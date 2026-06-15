@@ -9,9 +9,16 @@ from app.api.v1.schemas import (
     CreateProjectRequest,
     IntakeValidationResponse,
     ProjectResponse,
+    TopicDecomposeRequest,
+    TopicSpecResponse,
 )
 from app.db.database import get_session
 from app.db.repository import ProjectRepository
+from app.db.topic_spec_repository import TopicSpecRepository
+from packages.agents.nodes.phase2_decompose import (
+    allow_proceed_to_phase03,
+    decompose,
+)
 from packages.domain import (
     ProjectIntake,
     ValidationOutcome,
@@ -108,4 +115,81 @@ async def validate_intake_endpoint(
         intake_rating=rating,
         missing_fields=missing,
         allow_proceed_to_phase02=outcome == ValidationOutcome.OK,
+    )
+
+
+@router.post(
+    "/{project_id}/topic/decompose",
+    response_model=TopicSpecResponse,
+    summary="Phase 02: 调 LLM 拆解题目，生成 TopicSpec",
+)
+async def decompose_topic(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+    body: TopicDecomposeRequest = TopicDecomposeRequest(),
+) -> TopicSpecResponse:
+    prefer = body.prefer
+
+    proj_repo = ProjectRepository(session)
+    project = await proj_repo.get_by_id(project_id)
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 不存在",
+        )
+
+    payload = ProjectIntake.model_validate(project.payload)
+
+    # 交接校验：必须 Phase 01 通过
+    outcome, _, _ = validate_intake(payload)
+    if outcome != ValidationOutcome.OK:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                f"Phase 01 状态为 {outcome.value}，禁止进入 Phase 02。"
+                " 请先补问后 POST /api/v1/projects/{id}/intake/validate"
+            ),
+        )
+
+    spec = decompose(payload, prefer=prefer)
+    spec.project_id = str(project_id)
+
+    spec_repo = TopicSpecRepository(session)
+    row = await spec_repo.upsert(spec)
+
+    allow, _ = allow_proceed_to_phase03(spec)
+    return TopicSpecResponse(
+        id=row.id,
+        project_id=row.project_id,
+        case_id=row.case_id,
+        payload=row.payload,
+        decomposition_rating=spec.decomposition_rating,
+        allow_proceed_to_phase03=allow,
+    )
+
+
+@router.get(
+    "/{project_id}/topic/spec",
+    response_model=TopicSpecResponse,
+    summary="取已落库的 TopicSpec",
+)
+async def get_topic_spec(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> TopicSpecResponse:
+    spec_repo = TopicSpecRepository(session)
+    spec = await spec_repo.get_by_project_id(str(project_id))
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 TopicSpec，请先调 decompose",
+        )
+    allow, _ = allow_proceed_to_phase03(spec)
+    return TopicSpecResponse(
+        id=0,
+        project_id=spec.project_id,
+        case_id=spec.source_intake_case_id,
+        payload=spec.model_dump(mode="json"),
+        decomposition_rating=spec.decomposition_rating,
+        allow_proceed_to_phase03=allow,
     )

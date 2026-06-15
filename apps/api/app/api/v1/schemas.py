@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from packages.domain import IntakeRating, MissingField, ProjectIntake, ValidationOutcome
@@ -38,3 +40,23 @@ class IntakeValidationResponse(BaseModel):
     allow_proceed_to_phase02: bool = Field(
         description="仅在 outcome=OK 时为 True；NEED_CLARIFICATION 与 BLOCKED 都为 False",
     )
+
+
+class TopicDecomposeRequest(BaseModel):
+    """POST /api/v1/projects/{id}/topic/decompose 的请求体。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    prefer: Literal["auto", "llm", "heuristic"] = Field(
+        default="auto",
+        description="auto=LLM 优先，失败 fallback heuristic；llm=强制 LLM；heuristic=强制规则",
+    )
+
+
+class TopicSpecResponse(BaseModel):
+    id: int
+    project_id: str
+    case_id: str
+    payload: dict
+    decomposition_rating: str
+    allow_proceed_to_phase03: bool
