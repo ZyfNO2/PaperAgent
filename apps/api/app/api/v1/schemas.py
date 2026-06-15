@@ -60,3 +60,12 @@ class TopicSpecResponse(BaseModel):
     payload: dict
     decomposition_rating: str
     allow_proceed_to_phase03: bool
+
+
+class SearchPlanResponse(BaseModel):
+    id: int
+    project_id: str
+    case_id: str
+    payload: dict
+    maturity_rating: str
+    allow_proceed_to_phase04: bool

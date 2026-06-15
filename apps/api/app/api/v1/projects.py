@@ -9,18 +9,26 @@ from app.api.v1.schemas import (
     CreateProjectRequest,
     IntakeValidationResponse,
     ProjectResponse,
+    SearchPlanResponse,
     TopicDecomposeRequest,
     TopicSpecResponse,
 )
 from app.db.database import get_session
 from app.db.repository import ProjectRepository
+from app.db.search_plan_repository import SearchPlanRepository
 from app.db.topic_spec_repository import TopicSpecRepository
 from packages.agents.nodes.phase2_decompose import (
     allow_proceed_to_phase03,
     decompose,
 )
+from packages.agents.nodes.phase3_search_plan import (
+    allow_proceed_to_phase04,
+    build_search_plan,
+)
 from packages.domain import (
     ProjectIntake,
+    SearchQueryPlan,
+    TopicSpec,
     ValidationOutcome,
     compute_intake_rating,
     derive_missing_fields,
@@ -192,4 +200,75 @@ async def get_topic_spec(
         payload=spec.model_dump(mode="json"),
         decomposition_rating=spec.decomposition_rating,
         allow_proceed_to_phase03=allow,
+    )
+
+
+# -------- Phase 03 -------- #
+
+
+@router.post(
+    "/{project_id}/search/plan",
+    response_model=SearchPlanResponse,
+    summary="Phase 03: 从 TopicSpec 推 SearchQueryPlan",
+)
+async def build_search_plan_endpoint(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> SearchPlanResponse:
+    spec_repo = TopicSpecRepository(session)
+    spec = await spec_repo.get_by_project_id(str(project_id))
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 TopicSpec，请先调 decompose",
+        )
+
+    allow_p3, _ = allow_proceed_to_phase03(spec)
+    if not allow_p3:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="TopicSpec 评级不允许进入 Phase 03",
+        )
+
+    plan = build_search_plan(spec)
+    plan.project_id = str(project_id)
+    spec_repo2 = TopicSpecRepository(session)  # 不重复用，复用即可
+    plan_repo = SearchPlanRepository(session)
+    row = await plan_repo.upsert(plan)
+
+    allow_p4, _ = allow_proceed_to_phase04(plan)
+    return SearchPlanResponse(
+        id=row.id,
+        project_id=row.project_id,
+        case_id=spec.source_intake_case_id,
+        payload=row.payload,
+        maturity_rating=plan.maturity_rating,
+        allow_proceed_to_phase04=allow_p4,
+    )
+
+
+@router.get(
+    "/{project_id}/search/plan",
+    response_model=SearchPlanResponse,
+    summary="取已落库的 SearchQueryPlan",
+)
+async def get_search_plan(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> SearchPlanResponse:
+    repo = SearchPlanRepository(session)
+    plan = await repo.get_by_project_id(str(project_id))
+    if plan is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 SearchQueryPlan，请先调 plan",
+        )
+    allow_p4, _ = allow_proceed_to_phase04(plan)
+    return SearchPlanResponse(
+        id=0,
+        project_id=plan.project_id,
+        case_id="",
+        payload=plan.model_dump(mode="json"),
+        maturity_rating=plan.maturity_rating,
+        allow_proceed_to_phase04=allow_p4,
     )

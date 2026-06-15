@@ -21,6 +21,15 @@ from .phase2_models import (
     TopicSpec,
     WorkPackageDraft,
 )
+from .phase3_models import (
+    BaselineProbe,
+    MaturityProbe,
+    QueryLayer,
+    SearchQueryPlan,
+    SourceTarget,
+    ThesisTemplateProbe,
+    WorkPackageQuery,
+)
 
 __all__ = [
     "DegreeType",
@@ -41,4 +50,12 @@ __all__ = [
     "ThesisMapping",
     "TopicSpec",
     "WorkPackageDraft",
+    # Phase 03
+    "BaselineProbe",
+    "MaturityProbe",
+    "QueryLayer",
+    "SearchQueryPlan",
+    "SourceTarget",
+    "ThesisTemplateProbe",
+    "WorkPackageQuery",
 ]
