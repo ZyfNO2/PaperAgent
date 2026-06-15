@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.schemas import (
     CreateProjectRequest,
+    EvidenceLedgerRequest,
+    EvidenceLedgerResponse,
     IntakeValidationResponse,
     ProjectResponse,
     SearchPlanResponse,
@@ -14,6 +16,7 @@ from app.api.v1.schemas import (
     TopicSpecResponse,
 )
 from app.db.database import get_session
+from app.db.evidence_ledger_repository import EvidenceLedgerRepository
 from app.db.repository import ProjectRepository
 from app.db.search_plan_repository import SearchPlanRepository
 from app.db.topic_spec_repository import TopicSpecRepository
@@ -25,6 +28,7 @@ from packages.agents.nodes.phase3_search_plan import (
     allow_proceed_to_phase04,
     build_search_plan,
 )
+from packages.agents.nodes.phase4_evidence import build_evidence_ledger
 from packages.domain import (
     ProjectIntake,
     SearchQueryPlan,
@@ -271,4 +275,83 @@ async def get_search_plan(
         payload=plan.model_dump(mode="json"),
         maturity_rating=plan.maturity_rating,
         allow_proceed_to_phase04=allow_p4,
+    )
+
+
+# -------- Phase 04 -------- #
+
+
+@router.post(
+    "/{project_id}/evidence/build",
+    response_model=EvidenceLedgerResponse,
+    summary="Phase 04: 调 LLM 生成证据账本（论文/数据集/baseline/指标/模板）",
+)
+async def build_evidence_endpoint(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+    body: EvidenceLedgerRequest = EvidenceLedgerRequest(),
+) -> EvidenceLedgerResponse:
+    spec_repo = TopicSpecRepository(session)
+    spec = await spec_repo.get_by_project_id(str(project_id))
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 TopicSpec",
+        )
+
+    plan_repo = SearchPlanRepository(session)
+    plan = await plan_repo.get_by_project_id(str(project_id))
+    if plan is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 SearchQueryPlan，请先调 plan",
+        )
+
+    ledger = build_evidence_ledger(spec, plan, prefer=body.prefer)
+    ledger.project_id = str(project_id)
+
+    led_repo = EvidenceLedgerRepository(session)
+    row = await led_repo.upsert(ledger)
+
+    return EvidenceLedgerResponse(
+        id=row.id,
+        project_id=row.project_id,
+        case_id=spec.source_intake_case_id,
+        payload=row.payload,
+        evidence_rating=ledger.evidence_rating,
+        risk_flags=ledger.risk_flags,
+        paper_count=len(ledger.papers),
+        dataset_count=len(ledger.datasets),
+        baseline_count=len(ledger.baselines),
+        metric_count=len(ledger.metrics),
+    )
+
+
+@router.get(
+    "/{project_id}/evidence/ledger",
+    response_model=EvidenceLedgerResponse,
+    summary="取已落库的 EvidenceLedger",
+)
+async def get_evidence_ledger(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> EvidenceLedgerResponse:
+    repo = EvidenceLedgerRepository(session)
+    ledger = await repo.get_by_project_id(str(project_id))
+    if ledger is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 EvidenceLedger",
+        )
+    return EvidenceLedgerResponse(
+        id=0,
+        project_id=ledger.project_id,
+        case_id="",
+        payload=ledger.model_dump(mode="json"),
+        evidence_rating=ledger.evidence_rating,
+        risk_flags=ledger.risk_flags,
+        paper_count=len(ledger.papers),
+        dataset_count=len(ledger.datasets),
+        baseline_count=len(ledger.baselines),
+        metric_count=len(ledger.metrics),
     )

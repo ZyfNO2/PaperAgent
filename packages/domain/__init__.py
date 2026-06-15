@@ -30,6 +30,16 @@ from .phase3_models import (
     ThesisTemplateProbe,
     WorkPackageQuery,
 )
+from .phase4_models import (
+    BaselineCandidate,
+    DatasetCandidate,
+    EvidenceLedger,
+    ExperimentTemplate,
+    MetricSet,
+    PaperEvidence,
+    SourceTag,
+    ThesisTemplate,
+)
 
 __all__ = [
     "DegreeType",
@@ -58,4 +68,13 @@ __all__ = [
     "SourceTarget",
     "ThesisTemplateProbe",
     "WorkPackageQuery",
+    # Phase 04
+    "BaselineCandidate",
+    "DatasetCandidate",
+    "EvidenceLedger",
+    "ExperimentTemplate",
+    "MetricSet",
+    "PaperEvidence",
+    "SourceTag",
+    "ThesisTemplate",
 ]

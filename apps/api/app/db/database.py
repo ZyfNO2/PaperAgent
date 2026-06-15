@@ -80,6 +80,26 @@ class SearchQueryPlanRow(Base):
     maturity_rating: Mapped[str] = mapped_column(String(2), default="A")
 
 
+class EvidenceLedgerRow(Base):
+    """Phase 04 产物表。"""
+
+    __tablename__ = "evidence_ledgers"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    case_id: Mapped[str] = mapped_column(String(128), index=True)
+    created_at: Mapped["DateTime"] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped["DateTime"] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    evidence_rating: Mapped[str] = mapped_column(String(2), default="A")
+
+
 engine = create_async_engine(DATABASE_URL, echo=False, future=True)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 

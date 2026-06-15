@@ -69,3 +69,22 @@ class SearchPlanResponse(BaseModel):
     payload: dict
     maturity_rating: str
     allow_proceed_to_phase04: bool
+
+
+class EvidenceLedgerRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    prefer: Literal["auto", "llm", "heuristic"] = "auto"
+
+
+class EvidenceLedgerResponse(BaseModel):
+    id: int
+    project_id: str
+    case_id: str
+    payload: dict
+    evidence_rating: str
+    risk_flags: list[str]
+    paper_count: int
+    dataset_count: int
+    baseline_count: int
+    metric_count: int
