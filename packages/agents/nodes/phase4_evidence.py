@@ -130,12 +130,18 @@ def _arxiv_to_paper(a: ArxivPaper, idx: int, topic: TopicSpec) -> PaperEvidence:
 
 
 def _merge_arxiv_papers(
-    topic: TopicSpec, plan: SearchQueryPlan | None, max_total: int = 5
+    topic: TopicSpec, plan: SearchQueryPlan | None, max_total: int = 5,
+    trace_sink=None,
 ) -> list[PaperEvidence]:
     """从 SearchQueryPlan 抽检索词, 调 arXiv, 转 PaperEvidence. 失败返回 [].
 
     arXiv API 挂掉或搜不到时, 调用方按 fallback 把这些 slot 填回占位论文.
+    trace_sink: 接收 (name, detail, meta) 调用, 用于 SSE 流式 trace.
     """
+    def emit(name, detail, **meta):
+        if trace_sink:
+            trace_sink(name, detail, meta)
+
     queries: list[str] = []
     if plan is not None:
         for layer in plan.query_layers[:3]:
@@ -148,7 +154,9 @@ def _merge_arxiv_papers(
         queries = [topic.normalized_topic]
         queries.extend(topic.method_family[:2])
 
+    emit("step", "📡 arXiv 真检索", queries=len(queries), max_total=max_total)
     arxiv_hits = search_arxiv(queries, max_per_query=2, max_total=max_total, timeout=8.0)
+    emit("step", "✅ 解析 arXiv Atom XML", hits=len(arxiv_hits), queries=len(queries))
     return [_arxiv_to_paper(a, i, topic) for i, a in enumerate(arxiv_hits)]
 
 
@@ -356,19 +364,122 @@ def build_evidence_ledger_with_llm(
 
 
 def build_evidence_ledger(
-    spec: TopicSpec, plan: SearchQueryPlan, *, prefer: str = "auto"
+    spec: TopicSpec, plan: SearchQueryPlan, *, prefer: str = "auto",
+    trace_sink=None,
 ) -> EvidenceLedger:
+    def emit(name, detail, **meta):
+        if trace_sink:
+            trace_sink(name, detail, meta)
+
     if prefer == "heuristic":
-        return build_evidence_ledger_heuristic(spec, plan)
+        emit("step", "走纯启发式路径 (无 LLM)", mode="heuristic")
+        # 把 sink 传进去让 _merge_arxiv_papers emit
+        base_papers = _build_default_papers(spec)
+        arxiv_rows = _merge_arxiv_papers(spec, plan, max_total=len(base_papers), trace_sink=trace_sink)
+        papers = _replace_with_arxiv(base_papers, arxiv_rows)
+        surveys = _build_default_surveys(spec)
+        datasets = _build_default_datasets(spec)
+        baselines = _build_default_baselines(spec)
+        metrics = _build_default_metrics(spec)
+        exp, thesis = _build_default_templates()
+        rating, flags = _rate(papers=papers, surveys=surveys, datasets=datasets,
+                              baselines=baselines, metrics=metrics, exp=exp, thesis=thesis)
+        emit("step", "评分", rating=rating, flags=len(flags))
+        return EvidenceLedger(
+            project_id=spec.project_id, query_plan_id="", goal_level=spec.goal_level,
+            papers=papers, surveys=surveys, datasets=datasets, baselines=baselines,
+            metrics=metrics, experiment_templates=exp, thesis_templates=thesis,
+            risk_flags=flags, evidence_rating=rating,  # type: ignore[arg-type]
+        )
     if prefer == "llm":
-        return build_evidence_ledger_with_llm(spec, plan)
+        return _build_with_llm_emitting(spec, plan, trace_sink)
     # auto
     try:
-        return build_evidence_ledger_with_llm(spec, plan)
+        return _build_with_llm_emitting(spec, plan, trace_sink)
     except (LLMUnavailable, ValueError) as exc:
-        ledger = build_evidence_ledger_heuristic(spec, plan)
-        ledger.risk_flags.append(f"[fallback] heuristic used: {type(exc).__name__}")
-        return ledger
+        emit("warn", f"LLM 失败, 走启发式 fallback: {type(exc).__name__}")
+        base_papers = _build_default_papers(spec)
+        arxiv_rows = _merge_arxiv_papers(spec, plan, max_total=len(base_papers), trace_sink=trace_sink)
+        papers = _replace_with_arxiv(base_papers, arxiv_rows)
+        surveys = _build_default_surveys(spec)
+        datasets = _build_default_datasets(spec)
+        baselines = _build_default_baselines(spec)
+        metrics = _build_default_metrics(spec)
+        exp, thesis = _build_default_templates()
+        rating, flags = _rate(papers=papers, surveys=surveys, datasets=datasets,
+                              baselines=baselines, metrics=metrics, exp=exp, thesis=thesis)
+        flags.append(f"[fallback] heuristic used: {type(exc).__name__}")
+        emit("step", "评分", rating=rating, flags=len(flags))
+        return EvidenceLedger(
+            project_id=spec.project_id, query_plan_id="", goal_level=spec.goal_level,
+            papers=papers, surveys=surveys, datasets=datasets, baselines=baselines,
+            metrics=metrics, experiment_templates=exp, thesis_templates=thesis,
+            risk_flags=flags, evidence_rating=rating,  # type: ignore[arg-type]
+        )
+
+
+def _build_with_llm_emitting(
+    spec: TopicSpec, plan: SearchQueryPlan, trace_sink
+) -> EvidenceLedger:
+    """走 LLM 路径, 沿途 emit trace. 失败抛 LLMUnavailable 让上层 fallback."""
+    def emit(name, detail, **meta):
+        if trace_sink:
+            trace_sink(name, detail, meta)
+
+    import time as _t
+    emit("step", "📝 拼装证据 prompt", max_tokens=4000)
+    prompt = _EVIDENCE_PROMPT.format(
+        normalized_topic=spec.normalized_topic,
+        task_type=", ".join(spec.task_type),
+        method_family=", ".join(spec.method_family),
+        evaluation_metrics=", ".join(spec.evaluation_metrics),
+        wp_titles="; ".join(wp.title for wp in spec.work_package_drafts),
+        raw_topic=spec.raw_topic,
+    )
+    t0 = _t.time()
+    emit("llm", "🤖 调 M3 生成论文 / 数据 / baseline 候选", max_tokens=4000)
+    raw = chat_json(
+        [
+            {"role": "system", "content": "严格按 schema 输出 JSON。"},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.4,
+        max_tokens=4000,
+    )
+    emit("llm", "✅ LLM 返回", duration_ms=int((_t.time() - t0) * 1000))
+
+    papers = _safe_papers(raw.get("papers"), spec)
+    # 真 arXiv 论文优先, 然后 LLM 候选, 不足时回退占位 (emit arxiv trace)
+    arxiv_rows = _merge_arxiv_papers(spec, plan, max_total=5, trace_sink=trace_sink)
+    base_default = _build_default_papers(spec)
+    merged_papers: list[PaperEvidence] = []
+    seen_ids: set[str] = set()
+    for p in arxiv_rows + papers + base_default:
+        if p.paper_id in seen_ids:
+            continue
+        seen_ids.add(p.paper_id)
+        merged_papers.append(p)
+        if len(merged_papers) >= max(5, len(papers)):
+            break
+    papers = merged_papers
+    surveys = _safe_papers(raw.get("surveys"), spec, prefix="S")
+    datasets = _safe_datasets(raw.get("datasets"), spec)
+    baselines = _safe_baselines(raw.get("baselines"), spec)
+    metrics = _safe_metrics(raw.get("metrics"), spec)
+    exp = _safe_templates(raw.get("experiment_templates"))
+    thesis = _safe_thesis(raw.get("thesis_templates"))
+
+    rating, flags = _rate(
+        papers=papers, surveys=surveys, datasets=datasets,
+        baselines=baselines, metrics=metrics, exp=exp, thesis=thesis,
+    )
+    emit("step", "评分", rating=rating, flags=len(flags))
+    return EvidenceLedger(
+        project_id=spec.project_id, query_plan_id="", goal_level=spec.goal_level,
+        papers=papers, surveys=surveys, datasets=datasets, baselines=baselines,
+        metrics=metrics, experiment_templates=exp, thesis_templates=thesis,
+        risk_flags=flags, evidence_rating=rating,  # type: ignore[arg-type]
+    )
 
 
 # ----------------- helpers ----------------- #

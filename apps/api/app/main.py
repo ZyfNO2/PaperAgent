@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.projects import router as projects_router
+from app.api.v1.stream import router as stream_router
 from app.db.database import init_db
 
 
@@ -38,6 +39,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(projects_router, prefix="/api/v1")
+    app.include_router(stream_router)
 
     @app.get("/health", tags=["meta"])
     async def health() -> dict[str, str]:

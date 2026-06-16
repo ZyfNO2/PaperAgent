@@ -245,22 +245,49 @@ def decompose_with_llm(intake: ProjectIntake) -> TopicSpec:
     return _build_topicspec(intake, raw)
 
 
-def decompose(intake: ProjectIntake, *, prefer: str = "auto") -> TopicSpec:
-    """对外入口。``prefer='llm'`` 强制 LLM；``'heuristic'`` 强制规则；
-    ``'auto'`` 优先 LLM，失败则 fallback。"""
+def decompose(intake: ProjectIntake, *, prefer: str = "auto", trace_sink=None) -> TopicSpec:
+    """对外入口. ``prefer='llm'`` 强制 LLM; ``'heuristic'`` 强制规则;
+    ``'auto'`` 优先 LLM, 失败则 fallback. trace_sink: 可选 (name, detail, meta) sink.
+    """
+
+    def emit(name, detail, **meta):
+        if trace_sink:
+            trace_sink(name, detail, meta)
 
     if prefer == "heuristic":
-        return decompose_heuristic(intake)
+        emit("step", "走纯启发式 (无 LLM)", mode="heuristic")
+        emit("step", "正则扫 8 个高风险词 + 拼装 TopicSpec", topic_len=len(intake.raw_topic))
+        spec = decompose_heuristic(intake)
+        emit("step", "评分", rating=spec.decomposition_rating)
+        return spec
     if prefer == "llm":
-        return decompose_with_llm(intake)
+        return _decompose_with_llm_emitting(intake, trace_sink)
     # auto
     try:
-        return decompose_with_llm(intake)
+        return _decompose_with_llm_emitting(intake, trace_sink)
     except (LLMUnavailable, ValueError) as exc:
-        # 静默 fallback，但保留一条标记，让端到端测试可观测
+        emit("warn", f"LLM 失败, 走启发式 fallback: {type(exc).__name__}")
         spec = decompose_heuristic(intake)
         spec.carried_constraints.append(f"[fallback] heuristic used: {type(exc).__name__}")
+        emit("step", "评分", rating=spec.decomposition_rating)
         return spec
+
+
+def _decompose_with_llm_emitting(intake: ProjectIntake, trace_sink) -> TopicSpec:
+    """LLM 路径, 沿途 emit. 失败抛 LLMUnavailable."""
+    import time as _t
+
+    def emit(name, detail, **meta):
+        if trace_sink:
+            trace_sink(name, detail, meta)
+
+    emit("step", "📝 拼装拆解 prompt", max_tokens=3000)
+    t0 = _t.time()
+    emit("llm", "🤖 调 M3 拆解题目结构", max_tokens=3000)
+    spec = decompose_with_llm(intake)
+    emit("llm", "✅ LLM 返回", duration_ms=int((_t.time() - t0) * 1000))
+    emit("step", "校验 + 启发式补齐", rating=spec.decomposition_rating)
+    return spec
 
 
 # ----------------- 内部: 把 LLM 输出组装为 TopicSpec ----------------- #

@@ -1,535 +1,512 @@
-// TopicPilot-CN MVP 静态前端逻辑
-// 不使用任何前端框架, 直接 fetch + DOM 操作
-// 状态机: project_id + 每 Phase 状态 + 每 Phase payload 缓存 (供右侧栏读)
+// TopicPilot-CN v2: 一页一动作 + 流式 Agent trace
+// 状态机: currentPhase 1-8; 每完成一步切下一个 phase, 同时保留历史可回看
+// 流式: fetch + ReadableStream 调 /api/v1/projects/{id}/<phase>/<action>/stream
 
 const API = "http://127.0.0.1:18181";
+
 const state = {
-  project_id: null,
-  phase_status: {
-    "01": false, "02": false, "03": false, "04": false,
-    "05": false, "06": false, "07-proposal": false, "07-committee": false, "08": false,
+  projectId: null,
+  currentPhase: 1,                  // 1-8 当前显示的 phase
+  phases: {                         // 每 phase 状态
+    1: { done: false, data: null },
+    2: { done: false, data: null },
+    3: { done: false, data: null },
+    4: { done: false, data: null },
+    5: { done: false, data: null },
+    6: { done: false, data: null },
+    7: { done: false, data: { proposal: null, committee: null } },
+    8: { done: false, data: null },
   },
-  blocked: false,
-  // 每 Phase 缓存最后一次成功响应 payload (后端原始格式)
-  intake: null,         // Phase 01: create project 响应 (含 .payload)
-  topicSpec: null,      // Phase 02: decompose / get-spec
-  searchPlan: null,     // Phase 03: search-plan / get-plan
-  evidenceLedger: null, // Phase 04: evidence-build / get-ledger
-  riskEvaluation: null, // Phase 05
-  workPackage: null,    // Phase 06
-  proposalDraft: null,  // Phase 07 proposal
-  committeeReview: null,// Phase 07 committee
-  finalPackage: null,   // Phase 08
-  currentSidebarPhase: 0, // 0 = 未启动, 1-8 = 当前 phase
+  trace: [],                        // 流式 trace 事件累积
+  streamAbort: null,                // 当前流式 fetch 的 AbortController
+  blocked: false,                   // Phase 01 阻断
 };
 
-// ------- 工具函数 -------
+// ---------- 8 phase 路由表 ----------
 
-function setOutput(phaseId, text, level = "ok") {
-  const el = document.getElementById(`out-${phaseId}`);
-  el.className = `phase-output ${level}`;
-  el.textContent = text;
+const PHASE_DEFS = {
+  1: {
+    icon: "📝",
+    eyebrow: "Step 01 · 任务建档",
+    title: "填好研究背景, 系统会给你 A/B/C/D 评级",
+    desc: "专业 / 目标档位 / 时间 / 原始题目 缺一不可. D 评级会阻断后续 6 个 phase.",
+    renderForm: renderPhase01Form,
+    primary: { label: "创建项目 + 自动评级", action: "createProject" },
+  },
+  2: {
+    icon: "🔍",
+    eyebrow: "Step 02 · 题目拆解",
+    title: "把自然语言题目拆成结构化 TopicSpec",
+    desc: "识别研究对象 / 任务 / 模态 / 方法 / 数据 / 评价. 同时扫 8 个高风险词 (智能 / 高精度 / 端到端...).",
+    primary: { label: "开始拆解", action: "runPhase2" },
+  },
+  3: {
+    icon: "🗺️",
+    eyebrow: "Step 03 · 检索计划",
+    title: "7 层 × 121 个检索词覆盖研究现状",
+    desc: "L0 精确 → L1 中英同义 → L2 去场景 → L3 抽象任务 → L4 基线 → L5 综述 → L6 中文.",
+    primary: { label: "生成检索计划", action: "runPhase3" },
+  },
+  4: {
+    icon: "📚",
+    eyebrow: "Step 04 · 证据账本",
+    title: "真 arXiv 检索 + 论文 / 数据 / Baseline",
+    desc: "调 arXiv 公开 API 拉真实论文. 启发式时用占位论文, LLM 路径会按 arXiv 真实结果扩.",
+    primary: { label: "生成证据账本 (含 arXiv 真检索)", action: "runPhase4" },
+  },
+  5: {
+    icon: "⚖️",
+    eyebrow: "Step 05 · 风险评分",
+    title: "6 维评分 + M3 生成 Pivot 候选",
+    desc: "文献 / 数据 / Baseline / 评价 / 资源 / 范围 / 工作包. 决策: 继续 / 收缩 / 转向 / 停止.",
+    primary: { label: "评估风险", action: "runPhase5" },
+  },
+  6: {
+    icon: "📦",
+    eyebrow: "Step 06 · 工作包",
+    title: "把题目拆成 2-3 个可验证工作包",
+    desc: "每 WP 含独立研究问题 / 数据 / 对照 / 评价 / 论文章节. 失败不串行.",
+    primary: { label: "定稿工作包", action: "runPhase6" },
+  },
+  7: {
+    icon: "📄",
+    eyebrow: "Step 07 · 开题报告 + 委员会",
+    title: "10 节报告 + 7 维审查 + 3 角色 LLM 对话",
+    desc: "Supporter / Skeptic / Pragmatist 三个 '教授' 给出开题版评语 (不学术答辩腔).",
+    primary: { label: "生成开题报告", action: "runPhase7a" },
+    secondary: { label: "再走委员会审查", action: "runPhase7b" },
+  },
+  8: {
+    icon: "🎓",
+    eyebrow: "Step 08 · 最终材料",
+    title: "Markdown 初稿 + 3 维验收 + 浏览器下载",
+    desc: "包含 10 节 + 创新点 + 答辩问答 + 风险预案 + 7 维审查 + 9 个未来工作.",
+    primary: { label: "组装最终材料", action: "runPhase8" },
+    secondary: { label: "导出 Markdown 到本地", action: "exportMarkdown" },
+  },
+};
+
+// ============================================================ 渲染
+// ============================================================
+
+function renderStepper() {
+  document.querySelectorAll(".step-dot").forEach(dot => {
+    const n = parseInt(dot.dataset.phase, 10);
+    dot.classList.remove("step-dot--active", "step-dot--done");
+    dot.disabled = !state.phases[n].done && n !== state.currentPhase && !canReach(n);
+    if (state.phases[n].done) dot.classList.add("step-dot--done");
+    if (n === state.currentPhase) dot.classList.add("step-dot--active");
+  });
 }
 
-function enablePhase(phaseNum) {
-  const card = document.getElementById(`phase-0${phaseNum}`);
-  card.classList.remove("disabled");
-  card.querySelectorAll("button[data-action]").forEach(b => b.disabled = false);
+function canReach(n) {
+  if (n === 1) return true;
+  return state.phases[n - 1].done;
 }
 
-function showBlockBanner(detail) {
-  const banner = document.getElementById("block-banner");
-  document.getElementById("block-banner-detail").textContent = detail;
-  banner.classList.remove("hidden");
-  state.blocked = true;
-  for (let i = 2; i <= 8; i++) {
-    const card = document.getElementById(`phase-0${i}`);
-    if (card) card.classList.add("disabled");
+function renderCurrentPanel() {
+  const def = PHASE_DEFS[state.currentPhase];
+  const panel = document.getElementById("phase-panel");
+  const pState = state.phases[state.currentPhase];
+  const formHtml = def.renderForm ? def.renderForm() : "";
+  const resultHtml = pState.data ? renderResult(state.currentPhase, pState.data) : "";
+  const isFirstActive = state.currentPhase === 1 && !pState.data;
+
+  panel.innerHTML = `
+    <div class="phase-card">
+      <div class="phase-card__icon">${def.icon}</div>
+      <div class="phase-card__eyebrow">${def.eyebrow}</div>
+      <h2 class="phase-card__title">${def.title}</h2>
+      <p class="phase-card__desc">${def.desc}</p>
+      ${isFirstActive ? formHtml : ""}
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button class="cta-primary" id="btn-primary" ${pState.done ? "disabled" : ""}>
+          ${pState.done ? "✓ 已完成" : def.primary.label}
+        </button>
+        ${def.secondary && !pState.done
+          ? `<button class="cta-ghost" id="btn-secondary">${def.secondary.label}</button>`
+          : ""}
+        ${pState.done && state.currentPhase < 8
+          ? `<button class="cta-ghost" id="btn-next">下一步 →</button>`
+          : ""}
+        ${state.currentPhase > 1
+          ? `<button class="cta-ghost" id="btn-prev">← 上一步</button>`
+          : ""}
+      </div>
+      ${resultHtml}
+    </div>
+  `;
+
+  const btn = document.getElementById("btn-primary");
+  if (btn && !pState.done) btn.addEventListener("click", () => runAction(def.primary.action));
+  const sec = document.getElementById("btn-secondary");
+  if (sec) sec.addEventListener("click", () => runAction(def.secondary.action));
+  const nxt = document.getElementById("btn-next");
+  if (nxt) nxt.addEventListener("click", () => goToPhase(state.currentPhase + 1));
+  const prv = document.getElementById("btn-prev");
+  if (prv) prv.addEventListener("click", () => goToPhase(state.currentPhase - 1));
+}
+
+function renderResult(n, data) {
+  let rows = [];
+  if (n === 1) rows = [
+    ["case_id", data.case_id], ["rating", data.rating],
+    ["目标档位", data.goal_level], ["导师", data.advisor_direction],
+  ];
+  else if (n === 2) rows = [
+    ["normalized_topic", (data.normalized_topic || "").slice(0, 24) + "..."],
+    ["task_count", (data.task_type || []).length],
+    ["decomposition_rating", data.decomposition_rating || "-"],
+    ["allow_proceed", String(data.allow_proceed_to_phase03)],
+  ];
+  else if (n === 3) rows = [
+    ["maturity_rating", data.maturity_rating || "-"],
+    ["layer_count", data.layer_count || "-"],
+    ["query_total", data.query_total || "-"],
+    ["allow_proceed", String(data.allow_proceed_to_phase04)],
+  ];
+  else if (n === 4) rows = [
+    ["evidence_rating", data.evidence_rating],
+    ["paper_count", data.paper_count],
+    ["arxiv_papers", data.arxiv_papers || 0],
+    ["datasets", data.dataset_count],
+    ["baselines", data.baseline_count],
+  ];
+  else if (n === 5) rows = [
+    ["rating", data.overall_rating],
+    ["score", data.overall_score?.toFixed(1)],
+    ["decision", data.decision],
+    ["pivots", data.pivot_count],
+  ];
+  else if (n === 6) rows = [
+    ["final_topic", (data.final_topic || "").slice(0, 30) + "..."],
+    ["from_pivot", String(data.from_pivot)],
+    ["WPs", data.work_package_count],
+    ["experiments", data.experiment_count],
+  ];
+  else if (n === 7) {
+    const c = data.committee || {};
+    rows = [
+      ["proposal_sections", data.proposal_sections],
+      ["innovation_count", data.innovation_count],
+      ["verdict", c.overall_verdict || "—"],
+      ["maturity", c.proposal_maturity || "—"],
+      ["discussion", c.discussion_count || 0],
+    ];
+  } else if (n === 8) rows = [
+    ["ready_for_thesis", String(data.ready_for_thesis)],
+    ["backend", data.backend_verification],
+    ["ui", data.ui_verification],
+    ["playwright", data.playwright_verification],
+    ["markdown", data.proposal_markdown_chars + " chars"],
+  ];
+  return `
+    <div class="phase-result">
+      <div class="phase-result__head">✓ Phase ${String(n).padStart(2, "0")} 产物</div>
+      <div class="phase-result__grid">
+        ${rows.map(([k, v]) => `<div class="phase-result__row">
+          <span class="phase-result__k">${k}</span>
+          <span class="phase-result__v">${v}</span>
+        </div>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderPhase01Form() {
+  return `
+    <form class="phase-card__form" id="form-phase-01">
+      <div class="phase-card__row">
+        <label>案例编号 (case_id) <input name="case_id" value="WEB_V2" required></label>
+        <label>专业 <input name="major" value="计算机科学与技术"></label>
+        <label>学位 <select name="degree_type">
+          <option>本科</option><option selected>硕士</option><option>博士</option>
+        </select></label>
+        <label>目标档位 <select name="goal_level">
+          <option selected>保毕业</option><option>稳中求新</option><option>冲高水平</option>
+        </select></label>
+      </div>
+      <div class="phase-card__row">
+        <label>开题时间 <input name="proposal_deadline" value="2026-10-15"></label>
+        <label>毕业时间 <input name="thesis_deadline" value="2027-06-01"></label>
+        <label>首张结果表 <input name="first_result_deadline" value="2026-12-31"></label>
+      </div>
+      <label>导师方向 <input name="advisor_direction" value="图神经网络"></label>
+      <label>原始题目 <textarea name="raw_topic" required>基于图神经网络的学术论文推荐方法研究</textarea></label>
+      <div class="phase-card__row">
+        <label>必须保留 <input name="must_keep" value="图神经网络, 推荐"></label>
+        <label>每周投入 (h) <input name="weekly_hours" type="number" value="25" min="0" max="168"></label>
+      </div>
+    </form>
+  `;
+}
+
+// ============================================================ 流式
+// ============================================================
+
+function appendTrace(ev) {
+  state.trace.push(ev);
+  renderTraceList();
+}
+
+function renderTraceList() {
+  const list = document.getElementById("trace-list");
+  const count = document.getElementById("trace-count");
+  count.textContent = state.trace.length;
+  if (state.trace.length === 0) {
+    list.innerHTML = '<div class="trace-empty">尚无 trace 事件</div>';
+    return;
   }
+  list.innerHTML = state.trace.slice(-100).map(ev => {
+    const icon = ({
+      start: "🚀", step: "🔹", llm: "🤖",
+      warn: "⚠️", result: "✅", error: "❌",
+    })[ev.type] || "·";
+    const meta = ev.meta && Object.keys(ev.meta).length
+      ? `<div class="trace-item__meta">${Object.entries(ev.meta).slice(0, 3).map(([k, v]) => `${k}=${typeof v === 'object' ? JSON.stringify(v).slice(0, 40) : v}`).join('  ')}</div>`
+      : "";
+    return `<div class="trace-item trace-item--${ev.type}">
+      <div class="trace-item__icon">${icon}</div>
+      <div class="trace-item__body">
+        <div class="trace-item__name">${ev.name || ev.type}</div>
+        <div class="trace-item__detail">${ev.detail || ""}</div>
+        ${meta}
+      </div>
+      <div class="trace-item__time">${ev.ts_ms ? new Date(ev.ts_ms).toLocaleTimeString('zh-CN', { hour12: false }).slice(0, 8) : ""}</div>
+    </div>`;
+  }).join("");
+  list.scrollTop = list.scrollHeight;
 }
 
-async function postJSON(path, body = {}) {
-  const r = await fetch(API + path, {
+async function runStream(endpoint, body) {
+  // 清空当前 trace 面板
+  state.trace = [];
+  renderTraceList();
+  document.getElementById("trace-sub").textContent =
+    `正在调 ${endpoint.replace("/stream", "")} (流式)...`;
+
+  if (state.streamAbort) state.streamAbort.abort();
+  state.streamAbort = new AbortController();
+
+  const r = await fetch(API + endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(body || {}),
+    signal: state.streamAbort.signal,
   });
-  return { status: r.status, data: r.status < 400 ? await r.json() : await r.text() };
-}
-
-async function getJSON(path) {
-  const r = await fetch(API + path);
-  return { status: r.status, data: r.status < 400 ? await r.json() : await r.text() };
-}
-
-function summarize(obj, keys) {
-  const lines = [];
-  for (const k of keys) {
-    if (obj[k] !== undefined) {
-      const v = obj[k];
-      lines.push(`${k}: ${typeof v === "object" ? JSON.stringify(v).slice(0, 80) : v}`);
+  if (!r.ok) {
+    const err = await r.text();
+    appendTrace({ type: "error", name: "HTTP " + r.status, detail: err.slice(0, 200) });
+    throw new Error(`HTTP ${r.status}`);
+  }
+  const reader = r.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  let result = null;
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const lines = buf.split("\n\n");
+    buf = lines.pop();
+    for (const chunk of lines) {
+      if (!chunk.startsWith("data: ")) continue;
+      try {
+        const ev = JSON.parse(chunk.slice(6));
+        appendTrace(ev);
+        if (ev.type === "result") {
+          result = ev.meta || {};
+        }
+      } catch (e) { /* ignore */ }
     }
   }
-  return lines.join(" | ");
+  return result;
 }
 
-// ------- 右侧栏渲染 -------
+// ============================================================ Action
+// ============================================================
 
-function setSidebar(phaseNum, title, rows, extras) {
-  state.currentSidebarPhase = phaseNum;
-  document.getElementById("sidebar-title").textContent = title;
-  const sub = {
-    0: "完成 Phase 01 后这里实时显示每步关键字段",
-    1: "项目建档 + 毕业目标 + 评级",
-    2: "题目结构化 + 风险词 + 工作包草稿",
-    3: "7 层检索词 + 方向成熟度",
-    4: "论文 / 数据 / Baseline / 评价 (含 arXiv 真实论文)",
-    5: "6 维风险 + Pivot 候选 + 决策",
-    6: "最终题目 + 工作包 + 实验矩阵",
-    7: "开题报告 + 委员会 7 维度 + 3 角色对话",
-    8: "MVP 验收 + Markdown 导出",
-  }[phaseNum] || "";
-  document.getElementById("sidebar-sub").textContent = sub;
-
-  const fields = document.getElementById("sidebar-fields");
-  if (!rows || rows.length === 0) {
-    fields.innerHTML = '<div class="sidebar-empty">尚无数据</div>';
-  } else {
-    fields.innerHTML = rows.map(([k, v]) =>
-      `<div class="sidebar-row"><span class="k">${k}</span><span class="v">${v}</span></div>`
-    ).join("");
+function runAction(name) {
+  if (!state.projectId && name !== "createProject") {
+    alert("请先完成 Phase 01 建档");
+    return;
   }
-  document.getElementById("sidebar-extras").innerHTML = extras || "";
+  handlers[name]();
 }
 
-function renderSidebar(phaseNum) {
-  switch (phaseNum) {
-    case 1: return _renderSidebar01();
-    case 2: return _renderSidebar02();
-    case 3: return _renderSidebar03();
-    case 4: return _renderSidebar04();
-    case 5: return _renderSidebar05();
-    case 6: return _renderSidebar06();
-    case 7: return _renderSidebar07();
-    case 8: return _renderSidebar08();
-    default: return setSidebar(0, "当前阶段：未启动", [], "");
-  }
-}
+const handlers = {
+  async createProject() {
+    const fd = new FormData(document.getElementById("form-phase-01"));
+    const intake = {
+      case_id: fd.get("case_id") + "_" + Date.now().toString().slice(-6),
+      major: fd.get("major"), degree_type: fd.get("degree_type"),
+      goal_level: fd.get("goal_level"),
+      thesis_deadline: fd.get("thesis_deadline"),
+      proposal_deadline: fd.get("proposal_deadline"),
+      first_result_deadline: fd.get("first_result_deadline"),
+      advisor_direction: fd.get("advisor_direction"),
+      school_requirements: [], inherited_resources: [],
+      student_resources: {
+        programming_level: "熟练", dl_or_algorithm_foundation: "中",
+        paper_reading_ability: "中", english_reading_ability: "中",
+        compute_resource: "笔记本 3060", weekly_hours: parseInt(fd.get("weekly_hours")) || 25,
+        data_collection_ability: "中", data_annotation_ability: "中",
+        code_reproduction_ability: "中", system_dev_ability: "中",
+      },
+      raw_topic: fd.get("raw_topic"),
+      must_keep: (fd.get("must_keep") || "").split(",").map(s => s.trim()).filter(Boolean),
+      can_drop: [], missing_fields: [], intake_rating: "A",
+    };
+    appendTrace({ type: "start", name: "createProject", detail: "提交 Phase 01 建档" });
+    try {
+      const r = await fetch(API + "/api/v1/projects", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ intake }),
+      });
+      if (r.status !== 201) {
+        const t = await r.text();
+        appendTrace({ type: "error", name: "HTTP " + r.status, detail: t.slice(0, 200) });
+        return;
+      }
+      const data = await r.json();
+      state.projectId = data.id;
+      appendTrace({ type: "step", name: "validate", detail: "调 intake/validate 走评级判定" });
+      const v = await fetch(API + `/api/v1/projects/${state.projectId}/intake/validate`, { method: "POST" });
+      const vj = await v.json();
+      if (vj.outcome !== "OK") {
+        state.blocked = true;
+        appendTrace({ type: "warn", name: "BLOCKED", detail: `outcome=${vj.outcome} rating=${vj.intake_rating}` });
+        return;
+      }
+      state.phases[1].done = true;
+      state.phases[1].data = {
+        case_id: vj.case_id, rating: vj.intake_rating,
+        goal_level: intake.goal_level, advisor_direction: intake.advisor_direction,
+      };
+      appendTrace({ type: "result", name: "Phase 01 完成", detail: `case_id=${vj.case_id} rating=${vj.intake_rating}` });
+      renderStepper();
+      renderCurrentPanel();
+    } catch (e) {
+      appendTrace({ type: "error", name: "createProject", detail: String(e).slice(0, 200) });
+    }
+  },
 
-function _renderSidebar01() {
-  const p = state.intake;
-  if (!p) return setSidebar(1, "Phase 01 · 待创建", [], "");
-  const payload = p.payload || {};
-  setSidebar(1, "Phase 01 · 建档完成", [
-    ["项目 ID", p.id],
-    ["case_id", payload.case_id || "-"],
-    ["intake_rating", payload.intake_rating || "-"],
-    ["目标档位", payload.goal_level || "-"],
-    ["学位", payload.degree_type || "-"],
-    ["导师方向", payload.advisor_direction || "-"],
-    ["开题时间", payload.proposal_deadline || "-"],
-    ["毕业时间", payload.thesis_deadline || "-"],
-    ["原始题目", (payload.raw_topic || "").slice(0, 30) + "..."],
-  ]);
-}
-
-function _renderSidebar02() {
-  const p = state.topicSpec;
-  if (!p) return setSidebar(2, "Phase 02 · 待拆解", [], "");
-  setSidebar(2, "Phase 02 · 题目拆解", [
-    ["normalized_topic", (p.normalized_topic || "").slice(0, 28) + "..."],
-    ["task_count", (p.task_type || []).length],
-    ["method_count", (p.method_family || []).length],
-    ["data_count", (p.data_requirement || []).length],
-    ["metric_count", (p.evaluation_metrics || []).length],
-    ["decomposition_rating", p.decomposition_rating || "-"],
-    ["allow_proceed", String(p.allow_proceed_to_phase03)],
-  ]);
-}
-
-function _renderSidebar03() {
-  const p = state.searchPlan;
-  if (!p) return setSidebar(3, "Phase 03 · 待生成", [], "");
-  const layers = p.query_layers || [];
-  const total = layers.reduce((s, l) => s + (l.queries || []).length, 0);
-  setSidebar(3, "Phase 03 · 检索计划", [
-    ["maturity_rating", p.maturity_rating || "-"],
-    ["layer_count", layers.length],
-    ["query_total", total],
-    ["top_layer", layers[0]?.layer + ": " + (layers[0]?.title || "").slice(0, 12)],
-    ["sample_query", (layers[0]?.queries?.[0] || "").slice(0, 30)],
-    ["allow_proceed", String(p.allow_proceed_to_phase04)],
-  ]);
-}
-
-function _renderSidebar04() {
-  const p = state.evidenceLedger;
-  if (!p) return setSidebar(4, "Phase 04 · 待构建", [], "");
-  const papers = p.papers || [];
-  const arxiv = papers.filter(x => x.source === "arXiv");
-  const years = papers.map(x => x.year).filter(y => typeof y === "number");
-  const datasets = p.datasets || [];
-  const baselines = p.baselines || [];
-  const extras = arxiv.length ? arxiv.slice(0, 3).map(a =>
-    `<div class="arxiv-mini">` +
-    `<a href="${a.url || '#'}" target="_blank" rel="noopener">[${a.year || '?'}] ${(a.title || '').slice(0, 40)}</a>` +
-    `</div>`
-  ).join("") : "";
-  setSidebar(4, "Phase 04 · 证据账本", [
-    ["evidence_rating", p.evidence_rating || "-"],
-    ["paper_count", papers.length],
-    ["arxiv_papers", arxiv.length],
-    ["latest_year", years.length ? Math.max(...years) : "-"],
-    ["dataset_count", datasets.length],
-    ["baseline_count", baselines.length],
-    ["metric_count", (p.metrics || []).length],
-  ], arxiv.length ? "<h3 style='margin-top:10px;font-size:12px;color:#6b7280;'>arXiv 真实论文 (top 3)</h3>" + extras : "");
-}
-
-function _renderSidebar05() {
-  const p = state.riskEvaluation;
-  if (!p) return setSidebar(5, "Phase 05 · 待评估", [], "");
-  const rs = p.risk_score || {};
-  setSidebar(5, "Phase 05 · 风险评分", [
-    ["overall_rating", p.overall_rating || "-"],
-    ["overall_score", typeof rs.overall_score === "number" ? rs.overall_score.toFixed(1) : "-"],
-    ["decision", p.decision || "-"],
-    ["max_risk_dim", p.max_risk_dimension || "-"],
-    ["pivot_count", (p.pivot_candidates || []).length],
-    ["top_pivot", (p.pivot_candidates?.[0]?.to_topic || "-").slice(0, 30)],
-  ]);
-}
-
-function _renderSidebar06() {
-  const p = state.workPackage;
-  if (!p) return setSidebar(6, "Phase 06 · 待定稿", [], "");
-  setSidebar(6, "Phase 06 · 工作包", [
-    ["final_topic", (p.final_topic || "").slice(0, 30) + "..."],
-    ["from_pivot", String(p.from_pivot)],
-    ["WP_count", p.work_package_count || (p.work_packages || []).length],
-    ["experiment_count", p.experiment_count || (p.experiment_matrices || []).length],
-    ["chapter_count", (p.thesis_outline || []).length],
-    ["max_writing_risk", p.max_writing_risk || "-"],
-  ]);
-}
-
-function _renderSidebar07() {
-  const p = state.proposalDraft || state.committeeReview;
-  if (!p && !state.committeeReview) return setSidebar(7, "Phase 07 · 待生成", [], "");
-  const proposal = state.proposalDraft;
-  const comm = state.committeeReview;
-  const disc = comm?.discussion || [];
-  const extras = disc.length ? disc.map(d =>
-    `<div class="discussion-bubble ${d.role}">` +
-    `<div class="role ${d.role}"></div>` +
-    `<div class="body">${(d.comment || "").slice(0, 220)}${(d.comment || "").length > 220 ? "..." : ""}</div>` +
-    `</div>`
-  ).join("") : "";
-  setSidebar(7, "Phase 07 · 开题报告 + 委员会", [
-    ["proposal_sections", proposal?.section_count || (proposal?.proposal_sections || []).length],
-    ["innovation_count", proposal?.innovation_count || (proposal?.innovation_points || []).length],
-    ["committee_verdict", comm?.overall_verdict || "-"],
-    ["proposal_maturity", comm?.proposal_maturity || "-"],
-    ["review_count", comm?.review_count || (comm?.reviews || []).length],
-    ["question_count", comm?.question_count || (comm?.questions || []).length],
-    ["discussion_count", disc.length],
-  ], extras ? "<h3 style='margin-top:10px;font-size:12px;color:#6b7280;'>委员会 3 角色对话</h3>" + extras : "");
-}
-
-function _renderSidebar08() {
-  const p = state.finalPackage;
-  if (!p) return setSidebar(8, "Phase 08 · 待组装", [], "");
-  setSidebar(8, "Phase 08 · 最终材料", [
-    ["ready_for_thesis", String(p.ready_for_thesis)],
-    ["backend", p.backend_verification || "-"],
-    ["ui", p.ui_verification || "-"],
-    ["playwright", p.playwright_verification || "-"],
-    ["markdown_chars", p.proposal_markdown_chars + " chars"],
-    ["allow_proceed", String(p.allow_proceed_to_phase09 ?? "-")],
-  ]);
-}
-
-// ------- Phase 01: 建档 -------
-
-document.getElementById("intake-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const fd = new FormData(e.target);
-  const intake = {
-    case_id: fd.get("case_id") + "_" + Date.now().toString().slice(-6),
-    major: fd.get("major"),
-    degree_type: fd.get("degree_type"),
-    goal_level: fd.get("goal_level"),
-    thesis_deadline: fd.get("thesis_deadline"),
-    proposal_deadline: fd.get("proposal_deadline"),
-    first_result_deadline: fd.get("first_result_deadline"),
-    advisor_direction: fd.get("advisor_direction"),
-    school_requirements: ["必须中文文献"],
-    inherited_resources: [],
-    student_resources: {
-      programming_level: "熟练",
-      dl_or_algorithm_foundation: "中",
-      paper_reading_ability: "中",
-      english_reading_ability: "中",
-      compute_resource: "笔记本 3060",
-      weekly_hours: parseInt(fd.get("weekly_hours")) || 25,
-      data_collection_ability: "中",
-      data_annotation_ability: "中",
-      code_reproduction_ability: "中",
-      system_dev_ability: "中",
-    },
-    raw_topic: fd.get("raw_topic"),
-    must_keep: (fd.get("must_keep") || "").split(",").map(s => s.trim()).filter(Boolean),
-    can_drop: [],
-    missing_fields: [],
-    intake_rating: "A",
-  };
-  const { status, data } = await postJSON("/api/v1/projects", { intake });
-  if (status === 201) {
-    state.project_id = data.id;
-    state.intake = data;
-    setOutput("01", "✓ Phase 01 建档成功\n" + summarize(data, ["id", "case_id"]) +
-      "\nrating=" + data.payload.intake_rating);
-    renderSidebar(1);
-    const v = await postJSON(`/api/v1/projects/${state.project_id}/intake/validate`);
-    if (v.status === 200 && v.data.outcome === "OK") {
-      state.phase_status["01"] = true;
-      enablePhase(2);
+  async runPhase2() {
+    const r = await runStream(`/api/v1/projects/${state.projectId}/topic/decompose/stream`, { prefer: "heuristic" });
+    if (r) {
+      state.phases[2].done = true;
+      state.phases[2].data = r;
+      renderStepper();
+      renderCurrentPanel();
+    }
+  },
+  async runPhase3() {
+    const r = await runStream(`/api/v1/projects/${state.projectId}/search/plan/stream`);
+    if (r) {
+      state.phases[3].done = true;
+      state.phases[3].data = r;
+      renderStepper();
+      renderCurrentPanel();
+    }
+  },
+  async runPhase4() {
+    const r = await runStream(`/api/v1/projects/${state.projectId}/evidence/build/stream`, { prefer: "heuristic" });
+    if (r) {
+      state.phases[4].done = true;
+      state.phases[4].data = r;
+      renderStepper();
+      renderCurrentPanel();
+    }
+  },
+  async runPhase5() {
+    const r = await runStream(`/api/v1/projects/${state.projectId}/risk/evaluate/stream`, { prefer: "heuristic" });
+    if (r) {
+      state.phases[5].done = true;
+      state.phases[5].data = r;
+      renderStepper();
+      renderCurrentPanel();
+    }
+  },
+  async runPhase6() {
+    const r = await runStream(`/api/v1/projects/${state.projectId}/work_package/plan/stream`);
+    if (r) {
+      state.phases[6].done = true;
+      state.phases[6].data = r;
+      renderStepper();
+      renderCurrentPanel();
+    }
+  },
+  async runPhase7a() {
+    const r = await runStream(`/api/v1/projects/${state.projectId}/proposal/draft/stream`);
+    if (r) {
+      state.phases[7].data = state.phases[7].data || {};
+      state.phases[7].data.proposal = r;
+      renderStepper();
+      renderCurrentPanel();
+    }
+  },
+  async runPhase7b() {
+    const r = await runStream(`/api/v1/projects/${state.projectId}/committee/review/stream`);
+    if (r) {
+      state.phases[7].data = state.phases[7].data || {};
+      state.phases[7].data.committee = r;
+      state.phases[7].done = true;
+      renderStepper();
+      renderCurrentPanel();
+    }
+  },
+  async runPhase8() {
+    const r = await runStream(`/api/v1/projects/${state.projectId}/final_package/build/stream`);
+    if (r) {
+      state.phases[8].done = true;
+      state.phases[8].data = r;
+      renderStepper();
+      renderCurrentPanel();
+    }
+  },
+  async exportMarkdown() {
+    const r = await fetch(API + `/api/v1/projects/${state.projectId}/final_package/markdown`);
+    if (r.status === 200) {
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `proposal_${state.projectId}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      appendTrace({ type: "result", name: "export", detail: "已下载 proposal_" + state.projectId + ".md" });
     } else {
-      showBlockBanner(`outcome=${v.data.outcome} rating=${v.data.intake_rating}`);
+      appendTrace({ type: "error", name: "export", detail: "HTTP " + r.status });
     }
-  } else {
-    setOutput("01", "✗ 建档失败: HTTP " + status + "\n" + (typeof data === "string" ? data : JSON.stringify(data)), "error");
+  },
+};
+
+function goToPhase(n) {
+  if (n < 1 || n > 8) return;
+  if (!canReach(n) && n > state.currentPhase) {
+    appendTrace({ type: "warn", name: "blocked", detail: `Phase ${n} 未到, 完成上一步后才能看` });
+    return;
   }
-});
-
-// ------- 通用按钮绑定 -------
-
-function bindPhaseAction(phaseNum, action, handler) {
-  const card = document.getElementById(`phase-0${phaseNum}`);
-  if (!card) return;
-  card.querySelectorAll(`button[data-action="${action}"]`).forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (!state.project_id) {
-        setOutput(`0${phaseNum}`, "✗ 请先创建项目 (Phase 01)", "error");
-        return;
-      }
-      if (state.blocked) {
-        setOutput(`0${phaseNum}`, "✗ Phase 01 已阻断, 无法继续", "error");
-        return;
-      }
-      handler();
-    });
-  });
+  state.currentPhase = n;
+  renderStepper();
+  renderCurrentPanel();
 }
 
-// Phase 02
-bindPhaseAction(2, "decompose", async () => {
-  const { status, data } = await postJSON(
-    `/api/v1/projects/${state.project_id}/topic/decompose`,
-    { prefer: "heuristic" }
-  );
-  if (status === 200) {
-    state.phase_status["02"] = true;
-    state.topicSpec = data.payload || data;
-    enablePhase(3);
-    setOutput("02", "✓ 题目拆解完成\n" + summarize(data, ["decomposition_rating", "allow_proceed_to_phase03"]));
-    renderSidebar(2);
-  } else {
-    setOutput("02", "✗ " + (typeof data === "string" ? data : JSON.stringify(data)), "error");
-  }
-});
-bindPhaseAction(2, "get-spec", async () => {
-  const { status, data } = await getJSON(`/api/v1/projects/${state.project_id}/topic/spec`);
-  if (status === 200) {
-    state.topicSpec = data.payload || data;
-    setOutput("02", "TopicSpec:\n" + JSON.stringify(data.payload, null, 2).slice(0, 800));
-    renderSidebar(2);
-  } else {
-    setOutput("02", "✗ HTTP " + status, "error");
-  }
+// ============================================================ Init
+// ============================================================
+
+document.querySelectorAll(".step-dot").forEach(dot => {
+  dot.addEventListener("click", () => {
+    const n = parseInt(dot.dataset.phase, 10);
+    goToPhase(n);
+  });
 });
 
-// Phase 03
-bindPhaseAction(3, "search-plan", async () => {
-  const { status, data } = await postJSON(`/api/v1/projects/${state.project_id}/search/plan`);
-  if (status === 200) {
-    state.phase_status["03"] = true;
-    state.searchPlan = data.payload || data;
-    enablePhase(4);
-    setOutput("03", "✓ 检索计划生成\n" + summarize(data, ["maturity_rating", "allow_proceed_to_phase04"]));
-    renderSidebar(3);
-  } else {
-    setOutput("03", "✗ " + (typeof data === "string" ? data : JSON.stringify(data)), "error");
-  }
+document.getElementById("btn-trace-clear").addEventListener("click", () => {
+  state.trace = [];
+  renderTraceList();
 });
-bindPhaseAction(3, "get-plan", async () => {
-  const { status, data } = await getJSON(`/api/v1/projects/${state.project_id}/search/plan`);
-  if (status === 200) {
-    state.searchPlan = data.payload || data;
-    const layers = data.payload.query_layers.length;
-    const total = data.payload.query_layers.reduce((s, l) => s + l.queries.length, 0);
-    setOutput("03", `检索计划: ${layers} 层, ${total} 个总检索词\n` +
-      JSON.stringify(data.payload.query_layers.map(l => `${l.layer}: ${l.title}`), null, 2));
-    renderSidebar(3);
-  } else {
-    setOutput("03", "✗ HTTP " + status, "error");
-  }
-});
-
-// Phase 04
-bindPhaseAction(4, "evidence-build", async () => {
-  const { status, data } = await postJSON(
-    `/api/v1/projects/${state.project_id}/evidence/build`,
-    { prefer: "heuristic" }
-  );
-  if (status === 200) {
-    state.phase_status["04"] = true;
-    state.evidenceLedger = data.payload || data;
-    enablePhase(5);
-    setOutput("04",
-      "✓ 证据账本生成\n" +
-      `rating: ${data.evidence_rating}\n` +
-      `papers: ${data.paper_count} (含 arXiv ${(data.payload?.papers || []).filter(p => p.source === 'arXiv').length} 篇) | ` +
-      `datasets: ${data.dataset_count} | baselines: ${data.baseline_count} | metrics: ${data.metric_count}`
-    );
-    renderSidebar(4);
-  } else {
-    setOutput("04", "✗ " + (typeof data === "string" ? data : JSON.stringify(data)), "error");
-  }
-});
-bindPhaseAction(4, "get-ledger", async () => {
-  const { status, data } = await getJSON(`/api/v1/projects/${state.project_id}/evidence/ledger`);
-  if (status === 200) {
-    state.evidenceLedger = data.payload || data;
-    setOutput("04", "EvidenceLedger:\n" + JSON.stringify(data.payload, null, 2).slice(0, 800));
-    renderSidebar(4);
-  } else {
-    setOutput("04", "✗ HTTP " + status, "error");
-  }
-});
-
-// Phase 05
-bindPhaseAction(5, "risk-evaluate", async () => {
-  const { status, data } = await postJSON(
-    `/api/v1/projects/${state.project_id}/risk/evaluate`,
-    { prefer: "heuristic" }
-  );
-  if (status === 200) {
-    state.phase_status["05"] = true;
-    state.riskEvaluation = data.payload || data;
-    enablePhase(6);
-    setOutput("05",
-      "✓ 风险评估完成\n" +
-      `rating: ${data.overall_rating} (${data.overall_score.toFixed(1)})\n` +
-      `decision: ${data.decision} | max_risk: ${data.max_risk_dimension} | pivots: ${data.pivot_count}`
-    );
-    renderSidebar(5);
-  } else {
-    setOutput("05", "✗ " + (typeof data === "string" ? data : JSON.stringify(data)), "error");
-  }
-});
-bindPhaseAction(5, "get-risk", async () => {
-  const { status, data } = await getJSON(`/api/v1/projects/${state.project_id}/risk/evaluation`);
-  if (status === 200) {
-    state.riskEvaluation = data.payload || data;
-    setOutput("05", "RiskEvaluation:\n" + JSON.stringify(data.payload, null, 2).slice(0, 600));
-    renderSidebar(5);
-  } else {
-    setOutput("05", "✗ HTTP " + status, "error");
-  }
-});
-
-// Phase 06
-bindPhaseAction(6, "work-package", async () => {
-  const { status, data } = await postJSON(`/api/v1/projects/${state.project_id}/work_package/plan`);
-  if (status === 200) {
-    state.phase_status["06"] = true;
-    state.workPackage = data.payload || data;
-    enablePhase(7);
-    setOutput("06",
-      "✓ 工作包定稿\n" +
-      `final_topic: ${data.final_topic}\n` +
-      `from_pivot: ${data.from_pivot} | WPs: ${data.work_package_count} | ` +
-      `experiments: ${data.experiment_count}`
-    );
-    renderSidebar(6);
-  } else {
-    setOutput("06", "✗ " + (typeof data === "string" ? data : JSON.stringify(data)), "error");
-  }
-});
-bindPhaseAction(6, "get-work-package", async () => {
-  const { status, data } = await getJSON(`/api/v1/projects/${state.project_id}/work_package/plan`);
-  if (status === 200) {
-    state.workPackage = data.payload || data;
-    setOutput("06", "WorkPackagePlan:\n" + JSON.stringify(data.payload, null, 2).slice(0, 600));
-    renderSidebar(6);
-  } else {
-    setOutput("06", "✗ HTTP " + status, "error");
-  }
-});
-
-// Phase 07
-bindPhaseAction(7, "proposal", async () => {
-  const { status, data } = await postJSON(`/api/v1/projects/${state.project_id}/proposal/draft`);
-  if (status === 200) {
-    state.proposalDraft = data.payload || data;
-    setOutput("07", "✓ 开题报告骨架生成\nsections: " + data.section_count + " | innovations: " + data.innovation_count);
-    renderSidebar(7);
-  } else {
-    setOutput("07", "✗ " + (typeof data === "string" ? data : JSON.stringify(data)), "error");
-  }
-});
-bindPhaseAction(7, "committee", async () => {
-  const { status, data } = await postJSON(`/api/v1/projects/${state.project_id}/committee/review`);
-  if (status === 200) {
-    state.phase_status["07-committee"] = true;
-    state.committeeReview = data.payload || data;
-    enablePhase(8);
-    setOutput("07",
-      "✓ 委员会审查完成\n" +
-      `verdict: ${data.overall_verdict} | maturity: ${data.proposal_maturity}\n` +
-      `reviews: ${data.review_count} | questions: ${data.question_count} | discussion: ${(data.discussion || []).length}`
-    );
-    renderSidebar(7);
-  } else {
-    setOutput("07", "✗ " + (typeof data === "string" ? data : JSON.stringify(data)), "error");
-  }
-});
-
-// Phase 08
-bindPhaseAction(8, "final-package", async () => {
-  const { status, data } = await postJSON(`/api/v1/projects/${state.project_id}/final_package/build`);
-  if (status === 200) {
-    state.finalPackage = data.payload || data;
-    setOutput("08",
-      "✓ 最终材料组装完成\n" +
-      `ready_for_thesis: ${data.ready_for_thesis}\n` +
-      `backend: ${data.backend_verification} | ui: ${data.ui_verification} | ` +
-      `playwright: ${data.playwright_verification}\n` +
-      `markdown: ${data.proposal_markdown_chars} chars`
-    );
-    renderSidebar(8);
-  } else {
-    setOutput("08", "✗ " + (typeof data === "string" ? data : JSON.stringify(data)), "error");
-  }
-});
-bindPhaseAction(8, "export-md", async () => {
-  const r = await fetch(API + `/api/v1/projects/${state.project_id}/final_package/markdown`);
-  if (r.status === 200) {
-    const blob = await r.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `proposal_${state.project_id}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setOutput("08", "✓ Markdown 已下载: proposal_" + state.project_id + ".md");
-  } else {
-    setOutput("08", "✗ HTTP " + r.status, "error");
-  }
-});
-
-// ------- 初始化 -------
 
 document.getElementById("api-base").textContent = API;
-setSidebar(0, "当前阶段：未启动", [], "");
+renderStepper();
+renderCurrentPanel();
