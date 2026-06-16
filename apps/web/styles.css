@@ -1,0 +1,136 @@
+/* TopicPilot-CN MVP 极简样式 */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f6f7f9;
+  color: #1f2328;
+  line-height: 1.5;
+}
+
+header {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  padding: 24px 32px;
+}
+header h1 { font-size: 24px; font-weight: 600; }
+header .subtitle { font-size: 14px; opacity: 0.85; margin-top: 4px; }
+
+main {
+  max-width: 880px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.banner {
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border: 1px solid;
+}
+.banner-block {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+.banner.hidden { display: none; }
+
+.phase-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  transition: opacity 0.2s;
+}
+.phase-card.disabled {
+  opacity: 0.55;
+}
+.phase-card.disabled button {
+  cursor: not-allowed;
+}
+.phase-card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.phase-card .phase-desc {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.phase-card .row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.phase-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #4b5563;
+  flex: 1;
+  min-width: 180px;
+}
+.phase-card label.full { width: 100%; }
+.phase-card input, .phase-card select, .phase-card textarea {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.phase-card textarea { min-height: 60px; resize: vertical; }
+
+button {
+  padding: 7px 16px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  cursor: pointer;
+  margin-right: 8px;
+  margin-top: 4px;
+}
+button.primary {
+  background: #2563eb;
+  color: white;
+}
+button.primary:hover:not(:disabled) { background: #1d4ed8; }
+button.secondary {
+  background: white;
+  color: #1f2328;
+  border-color: #d1d5db;
+}
+button.secondary:hover:not(:disabled) { background: #f3f4f6; }
+button:disabled {
+  background: #d1d5db;
+  color: white;
+  border-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.phase-output {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 4px;
+  font-size: 13px;
+  min-height: 20px;
+  white-space: pre-wrap;
+  font-family: "SF Mono", Consolas, monospace;
+  display: none;
+}
+.phase-output:not(:empty) { display: block; }
+.phase-output.error { background: #fef2f2; color: #991b1b; }
+.phase-output.ok { background: #ecfdf5; color: #065f46; }
+
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 12px;
+  color: #6b7280;
+}

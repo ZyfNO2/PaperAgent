@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TopicPilot-CN · 开题选题助手</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>TopicPilot-CN · 开题选题助手</h1>
+    <p class="subtitle">Phase 01-08 MVP · 端到端闭环</p>
+  </header>
+
+  <main>
+    <!-- 风险 banner: Phase 01 阻断时显示 -->
+    <div id="block-banner" class="banner banner-block hidden" role="alert">
+      <strong>Phase 01 阻断</strong>
+      <p id="block-banner-detail"></p>
+    </div>
+
+    <!-- Phase 01: 建档 -->
+    <section id="phase-01" class="phase-card" data-phase="01">
+      <h2>Phase 01 · 任务建档与毕业目标确认</h2>
+      <p class="phase-desc">填写专业 / 目标档位 / 时间 / 原始题目, 提交后服务端给出 A/B/C/D 评级。</p>
+      <form id="intake-form" autocomplete="off">
+        <div class="row">
+          <label>案例编号 (case_id) <input name="case_id" required value="WEB_E2E" /></label>
+          <label>专业 <input name="major" value="计算机科学与技术" /></label>
+          <label>学位 <select name="degree_type">
+            <option>本科</option><option selected>硕士</option><option>博士</option>
+          </select></label>
+          <label>目标档位 <select name="goal_level">
+            <option selected>保毕业</option>
+            <option>稳中求新</option>
+            <option>冲高水平</option>
+          </select></label>
+        </div>
+        <div class="row">
+          <label>开题时间 <input name="proposal_deadline" value="2026-10-15" /></label>
+          <label>毕业时间 <input name="thesis_deadline" value="2027-06-01" /></label>
+          <label>首张结果表 <input name="first_result_deadline" value="2026-12-31" /></label>
+        </div>
+        <div class="row">
+          <label>导师方向 <input name="advisor_direction" value="图神经网络" /></label>
+        </div>
+        <label class="full">原始题目 <textarea name="raw_topic" required>基于图神经网络的学术论文推荐方法研究</textarea></label>
+        <div class="row">
+          <label>必须保留 <input name="must_keep" value="图神经网络, 推荐" /></label>
+          <label>每周投入 (h) <input name="weekly_hours" type="number" value="25" min="0" max="168" /></label>
+        </div>
+        <button type="submit" id="btn-create-project" class="primary">创建项目 + Phase 01 评级</button>
+      </form>
+      <div class="phase-output" id="out-01"></div>
+    </section>
+
+    <!-- Phase 02-08: 每个 phase 一个 card, 状态默认 disabled, 上游成功后启用 -->
+    <section id="phase-02" class="phase-card disabled" data-phase="02">
+      <h2>Phase 02 · 题目拆解与论文结构映射</h2>
+      <button class="primary" data-action="decompose" disabled>题目拆解</button>
+      <button class="secondary" data-action="get-spec" disabled>查看 TopicSpec</button>
+      <div class="phase-output" id="out-02"></div>
+    </section>
+
+    <section id="phase-03" class="phase-card disabled" data-phase="03">
+      <h2>Phase 03 · 方向成熟度与检索计划</h2>
+      <button class="primary" data-action="search-plan" disabled>生成检索计划</button>
+      <button class="secondary" data-action="get-plan" disabled>查看 SearchQueryPlan</button>
+      <div class="phase-output" id="out-03"></div>
+    </section>
+
+    <section id="phase-04" class="phase-card disabled" data-phase="04">
+      <h2>Phase 04 · 证据采集与 Baseline 账本</h2>
+      <button class="primary" data-action="evidence-build" disabled>生成证据账本</button>
+      <button class="secondary" data-action="get-ledger" disabled>查看 EvidenceLedger</button>
+      <div class="phase-output" id="out-04"></div>
+    </section>
+
+    <section id="phase-05" class="phase-card disabled" data-phase="05">
+      <h2>Phase 05 · 风险评分与 Pivot 决策</h2>
+      <button class="primary" data-action="risk-evaluate" disabled>评估风险</button>
+      <button class="secondary" data-action="get-risk" disabled>查看 RiskEvaluation</button>
+      <div class="phase-output" id="out-05"></div>
+    </section>
+
+    <section id="phase-06" class="phase-card disabled" data-phase="06">
+      <h2>Phase 06 · 工作包定稿与实验矩阵</h2>
+      <button class="primary" data-action="work-package" disabled>定稿工作包</button>
+      <button class="secondary" data-action="get-work-package" disabled>查看 WorkPackagePlan</button>
+      <div class="phase-output" id="out-06"></div>
+    </section>
+
+    <section id="phase-07" class="phase-card disabled" data-phase="07">
+      <h2>Phase 07 · 开题报告生成与委员会审查</h2>
+      <button class="primary" data-action="proposal" disabled>生成开题报告</button>
+      <button class="secondary" data-action="committee" disabled>委员会审查</button>
+      <div class="phase-output" id="out-07"></div>
+    </section>
+
+    <section id="phase-08" class="phase-card disabled" data-phase="08">
+      <h2>Phase 08 · 最终材料导出与 MVP 验收</h2>
+      <button class="primary" data-action="final-package" disabled>组装最终材料</button>
+      <button class="secondary" data-action="export-md" disabled>导出 Markdown</button>
+      <div class="phase-output" id="out-08"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>API: <span id="api-base">http://127.0.0.1:18181</span> · MVP 用例仅作演示</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
