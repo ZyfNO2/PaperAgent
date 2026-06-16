@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '> TopicPilot-CN: 见 CLAUDE.md 阶段开发流程约束'",
+            "description": "提醒 agent 项目级规约"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python .claude/hooks/post_phase_check.py",
+            "description": "Stop 时检查：当前未提交的 Phase 是否有 (1) 验收报告 (2) 测试全过 (3) 报告与代码同步"
+          }
+        ]
+      }
+    ]
+  }
+}
