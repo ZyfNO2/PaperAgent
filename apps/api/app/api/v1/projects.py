@@ -6,11 +6,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.schemas import (
+    CommitteeReviewResponse,
     CreateProjectRequest,
     EvidenceLedgerRequest,
     EvidenceLedgerResponse,
     IntakeValidationResponse,
     ProjectResponse,
+    ProposalDraftResponse,
     RiskEvaluationRequest,
     RiskEvaluationResponse,
     SearchPlanResponse,
@@ -20,6 +22,10 @@ from app.api.v1.schemas import (
 )
 from app.db.database import get_session
 from app.db.evidence_ledger_repository import EvidenceLedgerRepository
+from app.db.proposal_repository import (
+    CommitteeReviewRepository,
+    ProposalDraftRepository,
+)
 from app.db.repository import ProjectRepository
 from app.db.risk_repository import RiskEvaluationRepository
 from app.db.search_plan_repository import SearchPlanRepository
@@ -41,6 +47,11 @@ from packages.agents.nodes.phase5_risk import (
 from packages.agents.nodes.phase6_work_package import (
     allow_proceed_to_phase07,
     build_work_package_plan,
+)
+from packages.agents.nodes.phase7_proposal import (
+    allow_proceed_to_phase08,
+    build_committee_review,
+    build_proposal_draft,
 )
 from packages.domain import (
     ProjectIntake,
@@ -566,4 +577,190 @@ async def get_work_package_plan(
         work_package_count=len(plan.work_packages),
         experiment_count=n_experiments,
         allow_proceed_to_phase07=allow,
+    )
+
+
+# -------- Phase 07 -------- #
+
+
+@router.post(
+    "/{project_id}/proposal/draft",
+    response_model=ProposalDraftResponse,
+    summary="Phase 07: 生成开题报告骨架（10 节）",
+)
+async def build_proposal_draft_endpoint(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> ProposalDraftResponse:
+    plan_repo = WorkPackagePlanRepository(session)
+    plan = await plan_repo.get_by_project_id(str(project_id))
+    if plan is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 WorkPackagePlan",
+        )
+
+    risk_repo = RiskEvaluationRepository(session)
+    risk_ev = await risk_repo.get_by_project_id(str(project_id))
+    if risk_ev is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 RiskEvaluation",
+        )
+
+    led_repo = EvidenceLedgerRepository(session)
+    ledger = await led_repo.get_by_project_id(str(project_id))
+    if ledger is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 EvidenceLedger",
+        )
+
+    spec_repo = TopicSpecRepository(session)
+    spec = await spec_repo.get_by_project_id(str(project_id))
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 TopicSpec",
+        )
+
+    proj_repo = ProjectRepository(session)
+    project = await proj_repo.get_by_id(project_id)
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 不存在",
+        )
+    intake = ProjectIntake.model_validate(project.payload)
+
+    draft = build_proposal_draft(intake, spec.normalized_topic, ledger, plan, risk_ev)
+    draft.project_id = str(project_id)
+
+    repo = ProposalDraftRepository(session)
+    row = await repo.upsert(draft)
+
+    return ProposalDraftResponse(
+        id=row.id,
+        project_id=row.project_id,
+        case_id=spec.source_intake_case_id,
+        payload=row.payload,
+        final_topic=draft.final_topic,
+        section_count=len(draft.proposal_sections),
+        innovation_count=len(draft.innovation_points),
+    )
+
+
+@router.get(
+    "/{project_id}/proposal/draft",
+    response_model=ProposalDraftResponse,
+    summary="取已落库的 ProposalDraft",
+)
+async def get_proposal_draft(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> ProposalDraftResponse:
+    repo = ProposalDraftRepository(session)
+    draft = await repo.get_by_project_id(str(project_id))
+    if draft is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 ProposalDraft",
+        )
+    return ProposalDraftResponse(
+        id=0,
+        project_id=draft.project_id,
+        case_id="",
+        payload=draft.model_dump(mode="json"),
+        final_topic=draft.final_topic,
+        section_count=len(draft.proposal_sections),
+        innovation_count=len(draft.innovation_points),
+    )
+
+
+@router.post(
+    "/{project_id}/committee/review",
+    response_model=CommitteeReviewResponse,
+    summary="Phase 07: 委员会 7 维度审查 + 追问清单 + 修改清单",
+)
+async def build_committee_review_endpoint(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> CommitteeReviewResponse:
+    plan_repo = WorkPackagePlanRepository(session)
+    plan = await plan_repo.get_by_project_id(str(project_id))
+    if plan is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 WorkPackagePlan",
+        )
+
+    risk_repo = RiskEvaluationRepository(session)
+    risk_ev = await risk_repo.get_by_project_id(str(project_id))
+    if risk_ev is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 RiskEvaluation",
+        )
+
+    led_repo = EvidenceLedgerRepository(session)
+    ledger = await led_repo.get_by_project_id(str(project_id))
+    if ledger is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 EvidenceLedger",
+        )
+
+    spec_repo = TopicSpecRepository(session)
+    spec = await spec_repo.get_by_project_id(str(project_id))
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 TopicSpec",
+        )
+
+    review = build_committee_review(ledger, risk_ev, plan)
+    review.project_id = str(project_id)
+
+    repo = CommitteeReviewRepository(session)
+    row = await repo.upsert(review)
+
+    return CommitteeReviewResponse(
+        id=row.id,
+        project_id=row.project_id,
+        case_id=spec.source_intake_case_id,
+        payload=row.payload,
+        overall_verdict=review.overall_verdict,
+        proposal_maturity=review.proposal_maturity,
+        allow_proceed_to_phase08=review.allow_proceed_to_phase08,
+        review_count=len(review.reviews),
+        question_count=len(review.questions),
+    )
+
+
+@router.get(
+    "/{project_id}/committee/review",
+    response_model=CommitteeReviewResponse,
+    summary="取已落库的 CommitteeReview",
+)
+async def get_committee_review(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> CommitteeReviewResponse:
+    repo = CommitteeReviewRepository(session)
+    review = await repo.get_by_project_id(str(project_id))
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 CommitteeReview",
+        )
+    return CommitteeReviewResponse(
+        id=0,
+        project_id=review.project_id,
+        case_id="",
+        payload=review.model_dump(mode="json"),
+        overall_verdict=review.overall_verdict,
+        proposal_maturity=review.proposal_maturity,
+        allow_proceed_to_phase08=review.allow_proceed_to_phase08,
+        review_count=len(review.reviews),
+        question_count=len(review.questions),
     )

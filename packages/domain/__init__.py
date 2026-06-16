@@ -57,6 +57,17 @@ from .phase6_models import (
     WorkPackageKind,
     WorkPackagePlan,
 )
+from .phase7_models import (
+    CommitteeQuestion,
+    CommitteeReview,
+    CommitteeReviewItem,
+    InnovationPoint,
+    PROPOSAL_SECTIONS,
+    ProposalDraft,
+    ProposalSection,
+    ResearchStatusRow,
+    SectionKey,
+)
 
 __all__ = [
     "DegreeType",
@@ -109,4 +120,14 @@ __all__ = [
     "WorkPackageFinal",
     "WorkPackageKind",
     "WorkPackagePlan",
+    # Phase 07
+    "CommitteeQuestion",
+    "CommitteeReview",
+    "CommitteeReviewItem",
+    "InnovationPoint",
+    "PROPOSAL_SECTIONS",
+    "ProposalDraft",
+    "ProposalSection",
+    "ResearchStatusRow",
+    "SectionKey",
 ]

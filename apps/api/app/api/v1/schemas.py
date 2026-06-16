@@ -119,3 +119,25 @@ class WorkPackagePlanResponse(BaseModel):
     work_package_count: int
     experiment_count: int
     allow_proceed_to_phase07: bool
+
+
+class ProposalDraftResponse(BaseModel):
+    id: int
+    project_id: str
+    case_id: str
+    payload: dict
+    final_topic: str
+    section_count: int
+    innovation_count: int
+
+
+class CommitteeReviewResponse(BaseModel):
+    id: int
+    project_id: str
+    case_id: str
+    payload: dict
+    overall_verdict: str
+    proposal_maturity: str
+    allow_proceed_to_phase08: bool
+    review_count: int
+    question_count: int

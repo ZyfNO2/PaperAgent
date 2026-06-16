@@ -143,6 +143,48 @@ class WorkPackagePlanRow(Base):
     allow_proceed_to_phase07: Mapped[bool] = mapped_column(default=True)
 
 
+class ProposalDraftRow(Base):
+    """Phase 07 产物表。"""
+
+    __tablename__ = "proposal_drafts"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    case_id: Mapped[str] = mapped_column(String(128), index=True)
+    created_at: Mapped["DateTime"] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped["DateTime"] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    final_topic: Mapped[str] = mapped_column(String(512), default="")
+
+
+class CommitteeReviewRow(Base):
+    """Phase 07 审查表。"""
+
+    __tablename__ = "committee_reviews"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    case_id: Mapped[str] = mapped_column(String(128), index=True)
+    created_at: Mapped["DateTime"] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped["DateTime"] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    overall_verdict: Mapped[str] = mapped_column(String(8), default="有条件通过")
+    proposal_maturity: Mapped[str] = mapped_column(String(2), default="B")
+    allow_proceed_to_phase08: Mapped[bool] = mapped_column(default=False)
+
+
 engine = create_async_engine(DATABASE_URL, echo=False, future=True)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
