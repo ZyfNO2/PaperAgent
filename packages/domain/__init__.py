@@ -68,6 +68,16 @@ from .phase7_models import (
     ResearchStatusRow,
     SectionKey,
 )
+from .phase8_models import (
+    EvidenceArchive,
+    FinalPackage,
+    FinalTopic,
+    MVPVerdict,
+    ProposalSectionState,
+    QAPair,
+    ThesisStagePlan,
+    WorkPackageSummary,
+)
 
 __all__ = [
     "DegreeType",
@@ -130,4 +140,13 @@ __all__ = [
     "ProposalSection",
     "ResearchStatusRow",
     "SectionKey",
+    # Phase 08
+    "EvidenceArchive",
+    "FinalPackage",
+    "FinalTopic",
+    "MVPVerdict",
+    "ProposalSectionState",
+    "QAPair",
+    "ThesisStagePlan",
+    "WorkPackageSummary",
 ]

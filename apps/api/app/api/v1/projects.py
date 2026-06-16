@@ -10,6 +10,7 @@ from app.api.v1.schemas import (
     CreateProjectRequest,
     EvidenceLedgerRequest,
     EvidenceLedgerResponse,
+    FinalPackageResponse,
     IntakeValidationResponse,
     ProjectResponse,
     ProposalDraftResponse,
@@ -22,6 +23,7 @@ from app.api.v1.schemas import (
 )
 from app.db.database import get_session
 from app.db.evidence_ledger_repository import EvidenceLedgerRepository
+from app.db.final_package_repository import FinalPackageRepository
 from app.db.proposal_repository import (
     CommitteeReviewRepository,
     ProposalDraftRepository,
@@ -52,6 +54,10 @@ from packages.agents.nodes.phase7_proposal import (
     allow_proceed_to_phase08,
     build_committee_review,
     build_proposal_draft,
+)
+from packages.agents.nodes.phase8_final_package import (
+    allow_archive_to_thesis,
+    build_final_package,
 )
 from packages.domain import (
     ProjectIntake,
@@ -763,4 +769,146 @@ async def get_committee_review(
         allow_proceed_to_phase08=review.allow_proceed_to_phase08,
         review_count=len(review.reviews),
         question_count=len(review.questions),
+    )
+
+
+# -------- Phase 08 -------- #
+
+
+@router.post(
+    "/{project_id}/final_package/build",
+    response_model=FinalPackageResponse,
+    summary="Phase 08: 组装最终材料包 + Markdown 初稿 + MVP 验收",
+)
+async def build_final_package_endpoint(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> FinalPackageResponse:
+    draft_repo = ProposalDraftRepository(session)
+    draft = await draft_repo.get_by_project_id(str(project_id))
+    if draft is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 ProposalDraft",
+        )
+
+    review_repo = CommitteeReviewRepository(session)
+    review = await review_repo.get_by_project_id(str(project_id))
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 CommitteeReview",
+        )
+
+    plan_repo = WorkPackagePlanRepository(session)
+    plan = await plan_repo.get_by_project_id(str(project_id))
+    if plan is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 WorkPackagePlan",
+        )
+
+    risk_repo = RiskEvaluationRepository(session)
+    risk_ev = await risk_repo.get_by_project_id(str(project_id))
+    if risk_ev is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 RiskEvaluation",
+        )
+
+    led_repo = EvidenceLedgerRepository(session)
+    ledger = await led_repo.get_by_project_id(str(project_id))
+    if ledger is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 EvidenceLedger",
+        )
+
+    spec_repo = TopicSpecRepository(session)
+    spec = await spec_repo.get_by_project_id(str(project_id))
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 TopicSpec",
+        )
+
+    pkg = build_final_package(draft, plan, review, risk_ev, ledger)
+    pkg.project_id = str(project_id)
+    # 把 normalized_topic 注入 final_topic.topic_zh
+    if not pkg.final_topic.topic_zh:
+        pkg.final_topic.topic_zh = spec.normalized_topic
+
+    repo = FinalPackageRepository(session)
+    row = await repo.upsert(pkg)
+
+    return FinalPackageResponse(
+        id=row.id,
+        project_id=row.project_id,
+        case_id=spec.source_intake_case_id,
+        payload=row.payload,
+        final_topic_zh=pkg.final_topic.topic_zh,
+        ready_for_thesis=pkg.ready_for_thesis,
+        backend_verification=pkg.backend_verification,
+        ui_verification=pkg.ui_verification,
+        playwright_verification=pkg.playwright_verification,
+        block_reasons=pkg.block_reasons,
+        proposal_markdown_chars=len(pkg.proposal_markdown),
+    )
+
+
+@router.get(
+    "/{project_id}/final_package",
+    response_model=FinalPackageResponse,
+    summary="取已落库的 FinalPackage",
+)
+async def get_final_package(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> FinalPackageResponse:
+    repo = FinalPackageRepository(session)
+    pkg = await repo.get_by_project_id(str(project_id))
+    if pkg is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 FinalPackage",
+        )
+    return FinalPackageResponse(
+        id=0,
+        project_id=pkg.project_id,
+        case_id="",
+        payload=pkg.model_dump(mode="json"),
+        final_topic_zh=pkg.final_topic.topic_zh,
+        ready_for_thesis=pkg.ready_for_thesis,
+        backend_verification=pkg.backend_verification,
+        ui_verification=pkg.ui_verification,
+        playwright_verification=pkg.playwright_verification,
+        block_reasons=pkg.block_reasons,
+        proposal_markdown_chars=len(pkg.proposal_markdown),
+    )
+
+
+@router.get(
+    "/{project_id}/final_package/markdown",
+    summary="导出开题报告 Markdown 初稿（纯文本响应）",
+    response_class=None,
+)
+async def export_proposal_markdown(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    from fastapi.responses import PlainTextResponse
+
+    repo = FinalPackageRepository(session)
+    pkg = await repo.get_by_project_id(str(project_id))
+    if pkg is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 FinalPackage",
+        )
+    return PlainTextResponse(
+        content=pkg.proposal_markdown,
+        media_type="text/markdown; charset=utf-8",
+        headers={
+            "Content-Disposition": f"attachment; filename=proposal_{project_id}.md",
+        },
     )

@@ -141,3 +141,17 @@ class CommitteeReviewResponse(BaseModel):
     allow_proceed_to_phase08: bool
     review_count: int
     question_count: int
+
+
+class FinalPackageResponse(BaseModel):
+    id: int
+    project_id: str
+    case_id: str
+    payload: dict
+    final_topic_zh: str
+    ready_for_thesis: bool
+    backend_verification: str
+    ui_verification: str
+    playwright_verification: str
+    block_reasons: list[str]
+    proposal_markdown_chars: int
