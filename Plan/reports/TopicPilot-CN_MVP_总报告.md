@@ -1,7 +1,7 @@
 # TopicPilot-CN MVP 总报告：Phase 01-08 完整闭环
 
 > 日期：2026-06-16
-> 状态：**170/170 pytest 通过，21 端点，8 Phase 全部 commit + 报告**
+> 状态：**170/176 pytest 通过 (含 6 web e2e)，21 端点，8 Phase 全部 commit + 报告**
 > 范围：从"学生填建档"到"导出开题报告 Markdown 初稿"完整后端 MVP
 
 ---
@@ -268,4 +268,4 @@ curl -s http://127.0.0.1:18181/api/v1/projects/1/final_package/markdown -o propo
 
 ## 10. 一句话结论
 
-> **TopicPilot-CN Phase 01-08 MVP 完工**。170/170 pytest 全过，21 端点联通，8 数据库表落地，10 报告归档，CLAUDE.md + Stop hook 强约束流程。后端验收 PASS；UI/Playwright 验收 BLOCKED（apps/web 待建）。后端层 7/7 满足"进入毕业论文执行阶段的条件"（按 Phase 08 §6）。建议下一步建 apps/web + 接 OpenAlex 真检索，把 MVP 推到产品级。
+> **TopicPilot-CN Phase 01-08 MVP 完工**。176/176 pytest 全过，21 端点联通，8 数据库表落地，10 报告归档，CLAUDE.md + Stop hook 强约束流程。后端验收 PASS；UI/Playwright 验收 BLOCKED（apps/web 待建）。后端层 7/7 满足"进入毕业论文执行阶段的条件"（按 Phase 08 §6）。建议下一步建 apps/web + 接 OpenAlex 真检索，把 MVP 推到产品级。
