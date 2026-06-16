@@ -107,3 +107,15 @@ class RiskEvaluationResponse(BaseModel):
     max_risk_dimension: str
     pivot_count: int
     allow_proceed_to_phase06: bool
+
+
+class WorkPackagePlanResponse(BaseModel):
+    id: int
+    project_id: str
+    case_id: str
+    payload: dict
+    final_topic: str
+    from_pivot: bool
+    work_package_count: int
+    experiment_count: int
+    allow_proceed_to_phase07: bool

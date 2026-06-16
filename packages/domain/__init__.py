@@ -47,6 +47,16 @@ from .phase5_models import (
     RiskEvaluation,
     RiskScore,
 )
+from .phase6_models import (
+    ChapterAnchor,
+    Experiment,
+    ExperimentMatrix,
+    ExperimentType,
+    ThesisOutlineChapter,
+    WorkPackageFinal,
+    WorkPackageKind,
+    WorkPackagePlan,
+)
 
 __all__ = [
     "DegreeType",
@@ -90,4 +100,13 @@ __all__ = [
     "PivotCandidate",
     "RiskEvaluation",
     "RiskScore",
+    # Phase 06
+    "ChapterAnchor",
+    "Experiment",
+    "ExperimentMatrix",
+    "ExperimentType",
+    "ThesisOutlineChapter",
+    "WorkPackageFinal",
+    "WorkPackageKind",
+    "WorkPackagePlan",
 ]

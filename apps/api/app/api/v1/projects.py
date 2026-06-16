@@ -16,6 +16,7 @@ from app.api.v1.schemas import (
     SearchPlanResponse,
     TopicDecomposeRequest,
     TopicSpecResponse,
+    WorkPackagePlanResponse,
 )
 from app.db.database import get_session
 from app.db.evidence_ledger_repository import EvidenceLedgerRepository
@@ -23,6 +24,7 @@ from app.db.repository import ProjectRepository
 from app.db.risk_repository import RiskEvaluationRepository
 from app.db.search_plan_repository import SearchPlanRepository
 from app.db.topic_spec_repository import TopicSpecRepository
+from app.db.work_package_repository import WorkPackagePlanRepository
 from packages.agents.nodes.phase2_decompose import (
     allow_proceed_to_phase03,
     decompose,
@@ -35,6 +37,10 @@ from packages.agents.nodes.phase4_evidence import build_evidence_ledger
 from packages.agents.nodes.phase5_risk import (
     allow_proceed_to_phase06,
     build_risk_evaluation,
+)
+from packages.agents.nodes.phase6_work_package import (
+    allow_proceed_to_phase07,
+    build_work_package_plan,
 )
 from packages.domain import (
     ProjectIntake,
@@ -459,4 +465,105 @@ async def get_risk_evaluation(
         max_risk_dimension=ev.risk_score.max_risk_dimension,
         pivot_count=len(ev.pivot_candidates),
         allow_proceed_to_phase06=allow,
+    )
+
+
+# -------- Phase 06 -------- #
+
+
+@router.post(
+    "/{project_id}/work_package/plan",
+    response_model=WorkPackagePlanResponse,
+    summary="Phase 06: 工作包定稿 + 实验矩阵 + 五章式目录",
+)
+async def build_work_package_plan_endpoint(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> WorkPackagePlanResponse:
+    risk_repo = RiskEvaluationRepository(session)
+    risk_ev = await risk_repo.get_by_project_id(str(project_id))
+    if risk_ev is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 RiskEvaluation，请先调 /risk/evaluate",
+        )
+
+    spec_repo = TopicSpecRepository(session)
+    spec = await spec_repo.get_by_project_id(str(project_id))
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 TopicSpec",
+        )
+
+    led_repo = EvidenceLedgerRepository(session)
+    ledger = await led_repo.get_by_project_id(str(project_id))
+    if ledger is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 EvidenceLedger",
+        )
+
+    proj_repo = ProjectRepository(session)
+    project = await proj_repo.get_by_id(project_id)
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 不存在",
+        )
+    intake = ProjectIntake.model_validate(project.payload)
+
+    plan = build_work_package_plan(intake, spec, risk_ev, ledger)
+    plan.project_id = str(project_id)
+
+    repo = WorkPackagePlanRepository(session)
+    row = await repo.upsert(plan)
+
+    allow, _ = allow_proceed_to_phase07(plan)
+    n_experiments = sum(
+        1 + len(wp.supporting_experiments) for wp in plan.work_packages
+    )
+    return WorkPackagePlanResponse(
+        id=row.id,
+        project_id=row.project_id,
+        case_id=spec.source_intake_case_id,
+        payload=row.payload,
+        final_topic=plan.final_topic,
+        from_pivot=plan.final_topic_from_pivot,
+        work_package_count=len(plan.work_packages),
+        experiment_count=n_experiments,
+        allow_proceed_to_phase07=allow,
+    )
+
+
+@router.get(
+    "/{project_id}/work_package/plan",
+    response_model=WorkPackagePlanResponse,
+    summary="取已落库的 WorkPackagePlan",
+)
+async def get_work_package_plan(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> WorkPackagePlanResponse:
+    repo = WorkPackagePlanRepository(session)
+    plan = await repo.get_by_project_id(str(project_id))
+    if plan is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 WorkPackagePlan",
+        )
+    allow, _ = allow_proceed_to_phase07(plan)
+    n_experiments = sum(
+        1 + len(wp.supporting_experiments) for wp in plan.work_packages
+    )
+    return WorkPackagePlanResponse(
+        id=0,
+        project_id=plan.project_id,
+        case_id="",
+        payload=plan.model_dump(mode="json"),
+        final_topic=plan.final_topic,
+        from_pivot=plan.final_topic_from_pivot,
+        work_package_count=len(plan.work_packages),
+        experiment_count=n_experiments,
+        allow_proceed_to_phase07=allow,
     )

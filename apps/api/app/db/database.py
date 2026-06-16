@@ -121,6 +121,28 @@ class RiskEvaluationRow(Base):
     decision: Mapped[str] = mapped_column(String(8), default="继续")
 
 
+class WorkPackagePlanRow(Base):
+    """Phase 06 产物表。"""
+
+    __tablename__ = "work_package_plans"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    case_id: Mapped[str] = mapped_column(String(128), index=True)
+    created_at: Mapped["DateTime"] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped["DateTime"] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    final_topic: Mapped[str] = mapped_column(String(512), default="")
+    from_pivot: Mapped[bool] = mapped_column(default=False)
+    allow_proceed_to_phase07: Mapped[bool] = mapped_column(default=True)
+
+
 engine = create_async_engine(DATABASE_URL, echo=False, future=True)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
