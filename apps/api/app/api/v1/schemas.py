@@ -88,3 +88,22 @@ class EvidenceLedgerResponse(BaseModel):
     dataset_count: int
     baseline_count: int
     metric_count: int
+
+
+class RiskEvaluationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    prefer: Literal["auto", "llm", "heuristic"] = "auto"
+
+
+class RiskEvaluationResponse(BaseModel):
+    id: int
+    project_id: str
+    case_id: str
+    payload: dict
+    overall_rating: str
+    overall_score: float
+    decision: str
+    max_risk_dimension: str
+    pivot_count: int
+    allow_proceed_to_phase06: bool

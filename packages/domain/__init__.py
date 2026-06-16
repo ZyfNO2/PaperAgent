@@ -40,6 +40,13 @@ from .phase4_models import (
     SourceTag,
     ThesisTemplate,
 )
+from .phase5_models import (
+    DimensionKey,
+    DimensionScore,
+    PivotCandidate,
+    RiskEvaluation,
+    RiskScore,
+)
 
 __all__ = [
     "DegreeType",
@@ -77,4 +84,10 @@ __all__ = [
     "PaperEvidence",
     "SourceTag",
     "ThesisTemplate",
+    # Phase 05
+    "DimensionKey",
+    "DimensionScore",
+    "PivotCandidate",
+    "RiskEvaluation",
+    "RiskScore",
 ]

@@ -11,6 +11,8 @@ from app.api.v1.schemas import (
     EvidenceLedgerResponse,
     IntakeValidationResponse,
     ProjectResponse,
+    RiskEvaluationRequest,
+    RiskEvaluationResponse,
     SearchPlanResponse,
     TopicDecomposeRequest,
     TopicSpecResponse,
@@ -18,6 +20,7 @@ from app.api.v1.schemas import (
 from app.db.database import get_session
 from app.db.evidence_ledger_repository import EvidenceLedgerRepository
 from app.db.repository import ProjectRepository
+from app.db.risk_repository import RiskEvaluationRepository
 from app.db.search_plan_repository import SearchPlanRepository
 from app.db.topic_spec_repository import TopicSpecRepository
 from packages.agents.nodes.phase2_decompose import (
@@ -29,6 +32,10 @@ from packages.agents.nodes.phase3_search_plan import (
     build_search_plan,
 )
 from packages.agents.nodes.phase4_evidence import build_evidence_ledger
+from packages.agents.nodes.phase5_risk import (
+    allow_proceed_to_phase06,
+    build_risk_evaluation,
+)
 from packages.domain import (
     ProjectIntake,
     SearchQueryPlan,
@@ -354,4 +361,102 @@ async def get_evidence_ledger(
         dataset_count=len(ledger.datasets),
         baseline_count=len(ledger.baselines),
         metric_count=len(ledger.metrics),
+    )
+
+
+# -------- Phase 05 -------- #
+
+
+@router.post(
+    "/{project_id}/risk/evaluate",
+    response_model=RiskEvaluationResponse,
+    summary="Phase 05: 六维风险评分 + Pivot 候选",
+)
+async def evaluate_risk_endpoint(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+    body: RiskEvaluationRequest = RiskEvaluationRequest(),
+) -> RiskEvaluationResponse:
+    spec_repo = TopicSpecRepository(session)
+    spec = await spec_repo.get_by_project_id(str(project_id))
+    if spec is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 TopicSpec",
+        )
+
+    plan_repo = SearchPlanRepository(session)
+    plan = await plan_repo.get_by_project_id(str(project_id))
+    if plan is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 SearchQueryPlan",
+        )
+
+    led_repo = EvidenceLedgerRepository(session)
+    ledger = await led_repo.get_by_project_id(str(project_id))
+    if ledger is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"project_id {project_id} 没有 EvidenceLedger",
+        )
+
+    proj_repo = ProjectRepository(session)
+    project = await proj_repo.get_by_id(project_id)
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 不存在",
+        )
+    intake = ProjectIntake.model_validate(project.payload)
+
+    ev = build_risk_evaluation(intake, spec, plan, ledger, prefer=body.prefer)
+    ev.project_id = str(project_id)
+
+    repo = RiskEvaluationRepository(session)
+    row = await repo.upsert(ev)
+
+    allow, _ = allow_proceed_to_phase06(ev)
+    return RiskEvaluationResponse(
+        id=row.id,
+        project_id=row.project_id,
+        case_id=spec.source_intake_case_id,
+        payload=row.payload,
+        overall_rating=ev.risk_score.overall_rating,
+        overall_score=ev.risk_score.overall_score,
+        decision=ev.decision,
+        max_risk_dimension=ev.risk_score.max_risk_dimension,
+        pivot_count=len(ev.pivot_candidates),
+        allow_proceed_to_phase06=allow,
+    )
+
+
+@router.get(
+    "/{project_id}/risk/evaluation",
+    response_model=RiskEvaluationResponse,
+    summary="取已落库的 RiskEvaluation",
+)
+async def get_risk_evaluation(
+    project_id: int,
+    session: AsyncSession = Depends(get_session),
+) -> RiskEvaluationResponse:
+    repo = RiskEvaluationRepository(session)
+    ev = await repo.get_by_project_id(str(project_id))
+    if ev is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"project_id {project_id} 没有 RiskEvaluation",
+        )
+    allow, _ = allow_proceed_to_phase06(ev)
+    return RiskEvaluationResponse(
+        id=0,
+        project_id=ev.project_id,
+        case_id="",
+        payload=ev.model_dump(mode="json"),
+        overall_rating=ev.risk_score.overall_rating,
+        overall_score=ev.risk_score.overall_score,
+        decision=ev.decision,
+        max_risk_dimension=ev.risk_score.max_risk_dimension,
+        pivot_count=len(ev.pivot_candidates),
+        allow_proceed_to_phase06=allow,
     )
