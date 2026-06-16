@@ -113,6 +113,23 @@ class CommitteeQuestion(BaseModel):
     evidence_source: str | None = None
 
 
+CommitteeRole = Literal["supporter", "skeptic", "pragmatist"]
+
+
+class CommitteeDiscussionItem(BaseModel):
+    """3 角色开题对话: supporter(支持) / skeptic(质疑) / pragmatist(折中).
+
+    每条 1 段评语 (100-200 字), 开题版语气, 不学术答辩腔.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    role: CommitteeRole
+    stance: str = Field(min_length=1, description="支持 / 质疑 / 折中")
+    comment: str = Field(min_length=1, description="评语正文")
+    focus: list[str] = Field(default_factory=list, description="该角色关注的研究问题")
+
+
 class CommitteeReview(BaseModel):
     """Phase 07 产物：委员会审查意见。"""
 
@@ -124,6 +141,7 @@ class CommitteeReview(BaseModel):
     reviews: list[CommitteeReviewItem] = Field(min_length=1)
     questions: list[CommitteeQuestion] = Field(default_factory=list)
     revision_checklist: list[dict] = Field(default_factory=list)
+    discussion: list[CommitteeDiscussionItem] = Field(default_factory=list)
 
     overall_verdict: Literal["通过", "有条件通过", "需修改", "不通过"]
     proposal_maturity: Literal["A", "B", "C", "D"]

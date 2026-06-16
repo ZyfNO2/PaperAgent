@@ -22,6 +22,7 @@ from packages.domain import (
     TopicSpec,
 )
 from packages.llm import chat_json, LLMUnavailable
+from packages.clients.arxiv import ArxivPaper, search_arxiv
 
 
 _EVIDENCE_PROMPT = """你是中国研究生开题选题助手。给定 TopicSpec 与 SearchQueryPlan，
@@ -107,6 +108,58 @@ def _build_default_papers(topic: TopicSpec) -> list[PaperEvidence]:
         )
         for i in range(5)
     ]
+
+
+def _arxiv_to_paper(a: ArxivPaper, idx: int, topic: TopicSpec) -> PaperEvidence:
+    return PaperEvidence(
+        paper_id=a.arxiv_id or f"AX{idx:03d}",
+        title=a.title,
+        year=a.year or None,
+        source="arXiv",
+        url=a.abs_url,
+        abstract=a.summary or None,
+        task=list(topic.task_type[:2]),
+        method=list(topic.method_family[:2]),
+        datasets=[],
+        metrics=list(topic.evaluation_metrics[:2]),
+        baseline_mentions=[],
+        reusable_value=f"arXiv 真实论文 ({a.categories[0] if a.categories else 'cs'})",
+        evidence_score=0.7,
+        wp_binding=[f"WP{((idx % 2) + 1)}"],
+    )
+
+
+def _merge_arxiv_papers(
+    topic: TopicSpec, plan: SearchQueryPlan | None, max_total: int = 5
+) -> list[PaperEvidence]:
+    """从 SearchQueryPlan 抽检索词, 调 arXiv, 转 PaperEvidence. 失败返回 [].
+
+    arXiv API 挂掉或搜不到时, 调用方按 fallback 把这些 slot 填回占位论文.
+    """
+    queries: list[str] = []
+    if plan is not None:
+        for layer in plan.query_layers[:3]:
+            queries.extend(layer.queries[:2])
+        # 去重 + 顺序保留
+        seen: set[str] = set()
+        queries = [q for q in queries if not (q in seen or seen.add(q))]
+    if not queries:
+        # 退一步: 从 TopicSpec 拼
+        queries = [topic.normalized_topic]
+        queries.extend(topic.method_family[:2])
+
+    arxiv_hits = search_arxiv(queries, max_per_query=2, max_total=max_total, timeout=8.0)
+    return [_arxiv_to_paper(a, i, topic) for i, a in enumerate(arxiv_hits)]
+
+
+def _replace_with_arxiv(
+    base: list[PaperEvidence], arxiv_rows: list[PaperEvidence]
+) -> list[PaperEvidence]:
+    """前 N 条用 arXiv 真实论文, 不足的 slot 保留 base 占位."""
+    if not arxiv_rows:
+        return base
+    merged = list(arxiv_rows) + base[len(arxiv_rows):]
+    return merged[: len(base)] if len(base) >= len(arxiv_rows) else merged
 
 
 def _build_default_surveys(topic: TopicSpec) -> list[PaperEvidence]:
@@ -209,7 +262,9 @@ def _build_default_templates() -> tuple[list[ExperimentTemplate], list[ThesisTem
 def build_evidence_ledger_heuristic(
     spec: TopicSpec, plan: SearchQueryPlan
 ) -> EvidenceLedger:
-    papers = _build_default_papers(spec)
+    base_papers = _build_default_papers(spec)
+    arxiv_rows = _merge_arxiv_papers(spec, plan, max_total=len(base_papers))
+    papers = _replace_with_arxiv(base_papers, arxiv_rows)
     surveys = _build_default_surveys(spec)
     datasets = _build_default_datasets(spec)
     baselines = _build_default_baselines(spec)
@@ -259,6 +314,19 @@ def build_evidence_ledger_with_llm(
     )
 
     papers = _safe_papers(raw.get("papers"), spec)
+    # 真 arXiv 论文优先, 然后 LLM 候选, 不足时回退占位
+    arxiv_rows = _merge_arxiv_papers(spec, plan, max_total=5)
+    base_default = _build_default_papers(spec)
+    merged_papers: list[PaperEvidence] = []
+    seen_ids: set[str] = set()
+    for p in arxiv_rows + papers + base_default:
+        if p.paper_id in seen_ids:
+            continue
+        seen_ids.add(p.paper_id)
+        merged_papers.append(p)
+        if len(merged_papers) >= max(5, len(papers)):
+            break
+    papers = merged_papers
     surveys = _safe_papers(raw.get("surveys"), spec, prefix="S")
     datasets = _safe_datasets(raw.get("datasets"), spec)
     baselines = _safe_baselines(raw.get("baselines"), spec)

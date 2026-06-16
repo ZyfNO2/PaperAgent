@@ -133,6 +133,20 @@ def test_committee_questions_six() -> None:
         assert q.evidence_source
 
 
+def test_committee_review_has_3_role_discussion() -> None:
+    """新增: CommitteeReview 必须含 3 角色开题对话 (supporter / skeptic / pragmatist)."""
+
+    intake, spec, plan, ledger, risk_ev, wp = _setup()
+    cr = build_committee_review(ledger, risk_ev, wp)
+    assert len(cr.discussion) == 3
+    roles = {d.role for d in cr.discussion}
+    assert roles == {"supporter", "skeptic", "pragmatist"}
+    for d in cr.discussion:
+        assert d.stance in {"支持", "质疑", "折中"}
+        assert len(d.comment) >= 20, f"{d.role} 评语过短"
+        assert isinstance(d.focus, list)
+
+
 def test_committee_default_verdict_pass_or_conditional() -> None:
     intake, spec, plan, ledger, risk_ev, wp = _setup()
     cr = build_committee_review(ledger, risk_ev, wp)

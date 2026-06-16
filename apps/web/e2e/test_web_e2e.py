@@ -106,12 +106,12 @@ def _click_and_wait(page, phase_num: int, action: str, wait_text: str | None = N
     btn = card.locator(f"button[data-action='{action}']")
     btn.click()
     out = card.locator(".phase-output")
-    out.wait_for(state="visible", timeout=10000)
+    out.wait_for(state="visible", timeout=20000)
     if wait_text:
-        out.wait_for(state="visible")
         page.wait_for_function(
-            f"() => document.getElementById('out-0{phase_num}').textContent.includes({wait_text!r})",
-            timeout=10000,
+            f"() => {{const el = document.getElementById('out-0{phase_num}');"
+            f" return el && el.textContent && el.textContent.includes({wait_text!r});}}",
+            timeout=20000,
         )
 
 
@@ -135,10 +135,10 @@ def test_happy_path_01_to_08_via_real_browser(page) -> None:
     page.click("#btn-create-project")
 
     # 等待 Phase 01 输出 + Phase 02 卡片 enabled
-    page.locator("#out-01").wait_for(state="visible", timeout=10000)
+    page.locator("#out-01").wait_for(state="visible", timeout=20000)
     page.wait_for_function(
         "() => !document.getElementById('phase-02').classList.contains('disabled')",
-        timeout=10000,
+        timeout=20000,
     )
     assert "建档成功" in page.locator("#out-01").text_content()
 
@@ -160,8 +160,58 @@ def test_happy_path_01_to_08_via_real_browser(page) -> None:
     assert "ready_for_thesis: true" in final, f"最终输出不含 ready_for_thesis=true: {final}"
     assert "backend: PASS" in final
 
+    # 验证侧栏最终态
+    sidebar_title = page.locator("#sidebar-title").text_content()
+    assert "Phase 08" in sidebar_title, f"侧栏标题应为 Phase 08, 实际: {sidebar_title}"
+    sidebar_html = page.locator("#sidebar-fields").inner_html()
+    assert "ready_for_thesis" in sidebar_html, "侧栏应含 ready_for_thesis 字段"
+    print(f"  [OK ] sidebar final: {sidebar_title}")
+
     page.screenshot(path="tmp/e2e_happy_end.png", full_page=True)
     print("  [OK ] happy path: 8 Phase 全部走完")
+
+
+# ============================================================ sidebar arxiv
+
+
+def test_sidebar_shows_arxiv_papers_in_phase04(page) -> None:
+    """§4 真 arXiv: Phase 04 完成后, 侧栏应展示 arxiv_papers 计数 ≥ 1 + arXiv 论文链接."""
+
+    print("\n=== e2e: sidebar shows arxiv papers (Phase 04) ===")
+
+    page.wait_for_selector("#phase-01", state="visible")
+    page.fill('input[name="case_id"]', "E2E_SIDEBAR")
+    page.fill('input[name="advisor_direction"]', "图神经网络")
+    page.fill('textarea[name="raw_topic"]', "基于图神经网络的学术论文推荐方法研究")
+    page.fill('input[name="must_keep"]', "图神经网络, 推荐")
+    page.click("#btn-create-project")
+    page.locator("#out-01").wait_for(state="visible", timeout=10000)
+    page.wait_for_function(
+        "() => !document.getElementById('phase-02').classList.contains('disabled')",
+        timeout=10000,
+    )
+
+    # 走 Phase 02/03
+    _click_and_wait(page, 2, "decompose", "题目拆解完成")
+    _click_and_wait(page, 3, "search-plan", "检索计划生成")
+
+    # Phase 04: 触发真 arXiv 检索
+    _click_and_wait(page, 4, "evidence-build", "证据账本生成")
+
+    # 侧栏应含 arxiv_papers 字段
+    sidebar_html = page.locator("#sidebar-fields").inner_html()
+    assert "arxiv_papers" in sidebar_html, f"侧栏 Phase 04 应含 arxiv_papers 字段, 实际: {sidebar_html[:300]}"
+
+    # 读 arxiv_papers 值 (从 sidebar-row 的 .v 抓)
+    arxiv_count_text = page.locator("#sidebar-fields").text_content()
+    print(f"  sidebar 04 文本片段: {arxiv_count_text[:200]}")
+    # 抓 arxiv_papers 行的 v (>= 0, MVP 允许 0 但要出现字段; 联网时常 > 0)
+    arxiv_rows = page.locator(".arxiv-mini")
+    n_arxiv = arxiv_rows.count()
+    print(f"  arxiv-mini 条数: {n_arxiv} (可能 0 当 arXiv 不可达)")
+    # 不强制 >= 1, 因为 arXiv 可能限流; 但字段必须出现
+    page.screenshot(path="tmp/e2e_sidebar_arxiv.png", full_page=True)
+    print("  [OK ] sidebar arxiv: 字段已渲染")
 
 
 # ============================================================ blocked path

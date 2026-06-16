@@ -12,7 +12,8 @@
     <p class="subtitle">Phase 01-08 MVP · 端到端闭环</p>
   </header>
 
-  <main>
+  <main class="layout-grid">
+    <div class="phase-column">
     <!-- 风险 banner: Phase 01 阻断时显示 -->
     <div id="block-banner" class="banner banner-block hidden" role="alert">
       <strong>Phase 01 阻断</strong>
@@ -103,6 +104,16 @@
       <button class="secondary" data-action="export-md" disabled>导出 Markdown</button>
       <div class="phase-output" id="out-08"></div>
     </section>
+    </div><!-- /phase-column -->
+
+    <aside id="sidebar" class="sidebar">
+      <h2 id="sidebar-title">当前阶段：未启动</h2>
+      <p class="sidebar-sub" id="sidebar-sub">完成 Phase 01 后这里实时显示每步关键字段</p>
+      <div id="sidebar-fields">
+        <div class="sidebar-empty">尚无数据</div>
+      </div>
+      <div id="sidebar-extras"></div>
+    </aside>
   </main>
 
   <footer>

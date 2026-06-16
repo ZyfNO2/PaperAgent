@@ -12,6 +12,7 @@ MVP 设计：
 from __future__ import annotations
 
 from packages.domain import (
+    CommitteeDiscussionItem,
     CommitteeQuestion,
     CommitteeReview,
     CommitteeReviewItem,
@@ -27,6 +28,7 @@ from packages.domain import (
     SectionKey,
     WorkPackagePlan,
 )
+from packages.llm import chat_json, LLMUnavailable
 
 
 # ---------------- 10 节开题报告 ---------------- #
@@ -489,6 +491,7 @@ def build_committee_review(
     reviews = _build_reviews(ledger, risk_ev, plan)
     questions = _build_questions(risk_ev, plan, ledger)
     checklist = _build_revision_checklist(reviews)
+    discussion = _build_committee_discussion_llm(risk_ev, plan, ledger)
 
     # 总体 verdict
     verdicts = [r.verdict for r in reviews]
@@ -521,6 +524,7 @@ def build_committee_review(
         reviews=reviews,
         questions=questions,
         revision_checklist=checklist,
+        discussion=discussion,
         overall_verdict=overall,  # type: ignore[arg-type]
         proposal_maturity=maturity,  # type: ignore[arg-type]
         allow_proceed_to_phase08=allow,
@@ -533,3 +537,122 @@ def allow_proceed_to_phase08(review: CommitteeReview) -> tuple[bool, str]:
     if len(review.reviews) < 7:
         return False, f"审查维度 < 7 (当前 {len(review.reviews)})"
     return True, "ok"
+
+
+# ----------------- 3 角色 LLM 对话 (开题版) ----------------- #
+
+_DISCUSSION_PROFILES: list[dict] = [
+    {
+        "role": "supporter",
+        "stance": "支持",
+        "focus": ["工作包可行性", "Baseline 成熟度", "数据可获得"],
+        "system": (
+            "你是开题委员会的'支持型'教授. 语气务实, 不浮夸. "
+            "请站在'这个题目硕士生能毕业'的角度, 给出 100-180 字中文评语, "
+            "指出 1-2 个最有把握的支撑点 (如: baseline 有开源 / 数据公开 / 工作包有先例)."
+        ),
+    },
+    {
+        "role": "skeptic",
+        "stance": "质疑",
+        "focus": ["评价指标", "创新性", "工作包是否串行"],
+        "system": (
+            "你是开题委员会的'质疑型'教授. 语气直接, 不挖苦. "
+            "请站在'这个题目风险在哪里'的角度, 给出 100-180 字中文评语, "
+            "指出 1-2 个最不放心的环节 (如: 创新点难以验证 / 工作包相互依赖). "
+            "问题要具体, 不要泛泛而谈."
+        ),
+    },
+    {
+        "role": "pragmatist",
+        "stance": "折中",
+        "focus": ["工程实现", "算力", "毕业周期"],
+        "system": (
+            "你是开题委员会的'工程型'教授. 语气平衡, 不空想. "
+            "请站在'这个方案落地要付出多少'的角度, 给出 100-180 字中文评语, "
+            "指出 1-2 个工程 / 时间 / 算力上的现实约束, 给出可操作的调整建议."
+        ),
+    },
+]
+
+
+def _build_committee_discussion_llm(
+    risk_ev: RiskEvaluation, plan: WorkPackagePlan, ledger: EvidenceLedger
+) -> list[CommitteeDiscussionItem]:
+    """3 角色各 1 段评语, LLM 失败时回退规则模板.
+
+    评语只用于前端展示对话气泡; 不进入 reviews 维度评分.
+    """
+    context = (
+        f"题目: {plan.final_topic}\n"
+        f"目标档位: {plan.goal_level}\n"
+        f"工作包数: {len(plan.work_packages)} (thesis_outline={len(plan.thesis_outline)} 章)\n"
+        f"风险评级: {risk_ev.risk_score.overall_rating} ({risk_ev.risk_score.overall_score})\n"
+        f"决策: {risk_ev.decision}\n"
+        f"证据: papers={len(ledger.papers)} datasets={len(ledger.datasets)} "
+        f"baselines={len(ledger.baselines)}\n"
+    )
+    out: list[CommitteeDiscussionItem] = []
+    for prof in _DISCUSSION_PROFILES:
+        try:
+            raw = chat_json(
+                [
+                    {"role": "system", "content": prof["system"]},
+                    {"role": "user", "content": (
+                        context + "\n请直接输出 JSON: "
+                        "{\"comment\": \"你的评语 (100-180 字)\"}"
+                    )},
+                ],
+                temperature=0.5,
+                max_tokens=600,
+            )
+            comment = str(raw.get("comment", "")).strip()
+            if len(comment) < 20:
+                raise ValueError("comment too short")
+            out.append(CommitteeDiscussionItem(
+                role=prof["role"],  # type: ignore[arg-type]
+                stance=prof["stance"],
+                comment=comment,
+                focus=list(prof["focus"]),
+            ))
+        except (LLMUnavailable, ValueError, KeyError):
+            out.append(CommitteeDiscussionItem(
+                role=prof["role"],  # type: ignore[arg-type]
+                stance=prof["stance"],
+                comment=_fallback_comment(prof["role"], risk_ev, plan, ledger),
+                focus=list(prof["focus"]),
+            ))
+    return out
+
+
+def _fallback_comment(
+    role: str, risk_ev: RiskEvaluation, plan: WorkPackagePlan, ledger: EvidenceLedger
+) -> str:
+    """LLM 不可用时的规则评语 (开题版语气)."""
+    rating = risk_ev.risk_score.overall_rating
+    n_papers = len(ledger.papers)
+    n_wp = len(plan.work_packages)
+    if role == "supporter":
+        if n_papers >= 5:
+            return (
+                f"支持方面: 检索到 {n_papers} 篇相关论文, 其中 {n_wp} 个工作包有公开 baseline 和数据集可参考, "
+                f"整体风险评级 {rating}, 属于硕士可毕业范围. 建议在开题报告 '研究现状' 一节里重点展示 2-3 篇最相关的."
+            )
+        return "支持方面: 工作包设计有梯度, 可以分阶段交付. 建议补充 1-2 篇目标领域综述."
+    if role == "skeptic":
+        if rating in ("C", "D"):
+            return (
+                f"质疑方面: 风险评级 {rating}, 创新点需要进一步具体化, "
+                f"否则答辩时容易被问 '和 X 论文相比具体改了什么'. 建议在 '研究内容' 写 1-2 句可证伪的假设."
+            )
+        return (
+            "质疑方面: 两个工作包之间的边界要明确, "
+            "如果 WP1 数据 / baseline 出问题, WP2 是否仍能继续? "
+            "建议在 '风险预案' 写明 fallback 路径."
+        )
+    # pragmatist
+    return (
+        f"工程方面: 评估 GPU 显存 / 训练时长, "
+        f"如果只有 1 张 3060, 推荐论文级 batch size 并减少对比 baseline 数量. "
+        f"把 '实验方案' 的时间表按周拆, 每周 1 个可验证产物."
+    )

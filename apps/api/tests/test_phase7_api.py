@@ -99,6 +99,26 @@ async def test_get_committee_review(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
+async def test_committee_review_includes_3_role_discussion(client: AsyncClient) -> None:
+    """新增: 委员会审查 payload 必须含 3 角色对话 (开题版, 不学术答辩腔)."""
+
+    pid = await _setup_full(client, "P7_E2E_DISC")
+    r = await client.post(f"/api/v1/projects/{pid}/committee/review")
+    assert r.status_code == 200, r.text
+    payload = r.json()["payload"]
+    assert "discussion" in payload, "缺少 discussion 字段"
+    disc = payload["discussion"]
+    assert isinstance(disc, list) and len(disc) == 3, f"discussion 长度应为 3, 实际 {len(disc) if isinstance(disc, list) else '非list'}"
+    roles = {d["role"] for d in disc}
+    assert roles == {"supporter", "skeptic", "pragmatist"}, f"role 集合不对: {roles}"
+    for d in disc:
+        assert d["stance"] in {"支持", "质疑", "折中"}
+        assert isinstance(d["comment"], str) and len(d["comment"]) >= 20, \
+            f"{d['role']} 评语过短 ({len(d['comment'])} 字符)"
+        assert isinstance(d.get("focus"), list)
+
+
+@pytest.mark.asyncio
 async def test_proposal_blocked_without_work_package(client: AsyncClient) -> None:
     body = _complete_intake("P7_E2E_NO_WP")
     pid = (await client.post("/api/v1/projects", json=body)).json()["id"]

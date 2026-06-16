@@ -58,9 +58,11 @@ from .phase6_models import (
     WorkPackagePlan,
 )
 from .phase7_models import (
+    CommitteeDiscussionItem,
     CommitteeQuestion,
     CommitteeReview,
     CommitteeReviewItem,
+    CommitteeRole,
     InnovationPoint,
     PROPOSAL_SECTIONS,
     ProposalDraft,
@@ -131,9 +133,11 @@ __all__ = [
     "WorkPackageKind",
     "WorkPackagePlan",
     # Phase 07
+    "CommitteeDiscussionItem",
     "CommitteeQuestion",
     "CommitteeReview",
     "CommitteeReviewItem",
+    "CommitteeRole",
     "InnovationPoint",
     "PROPOSAL_SECTIONS",
     "ProposalDraft",

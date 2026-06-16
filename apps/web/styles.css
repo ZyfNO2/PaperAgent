@@ -18,10 +18,87 @@ header h1 { font-size: 24px; font-weight: 600; }
 header .subtitle { font-size: 14px; opacity: 0.85; margin-top: 4px; }
 
 main {
-  max-width: 880px;
+  max-width: 1200px;
   margin: 24px auto;
   padding: 0 16px;
 }
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+.phase-column { min-width: 0; }
+@media (max-width: 960px) {
+  .layout-grid { grid-template-columns: 1fr; }
+  .sidebar { position: static !important; max-height: none !important; }
+}
+
+.sidebar {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px 18px;
+  font-size: 13px;
+}
+.sidebar h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1f2328;
+}
+.sidebar .sidebar-sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+.sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 13px;
+}
+.sidebar-row:last-child { border-bottom: none; }
+.sidebar-row .k { color: #6b7280; flex: 0 0 auto; }
+.sidebar-row .v { color: #1f2328; font-weight: 500; word-break: break-all; text-align: right; }
+.sidebar-empty {
+  color: #9ca3af;
+  font-size: 12px;
+  padding: 12px 0;
+  text-align: center;
+}
+.discussion-bubble {
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-left: 3px solid;
+}
+.discussion-bubble.supporter { background: #ecfdf5; border-color: #10b981; }
+.discussion-bubble.skeptic { background: #fef2f2; border-color: #ef4444; }
+.discussion-bubble.pragmatist { background: #eff6ff; border-color: #3b82f6; }
+.discussion-bubble .role { font-weight: 600; margin-bottom: 2px; }
+.discussion-bubble .role.support::after { content: " · 支持"; color: #10b981; }
+.discussion-bubble .role.skeptic::after { content: " · 质疑"; color: #ef4444; }
+.discussion-bubble .role.pragmatist::after { content: " · 折中"; color: #3b82f6; }
+.discussion-bubble .body { color: #374151; }
+.arxiv-mini {
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dotted #e5e7eb;
+  color: #4b5563;
+}
+.arxiv-mini:last-child { border-bottom: none; }
+.arxiv-mini a { color: #2563eb; text-decoration: none; }
+.arxiv-mini a:hover { text-decoration: underline; }
 
 .banner {
   border-radius: 8px;
