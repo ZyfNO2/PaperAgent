@@ -267,8 +267,43 @@ def _heuristic_breakdown(raw: str) -> KeywordBreakdown:
 
 
 def _llm_breakdown(raw: str) -> KeywordBreakdown:
-    """LLM 路径: 让 M3 直接输出 KeywordBreakdown JSON."""
+    """LLM 路径: 优先用搜索助手 (arXiv 同领域参考) → LLM 拆题.
 
+    Session 6 §13.1: 先调 keyword_search_assistant 拿同领域 3-5 篇高引,
+    LLM 参考这些论文写关键词, 不是凭空写. 失败 → 旧 LLM 路径 → 启发式.
+    """
+
+    from . import keyword_search_assistant as ks
+
+    # 1) 搜索助手: arXiv 搜同领域 + LLM 参考
+    assistant_kw = ks.search_assistant(raw, prefer="auto")
+
+    # 2) 启发式 (兜底, 任何时候都跑, 用来补 query_keywords_zh/en)
+    h = _heuristic_breakdown(raw)
+
+    if assistant_kw is not None:
+        # 3) 合并 LLM 搜索助手 + 启发式
+        merged = ks.merge_with_heuristic(assistant_kw, {
+            "method_keywords": h.method_keywords,
+            "task_keywords": h.task_keywords,
+            "object_keywords": h.object_keywords,
+            "scenario_keywords": h.scenario_keywords,
+            "metric_keywords": h.metric_keywords,
+            "risk_terms": h.risk_terms,
+        })
+        bd = KeywordBreakdown(
+            method_keywords=merged["method_keywords"],
+            task_keywords=merged["task_keywords"],
+            object_keywords=merged["object_keywords"],
+            scenario_keywords=merged["scenario_keywords"],
+            metric_keywords=merged["metric_keywords"],
+            risk_terms=merged["risk_terms"],
+            query_keywords_zh=h.query_keywords_zh,
+            query_keywords_en=h.query_keywords_en,
+        )
+        return bd
+
+    # 4) 旧路径: 直接调 LLM
     prompt = (
         "你是中国研究生开题选题助手。给定一个选题, 输出一份 JSON, 严格按下面 schema, "
         "不要解释、不要 markdown 包裹:\n"
@@ -283,28 +318,24 @@ def _llm_breakdown(raw: str) -> KeywordBreakdown:
         f"选题: {raw}"
     )
     data = llm.chat_json(prompt, system="你是开题选题拆解助手, 严格输出 JSON dict", max_tokens=800)
-    return KeywordBreakdown(
+    bd = KeywordBreakdown(
         method_keywords=list(data.get("method_keywords") or []),
         task_keywords=list(data.get("task_keywords") or []),
         object_keywords=list(data.get("object_keywords") or []),
         scenario_keywords=list(data.get("scenario_keywords") or []),
         metric_keywords=list(data.get("metric_keywords") or []),
         risk_terms=list(data.get("risk_terms") or []),
-        query_keywords_zh=[],
-        query_keywords_en=[],
+        query_keywords_zh=h.query_keywords_zh,
+        query_keywords_en=h.query_keywords_en,
     )
+    return bd
 
 
 def breakdown_keywords(raw: str, prefer: str) -> KeywordBreakdown:
     if prefer == "heuristic":
         return _heuristic_breakdown(raw)
     try:
-        bd = _llm_breakdown(raw)
-        # 即使 LLM 成功, 兜底用启发式补全中英检索词
-        h = _heuristic_breakdown(raw)
-        bd.query_keywords_zh = h.query_keywords_zh
-        bd.query_keywords_en = h.query_keywords_en
-        return bd
+        return _llm_breakdown(raw)
     except llm.LLMUnavailable as exc:
         logger.info("LLM 拆解失败, fallback heuristic: %s", exc)
         return _heuristic_breakdown(raw)
@@ -578,6 +609,77 @@ def _heuristic_baselines(keywords: KeywordBreakdown) -> list[BaselineHit]:
     ]
 
 
+# ---------- LLM rerank arxiv (Session 6 §2 症状 3 根治) ---------- #
+
+
+_RERANK_PROMPT = """你是科研选题相关性评估助手. 给定一个**用户开题题目**和 N 篇 arXiv 命中论文, 对每篇打 0-1 的相关性分数.
+
+**用户题目**: {raw_topic}
+**题目关键词**: {keywords_block}
+
+**arXiv 命中 (按原顺序编号, 1-based)**:
+{papers_block}
+
+**严格输出 JSON 数组** (无 markdown fence, 无解释), 长度等于 arXiv 命中数, 每项是 0-1 浮点 (≥ 0.8 强相关, 0.5-0.8 一般, 0.3-0.5 弱, < 0.3 无关):
+[score1, score2, ...]
+"""
+
+
+def _llm_rerank_papers(
+    papers: list[PaperHit],
+    keywords: KeywordBreakdown,
+) -> list[PaperHit]:
+    """让 LLM 给每篇 arXiv 论文打 0-1 相关性, 过滤 < 0.3 的明显无关论文.
+
+    Fallback: LLM 失败 → 返回原列表 (heuristic 评分仍生效).
+    """
+
+    if len(papers) <= 1:
+        return papers
+
+    keywords_block = ", ".join(
+        (keywords.method_keywords or []) + (keywords.task_keywords or []) + (keywords.object_keywords or [])
+    )
+    papers_block = "\n".join(
+        f"  [{i+1}] {p.title}\n      摘要: {(p.summary or '')[:200]}"
+        for i, p in enumerate(papers)
+    )
+    raw_topic = keywords.query_keywords_zh[0] if keywords.query_keywords_zh else (
+        " ".join((keywords.method_keywords or []) + (keywords.task_keywords or []) + (keywords.object_keywords or []))
+    )
+    prompt = _RERANK_PROMPT.format(
+        raw_topic=raw_topic,
+        keywords_block=keywords_block,
+        papers_block=papers_block,
+    )
+
+    try:
+        result = llm.chat_json_array(prompt, temperature=0.1, max_tokens=400, timeout=20.0)
+    except llm.LLMUnavailable as exc:
+        logger.info("LLM rerank 失败, fallback 不过滤: %s", exc)
+        return papers
+
+    if len(result) != len(papers):
+        # 长度对不上, 视为失败
+        return papers
+
+    # 把 LLM 分数写进 relevance_score 字段, 过滤 < 0.3
+    kept: list[PaperHit] = []
+    for p, s in zip(papers, result):
+        try:
+            score = float(s)
+        except (TypeError, ValueError):
+            score = 0.5
+        score = max(0.0, min(1.0, score))
+        # 用 LLM 分数覆盖 heuristic 分数
+        new_p = p.model_copy(update={"relevance_score": round(score, 3)})
+        if score >= 0.3:
+            kept.append(new_p)
+        else:
+            logger.info("LLM rerank 过滤掉无关论文: %s (score=%.2f): %s", p.paper_id, score, p.title[:80])
+    return kept if kept else papers  # 极端情况: 全过滤掉 → 保留原列表 (heuristic 兜底)
+
+
 def collect_evidence(
     keywords: KeywordBreakdown,
     plan: SearchPlan,
@@ -587,6 +689,7 @@ def collect_evidence(
     """调 arXiv 真检索 (失败 → 启发式占位).
 
     arxiv_hits: 可选. SSE 流式路径先搜一次 arxiv 用来 emit 步骤, 这里复用避免重复.
+    Session 6: LLM rerank 过滤无关论文.
     """
 
     # 1) 论文: arXiv 真检索 (如已传 arxiv_hits 则复用)
@@ -612,6 +715,11 @@ def collect_evidence(
             ))
     else:
         papers = _heuristic_papers(keywords)
+
+    # Session 6: LLM rerank arxiv 命中 (症状 3 根治)
+    # 让 LLM 给每篇打 relevance_score, 过滤 < 0.3 的明显无关论文
+    if papers and prefer != "heuristic":
+        papers = _llm_rerank_papers(papers, keywords)
 
     # 2) 数据集: 启发式词典 (不调 LLM, 稳定)
     datasets = _heuristic_datasets(keywords)
@@ -895,6 +1003,9 @@ def generate_pivot_routes(
 def recommend_proposal(
     req: OneTopicRequest, keywords: KeywordBreakdown, ev: EvidenceSummary, feas: FeasibilitySummary,
 ) -> ProposalRecommendation:
+    """Session 6 §3: 优先 LLM 写推荐 + 工作包, 失败 fallback 启发式模板."""
+
+    # 启发式 fallback 模板 (保留作为兜底)
     method = keywords.method_keywords[0] if keywords.method_keywords else "深度学习方法"
     obj = keywords.object_keywords[0] if keywords.object_keywords else "目标对象"
     task = keywords.task_keywords[0] if keywords.task_keywords else "目标检测"
@@ -914,7 +1025,6 @@ def recommend_proposal(
     if not reasons:
         reasons.append("已根据启发式给出基本建议, 仍需补充证据.")
 
-    # 工作包
     wp1 = WorkPackageSuggestion(
         wp_id="WP1",
         title=f"基于公开数据集复现 {method} baseline",
@@ -947,6 +1057,58 @@ def recommend_proposal(
     ]
 
     pivot_routes = generate_pivot_routes(req, keywords, ev, feas)
+
+    # Session 6: LLM 路径覆盖启发式
+    if req.prefer != "heuristic":
+        from . import llm_content
+        llm_result = llm_content.recommend_proposal_llm(
+            raw_topic=req.raw_topic,
+            goal_level=req.goal_level,
+            keywords={
+                "method_keywords": keywords.method_keywords,
+                "task_keywords": keywords.task_keywords,
+                "object_keywords": keywords.object_keywords,
+                "scenario_keywords": keywords.scenario_keywords,
+                "metric_keywords": keywords.metric_keywords,
+                "risk_terms": keywords.risk_terms,
+            },
+            arxiv_count=ev.arxiv_paper_count,
+            paper_count=ev.paper_count,
+            dataset_names=[d.name for d in ev.datasets],
+            has_dataset=ev.has_public_dataset,
+            baseline_names=[b.name for b in ev.baselines],
+            has_baseline=ev.has_repro_baseline,
+            metrics=ev.metrics,
+            verdict=feas.verdict,
+            feas_reason=feas.reason,
+        )
+        if llm_result:
+            # 解析 WP
+            llm_wps = []
+            for wp_dict in llm_result.get("work_packages") or []:
+                if not isinstance(wp_dict, dict):
+                    continue
+                try:
+                    llm_wps.append(WorkPackageSuggestion(
+                        wp_id=str(wp_dict.get("wp_id") or f"WP{len(llm_wps)+1}"),
+                        title=str(wp_dict.get("title") or "工作包"),
+                        research_question=str(wp_dict.get("research_question") or ""),
+                        method_approach=str(wp_dict.get("method_approach") or ""),
+                        data_source=str(wp_dict.get("data_source") or ""),
+                        experiment_plan=str(wp_dict.get("experiment_plan") or ""),
+                        chapter=str(wp_dict.get("chapter") or "第三章"),
+                    ))
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("LLM WP 解析失败: %s", exc)
+                    continue
+            if llm_wps:
+                return ProposalRecommendation(
+                    recommended_topic=str(llm_result.get("recommended_topic") or recommended),
+                    recommendation_reason=list(llm_result.get("recommendation_reasons") or reasons),
+                    work_packages=llm_wps,
+                    proposal_outline=outline,
+                    pivot_routes=pivot_routes,
+                )
 
     return ProposalRecommendation(
         recommended_topic=recommended,
@@ -1007,6 +1169,9 @@ def evidence_status(ev: EvidenceSummary) -> list[str]:
 def light_review(
     req: OneTopicRequest, keywords: KeywordBreakdown, ev: EvidenceSummary, feas: FeasibilitySummary,
 ) -> LightReview:
+    """Session 6 §4: 优先 LLM 写 5 维审核, 失败 fallback 启发式."""
+
+    # 启发式 fallback (保留作为模板)
     checks: list[ReviewCheck] = []
 
     # 1. 题目边界
@@ -1073,6 +1238,44 @@ def light_review(
             revisions.append(f"[{c.dimension}] {c.comment}")
     if not revisions:
         revisions.append("无明显修改项, 可进入开题报告生成阶段.")
+
+    # Session 6: LLM 路径覆盖启发式
+    if req.prefer != "heuristic":
+        from . import llm_content
+        llm_result = llm_content.light_review_llm(
+            raw_topic=req.raw_topic,
+            goal_level=req.goal_level,
+            arxiv_count=ev.arxiv_paper_count,
+            paper_count=ev.paper_count,
+            dataset_names=[d.name for d in ev.datasets],
+            has_dataset=ev.has_public_dataset,
+            baseline_names=[b.name for b in ev.baselines],
+            has_baseline=ev.has_repro_baseline,
+            metrics=ev.metrics,
+            verdict=feas.verdict,
+            feas_reason=feas.reason,
+        )
+        if llm_result:
+            llm_checks: list[ReviewCheck] = []
+            for c_dict in llm_result.get("checks") or []:
+                if not isinstance(c_dict, dict):
+                    continue
+                try:
+                    llm_checks.append(ReviewCheck(
+                        dimension=str(c_dict.get("dimension") or "未命名"),
+                        result=str(c_dict.get("result") or "需补充"),
+                        comment=str(c_dict.get("comment") or ""),
+                    ))
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("LLM check 解析失败: %s", exc)
+                    continue
+            if llm_checks:
+                return LightReview(
+                    verdict=str(llm_result.get("verdict") or verdict),
+                    summary=str(llm_result.get("summary") or summary),
+                    checks=llm_checks,
+                    revision_checklist=list(llm_result.get("revision_checklist") or revisions),
+                )
 
     return LightReview(
         verdict=verdict,

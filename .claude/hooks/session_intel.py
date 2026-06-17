@@ -44,8 +44,8 @@ SESSION_PROGRESS = {
     "session_2": ("证据工作台 UI + 审核状态机", "done", "Session_02_Evidence_Workbench_验收报告"),
     "session_3": ("Human Gate 1-2 (关键词 + 检索计划)", "done", "Session_03_Human_Gates_验收报告"),
     "session_4": ("5 档可行性 + 3 条退化路线", "done", "Session_04_Pivot_Routes_验收报告"),
-    "session_5": ("去重 + 评分 (PaperRel/DatasetScore/RepoScore) + 接入 feasibility", "in_progress", "Plan/reports/Session_05_Evidence_Scoring_验收报告.md"),
-    "session_6": ("EvidenceRef 强制挂接 (Feasibility/Pivot/WP/Proposal 都能引用 evidence_id)", "pending", None),
+    "session_5": ("去重 + 评分 (PaperRel/DatasetScore/RepoScore) + 接入 feasibility", "done", "Plan/reports/Session_05_Evidence_Scoring_验收报告.md"),
+    "session_6": ("LLM 路径全激活 (搜索助手 + rerank + recommend + review) + 症状 3 根治", "done", "Plan/reports/Session_06_LLM_Path_Activation_验收报告.md"),
 }
 
 # PINN 诊断待办 (来自 PINN_数字孪生_诊断报告.md)

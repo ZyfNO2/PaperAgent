@@ -105,3 +105,66 @@ def chat_json(
     if not isinstance(result, dict):
         raise LLMUnavailable("LLM 返回的不是 dict")
     return result
+
+
+def chat_json_array(
+    prompt: str,
+    *,
+    system: str | None = None,
+    temperature: float = 0.2,
+    max_tokens: int = 1500,
+    timeout: float = 30.0,
+) -> list[Any]:
+    """调 MiniMax M3, 期望返回严格 JSON list (如 rerank 分数数组).
+
+    Raises:
+        LLMUnavailable: 缺 key / 网络错误 / 解析失败.
+    """
+
+    if not MINIMAX_API_KEY:
+        raise LLMUnavailable("MINIMAX_API_KEY 未设置")
+
+    import httpx
+
+    url = f"{MINIMAX_BASE_URL}/v1/messages"
+    headers = {
+        "x-api-key": MINIMAX_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+    }
+    body = {
+        "model": MINIMAX_MODEL,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    if system:
+        body["system"] = system
+
+    try:
+        r = httpx.post(url, headers=headers, json=body, timeout=timeout)
+        if r.status_code >= 400:
+            raise LLMUnavailable(f"HTTP {r.status_code}: {r.text[:200]}")
+        data = r.json()
+    except httpx.HTTPError as exc:
+        raise LLMUnavailable(f"网络错误: {exc}") from exc
+    except Exception as exc:  # noqa: BLE001
+        raise LLMUnavailable(f"LLM 调用失败: {exc}") from exc
+
+    text_parts = []
+    for block in data.get("content", []):
+        if block.get("type") == "text":
+            text_parts.append(block.get("text", ""))
+    raw = "".join(text_parts).strip()
+    if not raw:
+        raise LLMUnavailable("LLM 返回空内容")
+
+    cleaned = _strip_code_fence(raw)
+    try:
+        result = json.loads(cleaned)
+    except json.JSONDecodeError as exc:
+        raise LLMUnavailable(f"JSON 解析失败: {exc}; raw={raw[:200]!r}") from exc
+
+    if not isinstance(result, list):
+        raise LLMUnavailable(f"LLM 返回的不是 list (got {type(result).__name__})")
+    return result
