@@ -36,6 +36,7 @@ from ..schemas import (
 from . import arxiv as arxiv_client
 from . import evidence as ev_store
 from . import llm
+from . import scoring
 
 logger = logging.getLogger(__name__)
 
@@ -47,10 +48,20 @@ _METHOD_HINTS = {
     "vit": "ViT", "bert": "BERT", "gpt": "GPT", "llm": "LLM",
     "diffusion": "Diffusion", "gan": "GAN", "resnet": "ResNet",
     "cnn": "CNN", "lstm": "LSTM", "gru": "GRU", "mamba": "Mamba",
-    "知识图谱": "知识图谱", "图神经网络": "GNN", "gnn": "GNN",
-    "强化学习": "强化学习", "注意力": "注意力机制", "attention": "注意力机制",
+    "知识图谱": "知识图谱", "图神经网络": "GNN", "gnn": "GNN", "gcn": "GNN", "gat": "GNN", "graph": "GNN",
+    "强化学习": "强化学习", "rl": "强化学习", "注意力": "注意力机制", "attention": "注意力机制",
     "轻量化": "轻量化", "蒸馏": "知识蒸馏", "剪枝": "剪枝",
     "多模态": "多模态", "跨模态": "跨模态",
+    # Session 5: 数字孪生 / 物理信息 / 扩散 / Mamba / DETR / LoRA / 医学影像
+    "pinn": "PINN", "物理信息": "PINN", "物理神经网络": "PINN", "物理感知": "PINN",
+    "数字孪生": "数字孪生", "digital twin": "数字孪生", "孪生": "数字孪生",
+    "有限元": "有限元", "fem": "有限元", "fea": "有限元", "仿真": "有限元",
+    "detr": "DETR", "deit": "DeiT", "dino": "DINO",
+    "lora": "LoRA", "peft": "PEFT", "rag": "RAG", "agent": "Agent",
+    "扩散模型": "Diffusion", "stable diffusion": "Diffusion", "ddpm": "Diffusion",
+    "wgan": "GAN", "cyclegan": "GAN", "stylegan": "GAN",
+    "snn": "脉冲神经网络", "脉冲": "脉冲神经网络", "spiking": "脉冲神经网络",
+    "neural ode": "Neural ODE", "ode": "Neural ODE", "pde": "PDE",
 }
 _TASK_HINTS = {
     "检测": "目标检测", "识别": "图像识别", "分类": "图像分类",
@@ -61,7 +72,25 @@ _TASK_HINTS = {
     "tracking": "目标跟踪", "跟踪": "目标跟踪",
     "配准": "图像配准", "重建": "三维重建", "去噪": "图像去噪",
 }
+_OBJECT_HINTS_EXT = {  # Session 5: PINN / 数字孪生 / 推荐 / 时序 通用对象
+    "机构": "机构", "机械系统": "机械系统", "传动链": "传动链", "传动": "传动",
+    "装备": "工业装备", "工业装备": "工业装备", "机械": "机械", "机电": "机电",
+    "传感器": "传感器", "振动": "振动信号", "时序": "时序信号", "时间序列": "时序信号",
+    "推荐": "推荐系统", "排序": "推荐系统", "item": "推荐系统",
+    "医学": "医学影像", "病理": "医学影像", "影像": "医学影像", "ct": "CT 影像", "mri": "MRI 影像",
+}
+_PUBLIC_DATASET_OBJECTS = {  # Session 5: 路线 nearest-neighbor 用
+    "钢材": "NEU-DET", "带钢": "NEU-DET", "钢板": "NEU-DET",
+    "电路板": "DeepPCB", "pcb": "DeepPCB", "焊缝": "DeepPCB",
+    "桥梁": "CODEBRIM", "裂缝": "CODEBRIM", "道路": "CODEBRIM",
+    "皮肤": "HAM10000", "皮肤病": "HAM10000", "病变": "HAM10000",
+    "肺结节": "LUNA16", "肺": "LUNA16",
+    "车辆": "KITTI", "行人": "CityPersons",
+    "细胞": "CellNuclei", "血细胞": "CellNuclei",
+    "叶": "PlantDoc", "作物": "PlantDoc", "植物": "PlantDoc", "水果": "FruitVeg",
+}
 _OBJECT_HINTS = {
+    # Session 5 通用对象 (PINN / 数字孪生 / 推荐 / 时序)
     "钢材": "钢材", "带钢": "带钢", "钢板": "钢板",
     "桥梁": "桥梁", "道路": "道路", "混凝土": "混凝土",
     "叶片": "叶片", "绝缘子": "绝缘子", "输电线路": "输电线路",
@@ -74,6 +103,12 @@ _OBJECT_HINTS = {
     "x光": "X 光影像", "皮肤": "皮肤病变", "眼底": "眼底图像",
     "细胞": "细胞图像", "肺结节": "肺结节",
     "行人": "行人", "车辆": "车辆", "交通": "交通场景",
+    # Session 5 PINN 数字孪生 推荐 时序
+    "机构": "机械机构", "机械系统": "机械系统", "机械": "机械",
+    "传动链": "传动链", "传动": "传动系统", "装备": "工业装备", "工业装备": "工业装备",
+    "机电": "机电系统",
+    "传感器": "传感器信号", "振动": "振动信号", "时序": "时序信号", "时间序列": "时序信号",
+    "推荐": "推荐系统", "排序": "推荐系统", "知识图谱": "知识图谱",
 }
 _SCENARIO_HINTS = {
     "工业": "工业质检", "质检": "工业质检", "制造": "智能制造",
@@ -131,6 +166,9 @@ def _has_specific_object(object_keywords: list[str], raw: str) -> bool:
         if any(t.lower() in k.lower() or k in t for k in (
             "钢", "桥", "路", "叶", "电", "管", "轮", "轴", "果",
             "菜", "皮", "眼", "细", "行", "车", "PCB", "焊", "螺",
+            # Session 5: 抽象对象词也算具体 (机构/机械系统/...)
+            "机构", "机械", "传动", "装备", "机电", "传感器", "振动", "时序",
+            "时间", "推荐", "排序", "知识图谱",
         )):
             return True
     return False
@@ -458,19 +496,83 @@ def _heuristic_baselines(keywords: KeywordBreakdown) -> list[BaselineHit]:
                          repository_url="https://github.com/microsoft/Swin-Transformer",
                          reproduce_difficulty="中", source="github"),
         ]
-    if "bert" in method or "llm" in method or "gpt" in method:
+    if "bert" in method or "llm" in method or "gpt" in method or "rag" in method or "agent" in method:
         return [
             BaselineHit(baseline_id="BL01", name="BERT (HuggingFace)",
                          paper_title="BERT: Pre-training of Deep Bidirectional Transformers",
                          repository_url="https://github.com/google-research/bert",
                          reproduce_difficulty="中", source="github"),
+            BaselineHit(baseline_id="BL02", name="HuggingFace Transformers",
+                         paper_title="State-of-the-art Natural Language Processing",
+                         repository_url="https://github.com/huggingface/transformers",
+                         reproduce_difficulty="中", source="github"),
         ]
-    # 兜底
+    # Session 5: PINN / 数字孪生 / 物理
+    if "pinn" in method or "物理信息" in method or "物理神经网络" in method or "数字孪生" in method or "digital twin" in method:
+        return [
+            BaselineHit(baseline_id="BL01", name="DeepXDE (PINN 求解器)",
+                         paper_title="DeepXDE: A Deep Learning Library for Solving Differential Equations",
+                         repository_url="https://github.com/lululxvi/deepxde",
+                         reproduce_difficulty="中", source="github"),
+            BaselineHit(baseline_id="BL02", name="NVIDIA Modulus (Physics-ML)",
+                         paper_title="NVIDIA Modulus: A Framework for Physics-ML",
+                         repository_url="https://github.com/NVIDIA/modulus",
+                         reproduce_difficulty="高", source="github"),
+        ]
+    # Session 5: 扩散模型
+    if "diffusion" in method or "扩散" in method:
+        return [
+            BaselineHit(baseline_id="BL01", name="Stable Diffusion (diffusers)",
+                         paper_title="High-Resolution Image Synthesis with Latent Diffusion Models",
+                         repository_url="https://github.com/huggingface/diffusers",
+                         reproduce_difficulty="中", source="github"),
+            BaselineHit(baseline_id="BL02", name="DDPM (lucidrains)",
+                         paper_title="Denoising Diffusion Probabilistic Models",
+                         repository_url="https://github.com/lucidrains/denoising-diffusion-pytorch",
+                         reproduce_difficulty="中", source="github"),
+        ]
+    # Session 5: GNN / GCN / GAT
+    if "gnn" in method or "gcn" in method or "gat" in method or "图神经" in method or "知识图谱" in method:
+        return [
+            BaselineHit(baseline_id="BL01", name="PyTorch Geometric (PyG)",
+                         paper_title="Fast Graph Representation Learning with PyTorch Geometric",
+                         repository_url="https://github.com/pyg-team/pytorch_geometric",
+                         reproduce_difficulty="中", source="github"),
+            BaselineHit(baseline_id="BL02", name="DGL (Deep Graph Library)",
+                         paper_title="Deep Graph Library",
+                         repository_url="https://github.com/dmlc/dgl",
+                         reproduce_difficulty="中", source="github"),
+        ]
+    # Session 5: GAN
+    if "gan" in method:
+        return [
+            BaselineHit(baseline_id="BL01", name="PyTorch GAN Zoo",
+                         paper_title="A PyTorch GAN Zoo",
+                         repository_url="https://github.com/facebookresearch/pytorch_GAN_zoo",
+                         reproduce_difficulty="中", source="github"),
+        ]
+    # Session 5: Mamba (状态空间模型)
+    if "mamba" in method:
+        return [
+            BaselineHit(baseline_id="BL01", name="Mamba (state-spaces)",
+                         paper_title="Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+                         repository_url="https://github.com/state-spaces/mamba",
+                         reproduce_difficulty="高", source="github"),
+        ]
+    # Session 5: 强化学习 / RL
+    if "强化学习" in method or "rl" in method:
+        return [
+            BaselineHit(baseline_id="BL01", name="Stable-Baselines3",
+                         paper_title="Stable-Baselines3: Reliable Reinforcement Learning Implementations",
+                         repository_url="https://github.com/DLR-RM/stable-baselines3",
+                         reproduce_difficulty="中", source="github"),
+        ]
+    # 兜底: 不再硬编码 ResNet, 给个通用"请补充"占位 (并把 reproduce_difficulty 标 未知)
     return [
-        BaselineHit(baseline_id="BL99", name="ResNet-50 (torchvision)",
-                     paper_title="Deep Residual Learning for Image Recognition",
-                     repository_url="https://github.com/pytorch/vision",
-                     reproduce_difficulty="低", source="github"),
+        BaselineHit(baseline_id="BL99", name="(未匹配通用 baseline, 请手动补)",
+                     paper_title=None,
+                     repository_url=None,
+                     reproduce_difficulty="未知", source="heuristic"),
     ]
 
 
@@ -518,6 +620,24 @@ def collect_evidence(
     has_repro = any(b.reproduce_difficulty in ("低", "中") and b.repository_url for b in baselines)
     has_metrics = len(metrics) > 0
 
+    # Session 5: 给 paper/dataset/repo 加 score + paper_type (SOP §7.3-7.5)
+    kw_for_score = {
+        "method_keywords": keywords.method_keywords,
+        "task_keywords": keywords.task_keywords,
+        "object_keywords": keywords.object_keywords,
+        "scenario_keywords": keywords.scenario_keywords,
+        "metric_keywords": keywords.metric_keywords,
+    }
+    papers_dict = [p.model_dump() for p in papers]
+    datasets_dict = [d.model_dump() for d in datasets]
+    baselines_dict = [b.model_dump() for b in baselines]
+    scoring.attach_scores_to_evidence(papers_dict, datasets_dict, baselines_dict, kw_for_score)
+    # 用 model_validate 重建 (Pydantic v2 model_copy 静默丢字段)
+    from ..schemas import PaperHit as _PH, DatasetHit as _DH, BaselineHit as _BH
+    papers = [_PH.model_validate(d) for d in papers_dict]
+    datasets = [_DH.model_validate(d) for d in datasets_dict]
+    baselines = [_BH.model_validate(d) for d in baselines_dict]
+
     return EvidenceSummary(
         papers=papers,
         datasets=datasets,
@@ -541,10 +661,25 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
     niche = _is_niche_topic(req.raw_topic, keywords)
     missing: list[str] = []
 
-    paper_status = "✓ 有 arXiv 真实论文" if ev.arxiv_paper_count >= 3 else (
+    # Session 5: 评分喂给 5 档 (SOP §4.5). 算"可入池"集合
+    usable_papers = [p for p in ev.papers
+                     if (p.relevance_score or 0) >= 0.3
+                     and p.paper_type not in ("irrelevant", None)]
+    avg_paper_score = (
+        sum(p.relevance_score for p in usable_papers) / len(usable_papers)
+        if usable_papers else 0.0
+    )
+    usable_datasets = [d for d in ev.datasets
+                       if (d.quality_score or 0) >= 0.4
+                       and d.dataset_status in ("ready", "needs_preprocess")]
+    usable_repos = [b for b in ev.baselines
+                    if (b.quality_score or 0) >= 0.4
+                    and b.repo_type in ("official", "reproduction", "baseline_framework")]
+
+    paper_status = ("✓ 有 arXiv 真实论文 (平均分 %.2f)" % avg_paper_score) if ev.arxiv_paper_count >= 3 else (
         "⚠ 论文偏少 (< 3 篇)" if ev.arxiv_paper_count > 0 else "✗ 无 arXiv 真实论文 (启发式占位)")
-    dataset_status = "✓ 有公开数据集" if ev.has_public_dataset else "✗ 未匹配到公开数据集"
-    baseline_status = "✓ 有可复现 baseline" if ev.has_repro_baseline else "⚠ baseline 复现难度未知"
+    dataset_status = ("✓ 有公开数据集 (%d 个 ready)" % len(usable_datasets)) if ev.has_public_dataset else "✗ 未匹配到公开数据集"
+    baseline_status = ("✓ 有可复现 baseline (%d 个)" % len(usable_repos)) if ev.has_repro_baseline else "⚠ baseline 复现难度未知"
     engineering_status = ("✓ 有 GitHub 工程" if any(b.repository_url for b in ev.baselines)
                           else "⚠ 未确认 GitHub 工程")
 
@@ -554,22 +689,33 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
         missing.append("缺少可复现 baseline (复现成本未知)")
     if paper_count < 3:
         missing.append("论文偏少 (方向成熟度未确认)")
+    if avg_paper_score and avg_paper_score < 0.4:
+        missing.append(f"arXiv 论文相关性偏低 (平均分 {avg_paper_score:.2f}), 方向需要补检索词")
     if niche:
         missing.append("题目研究对象极小众, 公开数据几乎不存在")
 
-    # 决策 (SOP §9.4 5 档: GO/NARROW/PIVOT/PARK/STOP)
+    # 决策 (SOP §4.5 + §9.4 5 档: GO/NARROW/PIVOT/PARK/STOP)
+    # Session 5 升级: 不只看数量, 还要看评分质量
     if niche and not ev.has_public_dataset:
         verdict: Literal["可做", "收缩后可做", "可转向", "暂缓", "不建议"] = "暂缓"
         reason = "题目对象极小众, 公开数据集几乎不存在, 建议收缩到成熟对象 (钢材/PCB/桥梁等) 或加自采数据."
-    elif not ev.has_public_dataset and not ev.has_repro_baseline:
-        verdict = "不建议"
-        reason = "缺少公开数据集和可复现 baseline, 当前阶段不建议开题."
+    elif not usable_datasets and not usable_repos:
+        # 无可用数据集 + 无可复现 repo
+        if not ev.has_public_dataset and not ev.has_repro_baseline:
+            verdict = "不建议"
+            reason = "缺少 ready 状态数据集 + 可复现 baseline, 当前阶段不建议开题."
+        else:
+            verdict = "可转向"
+            reason = "原题方向可行, 但数据集/Repo 评分均偏低, 建议转向相邻成熟方向."
+    elif (len(usable_papers) >= 3 and avg_paper_score >= 0.5
+          and len(usable_datasets) >= 1 and len(usable_repos) >= 1
+          and ev.has_metrics):
+        verdict = "可做"
+        reason = (f"论文 {len(usable_papers)} 篇 (平均分 {avg_paper_score:.2f}) + "
+                  f"数据集 {len(usable_datasets)} 个 + repo {len(usable_repos)} 个 + 指标齐备, 可进入开题报告推荐.")
     elif not ev.has_public_dataset or not ev.has_repro_baseline:
         verdict = "可转向"
         reason = "原题方向可行, 但当前路线证据不足, 建议转向相邻成熟方向 (如钢材→带钢/PCB 等已稳定开源数据集场景)."
-    elif paper_count >= 3 and ev.has_metrics:
-        verdict = "可做"
-        reason = "论文 + 数据集 + baseline + 指标都齐备, 可进入开题报告推荐."
     else:
         verdict = "收缩后可做"
         reason = "基础齐备, 建议收缩题目边界以降低风险."
@@ -600,18 +746,33 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
 # ---------- 退化路线 (§10) ---------- #
 
 
-def generate_pivot_routes(
-    req: OneTopicRequest, keywords: KeywordBreakdown, ev: EvidenceSummary, feas: FeasibilitySummary,
-) -> list[PivotRoute]:
-    """SOP §10.3 三条路线 (保守/平衡/激进).
+def _nearest_public_dataset(object_keywords):
+    """根据原题对象词, 选 _PUBLIC_DATASET_OBJECTS 里的 nearest public dataset.
 
-    只在 verdict=可转向 / 收缩后可做 时有意义 (其他 verdict 给 0/1 条).
-    路线 = 不同 aggressiveness 的题目收缩 + 工作包调整.
+    用于 conservative 路线: 若原题无公开数据集, 推荐相邻最稳对象.
+    """
+
+    for obj in object_keywords:
+        for key, dataset in _PUBLIC_DATASET_OBJECTS.items():
+            if key in obj or obj in key:
+                return f"{key} ({dataset})"
+    return "目标对象 (NEU-DET)"  # 兜底
+
+
+def generate_pivot_routes(
+    req, keywords, ev, feas,
+):
+    """SOP 10.3 三条路线 (保守/平衡/激进).
+
+    Session 5 改造: 不再硬编码 - 保守路线按原题语义生成:
+    - 原题有公开数据集 -> 保守保留原题, 收缩 risk_terms
+    - 原题无公开数据集 -> 保守推荐相邻最稳对象 (nearest public dataset)
     """
 
     method = keywords.method_keywords[0] if keywords.method_keywords else "深度学习方法"
     obj = keywords.object_keywords[0] if keywords.object_keywords else "目标对象"
     task = keywords.task_keywords[0] if keywords.task_keywords else "目标检测"
+    obj_list = keywords.object_keywords or [obj]
 
     if feas.verdict not in ("可转向", "收缩后可做"):
         return []
@@ -619,20 +780,37 @@ def generate_pivot_routes(
     removed = list(keywords.risk_terms or [])
     preserved = [k for k in (keywords.method_keywords + keywords.task_keywords) if k]
 
-    # 保守: 用最稳的成熟对象 (YOLO + 钢材), 公开数据集, 创新轻
+    has_public = any(d.fit in ("高", "中") and d.dataset_id != "DS99" for d in ev.datasets)
+    nearest_ds = _nearest_public_dataset(obj_list)
+
+    if has_public:
+        cons_obj = obj_list[0] if obj_list else "目标对象"
+        cons_dataset = ev.datasets[0].name if ev.datasets else "公开数据集"
+        cons_topic = f"基于 {method} 的 {cons_obj} {task} 方法研究"
+        cons_data_source = cons_dataset
+        cons_research_q = f"{method} 在 {cons_obj} 上的 baseline 表现如何?"
+        cons_dataset_name = cons_dataset
+    else:
+        parts = (nearest_ds.split(" (") + [""])[:2]
+        cons_obj = parts[0]
+        cons_dataset_name = parts[1].rstrip(")")
+        cons_topic = f"基于 {method} 的 {cons_obj} {task} 方法研究"
+        cons_data_source = f"{cons_dataset_name} (相邻最稳公开数据集)"
+        cons_research_q = f"{method} 在 {cons_obj} 上的 baseline 表现如何?"
+
     cons = PivotRoute(
         level="conservative",
-        new_topic=f"基于 {method} 的钢材表面缺陷检测方法研究",
-        preserved_keywords=preserved + ["钢材表面缺陷"],
-        removed_keywords=removed + ["多模态", "高精度", "实时"],
-        tradeoff="去掉多模态 / 实时, 限定到钢材+检测. 创新空间小但风险最低, 容易出第一张结果表.",
+        new_topic=cons_topic,
+        preserved_keywords=preserved + obj_list,
+        removed_keywords=removed,
+        tradeoff=f"去掉 risk_terms, 限定到 1 个公开数据集 ({cons_data_source}). 创新空间小但风险最低, 容易出第一张结果表.",
         work_packages=[
             WorkPackageSuggestion(
                 wp_id="WP1",
-                title=f"基于公开数据集复现 {method} baseline",
-                research_question=f"{method} 在钢材表面缺陷数据上的 baseline 性能如何?",
-                method_approach=f"采用 {method} 官方实现, 在 NEU-DET/GC10-DET 上训练.",
-                data_source="NEU-DET / GC10-DET",
+                title=f"基于 {cons_dataset_name or cons_data_source} 复现 {method} baseline",
+                research_question=cons_research_q,
+                method_approach=f"采用 {method} 官方实现, 在 {cons_data_source} 上训练.",
+                data_source=cons_data_source,
                 experiment_plan="按标准 split 训练, 报告 mAP / Recall / FPS.",
                 chapter="第三章",
             ),
@@ -648,18 +826,18 @@ def generate_pivot_routes(
         ],
     )
 
-    # 平衡: 用原始对象, 公开数据集 + 少量自采, 轻量模块
+    bal_obj = obj_list[0] if obj_list else "目标对象"
     bal = PivotRoute(
         level="balanced",
-        new_topic=feas.reason and (keywords.object_keywords[0] if keywords.object_keywords else obj) + f" {task} 方法研究",
-        preserved_keywords=preserved + (keywords.object_keywords[:1] if keywords.object_keywords else [obj]),
+        new_topic=f"基于 {method} 的 {bal_obj} {task} 方法研究",
+        preserved_keywords=preserved + obj_list,
         removed_keywords=[r for r in removed if r not in ["高精度", "实时"]],
         tradeoff="保留原始对象, 用公开数据集 + 自采小规模验证. 创新适中, 风险适中.",
         work_packages=[
             WorkPackageSuggestion(
                 wp_id="WP1",
-                title=f"公开数据集上复现 {method} baseline + 自采小规模验证",
-                research_question="原始对象上的 baseline 表现 + 自采数据上的迁移能力?",
+                title=f"公开数据集上复现 {method} baseline + 自采小批量验证",
+                research_question=f"原始对象 {bal_obj} 上的 baseline 表现 + 自采数据的迁移能力?",
                 method_approach=f"{method} 标准实现 + 自采 100-200 张作 domain adaptation.",
                 data_source="公开数据集 + 自采小批量",
                 experiment_plan="baseline 在公开集 + 自采集分别报告, 给出迁移 gap.",
@@ -669,7 +847,7 @@ def generate_pivot_routes(
                 wp_id="WP2",
                 title="针对原始对象的轻量改进 + 跨域消融",
                 research_question="模块改进在原始对象上的增量是多少?",
-                method_approach="针对原始对象特性 (光照/尺度/类别分布) 设计模块.",
+                method_approach=f"针对 {bal_obj} 特性设计模块.",
                 data_source="同 WP1",
                 experiment_plan="消融 + 跨域对比.",
                 chapter="第四章",
@@ -677,29 +855,29 @@ def generate_pivot_routes(
         ],
     )
 
-    # 激进: 保留原对象 + 多模态/3D, 加自采大数据, 创新强
+    agg_obj = obj_list[0] if obj_list else "目标对象"
     agg = PivotRoute(
         level="aggressive",
-        new_topic=f"基于 {method} + 多模态的 {obj} {task} 新方法",
-        preserved_keywords=preserved + (keywords.object_keywords[:1] if keywords.object_keywords else [obj]) + ["多模态"],
+        new_topic=f"基于 {method} + 多模态的 {agg_obj} {task} 新方法",
+        preserved_keywords=preserved + obj_list + ["多模态"],
         removed_keywords=[],
         tradeoff="保留所有原题要素 + 多模态, 必须自采大规模数据. 创新强, 风险高, 时间成本大.",
         work_packages=[
             WorkPackageSuggestion(
                 wp_id="WP1",
-                title="自采多模态数据采集与标注",
-                research_question="如何构建 {obj} 的多模态数据集?",
+                title=f"自采多模态数据采集与标注 ({agg_obj})",
+                research_question=f"如何构建 {agg_obj} 的多模态数据集?",
                 method_approach="RGB-D / 红外-可见光双模态自采 + 标注流程设计.",
-                data_source="自采 1000+ 张多模态数据",
+                data_source=f"自采 1000+ 张 {agg_obj} 多模态数据",
                 experiment_plan="数据采集方案 + 标注一致性 + 数据集统计.",
                 chapter="第三章",
             ),
             WorkPackageSuggestion(
                 wp_id="WP2",
                 title="多模态融合方法设计 + 跨模态消融",
-                research_question="多模态融合在 {obj} 上的增益?",
+                research_question=f"多模态融合在 {agg_obj} 上的增益?",
                 method_approach="跨模态特征对齐 + 决策融合.",
-                data_source="自采多模态数据",
+                data_source=f"自采 {agg_obj} 多模态数据",
                 experiment_plan="单模态 vs 融合 消融; 不同融合策略对比.",
                 chapter="第四章",
             ),
@@ -707,11 +885,6 @@ def generate_pivot_routes(
     )
 
     return [cons, bal, agg]
-
-
-# ---------- 开题建议 (§8) ---------- #
-
-
 def recommend_proposal(
     req: OneTopicRequest, keywords: KeywordBreakdown, ev: EvidenceSummary, feas: FeasibilitySummary,
 ) -> ProposalRecommendation:

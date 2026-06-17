@@ -38,6 +38,24 @@ PLAN_CAPABILITIES = {
     "markdown_export": "导出开题报告 Markdown (SOP §6.2)",
 }
 
+# Session 范围: 1-4 验收完, 5 在做, 6 待做
+SESSION_PROGRESS = {
+    "session_1": ("Evidence 数据模型 + 手动入池", "done", "Session_01_Evidence_验收报告"),
+    "session_2": ("证据工作台 UI + 审核状态机", "done", "Session_02_Evidence_Workbench_验收报告"),
+    "session_3": ("Human Gate 1-2 (关键词 + 检索计划)", "done", "Session_03_Human_Gates_验收报告"),
+    "session_4": ("5 档可行性 + 3 条退化路线", "done", "Session_04_Pivot_Routes_验收报告"),
+    "session_5": ("去重 + 评分 (PaperRel/DatasetScore/RepoScore) + 接入 feasibility", "in_progress", "Plan/reports/Session_05_Evidence_Scoring_验收报告.md"),
+    "session_6": ("EvidenceRef 强制挂接 (Feasibility/Pivot/WP/Proposal 都能引用 evidence_id)", "pending", None),
+}
+
+# PINN 诊断待办 (来自 PINN_数字孪生_诊断报告.md)
+PINN_PENDING = [
+    "扩展 _METHOD_HINTS 覆盖 PINN/数字孪生/GNN/Diffusion/GAN/Mamba/RL/DETR",
+    "添加 _OBJECT_HINTS (机构/传动链/工业装备/传感器/振动)",
+    "arXiv 检索结果按 PaperRelevance 过滤 irrelevant",
+    "Pivot 路线模板化 (根除硬编码钢材)",
+]
+
 # 哪些 Skill 是参考价值最高的 (P0 级别, 来自 Skill 下载链接汇总)
 REFERENCE_SKILLS = {
     "deep-research": "Weizhena/Deep-Research-skills: 分阶段研究 + HITL outline 模板",
@@ -166,6 +184,14 @@ def main() -> int:
     _emit_stderr("=" * 70)
     _emit_stderr(f"  Plan 文档: {', '.join(report['plan_files'])}")
     _emit_stderr("")
+    _emit_stderr("  Session 进度 (按 SOP §4-§12):")
+    for sid, (title, status, report) in SESSION_PROGRESS.items():
+        marker = "DONE" if status == "done" else ("DOING" if status == "in_progress" else "TODO ")
+        line = f"    [{marker}] {sid}: {title}"
+        if report:
+            line += f"  ({report})"
+        _emit_stderr(line)
+    _emit_stderr("")
     _emit_stderr("  当前已有 (OneTopic MVP):")
     for cap in report["existing_capabilities"]:
         _emit_stderr(f"    - {cap}")
@@ -176,6 +202,10 @@ def main() -> int:
         for m in missing:
             desc = PLAN_CAPABILITIES.get(m, "")
             _emit_stderr(f"    - {m}: {desc}")
+    _emit_stderr("")
+    _emit_stderr("  PINN 诊断待办 (从 PINN_数字孪生_诊断报告.md):")
+    for item in PINN_PENDING:
+        _emit_stderr(f"    - {item}")
     _emit_stderr("")
     _emit_stderr("  参考 Skill (P0 级别, 改写前先看):")
     for name, desc in report["reference_skills"].items():

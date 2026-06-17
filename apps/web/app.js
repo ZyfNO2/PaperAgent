@@ -162,13 +162,20 @@ function renderResult(r) {
   `;
 
   // Block 3: 证据 (原版, 详细卡片在 evidence page)
+  // Session 5: 展示 score / type (§7.1)
   const ev = r.evidence_summary || {};
+  // 评分色阶 class
+  const relCls = (s) => s == null ? "" : (s >= 0.6 ? "evidence-card__score--rel--high" : (s < 0.3 ? "evidence-card__score--rel--low" : "evidence-card__score--rel"));
   const paperCards = (ev.papers || []).map(p => `
     <div class="evidence-card">
       <div class="evidence-card__title">${escapeHtml((p.title || "").slice(0, 100))}
         <span class="evidence-card__source evidence-card__source--${p.source}">${p.source}</span>
       </div>
       <div class="evidence-card__meta">${p.year ? `[${p.year}]` : ""}${(p.authors && p.authors.length) ? " · " + escapeHtml(p.authors.slice(0, 3).join(", ")) : ""}</div>
+      <div class="evidence-card__scores">
+        <span class="evidence-card__score ${relCls(p.relevance_score)}">相关性: ${p.relevance_score != null ? p.relevance_score.toFixed(2) : "-"}</span>
+        ${p.paper_type ? `<span class="evidence-card__type evidence-card__type--${p.paper_type}">${p.paper_type}</span>` : ""}
+      </div>
       ${p.url ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener">📄 arXiv</a>` : ""}
     </div>
   `).join("") || '<div class="evidence-empty">暂无论文</div>';
@@ -178,6 +185,10 @@ function renderResult(r) {
         <span class="evidence-card__source evidence-card__source--${d.source}">${d.source}</span>
       </div>
       <div class="evidence-card__meta">规模: ${escapeHtml(d.scale || "未知")} · 契合度: ${escapeHtml(d.fit || "中")}</div>
+      <div class="evidence-card__scores">
+        <span class="evidence-card__score ${relCls(d.quality_score)}">可用性: ${d.quality_score != null ? d.quality_score.toFixed(2) : "-"}</span>
+        ${d.dataset_status ? `<span class="evidence-card__type evidence-card__type--${d.dataset_status}">${d.dataset_status}</span>` : ""}
+      </div>
       ${d.download ? `<a href="${escapeHtml(d.download)}" target="_blank" rel="noopener">⬇️ 下载</a>` : ""}
     </div>
   `).join("") || '<div class="evidence-empty">暂无数据集</div>';
@@ -187,22 +198,38 @@ function renderResult(r) {
         <span class="evidence-card__source evidence-card__source--${b.source}">${b.source}</span>
       </div>
       <div class="evidence-card__meta">复现难度: ${escapeHtml(b.reproduce_difficulty || "中")}</div>
+      <div class="evidence-card__scores">
+        <span class="evidence-card__score ${relCls(b.quality_score)}">可复现: ${b.quality_score != null ? b.quality_score.toFixed(2) : "-"}</span>
+        ${b.repo_type ? `<span class="evidence-card__type evidence-card__type--${b.repo_type}">${b.repo_type}</span>` : ""}
+      </div>
       ${b.repository_url ? `<a href="${escapeHtml(b.repository_url)}" target="_blank" rel="noopener">🔗 仓库</a>` : ""}
     </div>
   `).join("") || '<div class="evidence-empty">暂无 baseline</div>';
 
   document.getElementById("block-evidence").innerHTML = `
+    <div class="evidence-section__toolbar">
+      <button class="evidence-section__btn-rescore" id="btn-rescore" type="button" data-project-id="${escapeHtml(r.project_id || "")}">🔄 重新评分证据</button>
+      <span class="evidence-section__sort">
+        排序:
+        <select id="sort-papers">
+          <option value="score-desc">按评分↓</option>
+          <option value="score-asc">按评分↑</option>
+          <option value="year-desc">按年份↓</option>
+          <option value="year-asc">按年份↑</option>
+        </select>
+      </span>
+    </div>
     <div class="evidence-section">
       <div class="evidence-section__title">📚 论文 <span class="evidence-section__count">${ev.paper_count || 0}</span> (arXiv 真实 ${ev.arxiv_paper_count || 0})</div>
-      <div class="evidence-list">${paperCards}</div>
+      <div class="evidence-list" data-evidence-list="papers">${paperCards}</div>
     </div>
     <div class="evidence-section">
       <div class="evidence-section__title">💾 数据集 <span class="evidence-section__count">${ev.dataset_count || 0}</span></div>
-      <div class="evidence-list">${datasetCards}</div>
+      <div class="evidence-list" data-evidence-list="datasets">${datasetCards}</div>
     </div>
     <div class="evidence-section">
       <div class="evidence-section__title">⚙️ Baseline <span class="evidence-section__count">${ev.baseline_count || 0}</span></div>
-      <div class="evidence-list">${baselineCards}</div>
+      <div class="evidence-list" data-evidence-list="baselines">${baselineCards}</div>
     </div>
     <div class="evidence-section">
       <div class="evidence-section__title">📏 评价指标: ${(ev.metrics || []).map(escapeHtml).join("、") || "无"}</div>
@@ -708,7 +735,7 @@ async function regenerate(useConfirmedKw, useConfirmedPlan) {
 
 // Session 3 关键词/检索词编辑: 用事件代理绑在 document 上
 document.addEventListener("click", async (e) => {
-  const t = e.target.closest("[data-action], #btn-edit-keywords, #btn-edit-search-plan, #kw-cancel, #kw-regen, #sp-cancel, #sp-regen, #btn-show-pivots, #pivot-cancel, [data-pivot-level]");
+  const t = e.target.closest("[data-action], #btn-edit-keywords, #btn-edit-search-plan, #kw-cancel, #kw-regen, #sp-cancel, #sp-regen, #btn-show-pivots, #pivot-cancel, #btn-rescore, [data-pivot-level]");
   if (!t) return;
   const id = t.id;
 
@@ -758,6 +785,51 @@ document.addEventListener("click", async (e) => {
     plan.query_total = plan.paper_queries.length + plan.dataset_queries.length + plan.engineering_queries.length;
     hideModal("modal-edit-search-plan");
     await regenerate(null, plan);
+  } else if (id === "btn-rescore") {
+    // Session 5 §7.3: 重新评分证据 (不改变 review_status)
+    if (!state.projectId) {
+      alert("请先跑一次分析");
+      return;
+    }
+    t.disabled = true;
+    t.textContent = "⏳ 评分中...";
+    try {
+      const rr = await fetchJson(`/api/v1/one-topic/${state.projectId}/evidence/rescore`, {method: "POST"});
+      const sm = await fetchJson(`/api/v1/one-topic/${state.projectId}/evidence/score-summary`, {method: "GET"});
+      t.textContent = `✓ 已更新 (paper ${rr.summary.avg_paper_score}, dataset ${rr.summary.avg_dataset_score}, repo ${rr.summary.avg_repo_score}; usable: ${sm.usable_papers}P ${sm.usable_datasets}D ${sm.usable_repos}R)`;
+      setTimeout(() => { t.textContent = "🔄 重新评分证据"; t.disabled = false; }, 5000);
+    } catch (err) {
+      t.textContent = "✗ 失败: " + err.message;
+      t.disabled = false;
+    }
+  }
+});
+
+document.addEventListener("change", (e) => {
+  // Session 5 §7.2: 证据按评分/年份排序
+  if (e.target && e.target.id === "sort-papers") {
+    const mode = e.target.value;
+    const list = document.querySelector('[data-evidence-list="papers"]');
+    if (!list) return;
+    const cards = Array.from(list.querySelectorAll(".evidence-card"));
+    const getScore = (c) => {
+      const m = (c.querySelector(".evidence-card__score") || {}).textContent || "";
+      const mm = m.match(/[\d.]+/);
+      return mm ? parseFloat(mm[0]) : 0;
+    };
+    const getYear = (c) => {
+      const m = (c.querySelector(".evidence-card__meta") || {}).textContent || "";
+      const mm = m.match(/\[(\d{4})\]/);
+      return mm ? parseInt(mm[1]) : 0;
+    };
+    cards.sort((a, b) => {
+      if (mode === "score-desc") return getScore(b) - getScore(a);
+      if (mode === "score-asc") return getScore(a) - getScore(b);
+      if (mode === "year-desc") return getYear(b) - getYear(a);
+      if (mode === "year-asc") return getYear(a) - getYear(b);
+      return 0;
+    });
+    cards.forEach(c => list.appendChild(c));
   }
 });
 

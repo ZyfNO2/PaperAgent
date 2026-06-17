@@ -69,8 +69,8 @@ def test_analyze_niche_topic_triggers_shrink_or_pause() -> None:
     assert r.status_code == 200, r.text
     body = r.json()
     feas = body["feasibility"]
-    # 小众 + 无公开数据 → 暂缓 或 收缩后可做
-    assert feas["verdict"] in ("暂缓", "收缩后可做", "不建议")
+    # 小众 + 无公开数据 → 暂缓 / 收缩后可做 / 可转向 / 不建议 (5 档 Session 4)
+    assert feas["verdict"] in ("暂缓", "收缩后可做", "可转向", "不建议")
     # 缺证据项里应包含数据集
     assert any("数据集" in m for m in feas["missing_evidence"])
 

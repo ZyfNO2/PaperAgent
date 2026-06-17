@@ -62,6 +62,23 @@ html, body { background: #0b0d12; color: #e6e8ee; font-family: -apple-system, Bl
 .evidence-card a:hover { text-decoration: underline; }
 .evidence-empty { color: #6b7280; font-size: 12px; font-style: italic; padding: 6px 0; }
 
+/* Session 5: 评分 / 类型 标签 (§7.1) */
+.evidence-card__scores { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 4px; }
+.evidence-card__score { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.evidence-card__score--rel { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+.evidence-card__score--rel--high { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+.evidence-card__score--rel--low { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+.evidence-card__type { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; background: rgba(148, 163, 184, 0.18); color: #cbd5e1; }
+.evidence-card__type--irrelevant { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.evidence-card__type--ready, .evidence-card__type--official, .evidence-card__type--baseline_framework { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+.evidence-card__type--needs_preprocess, .evidence-card__type--reproduction { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+.evidence-section__toolbar { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
+.evidence-section__btn-rescore { background: rgba(99, 102, 241, 0.18); color: #a5b4fc; border: 1px solid #6366f1; border-radius: 6px; padding: 4px 12px; font-size: 12px; cursor: pointer; }
+.evidence-section__btn-rescore:hover { background: rgba(99, 102, 241, 0.32); }
+.evidence-section__btn-rescore:disabled { opacity: 0.5; cursor: not-allowed; }
+.evidence-section__sort { font-size: 11px; color: #8b94a8; margin-left: auto; }
+.evidence-section__sort select { background: #0b0f1a; color: #fff; border: 1px solid #2a3142; border-radius: 4px; padding: 2px 6px; font-size: 11px; }
+
 /* 可行性 */
 .feasibility__verdict { display: inline-block; padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
 .feasibility__verdict--可做 { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }

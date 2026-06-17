@@ -11,7 +11,8 @@ from collections.abc import AsyncGenerator
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from pydantic import ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from typing import Literal
 
 from ...schemas import OneTopicRequest, OneTopicResponse, ProposalRecommendation
 from ...schemas import PivotRoute
@@ -27,6 +28,52 @@ from ...services import evidence as ev_store
 from ...services import one_topic as ot_service
 
 router = APIRouter(prefix="/api/v1/one-topic", tags=["one-topic"])
+
+
+# ---------- Session 5: 评分 / 去重 端点的 Pydantic 模型 (§8) ---------- #
+
+
+class RescoreResponse(BaseModel):
+    """POST /evidence/rescore  响应."""
+
+    project_id: str
+    paper_count: int
+    dataset_count: int
+    repo_count: int
+    updated_count: int
+    summary: dict
+
+
+class ScoreSummaryResponse(BaseModel):
+    """GET /evidence/score-summary  响应."""
+
+    project_id: str
+    usable_papers: int
+    usable_datasets: int
+    usable_repos: int
+    low_quality_evidence: int
+    rejected_evidence: int
+    feasibility_inputs: dict
+
+
+class DedupCheckRequest(BaseModel):
+    """POST /evidence/dedup/check  请求体."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    evidence_type: Literal["paper", "dataset", "repo"]
+    title: str = Field(min_length=1)
+    doi: str | None = None
+    arxiv_id: str | None = None
+    url: str | None = None
+
+
+class DedupCheckResponse(BaseModel):
+    """POST /evidence/dedup/check  响应."""
+
+    is_duplicate: bool
+    existing_evidence_id: str | None = None
+    reason: str | None = None
 
 
 # ---------- 一题分析 ---------- #
@@ -221,3 +268,38 @@ def update_review(evidence_id: str, body: ReviewUpdate) -> EvidenceActionRespons
 )
 def delete_evidence(evidence_id: str) -> EvidenceActionResponse:
     return ev_store.delete_evidence(evidence_id)
+
+
+# ---------- Session 5: 评分 / 去重 端点 (§8) ---------- #
+
+
+@router.post(
+    "/{project_id}/evidence/rescore",
+    response_model=RescoreResponse,
+    summary="Session 5 §8.1: 重新评分 (不改变 review_status)",
+)
+def rescore_evidence(project_id: str) -> RescoreResponse:
+    """对当前 project 的 evidence pool 重新计算 score / paper_type / dataset_status / repo_type.
+
+    不改变 user review_status. 被 rejected 的证据仍保留, 但不参与可行性判断.
+    """
+
+    return ev_store.rescore_project(project_id)
+
+
+@router.get(
+    "/{project_id}/evidence/score-summary",
+    response_model=ScoreSummaryResponse,
+    summary="Session 5 §8.2: 评分摘要 (含 feasibility 喂入的统计)",
+)
+def score_summary(project_id: str) -> ScoreSummaryResponse:
+    return ev_store.score_summary(project_id)
+
+
+@router.post(
+    "/{project_id}/evidence/dedup/check",
+    response_model=DedupCheckResponse,
+    summary="Session 5 §8.3: 去重检查 (手动添加前提示)",
+)
+def dedup_check(project_id: str, body: DedupCheckRequest) -> DedupCheckResponse:
+    return ev_store.dedup_check(project_id, body)

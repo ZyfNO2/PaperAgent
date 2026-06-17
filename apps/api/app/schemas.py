@@ -86,6 +86,8 @@ class SearchPlan(BaseModel):
 
 
 class PaperHit(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     paper_id: str
     title: str
     authors: list[str] = Field(default_factory=list)
@@ -94,9 +96,14 @@ class PaperHit(BaseModel):
     summary: str | None = None
     summary_zh: str | None = None
     source: Literal["arXiv", "heuristic", "user-uploaded"] = "heuristic"
+    relevance_score: float | None = Field(default=None, ge=0.0, le=1.0, description="PaperRelevance 评分 (SOP §7.3)")
+    paper_type: str | None = Field(default=None, description="survey / baseline_method / application / dataset_paper / benchmark / case_study / irrelevant / unknown")
+    score_breakdown: dict | None = Field(default=None, description="6 维评分明细 (前端可视化)")
 
 
 class DatasetHit(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     dataset_id: str
     name: str
     scale: str | None = None
@@ -104,15 +111,23 @@ class DatasetHit(BaseModel):
     download: str | None = None
     fit: Literal["高", "中", "低", "未知"] = "中"
     source: Literal["public-known", "heuristic"] = "heuristic"
+    quality_score: float | None = Field(default=None, ge=0.0, le=1.0, description="DatasetScore 评分 (SOP §7.4)")
+    dataset_status: str | None = Field(default=None, description="ready / needs_preprocess / needs_permission / weak_match / unverified / invalid")
+    score_breakdown: dict | None = Field(default=None, description="7 维评分明细")
 
 
 class BaselineHit(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     baseline_id: str
     name: str
     paper_title: str | None = None
     repository_url: str | None = None
     reproduce_difficulty: Literal["低", "中", "高", "未知"] = "中"
     source: Literal["github", "paper-claimed", "heuristic"] = "heuristic"
+    quality_score: float | None = Field(default=None, ge=0.0, le=1.0, description="RepoScore 评分 (SOP §7.5)")
+    repo_type: str | None = Field(default=None, description="official / reproduction / baseline_framework / demo_only / not_reproducible / unknown")
+    score_breakdown: dict | None = Field(default=None, description="8 维评分明细")
 
 
 class EvidenceSummary(BaseModel):
