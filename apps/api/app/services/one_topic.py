@@ -26,6 +26,7 @@ from ..schemas import (
     OneTopicRequest,
     OneTopicResponse,
     PaperHit,
+    PivotRoute,
     ProposalRecommendation,
     ReviewCheck,
     SearchPlan,
@@ -556,17 +557,17 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
     if niche:
         missing.append("题目研究对象极小众, 公开数据几乎不存在")
 
-    # 决策
+    # 决策 (SOP §9.4 5 档: GO/NARROW/PIVOT/PARK/STOP)
     if niche and not ev.has_public_dataset:
-        verdict: Literal["可做", "收缩后可做", "暂缓", "不建议"] = "暂缓"
+        verdict: Literal["可做", "收缩后可做", "可转向", "暂缓", "不建议"] = "暂缓"
         reason = "题目对象极小众, 公开数据集几乎不存在, 建议收缩到成熟对象 (钢材/PCB/桥梁等) 或加自采数据."
     elif not ev.has_public_dataset and not ev.has_repro_baseline:
         verdict = "不建议"
         reason = "缺少公开数据集和可复现 baseline, 当前阶段不建议开题."
     elif not ev.has_public_dataset or not ev.has_repro_baseline:
-        verdict = "收缩后可做"
-        reason = "方向可行, 但需要收缩到有公开数据 + 成熟 baseline 的子任务."
-    elif paper_count >= 5 and ev.has_metrics:
+        verdict = "可转向"
+        reason = "原题方向可行, 但当前路线证据不足, 建议转向相邻成熟方向 (如钢材→带钢/PCB 等已稳定开源数据集场景)."
+    elif paper_count >= 3 and ev.has_metrics:
         verdict = "可做"
         reason = "论文 + 数据集 + baseline + 指标都齐备, 可进入开题报告推荐."
     else:
@@ -577,6 +578,8 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
         next_action = "进入开题报告骨架 + 工作包推荐."
     elif verdict == "收缩后可做":
         next_action = "优先确认数据集与 baseline 名称, 再收缩题目边界."
+    elif verdict == "可转向":
+        next_action = "看 3 条退化路线 (保守/平衡/激进), 用户选一条后生成对应工作包."
     elif verdict == "暂缓":
         next_action = "改换研究对象到成熟方向, 或启动自采数据计划."
     else:
@@ -592,6 +595,118 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
         missing_evidence=missing,
         recommended_next_action=next_action,
     )
+
+
+# ---------- 退化路线 (§10) ---------- #
+
+
+def generate_pivot_routes(
+    req: OneTopicRequest, keywords: KeywordBreakdown, ev: EvidenceSummary, feas: FeasibilitySummary,
+) -> list[PivotRoute]:
+    """SOP §10.3 三条路线 (保守/平衡/激进).
+
+    只在 verdict=可转向 / 收缩后可做 时有意义 (其他 verdict 给 0/1 条).
+    路线 = 不同 aggressiveness 的题目收缩 + 工作包调整.
+    """
+
+    method = keywords.method_keywords[0] if keywords.method_keywords else "深度学习方法"
+    obj = keywords.object_keywords[0] if keywords.object_keywords else "目标对象"
+    task = keywords.task_keywords[0] if keywords.task_keywords else "目标检测"
+
+    if feas.verdict not in ("可转向", "收缩后可做"):
+        return []
+
+    removed = list(keywords.risk_terms or [])
+    preserved = [k for k in (keywords.method_keywords + keywords.task_keywords) if k]
+
+    # 保守: 用最稳的成熟对象 (YOLO + 钢材), 公开数据集, 创新轻
+    cons = PivotRoute(
+        level="conservative",
+        new_topic=f"基于 {method} 的钢材表面缺陷检测方法研究",
+        preserved_keywords=preserved + ["钢材表面缺陷"],
+        removed_keywords=removed + ["多模态", "高精度", "实时"],
+        tradeoff="去掉多模态 / 实时, 限定到钢材+检测. 创新空间小但风险最低, 容易出第一张结果表.",
+        work_packages=[
+            WorkPackageSuggestion(
+                wp_id="WP1",
+                title=f"基于公开数据集复现 {method} baseline",
+                research_question=f"{method} 在钢材表面缺陷数据上的 baseline 性能如何?",
+                method_approach=f"采用 {method} 官方实现, 在 NEU-DET/GC10-DET 上训练.",
+                data_source="NEU-DET / GC10-DET",
+                experiment_plan="按标准 split 训练, 报告 mAP / Recall / FPS.",
+                chapter="第三章",
+            ),
+            WorkPackageSuggestion(
+                wp_id="WP2",
+                title="轻量模块改进 + 消融实验",
+                research_question="轻量 backbone / 注意力模块能否在 baseline 之上提升精度?",
+                method_approach="在主干插入轻量化模块, 其他超参保持一致.",
+                data_source="同 WP1",
+                experiment_plan="消融实验: baseline vs baseline+模块; 多组指标对比.",
+                chapter="第四章",
+            ),
+        ],
+    )
+
+    # 平衡: 用原始对象, 公开数据集 + 少量自采, 轻量模块
+    bal = PivotRoute(
+        level="balanced",
+        new_topic=feas.reason and (keywords.object_keywords[0] if keywords.object_keywords else obj) + f" {task} 方法研究",
+        preserved_keywords=preserved + (keywords.object_keywords[:1] if keywords.object_keywords else [obj]),
+        removed_keywords=[r for r in removed if r not in ["高精度", "实时"]],
+        tradeoff="保留原始对象, 用公开数据集 + 自采小规模验证. 创新适中, 风险适中.",
+        work_packages=[
+            WorkPackageSuggestion(
+                wp_id="WP1",
+                title=f"公开数据集上复现 {method} baseline + 自采小规模验证",
+                research_question="原始对象上的 baseline 表现 + 自采数据上的迁移能力?",
+                method_approach=f"{method} 标准实现 + 自采 100-200 张作 domain adaptation.",
+                data_source="公开数据集 + 自采小批量",
+                experiment_plan="baseline 在公开集 + 自采集分别报告, 给出迁移 gap.",
+                chapter="第三章",
+            ),
+            WorkPackageSuggestion(
+                wp_id="WP2",
+                title="针对原始对象的轻量改进 + 跨域消融",
+                research_question="模块改进在原始对象上的增量是多少?",
+                method_approach="针对原始对象特性 (光照/尺度/类别分布) 设计模块.",
+                data_source="同 WP1",
+                experiment_plan="消融 + 跨域对比.",
+                chapter="第四章",
+            ),
+        ],
+    )
+
+    # 激进: 保留原对象 + 多模态/3D, 加自采大数据, 创新强
+    agg = PivotRoute(
+        level="aggressive",
+        new_topic=f"基于 {method} + 多模态的 {obj} {task} 新方法",
+        preserved_keywords=preserved + (keywords.object_keywords[:1] if keywords.object_keywords else [obj]) + ["多模态"],
+        removed_keywords=[],
+        tradeoff="保留所有原题要素 + 多模态, 必须自采大规模数据. 创新强, 风险高, 时间成本大.",
+        work_packages=[
+            WorkPackageSuggestion(
+                wp_id="WP1",
+                title="自采多模态数据采集与标注",
+                research_question="如何构建 {obj} 的多模态数据集?",
+                method_approach="RGB-D / 红外-可见光双模态自采 + 标注流程设计.",
+                data_source="自采 1000+ 张多模态数据",
+                experiment_plan="数据采集方案 + 标注一致性 + 数据集统计.",
+                chapter="第三章",
+            ),
+            WorkPackageSuggestion(
+                wp_id="WP2",
+                title="多模态融合方法设计 + 跨模态消融",
+                research_question="多模态融合在 {obj} 上的增益?",
+                method_approach="跨模态特征对齐 + 决策融合.",
+                data_source="自采多模态数据",
+                experiment_plan="单模态 vs 融合 消融; 不同融合策略对比.",
+                chapter="第四章",
+            ),
+        ],
+    )
+
+    return [cons, bal, agg]
 
 
 # ---------- 开题建议 (§8) ---------- #
@@ -651,12 +766,59 @@ def recommend_proposal(
         "8. 风险预案",
     ]
 
+    pivot_routes = generate_pivot_routes(req, keywords, ev, feas)
+
     return ProposalRecommendation(
         recommended_topic=recommended,
         recommendation_reason=reasons,
         work_packages=[wp1, wp2],
         proposal_outline=outline,
+        pivot_routes=pivot_routes,
     )
+
+
+# ---------- 选 pivot (§10.4) ---------- #
+
+
+def apply_pivot_route(route: PivotRoute, keywords: KeywordBreakdown, ev: EvidenceSummary) -> ProposalRecommendation:
+    """用户选了 1 条路线后, 用该路线生成对应工作包 + 建议."""
+
+    method = keywords.method_keywords[0] if keywords.method_keywords else "深度学习方法"
+    obj = keywords.object_keywords[0] if keywords.object_keywords else "目标对象"
+    task = keywords.task_keywords[0] if keywords.task_keywords else "目标检测"
+    metric = ev.metrics[0] if ev.metrics else "mAP"
+
+    reasons = [
+        f"按 {route.level} 路线收缩题目.",
+        f"保留关键词: {', '.join(route.preserved_keywords) or '(无)'}",
+        f"去掉关键词: {', '.join(route.removed_keywords) or '(无)'}",
+        route.tradeoff,
+    ]
+
+    outline = [
+        "1. 研究背景与意义",
+        f"2. 国内外研究现状 ({len(ev.papers)} 篇论文, {len(evidence_status(ev))} 个数据集)",
+        f"3. 研究内容与目标 ({len(route.work_packages)} 个工作包)",
+        "4. 技术路线",
+        "5. 实验方案 (数据集 / 评价指标 / baseline 对比)",
+        "6. 预期创新点",
+        "7. 进度计划",
+        "8. 风险预案",
+    ]
+
+    return ProposalRecommendation(
+        recommended_topic=route.new_topic,
+        recommendation_reason=reasons,
+        work_packages=route.work_packages,
+        proposal_outline=outline,
+        pivot_routes=[route],
+    )
+
+
+def evidence_status(ev: EvidenceSummary) -> list[str]:
+    """helper for apply_pivot_route outline."""
+
+    return [d.name or d.dataset_id for d in ev.datasets]
 
 
 # ---------- 低门槛审核 (§9) ---------- #

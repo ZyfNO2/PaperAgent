@@ -221,6 +221,21 @@ html, body { background: #0b0d12; color: #e6e8ee; font-family: -apple-system, Bl
 .form-row--4 label.cb input { width: auto; margin: 0; }
 .modal__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 
+/* Session 4: pivot 退化路线 */
+.pivot-list { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow-y: auto; }
+.pivot-card { background: #0b0f1a; border: 1px solid #2a3142; border-radius: 8px; padding: 12px 14px; }
+.pivot-card__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.pivot-card__level { font-size: 11px; padding: 2px 8px; border-radius: 3px; }
+.pivot-card__level--conservative { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+.pivot-card__level--balanced { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+.pivot-card__level--aggressive { background: rgba(245,158,11,0.2); color: #fbbf24; }
+.pivot-card__title { font-size: 14px; font-weight: 600; color: #fff; flex: 1; }
+.pivot-card__tradeoff { font-size: 12px; color: #8b94a8; margin-top: 6px; }
+.pivot-card__keywords { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.pivot-card__kw { font-size: 10px; padding: 1px 6px; background: #131722; border: 1px solid #2a3142; border-radius: 3px; color: #cbd5e1; }
+.pivot-card__kw--removed { color: #fca5a5; text-decoration: line-through; }
+.pivot-card__select { margin-top: 8px; }
+
 /* ---------- 响应式 ---------- */
 @media (max-width: 1100px) {
   .trace-panel { position: static; width: 100%; max-height: 360px; margin-top: 16px; }

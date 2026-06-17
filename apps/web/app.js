@@ -231,6 +231,11 @@ function renderResult(r) {
       </div>
     ` : ""}
     <div class="feasibility__next">${escapeHtml(feas.recommended_next_action || "")}</div>
+    ${(feas.verdict === "可转向" || feas.verdict === "收缩后可做") ? `
+      <div style="margin-top:10px;">
+        <button class="cta-mini" id="btn-show-pivots" type="button">🔀 看 3 条退化路线</button>
+      </div>
+    ` : ""}
   `;
 
   // Block 5: 开题建议 + 审核
@@ -265,6 +270,28 @@ function renderResult(r) {
       <summary>📋 开题结构 (8 节)</summary>
       <ol>${(rec.proposal_outline || []).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ol>
     </details>
+    ${(rec.pivot_routes || []).length > 0 ? `
+      <details class="outline-list" open>
+        <summary>🔀 退化路线 (${rec.pivot_routes.length} 条)</summary>
+        <div style="font-size:11px;color:#8b94a8;margin-top:6px;">选一条 → 系统生成对应工作包</div>
+        ${rec.pivot_routes.map(r => `
+          <div class="pivot-card" style="margin-top:8px;">
+            <div class="pivot-card__head">
+              <span class="pivot-card__level pivot-card__level--${r.level}">${r.level}</span>
+              <div class="pivot-card__title">${escapeHtml(r.new_topic)}</div>
+            </div>
+            <div class="pivot-card__tradeoff">${escapeHtml(r.tradeoff)}</div>
+            <div class="pivot-card__keywords">
+              ${(r.preserved_keywords || []).map(k => `<span class="pivot-card__kw">✓ ${escapeHtml(k)}</span>`).join("")}
+              ${(r.removed_keywords || []).map(k => `<span class="pivot-card__kw pivot-card__kw--removed">✗ ${escapeHtml(k)}</span>`).join("")}
+            </div>
+            <div class="pivot-card__select">
+              <button class="cta-mini" data-action="select-pivot" data-level="${r.level}" data-new-topic="${escapeHtml(r.new_topic)}" type="button">✓ 选这条路</button>
+            </div>
+          </div>
+        `).join("")}
+      </details>
+    ` : ""}
     <div class="review__verdict review__verdict--${escapeHtml(rev.verdict || "需修改")}">🛡️ ${escapeHtml(rev.verdict || "需修改")}</div>
     <div class="review__summary">${escapeHtml(rev.summary || "")}</div>
     <div class="review__checks">${checksHtml}</div>
@@ -681,7 +708,7 @@ async function regenerate(useConfirmedKw, useConfirmedPlan) {
 
 // Session 3 关键词/检索词编辑: 用事件代理绑在 document 上
 document.addEventListener("click", async (e) => {
-  const t = e.target.closest("[data-action], #btn-edit-keywords, #btn-edit-search-plan, #kw-cancel, #kw-regen, #sp-cancel, #sp-regen");
+  const t = e.target.closest("[data-action], #btn-edit-keywords, #btn-edit-search-plan, #kw-cancel, #kw-regen, #sp-cancel, #sp-regen, #btn-show-pivots, #pivot-cancel, [data-pivot-level]");
   if (!t) return;
   const id = t.id;
 
@@ -718,6 +745,10 @@ document.addEventListener("click", async (e) => {
     showModal("modal-edit-search-plan");
   } else if (id === "sp-cancel") {
     hideModal("modal-edit-search-plan");
+  } else if (id === "btn-show-pivots") {
+    showPivotModal();
+  } else if (id === "pivot-cancel") {
+    hideModal("modal-pivot");
   } else if (id === "sp-regen") {
     const plan = {
       paper_queries: _parseList(document.getElementById("sp-papers").value),
@@ -730,9 +761,70 @@ document.addEventListener("click", async (e) => {
   }
 });
 
+function showPivotModal() {
+  if (!state.result || !state.projectId) {
+    alert("先跑一次分析");
+    return;
+  }
+  const routes = (state.result.proposal_recommendation || {}).pivot_routes || [];
+  if (routes.length === 0) {
+    alert("当前 verdict 无需退化路线 (已是 可做)");
+    return;
+  }
+  const html = routes.map(r => `
+    <div class="pivot-card">
+      <div class="pivot-card__head">
+        <span class="pivot-card__level pivot-card__level--${r.level}">${r.level}</span>
+        <div class="pivot-card__title">${escapeHtml(r.new_topic)}</div>
+      </div>
+      <div class="pivot-card__tradeoff">${escapeHtml(r.tradeoff)}</div>
+      <div class="pivot-card__keywords">
+        ${(r.preserved_keywords || []).map(k => `<span class="pivot-card__kw">✓ ${escapeHtml(k)}</span>`).join("")}
+        ${(r.removed_keywords || []).map(k => `<span class="pivot-card__kw pivot-card__kw--removed">✗ ${escapeHtml(k)}</span>`).join("")}
+      </div>
+      <div class="pivot-card__select">
+        <button id="btn-select-pivot-${r.level}" data-pivot-level="${r.level}" type="button">✓ 选这条路</button>
+      </div>
+    </div>
+  `).join("");
+  document.getElementById("pivot-list").innerHTML = html;
+  showModal("modal-pivot");
+}
+
+async function selectPivotRoute(level) {
+  if (!state.projectId) return;
+  const routes = (state.result.proposal_recommendation || {}).pivot_routes || [];
+  const route = routes.find(r => r.level === level);
+  if (!route) {
+    alert("未找到路线 " + level);
+    return;
+  }
+  hideModal("modal-pivot");
+  appendTrace({ type: "step", name: "select-pivot", detail: "选 " + level });
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/pivot/select`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(route),
+    });
+    if (!r.ok) {
+      const err = await r.text();
+      showError("选路线失败: " + err.slice(0, 200));
+      return;
+    }
+    const rec = await r.json();
+    // 替换 state.result 的 recommendation, 重渲
+    state.result = { ...state.result, proposal_recommendation: rec };
+    renderResult(state.result);
+    appendTrace({ type: "step", name: "pivot-applied", detail: "已用 " + level + " 路线生成新工作包" });
+  } catch (e) {
+    showError("选路线异常: " + String(e).slice(0, 200));
+  }
+}
+
 // 事件代理: ev-card 内的按钮
 document.body.addEventListener("click", async (e) => {
-  const btn = e.target.closest("[data-action]");
+  const btn = e.target.closest("[data-action], [data-pivot-level]");
   if (!btn) return;
   const action = btn.dataset.action;
   const eid = btn.dataset.evId;
@@ -740,5 +832,9 @@ document.body.addEventListener("click", async (e) => {
     await patchReview(eid, btn.dataset.status);
   } else if (action === "delete") {
     await deleteEvidence(eid);
+  } else if (action === "select-pivot") {
+    await selectPivotRoute(btn.dataset.level);
+  } else if (btn.dataset.pivotLevel) {
+    await selectPivotRoute(btn.dataset.pivotLevel);
   }
 });

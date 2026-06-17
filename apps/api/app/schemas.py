@@ -135,9 +135,9 @@ class EvidenceSummary(BaseModel):
 
 
 class FeasibilitySummary(BaseModel):
-    """OneTopic §7.3 — 可行性四档。"""
+    """OneTopic §9.4 — 可行性 5 档 (GO/NARROW/PIVOT/PARK/STOP)."""
 
-    verdict: Literal["可做", "收缩后可做", "暂缓", "不建议"]
+    verdict: Literal["可做", "收缩后可做", "可转向", "暂缓", "不建议"]
     reason: str
     paper_status: str
     dataset_status: str
@@ -160,13 +160,25 @@ class WorkPackageSuggestion(BaseModel):
     chapter: str
 
 
+class PivotRoute(BaseModel):
+    """OneTopic §10 — 退化路线 (保守/平衡/激进)."""
+
+    level: Literal["conservative", "balanced", "aggressive"]
+    new_topic: str
+    preserved_keywords: list[str] = Field(default_factory=list)
+    removed_keywords: list[str] = Field(default_factory=list)
+    tradeoff: str
+    work_packages: list[WorkPackageSuggestion] = Field(default_factory=list)
+
+
 class ProposalRecommendation(BaseModel):
-    """OneTopic §8 — 推荐题目 + 工作包 + 开题结构。"""
+    """OneTopic §8 + §10 — 推荐题目 + 工作包 + 退化路线."""
 
     recommended_topic: str
     recommendation_reason: list[str] = Field(default_factory=list)
     work_packages: list[WorkPackageSuggestion] = Field(default_factory=list)
     proposal_outline: list[str] = Field(default_factory=list)
+    pivot_routes: list[PivotRoute] = Field(default_factory=list, description="§10 三条退化路线")
 
 
 # ---------- 低门槛审核 (§9) ---------- #

@@ -13,7 +13,8 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
-from ...schemas import OneTopicRequest, OneTopicResponse
+from ...schemas import OneTopicRequest, OneTopicResponse, ProposalRecommendation
+from ...schemas import PivotRoute
 from ...schemas_evidence import (
     DatasetManualCreate,
     EvidenceActionResponse,
@@ -113,6 +114,59 @@ def regenerate(project_id: str, req: OneTopicRequest) -> OneTopicResponse:
     # 沿用 url 的 project_id
     req2 = req.model_copy(update={"project_id_override": project_id})
     return ot_service.run_one_topic(req2)
+
+
+@router.post(
+    "/{project_id}/pivot/select",
+    response_model=ProposalRecommendation,
+    summary="POST: 用户选了 1 条 pivot 路线后, 生成对应工作包 (Session 4)",
+)
+def select_pivot_route(project_id: str, body: PivotRoute) -> ProposalRecommendation:
+    """§10.4 用户选 1 条路线 (conservative/balanced/aggressive) 后生成对应工作包.
+
+    - 用已有的 keyword_breakdown + evidence_summary 重建 ProposalRecommendation
+    - 沿用 project_id (确保 evidence ledger 一致)
+    - 返回的 work_packages / recommended_topic 来自 pivot 路线
+    """
+
+    # 取当前 project 的 evidence ledger + 上次跑出的 keywords (用最新一次 analyze 的结果)
+    ledger = ev_store.get_ledger(project_id)
+    if not ledger.papers and not ledger.datasets and not ledger.repos:
+        raise HTTPException(
+            status_code=409,
+            detail=f"project_id {project_id} 还没有任何证据, 请先 POST /analyze 或 /regenerate",
+        )
+
+    # 从 evidence-ledger 推断 keywords (heuristic fallback: 用前一次 analyze 留下的 paper titles 拼)
+    paper_titles = [p.title for p in ledger.papers if p.title][:5]
+    keywords = ot_service.KeywordBreakdown(
+        method_keywords=[t.split()[0] for t in paper_titles if t] or ["深度学习方法"],
+        task_keywords=["目标检测"],
+        object_keywords=[paper_titles[0].split(" ")[-1] if paper_titles else "目标对象"],
+        scenario_keywords=[],
+        metric_keywords=["mAP", "Recall"],
+        risk_terms=[],
+        query_keywords_zh=[], query_keywords_en=[],
+    )
+    # 构造 EvidenceSummary 来自 ledger
+    ev = ot_service.EvidenceSummary(
+        papers=[ot_service.PaperHit(paper_id=p.evidence_id, title=p.title) for p in ledger.papers],
+        datasets=[ot_service.DatasetHit(dataset_id=d.evidence_id, name=d.title) for d in ledger.datasets],
+        baselines=[ot_service.BaselineHit(baseline_id=r.evidence_id, name=r.title) for r in ledger.repos],
+        metrics=["mAP", "Recall", "FPS"],
+        paper_count=len(ledger.papers),
+        arxiv_paper_count=sum(1 for p in ledger.papers if (p.tags or []) and "auto" in p.tags),
+        dataset_count=len(ledger.datasets),
+        baseline_count=len(ledger.repos),
+        has_public_dataset=len(ledger.datasets) > 0,
+        has_repro_baseline=len(ledger.repos) > 0,
+        has_metrics=True,
+    )
+    return ot_service.apply_pivot_route(
+        route=body,
+        keywords=keywords,
+        ev=ev,
+    )
 
 
 @router.get(
