@@ -16,7 +16,7 @@ GoalLevel = Literal["保毕业", "稳中求新", "冲高水平"]
 
 
 class OneTopicRequest(BaseModel):
-    """POST /analyze 请求体 — 用户只输入一个题目。"""
+    """POST /analyze 请求体 — 用户只输入一个题目 (SOP §6.2)."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -28,6 +28,20 @@ class OneTopicRequest(BaseModel):
     prefer: Literal["auto", "llm", "heuristic"] = Field(
         default="auto",
         description="auto=LLM 优先失败 fallback heuristic; heuristic=强制规则",
+    )
+    # Session 3: Human Gate 1+2 (SOP §6.2). 用户编辑过的 keywords / 检索词,
+    # 传进来时直接用, 不再走自动拆解.
+    confirmed_keywords: dict | None = Field(
+        default=None,
+        description="Gate 1 用户确认后的关键词; 给定后跳过自动拆解 (dict 形如 {method_keywords, task_keywords, ...})",
+    )
+    confirmed_search_plan: dict | None = Field(
+        default=None,
+        description="Gate 2 用户确认后的检索词; 给定后跳过自动构建 (dict 形如 {paper_queries, dataset_queries, ...})",
+    )
+    project_id_override: str | None = Field(
+        default=None,
+        description="Session 3 regenerate: 沿用已有 project_id, 避免新生成",
     )
 
 

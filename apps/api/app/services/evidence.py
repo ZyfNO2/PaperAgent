@@ -127,6 +127,19 @@ def _is_duplicate(new: EvidenceItem, existing: list[EvidenceItem]) -> EvidenceIt
 # ---------- 自动入池 ---------- #
 
 
+def clear_auto_evidence(project_id: str) -> int:
+    """清掉一个 project 的所有 auto_* 证据 (regenerate 前调用). 返回删除数."""
+
+    proj = _get_project(project_id)
+    removed = 0
+    with _LEDGER_LOCK:
+        for eid in list(proj.items.keys()):
+            if eid.startswith("auto_"):
+                del proj.items[eid]
+                removed += 1
+    return removed
+
+
 def ingest_auto_evidence(project_id: str, evidence: EvidenceSummary) -> None:
     """run_one_topic 跑完后, 把自动检索的 papers/datasets/baselines 入池.
 

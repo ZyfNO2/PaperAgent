@@ -130,6 +130,11 @@ function renderResult(r) {
     ? arr.map(x => `<span class="kw-chip ${cls}">${escapeHtml(x)}</span>`).join("")
     : '<span class="evidence-empty">无</span>';
   document.getElementById("block-keywords").innerHTML = `
+    <div class="kw-header">
+      <span style="color:#8b94a8;font-size:12px;">点击下方词条右上角✏️ 可编辑</span>
+      <button class="cta-mini" id="btn-edit-keywords" type="button">✏️ 编辑关键词</button>
+    </div>
+  ` + `
     <div class="kw-group">
       <div class="kw-group__label">🔧 方法词 (${(kb.method_keywords || []).length})</div>
       <div class="kw-group__chips">${kwChips(kb.method_keywords)}</div>
@@ -205,6 +210,7 @@ function renderResult(r) {
     <p style="margin-top:8px;font-size:12px;color:#8b94a8;">
       切换到 "证据工作台" tab 可手动加论文 / 接受 / 拒绝 / 删除
     </p>
+    <button class="cta-mini" id="btn-edit-search-plan" type="button" style="margin-top:8px;">✏️ 编辑检索词</button>
   `;
 
   // Block 4: 可行性
@@ -625,6 +631,102 @@ document.getElementById("mr-save").addEventListener("click", async () => {
     refreshEvidence();
   } else {
     alert("入池失败: " + data.message);
+  }
+});
+
+// ---------- Session 3: Human Gate 1-2 (regenerate) ----------
+
+function _parseList(s) {
+  return (s || "").split(/[,\n]/).map(x => x.trim()).filter(Boolean);
+}
+
+async function regenerate(useConfirmedKw, useConfirmedPlan) {
+  if (!state.projectId) {
+    alert("先跑一次分析");
+    return;
+  }
+  const body = {
+    raw_topic: document.getElementById("input-topic").value.trim(),
+    major: document.getElementById("input-major").value.trim() || null,
+    advisor_direction: document.getElementById("input-advisor").value.trim() || null,
+    goal_level: document.getElementById("input-goal").value,
+    prefer: document.getElementById("input-prefer").value,
+  };
+  if (useConfirmedKw) body.confirmed_keywords = useConfirmedKw;
+  if (useConfirmedPlan) body.confirmed_search_plan = useConfirmedPlan;
+
+  appendTrace({ type: "step", name: "regenerate", detail: "用确认版关键词/检索词重跑" });
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/regenerate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) {
+      const err = await r.text();
+      appendTrace({ type: "error", name: "regenerate", detail: err.slice(0, 300) });
+      showError("regenerate 失败: " + err.slice(0, 200));
+      return;
+    }
+    const data = await r.json();
+    state.result = data;
+    state.projectId = data.project_id || state.projectId;
+    renderResult(data);
+    document.getElementById("trace-sub").textContent =
+      `regenerate 完成 · ${data.elapsed_ms || "?"} ms`;
+  } catch (e) {
+    showError("regenerate 异常: " + String(e).slice(0, 200));
+  }
+}
+
+// Session 3 关键词/检索词编辑: 用事件代理绑在 document 上
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("[data-action], #btn-edit-keywords, #btn-edit-search-plan, #kw-cancel, #kw-regen, #sp-cancel, #sp-regen");
+  if (!t) return;
+  const id = t.id;
+
+  if (id === "btn-edit-keywords") {
+    if (!state.result) return;
+    const kb = state.result.keyword_breakdown || {};
+    document.getElementById("kw-method").value = (kb.method_keywords || []).join(", ");
+    document.getElementById("kw-task").value = (kb.task_keywords || []).join(", ");
+    document.getElementById("kw-object").value = (kb.object_keywords || []).join(", ");
+    document.getElementById("kw-scenario").value = (kb.scenario_keywords || []).join(", ");
+    document.getElementById("kw-metric").value = (kb.metric_keywords || []).join(", ");
+    document.getElementById("kw-risk").value = (kb.risk_terms || []).join(", ");
+    showModal("modal-edit-keywords");
+  } else if (id === "kw-cancel") {
+    hideModal("modal-edit-keywords");
+  } else if (id === "kw-regen") {
+    const kw = {
+      method_keywords: _parseList(document.getElementById("kw-method").value),
+      task_keywords: _parseList(document.getElementById("kw-task").value),
+      object_keywords: _parseList(document.getElementById("kw-object").value),
+      scenario_keywords: _parseList(document.getElementById("kw-scenario").value),
+      metric_keywords: _parseList(document.getElementById("kw-metric").value),
+      risk_terms: _parseList(document.getElementById("kw-risk").value),
+      query_keywords_zh: [], query_keywords_en: [],
+    };
+    hideModal("modal-edit-keywords");
+    await regenerate(kw, null);
+  } else if (id === "btn-edit-search-plan") {
+    if (!state.result) return;
+    const sp = state.result.search_plan || {};
+    document.getElementById("sp-papers").value = (sp.paper_queries || []).join("\n");
+    document.getElementById("sp-datasets").value = (sp.dataset_queries || []).join("\n");
+    document.getElementById("sp-eng").value = (sp.engineering_queries || []).join("\n");
+    showModal("modal-edit-search-plan");
+  } else if (id === "sp-cancel") {
+    hideModal("modal-edit-search-plan");
+  } else if (id === "sp-regen") {
+    const plan = {
+      paper_queries: _parseList(document.getElementById("sp-papers").value),
+      dataset_queries: _parseList(document.getElementById("sp-datasets").value),
+      engineering_queries: _parseList(document.getElementById("sp-eng").value),
+    };
+    plan.query_total = plan.paper_queries.length + plan.dataset_queries.length + plan.engineering_queries.length;
+    hideModal("modal-edit-search-plan");
+    await regenerate(null, plan);
   }
 });
 

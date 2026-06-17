@@ -743,17 +743,39 @@ def light_review(
 # ---------- 编排主入口 ---------- #
 
 
+def _coerce_keywords(d: dict | None) -> KeywordBreakdown | None:
+    """用户编辑过的 keywords 转为 KeywordBreakdown (Session 3 Gate 1)."""
+
+    if not d:
+        return None
+    try:
+        return KeywordBreakdown.model_validate(d)
+    except Exception:
+        return None
+
+
+def _coerce_search_plan(d: dict | None) -> SearchPlan | None:
+    """用户编辑过的 search_plan 转为 SearchPlan (Session 3 Gate 2)."""
+
+    if not d:
+        return None
+    try:
+        return SearchPlan.model_validate(d)
+    except Exception:
+        return None
+
+
 def run_one_topic(req: OneTopicRequest) -> OneTopicResponse:
     t0 = time.time()
-    keywords = breakdown_keywords(req.raw_topic, req.prefer)
+    keywords = _coerce_keywords(req.confirmed_keywords) or breakdown_keywords(req.raw_topic, req.prefer)
     topic = understand_topic(req, keywords)
-    plan = build_search_plan(keywords)
+    plan = _coerce_search_plan(req.confirmed_search_plan) or build_search_plan(keywords)
     ev = collect_evidence(keywords, plan, req.prefer)
     feas = judge_feasibility(req, keywords, ev)
     rec = recommend_proposal(req, keywords, ev, feas)
     rev = light_review(req, keywords, ev, feas)
     elapsed_ms = int((time.time() - t0) * 1000)
-    project_id = "ot_" + uuid.uuid4().hex[:12]
+    project_id = req.project_id_override or ("ot_" + uuid.uuid4().hex[:12])
     # Auto-ingest into the per-project ledger (SOP 5 + 13.1).
     try:
         ev_store.ingest_auto_evidence(project_id, ev)
@@ -785,9 +807,20 @@ def run_one_topic_stream(
 
     emit("start", "OneTopic MVP 启动", {"raw_topic": req.raw_topic})
 
-    # Step 1: 关键词拆解
-    emit("step", "🔍 正在拆出方法词、任务词、对象词", {"phase": "keyword_decompose"})
-    keywords = breakdown_keywords(req.raw_topic, req.prefer)
+    # Session 3 Gate 1+2: 如果用户已经确认过 keywords/plan, 直接用, 跳过自动拆解
+    confirmed_kw = _coerce_keywords(req.confirmed_keywords)
+    confirmed_plan = _coerce_search_plan(req.confirmed_search_plan)
+    if confirmed_kw and confirmed_plan:
+        emit("step", "✅ 使用用户确认的关键词 + 检索词 (Gate 1+2 跳过)", {
+            "method_keywords": confirmed_kw.method_keywords,
+            "plan_total": len(confirmed_plan.paper_queries) + len(confirmed_plan.dataset_queries),
+        })
+        keywords = confirmed_kw
+        plan = confirmed_plan
+    else:
+        # Step 1: 关键词拆解
+        emit("step", "🔍 正在拆出方法词、任务词、对象词", {"phase": "keyword_decompose"})
+        keywords = breakdown_keywords(req.raw_topic, req.prefer)
     emit("step", f"✓ 拆出方法词 {len(keywords.method_keywords)} / 任务词 {len(keywords.task_keywords)} / 对象词 {len(keywords.object_keywords)}", {
         "method_keywords": keywords.method_keywords,
         "task_keywords": keywords.task_keywords,
@@ -874,7 +907,7 @@ def run_one_topic_stream(
     # Final result
     emit("step", "🎁 全部完成, 打包返回", {"phase": "result"})
 
-    project_id = "ot_" + uuid.uuid4().hex[:12]
+    project_id = req.project_id_override or ("ot_" + uuid.uuid4().hex[:12])
     try:
         ev_store.ingest_auto_evidence(project_id, ev)
     except Exception:  # noqa: BLE001

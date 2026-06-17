@@ -208,7 +208,42 @@
   </div>
 
   <!-- 手动加工程 -->
-  <div class="modal" id="modal-add-repo" hidden>
+  <!-- Session 3: 编辑关键词 (Gate 1) -->
+<div class="modal" id="modal-edit-keywords" hidden>
+  <div class="modal__inner">
+    <h3>编辑关键词 (Gate 1)</h3>
+    <p style="font-size:12px;color:#8b94a8;margin-bottom:10px;">每个类别一行, 多个词用逗号分隔. 改完点"重新跑分析"用新关键词检索.</p>
+    <div class="form-row"><label>🔧 方法词<input id="kw-method" type="text" placeholder="YOLO, Transformer, ..."></label></div>
+    <div class="form-row"><label>📋 任务词<input id="kw-task" type="text" placeholder="检测, 分类, ..."></label></div>
+    <div class="form-row"><label>🎯 对象词<input id="kw-object" type="text" placeholder="钢材表面缺陷, ..."></label></div>
+    <div class="form-row"><label>🌐 场景词<input id="kw-scenario" type="text" placeholder="工业质检, ..."></label></div>
+    <div class="form-row"><label>📏 指标词<input id="kw-metric" type="text" placeholder="mAP, Recall, ..."></label></div>
+    <div class="form-row"><label>⚠️ 风险词<input id="kw-risk" type="text" placeholder="高精度, 实时, ..."></label></div>
+    <div class="modal__actions">
+      <button class="cta-ghost" id="kw-cancel" type="button">取消</button>
+      <button class="cta-primary" id="kw-regen" type="button">🔄 用新关键词重新跑分析</button>
+    </div>
+  </div>
+</div>
+
+<!-- Session 3: 编辑检索计划 (Gate 2) -->
+<div class="modal" id="modal-edit-search-plan" hidden>
+  <div class="modal__inner">
+    <h3>编辑检索词 (Gate 2)</h3>
+    <p style="font-size:12px;color:#8b94a8;margin-bottom:10px;">一行一个检索词. 改完点"重新检索"用新词调 arXiv.</p>
+    <div class="form-row"><label>📚 论文检索词 (一行一条)<textarea id="sp-papers" rows="5" placeholder="YOLO steel defect detection
+..."></textarea></label></div>
+    <div class="form-row"><label>💾 数据集检索词 (一行一条)<textarea id="sp-datasets" rows="3" placeholder="NEU-DET
+GC10-DET"></textarea></label></div>
+    <div class="form-row"><label>⚙️ 工程检索词 (一行一条)<textarea id="sp-eng" rows="3" placeholder="YOLOv8 github"></textarea></label></div>
+    <div class="modal__actions">
+      <button class="cta-ghost" id="sp-cancel" type="button">取消</button>
+      <button class="cta-primary" id="sp-regen" type="button">🔄 用新检索词重新检索</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-add-repo" hidden>
     <div class="modal__inner">
       <h3>手动加 GitHub 工程</h3>
       <div class="form-row"><label>名称 (必填)<input id="mr-name" type="text" placeholder="如 YOLOv8 Fork (Steel)"></label></div>

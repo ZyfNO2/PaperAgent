@@ -95,6 +95,26 @@ async def analyze_stream(req: OneTopicRequest) -> StreamingResponse:
 # ---------- 证据工作台 (SOP 5 + 13.1) ---------- #
 
 
+@router.post(
+    "/{project_id}/regenerate",
+    response_model=OneTopicResponse,
+    summary="POST: 用用户编辑的 keywords / 检索计划复跑 (Session 3 Gate 1+2)",
+)
+def regenerate(project_id: str, req: OneTopicRequest) -> OneTopicResponse:
+    """Gate 1+2 用户编辑后复跑.
+
+    - 清掉所有 auto_* 证据 (保留手动 man_*)
+    - 用 url 的 project_id 覆盖, 沿用同一个 evidence ledger
+    - 如果 req.confirmed_keywords 给定, 跳过自动拆解
+    - 如果 req.confirmed_search_plan 给定, 跳过自动 build_search_plan
+    """
+
+    ev_store.clear_auto_evidence(project_id)
+    # 沿用 url 的 project_id
+    req2 = req.model_copy(update={"project_id_override": project_id})
+    return ot_service.run_one_topic(req2)
+
+
 @router.get(
     "/{project_id}/evidence",
     response_model=EvidenceLedgerResponse,
