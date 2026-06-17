@@ -12,93 +12,224 @@
       <div class="hero__badge">TopicPilot-CN · OneTopic MVP</div>
       <h1 class="hero__title">只输入一个题目, 先帮你判断这个题能不能开题</h1>
       <p class="hero__sub">关键词拆解 · 论文/数据集/工程三线检索 · 可行性四档 · 开题建议 · 低门槛模拟审核</p>
+      <nav class="hero__nav">
+        <button class="tab tab--active" data-tab="analyze" type="button">一题分析</button>
+        <button class="tab" data-tab="evidence" type="button" id="tab-evidence">证据工作台 <span class="tab__badge" id="tab-evidence-count" hidden>0</span></button>
+      </nav>
     </div>
   </header>
 
   <main class="page">
-    <section class="input-card" id="input-card">
-      <label class="input-card__label">你的选题是什么?</label>
-      <input
-        class="input-card__input"
-        id="input-topic"
-        type="text"
-        placeholder="例如: 基于YOLO的钢材表面缺陷检测"
-        value="基于YOLO的钢材表面缺陷检测"
-        autocomplete="off"
-      />
-      <div class="input-card__row">
-        <label>
-          专业 (可选)
-          <input id="input-major" type="text" placeholder="如 计算机科学与技术" />
-        </label>
-        <label>
-          导师方向 (可选)
-          <input id="input-advisor" type="text" placeholder="如 工业质检" />
-        </label>
-        <label>
-          目标档位
-          <select id="input-goal">
-            <option value="保毕业" selected>保毕业</option>
-            <option value="稳中求新">稳中求新</option>
-            <option value="冲高水平">冲高水平</option>
-          </select>
-        </label>
-        <label>
-          LLM 路径
-          <select id="input-prefer">
-            <option value="auto" selected>auto (LLM 失败 fallback 启发式)</option>
-            <option value="heuristic">heuristic (纯规则)</option>
-            <option value="llm">llm (强制 LLM)</option>
-          </select>
-        </label>
+
+    <!-- Page 1: Analyze -->
+    <section class="page-section" id="page-analyze">
+      <div class="input-card" id="input-card">
+        <label class="input-card__label">你的选题是什么?</label>
+        <input
+          class="input-card__input"
+          id="input-topic"
+          type="text"
+          placeholder="例如: 基于YOLO的钢材表面缺陷检测"
+          value="基于YOLO的钢材表面缺陷检测"
+          autocomplete="off"
+        />
+        <div class="input-card__row">
+          <label>
+            专业 (可选)
+            <input id="input-major" type="text" placeholder="如 计算机科学与技术" />
+          </label>
+          <label>
+            导师方向 (可选)
+            <input id="input-advisor" type="text" placeholder="如 工业质检" />
+          </label>
+          <label>
+            目标档位
+            <select id="input-goal">
+              <option value="保毕业" selected>保毕业</option>
+              <option value="稳中求新">稳中求新</option>
+              <option value="冲高水平">冲高水平</option>
+            </select>
+          </label>
+          <label>
+            LLM 路径
+            <select id="input-prefer">
+              <option value="auto" selected>auto (LLM 失败 fallback 启发式)</option>
+              <option value="heuristic">heuristic (纯规则)</option>
+              <option value="llm">强制 LLM</option>
+            </select>
+          </label>
+        </div>
+        <p class="input-card__hint">先不用填完整开题信息, 系统先帮你判断有没有论文、数据集和 baseline.</p>
+        <button class="cta-primary" id="btn-analyze" type="button">🚀 开始判断能不能做</button>
+        <div class="input-card__error" id="input-error" hidden></div>
       </div>
-      <p class="input-card__hint">先不用填完整开题信息, 系统先帮你判断有没有论文、数据集和 baseline.</p>
-      <button class="cta-primary" id="btn-analyze" type="button">🚀 开始判断能不能做</button>
-      <div class="input-card__error" id="input-error" hidden></div>
+
+      <section class="result-grid" id="result-grid" hidden>
+        <article class="block block--understanding">
+          <header class="block__head">
+            <span class="block__num">1</span>
+            <h2 class="block__title">题目理解</h2>
+          </header>
+          <div class="block__body" id="block-understanding"></div>
+        </article>
+
+        <article class="block block--keywords">
+          <header class="block__head">
+            <span class="block__num">2</span>
+            <h2 class="block__title">关键词拆解</h2>
+          </header>
+          <div class="block__body" id="block-keywords"></div>
+        </article>
+
+        <article class="block block--evidence">
+          <header class="block__head">
+            <span class="block__num">3</span>
+            <h2 class="block__title">证据检索 (论文 / 数据集 / 工程)</h2>
+          </header>
+          <div class="block__body" id="block-evidence"></div>
+        </article>
+
+        <article class="block block--feasibility">
+          <header class="block__head">
+            <span class="block__num">4</span>
+            <h2 class="block__title">可行性判断</h2>
+          </header>
+          <div class="block__body" id="block-feasibility"></div>
+        </article>
+
+        <article class="block block--recommendation">
+          <header class="block__head">
+            <span class="block__num">5</span>
+            <h2 class="block__title">开题建议 &amp; 低门槛审核</h2>
+          </header>
+          <div class="block__body" id="block-recommendation"></div>
+        </article>
+      </section>
     </section>
 
-    <section class="result-grid" id="result-grid" hidden>
-      <article class="block block--understanding">
-        <header class="block__head">
-          <span class="block__num">1</span>
-          <h2 class="block__title">题目理解</h2>
-        </header>
-        <div class="block__body" id="block-understanding"></div>
-      </article>
+    <!-- Page 2: Evidence Workbench -->
+    <section class="page-section" id="page-evidence" hidden>
+      <div class="evidence-header">
+        <div>
+          <h2 class="evidence-header__title">证据工作台</h2>
+          <p class="evidence-header__hint">
+            每次一题分析会自动入池论文 / 数据集 / 工程; 你可以手动加导师给的论文、
+            接受/拒绝/标记核心、删除无关证据。修改后会回到分析页重算可行性。
+          </p>
+        </div>
+        <div class="evidence-header__meta">
+          <span class="evidence-header__pid" id="ev-pid">未关联 project</span>
+          <button class="cta-ghost" id="btn-ev-refresh" type="button">🔄 刷新</button>
+        </div>
+      </div>
 
-      <article class="block block--keywords">
-        <header class="block__head">
-          <span class="block__num">2</span>
-          <h2 class="block__title">关键词拆解</h2>
-        </header>
-        <div class="block__body" id="block-keywords"></div>
-      </article>
+      <!-- 池摘要 -->
+      <div class="evidence-summary" id="ev-summary">
+        <div class="summary-cell"><span class="num" id="sum-paper">0</span><span class="lbl">论文</span></div>
+        <div class="summary-cell"><span class="num" id="sum-dataset">0</span><span class="lbl">数据集</span></div>
+        <div class="summary-cell"><span class="num" id="sum-repo">0</span><span class="lbl">工程</span></div>
+        <div class="summary-cell summary-cell--ok"><span class="num" id="sum-accepted">0</span><span class="lbl">已接受</span></div>
+        <div class="summary-cell summary-cell--core"><span class="num" id="sum-core">0</span><span class="lbl">核心</span></div>
+        <div class="summary-cell summary-cell--bad"><span class="num" id="sum-rejected">0</span><span class="lbl">已拒绝</span></div>
+      </div>
 
-      <article class="block block--evidence">
-        <header class="block__head">
-          <span class="block__num">3</span>
-          <h2 class="block__title">证据检索 (论文 / 数据集 / 工程)</h2>
-        </header>
-        <div class="block__body" id="block-evidence"></div>
-      </article>
-
-      <article class="block block--feasibility">
-        <header class="block__head">
-          <span class="block__num">4</span>
-          <h2 class="block__title">可行性判断</h2>
-        </header>
-        <div class="block__body" id="block-feasibility"></div>
-      </article>
-
-      <article class="block block--recommendation">
-        <header class="block__head">
-          <span class="block__num">5</span>
-          <h2 class="block__title">开题建议 &amp; 低门槛审核</h2>
-        </header>
-        <div class="block__body" id="block-recommendation"></div>
-      </article>
+      <!-- 三栏: 论文 / 数据集 / 工程 -->
+      <div class="evidence-cols">
+        <section class="ev-col">
+          <header class="ev-col__head">
+            <h3>📚 论文</h3>
+            <button class="cta-mini" id="btn-add-paper" type="button">+ 手动加</button>
+          </header>
+          <div class="ev-list" id="ev-paper-list">
+            <div class="ev-empty">暂无论文</div>
+          </div>
+        </section>
+        <section class="ev-col">
+          <header class="ev-col__head">
+            <h3>💾 数据集</h3>
+            <button class="cta-mini" id="btn-add-dataset" type="button">+ 手动加</button>
+          </header>
+          <div class="ev-list" id="ev-dataset-list">
+            <div class="ev-empty">暂无数据集</div>
+          </div>
+        </section>
+        <section class="ev-col">
+          <header class="ev-col__head">
+            <h3>⚙️ 工程</h3>
+            <button class="cta-mini" id="btn-add-repo" type="button">+ 手动加</button>
+          </header>
+          <div class="ev-list" id="ev-repo-list">
+            <div class="ev-empty">暂无工程</div>
+          </div>
+        </section>
+      </div>
     </section>
+
   </main>
+
+  <!-- 手动加论文弹窗 -->
+  <div class="modal" id="modal-add-paper" hidden>
+    <div class="modal__inner">
+      <h3>手动加论文</h3>
+      <div class="form-row"><label>标题 (必填)<input id="mp-title" type="text" placeholder="如 Lightweight YOLOv8 for Steel Defect Detection"></label></div>
+      <div class="form-row"><label>作者 (逗号分隔)<input id="mp-authors" type="text" placeholder="He, X., Wang, Y."></label></div>
+      <div class="form-row form-row--2">
+        <label>年份<input id="mp-year" type="number" placeholder="2024"></label>
+        <label>DOI<input id="mp-doi" type="text" placeholder="10.1234/..."></label>
+      </div>
+      <div class="form-row"><label>arXiv ID<input id="mp-arxiv" type="text" placeholder="2401.12345"></label></div>
+      <div class="form-row"><label>URL<input id="mp-url" type="text" placeholder="https://..."></label></div>
+      <div class="form-row"><label>摘要<textarea id="mp-abstract" rows="3"></textarea></label></div>
+      <div class="form-row"><label>备注<input id="mp-note" type="text" placeholder="导师给的 / 课题组同门 / 等等"></label></div>
+      <div class="modal__actions">
+        <button class="cta-ghost" id="mp-cancel" type="button">取消</button>
+        <button class="cta-primary" id="mp-save" type="button">入池</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 手动加数据集 -->
+  <div class="modal" id="modal-add-dataset" hidden>
+    <div class="modal__inner">
+      <h3>手动加数据集</h3>
+      <div class="form-row"><label>名称 (必填)<input id="md-name" type="text" placeholder="如 NEU-DET"></label></div>
+      <div class="form-row form-row--2">
+        <label>规模<input id="md-scale" type="text" placeholder="1800 张 / 6 类"></label>
+        <label>许可<input id="md-license" type="text" placeholder="学术使用"></label>
+      </div>
+      <div class="form-row"><label>下载链接<input id="md-download" type="text" placeholder="https://..."></label></div>
+      <div class="form-row"><label>标注说明<input id="md-annotation" type="text" placeholder="bbox 标注 / pixel mask / ..."></label></div>
+      <div class="form-row"><label>备注<input id="md-note" type="text" placeholder="课题组提供 / Kaggle 公开 / ..."></label></div>
+      <div class="modal__actions">
+        <button class="cta-ghost" id="md-cancel" type="button">取消</button>
+        <button class="cta-primary" id="md-save" type="button">入池</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 手动加工程 -->
+  <div class="modal" id="modal-add-repo" hidden>
+    <div class="modal__inner">
+      <h3>手动加 GitHub 工程</h3>
+      <div class="form-row"><label>名称 (必填)<input id="mr-name" type="text" placeholder="如 YOLOv8 Fork (Steel)"></label></div>
+      <div class="form-row"><label>仓库 URL<input id="mr-url" type="text" placeholder="https://github.com/..."></label></div>
+      <div class="form-row"><label>关联论文<input id="mr-paper" type="text" placeholder="如 Lightweight YOLOv8 for Steel..."></label></div>
+      <div class="form-row form-row--2">
+        <label>许可<input id="mr-license" type="text" placeholder="MIT"></label>
+        <label>备注<input id="mr-note" type="text" placeholder="第三方复现 / 官方 / ..."></label></div>
+      </div>
+      <div class="form-row form-row--4">
+        <label class="cb"><input type="checkbox" id="mr-readme"> 有 README</label>
+        <label class="cb"><input type="checkbox" id="mr-env"> 有 env 文件</label>
+        <label class="cb"><input type="checkbox" id="mr-train"> 有训练脚本</label>
+        <label class="cb"><input type="checkbox" id="mr-eval"> 有评估脚本</label>
+      </div>
+      <div class="modal__actions">
+        <button class="cta-ghost" id="mr-cancel" type="button">取消</button>
+        <button class="cta-primary" id="mr-save" type="button">入池</button>
+      </div>
+    </div>
+  </div>
 
   <aside class="trace-panel" id="trace-panel">
     <div class="trace-panel__head">

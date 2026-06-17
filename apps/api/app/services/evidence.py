@@ -137,7 +137,7 @@ def ingest_auto_evidence(project_id: str, evidence: EvidenceSummary) -> None:
     existing = list(proj.items.values())
 
     for i, p in enumerate(evidence.papers):
-        eid = f"auto_paper_{i+1:03d}"
+        eid = f"auto_paper_{project_id[:6]}_{i+1:03d}"
         if eid in proj.items:
             continue
         item = EvidenceItem(
@@ -155,7 +155,7 @@ def ingest_auto_evidence(project_id: str, evidence: EvidenceSummary) -> None:
         existing.append(item)
 
     for i, d in enumerate(evidence.datasets):
-        eid = f"auto_dataset_{i+1:03d}"
+        eid = f"auto_dataset_{project_id[:6]}_{i+1:03d}"
         if eid in proj.items:
             continue
         item = EvidenceItem(
@@ -169,7 +169,7 @@ def ingest_auto_evidence(project_id: str, evidence: EvidenceSummary) -> None:
         proj.items[eid] = item
 
     for i, b in enumerate(evidence.baselines):
-        eid = f"auto_repo_{i+1:03d}"
+        eid = f"auto_repo_{project_id[:6]}_{i+1:03d}"
         if eid in proj.items:
             continue
         item = EvidenceItem(

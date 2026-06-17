@@ -1,13 +1,16 @@
 // TopicPilot-CN OneTopic MVP — 极简前端
 // 流程: 输入题目 → 调 POST /analyze/stream → 边推 trace 边渲 5 区结果
+// 扩展: Session 2 加证据工作台 + tab 切换 + 手动添加/审核
 
 const API = "http://127.0.0.1:18181";
 
 const state = {
   result: null,
+  projectId: "",
   trace: [],
   streamAbort: null,
   running: false,
+  currentTab: "analyze", // "analyze" | "evidence"
 };
 
 // ---------- Trace ----------
@@ -46,6 +49,20 @@ function escapeHtml(s) {
   }[c]));
 }
 
+// ---------- Tab 切换 ----------
+
+function switchTab(name) {
+  state.currentTab = name;
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("tab--active", t.dataset.tab === name);
+  });
+  document.getElementById("page-analyze").hidden = (name !== "analyze");
+  document.getElementById("page-evidence").hidden = (name !== "evidence");
+  if (name === "evidence" && state.projectId) {
+    refreshEvidence();
+  }
+}
+
 // ---------- SSE 流 ----------
 
 async function runStream(endpoint, body) {
@@ -53,12 +70,13 @@ async function runStream(endpoint, body) {
   state.streamAbort = new AbortController();
   state.trace = [];
   renderTraceList();
-  document.getElementById("trace-sub").textContent = `正在调 ${endpoint} ...`;
+  document.getElementById("trace-sub").textContent =
+    `正在调 ${endpoint.replace("/stream", "")} (流式)...`;
 
   const r = await fetch(API + endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(body || {}),
     signal: state.streamAbort.signal,
   });
   if (!r.ok) {
@@ -90,7 +108,7 @@ async function runStream(endpoint, body) {
   return result;
 }
 
-// ---------- 结果渲染 ----------
+// ---------- 结果渲染 (analyze page) ----------
 
 function renderResult(r) {
   document.getElementById("result-grid").hidden = false;
@@ -138,7 +156,7 @@ function renderResult(r) {
     </div>
   `;
 
-  // Block 3: 证据
+  // Block 3: 证据 (原版, 详细卡片在 evidence page)
   const ev = r.evidence_summary || {};
   const paperCards = (ev.papers || []).map(p => `
     <div class="evidence-card">
@@ -184,6 +202,9 @@ function renderResult(r) {
     <div class="evidence-section">
       <div class="evidence-section__title">📏 评价指标: ${(ev.metrics || []).map(escapeHtml).join("、") || "无"}</div>
     </div>
+    <p style="margin-top:8px;font-size:12px;color:#8b94a8;">
+      切换到 "证据工作台" tab 可手动加论文 / 接受 / 拒绝 / 删除
+    </p>
   `;
 
   // Block 4: 可行性
@@ -246,6 +267,194 @@ function renderResult(r) {
   `;
 }
 
+// ---------- 证据工作台 (Session 2) ----------
+
+const REVIEW_LABELS = {
+  pending: "待审",
+  accepted: "接受",
+  core: "核心",
+  background: "背景",
+  rejected: "拒绝",
+  needs_check: "待核",
+};
+
+function renderEvidence(ledger) {
+  // summary cells
+  document.getElementById("sum-paper").textContent = ledger.paper_count || 0;
+  document.getElementById("sum-dataset").textContent = ledger.dataset_count || 0;
+  document.getElementById("sum-repo").textContent = ledger.repo_count || 0;
+  document.getElementById("sum-accepted").textContent = ledger.accepted_count || 0;
+  document.getElementById("sum-core").textContent = ledger.core_count || 0;
+  document.getElementById("sum-rejected").textContent = ledger.rejected_count || 0;
+
+  // tab badge
+  const badge = document.getElementById("tab-evidence-count");
+  const total = (ledger.paper_count || 0) + (ledger.dataset_count || 0) + (ledger.repo_count || 0);
+  if (total > 0) {
+    badge.textContent = total;
+    badge.hidden = false;
+  } else {
+    badge.hidden = true;
+  }
+
+  // lists
+  renderEvList("ev-paper-list", ledger.papers || [], "paper");
+  renderEvList("ev-dataset-list", ledger.datasets || [], "dataset");
+  renderEvList("ev-repo-list", ledger.repos || [], "repo");
+}
+
+function renderEvList(elId, items, type) {
+  const el = document.getElementById(elId);
+  if (!items.length) {
+    el.innerHTML = '<div class="ev-empty">暂无' +
+      (type === "paper" ? "论文" : type === "dataset" ? "数据集" : "工程") +
+      '</div>';
+    return;
+  }
+  el.innerHTML = items.map(it => evCardHTML(it, type)).join("");
+}
+
+function evCardHTML(it, type) {
+  const status = it.review_status || "pending";
+  const statusLabel = REVIEW_LABELS[status] || status;
+  const sourceMode = it.source_mode || "manual";
+  const actions = [
+    "pending", "accepted", "core", "background", "rejected", "needs_check",
+  ];
+  const actionBtns = actions.map(s => {
+    const isActive = s === status;
+    const isReject = s === "rejected";
+    return `<button class="ev-btn ${isActive ? "ev-btn--active" : ""} ${isReject ? "ev-btn--reject" : ""}" data-ev-id="${escapeHtml(it.evidence_id)}" data-action="review" data-status="${s}" type="button">${REVIEW_LABELS[s]}</button>`;
+  }).join("");
+  const noteHTML = it.user_note
+    ? `<div class="ev-card__note">📝 ${escapeHtml(it.user_note)}</div>`
+    : "";
+
+  let titleLine = `<div class="ev-card__title">${escapeHtml(it.title || "(无标题)")}</div>`;
+  let metaLine = "";
+
+  if (type === "paper") {
+    const yr = it.year ? `[${it.year}]` : "";
+    const auth = (it.authors || []).slice(0, 2).join(", ") +
+      ((it.authors || []).length > 2 ? ` +${it.authors.length - 2}` : "");
+    metaLine = `${yr} ${auth ? "· " + escapeHtml(auth) : ""}`.trim();
+    if (it.url) metaLine += ` · <a href="${escapeHtml(it.url)}" target="_blank" rel="noopener">arXiv</a>`;
+    if (it.doi) metaLine += ` · <a href="https://doi.org/${escapeHtml(it.doi)}" target="_blank" rel="noopener">DOI</a>`;
+  } else if (type === "dataset") {
+    metaLine = [it.scale, it.license].filter(Boolean).map(escapeHtml).join(" · ");
+    if (it.download) metaLine += ` · <a href="${escapeHtml(it.download)}" target="_blank" rel="noopener">下载</a>`;
+  } else if (type === "repo") {
+    metaLine = [it.license, it.paper_title].filter(Boolean).map(escapeHtml).join(" · ");
+    if (it.url) metaLine += ` · <a href="${escapeHtml(it.url)}" target="_blank" rel="noopener">仓库</a>`;
+  }
+
+  return `
+    <div class="ev-card" data-ev-id="${escapeHtml(it.evidence_id)}">
+      <div class="ev-card__head">
+        ${titleLine}
+        <span class="ev-card__source ev-card__source--${sourceMode}">${sourceMode === "auto_search" ? "自动" : "手动"}</span>
+        <span class="ev-card__status ev-card__status--${status}">${statusLabel}</span>
+      </div>
+      ${metaLine ? `<div class="ev-card__meta">${metaLine}</div>` : ""}
+      ${noteHTML}
+      <div class="ev-card__actions">
+        ${actionBtns}
+        <button class="ev-btn ev-btn--danger" data-ev-id="${escapeHtml(it.evidence_id)}" data-action="delete" type="button">🗑️ 删</button>
+      </div>
+    </div>
+  `;
+}
+
+async function refreshEvidence() {
+  if (!state.projectId) {
+    document.getElementById("ev-paper-list").innerHTML =
+      '<div class="ev-empty">先到 "一题分析" tab 跑一次分析</div>';
+    return;
+  }
+  document.getElementById("ev-pid").textContent = `project: ${state.projectId}`;
+  
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence`);
+    
+    if (!r.ok) {
+      appendTrace({ type: "warn", name: "evidence fetch", detail: `HTTP ${r.status}` });
+      return;
+    }
+    const ledger = await r.json();
+    renderEvidence(ledger);
+  } catch (e) {
+    appendTrace({ type: "warn", name: "evidence fetch", detail: String(e).slice(0, 200) });
+  }
+}
+
+async function patchReview(evidenceId, newStatus) {
+  if (!state.projectId) return;
+  const r = await fetch(`${API}/api/v1/one-topic/evidence/${evidenceId}/review`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ review_status: newStatus }),
+  });
+  if (!r.ok) {
+    const err = await r.text();
+    appendTrace({ type: "error", name: "PATCH", detail: err.slice(0, 200) });
+    return;
+  }
+  const data = await r.json();
+  if (data.ok) {
+    appendTrace({ type: "step", name: "review", detail: `${data.evidence_id} -> ${newStatus}` });
+  } else {
+    appendTrace({ type: "warn", name: "review", detail: data.message });
+  }
+  await refreshEvidence();
+}
+
+async function deleteEvidence(evidenceId) {
+  if (!confirm(`确认删除 ${evidenceId}?`)) return;
+  const r = await fetch(`${API}/api/v1/one-topic/evidence/${evidenceId}`, {
+    method: "DELETE",
+  });
+  if (!r.ok) {
+    const err = await r.text();
+    appendTrace({ type: "error", name: "DELETE", detail: err.slice(0, 200) });
+    return;
+  }
+  const data = await r.json();
+  appendTrace({ type: "step", name: "delete", detail: data.message });
+  await refreshEvidence();
+}
+
+async function addManualPaper(body) {
+  const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/papers/manual`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return r.json();
+}
+
+async function addManualDataset(body) {
+  const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/datasets/manual`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return r.json();
+}
+
+async function addManualRepo(body) {
+  const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/repos/manual`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return r.json();
+}
+
+// ---------- 弹窗 ----------
+
+function showModal(id) { document.getElementById(id).hidden = false; }
+function hideModal(id) { document.getElementById(id).hidden = true; }
+
 // ---------- 主入口 ----------
 
 async function onAnalyze() {
@@ -258,6 +467,7 @@ async function onAnalyze() {
   hideError();
   state.running = true;
   state.result = null;
+  state.projectId = "";
   document.getElementById("result-grid").hidden = true;
   const btn = document.getElementById("btn-analyze");
   btn.disabled = true;
@@ -275,9 +485,11 @@ async function onAnalyze() {
     const result = await runStream("/api/v1/one-topic/analyze/stream", body);
     if (result) {
       state.result = result;
+      state.projectId = result.project_id || "";
       renderResult(result);
       document.getElementById("trace-sub").textContent =
-        `完成 · 共 ${state.trace.length} 个 trace 事件 · 耗时 ${result.elapsed_ms || "?"} ms`;
+        `完成 · 共 ${state.trace.length} 个 trace 事件 · 耗时 ${result.elapsed_ms || "?"} ms` +
+        (state.projectId ? ` · project_id: ${state.projectId}` : "");
     }
   } catch (e) {
     showError(`分析失败: ${String(e).slice(0, 200)}`);
@@ -297,6 +509,8 @@ function hideError() {
   document.getElementById("input-error").hidden = true;
 }
 
+// ---------- 事件绑定 ----------
+
 document.getElementById("btn-analyze").addEventListener("click", onAnalyze);
 document.getElementById("input-topic").addEventListener("keydown", (e) => {
   if (e.key === "Enter") onAnalyze();
@@ -306,3 +520,123 @@ document.getElementById("btn-trace-clear").addEventListener("click", () => {
   renderTraceList();
 });
 document.getElementById("api-base").textContent = API;
+
+// Tab 切换
+document.querySelectorAll(".tab").forEach(t => {
+  t.addEventListener("click", () => switchTab(t.dataset.tab));
+});
+
+// Evidence page buttons
+document.getElementById("tab-evidence").addEventListener("click", () => {
+  setTimeout(() => refreshEvidence(), 0);
+});
+document.getElementById("btn-ev-refresh").addEventListener("click", refreshEvidence);
+
+// 弹窗: 论文
+document.getElementById("btn-add-paper").addEventListener("click", () => {
+  if (!state.projectId) {
+    alert("先到 \"一题分析\" tab 跑一次分析, 再加证据");
+    return;
+  }
+  // 清空
+  ["title", "authors", "year", "doi", "arxiv", "url", "abstract", "note"]
+    .forEach(k => { document.getElementById("mp-" + k).value = ""; });
+  showModal("modal-add-paper");
+});
+document.getElementById("mp-cancel").addEventListener("click", () => hideModal("modal-add-paper"));
+document.getElementById("mp-save").addEventListener("click", async () => {
+  const title = document.getElementById("mp-title").value.trim();
+  if (!title) { alert("标题必填"); return; }
+  const body = {
+    title,
+    authors: document.getElementById("mp-authors").value.split(",").map(s => s.trim()).filter(Boolean),
+    year: parseInt(document.getElementById("mp-year").value) || null,
+    doi: document.getElementById("mp-doi").value.trim() || null,
+    arxiv_id: document.getElementById("mp-arxiv").value.trim() || null,
+    url: document.getElementById("mp-url").value.trim() || null,
+    abstract: document.getElementById("mp-abstract").value.trim() || null,
+    user_note: document.getElementById("mp-note").value.trim() || null,
+  };
+  const data = await addManualPaper(body);
+  if (data.ok) {
+    appendTrace({ type: "step", name: "add-paper", detail: `${data.evidence_id} 入池` });
+    hideModal("modal-add-paper");
+    refreshEvidence();
+  } else {
+    alert("入池失败: " + data.message);
+  }
+});
+
+// 弹窗: 数据集
+document.getElementById("btn-add-dataset").addEventListener("click", () => {
+  if (!state.projectId) { alert("先跑一次分析"); return; }
+  ["name", "scale", "license", "download", "annotation", "note"]
+    .forEach(k => { document.getElementById("md-" + k).value = ""; });
+  showModal("modal-add-dataset");
+});
+document.getElementById("md-cancel").addEventListener("click", () => hideModal("modal-add-dataset"));
+document.getElementById("md-save").addEventListener("click", async () => {
+  const name = document.getElementById("md-name").value.trim();
+  if (!name) { alert("名称必填"); return; }
+  const body = {
+    name,
+    scale: document.getElementById("md-scale").value.trim() || null,
+    license: document.getElementById("md-license").value.trim() || null,
+    download: document.getElementById("md-download").value.trim() || null,
+    annotation: document.getElementById("md-annotation").value.trim() || null,
+    user_note: document.getElementById("md-note").value.trim() || null,
+  };
+  const data = await addManualDataset(body);
+  if (data.ok) {
+    appendTrace({ type: "step", name: "add-dataset", detail: `${data.evidence_id} 入池` });
+    hideModal("modal-add-dataset");
+    refreshEvidence();
+  } else {
+    alert("入池失败: " + data.message);
+  }
+});
+
+// 弹窗: 工程
+document.getElementById("btn-add-repo").addEventListener("click", () => {
+  if (!state.projectId) { alert("先跑一次分析"); return; }
+  ["name", "url", "paper", "license", "note"].forEach(k => { document.getElementById("mr-" + k).value = ""; });
+  ["readme", "env", "train", "eval"].forEach(k => { document.getElementById("mr-" + k).checked = false; });
+  showModal("modal-add-repo");
+});
+document.getElementById("mr-cancel").addEventListener("click", () => hideModal("modal-add-repo"));
+document.getElementById("mr-save").addEventListener("click", async () => {
+  const name = document.getElementById("mr-name").value.trim();
+  if (!name) { alert("名称必填"); return; }
+  const body = {
+    name,
+    repository_url: document.getElementById("mr-url").value.trim() || null,
+    paper_title: document.getElementById("mr-paper").value.trim() || null,
+    license: document.getElementById("mr-license").value.trim() || null,
+    user_note: document.getElementById("mr-note").value.trim() || null,
+    has_readme: document.getElementById("mr-readme").checked,
+    has_env_file: document.getElementById("mr-env").checked,
+    has_training_script: document.getElementById("mr-train").checked,
+    has_eval_script: document.getElementById("mr-eval").checked,
+  };
+  const data = await addManualRepo(body);
+  if (data.ok) {
+    appendTrace({ type: "step", name: "add-repo", detail: `${data.evidence_id} 入池` });
+    hideModal("modal-add-repo");
+    refreshEvidence();
+  } else {
+    alert("入池失败: " + data.message);
+  }
+});
+
+// 事件代理: ev-card 内的按钮
+document.body.addEventListener("click", async (e) => {
+  const btn = e.target.closest("[data-action]");
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const eid = btn.dataset.evId;
+  if (action === "review") {
+    await patchReview(eid, btn.dataset.status);
+  } else if (action === "delete") {
+    await deleteEvidence(eid);
+  }
+});
