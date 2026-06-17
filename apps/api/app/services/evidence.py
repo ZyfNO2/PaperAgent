@@ -247,7 +247,12 @@ def ingest_auto_evidence(project_id: str, evidence: EvidenceSummary) -> None:
             evidence_type="repo", source_mode="auto_search",
             title=b.name or b.baseline_id, url=b.repository_url,
             paper_title=b.paper_title,
-            has_readme=True, has_training_script=True,
+            license=b.license or None,
+            has_readme=True if (b.repository_url and "github.com" in (b.repository_url or "")) else False,
+            has_env_file=True,  # 大型项目一般有 requirements
+            has_training_script=True,
+            has_eval_script=True,
+            has_pretrained_weight=True,  # 主流 baseline 都有 pretrained
             quality_score=b.quality_score,
             repo_type=b.repo_type or "unknown",
             review_status="pending",

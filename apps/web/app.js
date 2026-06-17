@@ -792,12 +792,17 @@ document.addEventListener("click", async (e) => {
       return;
     }
     t.disabled = true;
+    const _orig = t.textContent;
     t.textContent = "⏳ 评分中...";
     try {
-      const rr = await fetchJson(`/api/v1/one-topic/${state.projectId}/evidence/rescore`, {method: "POST"});
-      const sm = await fetchJson(`/api/v1/one-topic/${state.projectId}/evidence/score-summary`, {method: "GET"});
+      const r1 = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/rescore`, {method: "POST"});
+      if (!r1.ok) throw new Error(`HTTP ${r1.status}`);
+      const rr = await r1.json();
+      const r2 = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/score-summary`);
+      if (!r2.ok) throw new Error(`HTTP ${r2.status}`);
+      const sm = await r2.json();
       t.textContent = `✓ 已更新 (paper ${rr.summary.avg_paper_score}, dataset ${rr.summary.avg_dataset_score}, repo ${rr.summary.avg_repo_score}; usable: ${sm.usable_papers}P ${sm.usable_datasets}D ${sm.usable_repos}R)`;
-      setTimeout(() => { t.textContent = "🔄 重新评分证据"; t.disabled = false; }, 5000);
+      setTimeout(() => { t.textContent = _orig; t.disabled = false; }, 5000);
     } catch (err) {
       t.textContent = "✗ 失败: " + err.message;
       t.disabled = false;

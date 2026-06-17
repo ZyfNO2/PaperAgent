@@ -123,6 +123,7 @@ class BaselineHit(BaseModel):
     name: str
     paper_title: str | None = None
     repository_url: str | None = None
+    license: str | None = None
     reproduce_difficulty: Literal["低", "中", "高", "未知"] = "中"
     source: Literal["github", "paper-claimed", "heuristic"] = "heuristic"
     quality_score: float | None = Field(default=None, ge=0.0, le=1.0, description="RepoScore 评分 (SOP §7.5)")

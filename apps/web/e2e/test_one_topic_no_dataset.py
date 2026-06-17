@@ -10,9 +10,9 @@ def test_niche_topic_triggers_shrink_or_pause(page) -> None:
     page.wait_for_selector("#block-feasibility .feasibility__verdict", timeout=10000, state="attached")
 
     feas_text = page.inner_text("#block-feasibility")
-    # 4 档: 可做 / 收缩后可做 / 暂缓 / 不建议; 极小众 + 无数据应是 后 2 档
-    assert ("暂缓" in feas_text) or ("不建议" in feas_text) or ("收缩后可做" in feas_text), (
-        f"可行性结论应为 暂缓/不建议/收缩后可做, 实际: {feas_text[:200]}"
+    # 5 档 (Session 4 升级): 极小众 + 无数据可能落 暂缓/不建议/可转向/收缩后可做 任一
+    assert any(v in feas_text for v in ("暂缓", "不建议", "可转向", "收缩后可做")), (
+        f"可行性结论应在 5 档之一, 实际: {feas_text[:200]}"
     )
 
     # 缺证据项里应有数据集

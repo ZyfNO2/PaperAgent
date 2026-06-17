@@ -483,10 +483,12 @@ def _heuristic_baselines(keywords: KeywordBreakdown) -> list[BaselineHit]:
             BaselineHit(baseline_id="BL01", name="YOLOv8 (Ultralytics 官方)",
                          paper_title="Ultralytics YOLOv8",
                          repository_url="https://github.com/ultralytics/ultralytics",
+                         license="AGPL-3.0",
                          reproduce_difficulty="低", source="github"),
             BaselineHit(baseline_id="BL02", name="YOLOv5 (Ultralytics 官方)",
                          paper_title="YOLOv5 by Ultralytics",
                          repository_url="https://github.com/ultralytics/yolov5",
+                         license="GPL-3.0",
                          reproduce_difficulty="低", source="github"),
         ]
     if "transformer" in method or "vit" in method:
@@ -580,16 +582,21 @@ def collect_evidence(
     keywords: KeywordBreakdown,
     plan: SearchPlan,
     prefer: str,
+    arxiv_hits: list[arxiv_client.ArxivPaper] | None = None,
 ) -> EvidenceSummary:
-    """调 arXiv 真检索 (失败 → 启发式占位)."""
+    """调 arXiv 真检索 (失败 → 启发式占位).
 
-    # 1) 论文: arXiv 真检索
+    arxiv_hits: 可选. SSE 流式路径先搜一次 arxiv 用来 emit 步骤, 这里复用避免重复.
+    """
+
+    # 1) 论文: arXiv 真检索 (如已传 arxiv_hits 则复用)
     papers: list[PaperHit] = []
-    arxiv_hits: list[arxiv_client.ArxivPaper] = []
-    try:
-        arxiv_hits = arxiv_client.search_arxiv(plan.paper_queries, max_per_query=2, max_total=6)
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("arxiv 检索异常: %s", exc)
+    if arxiv_hits is None:
+        arxiv_hits = []
+        try:
+            arxiv_hits = arxiv_client.search_arxiv(plan.paper_queries, max_per_query=2, max_total=6)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("arxiv 检索异常: %s", exc)
 
     if arxiv_hits:
         for p in arxiv_hits:
@@ -1193,28 +1200,11 @@ def run_one_topic_stream(
     baselines = _heuristic_baselines(keywords)
     emit("step", f"✓ Baseline 候选 {len(baselines)} 个", {"baseline_count": len(baselines)})
 
-    # 装配 evidence
-    papers: list[PaperHit] = []
-    for p in arxiv_papers:
-        papers.append(PaperHit(
-            paper_id=p.arxiv_id, title=p.title, authors=p.authors,
-            year=p.year or None, url=p.abs_url, summary=p.summary,
-            summary_zh=arxiv_client.summarize_paper_zh(p.title, p.summary),
-            source="arXiv",
-        ))
-    if not papers:
-        papers = _heuristic_papers(keywords)
-    arxiv_paper_count = sum(1 for p in papers if p.source == "arXiv")
-    metrics = list(keywords.metric_keywords) or ["mAP", "Recall", "Precision"]
-    ev = EvidenceSummary(
-        papers=papers, datasets=datasets, baselines=baselines,
-        metrics=metrics, paper_count=len(papers),
-        arxiv_paper_count=arxiv_paper_count,
-        dataset_count=len(datasets), baseline_count=len(baselines),
-        has_public_dataset=any(d.fit in ("高", "中") and d.dataset_id != "DS99" for d in datasets),
-        has_repro_baseline=any(b.repository_url for b in baselines),
-        has_metrics=bool(metrics),
-    )
+    # 装配 evidence (走 collect_evidence 走评分 + 去重; 复用 arxiv_papers 避免重复检索)
+    emit("step", "⚙️ 正在合成证据 + 评分 + 分类", {"phase": "evidence_scoring"})
+    ev = collect_evidence(keywords, plan, req.prefer, arxiv_hits=arxiv_papers)
+    arxiv_paper_count = ev.arxiv_paper_count
+    metrics = ev.metrics
 
     # Step 7: 可行性判断
     emit("step", "⚖️ 正在生成可行性判断", {"phase": "feasibility"})
