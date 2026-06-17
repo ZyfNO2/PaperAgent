@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '> TopicPilot-CN: 见 CLAUDE.md 阶段开发流程约束'",
+            "description": "提醒 agent 项目级规约"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python .claude/hooks/session_intel.py 2>&1 || python .claude/hooks/session_intel.py 2>&1",
+            "description": "Session 启动时扫描参考项目 + 改造计划, 列出可复用 vs 缺口"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python .claude/hooks/post_phase_check.py 2>&1 || python .claude/hooks/post_phase_check.py 2>&1",
+            "description": "Stop 时检查 Phase 完工情况"
+          }
+        ]
+      }
+    ]
+  }
+}
