@@ -19,6 +19,7 @@ SourceTag = Literal[
     "OpenAlex", "Semantic Scholar", "arXiv", "Crossref", "DBLP",
     "GitHub", "Papers with Code", "Hugging Face",
     "CNKI", "Wanfang", "学校仓储", "模板复用",
+    "user-uploaded",
     "LLM-generated-candidate", "无法追溯",
 ]
 
@@ -32,6 +33,7 @@ class PaperEvidence(BaseModel):
     source: SourceTag
     url: str | None = None
     abstract: str | None = None
+    authors: list[str] = Field(default_factory=list, description="作者列表 (上传论文)")
     task: list[str] = Field(default_factory=list)
     method: list[str] = Field(default_factory=list)
     datasets: list[str] = Field(default_factory=list)
@@ -40,6 +42,15 @@ class PaperEvidence(BaseModel):
     reusable_value: str = Field(min_length=1, description="可借鉴点")
     evidence_score: float = Field(default=0.5, ge=0.0, le=1.0)
     wp_binding: list[str] = Field(default_factory=list, description="绑定的 WP1/WP2")
+    # 中文 UI 增强字段 (启发式生成)
+    summary_zh: str | None = Field(default=None, description="中文 1 句简介")
+    keywords_zh: list[str] = Field(default_factory=list, description="中文关键词 (实际是英文高信息词)")
+    field: str | None = Field(default=None, description="研究领域 (中文)")
+
+    # arXiv 真论文增强: LLM 翻译 (LLM 失败为 None, 前端 fallback 到英文摘要)
+    summary_zh: str | None = Field(default=None, description="LLM 中文一句话简介")
+    keywords_zh: list[str] = Field(default_factory=list, description="LLM 中文关键词 ≤5")
+    field: str | None = Field(default=None, description="LLM 提取的研究领域")
 
 
 class DatasetCandidate(BaseModel):
