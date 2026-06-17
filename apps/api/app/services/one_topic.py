@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid
 import re
 import time
 from collections.abc import Callable
@@ -32,6 +33,7 @@ from ..schemas import (
     WorkPackageSuggestion,
 )
 from . import arxiv as arxiv_client
+from . import evidence as ev_store
 from . import llm
 
 logger = logging.getLogger(__name__)
@@ -751,8 +753,15 @@ def run_one_topic(req: OneTopicRequest) -> OneTopicResponse:
     rec = recommend_proposal(req, keywords, ev, feas)
     rev = light_review(req, keywords, ev, feas)
     elapsed_ms = int((time.time() - t0) * 1000)
+    project_id = "ot_" + uuid.uuid4().hex[:12]
+    # Auto-ingest into the per-project ledger (SOP 5 + 13.1).
+    try:
+        ev_store.ingest_auto_evidence(project_id, ev)
+    except Exception:  # noqa: BLE001
+        pass
 
     return OneTopicResponse(
+        project_id=project_id,
         request=req,
         topic_understanding=topic,
         keyword_breakdown=keywords,
@@ -865,7 +874,13 @@ def run_one_topic_stream(
     # Final result
     emit("step", "🎁 全部完成, 打包返回", {"phase": "result"})
 
+    project_id = "ot_" + uuid.uuid4().hex[:12]
+    try:
+        ev_store.ingest_auto_evidence(project_id, ev)
+    except Exception:  # noqa: BLE001
+        pass
     response = OneTopicResponse(
+        project_id=project_id,
         request=req,
         topic_understanding=topic,
         keyword_breakdown=keywords,

@@ -179,6 +179,7 @@ class LightReview(BaseModel):
 class OneTopicResponse(BaseModel):
     """OneTopic §12.1 — 完整返回 (6 段)。"""
 
+    project_id: str = Field(default="", description="本次分析对应的 project_id, 用于后续手动添加证据")
     request: OneTopicRequest
     topic_understanding: TopicUnderstanding
     keyword_breakdown: KeywordBreakdown

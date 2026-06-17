@@ -1,4 +1,4 @@
-"""OneTopic router: POST /analyze + POST /analyze/stream (SSE).
+"""OneTopic router: POST /analyze + POST /analyze/stream (SSE) + 证据工作台端点 (SOP 5).
 
 对齐 Plan/TopicPilot-CN_OneTopic_MVP_修改SOP.md §12.
 """
@@ -14,9 +14,21 @@ from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
 from ...schemas import OneTopicRequest, OneTopicResponse
+from ...schemas_evidence import (
+    DatasetManualCreate,
+    EvidenceActionResponse,
+    EvidenceLedgerResponse,
+    PaperManualCreate,
+    RepoManualCreate,
+    ReviewUpdate,
+)
+from ...services import evidence as ev_store
 from ...services import one_topic as ot_service
 
 router = APIRouter(prefix="/api/v1/one-topic", tags=["one-topic"])
+
+
+# ---------- 一题分析 ---------- #
 
 
 @router.post("/analyze", response_model=OneTopicResponse, summary="一题分析: 6 段产物一次返回")
@@ -78,3 +90,60 @@ async def analyze_stream(req: OneTopicRequest) -> StreamingResponse:
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+# ---------- 证据工作台 (SOP 5 + 13.1) ---------- #
+
+
+@router.get(
+    "/{project_id}/evidence",
+    response_model=EvidenceLedgerResponse,
+    summary="GET: 取一个 project 的证据池 (含自动入池 + 手动添加的)",
+)
+def get_evidence(project_id: str) -> EvidenceLedgerResponse:
+    return ev_store.get_ledger(project_id)
+
+
+@router.post(
+    "/{project_id}/evidence/papers/manual",
+    response_model=EvidenceActionResponse,
+    summary="POST: 手动添加一篇论文 (DOI / arXiv / 标题去重)",
+)
+def add_paper_manual(project_id: str, body: PaperManualCreate) -> EvidenceActionResponse:
+    return ev_store.add_paper_manual(project_id, body)
+
+
+@router.post(
+    "/{project_id}/evidence/datasets/manual",
+    response_model=EvidenceActionResponse,
+    summary="POST: 手动添加一个数据集",
+)
+def add_dataset_manual(project_id: str, body: DatasetManualCreate) -> EvidenceActionResponse:
+    return ev_store.add_dataset_manual(project_id, body)
+
+
+@router.post(
+    "/{project_id}/evidence/repos/manual",
+    response_model=EvidenceActionResponse,
+    summary="POST: 手动添加一个 GitHub 工程",
+)
+def add_repo_manual(project_id: str, body: RepoManualCreate) -> EvidenceActionResponse:
+    return ev_store.add_repo_manual(project_id, body)
+
+
+@router.patch(
+    "/evidence/{evidence_id}/review",
+    response_model=EvidenceActionResponse,
+    summary="PATCH: 更新单条证据的 review_status (accepted / core / background / rejected / needs_check)",
+)
+def update_review(evidence_id: str, body: ReviewUpdate) -> EvidenceActionResponse:
+    return ev_store.update_review(evidence_id, body)
+
+
+@router.delete(
+    "/evidence/{evidence_id}",
+    response_model=EvidenceActionResponse,
+    summary="DELETE: 删除一条证据",
+)
+def delete_evidence(evidence_id: str) -> EvidenceActionResponse:
+    return ev_store.delete_evidence(evidence_id)
