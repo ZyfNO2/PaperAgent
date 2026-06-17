@@ -1,41 +1,36 @@
-"""Mini static file server for apps/web (dev only).
+"""前端 dev server: 静态文件服务, 端口 18182.
 
-MVP: 用 http.server 在 18182 端口 serve index.html / app.js / styles.css,
-e2e 测试通过 http://127.0.0.1:18182 访问 (与后端 uvicorn 18181 分开)。
+Usage:
+    .venv/Scripts/python.exe apps/web/dev_server.py
 """
 
 from __future__ import annotations
 
 import http.server
-import os
 import socketserver
-import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-PORT = int(os.environ.get("WEB_PORT", "18182"))
+WEB_DIR = Path(__file__).resolve().parent
+PORT = 18182
 
 
-class Handler(http.server.SimpleHTTPRequestHandler):
+class _Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(ROOT), **kwargs)
+        super().__init__(*args, directory=str(WEB_DIR), **kwargs)
 
     def end_headers(self):
-        # 避免浏览器缓存
+        # 避免缓存, 让修改立刻生效
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
-    def log_message(self, format, *args):  # noqa: A002
-        # 静默日志
-        pass
-
-
-def main() -> int:
-    print(f"[web_dev] serving {ROOT} at http://127.0.0.1:{PORT}", flush=True)
-    with socketserver.TCPServer(("127.0.0.1", PORT), Handler) as httpd:
-        httpd.serve_forever()
-    return 0
+    def log_message(self, format: str, *args) -> None:  # noqa: A002
+        pass  # 静默
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    with socketserver.TCPServer(("127.0.0.1", PORT), _Handler) as httpd:
+        print(f"apps/web dev server: http://127.0.0.1:{PORT}/")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            pass

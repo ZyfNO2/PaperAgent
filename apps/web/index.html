@@ -3,83 +3,120 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TopicPilot-CN · 开题选题助手</title>
+  <title>TopicPilot-CN · 一题判断能不能做</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="hero">
-    <div class="hero__glow hero__glow--left"></div>
-    <div class="hero__glow hero__glow--right"></div>
     <div class="hero__inner">
-      <div class="hero__badge">TopicPilot-CN · 开题选题助手</div>
-      <h1 class="hero__title">从「航母检测」到「毕业论文工作量」</h1>
-      <p class="hero__sub">8 阶段闭环 · 真 arXiv 检索 · 真学术委员会对话 · 全程可 Trace</p>
-
-      <div class="hero__steps" id="hero-steps">
-        <button class="step-dot step-dot--active" data-phase="1" type="button">
-          <span class="step-dot__num">1</span><span class="step-dot__label">建档</span>
-        </button>
-        <div class="step-line"></div>
-        <button class="step-dot" data-phase="2" type="button" disabled>
-          <span class="step-dot__num">2</span><span class="step-dot__label">拆解</span>
-        </button>
-        <div class="step-line"></div>
-        <button class="step-dot" data-phase="3" type="button" disabled>
-          <span class="step-dot__num">3</span><span class="step-dot__label">检索</span>
-        </button>
-        <div class="step-line"></div>
-        <button class="step-dot" data-phase="4" type="button" disabled>
-          <span class="step-dot__num">4</span><span class="step-dot__label">证据</span>
-        </button>
-        <div class="step-line"></div>
-        <button class="step-dot" data-phase="5" type="button" disabled>
-          <span class="step-dot__num">5</span><span class="step-dot__label">风险</span>
-        </button>
-        <div class="step-line"></div>
-        <button class="step-dot" data-phase="6" type="button" disabled>
-          <span class="step-dot__num">6</span><span class="step-dot__label">工作包</span>
-        </button>
-        <div class="step-line"></div>
-        <button class="step-dot" data-phase="7" type="button" disabled>
-          <span class="step-dot__num">7</span><span class="step-dot__label">报告</span>
-        </button>
-        <div class="step-line"></div>
-        <button class="step-dot" data-phase="8" type="button" disabled>
-          <span class="step-dot__num">8</span><span class="step-dot__label">导出</span>
-        </button>
-      </div>
+      <div class="hero__badge">TopicPilot-CN · OneTopic MVP</div>
+      <h1 class="hero__title">只输入一个题目, 先帮你判断这个题能不能开题</h1>
+      <p class="hero__sub">关键词拆解 · 论文/数据集/工程三线检索 · 可行性四档 · 开题建议 · 低门槛模拟审核</p>
     </div>
   </header>
 
-  <main class="page-content">
-    <div class="layout-grid">
-      <!-- 左: 当前 Phase 操作面板 (一页一动作) -->
-      <section class="phase-panel" id="phase-panel">
-        <!-- 由 app.js 根据 state.currentPhase 渲染 -->
-      </section>
+  <main class="page">
+    <section class="input-card" id="input-card">
+      <label class="input-card__label">你的选题是什么?</label>
+      <input
+        class="input-card__input"
+        id="input-topic"
+        type="text"
+        placeholder="例如: 基于YOLO的钢材表面缺陷检测"
+        value="基于YOLO的钢材表面缺陷检测"
+        autocomplete="off"
+      />
+      <div class="input-card__row">
+        <label>
+          专业 (可选)
+          <input id="input-major" type="text" placeholder="如 计算机科学与技术" />
+        </label>
+        <label>
+          导师方向 (可选)
+          <input id="input-advisor" type="text" placeholder="如 工业质检" />
+        </label>
+        <label>
+          目标档位
+          <select id="input-goal">
+            <option value="保毕业" selected>保毕业</option>
+            <option value="稳中求新">稳中求新</option>
+            <option value="冲高水平">冲高水平</option>
+          </select>
+        </label>
+        <label>
+          LLM 路径
+          <select id="input-prefer">
+            <option value="auto" selected>auto (LLM 失败 fallback 启发式)</option>
+            <option value="heuristic">heuristic (纯规则)</option>
+            <option value="llm">llm (强制 LLM)</option>
+          </select>
+        </label>
+      </div>
+      <p class="input-card__hint">先不用填完整开题信息, 系统先帮你判断有没有论文、数据集和 baseline.</p>
+      <button class="cta-primary" id="btn-analyze" type="button">🚀 开始判断能不能做</button>
+      <div class="input-card__error" id="input-error" hidden></div>
+    </section>
 
-      <!-- 右: 流式 Trace 面板 (sticky) -->
-      <aside class="trace-panel" id="trace-panel">
-        <div class="trace-panel__head">
-          <span class="trace-panel__icon">🧠</span>
-          <h3 class="trace-panel__title">Agent 思考流</h3>
-          <span class="trace-panel__count" id="trace-count">0</span>
-        </div>
-        <div class="trace-panel__sub" id="trace-sub">
-          完成 Phase 01 后, 这里实时显示 Agent 思考过程
-        </div>
-        <div class="trace-list" id="trace-list">
-          <div class="trace-empty">尚无 trace 事件</div>
-        </div>
-        <button class="trace-clear" id="btn-trace-clear" type="button">🗑️ 清空 trace</button>
-      </aside>
-    </div>
+    <section class="result-grid" id="result-grid" hidden>
+      <article class="block block--understanding">
+        <header class="block__head">
+          <span class="block__num">1</span>
+          <h2 class="block__title">题目理解</h2>
+        </header>
+        <div class="block__body" id="block-understanding"></div>
+      </article>
+
+      <article class="block block--keywords">
+        <header class="block__head">
+          <span class="block__num">2</span>
+          <h2 class="block__title">关键词拆解</h2>
+        </header>
+        <div class="block__body" id="block-keywords"></div>
+      </article>
+
+      <article class="block block--evidence">
+        <header class="block__head">
+          <span class="block__num">3</span>
+          <h2 class="block__title">证据检索 (论文 / 数据集 / 工程)</h2>
+        </header>
+        <div class="block__body" id="block-evidence"></div>
+      </article>
+
+      <article class="block block--feasibility">
+        <header class="block__head">
+          <span class="block__num">4</span>
+          <h2 class="block__title">可行性判断</h2>
+        </header>
+        <div class="block__body" id="block-feasibility"></div>
+      </article>
+
+      <article class="block block--recommendation">
+        <header class="block__head">
+          <span class="block__num">5</span>
+          <h2 class="block__title">开题建议 &amp; 低门槛审核</h2>
+        </header>
+        <div class="block__body" id="block-recommendation"></div>
+      </article>
+    </section>
   </main>
+
+  <aside class="trace-panel" id="trace-panel">
+    <div class="trace-panel__head">
+      <span class="trace-panel__icon">🧠</span>
+      <h3 class="trace-panel__title">Agent 思考流</h3>
+      <span class="trace-panel__count" id="trace-count">0</span>
+    </div>
+    <div class="trace-panel__sub" id="trace-sub">输入题目后, 这里会实时显示人话 trace</div>
+    <div class="trace-list" id="trace-list">
+      <div class="trace-empty">尚无 trace 事件</div>
+    </div>
+    <button class="trace-clear" id="btn-trace-clear" type="button">🗑️ 清空 trace</button>
+  </aside>
 
   <footer class="page-footer">
     <span>API: <code id="api-base">http://127.0.0.1:18181</code></span>
     <span class="dot">·</span>
-    <span>TopicPilot-CN MVP · 2026-06-16</span>
+    <span>TopicPilot-CN OneTopic MVP · 2026-06-17</span>
   </footer>
 
   <script src="app.js"></script>
