@@ -13,7 +13,23 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import pytest
+from fastapi.testclient import TestClient
+
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "apps" / "api"))
+
+from app.main import app  # noqa: E402
+from app.services import evidence as ev_store  # noqa: E402
+
+
+@pytest.fixture
+def api_client():
+    ev_store.reset_all()
+    return TestClient(app)
 
 
 def test_01_report_section_visible(page_with_result):
@@ -46,14 +62,15 @@ def test_03_preview_contains_proposal_header(page_with_result, api_client):
     """Markdown 预览包含 '开题报告'."""
 
     page_with_result.locator("#btn-build-report").click()
-    page_with_result.wait_for_timeout(2500)
-
-    # 点击 显示/隐藏预览 按钮
-    page_with_result.locator("#btn-preview-report").click()
-    page_with_result.wait_for_timeout(300)
+    # 等 preview 出现, 而不是固定 sleep
+    try:
+        page_with_result.wait_for_selector("#report-preview", state="visible", timeout=10000)
+    except Exception:
+        # fallback: 可能是 build 慢, 再点一次 preview 按钮
+        page_with_result.locator("#btn-preview-report").click()
+        page_with_result.wait_for_selector("#report-preview", state="visible", timeout=8000)
 
     pre = page_with_result.locator("#report-preview")
-    assert pre.is_visible(), "preview 应可见"
     text = pre.inner_text()
     assert "开题报告" in text, "应有 '开题报告' 标题"
     assert "研究背景" in text, "应有 '研究背景' 章节"
@@ -63,9 +80,11 @@ def test_04_preview_has_citation_refs(page_with_result, api_client):
     """Markdown 预览包含 [E1]/[D1]/[R1] 引用编号."""
 
     page_with_result.locator("#btn-build-report").click()
-    page_with_result.wait_for_timeout(2500)
-    page_with_result.locator("#btn-preview-report").click()
-    page_with_result.wait_for_timeout(300)
+    try:
+        page_with_result.wait_for_selector("#report-preview", state="visible", timeout=10000)
+    except Exception:
+        page_with_result.locator("#btn-preview-report").click()
+        page_with_result.wait_for_selector("#report-preview", state="visible", timeout=8000)
 
     pre = page_with_result.locator("#report-preview")
     text = pre.inner_text()
@@ -80,9 +99,11 @@ def test_05_preview_has_citation_list(page_with_result, api_client):
     """Markdown 预览末尾有证据引用清单表格."""
 
     page_with_result.locator("#btn-build-report").click()
-    page_with_result.wait_for_timeout(2500)
-    page_with_result.locator("#btn-preview-report").click()
-    page_with_result.wait_for_timeout(300)
+    try:
+        page_with_result.wait_for_selector("#report-preview", state="visible", timeout=10000)
+    except Exception:
+        page_with_result.locator("#btn-preview-report").click()
+        page_with_result.wait_for_selector("#report-preview", state="visible", timeout=8000)
 
     pre = page_with_result.locator("#report-preview")
     text = pre.inner_text()

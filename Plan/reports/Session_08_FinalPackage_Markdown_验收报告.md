@@ -196,21 +196,35 @@ test_13_summary_endpoint                          PASSED
 
 ## 9. Playwright 测试结果
 
-新增 `apps/web/e2e/test_one_topic_session8_final_package.py` (8 tests):
+新增 `apps/web/e2e/test_one_topic_session8_final_package.py` (8 tests, 全部通过):
 
-测试由 subagent 跑中 (arXiv 检索慢, 单测 ~80-130s). 主 context 拿到结果后会回填本节.
+```
+test_01_report_section_visible               PASSED
+test_02_build_shows_chars                    PASSED
+test_03_preview_contains_proposal_header     PASSED
+test_04_preview_has_citation_refs            PASSED
+test_05_preview_has_citation_list            PASSED
+test_06_download_button_visible              PASSED
+test_07_download_endpoint_returns_markdown   PASSED
+test_08_rejected_not_in_positive_citations   PASSED
+
+8 passed in 248.47s (4:08)
+```
 
 测试覆盖 (SOP §10.2):
 1. 页面出现 "开题报告导出" 区域
-2. 点击 "生成报告" 后显示 Markdown 字符数
-3. Markdown 预览包含 "开题报告" 标题
+2. 点击 "生成报告" 后显示 Markdown 字符数 (chars / sections / citations chip)
+3. Markdown 预览包含 "开题报告" + "研究背景"
 4. Markdown 预览包含 [E1]/[D1]/[R1] 引用编号
 5. Markdown 预览包含证据引用清单表格
 6. 下载按钮可见
 7. /markdown 端点返回 text/markdown + attachment
 8. rejected evidence 不进入 citation_list
 
-按 SOP §10.3 "LLM 真实 e2e 允许作为 smoke, 不应成为每次 CI 的硬阻断"; 若有 flake, 加 mock fallback.
+实现细节:
+- 测试 02-05 改用 `wait_for_selector(state="visible")` 替代固定 `wait_for_timeout`, 避免 race condition
+- 添加 `sys.path.insert(0, str(ROOT / "apps" / "api"))` 让 pytest 能 import app.services
+- `api_client` fixture 用 `ev_store.reset_all()` 保证 test 隔离
 
 ---
 
