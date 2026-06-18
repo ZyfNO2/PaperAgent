@@ -13,23 +13,53 @@
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
+import json
+import urllib.request
+from typing import Any
 
 import pytest
-from fastapi.testclient import TestClient
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "apps" / "api"))
+# Session 9 e2e 关键: api_client 必须走真实 HTTP (18181) 跟浏览器共享 uvicorn state.
+# 之前用 TestClient(app) 启的是测试进程内的内存 store, 跟 18181 完全隔离.
+BACKEND_URL = "http://127.0.0.1:18181"
 
-from app.main import app  # noqa: E402
-from app.services import evidence as ev_store  # noqa: E402
+
+class _Resp:
+    def __init__(self, status: int, body: Any):
+        self.status_code = status
+        self._body = body
+
+    def json(self) -> Any:
+        return self._body
+
+
+class _HTTPClient:
+    """最小 HTTP client: get/post/patch 返回带 .status_code 和 .json() 的对象."""
+
+    def get(self, path: str) -> _Resp:
+        return self._send("GET", path)
+
+    def post(self, path: str, json: dict | None = None) -> _Resp:
+        return self._send("POST", path, json)
+
+    def patch(self, path: str, json: dict | None = None) -> _Resp:
+        return self._send("PATCH", path, json)
+
+    def _send(self, method: str, path: str, body: dict | None = None) -> _Resp:
+        data = json.dumps(body).encode("utf-8") if body is not None else None
+        req = urllib.request.Request(
+            f"{BACKEND_URL}{path}", data=data, method=method,
+            headers={"Content-Type": "application/json"} if data else {},
+        )
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return _Resp(r.status, json.loads(r.read()))
 
 
 @pytest.fixture
 def api_client():
-    ev_store.reset_all()
-    return TestClient(app)
+    """HTTP client 走 18181, 与 Playwright 浏览器共享同一份 ev_store."""
+
+    return _HTTPClient()
 
 
 def test_01_workspace_board_visible(page_with_result):
@@ -59,18 +89,17 @@ def test_02_three_type_panels_exist(page_with_result, api_client):
 def test_03_add_to_left_button(page_with_result, api_client):
     """系统候选卡片可以加入左侧 (§7.2.3)."""
 
-    # 切到 paper tab (默认就是), 找 right lane 的 add_left 按钮
     add_left_btn = page_with_result.locator(
         '#ws-paper-right .ws-card__btn[data-ws-action="add_left"]'
     ).first
     if add_left_btn.count() == 0:
         pytest.skip("无 right 卡片可加入左侧")
-    add_left_btn.click()
-    page_with_result.wait_for_timeout(2000)
-    # 验证 board 刷新: 该 eid 应在 left
-    # 重新拉 board 数据查
     eid = add_left_btn.get_attribute("data-ws-eid")
-    # 通过 API 验证
+    add_left_btn.click()
+    # 等 patchWorkspaceItem 调完 loadWorkspaceBoard, 等 left 出现这个 eid
+    page_with_result.wait_for_selector(
+        f'#ws-paper-left [data-ev-id="{eid}"]', timeout=10000
+    )
     pid = page_with_result.evaluate("() => state && state.projectId")
     if not pid:
         pytest.skip("无 projectId")
@@ -87,9 +116,12 @@ def test_04_mark_core_button(page_with_result, api_client):
     ).first
     if mark_core_btn.count() == 0:
         pytest.skip("无 right 卡片")
-    mark_core_btn.click()
-    page_with_result.wait_for_timeout(2000)
     eid = mark_core_btn.get_attribute("data-ws-eid")
+    mark_core_btn.click()
+    # 等 selected 出现这个 eid (DOM 存在即可; selected 在 <details> 内默认折叠)
+    page_with_result.wait_for_selector(
+        f'#ws-paper-selected [data-ev-id="{eid}"]', state="attached", timeout=10000
+    )
     pid = page_with_result.evaluate("() => state && state.projectId")
     board = api_client.get(f"/api/v1/one-topic/{pid}/workspace/board").json()
     sel_eids = [e["evidence_id"] for e in board["papers"]["selected_items"]]

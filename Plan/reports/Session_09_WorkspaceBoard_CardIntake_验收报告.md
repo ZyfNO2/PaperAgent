@@ -2,7 +2,7 @@
 
 > 验收时间: 2026-06-18
 > 阶段: Session 9 (按 `Plan/PaperAgent_Session09_双栏证据工作台与Agent卡片导入SOP.md`)
-> Commit: <待 commit>
+> Commit: `573a2284` (后续 amended 含 e2e 修复)
 
 ---
 
@@ -212,19 +212,35 @@ test_12_intake_pending_excluded_from_markdown      PASSED
 
 ## 8. Playwright 测试结果
 
-新增 `apps/web/e2e/test_one_topic_session9_workspace_board.py` (8 tests):
+新增 `apps/web/e2e/test_one_topic_session9_workspace_board.py` (8 tests, 全部通过):
 
-测试由 subagent 跑中 (arXiv 检索慢, 单测 ~80-130s). 主 context 拿到结果后会回填本节.
+```
+test_01_workspace_board_visible                PASSED
+test_02_three_type_panels_exist                PASSED
+test_03_add_to_left_button                     PASSED  (修: wait_for_selector)
+test_04_mark_core_button                       PASSED  (修: state="attached" 因 selected 在 <details> 内默认折叠)
+test_05_reject_excluded_from_citations         PASSED
+test_06_card_intake_panel_visible              PASSED
+test_07_github_url_creates_repo_card           PASSED
+test_08_intake_card_shows_confidence_warnings  PASSED
+
+8 passed in 316.54s (5:16)
+```
 
 测试覆盖 (SOP §7.2):
-1. 页面显示双栏证据工作台
-2. paper / dataset / repo 三类分区存在
-3. 系统候选卡片可以加入左侧
-4. 卡片可以标为核心
-5. 拒绝卡片后 Markdown 不再正向引用
-6. Agent 卡片导入面板存在
-7. 输入 GitHub URL 后生成 repo 卡片
-8. 生成的卡片显示 pending / extraction_confidence / warning
+1. 页面显示双栏证据工作台 ✓
+2. paper / dataset / repo 三类分区存在 ✓
+3. 系统候选卡片可以加入左侧 (right → user_preferred) ✓
+4. 卡片可以标为核心 (right → selected / core) ✓
+5. 拒绝卡片后 Markdown 不再正向引用 (rejected 不进 citation_list) ✓
+6. Agent 卡片导入面板存在 ✓
+7. 输入 GitHub URL 后生成 repo 卡片 (识别为 repo, confidence 0.55) ✓
+8. 生成的卡片显示 pending / extraction_confidence / warning ✓
+
+修复要点 (amend 进 commit `573a2284`):
+- `api_client` fixture 由 `TestClient(app)` 改为 urllib HTTP 走 18181, 跟浏览器共享 ev_store.
+- test_03/04 由固定 `wait_for_timeout(2000)` 改为 `wait_for_selector` 等待 DOM 真正出现该 eid.
+- test_04 用 `state="attached"` (selected lane 在 `<details>` 内, 默认折叠, Playwright 看不到 visible).
 
 ---
 
