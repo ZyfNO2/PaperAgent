@@ -40,6 +40,9 @@ class _ProjectEvidence:
     def __init__(self, project_id: str) -> None:
         self.project_id = project_id
         self.items: dict[str, EvidenceItem] = {}
+        self.latest_snapshot: dict[str, Any] | None = None
+        # Session 8 §6.4: 缓存最近构建的 FinalPackage
+        self.latest_final_package: Any | None = None
         # Session 7: 最新一次 analyze 的快照 (供 refs/rebuild 和 refs/coverage 用)
         self.latest_snapshot: dict[str, Any] | None = None
 
@@ -670,6 +673,20 @@ def get_snapshot(project_id: str) -> dict[str, Any] | None:
     with _LEDGER_LOCK:
         proj = _get_project(project_id)
         return proj.latest_snapshot
+
+
+def save_final_package(project_id: str, pkg: Any) -> None:
+    """缓存最近一次构建的 FinalPackage (Session 8 §6.4)."""
+
+    with _LEDGER_LOCK:
+        proj = _get_project(project_id)
+        proj.latest_final_package = pkg
+
+
+def get_final_package(project_id: str) -> Any | None:
+    with _LEDGER_LOCK:
+        proj = _get_project(project_id)
+        return proj.latest_final_package
 
 
 def get_pool_items(project_id: str) -> list[EvidenceItem]:

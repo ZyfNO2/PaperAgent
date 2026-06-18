@@ -273,3 +273,80 @@ class OneTopicResponse(BaseModel):
     proposal_recommendation: ProposalRecommendation
     light_review: LightReview
     elapsed_ms: int = 0
+
+
+# ---------- FinalPackage (Session 8 §4.1) ---------- #
+
+
+class FinalPackageBuildOptions(BaseModel):
+    """POST /final-package/build 请求体."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    include_low_confidence_refs: bool = Field(
+        default=False,
+        description="是否包含 needs_check 状态的证据 (默认排除)",
+    )
+    include_rejected_as_appendix: bool = Field(
+        default=False,
+        description="是否把 rejected 证据作为附录展示 (默认排除)",
+    )
+    style: Literal["proposal_mvp", "proposal_full"] = Field(
+        default="proposal_mvp",
+        description="proposal_mvp = 13 章节初稿; proposal_full = 后续扩展",
+    )
+    language: Literal["zh", "en"] = Field(default="zh", description="报告语言")
+
+
+class ReportSection(BaseModel):
+    """Markdown 报告的一个章节."""
+
+    key: str
+    title: str
+    content: str
+    evidence_refs: list[EvidenceRef] = Field(default_factory=list)
+    unsupported_claims: list[str] = Field(default_factory=list)
+
+
+class ReportCitation(BaseModel):
+    """Markdown 末尾的证据引用清单条目."""
+
+    ref_no: str = Field(description="E1 / D1 / R1 / N1")
+    evidence_id: str
+    evidence_type: str
+    title: str
+    url: str | None = None
+    review_status: str
+    role: str
+    score: float | None = None
+    used_in_sections: list[str] = Field(default_factory=list)
+
+
+class FinalPackageSummary(BaseModel):
+    """GET /final-package  响应: 摘要 (不含 markdown 全文)."""
+
+    project_id: str
+    final_topic: str
+    ready_for_proposal: bool
+    coverage_score: float
+    low_coverage_warning: bool
+    backend_verification: Literal["PASS", "WARN", "FAIL"] = "PASS"
+    ui_verification: Literal["PASS", "WARN", "FAIL", "NOT_RUN"] = "NOT_RUN"
+    playwright_verification: Literal["PASS", "WARN", "FAIL", "NOT_RUN"] = "NOT_RUN"
+    proposal_markdown_chars: int
+    section_count: int
+    citation_count: int
+    unsupported_claims_count: int
+    revision_checklist_count: int
+    generated_at: str
+    cached: bool = Field(default=False, description="是否命中缓存 (未重新生成)")
+
+
+class FinalPackage(FinalPackageSummary):
+    """POST /final-package/build 完整响应 (含 markdown 全文 + sections + citations)."""
+
+    proposal_markdown: str
+    sections: list[ReportSection] = Field(default_factory=list)
+    citation_list: list[ReportCitation] = Field(default_factory=list)
+    unsupported_claims: list[str] = Field(default_factory=list)
+    revision_checklist: list[str] = Field(default_factory=list)

@@ -16,6 +16,11 @@ from typing import Literal
 
 from ...schemas import OneTopicRequest, OneTopicResponse, ProposalRecommendation
 from ...schemas import PivotRoute, FeasibilitySummary, LightReview, EvidenceRef
+from ...schemas import (
+    FinalPackage,
+    FinalPackageBuildOptions,
+    FinalPackageSummary,
+)
 from ...schemas_evidence import (
     DatasetManualCreate,
     EvidenceActionResponse,
@@ -26,6 +31,7 @@ from ...schemas_evidence import (
 )
 from ...services import evidence as ev_store
 from ...services import evidence_refs as refs_service
+from ...services import final_package as fp_service
 from ...services import one_topic as ot_service
 
 router = APIRouter(prefix="/api/v1/one-topic", tags=["one-topic"])
@@ -721,3 +727,63 @@ def review_ref(project_id: str, body: RefsReviewRequest) -> RefsReviewResponse:
         new_coverage_score=new_coverage,
         message=message or "ok",
     )
+
+
+# ---------- Session 8: FinalPackage Markdown 导出 (§5) ---------- #
+
+
+@router.post(
+    "/{project_id}/final-package/build",
+    response_model=FinalPackage,
+    summary="Session 8 §5.1: 从 snapshot 构建 FinalPackage (Markdown + sections + citations)",
+)
+def build_final_package(project_id: str, body: FinalPackageBuildOptions) -> FinalPackage:
+    try:
+        pkg = fp_service.build_final_package(project_id, body)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    ev_store.save_final_package(project_id, pkg)
+    return pkg
+
+
+@router.get(
+    "/{project_id}/final-package",
+    response_model=FinalPackageSummary,
+    summary="Session 8 §5.3: 获取 FinalPackage 摘要 (不返回 markdown 全文)",
+)
+def get_final_package_summary(project_id: str) -> FinalPackageSummary:
+    summary = fp_service.build_final_package_summary(project_id)
+    if not summary:
+        raise HTTPException(
+            status_code=409,
+            detail=f"project_id {project_id} 还没有 FinalPackage, 请先 POST /final-package/build",
+        )
+    return summary
+
+
+@router.get(
+    "/{project_id}/final-package/markdown",
+    summary="Session 8 §5.2: 下载 Markdown 文件 (Content-Type: text/markdown)",
+)
+def download_final_package_markdown(project_id: str):
+    """若无缓存, 自动 build 一次 (MVP 行为)."""
+
+    cached = ev_store.get_final_package(project_id)
+    if cached is None:
+        # 自动 build
+        opts = FinalPackageBuildOptions()
+        try:
+            cached = fp_service.build_final_package(project_id, opts)
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        ev_store.save_final_package(project_id, cached)
+
+    md = cached.proposal_markdown
+    filename = f"proposal_{project_id}.md"
+    headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Content-Type": "text/markdown; charset=utf-8",
+        "Cache-Control": "no-store",
+    }
+    from fastapi.responses import Response
+    return Response(content=md, media_type="text/markdown; charset=utf-8", headers=headers)

@@ -445,8 +445,113 @@ function renderResult(r) {
     <div class="review__checks">${checksHtml}</div>
     <div class="review__checklist-title">📝 修改清单</div>
     <ol class="review__checklist">${checklistHtml}</ol>
+
+    ${renderReportBlock(state.projectId)}
   `;
 }
+
+// ---------- Session 8: FinalPackage 报告区 ---------- //
+
+function renderReportBlock(projectId) {
+  // 占位: report block 已经在 index.html 里写好, 这里只负责 populate 数据
+  // 实际 fetch + 填充由 buildReport / refreshReportSummary 完成
+  if (!projectId) {
+    return `<div class="report__hint">先跑一次分析, 再生成开题报告</div>`;
+  }
+  return "";  // 数据通过 refreshReportSummary 填充
+}
+
+async function buildReport() {
+  if (!state.projectId) {
+    showError("先跑一次分析");
+    return;
+  }
+  const btn = document.getElementById("btn-build-report");
+  if (btn) btn.disabled = true;
+  appendTrace({ type: "step", name: "build-report", detail: "生成开题报告" });
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/final-package/build`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    if (!r.ok) {
+      showError("生成报告失败: " + (await r.text()).slice(0, 200));
+      return;
+    }
+    const pkg = await r.json();
+    state.finalPackage = pkg;
+    renderReportSummary(pkg);
+    showReportPreview(pkg.proposal_markdown);
+    appendTrace({ type: "step", name: "report-built", detail: `共 ${pkg.proposal_markdown_chars} 字, ${pkg.citation_count} 引用` });
+  } catch (e) {
+    showError("生成报告异常: " + String(e).slice(0, 200));
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function refreshReportSummary() {
+  if (!state.projectId) return;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/final-package`);
+    if (r.status === 409) return;  // 还没 build
+    if (!r.ok) return;
+    const summary = await r.json();
+    renderReportSummary(summary);
+  } catch (_) {
+    /* silent */
+  }
+}
+
+function renderReportSummary(pkg) {
+  const summary = document.getElementById("report-summary");
+  const readyVal = document.getElementById("report-ready-val");
+  const covVal = document.getElementById("report-coverage-val");
+  const charsVal = document.getElementById("report-chars-val");
+  const sectionsVal = document.getElementById("report-sections-val");
+  const citationsVal = document.getElementById("report-citations-val");
+  const warnChip = document.getElementById("report-warning-chip");
+  const btnBuild = document.getElementById("btn-build-report");
+  const btnRebuild = document.getElementById("btn-rebuild-report");
+  const btnDownload = document.getElementById("btn-download-report");
+  const btnPreview = document.getElementById("btn-preview-report");
+
+  if (summary) summary.hidden = false;
+  if (readyVal) readyVal.textContent = pkg.ready_for_proposal ? "可提交草稿" : "需补证据";
+  if (covVal) covVal.textContent = (pkg.coverage_score ?? 0).toFixed(2);
+  if (charsVal) charsVal.textContent = pkg.proposal_markdown_chars ?? "-";
+  if (sectionsVal) sectionsVal.textContent = pkg.section_count ?? "-";
+  if (citationsVal) citationsVal.textContent = pkg.citation_count ?? "-";
+  if (warnChip) warnChip.hidden = !pkg.low_coverage_warning;
+
+  if (btnBuild) btnBuild.hidden = true;
+  if (btnRebuild) btnRebuild.hidden = false;
+  if (btnDownload) btnDownload.hidden = false;
+  if (btnPreview) btnPreview.hidden = false;
+}
+
+function showReportPreview(md) {
+  const pre = document.getElementById("report-preview");
+  if (pre) {
+    pre.textContent = md || "";
+    pre.hidden = false;
+  }
+}
+
+function toggleReportPreview() {
+  const pre = document.getElementById("report-preview");
+  if (pre) pre.hidden = !pre.hidden;
+}
+
+function downloadReport() {
+  if (!state.projectId) return;
+  const url = `${API}/api/v1/one-topic/${state.projectId}/final-package/markdown`;
+  // 浏览器直接下载
+  window.open(url, "_blank");
+  appendTrace({ type: "step", name: "download-report", detail: "下载 Markdown" });
+}
+
 
 // ---------- 证据工作台 (Session 2) ----------
 
@@ -671,6 +776,7 @@ async function onAnalyze() {
       document.getElementById("trace-sub").textContent =
         `完成 · 共 ${state.trace.length} 个 trace 事件 · 耗时 ${result.elapsed_ms || "?"} ms` +
         (state.projectId ? ` · project_id: ${state.projectId}` : "");
+      refreshReportSummary();  // Session 8: 自动加载已有 FinalPackage 摘要
     }
   } catch (e) {
     showError(`分析失败: ${String(e).slice(0, 200)}`);
@@ -1097,16 +1203,27 @@ async function selectPivotRoute(level) {
 // 事件代理: ev-card 内的按钮
 document.body.addEventListener("click", async (e) => {
   const btn = e.target.closest("[data-action], [data-pivot-level]");
-  if (!btn) return;
-  const action = btn.dataset.action;
-  const eid = btn.dataset.evId;
-  if (action === "review") {
-    await patchReview(eid, btn.dataset.status);
-  } else if (action === "delete") {
-    await deleteEvidence(eid);
-  } else if (action === "select-pivot") {
-    await selectPivotRoute(btn.dataset.level);
-  } else if (btn.dataset.pivotLevel) {
-    await selectPivotRoute(btn.dataset.pivotLevel);
+  if (btn) {
+    const action = btn.dataset.action;
+    const eid = btn.dataset.evId;
+    if (action === "review") {
+      await patchReview(eid, btn.dataset.status);
+    } else if (action === "delete") {
+      await deleteEvidence(eid);
+    } else if (action === "select-pivot") {
+      await selectPivotRoute(btn.dataset.level);
+    } else if (btn.dataset.pivotLevel) {
+      await selectPivotRoute(btn.dataset.pivotLevel);
+    }
+    return;
+  }
+  // Session 8: 报告区按钮
+  const id = e.target.id;
+  if (id === "btn-build-report" || id === "btn-rebuild-report") {
+    await buildReport();
+  } else if (id === "btn-download-report") {
+    downloadReport();
+  } else if (id === "btn-preview-report") {
+    toggleReportPreview();
   }
 });

@@ -105,6 +105,30 @@
           </header>
           <div class="block__body" id="block-recommendation"></div>
         </article>
+
+        <article class="block block--report" id="block-report">
+          <header class="block__head">
+            <span class="block__num">6</span>
+            <h2 class="block__title">开题报告导出 (Markdown)</h2>
+          </header>
+          <div class="block__body">
+            <div id="report-summary" class="report__summary" hidden>
+              <span class="report__chip" id="report-ready">状态: <strong id="report-ready-val">--</strong></span>
+              <span class="report__chip">覆盖率: <strong id="report-coverage-val">--</strong></span>
+              <span class="report__chip">字符数: <strong id="report-chars-val">--</strong></span>
+              <span class="report__chip">章节: <strong id="report-sections-val">--</strong></span>
+              <span class="report__chip">引用: <strong id="report-citations-val">--</strong></span>
+              <span class="report__chip" id="report-warning-chip" hidden>⚠ 证据不足</span>
+            </div>
+            <div class="report__actions">
+              <button id="btn-build-report" type="button" class="btn btn--primary">生成报告</button>
+              <button id="btn-rebuild-report" type="button" class="btn" hidden>重新生成</button>
+              <button id="btn-download-report" type="button" class="btn" hidden>下载 Markdown</button>
+              <button id="btn-preview-report" type="button" class="btn" hidden>显示/隐藏预览</button>
+            </div>
+            <pre id="report-preview" class="report__preview" hidden></pre>
+          </div>
+        </article>
       </section>
     </section>
 
