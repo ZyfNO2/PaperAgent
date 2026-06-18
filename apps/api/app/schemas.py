@@ -164,6 +164,10 @@ class EvidenceRef(BaseModel):
     review_status: str
     url: str | None = None
     url_verified: bool | None = None
+    # Session 10 §7.2: 验证联动字段
+    verification_status: str | None = None
+    verification_confidence: float | None = None
+    verification_warnings: list[str] = Field(default_factory=list)
 
 
 # ---------- 可行性判断 (§7) ---------- #
@@ -320,6 +324,10 @@ class ReportCitation(BaseModel):
     role: str
     score: float | None = None
     used_in_sections: list[str] = Field(default_factory=list)
+    # Session 10 §8: 验证联动字段
+    verification_status: str | None = None
+    verification_confidence: float | None = None
+    verification_warnings: list[str] = Field(default_factory=list)
 
 
 class FinalPackageSummary(BaseModel):

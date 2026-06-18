@@ -54,6 +54,7 @@ def _build_citation_map(
     feasibility_refs: list[dict], proposal_refs: list[dict],
     review_refs: list[dict], *,
     options: FinalPackageBuildOptions,
+    extras: list[dict] | None = None,
 ) -> dict[str, ReportCitation]:
     """生成稳定的引用编号.
 
@@ -63,6 +64,7 @@ def _build_citation_map(
     - 同一 evidence_id 在全文编号稳定
     - rejected 默认跳过 (除非 include_rejected_as_appendix)
     - needs_check 默认跳过正向引用 (除非 include_low_confidence_refs)
+    - Session 10 §8: extras 提供 verification 字段, 写入 ReportCitation
     """
 
     cite: dict[str, ReportCitation] = {}
@@ -112,9 +114,20 @@ def _build_citation_map(
     counters = {"paper": 0, "dataset": 0, "repo": 0, "note": 0}
     prefix = {"paper": "E", "dataset": "D", "repo": "R", "note": "N"}
 
+    # Session 10 §8: 从 extras 拿 verification 字段 (手动/assistant_intake 的真实状态)
+    extras_v = {}
+    if extras:
+        for e in extras:
+            extras_v[e.get("evidence_id", "")] = {
+                "verification_status": e.get("verification_status") or "unverified",
+                "verification_confidence": e.get("verification_confidence"),
+                "verification_warnings": list(e.get("verification_warnings") or []),
+            }
+
     for ev_type, eid, title, url, rs, score, group in candidates:
         counters[ev_type] += 1
         ref_no = f"{prefix[ev_type]}{counters[ev_type]}"
+        v_meta = extras_v.get(eid, {})
         cite[eid] = ReportCitation(
             ref_no=ref_no,
             evidence_id=eid,
@@ -125,6 +138,9 @@ def _build_citation_map(
             role="supports",
             score=score,
             used_in_sections=[],
+            verification_status=v_meta.get("verification_status", "unverified"),
+            verification_confidence=v_meta.get("verification_confidence"),
+            verification_warnings=v_meta.get("verification_warnings", []),
         )
         used_in[eid] = set()
 
@@ -400,7 +416,7 @@ def _build_sections(
     )
     sections.append(sec_feas)
 
-    # 九、风险预案
+    # 九、风险预案 (Session 10 §8: partial / failed 证据也列在这里)
     risk_lines: list[str] = []
     risk_refs_collected: list[dict] = []
     for missing in feas.get("missing_evidence", [])[:5]:
@@ -409,6 +425,24 @@ def _build_sections(
         nc_str = _format_refs(needs_check_refs, cite)
         risk_lines.append(f"- 待复核证据: {nc_str}")
         risk_refs_collected.extend(needs_check_refs)
+    # Session 10 §8: 关键 supports 中存在 partial → 在风险预案列出
+    partial_supports: list[dict] = []
+    failed_supports: list[dict] = []
+    for c in cite.values():
+        if not c.used_in_sections:
+            continue
+        if c.verification_status == "partial":
+            partial_supports.append({"evidence_id": c.evidence_id, "title": c.title})
+        elif c.verification_status == "failed":
+            failed_supports.append({"evidence_id": c.evidence_id, "title": c.title})
+    if partial_supports:
+        ps_str = _format_refs(partial_supports, cite)
+        risk_lines.append(f"- 部分验证证据 (引用过但未完全验证): {ps_str}")
+        risk_refs_collected.extend(partial_supports)
+    if failed_supports:
+        fs_str = _format_refs(failed_supports, cite)
+        risk_lines.append(f"- 验证失败的证据 (已降级为 warning, 不应正向引用): {fs_str}")
+        risk_refs_collected.extend(failed_supports)
     if not risk_lines:
         risk_lines = ["- 暂无明确风险, 主要风险点已在缺失证据中体现。"]
     sec_risk = ReportSection(
@@ -463,13 +497,24 @@ def _build_sections(
     # 十二、证据引用清单 (在 render_markdown 里拼, 这里只占位)
     sections.append(ReportSection(key="citations", title=SECTION_TITLES[11][1], content=""))
 
-    # 十三、待补证据与修改清单
+    # 十三、待补证据与修改清单 (Session 10 §8: 验证未通过项也列出)
     todo_lines: list[str] = []
     for missing in feas.get("missing_ref_reasons", []) or []:
         todo_lines.append(f"- [待补证据] {missing}")
     for wp in wp_list:
         for q in wp.get("open_questions", []) or []:
             todo_lines.append(f"- [待补证据] {wp.get('wp_id', '')}: {q}")
+    # Session 10 §8: failed / unverified key supports 出现在 待补清单
+    for c in cite.values():
+        if c.verification_status == "failed" and c.used_in_sections:
+            todo_lines.append(
+                f"- [待补证据/重验证] {c.ref_no} {c.title[:40]} 验证失败, 需重新检查 URL 或更换证据"
+            )
+        elif c.verification_status == "partial" and c.used_in_sections:
+            warnings_short = "; ".join(c.verification_warnings[:2]) if c.verification_warnings else ""
+            todo_lines.append(
+                f"- [待补验证] {c.ref_no} {c.title[:40]} 部分验证 ({c.verification_confidence or 0:.2f}): {warnings_short}"
+            )
     if not todo_lines:
         todo_lines = ["(无明显缺失, 可在交付前由用户再次复核)"]
     sec_todo = ReportSection(
@@ -511,20 +556,41 @@ def _render_markdown(
     lines.append(f"- 共挂载 **{len(cite)}** 条证据引用")
     lines.append(f"- 支持正向结论: {sum(1 for c in cite.values() if c.review_status in ('core', 'accepted', 'background'))} 条")
     lines.append(f"- 已被用户复核: {sum(1 for c in cite.values() if c.used_in_sections)} 条 (used_in_sections 非空)")
+
+    # Session 10 §8: 证据验证率
+    verified_n = sum(1 for c in cite.values() if c.verification_status == "verified")
+    partial_n = sum(1 for c in cite.values() if c.verification_status == "partial")
+    failed_n = sum(1 for c in cite.values() if c.verification_status == "failed")
+    skipped_n = sum(1 for c in cite.values() if c.verification_status == "skipped")
+    unverified_n = sum(1 for c in cite.values() if c.verification_status in (None, "unverified"))
+    total_n = max(len(cite), 1)
+    rate = (verified_n + partial_n) / total_n
+    lines.append(f"- 证据验证率 (verified+partial / total): **{rate:.0%}** ({verified_n + partial_n}/{len(cite)})")
+    if verified_n or partial_n or failed_n:
+        lines.append(
+            f"- 验证细分: verified={verified_n}, partial={partial_n}, "
+            f"failed={failed_n}, skipped={skipped_n}, unverified={unverified_n}"
+        )
     lines.append("")
 
     for sec in sections:
         if sec.key == "citations":
-            # 拼证据清单
+            # Session 10 §8: 证据清单增加 验证状态/置信度/警告 列
             lines.append(f"## {sec.title}")
             lines.append("")
-            lines.append("| 编号 | 类型 | 标题 | 状态 | 分数 | 链接 |")
-            lines.append("|---|---|---|---|---:|---|")
+            lines.append("| 编号 | 类型 | 标题 | 审核状态 | 验证 | 置信度 | 警告 | 链接 |")
+            lines.append("|---|---|---|---|---|---:|---|---|")
             for c in cite.values():
                 title_short = _short(c.title, 50)
                 url = c.url or "-"
                 score_str = f"{c.score:.2f}" if c.score is not None else "-"
-                lines.append(f"| {c.ref_no} | {c.evidence_type} | {title_short} | {c.review_status} | {score_str} | {url} |")
+                v_status = c.verification_status or "unverified"
+                v_conf = f"{c.verification_confidence:.2f}" if c.verification_confidence is not None else "-"
+                v_warn = _short("; ".join(c.verification_warnings[:2]), 40) if c.verification_warnings else "-"
+                lines.append(
+                    f"| {c.ref_no} | {c.evidence_type} | {title_short} | "
+                    f"{c.review_status} | {v_status} | {v_conf} | {v_warn} | {url} |"
+                )
             lines.append("")
             continue
         if sec.key == "todo":
@@ -580,7 +646,8 @@ def build_final_package(
     low_warning = coverage < 0.70
     ready = coverage >= 0.70 and bool(feas_refs)
 
-    # citation map
+    # citation map (Session 10 §8: 传 extras 取 verification 状态)
+    extras_pool = ev_store.get_pool_items(project_id)
     cite = _build_citation_map(
         papers=ev_sum.get("papers", []) or [],
         datasets=ev_sum.get("datasets", []) or [],
@@ -589,6 +656,7 @@ def build_final_package(
         proposal_refs=proposal_refs,
         review_refs=review_refs,
         options=options,
+        extras=[it.model_dump() for it in extras_pool],
     )
 
     # sections

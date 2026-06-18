@@ -416,6 +416,34 @@ def delete_evidence(evidence_id: str) -> EvidenceActionResponse:
     )
 
 
+# ---------- Session 10 §6: 验证状态更新 ---------- #
+
+
+def update_verification_field(
+    evidence_id: str,
+    new_item: EvidenceItem,
+) -> EvidenceActionResponse:
+    """用一个新的 EvidenceItem (含 verification 字段) 替换原有 item.
+
+    不影响 review_status / workspace_lane; 仅更新 verification_* 字段.
+    """
+
+    with _LEDGER_LOCK:
+        for proj in _LEDGER.values():
+            if evidence_id in proj.items:
+                proj.items[evidence_id] = new_item
+                return EvidenceActionResponse(
+                    ok=True, evidence_id=evidence_id, evidence=new_item,
+                    ledger_summary=_summary(proj.project_id),
+                    message="验证状态已更新",
+                )
+    return EvidenceActionResponse(
+        ok=False, evidence_id=evidence_id, evidence=None,
+        ledger_summary=EvidenceLedgerResponse(project_id=""),
+        message=f"evidence_id {evidence_id} 不存在",
+    )
+
+
 # ---------- 查询 ---------- #
 
 

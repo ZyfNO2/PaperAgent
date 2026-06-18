@@ -128,6 +128,7 @@ function switchTab(name) {
   if (name === "evidence" && state.projectId) {
     refreshEvidence();
     loadWorkspaceBoard();
+    refreshVerificationSummary();
   }
 }
 
@@ -605,11 +606,19 @@ function workspaceCardHTML(it, boardType) {
     it.source_mode || "auto_search",
   ].join(" · ");
   const url = it.url || it.download || "";
+  const vStatus = it.verification_status || "unverified";
+  const vConf = it.verification_confidence;
+  const vWarn = (it.verification_warnings || []).slice(0, 2).join("; ");
+  const vPill = `<span class="v-pill v-pill--${vStatus}">验证: ${vStatus}</span>` +
+    (vConf != null ? `<span class="v-meta">置信度 ${vConf.toFixed(2)}</span>` : "");
+  const vMeta = vWarn ? `<div class="v-warnings">⚠ ${escapeHtml(vWarn)}</div>` : "";
   return `
     <div class="ws-card" data-ev-id="${eid}">
       <div class="ws-card__title">${title}</div>
       <div class="ws-card__meta">${escapeHtml(meta)}${url ? ` · <a href="${escapeHtml(url)}" target="_blank" rel="noopener">链接</a>` : ""}</div>
+      <div class="ws-card__verify-line">${vPill}${vMeta}</div>
       <div class="ws-card__actions">
+        <button class="ws-card__verify-btn" data-ws-action="verify" data-ws-eid="${eid}">🔍 验证来源</button>
         <button class="ws-card__btn ws-card__btn--left" data-ws-action="add_left" data-ws-eid="${eid}">加入左侧</button>
         <button class="ws-card__btn ws-card__btn--core" data-ws-action="mark_core" data-ws-eid="${eid}">标核心</button>
         <button class="ws-card__btn" data-ws-action="move_right" data-ws-eid="${eid}">移到系统</button>
@@ -701,10 +710,143 @@ async function cardsIntake() {
       `;
     }
     appendTrace({ type: "step", name: "intake", detail: `生成 ${data.card_type} 卡片: ${ev?.title || "?"}` });
+    // Session 10 §9.3: 提示 "建议先验证来源" (URL 类型)
+    if (ev.url || (ev.raw_input_ref && String(ev.raw_input_ref).startsWith("http"))) {
+      const hintEl = resultEl.querySelector(".card-intake__card");
+      if (hintEl && !hintEl.querySelector("[data-intake-verify-hint]")) {
+        const verifyBtn = document.createElement("button");
+        verifyBtn.className = "ws-card__verify-btn";
+        verifyBtn.setAttribute("data-intake-verify-hint", "1");
+        verifyBtn.setAttribute("data-intake-verify-eid", ev.evidence_id || "");
+        verifyBtn.textContent = "🔍 立即验证来源";
+        verifyBtn.style.marginTop = "6px";
+        hintEl.appendChild(verifyBtn);
+      }
+    }
     // 刷新 board
     await loadWorkspaceBoard();
   } catch (e) {
     showError("生成卡片异常: " + String(e).slice(0, 200));
+  }
+}
+
+
+// ---------- Session 10: 多源轻验证 + URL Verified ---------- #
+
+async function verifyEvidence(evidenceId) {
+  if (!state.projectId) {
+    showError("先跑一次分析");
+    return;
+  }
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/${evidenceId}/verify`, {
+      method: "POST",
+    });
+    if (!r.ok) {
+      showError("验证失败: " + (await r.text()).slice(0, 200));
+      return null;
+    }
+    return await r.json();
+  } catch (e) {
+    showError("验证异常: " + String(e).slice(0, 200));
+    return null;
+  }
+}
+
+async function verifyProjectScope(scope) {
+  if (!state.projectId) {
+    showError("先跑一次分析");
+    return null;
+  }
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scope, include_pending: true, refresh: true }),
+    });
+    if (!r.ok) {
+      showError("批量验证失败: " + (await r.text()).slice(0, 200));
+      return null;
+    }
+    return await r.json();
+  } catch (e) {
+    showError("批量验证异常: " + String(e).slice(0, 200));
+    return null;
+  }
+}
+
+async function fetchVerificationSummary() {
+  if (!state.projectId) return null;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/verification-summary`);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderVerificationResult(result, scopeLabel) {
+  const resultEl = document.getElementById("verification-result");
+  const hintEl = document.getElementById("verification-summary-hint");
+  if (!resultEl || !hintEl) return;
+  resultEl.hidden = false;
+  if (result.total === 0) {
+    resultEl.innerHTML = `<div>${escapeHtml(scopeLabel || "验证")}: 未匹配到任何证据</div>`;
+    hintEl.textContent = "无证据";
+    return;
+  }
+  const rate = result.total ? ((result.verified + result.partial) / result.total) : 0;
+  hintEl.textContent =
+    `${scopeLabel || "验证"}: verified ${result.verified} · partial ${result.partial} · failed ${result.failed} · skipped ${result.skipped} · 平均置信度 ${result.avg_confidence.toFixed(2)} · 验证率 ${(rate * 100).toFixed(0)}%`;
+  const highRisk = (result.high_risk_items || []).slice(0, 5);
+  const riskHTML = highRisk.length
+    ? `<details><summary>高风险 (${highRisk.length})</summary><ul>${highRisk.map(h =>
+        `<li>${escapeHtml(h.evidence_id)} · ${escapeHtml(h.verification_status)} · ${escapeHtml((h.warnings || []).join("; ").slice(0, 80))}</li>`
+      ).join("")}</ul></details>`
+    : "";
+  resultEl.innerHTML = `
+    <div><strong>${escapeHtml(scopeLabel || "验证结果")}</strong></div>
+    <div>verified=${result.verified}, partial=${result.partial}, failed=${result.failed}, skipped=${result.skipped}, avg_confidence=${result.avg_confidence.toFixed(3)}</div>
+    <div>证据验证率 (verified+partial / total): <strong>${(rate * 100).toFixed(0)}%</strong> (${result.verified + result.partial}/${result.total})</div>
+    ${riskHTML}
+  `;
+}
+
+async function refreshVerificationSummary() {
+  const sum = await fetchVerificationSummary();
+  const hintEl = document.getElementById("verification-summary-hint");
+  if (!hintEl) return;
+  if (!sum) {
+    hintEl.textContent = "未加载";
+    return;
+  }
+  const rate = sum.total ? ((sum.verified + sum.partial) / sum.total) : 0;
+  hintEl.textContent =
+    `总览: verified ${sum.verified} · partial ${sum.partial} · failed ${sum.failed} · skipped ${sum.skipped} · 平均置信度 ${sum.avg_confidence.toFixed(2)} · 验证率 ${(rate * 100).toFixed(0)}%`;
+}
+
+async function manualConfirmVerification(evidenceId, newStatus, reason) {
+  if (!state.projectId) return;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/${evidenceId}/verification`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        verification_status: newStatus,
+        verification_source: "manual",
+        verification_confidence: newStatus === "verified" ? 0.90 : (newStatus === "failed" ? 0.20 : 0.50),
+        reason: reason || `用户手动确认: ${newStatus}`,
+      }),
+    });
+    if (!r.ok) {
+      showError("手动确认失败: " + (await r.text()).slice(0, 200));
+      return null;
+    }
+    return await r.json();
+  } catch (e) {
+    showError("手动确认异常: " + String(e).slice(0, 200));
+    return null;
   }
 }
 
@@ -798,11 +940,30 @@ function evCardHTML(it, type) {
         <span class="ev-card__status ev-card__status--${status}">${statusLabel}</span>
       </div>
       ${metaLine ? `<div class="ev-card__meta">${metaLine}</div>` : ""}
+      ${verificationLineHTML(it)}
       ${noteHTML}
       <div class="ev-card__actions">
         ${actionBtns}
+        <button class="ev-card__verify-btn" data-ev-id="${escapeHtml(it.evidence_id)}" data-action="verify" type="button">🔍 验证来源</button>
         <button class="ev-btn ev-btn--danger" data-ev-id="${escapeHtml(it.evidence_id)}" data-action="delete" type="button">🗑️ 删</button>
       </div>
+    </div>
+  `;
+}
+
+function verificationLineHTML(it) {
+  const v = it.verification_status || "unverified";
+  const conf = it.verification_confidence;
+  const warnings = (it.verification_warnings || []).slice(0, 2);
+  const confText = conf != null ? `置信度 ${conf.toFixed(2)}` : "";
+  const warnsHTML = warnings.length
+    ? `<div class="v-warnings">⚠ ${warnings.map(escapeHtml).join("; ")}</div>`
+    : "";
+  return `
+    <div class="ev-card__verify">
+      <span class="v-pill v-pill--${v}">验证: ${v}</span>
+      ${confText ? `<span class="v-meta">${confText}</span>` : ""}
+      ${warnsHTML}
     </div>
   `;
 }
@@ -934,6 +1095,7 @@ async function onAnalyze() {
         (state.projectId ? ` · project_id: ${state.projectId}` : "");
       refreshReportSummary();  // Session 8: 自动加载已有 FinalPackage 摘要
       loadWorkspaceBoard();  // Session 9: 自动加载双栏工作台
+      refreshVerificationSummary();  // Session 10: 自动加载验证摘要
     }
   } catch (e) {
     showError(`分析失败: ${String(e).slice(0, 200)}`);
@@ -1367,6 +1529,14 @@ document.body.addEventListener("click", async (e) => {
       await patchReview(eid, btn.dataset.status);
     } else if (action === "delete") {
       await deleteEvidence(eid);
+    } else if (action === "verify") {
+      const r = await verifyEvidence(eid);
+      if (r) {
+        appendTrace({ type: "step", name: "verify", detail: `${eid} → ${r.verification_status} (${r.verification_source}, conf=${r.verification_confidence.toFixed(2)})` });
+        await refreshEvidence();
+        await loadWorkspaceBoard();
+        await refreshVerificationSummary();
+      }
     } else if (action === "select-pivot") {
       await selectPivotRoute(btn.dataset.level);
     } else if (btn.dataset.pivotLevel) {
@@ -1379,7 +1549,14 @@ document.body.addEventListener("click", async (e) => {
     const btn = e.target.closest("[data-ws-action]");
     const action = btn.dataset.wsAction;
     const eid = btn.dataset.wsEid;
-    if (action === "add_left") {
+    if (action === "verify") {
+      const r = await verifyEvidence(eid);
+      if (r) {
+        appendTrace({ type: "step", name: "verify", detail: `${eid} → ${r.verification_status} (${r.verification_source}, conf=${r.verification_confidence.toFixed(2)})` });
+        await loadWorkspaceBoard();
+        await refreshVerificationSummary();
+      }
+    } else if (action === "add_left") {
       await patchWorkspaceItem(eid, "user_preferred", "accepted", "用户加入左侧");
     } else if (action === "mark_core") {
       await patchWorkspaceItem(eid, "selected", "core", "用户标核心");
@@ -1402,6 +1579,16 @@ document.body.addEventListener("click", async (e) => {
     await patchWorkspaceItem(e.target.dataset.intakeRejectEid, "rejected", "rejected", "Agent 卡片用户拒绝");
     return;
   }
+  if (e.target.dataset.intakeVerifyEid) {
+    const eid = e.target.dataset.intakeVerifyEid;
+    const r = await verifyEvidence(eid);
+    if (r) {
+      appendTrace({ type: "step", name: "verify", detail: `intake ${eid} → ${r.verification_status}` });
+      await loadWorkspaceBoard();
+      await refreshVerificationSummary();
+    }
+    return;
+  }
   // Session 8: 报告区按钮
   const id = e.target.id;
   if (id === "btn-build-report" || id === "btn-rebuild-report") {
@@ -1414,5 +1601,31 @@ document.body.addEventListener("click", async (e) => {
     await cardsIntake();
   } else if (id === "btn-ws-refresh") {
     await loadWorkspaceBoard();
+  } else if (id === "btn-verify-all") {
+    const r = await verifyProjectScope("all");
+    if (r) {
+      appendTrace({ type: "step", name: "verify-all", detail: `verified=${r.verified} partial=${r.partial} failed=${r.failed} skipped=${r.skipped}` });
+      renderVerificationResult(r, "验证全部证据");
+      await loadWorkspaceBoard();
+      await refreshEvidence();
+    }
+  } else if (id === "btn-verify-user") {
+    const r = await verifyProjectScope("user_preferred");
+    if (r) {
+      appendTrace({ type: "step", name: "verify-user", detail: `verified=${r.verified} partial=${r.partial} failed=${r.failed} skipped=${r.skipped}` });
+      renderVerificationResult(r, "只验证用户栏");
+      await loadWorkspaceBoard();
+    }
+  } else if (id === "btn-verify-intake") {
+    const r = await verifyProjectScope("assistant_intake");
+    if (r) {
+      appendTrace({ type: "step", name: "verify-intake", detail: `verified=${r.verified} partial=${r.partial} failed=${r.failed} skipped=${r.skipped}` });
+      renderVerificationResult(r, "只验证 Agent 导入");
+      await loadWorkspaceBoard();
+    }
+  } else if (id === "btn-verify-summary") {
+    await refreshVerificationSummary();
+    const sum = await fetchVerificationSummary();
+    if (sum) renderVerificationResult(sum, "验证摘要");
   }
 });

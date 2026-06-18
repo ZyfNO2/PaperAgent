@@ -173,6 +173,21 @@
         <div class="card-intake__result" id="intake-result" hidden></div>
       </div>
 
+      <!-- Session 10: 验证面板 (轻验证 + URL Verified) -->
+      <div class="verification-panel" id="verification-panel">
+        <header class="verification-panel__head">
+          <h3>🔍 证据验证 (Session 10: URL Verified)</h3>
+          <span class="verification-panel__hint" id="verification-summary-hint">未加载</span>
+        </header>
+        <div class="verification-panel__row">
+          <button class="cta-mini" id="btn-verify-all" type="button">✅ 验证全部证据</button>
+          <button class="cta-mini" id="btn-verify-user" type="button">👤 只验证用户栏</button>
+          <button class="cta-mini" id="btn-verify-intake" type="button">🤖 只验证 Agent 导入</button>
+          <button class="cta-mini" id="btn-verify-summary" type="button">📊 查看验证摘要</button>
+        </div>
+        <div class="verification-panel__result" id="verification-result" hidden></div>
+      </div>
+
       <!-- Session 9: 双栏工作台 -->
       <div class="workspace-board" id="workspace-board">
         <header class="workspace-board__head">
@@ -366,7 +381,7 @@ GC10-DET"></textarea></label></div>
       <div class="form-row"><label>关联论文<input id="mr-paper" type="text" placeholder="如 Lightweight YOLOv8 for Steel..."></label></div>
       <div class="form-row form-row--2">
         <label>许可<input id="mr-license" type="text" placeholder="MIT"></label>
-        <label>备注<input id="mr-note" type="text" placeholder="第三方复现 / 官方 / ..."></label></div>
+        <label>备注<input id="mr-note" type="text" placeholder="第三方复现 / 官方 / ..."></label>
       </div>
       <div class="form-row form-row--4">
         <label class="cb"><input type="checkbox" id="mr-readme"> 有 README</label>

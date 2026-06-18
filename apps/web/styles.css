@@ -383,6 +383,33 @@ html, body { background: #0b0d12; color: #e6e8ee; font-family: -apple-system, Bl
 .ws-extra__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
 .ws-extra__grid h5 { margin: 0 0 6px 0; color: #fbbf24; }
 
+/* Session 10: 多源轻验证 + URL Verified 样式 */
+.verification-panel { margin-top: 18px; padding: 14px 16px; background: #131722; border: 1px solid #2a3142; border-radius: 10px; }
+.verification-panel__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.verification-panel__head h3 { margin: 0; font-size: 15px; color: #f1f5f9; }
+.verification-panel__hint { font-size: 12px; color: #8b94a8; }
+.verification-panel__row { display: flex; gap: 8px; flex-wrap: wrap; }
+.verification-panel__result { margin-top: 10px; padding: 10px 12px; background: #0d1117; border: 1px solid #2a3550; border-radius: 6px; font-size: 12px; color: #cbd5e1; }
+.verification-panel__result pre { white-space: pre-wrap; word-break: break-all; }
+
+.v-pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; margin-right: 4px; }
+.v-pill--verified { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4); }
+.v-pill--partial { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+.v-pill--failed { background: rgba(239, 68, 68, 0.18); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); }
+.v-pill--unverified { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; border: 1px solid rgba(148,163,184,0.4); }
+.v-pill--skipped { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border: 1px dashed rgba(148,163,184,0.4); }
+
+.v-warnings { margin-top: 4px; font-size: 10px; color: #fca5a5; }
+.v-meta { font-size: 10px; color: #8b94a8; margin-top: 2px; }
+
+.ev-card__verify { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 11px; }
+.ev-card__verify-btn { padding: 3px 8px; background: #0d1117; border: 1px solid #6366f1; color: #a5b4fc; border-radius: 4px; font-size: 11px; cursor: pointer; }
+.ev-card__verify-btn:hover { background: rgba(99,102,241,0.18); }
+
+.ws-card__verify-line { font-size: 10px; color: #8b94a8; margin-bottom: 4px; }
+.ws-card__verify-btn { padding: 2px 6px; background: #0d1117; border: 1px solid #6366f1; color: #a5b4fc; border-radius: 3px; font-size: 10px; cursor: pointer; margin-right: 4px; }
+.ws-card__verify-btn:hover { background: rgba(99,102,241,0.18); }
+
 .feasibility__confidence {
   font-size: 12px;
   color: #8b94a8;

@@ -31,6 +31,10 @@ from ...schemas_evidence import (
     PaperManualCreate,
     RepoManualCreate,
     ReviewUpdate,
+    VerificationBatchRequest,
+    VerificationResult,
+    VerificationSummary,
+    ManualVerificationUpdate,
 )
 from ...services import evidence as ev_store
 from ...services import evidence_refs as refs_service
@@ -38,6 +42,7 @@ from ...services import final_package as fp_service
 from ...services import one_topic as ot_service
 from ...services import workspace as ws_service
 from ...services import card_intake as ci_service
+from ...services import verification as ver_service
 
 router = APIRouter(prefix="/api/v1/one-topic", tags=["one-topic"])
 
@@ -866,3 +871,184 @@ def cards_intake(project_id: str, body: CardIntakeRequest) -> CardIntakeResponse
         warnings=warnings,
         message=f"已生成 {card_type} 卡片, 默认 pending 待用户确认",
     )
+
+
+# ---------- Session 10: 多源轻验证与 URL Verified (§6) ---------- #
+
+
+@router.post(
+    "/{project_id}/evidence/{evidence_id}/verify",
+    response_model=VerificationResult,
+    summary="Session 10 §6.1: 验证单条证据 (URL / 元数据轻验证)",
+)
+def verify_one_evidence(project_id: str, evidence_id: str) -> VerificationResult:
+    """对单条 evidence 跑验证. 更新 verification_* 字段, 不改变 review_status.
+
+    返回 VerificationResult; 写入 Trace.
+    """
+
+    item = ev_store.get_item(evidence_id)
+    if item is None or item.project_id != project_id:
+        raise HTTPException(
+            status_code=404,
+            detail=f"evidence_id {evidence_id} 不在 project_id {project_id} 中",
+        )
+
+    result = ver_service.verify_evidence_item(item, refresh=True)
+    updated = ver_service.apply_verification(item, result)
+    ev_store.update_verification_field(evidence_id, updated)
+
+    ev_store.append_trace(
+        project_id, "verify_evidence", "evidence_item", evidence_id,
+        evidence_id=evidence_id,
+        reason=f"verification_status={result.verification_status}, source={result.verification_source}",
+        actor="system",
+    )
+    return result
+
+
+@router.post(
+    "/{project_id}/evidence/verify",
+    response_model=VerificationSummary,
+    summary="Session 10 §6.2: 批量验证项目证据 (含 scope / refresh 选项)",
+)
+def verify_project_evidence(
+    project_id: str, body: VerificationBatchRequest,
+) -> VerificationSummary:
+    """批量验证, 返回 VerificationSummary (含 high_risk_items)."""
+
+    pool = ev_store.get_pool_items(project_id)
+    if not pool:
+        raise HTTPException(
+            status_code=409,
+            detail=f"project_id {project_id} 还没有 evidence, 请先 POST /analyze 或手动添加",
+        )
+
+    results = ver_service.verify_project_evidence(
+        project_id=project_id,
+        pool_items=pool,
+        scope=body.scope,
+        include_rejected=body.include_rejected,
+        include_pending=body.include_pending,
+        refresh=body.refresh,
+    )
+
+    # 写回 ledger
+    for r in results:
+        item = ev_store.get_item(r.evidence_id)
+        if item is None:
+            continue
+        # refresh=False 时跳过已验证条目, 不重写
+        if not body.refresh and item.verification_status not in ("unverified",):
+            continue
+        updated = ver_service.apply_verification(item, r)
+        ev_store.update_verification_field(r.evidence_id, updated)
+
+    summary = ver_service.build_summary(project_id, results)
+
+    ev_store.append_trace(
+        project_id, "verify_project", "evidence_pool", body.scope,
+        reason=f"verified={summary.verified}, partial={summary.partial}, failed={summary.failed}, skipped={summary.skipped}",
+        actor="system",
+    )
+    return summary
+
+
+@router.get(
+    "/{project_id}/evidence/verification-summary",
+    response_model=VerificationSummary,
+    summary="Session 10 §6.3: 取项目验证摘要",
+)
+def verification_summary(project_id: str) -> VerificationSummary:
+    pool = ev_store.get_pool_items(project_id)
+    if not pool:
+        raise HTTPException(
+            status_code=409,
+            detail=f"project_id {project_id} 还没有 evidence",
+        )
+
+    # 不重跑, 用已有的 verification 字段聚合
+    results: list[VerificationResult] = []
+    for it in pool:
+        # 包装 EvidenceItem 现有字段为 VerificationResult
+        results.append(VerificationResult(
+            evidence_id=it.evidence_id,
+            evidence_type=it.evidence_type,
+            ok=it.verification_status != "failed",
+            url_verified=bool(it.url_verified),
+            verification_status=it.verification_status,
+            verification_confidence=it.verification_confidence or 0.0,
+            verification_source=it.verification_source,
+            normalized_url=it.url,
+            metadata=it.verification_metadata,
+            warnings=it.verification_warnings,
+            checked_at=it.verification_checked_at.isoformat() if it.verification_checked_at else "",
+        ))
+    return ver_service.build_summary(project_id, results)
+
+
+@router.patch(
+    "/{project_id}/evidence/{evidence_id}/verification",
+    response_model=VerificationResult,
+    summary="Session 10 §6.4: 手动确认验证 (不改变 review_status, 写入 Trace)",
+)
+def manual_verification(
+    project_id: str, evidence_id: str, body: ManualVerificationUpdate,
+) -> VerificationResult:
+    item = ev_store.get_item(evidence_id)
+    if item is None or item.project_id != project_id:
+        raise HTTPException(
+            status_code=404,
+            detail=f"evidence_id {evidence_id} 不在 project_id {project_id} 中",
+        )
+
+    now = ev_store._utcnow() if hasattr(ev_store, "_utcnow") else None
+    from datetime import datetime, timezone
+    now = now or datetime.now(timezone.utc)
+
+    new_data = item.model_dump()
+    new_data["verification_status"] = body.verification_status
+    new_data["verification_source"] = body.verification_source
+    if body.verification_confidence is not None:
+        new_data["verification_confidence"] = body.verification_confidence
+    else:
+        # 手动确认的默认置信度
+        new_data["verification_confidence"] = 0.90 if body.verification_status == "verified" else (
+            0.20 if body.verification_status == "failed" else 0.50
+        )
+    new_data["url_verified"] = (body.verification_status == "verified")
+    new_data["verification_checked_at"] = now
+    new_data["verification_warnings"] = [body.reason] if body.reason else list(item.verification_warnings)
+    new_data["verification_metadata"] = {**item.verification_metadata, "manual_reason": body.reason}
+
+    updated = EvidenceItem(**new_data) if False else _reload_evidence(new_data)
+
+    ev_store.update_verification_field(evidence_id, updated)
+
+    ev_store.append_trace(
+        project_id, "manual_verification", "evidence_item", evidence_id,
+        evidence_id=evidence_id,
+        reason=body.reason or f"manual: {body.verification_status} via {body.verification_source}",
+        actor="user",
+    )
+
+    return VerificationResult(
+        evidence_id=updated.evidence_id,
+        evidence_type=updated.evidence_type,
+        ok=updated.verification_status != "failed",
+        url_verified=bool(updated.url_verified),
+        verification_status=updated.verification_status,
+        verification_confidence=updated.verification_confidence or 0.0,
+        verification_source=updated.verification_source,
+        normalized_url=updated.url,
+        metadata=updated.verification_metadata,
+        warnings=updated.verification_warnings,
+        checked_at=updated.verification_checked_at.isoformat() if updated.verification_checked_at else now.isoformat(),
+    )
+
+
+def _reload_evidence(data: dict) -> "EvidenceItem":
+    """用 dict 重建 EvidenceItem (避免循环 import)."""
+
+    from ...schemas_evidence import EvidenceItem
+    return EvidenceItem(**data)

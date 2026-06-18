@@ -16,6 +16,8 @@ SourceMode = Literal["auto_search", "manual", "upload", "import", "assistant_int
 ReviewStatus = Literal["pending", "accepted", "core", "background", "rejected", "needs_check"]
 WorkspaceLane = Literal["user_preferred", "system_found", "selected", "rejected"]
 RawInputType = Literal["url", "text", "github", "dataset_page", "paper_page", "image", "pdf"]
+VerificationStatus = Literal["unverified", "verified", "failed", "partial", "skipped"]
+VerificationSource = Literal["http", "arxiv", "openalex", "github", "huggingface", "kaggle", "manual", "none"]
 
 
 def _utcnow() -> datetime:
@@ -145,6 +147,76 @@ class EvidenceItem(BaseModel):
     raw_input_ref: str | None = None
     extraction_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
     extraction_warnings: list[str] = Field(default_factory=list)
+
+    # Session 10 §4.1: 多源轻验证与 URL Verified 字段
+    url_verified: bool | None = None
+    verification_status: VerificationStatus = "unverified"
+    verification_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    verification_source: VerificationSource = "none"
+    verification_checked_at: datetime | None = None
+    verification_warnings: list[str] = Field(default_factory=list)
+    verification_metadata: dict = Field(default_factory=dict)
+
+
+# ---------- Session 10: Verification 模型 (§4.2) ---------- #
+
+
+class VerificationResult(BaseModel):
+    """单条 evidence 的验证结果."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    evidence_id: str
+    evidence_type: str
+    ok: bool
+    url_verified: bool
+    verification_status: VerificationStatus
+    verification_confidence: float
+    verification_source: VerificationSource
+    normalized_url: str | None = None
+    metadata: dict = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
+    checked_at: str
+
+
+class VerificationSummary(BaseModel):
+    """批量验证摘要 (§6.3)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    project_id: str
+    total: int
+    verified: int
+    partial: int
+    failed: int
+    skipped: int
+    avg_confidence: float
+    high_risk_items: list[VerificationResult] = Field(default_factory=list)
+
+
+class VerificationBatchRequest(BaseModel):
+    """POST /evidence/verify 请求体 (§6.2)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    scope: Literal[
+        "all", "paper", "dataset", "repo", "note",
+        "assistant_intake", "user_preferred", "selected",
+    ] = "all"
+    include_rejected: bool = False
+    include_pending: bool = True
+    refresh: bool = False
+
+
+class ManualVerificationUpdate(BaseModel):
+    """PATCH /evidence/{id}/verification 请求体 (§6.4)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    verification_status: VerificationStatus
+    verification_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    verification_source: VerificationSource = "manual"
+    reason: str | None = None
 
 
 # ---------- 证据池响应 ---------- #
