@@ -147,6 +147,25 @@ class EvidenceSummary(BaseModel):
     has_metrics: bool = False
 
 
+# ---------- EvidenceRef (Session 7 §5.1) ---------- #
+
+
+class EvidenceRef(BaseModel):
+    """统一的证据引用结构 (SOP §5.1)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    evidence_id: str
+    evidence_type: Literal["paper", "dataset", "repo", "baseline", "note"]
+    title: str
+    role: Literal["supports", "warns", "blocks", "background", "alternative"]
+    reason: str
+    score: float | None = None
+    review_status: str
+    url: str | None = None
+    url_verified: bool | None = None
+
+
 # ---------- 可行性判断 (§7) ---------- #
 
 
@@ -161,6 +180,11 @@ class FeasibilitySummary(BaseModel):
     engineering_status: str
     missing_evidence: list[str] = Field(default_factory=list)
     recommended_next_action: str
+    # Session 7: 证据引用
+    evidence_refs: list[EvidenceRef] = Field(default_factory=list)
+    blocking_refs: list[EvidenceRef] = Field(default_factory=list)
+    missing_ref_reasons: list[str] = Field(default_factory=list)
+    confidence: float = 0.0
 
 
 # ---------- 开题建议 (§8) ---------- #
@@ -174,6 +198,13 @@ class WorkPackageSuggestion(BaseModel):
     data_source: str
     experiment_plan: str
     chapter: str
+    # Session 7: 证据引用
+    evidence_refs: list[EvidenceRef] = Field(default_factory=list)
+    dataset_refs: list[EvidenceRef] = Field(default_factory=list)
+    baseline_refs: list[EvidenceRef] = Field(default_factory=list)
+    metric_refs: list[EvidenceRef] = Field(default_factory=list)
+    open_questions: list[str] = Field(default_factory=list)
+    status: Literal["ready", "needs_evidence"] = "ready"
 
 
 class PivotRoute(BaseModel):
@@ -185,6 +216,11 @@ class PivotRoute(BaseModel):
     removed_keywords: list[str] = Field(default_factory=list)
     tradeoff: str
     work_packages: list[WorkPackageSuggestion] = Field(default_factory=list)
+    # Session 7: 证据引用
+    evidence_refs: list[EvidenceRef] = Field(default_factory=list)
+    risk_reduction_refs: list[EvidenceRef] = Field(default_factory=list)
+    missing_evidence: list[str] = Field(default_factory=list)
+    confidence: float = 0.0
 
 
 class ProposalRecommendation(BaseModel):
@@ -195,6 +231,9 @@ class ProposalRecommendation(BaseModel):
     work_packages: list[WorkPackageSuggestion] = Field(default_factory=list)
     proposal_outline: list[str] = Field(default_factory=list)
     pivot_routes: list[PivotRoute] = Field(default_factory=list, description="§10 三条退化路线")
+    # Session 7: 证据引用
+    topic_evidence_refs: list[EvidenceRef] = Field(default_factory=list)
+    reason_evidence_refs: dict[str, list[EvidenceRef]] = Field(default_factory=dict)
 
 
 # ---------- 低门槛审核 (§9) ---------- #
@@ -204,6 +243,9 @@ class ReviewCheck(BaseModel):
     dimension: str
     result: Literal["通过", "需补充", "有条件通过", "不通过"]
     comment: str
+    # Session 7: 证据引用
+    evidence_refs: list[EvidenceRef] = Field(default_factory=list)
+    confidence: float = 0.0
 
 
 class LightReview(BaseModel):

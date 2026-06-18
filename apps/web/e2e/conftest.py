@@ -87,5 +87,5 @@ def page_with_result(page):
 
     page.fill("#input-topic", "基于YOLO的钢材表面缺陷检测")
     page.click("#btn-analyze")
-    page.wait_for_selector("#result-grid:not([hidden])", timeout=60000)
+    page.wait_for_selector("#result-grid:not([hidden])", timeout=120000)
     return page

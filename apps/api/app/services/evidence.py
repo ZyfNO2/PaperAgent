@@ -40,10 +40,16 @@ class _ProjectEvidence:
     def __init__(self, project_id: str) -> None:
         self.project_id = project_id
         self.items: dict[str, EvidenceItem] = {}
+        # Session 7: 最新一次 analyze 的快照 (供 refs/rebuild 和 refs/coverage 用)
+        self.latest_snapshot: dict[str, Any] | None = None
 
 
 _LEDGER: dict[str, _ProjectEvidence] = {}
 _LEDGER_LOCK = threading.RLock()  # RLock 因为 _summary 在 update_review 锁内递归调用
+
+# Session 7 §7.3: 用户复核 EvidenceRef 的 Trace 记录
+_TRACE: dict[str, list[dict[str, Any]]] = {}
+_TRACE_LOCK = threading.RLock()
 
 
 def _get_project(project_id: str) -> _ProjectEvidence:
@@ -607,3 +613,68 @@ def dedup_check(project_id: str, body) -> dict:
             "reason": reason,
         }
     return {"is_duplicate": False, "existing_evidence_id": None, "reason": None}
+
+
+# ---------- Session 7 §7.3 Trace 记录 ---------- #
+
+
+def append_trace(project_id: str, action: str, target_type: str, target_id: str,
+                 evidence_id: str | None = None, reason: str | None = None,
+                 actor: str = "system") -> dict[str, Any]:
+    """追加一条 Trace 记录到 project 的 trace 日志 (in-memory).
+
+    - actor: system / user
+    - target_type: feasibility / pivot_route / work_package / review_check / proposal / coverage
+    - target_id: ref_idx / WP id / route level
+    - action: rebuild / remove_ref / mark_ref_core / mark_ref_wrong / replace_ref / coverage_change / etc
+    """
+
+    from datetime import datetime, timezone
+
+    event = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "actor": actor,
+        "action": action,
+        "target_type": target_type,
+        "target_id": target_id,
+        "evidence_id": evidence_id,
+        "reason": reason,
+    }
+    with _TRACE_LOCK:
+        _TRACE.setdefault(project_id, []).append(event)
+    return event
+
+
+def get_trace(project_id: str) -> list[dict[str, Any]]:
+    with _TRACE_LOCK:
+        return list(_TRACE.get(project_id, []))
+
+
+def clear_trace(project_id: str) -> None:
+    with _TRACE_LOCK:
+        _TRACE.pop(project_id, None)
+
+
+# ---------- Session 7 §7: Snapshot (缓存最后一次 analyze 响应, 供 rebuild/coverage 用) ---------- #
+
+
+def save_snapshot(project_id: str, snapshot: dict[str, Any]) -> None:
+    """缓存最近一次 OneTopicResponse.model_dump() 的核心段."""
+
+    with _LEDGER_LOCK:
+        proj = _get_project(project_id)
+        proj.latest_snapshot = snapshot
+
+
+def get_snapshot(project_id: str) -> dict[str, Any] | None:
+    with _LEDGER_LOCK:
+        proj = _get_project(project_id)
+        return proj.latest_snapshot
+
+
+def get_pool_items(project_id: str) -> list[EvidenceItem]:
+    """取 project 的全部 EvidenceItem (供 rebuild 时通过 extras 注入)."""
+
+    with _LEDGER_LOCK:
+        proj = _get_project(project_id)
+        return list(proj.items.values())

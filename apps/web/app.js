@@ -49,6 +49,73 @@ function escapeHtml(s) {
   }[c]));
 }
 
+// ---------- Session 7: EvidenceRef 渲染 + 复核动作 (§8) ----------
+
+function renderEvidenceRefs(refs, opts) {
+  // refs: list of EvidenceRef. opts: { target_type, target_id }.
+  // Returns HTML string of small ref cards with remove / mark_core buttons.
+  opts = opts || {};
+  if (!refs || refs.length === 0) {
+    return '<div class="ref-empty">⚠ 无证据引用</div>';
+  }
+  return refs.map(r => `
+    <div class="ref-card ref-card--${escapeHtml(r.role)}" data-ref-id="${escapeHtml(r.evidence_id)}">
+      <div class="ref-card__head">
+        <span class="ref-card__role ref-card__role--${escapeHtml(r.role)}">${escapeHtml(r.role)}</span>
+        <span class="ref-card__type">${escapeHtml(r.evidence_type)}</span>
+        <span class="ref-card__status">${escapeHtml(r.review_status)}</span>
+        ${r.score != null ? `<span class="ref-card__score">${r.score.toFixed(2)}</span>` : ""}
+      </div>
+      <div class="ref-card__title">${escapeHtml(r.title)}</div>
+      <div class="ref-card__reason">${escapeHtml(r.reason || "")}</div>
+      <div class="ref-card__actions">
+        ${r.url ? `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="ref-link">🔗 打开</a>` : ""}
+        ${opts.target_type ? `
+          <button class="ref-btn" data-ref-action="mark_ref_core" data-evidence-id="${escapeHtml(r.evidence_id)}" type="button">⭐ 标核心</button>
+          <button class="ref-btn" data-ref-action="mark_ref_wrong" data-evidence-id="${escapeHtml(r.evidence_id)}" type="button">❌ 标错</button>
+          <button class="ref-btn" data-ref-action="remove_ref" data-evidence-id="${escapeHtml(r.evidence_id)}" type="button">🗑 移除</button>
+        ` : ""}
+      </div>
+    </div>
+  `).join("");
+}
+
+async function reviewRef(projectId, targetType, targetId, evidenceId, action, reason) {
+  const body = {
+    target_type: targetType,
+    target_id: targetId,
+    evidence_id: evidenceId,
+    action: action,
+    reason: reason || null,
+  };
+  const r = await fetch(`${API}/api/v1/one-topic/${projectId}/evidence/refs/review`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) {
+    appendTrace({ type: "warn", name: "ref-review-failed", detail: `HTTP ${r.status}` });
+    return null;
+  }
+  const data = await r.json();
+  appendTrace({
+    type: "step", name: `ref-${action}`,
+    detail: `${targetType}/${targetId} ${evidenceId}: ${data.new_coverage_score.toFixed(2)}`,
+  });
+  return data;
+}
+
+async function refreshRefs(projectId) {
+  // Re-fetch coverage; state.result snapshot is server-side already updated.
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${projectId}/evidence/refs/coverage`);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch (e) {
+    return null;
+  }
+}
+
 // ---------- Tab 切换 ----------
 
 function switchTab(name) {
@@ -112,6 +179,21 @@ async function runStream(endpoint, body) {
 
 function renderResult(r) {
   document.getElementById("result-grid").hidden = false;
+
+  // Session 7 §8.3: 覆盖率低时显示 banner
+  const feas = r.feasibility || {};
+  const rec = r.proposal_recommendation || {};
+  const totalRefs = (feas.evidence_refs ? feas.evidence_refs.length : 0)
+    + (rec.topic_evidence_refs ? rec.topic_evidence_refs.length : 0)
+    + rec.pivot_routes.reduce((s, p) => s + (p.evidence_refs ? p.evidence_refs.length : 0), 0)
+    + rec.work_packages.reduce((s, w) => s + (w.evidence_refs ? w.evidence_refs.length : 0), 0)
+    + (r.light_review ? r.light_review.checks.reduce((s, c) => s + (c.evidence_refs ? c.evidence_refs.length : 0), 0) : 0);
+  const banner = document.getElementById("coverage-banner");
+  if (banner) {
+    banner.hidden = false;
+    banner.className = "coverage-banner coverage-banner--ok";
+    banner.innerHTML = `🔗 共挂载 <strong>${totalRefs}</strong> 条证据引用 (feasibility ${feas.evidence_refs ? feas.evidence_refs.length : 0} · pivot ${rec.pivot_routes.filter(p => p.evidence_refs && p.evidence_refs.length).length}/${rec.pivot_routes.length} · WP ${rec.work_packages.filter(w => w.evidence_refs && w.evidence_refs.length).length}/${rec.work_packages.length})`;
+  }
 
   // Block 1: 题目理解
   const tu = r.topic_understanding || {};
@@ -240,11 +322,22 @@ function renderResult(r) {
     <button class="cta-mini" id="btn-edit-search-plan" type="button" style="margin-top:8px;">✏️ 编辑检索词</button>
   `;
 
-  // Block 4: 可行性
-  const feas = r.feasibility || {};
+  // Block 4: 可行性 (feas 已在 renderResult 顶部声明)
+  const feasRefsHtml = renderEvidenceRefs(feas.evidence_refs || [], { target_type: "feasibility", target_id: "main" });
+  const feasBlockingHtml = (feas.blocking_refs && feas.blocking_refs.length)
+    ? `<div class="feasibility__blocking">
+         <div class="feasibility__blocking-title">🚫 阻断依据</div>
+         ${renderEvidenceRefs(feas.blocking_refs, { target_type: "feasibility", target_id: "main" })}
+       </div>` : "";
+  const feasMissingHtml = (feas.missing_ref_reasons && feas.missing_ref_reasons.length)
+    ? `<div class="feasibility__missing-refs">
+         <div class="feasibility__missing-refs-title">⚠ 证据缺口</div>
+         <ul>${feas.missing_ref_reasons.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+       </div>` : "";
   document.getElementById("block-feasibility").innerHTML = `
     <div class="feasibility__verdict feasibility__verdict--${escapeHtml(feas.verdict || "暂缓")}">${escapeHtml(feas.verdict || "暂缓")}</div>
     <div class="feasibility__reason">${escapeHtml(feas.reason || "")}</div>
+    <div class="feasibility__confidence">证据覆盖置信度: <strong>${(feas.confidence || 0).toFixed(2)}</strong></div>
     <div class="feasibility__status">
       <div class="feasibility__status-item">论文: ${escapeHtml(feas.paper_status || "")}</div>
       <div class="feasibility__status-item">数据集: ${escapeHtml(feas.dataset_status || "")}</div>
@@ -257,6 +350,12 @@ function renderResult(r) {
         <ul>${feas.missing_evidence.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
       </div>
     ` : ""}
+    <details class="ref-panel" open>
+      <summary>🔗 结论引用 (${(feas.evidence_refs || []).length} 条)</summary>
+      ${feasRefsHtml}
+      ${feasBlockingHtml}
+      ${feasMissingHtml}
+    </details>
     <div class="feasibility__next">${escapeHtml(feas.recommended_next_action || "")}</div>
     ${(feas.verdict === "可转向" || feas.verdict === "收缩后可做") ? `
       <div style="margin-top:10px;">
@@ -265,32 +364,54 @@ function renderResult(r) {
     ` : ""}
   `;
 
-  // Block 5: 开题建议 + 审核
-  const rec = r.proposal_recommendation || {};
+  // Block 5: 开题建议 + 审核 (rec 已在 renderResult 顶部声明)
   const rev = r.light_review || {};
-  const wpHtml = (rec.work_packages || []).map(wp => `
-    <div class="wp-card">
-      <div class="wp-card__id">${escapeHtml(wp.wp_id)} · ${escapeHtml(wp.chapter || "")}</div>
+  const wpHtml = (rec.work_packages || []).map(wp => {
+    const wpRefsHtml = renderEvidenceRefs(wp.evidence_refs || [], { target_type: "work_package", target_id: wp.wp_id });
+    const wpOpenQsHtml = (wp.open_questions && wp.open_questions.length)
+      ? `<details class="wp-card__open-q"><summary>⚠ 待补 (${wp.open_questions.length})</summary><ul>${wp.open_questions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul></details>` : "";
+    const statusBadge = wp.status === "needs_evidence"
+      ? `<span class="wp-card__status wp-card__status--needs">待补证据</span>` : "";
+    return `
+    <div class="wp-card" data-wp-id="${escapeHtml(wp.wp_id)}">
+      <div class="wp-card__id">${escapeHtml(wp.wp_id)} · ${escapeHtml(wp.chapter || "")} ${statusBadge}</div>
       <div class="wp-card__title">${escapeHtml(wp.title || "")}</div>
       <div class="wp-card__detail"><strong>问题:</strong> ${escapeHtml(wp.research_question || "")}</div>
       <div class="wp-card__detail"><strong>方法:</strong> ${escapeHtml(wp.method_approach || "")}</div>
       <div class="wp-card__detail"><strong>数据:</strong> ${escapeHtml(wp.data_source || "")}</div>
       <div class="wp-card__detail"><strong>实验:</strong> ${escapeHtml(wp.experiment_plan || "")}</div>
+      <details class="wp-card__refs"><summary>🔗 引用 (${(wp.evidence_refs || []).length})</summary>${wpRefsHtml}</details>
+      ${wpOpenQsHtml}
     </div>
-  `).join("");
-  const checksHtml = (rev.checks || []).map(c => `
-    <div class="review__check">
-      <div class="review__check-dim">${escapeHtml(c.dimension)}</div>
+  `;
+  }).join("");
+  const checksHtml = (rev.checks || []).map(c => {
+    const checkRefsHtml = renderEvidenceRefs(c.evidence_refs || [], { target_type: "review_check", target_id: c.dimension });
+    return `
+    <div class="review__check" data-check-dim="${escapeHtml(c.dimension)}">
+      <div class="review__check-dim">${escapeHtml(c.dimension)} <span class="review__check-conf">conf=${(c.confidence || 0).toFixed(2)}</span></div>
       <div class="review__check-result review__check-result--${escapeHtml(c.result)}">${escapeHtml(c.result)}</div>
       <div class="review__check-comment">${escapeHtml(c.comment || "")}</div>
+      <details class="review__check-refs"><summary>🔗 引用 (${(c.evidence_refs || []).length})</summary>${checkRefsHtml}</details>
     </div>
-  `).join("");
+  `;
+  }).join("");
   const checklistHtml = (rev.revision_checklist || []).map(x => `<li>${escapeHtml(x)}</li>`).join("");
   document.getElementById("block-recommendation").innerHTML = `
     <div class="proposal__topic">📌 ${escapeHtml(rec.recommended_topic || "")}</div>
+    ${(rec.topic_evidence_refs && rec.topic_evidence_refs.length) ? `
+      <details class="proposal__topic-refs" open>
+        <summary>🔗 题目引用 (${rec.topic_evidence_refs.length})</summary>
+        ${renderEvidenceRefs(rec.topic_evidence_refs, {})}
+      </details>
+    ` : ""}
     <div class="proposal__reason">
       推荐理由:
-      <ul>${(rec.recommendation_reason || []).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+      <ul>${(rec.recommendation_reason || []).map((x, i) => {
+        const reason_key = `reason_${i+1}`;
+        const refs = (rec.reason_evidence_refs || {})[reason_key] || [];
+        return `<li>${escapeHtml(x)}${refs.length ? ` <span class="reason-refs-count">[${refs.length} 引用]</span>` : ` <span class="reason-no-refs">[待补证据]</span>`}</li>`;
+      }).join("")}</ul>
     </div>
     <div class="wp-list">${wpHtml}</div>
     <details class="outline-list">
@@ -735,6 +856,63 @@ async function regenerate(useConfirmedKw, useConfirmedPlan) {
 
 // Session 3 关键词/检索词编辑: 用事件代理绑在 document 上
 document.addEventListener("click", async (e) => {
+  // Session 7: ref-action 按钮优先匹配 (ref cards 在 data-action 区域外)
+  const refBtn = e.target.closest("[data-ref-action]");
+  if (refBtn) {
+    if (!state.projectId) {
+      alert("请先跑一次分析");
+      return;
+    }
+    const action = refBtn.dataset.refAction;
+    const evidenceId = refBtn.dataset.evidenceId;
+
+    const card = refBtn.closest(".ref-card");
+    const wpCard = refBtn.closest(".wp-card");
+    const pivotCard = refBtn.closest(".pivot-card");
+    const checkDiv = refBtn.closest(".review__check");
+    let target_type = "feasibility", target_id = "main";
+    if (wpCard) {
+      target_type = "work_package";
+      target_id = wpCard.dataset.wpId;
+    } else if (pivotCard) {
+      target_type = "pivot_route";
+      target_id = pivotCard.dataset.pivotLevel;
+    } else if (checkDiv) {
+      target_type = "review_check";
+      target_id = checkDiv.dataset.checkDim;
+    }
+
+    const reason = prompt(`复核理由 (${action} ${evidenceId}):`, "");
+    if (reason === null) return;
+
+    refBtn.disabled = true;
+    const _orig = refBtn.textContent;
+    refBtn.textContent = "⏳ ...";
+    try {
+      const resp = await reviewRef(state.projectId, target_type, target_id, evidenceId, action, reason);
+      if (resp && resp.ok) {
+        refBtn.textContent = "✓";
+        if (card && card.parentNode) {
+          card.style.opacity = "0.3";
+        }
+        const cov = await refreshRefs(state.projectId);
+        if (cov) {
+          appendTrace({
+            type: "step", name: "coverage-update",
+            detail: `coverage=${cov.coverage_score.toFixed(2)}`,
+          });
+        }
+      } else {
+        refBtn.textContent = "✗ " + (resp ? resp.message : "fail");
+        setTimeout(() => { refBtn.textContent = _orig; refBtn.disabled = false; }, 3000);
+      }
+    } catch (err) {
+      refBtn.textContent = "✗ " + err.message;
+      refBtn.disabled = false;
+    }
+    return;
+  }
+
   const t = e.target.closest("[data-action], #btn-edit-keywords, #btn-edit-search-plan, #kw-cancel, #kw-regen, #sp-cancel, #sp-regen, #btn-show-pivots, #pivot-cancel, #btn-rescore, [data-pivot-level]");
   if (!t) return;
   const id = t.id;
@@ -807,6 +985,9 @@ document.addEventListener("click", async (e) => {
       t.textContent = "✗ 失败: " + err.message;
       t.disabled = false;
     }
+  } else if (t.dataset.refAction) {
+    // Session 7 §7.3: 用户复核 EvidenceRef (duplicate guard, handled above)
+    return;
   }
 });
 
@@ -848,22 +1029,36 @@ function showPivotModal() {
     alert("当前 verdict 无需退化路线 (已是 可做)");
     return;
   }
-  const html = routes.map(r => `
-    <div class="pivot-card">
+  const html = routes.map(r => {
+    const refsHtml = renderEvidenceRefs(r.evidence_refs || [], { target_type: "pivot_route", target_id: r.level });
+    const riskHtml = (r.risk_reduction_refs && r.risk_reduction_refs.length)
+      ? `<details class="pivot-card__risk-refs"><summary>📉 风险降低 (${r.risk_reduction_refs.length})</summary>${renderEvidenceRefs(r.risk_reduction_refs, {})}</details>` : "";
+    const missingHtml = (r.missing_evidence && r.missing_evidence.length)
+      ? `<div class="pivot-card__missing"><div class="pivot-card__missing-title">⚠ 缺口</div><ul>${r.missing_evidence.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>` : "";
+    return `
+    <div class="pivot-card" data-pivot-level="${r.level}">
       <div class="pivot-card__head">
         <span class="pivot-card__level pivot-card__level--${r.level}">${r.level}</span>
         <div class="pivot-card__title">${escapeHtml(r.new_topic)}</div>
+        <span class="pivot-card__conf">conf=${(r.confidence || 0).toFixed(2)}</span>
       </div>
       <div class="pivot-card__tradeoff">${escapeHtml(r.tradeoff)}</div>
       <div class="pivot-card__keywords">
         ${(r.preserved_keywords || []).map(k => `<span class="pivot-card__kw">✓ ${escapeHtml(k)}</span>`).join("")}
         ${(r.removed_keywords || []).map(k => `<span class="pivot-card__kw pivot-card__kw--removed">✗ ${escapeHtml(k)}</span>`).join("")}
       </div>
+      <details class="pivot-card__refs" open>
+        <summary>🔗 路线引用 (${(r.evidence_refs || []).length})</summary>
+        ${refsHtml}
+      </details>
+      ${riskHtml}
+      ${missingHtml}
       <div class="pivot-card__select">
         <button id="btn-select-pivot-${r.level}" data-pivot-level="${r.level}" type="button">✓ 选这条路</button>
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
   document.getElementById("pivot-list").innerHTML = html;
   showModal("modal-pivot");
 }

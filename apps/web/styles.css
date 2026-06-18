@@ -253,6 +253,106 @@ html, body { background: #0b0d12; color: #e6e8ee; font-family: -apple-system, Bl
 .pivot-card__kw--removed { color: #fca5a5; text-decoration: line-through; }
 .pivot-card__select { margin-top: 8px; }
 
+/* ---------- Session 7: EvidenceRef 引用面板 ---------- */
+
+.coverage-banner {
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #1f2a3d;
+  border-left: 4px solid #6b9aff;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+.coverage-banner--warn { border-left-color: #f59e0b; background: #3d2f1a; }
+.coverage-banner--low { border-left-color: #ef4444; background: #3d1a1a; }
+.coverage-banner strong { color: #fff; }
+
+.feasibility__confidence {
+  font-size: 12px;
+  color: #8b94a8;
+  margin: 8px 0;
+}
+.feasibility__confidence strong { color: #fcd34d; font-size: 14px; }
+
+.feasibility__blocking { margin-top: 8px; }
+.feasibility__blocking-title {
+  font-size: 12px;
+  color: #fca5a5;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.feasibility__missing-refs { margin-top: 8px; }
+.feasibility__missing-refs-title {
+  font-size: 12px;
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.ref-panel { margin-top: 10px; border-top: 1px dashed #2a3142; padding-top: 8px; }
+.ref-panel > summary { font-size: 12px; color: #cbd5e1; cursor: pointer; }
+.ref-empty { font-size: 11px; color: #8b94a8; padding: 6px; }
+
+.ref-card {
+  border: 1px solid #2a3142;
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 6px;
+  background: #131722;
+  font-size: 11px;
+  transition: opacity 0.3s;
+}
+.ref-card--supports { border-left: 3px solid #22c55e; }
+.ref-card--warns { border-left: 3px solid #f59e0b; }
+.ref-card--blocks { border-left: 3px solid #ef4444; }
+.ref-card--background { border-left: 3px solid #6b7280; }
+.ref-card--alternative { border-left: 3px solid #a78bfa; }
+
+.ref-card__head { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ref-card__role { font-size: 10px; padding: 1px 6px; border-radius: 3px; background: #1f2a3d; }
+.ref-card__role--supports { background: #14532d; color: #bbf7d0; }
+.ref-card__role--warns { background: #78350f; color: #fed7aa; }
+.ref-card__role--blocks { background: #7f1d1d; color: #fecaca; }
+.ref-card__role--background { background: #1f2937; color: #9ca3af; }
+.ref-card__role--alternative { background: #4c1d95; color: #ddd6fe; }
+.ref-card__type { font-size: 9px; padding: 1px 5px; background: #2a3142; border-radius: 3px; color: #cbd5e1; }
+.ref-card__status { font-size: 9px; padding: 1px 5px; background: #2a3142; border-radius: 3px; color: #fcd34d; }
+.ref-card__score { font-size: 10px; color: #6b9aff; margin-left: auto; }
+.ref-card__title { font-size: 12px; color: #fff; margin-top: 4px; }
+.ref-card__reason { font-size: 10px; color: #8b94a8; margin-top: 2px; font-style: italic; }
+.ref-card__actions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.ref-link { font-size: 10px; color: #6b9aff; text-decoration: none; }
+.ref-btn { font-size: 10px; padding: 2px 6px; background: #1f2a3d; color: #cbd5e1; border: 1px solid #2a3142; border-radius: 3px; cursor: pointer; }
+.ref-btn:hover { background: #2a3142; }
+.ref-btn:disabled { opacity: 0.5; cursor: wait; }
+
+.wp-card__status {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: #78350f;
+  color: #fed7aa;
+  border-radius: 3px;
+  margin-left: 8px;
+}
+.wp-card__status--needs { background: #7f1d1d; color: #fecaca; }
+.wp-card__refs, .wp-card__open-q { margin-top: 6px; }
+.wp-card__refs > summary, .wp-card__open-q > summary, .review__check-refs > summary, .pivot-card__refs > summary, .pivot-card__risk-refs > summary {
+  font-size: 11px; color: #8b94a8; cursor: pointer;
+}
+.review__check-conf { font-size: 10px; color: #6b9aff; margin-left: 4px; }
+.review__check-refs { margin-top: 6px; }
+
+.pivot-card__conf { font-size: 10px; color: #6b9aff; margin-left: auto; }
+.pivot-card__missing { font-size: 11px; margin-top: 6px; color: #fbbf24; }
+.pivot-card__missing-title { font-weight: 600; margin-bottom: 2px; }
+.pivot-card__missing ul { margin: 0; padding-left: 18px; }
+
+.proposal__topic-refs { margin: 8px 0; }
+.proposal__topic-refs > summary { font-size: 12px; color: #cbd5e1; cursor: pointer; }
+
+.reason-refs-count { font-size: 10px; color: #22c55e; margin-left: 4px; }
+.reason-no-refs { font-size: 10px; color: #f59e0b; margin-left: 4px; }
+
 /* ---------- 响应式 ---------- */
 @media (max-width: 1100px) {
   .trace-panel { position: static; width: 100%; max-height: 360px; margin-top: 16px; }

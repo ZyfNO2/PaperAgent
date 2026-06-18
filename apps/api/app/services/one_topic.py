@@ -846,7 +846,7 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
     else:
         next_action = "重新选择方向, 当前题目不建议开题."
 
-    return FeasibilitySummary(
+    feasibility = FeasibilitySummary(
         verdict=verdict,
         reason=reason,
         paper_status=paper_status,
@@ -855,6 +855,12 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
         engineering_status=engineering_status,
         missing_evidence=missing,
         recommended_next_action=next_action,
+    )
+
+    # Session 7: 挂 evidence_refs / blocking_refs / confidence
+    from . import evidence_refs as refs_service
+    return refs_service.build_feasibility_refs(
+        feasibility, ev.papers, ev.datasets, ev.baselines,
     )
 
 
@@ -999,6 +1005,12 @@ def generate_pivot_routes(
         ],
     )
 
+    # Session 7: 给每条路线挂 evidence_refs
+    from . import evidence_refs as refs_service
+    cons = refs_service.build_pivot_refs(cons, ev.papers, ev.datasets, ev.baselines)
+    bal = refs_service.build_pivot_refs(bal, ev.papers, ev.datasets, ev.baselines)
+    agg = refs_service.build_pivot_refs(agg, ev.papers, ev.datasets, ev.baselines)
+
     return [cons, bal, agg]
 def recommend_proposal(
     req: OneTopicRequest, keywords: KeywordBreakdown, ev: EvidenceSummary, feas: FeasibilitySummary,
@@ -1102,21 +1114,37 @@ def recommend_proposal(
                     logger.warning("LLM WP 解析失败: %s", exc)
                     continue
             if llm_wps:
-                return ProposalRecommendation(
+                # Session 7: 挂 evidence_refs
+                from . import evidence_refs as refs_service
+                for wp in llm_wps:
+                    wp = refs_service.build_wp_refs(wp, ev.papers, ev.datasets, ev.baselines)
+                proposal_for_refs = ProposalRecommendation(
                     recommended_topic=str(llm_result.get("recommended_topic") or recommended),
                     recommendation_reason=list(llm_result.get("recommendation_reasons") or reasons),
                     work_packages=llm_wps,
                     proposal_outline=outline,
                     pivot_routes=pivot_routes,
                 )
+                proposal_for_refs, _unsupported = refs_service.build_proposal_refs(
+                    proposal_for_refs, ev.papers, ev.datasets, ev.baselines,
+                )
+                return proposal_for_refs
 
-    return ProposalRecommendation(
+    # Session 7: heuristic fallback 也挂 refs
+    from . import evidence_refs as refs_service
+    for wp in (wp1, wp2):
+        wp = refs_service.build_wp_refs(wp, ev.papers, ev.datasets, ev.baselines)
+    proposal_for_refs = ProposalRecommendation(
         recommended_topic=recommended,
         recommendation_reason=reasons,
         work_packages=[wp1, wp2],
         proposal_outline=outline,
         pivot_routes=pivot_routes,
     )
+    proposal_for_refs, _unsupported = refs_service.build_proposal_refs(
+        proposal_for_refs, ev.papers, ev.datasets, ev.baselines,
+    )
+    return proposal_for_refs
 
 
 # ---------- 选 pivot (§10.4) ---------- #
@@ -1285,6 +1313,15 @@ def light_review(
     )
 
 
+def _attach_review_refs(review: LightReview, ev: EvidenceSummary) -> LightReview:
+    """Session 7 §5.6: 给 LightReview 5 维 checks 挂 evidence_refs + confidence."""
+
+    from . import evidence_refs as refs_service
+    return refs_service.build_review_refs(
+        review, ev.papers, ev.datasets, ev.baselines,
+    )
+
+
 # ---------- 编排主入口 ---------- #
 
 
@@ -1319,6 +1356,7 @@ def run_one_topic(req: OneTopicRequest) -> OneTopicResponse:
     feas = judge_feasibility(req, keywords, ev)
     rec = recommend_proposal(req, keywords, ev, feas)
     rev = light_review(req, keywords, ev, feas)
+    rev = _attach_review_refs(rev, ev)
     elapsed_ms = int((time.time() - t0) * 1000)
     project_id = req.project_id_override or ("ot_" + uuid.uuid4().hex[:12])
     # Auto-ingest into the per-project ledger (SOP 5 + 13.1).
@@ -1327,7 +1365,7 @@ def run_one_topic(req: OneTopicRequest) -> OneTopicResponse:
     except Exception:  # noqa: BLE001
         pass
 
-    return OneTopicResponse(
+    response = OneTopicResponse(
         project_id=project_id,
         request=req,
         topic_understanding=topic,
@@ -1339,6 +1377,28 @@ def run_one_topic(req: OneTopicRequest) -> OneTopicResponse:
         light_review=rev,
         elapsed_ms=elapsed_ms,
     )
+    _save_response_snapshot(project_id, response)
+    return response
+
+
+def _save_response_snapshot(project_id: str, response: OneTopicResponse) -> None:
+    """Session 7 §7: 保存最近一次响应的关键段, 供 /refs/rebuild 和 /refs/coverage 用."""
+
+    try:
+        snap = {
+            "project_id": project_id,
+            "feasibility": response.feasibility.model_dump(mode="json"),
+            "proposal_recommendation": response.proposal_recommendation.model_dump(mode="json"),
+            "light_review": response.light_review.model_dump(mode="json"),
+            "evidence_summary": {
+                "papers": [p.model_dump(mode="json") for p in response.evidence_summary.papers],
+                "datasets": [d.model_dump(mode="json") for d in response.evidence_summary.datasets],
+                "baselines": [b.model_dump(mode="json") for b in response.evidence_summary.baselines],
+            },
+        }
+        ev_store.save_snapshot(project_id, snap)
+    except Exception:  # noqa: BLE001
+        pass
 
 
 # ---------- 流式 (SSE) ---------- #
@@ -1427,6 +1487,7 @@ def run_one_topic_stream(
     # Step 9: 低门槛审核
     emit("step", "🛡️ 正在跑低门槛模拟审核 (5 维)", {"phase": "light_review"})
     rev = light_review(req, keywords, ev, feas)
+    rev = _attach_review_refs(rev, ev)
     emit("step", f"✓ 审核结论: {rev.verdict}", {
         "verdict": rev.verdict,
         "check_count": len(rev.checks),
@@ -1451,4 +1512,5 @@ def run_one_topic_stream(
         proposal_recommendation=rec,
         light_review=rev,
     )
+    _save_response_snapshot(project_id, response)
     emit("result", "OneTopic MVP 完成", response.model_dump(mode="json"))
