@@ -316,6 +316,73 @@ html, body { background: #0b0d12; color: #e6e8ee; font-family: -apple-system, Bl
   word-break: break-word;
 }
 
+
+/* ---------- Session 9: 双栏工作台 + Agent 卡片导入 ---------- */
+
+.card-intake {
+  margin: 16px 0;
+  padding: 14px 16px;
+  background: #1a2336;
+  border: 1px solid #2a3550;
+  border-radius: 8px;
+}
+.card-intake__head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.card-intake__head h3 { margin: 0; font-size: 15px; color: #f1f5f9; }
+.card-intake__hint { font-size: 12px; color: #8b94a8; }
+.card-intake__row { display: flex; gap: 8px; flex-wrap: wrap; }
+.card-intake__type, .card-intake__lane { padding: 6px 8px; background: #0d1117; border: 1px solid #2a3550; border-radius: 6px; color: #cbd5e1; font-size: 12px; }
+.card-intake__input { flex: 2 1 240px; padding: 6px 10px; background: #0d1117; border: 1px solid #2a3550; border-radius: 6px; color: #cbd5e1; font-size: 12px; }
+.card-intake__input--small { flex: 1 1 140px; }
+.card-intake__result { margin-top: 10px; padding: 10px; background: #0d1117; border-radius: 6px; }
+.card-intake__card { display: flex; flex-direction: column; gap: 6px; }
+.card-intake__card .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; margin-right: 4px; }
+.pill--type { background: #1f3a5c; color: #6b9aff; }
+.pill--conf { background: #1f3a5c; color: #cbd5e1; }
+.pill--warn { background: #3d2f1a; color: #f59e0b; }
+.card-intake__actions { display: flex; gap: 6px; margin-top: 8px; }
+
+.workspace-board {
+  margin: 16px 0;
+  padding: 14px 16px;
+  background: #1a2336;
+  border: 1px solid #2a3550;
+  border-radius: 8px;
+}
+.workspace-board__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.workspace-board__head h3 { margin: 0; font-size: 15px; color: #f1f5f9; }
+.workspace-board__hint { font-size: 12px; color: #8b94a8; }
+.workspace-board__tabs { display: flex; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid #2a3550; }
+.ws-tab { padding: 6px 14px; background: transparent; color: #8b94a8; border: 0; border-bottom: 2px solid transparent; cursor: pointer; font-size: 13px; }
+.ws-tab.is-active { color: #6b9aff; border-bottom-color: #6b9aff; }
+.workspace-board__panels { display: flex; gap: 12px; }
+.ws-panel { display: flex; gap: 12px; width: 100%; }
+.ws-lane { flex: 1 1 50%; min-height: 100px; padding: 10px; background: #0d1117; border: 1px solid #2a3550; border-radius: 6px; }
+.ws-lane h4 { margin: 0 0 6px 0; font-size: 12px; color: #6b9aff; text-transform: uppercase; letter-spacing: 0.5px; }
+.ws-lane--left { border-left: 3px solid #10b981; }
+.ws-lane--right { border-left: 3px solid #6b9aff; }
+.ws-lane__list { display: flex; flex-direction: column; gap: 6px; }
+
+.ws-card {
+  padding: 8px 10px;
+  background: #1a2336;
+  border: 1px solid #2a3550;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+.ws-card__title { font-weight: 500; color: #f1f5f9; margin-bottom: 4px; }
+.ws-card__meta { font-size: 11px; color: #8b94a8; margin-bottom: 6px; }
+.ws-card__actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.ws-card__btn { padding: 3px 8px; font-size: 11px; background: #0d1117; border: 1px solid #2a3550; color: #cbd5e1; border-radius: 4px; cursor: pointer; }
+.ws-card__btn:hover { background: #2a3550; }
+.ws-card__btn--core { border-color: #fbbf24; color: #fbbf24; }
+.ws-card__btn--reject { border-color: #ef4444; color: #ef4444; }
+.ws-card__btn--left { border-color: #10b981; color: #10b981; }
+
+.ws-extra { margin-top: 12px; font-size: 12px; color: #8b94a8; }
+.ws-extra__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+.ws-extra__grid h5 { margin: 0 0 6px 0; color: #fbbf24; }
+
 .feasibility__confidence {
   font-size: 12px;
   color: #8b94a8;

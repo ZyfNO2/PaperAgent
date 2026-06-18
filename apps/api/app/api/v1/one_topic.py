@@ -20,6 +20,9 @@ from ...schemas import (
     FinalPackage,
     FinalPackageBuildOptions,
     FinalPackageSummary,
+    WorkspaceBoardResponse,
+    WorkspaceItemPatch,
+    WorkspaceItemPatchResponse,
 )
 from ...schemas_evidence import (
     DatasetManualCreate,
@@ -33,6 +36,8 @@ from ...services import evidence as ev_store
 from ...services import evidence_refs as refs_service
 from ...services import final_package as fp_service
 from ...services import one_topic as ot_service
+from ...services import workspace as ws_service
+from ...services import card_intake as ci_service
 
 router = APIRouter(prefix="/api/v1/one-topic", tags=["one-topic"])
 
@@ -787,3 +792,77 @@ def download_final_package_markdown(project_id: str):
     }
     from fastapi.responses import Response
     return Response(content=md, media_type="text/markdown; charset=utf-8", headers=headers)
+
+
+# ---------- Session 9: 双栏工作台 + Agent Card Intake (§4.3 + §4.4) ---------- #
+
+
+class CardIntakeRequest(BaseModel):
+    """POST /cards/intake 请求体 (§4.4)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    input_type: Literal["url", "text", "github", "dataset_page", "paper_page", "image", "pdf"] = "url"
+    content: str = Field(min_length=1)
+    hint: str | None = None
+    target_lane: Literal["user_preferred", "system_found"] = "user_preferred"
+
+
+class CardIntakeResponse(BaseModel):
+    """POST /cards/intake 响应 (§4.4)."""
+
+    ok: bool
+    needs_user_confirmation: bool = True
+    card_type: str
+    evidence: dict = Field(default_factory=dict, description="EvidenceItem.model_dump()")
+    extraction_confidence: float
+    warnings: list[str] = Field(default_factory=list)
+    message: str = ""
+
+
+@router.get(
+    "/{project_id}/workspace/board",
+    response_model=WorkspaceBoardResponse,
+    summary="Session 9 §4.3: 双栏 Board (paper/dataset/repo 三类)",
+)
+def get_workspace_board(project_id: str) -> WorkspaceBoardResponse:
+    boards = ws_service.get_workspace_board(project_id)
+    return WorkspaceBoardResponse(
+        project_id=project_id,
+        papers=boards["paper"],
+        datasets=boards["dataset"],
+        repos=boards["repo"],
+    )
+
+
+@router.patch(
+    "/{project_id}/workspace/item",
+    response_model=WorkspaceItemPatchResponse,
+    summary="Session 9 §4.3: 移动 / 标核心 / 拒绝 evidence (同步 review_status + 写 Trace)",
+)
+def patch_workspace_item(project_id: str, body: WorkspaceItemPatch) -> WorkspaceItemPatchResponse:
+    return ws_service.patch_workspace_item(project_id, body)
+
+
+@router.post(
+    "/{project_id}/cards/intake",
+    response_model=CardIntakeResponse,
+    summary="Session 9 §4.4: Agent Card Intake 从 URL / 文字生成 pending EvidenceCard",
+)
+def cards_intake(project_id: str, body: CardIntakeRequest) -> CardIntakeResponse:
+    item, card_type, confidence, warnings = ci_service.intake_card(
+        project_id=project_id,
+        input_type=body.input_type,
+        content=body.content,
+        hint=body.hint,
+        target_lane=body.target_lane,
+    )
+    return CardIntakeResponse(
+        ok=True,
+        needs_user_confirmation=True,
+        card_type=card_type,
+        evidence=item.model_dump(mode="json"),
+        extraction_confidence=confidence,
+        warnings=warnings,
+        message=f"已生成 {card_type} 卡片, 默认 pending 待用户确认",
+    )

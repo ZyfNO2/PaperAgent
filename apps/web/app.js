@@ -127,6 +127,7 @@ function switchTab(name) {
   document.getElementById("page-evidence").hidden = (name !== "evidence");
   if (name === "evidence" && state.projectId) {
     refreshEvidence();
+    loadWorkspaceBoard();
   }
 }
 
@@ -553,6 +554,161 @@ function downloadReport() {
 }
 
 
+// ---------- Session 9: 双栏工作台 + Agent Card Intake ---------- //
+
+async function loadWorkspaceBoard() {
+  if (!state.projectId) return;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/workspace/board`);
+    if (!r.ok) return;
+    const data = await r.json();
+    state.workspaceBoard = data;
+    renderWorkspaceBoard(data);
+  } catch (e) {
+    appendTrace({ type: "warn", name: "ws-board", detail: String(e).slice(0, 200) });
+  }
+}
+
+function renderWorkspaceBoard(data) {
+  const summary = document.getElementById("workspace-summary");
+  if (summary) {
+    const total = (data.papers.left_items.length + data.papers.right_items.length +
+      data.datasets.left_items.length + data.datasets.right_items.length +
+      data.repos.left_items.length + data.repos.right_items.length);
+    summary.textContent = `左侧 ${data.papers.left_items.length + data.datasets.left_items.length + data.repos.left_items.length} 条, 右侧 ${data.papers.right_items.length + data.datasets.right_items.length + data.repos.right_items.length} 条, 核心 ${data.papers.selected_items.length + data.datasets.selected_items.length + data.repos.selected_items.length} 条, 拒绝 ${data.papers.rejected_items.length + data.datasets.rejected_items.length + data.repos.rejected_items.length} 条, 共 ${total} 条`;
+  }
+  for (const bt of ["paper", "dataset", "repo"]) {
+    const board = data[bt === "paper" ? "papers" : bt === "dataset" ? "datasets" : "repos"];
+    renderLane(`ws-${bt}-left`, board.left_items, bt);
+    renderLane(`ws-${bt}-right`, board.right_items, bt);
+    renderLane(`ws-${bt}-selected`, board.selected_items, bt);
+    renderLane(`ws-${bt}-rejected`, board.rejected_items, bt);
+  }
+}
+
+function renderLane(elId, items, boardType) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (!items || items.length === 0) {
+    el.innerHTML = `<div class="ev-empty" style="color:#8b94a8;font-size:11px;padding:8px">(空)</div>`;
+    return;
+  }
+  el.innerHTML = items.map(it => workspaceCardHTML(it, boardType)).join("");
+}
+
+function workspaceCardHTML(it, boardType) {
+  const eid = it.evidence_id;
+  const title = escapeHtml(it.title || "(无标题)");
+  const meta = [
+    it.review_status || "pending",
+    it.workspace_lane || "system_found",
+    it.source_mode || "auto_search",
+  ].join(" · ");
+  const url = it.url || it.download || "";
+  return `
+    <div class="ws-card" data-ev-id="${eid}">
+      <div class="ws-card__title">${title}</div>
+      <div class="ws-card__meta">${escapeHtml(meta)}${url ? ` · <a href="${escapeHtml(url)}" target="_blank" rel="noopener">链接</a>` : ""}</div>
+      <div class="ws-card__actions">
+        <button class="ws-card__btn ws-card__btn--left" data-ws-action="add_left" data-ws-eid="${eid}">加入左侧</button>
+        <button class="ws-card__btn ws-card__btn--core" data-ws-action="mark_core" data-ws-eid="${eid}">标核心</button>
+        <button class="ws-card__btn" data-ws-action="move_right" data-ws-eid="${eid}">移到系统</button>
+        <button class="ws-card__btn ws-card__btn--reject" data-ws-action="reject" data-ws-eid="${eid}">拒绝</button>
+      </div>
+    </div>
+  `;
+}
+
+async function patchWorkspaceItem(evidenceId, lane, status, reason) {
+  if (!state.projectId) return;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/workspace/item`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        evidence_id: evidenceId,
+        workspace_lane: lane || undefined,
+        review_status: status || undefined,
+        reason: reason || `ws-action lane=${lane} status=${status}`,
+      }),
+    });
+    if (!r.ok) {
+      showError("移动 evidence 失败: " + (await r.text()).slice(0, 200));
+      return;
+    }
+    appendTrace({ type: "step", name: "ws-move", detail: `${evidenceId} → lane=${lane} status=${status}` });
+    // 刷新 board
+    await loadWorkspaceBoard();
+    // 同步刷新 evidence workbench
+    if (typeof loadEvidence === "function") await loadEvidence();
+  } catch (e) {
+    showError("移动 evidence 异常: " + String(e).slice(0, 200));
+  }
+}
+
+function switchWsTab(tab) {
+  document.querySelectorAll(".ws-tab").forEach(btn => {
+    btn.classList.toggle("is-active", btn.dataset.wsTab === tab);
+  });
+  document.querySelectorAll(".ws-panel").forEach(panel => {
+    panel.hidden = panel.dataset.wsPanel !== tab;
+  });
+}
+
+async function cardsIntake() {
+  if (!state.projectId) {
+    showError("先跑一次分析");
+    return;
+  }
+  const inputType = document.getElementById("intake-type")?.value || "url";
+  const content = document.getElementById("intake-content")?.value?.trim() || "";
+  const hint = document.getElementById("intake-hint")?.value?.trim() || null;
+  const lane = document.getElementById("intake-lane")?.value || "user_preferred";
+  if (!content) {
+    showError("请输入 URL 或文字");
+    return;
+  }
+  const resultEl = document.getElementById("intake-result");
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/cards/intake`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ input_type: inputType, content, hint, target_lane: lane }),
+    });
+    if (!r.ok) {
+      showError("生成卡片失败: " + (await r.text()).slice(0, 200));
+      return;
+    }
+    const data = await r.json();
+    if (resultEl) {
+      resultEl.hidden = false;
+      const ev = data.evidence || {};
+      const warnings = (data.warnings || []).map(w => `<span class="pill pill--warn">⚠ ${escapeHtml(w)}</span>`).join(" ");
+      resultEl.innerHTML = `
+        <div class="card-intake__card">
+          <div>
+            <span class="pill pill--type">${escapeHtml(data.card_type)}</span>
+            <span class="pill pill--conf">置信度 ${(data.extraction_confidence * 100).toFixed(0)}%</span>
+            ${warnings}
+          </div>
+          <div><strong>${escapeHtml(ev.title || "(无标题)")}</strong></div>
+          <div style="color:#8b94a8;font-size:11px">evidence_id: ${escapeHtml(ev.evidence_id || "")} · 状态: ${escapeHtml(ev.review_status || "pending")} · 栏位: ${escapeHtml(ev.workspace_lane || "user_preferred")}</div>
+          <div class="card-intake__actions">
+            <button class="ws-card__btn ws-card__btn--core" data-intake-confirm-eid="${escapeHtml(ev.evidence_id || "")}">确认 (标 core)</button>
+            <button class="ws-card__btn ws-card__btn--reject" data-intake-reject-eid="${escapeHtml(ev.evidence_id || "")}">拒绝</button>
+          </div>
+        </div>
+      `;
+    }
+    appendTrace({ type: "step", name: "intake", detail: `生成 ${data.card_type} 卡片: ${ev?.title || "?"}` });
+    // 刷新 board
+    await loadWorkspaceBoard();
+  } catch (e) {
+    showError("生成卡片异常: " + String(e).slice(0, 200));
+  }
+}
+
+
 // ---------- 证据工作台 (Session 2) ----------
 
 const REVIEW_LABELS = {
@@ -777,6 +933,7 @@ async function onAnalyze() {
         `完成 · 共 ${state.trace.length} 个 trace 事件 · 耗时 ${result.elapsed_ms || "?"} ms` +
         (state.projectId ? ` · project_id: ${state.projectId}` : "");
       refreshReportSummary();  // Session 8: 自动加载已有 FinalPackage 摘要
+      loadWorkspaceBoard();  // Session 9: 自动加载双栏工作台
     }
   } catch (e) {
     showError(`分析失败: ${String(e).slice(0, 200)}`);
@@ -1217,6 +1374,34 @@ document.body.addEventListener("click", async (e) => {
     }
     return;
   }
+  // Session 9: workspace / intake 按钮
+  if (e.target.closest("[data-ws-action]")) {
+    const btn = e.target.closest("[data-ws-action]");
+    const action = btn.dataset.wsAction;
+    const eid = btn.dataset.wsEid;
+    if (action === "add_left") {
+      await patchWorkspaceItem(eid, "user_preferred", "accepted", "用户加入左侧");
+    } else if (action === "mark_core") {
+      await patchWorkspaceItem(eid, "selected", "core", "用户标核心");
+    } else if (action === "move_right") {
+      await patchWorkspaceItem(eid, "system_found", "background", "用户移到系统");
+    } else if (action === "reject") {
+      await patchWorkspaceItem(eid, "rejected", "rejected", "用户拒绝");
+    }
+    return;
+  }
+  if (e.target.dataset.wsTab) {
+    switchWsTab(e.target.dataset.wsTab);
+    return;
+  }
+  if (e.target.dataset.intakeConfirmEid) {
+    await patchWorkspaceItem(e.target.dataset.intakeConfirmEid, "selected", "core", "Agent 卡片用户确认");
+    return;
+  }
+  if (e.target.dataset.intakeRejectEid) {
+    await patchWorkspaceItem(e.target.dataset.intakeRejectEid, "rejected", "rejected", "Agent 卡片用户拒绝");
+    return;
+  }
   // Session 8: 报告区按钮
   const id = e.target.id;
   if (id === "btn-build-report" || id === "btn-rebuild-report") {
@@ -1225,5 +1410,9 @@ document.body.addEventListener("click", async (e) => {
     downloadReport();
   } else if (id === "btn-preview-report") {
     toggleReportPreview();
+  } else if (id === "btn-intake") {
+    await cardsIntake();
+  } else if (id === "btn-ws-refresh") {
+    await loadWorkspaceBoard();
   }
 });

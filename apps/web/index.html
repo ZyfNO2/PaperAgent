@@ -148,6 +148,84 @@
         </div>
       </div>
 
+      <!-- Session 9: Agent 卡片导入面板 -->
+      <div class="card-intake" id="card-intake-panel">
+        <header class="card-intake__head">
+          <h3>🤖 Agent 卡片导入</h3>
+          <span class="card-intake__hint">把材料链接 / 文字描述丢进来, 系统自动识别并生成待确认的证据卡片</span>
+        </header>
+        <div class="card-intake__row">
+          <select class="card-intake__type" id="intake-type">
+            <option value="url">URL</option>
+            <option value="github">GitHub</option>
+            <option value="paper_page">论文网页</option>
+            <option value="dataset_page">数据集网页</option>
+            <option value="text">纯文本</option>
+          </select>
+          <input class="card-intake__input" id="intake-content" type="text" placeholder="https://github.com/ultralytics/ultralytics 或一段文字描述" />
+          <input class="card-intake__input card-intake__input--small" id="intake-hint" type="text" placeholder="hint: 这是什么材料?" />
+          <select class="card-intake__lane" id="intake-lane">
+            <option value="user_preferred">左侧 (用户希望使用)</option>
+            <option value="system_found">右侧 (系统候选)</option>
+          </select>
+          <button class="cta-mini" id="btn-intake" type="button">生成卡片</button>
+        </div>
+        <div class="card-intake__result" id="intake-result" hidden></div>
+      </div>
+
+      <!-- Session 9: 双栏工作台 -->
+      <div class="workspace-board" id="workspace-board">
+        <header class="workspace-board__head">
+          <h3>🗂️ 双栏工作台 (用户希望使用 vs 系统检索候选)</h3>
+          <span class="workspace-board__hint" id="workspace-summary">加载中...</span>
+          <button class="cta-mini" id="btn-ws-refresh" type="button">🔄 刷新</button>
+        </header>
+        <div class="workspace-board__tabs">
+          <button class="ws-tab is-active" data-ws-tab="paper" type="button">📚 论文</button>
+          <button class="ws-tab" data-ws-tab="dataset" type="button">💾 数据集</button>
+          <button class="ws-tab" data-ws-tab="repo" type="button">🔗 工程</button>
+        </div>
+        <div class="workspace-board__panels">
+          <div class="ws-panel" data-ws-panel="paper">
+            <div class="ws-lane ws-lane--left">
+              <h4>用户希望使用</h4>
+              <div class="ws-lane__list" id="ws-paper-left"></div>
+            </div>
+            <div class="ws-lane ws-lane--right">
+              <h4>系统检索候选</h4>
+              <div class="ws-lane__list" id="ws-paper-right"></div>
+            </div>
+          </div>
+          <div class="ws-panel" data-ws-panel="dataset" hidden>
+            <div class="ws-lane ws-lane--left">
+              <h4>用户希望使用</h4>
+              <div class="ws-lane__list" id="ws-dataset-left"></div>
+            </div>
+            <div class="ws-lane ws-lane--right">
+              <h4>系统检索候选</h4>
+              <div class="ws-lane__list" id="ws-dataset-right"></div>
+            </div>
+          </div>
+          <div class="ws-panel" data-ws-panel="repo" hidden>
+            <div class="ws-lane ws-lane--left">
+              <h4>用户希望使用</h4>
+              <div class="ws-lane__list" id="ws-repo-left"></div>
+            </div>
+            <div class="ws-lane ws-lane--right">
+              <h4>系统检索候选</h4>
+              <div class="ws-lane__list" id="ws-repo-right"></div>
+            </div>
+          </div>
+        </div>
+        <details class="ws-extra" id="ws-extra">
+          <summary>查看 selected (核心) / rejected (拒绝) 栏</summary>
+          <div class="ws-extra__grid">
+            <div><h5>⭐ 核心 (selected)</h5><div class="ws-lane__list" id="ws-paper-selected"></div><div class="ws-lane__list" id="ws-dataset-selected"></div><div class="ws-lane__list" id="ws-repo-selected"></div></div>
+            <div><h5>❌ 拒绝 (rejected)</h5><div class="ws-lane__list" id="ws-paper-rejected"></div><div class="ws-lane__list" id="ws-dataset-rejected"></div><div class="ws-lane__list" id="ws-repo-rejected"></div></div>
+          </div>
+        </details>
+      </div>
+
       <!-- 池摘要 -->
       <div class="evidence-summary" id="ev-summary">
         <div class="summary-cell"><span class="num" id="sum-paper">0</span><span class="lbl">论文</span></div>

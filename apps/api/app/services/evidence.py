@@ -64,6 +64,20 @@ def _get_project(project_id: str) -> _ProjectEvidence:
         return _LEDGER[project_id]
 
 
+# Session 9 §4.1: 根据 review_status 推导 workspace_lane (review_status 变化时联动)
+_REVIEW_TO_LANE = {
+    "core": "selected",
+    "rejected": "rejected",
+}
+
+
+def _derive_workspace_lane(review_status: str, current_lane: str) -> str:
+    """core → selected, rejected → rejected; 其余保留."""
+
+    new_lane = _REVIEW_TO_LANE.get(review_status)
+    return new_lane or current_lane
+
+
 def _summary(project_id: str) -> EvidenceLedgerResponse:
     proj = _get_project(project_id)
     papers = [e for e in proj.items.values() if e.evidence_type == "paper"]
@@ -201,6 +215,7 @@ def ingest_auto_evidence(project_id: str, evidence: EvidenceSummary) -> None:
 
     同一 project 多次调用 → dedup 跳过已存在的, 不覆盖.
     Session 5: 把 score / paper_type / dataset_status / repo_type 同步过来 (SOP §7.3-7.5).
+    Session 9: 自动入池的 evidence 默认 workspace_lane="system_found".
     """
 
     proj = _get_project(project_id)
@@ -287,6 +302,7 @@ def add_paper_manual(project_id: str, body: PaperManualCreate) -> EvidenceAction
         authors=body.authors, doi=body.doi, arxiv_id=body.arxiv_id,
         abstract=body.abstract, user_note=body.user_note,
         tags=body.tags, review_status=body.review_status,
+        workspace_lane="user_preferred",  # Session 9 §4.1
     )
     existing_papers = [e for e in proj.items.values() if e.evidence_type == "paper"]
     dup = _is_duplicate(item, existing_papers)
@@ -314,6 +330,7 @@ def add_dataset_manual(project_id: str, body: DatasetManualCreate) -> EvidenceAc
         scale=body.scale, license=body.license,
         modality=body.modality, annotation=body.annotation,
         user_note=body.user_note, review_status=body.review_status,
+        workspace_lane="user_preferred",  # Session 9 §4.1
     )
     proj.items[eid] = item
     return EvidenceActionResponse(
@@ -335,6 +352,7 @@ def add_repo_manual(project_id: str, body: RepoManualCreate) -> EvidenceActionRe
         has_training_script=body.has_training_script,
         has_eval_script=body.has_eval_script,
         user_note=body.user_note, review_status=body.review_status,
+        workspace_lane="user_preferred",  # Session 9 §4.1
     )
     existing_repos = [e for e in proj.items.values() if e.evidence_type == "repo"]
     dup = _is_duplicate(item, existing_repos)
@@ -364,6 +382,10 @@ def update_review(evidence_id: str, body: ReviewUpdate) -> EvidenceActionRespons
                 new_data["review_status"] = body.review_status
                 if body.user_note is not None:
                     new_data["user_note"] = body.user_note
+                # Session 9 §4.1: review_status 联动 workspace_lane
+                new_data["workspace_lane"] = _derive_workspace_lane(
+                    body.review_status, new_data.get("workspace_lane", "system_found"),
+                )
                 proj.items[evidence_id] = EvidenceItem(**new_data)
                 return EvidenceActionResponse(
                     ok=True, evidence_id=evidence_id, evidence=proj.items[evidence_id],

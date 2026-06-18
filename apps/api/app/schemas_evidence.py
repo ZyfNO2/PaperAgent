@@ -12,8 +12,10 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 EvidenceType = Literal["paper", "dataset", "repo", "note", "custom"]
-SourceMode = Literal["auto_search", "manual", "upload", "import"]
+SourceMode = Literal["auto_search", "manual", "upload", "import", "assistant_intake"]
 ReviewStatus = Literal["pending", "accepted", "core", "background", "rejected", "needs_check"]
+WorkspaceLane = Literal["user_preferred", "system_found", "selected", "rejected"]
+RawInputType = Literal["url", "text", "github", "dataset_page", "paper_page", "image", "pdf"]
 
 
 def _utcnow() -> datetime:
@@ -133,6 +135,16 @@ class EvidenceItem(BaseModel):
     # 评分
     relevance_score: float | None = Field(default=None, ge=0.0, le=1.0)
     quality_score: float | None = Field(default=None, ge=0.0, le=1.0)
+
+    # Session 9 §4.1: 双栏工作台 + Agent Card Intake 字段
+    workspace_lane: WorkspaceLane = "system_found"
+    workspace_order: int | None = None
+    paired_with: list[str] = Field(default_factory=list)
+
+    raw_input_type: RawInputType | None = None
+    raw_input_ref: str | None = None
+    extraction_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    extraction_warnings: list[str] = Field(default_factory=list)
 
 
 # ---------- 证据池响应 ---------- #

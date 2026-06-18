@@ -350,3 +350,53 @@ class FinalPackage(FinalPackageSummary):
     citation_list: list[ReportCitation] = Field(default_factory=list)
     unsupported_claims: list[str] = Field(default_factory=list)
     revision_checklist: list[str] = Field(default_factory=list)
+
+
+# ---------- Workspace Board (Session 9 §4.2-§4.3) ---------- #
+
+
+class EvidenceWorkspaceBoard(BaseModel):
+    """单类型 (paper / dataset / repo) 的双栏 board."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    board_type: Literal["paper", "dataset", "repo"]
+    left_lane_title: str = "用户希望使用"
+    right_lane_title: str = "系统检索候选"
+    left_items: list[dict] = Field(default_factory=list, description="EvidenceItem.model_dump() 列表 (lane=user_preferred)")
+    right_items: list[dict] = Field(default_factory=list, description="EvidenceItem.model_dump() 列表 (lane=system_found 或 background)")
+    selected_items: list[dict] = Field(default_factory=list, description="EvidenceItem.model_dump() 列表 (lane=selected, review_status=core)")
+    rejected_items: list[dict] = Field(default_factory=list, description="EvidenceItem.model_dump() 列表 (lane=rejected)")
+
+
+class WorkspaceBoardResponse(BaseModel):
+    """GET /workspace/board 响应: 三类 board 同时返回."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    project_id: str
+    papers: EvidenceWorkspaceBoard
+    datasets: EvidenceWorkspaceBoard
+    repos: EvidenceWorkspaceBoard
+
+
+class WorkspaceItemPatch(BaseModel):
+    """PATCH /workspace/item 请求体."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    evidence_id: str
+    workspace_lane: Literal["user_preferred", "system_found", "selected", "rejected"] | None = None
+    review_status: Literal["pending", "accepted", "core", "background", "rejected", "needs_check"] | None = None
+    reason: str | None = Field(default=None, description="用户操作理由, 写入 Trace")
+
+
+class WorkspaceItemPatchResponse(BaseModel):
+    """PATCH /workspace/item 响应."""
+
+    ok: bool
+    evidence_id: str
+    workspace_lane: str
+    review_status: str
+    message: str = ""
+    trace_event: dict | None = None

@@ -34,6 +34,14 @@ REVIEW_WEIGHT = {
     "rejected": 0.00,
 }
 
+# Session 9 §6: workspace_lane bonus 影响 ref_priority
+LANE_BONUS = {
+    "selected": 0.15,
+    "user_preferred": 0.10,
+    "system_found": 0.00,
+    "rejected": -1.00,  # 直接打到底, 排序时永远垫底
+}
+
 PAPER_TYPE_WEIGHT = {
     "baseline_method": 0.90, "application": 0.85, "benchmark": 0.80,
     "survey": 0.75, "dataset_paper": 0.70, "case_study": 0.55,
@@ -70,14 +78,23 @@ def _recency(year: int | None, current_year: int = 2026) -> float:
 
 
 def _ref_priority(item: dict[str, Any]) -> float:
-    """§6.2: 0.40 review + 0.30 score + 0.15 type + 0.10 recency + 0.05 url_verified."""
+    """§6.2 + Session 9 §6: 0.40 review + 0.30 score + 0.15 type + 0.10 recency + 0.05 url_verified + lane_bonus."""
 
     review_w = REVIEW_WEIGHT.get(item.get("review_status") or "pending", 0.20)
     score = item.get("relevance_score") or item.get("quality_score") or 0.5
     type_w = _type_weight(item.get("evidence_type") or "paper", item)
     rec_w = _recency(item.get("year"))
     url_v = 1.0 if (item.get("url") or item.get("repository_url") or item.get("download")) else 0.0
-    return round(0.40 * review_w + 0.30 * score + 0.15 * type_w + 0.10 * rec_w + 0.05 * url_v, 3)
+    lane_b = LANE_BONUS.get(item.get("workspace_lane") or "system_found", 0.0)
+    return round(
+        0.40 * review_w
+        + 0.30 * score
+        + 0.15 * type_w
+        + 0.10 * rec_w
+        + 0.05 * url_v
+        + lane_b,
+        3,
+    )
 
 
 # ---------- evidence_pool 抽象 (统一 paper/dataset/repo) ---------- #
@@ -125,6 +142,7 @@ def _collect_evidence_pool(
                 "paper_type": d.get("paper_type") or "unknown",
                 "dataset_status": d.get("dataset_status") or "unverified",
                 "repo_type": d.get("repo_type") or "unknown",
+                "workspace_lane": d.get("workspace_lane") or "system_found",  # Session 9
             })
 
     # 自动入池 (从 evidence_summary 的 papers/datasets/baselines, evidence_id 是合成 ID)
@@ -146,6 +164,7 @@ def _collect_evidence_pool(
                 "paper_type": getattr(p, "paper_type", None) or (p.get("paper_type") if isinstance(p, dict) else None) or "unknown",
                 "dataset_status": "unverified",
                 "repo_type": "unknown",
+                "workspace_lane": "system_found",  # Session 9: 自动入池默认 system_found
             })
 
     if datasets:
@@ -166,6 +185,7 @@ def _collect_evidence_pool(
                 "paper_type": "unknown",
                 "dataset_status": getattr(d_, "dataset_status", None) or (d_.get("dataset_status") if isinstance(d_, dict) else None) or "unverified",
                 "repo_type": "unknown",
+                "workspace_lane": "system_found",  # Session 9
             })
 
     if repos:
@@ -186,15 +206,16 @@ def _collect_evidence_pool(
                 "paper_type": "unknown",
                 "dataset_status": "unverified",
                 "repo_type": getattr(b, "repo_type", None) or (b.get("repo_type") if isinstance(b, dict) else None) or "unknown",
+                "workspace_lane": "system_found",  # Session 9
             })
 
     return pool
 
 
-def _select_role(review_status: str, score: float | None, evidence_type: str) -> Literal["supports", "warns", "blocks", "background", "alternative"]:
-    """§6.1: review_status 决定 role 候选."""
+def _select_role(review_status: str, score: float | None, evidence_type: str, lane: str = "system_found") -> Literal["supports", "warns", "blocks", "background", "alternative"]:
+    """§6.1: review_status 决定 role 候选. Session 9: rejected lane 永远不进 supports."""
 
-    if review_status == "rejected":
+    if lane == "rejected" or review_status == "rejected":
         return "alternative"  # 反例/排除
     if review_status in ("needs_check", "pending"):
         return "warns" if (score is None or score < 0.5) else "background"
@@ -248,7 +269,7 @@ def build_feasibility_refs(
 
     # 论文 supports (取 top 3)
     for p in by_type["paper"][:3]:
-        role = _select_role(p.get("review_status", "pending"), p.get("relevance_score"), "paper")
+        role = _select_role(p.get("review_status", "pending"), p.get("relevance_score"), "paper", p.get("workspace_lane", "system_found"))
         if role == "supports":
             supports.append(_make_ref(p, "supports", f"arXiv 命中, 相关性 {p.get('relevance_score', 0):.2f}"))
         elif role in ("warns", "blocks"):
@@ -259,7 +280,7 @@ def build_feasibility_refs(
     # 数据集 supports (取 top 1)
     if by_type["dataset"]:
         d = by_type["dataset"][0]
-        role = _select_role(d.get("review_status", "pending"), d.get("quality_score"), "dataset")
+        role = _select_role(d.get("review_status", "pending"), d.get("quality_score"), "dataset", d.get("workspace_lane", "system_found"))
         if role == "supports":
             supports.append(_make_ref(d, "supports", f"数据集 {d.get('dataset_status')}, 质量分 {d.get('quality_score', 0):.2f}"))
         elif role in ("warns", "blocks"):
@@ -271,7 +292,7 @@ def build_feasibility_refs(
     # Repo supports (取 top 1)
     if by_type["repo"]:
         r = by_type["repo"][0]
-        role = _select_role(r.get("review_status", "pending"), r.get("quality_score"), "repo")
+        role = _select_role(r.get("review_status", "pending"), r.get("quality_score"), "repo", r.get("workspace_lane", "system_found"))
         if role == "supports":
             supports.append(_make_ref(r, "supports", f"Repo {r.get('repo_type')}, 复现分 {r.get('quality_score', 0):.2f}"))
         elif role in ("warns", "blocks"):
@@ -324,15 +345,15 @@ def build_pivot_refs(
     # supports: top 2 paper + top 1 dataset + top 1 repo
     refs: list[EvidenceRef] = []
     for p in by_type["paper"][:2]:
-        role = _select_role(p.get("review_status", "pending"), p.get("relevance_score"), "paper")
+        role = _select_role(p.get("review_status", "pending"), p.get("relevance_score"), "paper", p.get("workspace_lane", "system_found"))
         if role == "supports":
             refs.append(_make_ref(p, "supports", f"路线支撑: {p.get('paper_type')}"))
     for d in by_type["dataset"][:1]:
-        role = _select_role(d.get("review_status", "pending"), d.get("quality_score"), "dataset")
+        role = _select_role(d.get("review_status", "pending"), d.get("quality_score"), "dataset", d.get("workspace_lane", "system_found"))
         if role == "supports":
             refs.append(_make_ref(d, "supports", f"路线数据集: {d.get('dataset_status')}"))
     for r in by_type["repo"][:1]:
-        role = _select_role(r.get("review_status", "pending"), r.get("quality_score"), "repo")
+        role = _select_role(r.get("review_status", "pending"), r.get("quality_score"), "repo", r.get("workspace_lane", "system_found"))
         if role == "supports":
             refs.append(_make_ref(r, "supports", f"路线 baseline: {r.get('repo_type')}"))
 
@@ -383,13 +404,13 @@ def build_wp_refs(
     open_q: list[str] = []
 
     for p in by_type["paper"][:2]:
-        role = _select_role(p.get("review_status", "pending"), p.get("relevance_score"), "paper")
+        role = _select_role(p.get("review_status", "pending"), p.get("relevance_score"), "paper", p.get("workspace_lane", "system_found"))
         if role == "supports":
             paper_refs.append(_make_ref(p, "supports", f"WP 论文支撑: {p.get('paper_type')}"))
 
     if by_type["dataset"]:
         d = by_type["dataset"][0]
-        role = _select_role(d.get("review_status", "pending"), d.get("quality_score"), "dataset")
+        role = _select_role(d.get("review_status", "pending"), d.get("quality_score"), "dataset", d.get("workspace_lane", "system_found"))
         if role == "supports":
             dataset_refs.append(_make_ref(d, "supports", f"WP 数据集: {d.get('dataset_status')}"))
         else:
@@ -399,7 +420,7 @@ def build_wp_refs(
 
     if by_type["repo"]:
         r = by_type["repo"][0]
-        role = _select_role(r.get("review_status", "pending"), r.get("quality_score"), "repo")
+        role = _select_role(r.get("review_status", "pending"), r.get("quality_score"), "repo", r.get("workspace_lane", "system_found"))
         if role == "supports":
             baseline_refs.append(_make_ref(r, "supports", f"WP baseline: {r.get('repo_type')}"))
         else:
@@ -452,7 +473,7 @@ def build_review_refs(
         items = by_type[ev_type][:2]
         refs: list[EvidenceRef] = []
         for it in items:
-            role = _select_role(it.get("review_status", "pending"), it.get("relevance_score") or it.get("quality_score"), ev_type)
+            role = _select_role(it.get("review_status", "pending"), it.get("relevance_score") or it.get("quality_score"), ev_type, it.get("workspace_lane", "system_found"))
             refs.append(_make_ref(it, role, f"{dim} 维度引用: {it.get('evidence_type')}"))
         check.evidence_refs = refs
         check.confidence = round(sum(_ref_priority(p) for p in items) / max(len(items), 1), 3) if items else 0.0
