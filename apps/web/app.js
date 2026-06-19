@@ -8,50 +8,125 @@ const API = "http://127.0.0.1:18181";
 // ---------- Session 16: 通用提示 helper ----------
 
 function emptyStateHTML(opts) {
-  // opts: { icon, title, hint, actionHtml? }
+  // opts: { icon, title, hint, nextAction?, actionHtml?, kind? }
+  // kind: 'info' | 'warn' | 'error' (default 'info') — 影响边框颜色
   const icon = opts?.icon || "📭";
   const title = opts?.title || "暂无内容";
   const hint = opts?.hint || "等用户操作后会出现在这里。";
+  const nextAction = opts?.nextAction || "";
   const action = opts?.actionHtml || "";
-  return `<div class="empty-state">
+  const kind = opts?.kind || "info";
+  const nextHtml = nextAction
+    ? `<div class="empty-state__next">下一步: ${escapeHtml(nextAction)}</div>`
+    : "";
+  return `<div class="empty-state empty-state--${escapeHtml(kind)}">
     <div class="empty-state__icon">${icon}</div>
     <div class="empty-state__title">${escapeHtml(title)}</div>
     <div class="empty-state__hint">${escapeHtml(hint)}</div>
+    ${nextHtml}
     ${action}
   </div>`;
 }
 
+function explainRetrievalFailure(partialFailure) {
+  // partialFailure: { failed_sources: [...], status, message }
+  const failed = partialFailure?.failed_sources || [];
+  if (!failed.length) return "所有检索源成功, 已返回候选.";
+  const ok = partialFailure?.status === "partial"
+    ? "已保留其他来源结果."
+    : "请检查网络或稍后重试.";
+  return `${failed.length} 个检索源失败 (${failed.join(", ")}), ${ok}`;
+}
+
+function explainVerifyFailure(item) {
+  // item: evidence dict
+  const status = item?.verification_status || "unverified";
+  const url = item?.url || "(无 URL)";
+  if (status === "failed") return `URL 验证失败: ${url}; 这条证据不会进 supports.`;
+  if (status === "partial") return `URL 部分验证: ${url}; 建议人工确认.`;
+  if (status === "skipped") return `URL 跳过验证: ${url}; 需用户手动确认 (不会自动 supports).`;
+  if (status === "unverified") return `尚未验证: ${url}; 可点击 "URL 验证" 按钮.`;
+  return `验证状态: ${status}.`;
+}
+
+function explainUploadFailure(status, body) {
+  // Session 18 强化: 返回结构 next_action + message
+  const code = parseInt(status, 10);
+  if (code === 413) {
+    return {
+      message: `文件超过 20MB 上限`,
+      next_action: "压缩文件或拆分后再上传.",
+    };
+  }
+  if (code === 415) {
+    return {
+      message: `文件类型不在白名单`,
+      next_action: "确认扩展名与 MIME (PDF / PNG / JPG / WEBP / TXT / MD).",
+    };
+  }
+  if (code === 422) {
+    return {
+      message: `请求格式错误`,
+      next_action: `检查参数: ${(body || "").slice(0, 120)}`,
+    };
+  }
+  if (code === 400) {
+    return {
+      message: `请求被拒绝`,
+      next_action: `${(body || "").slice(0, 120)}`,
+    };
+  }
+  if (code === 0 || !code) {
+    return {
+      message: `上传中断或网络异常`,
+      next_action: "重试; 如持续失败检查后端日志.",
+    };
+  }
+  return {
+    message: `上传失败 (HTTP ${code})`,
+    next_action: `${(body || "").slice(0, 120)}`,
+  };
+}
+
+function explainReportQuality(verdict, score) {
+  if (!verdict) return { message: "", next_action: "" };
+  const pct = typeof score === "number" ? (score * 100).toFixed(0) + "%" : "—";
+  if (verdict === "PASS") {
+    return { message: `审核通过 (coverage ${pct})`, next_action: "可导出 FinalPackage Markdown." };
+  }
+  if (verdict === "WARN") {
+    return {
+      message: `审核有条件通过 (coverage ${pct})`,
+      next_action: "按 revision_checklist 补强后再导出.",
+    };
+  }
+  if (verdict === "FAIL") {
+    return {
+      message: `审核未通过 (coverage ${pct})`,
+      next_action: "先扩充证据 / 修复未支持声明, 再生成报告.",
+    };
+  }
+  if (verdict === "需修改" || verdict === "不建议") {
+    return {
+      message: `${verdict} (coverage ${pct})`,
+      next_action: "看 revision_checklist, 补足缺失维度.",
+    };
+  }
+  return { message: verdict, next_action: "" };
+}
+
 function explainVerificationFailure(result) {
-  // 把 verified/partial/failed/skipped 翻译成中文短解释
+  // 旧版 (S16) 保留: 把 verified/partial/failed/skipped 翻译为中文短解释
   if (!result) return "";
   const fail = result.failed || 0;
   const skipped = result.skipped || 0;
   const total = result.total || 0;
-  if (total === 0) return "本次没有匹配到任何证据, 验证未执行。";
-  if (fail === 0 && skipped === 0) return "全部证据已通过 URL 验证, 可信度良好。";
+  if (total === 0) return "本次没有匹配到任何证据, 验证未执行.";
+  if (fail === 0 && skipped === 0) return "全部证据已通过 URL 验证, 可信度良好.";
   const parts = [];
   if (fail > 0) parts.push(`${fail} 条 failed (URL 无效或来源异常, 不会进 supports)`);
   if (skipped > 0) parts.push(`${skipped} 条 skipped (未配置外部校验源, 需手动确认)`);
-  return parts.join("；") + "。";
-}
-
-function explainReportQuality(verdict, score) {
-  if (!verdict) return "";
-  const pct = typeof score === "number" ? (score * 100).toFixed(0) + "%" : "—";
-  if (verdict === "PASS") return `审核通过 (coverage ${pct})。可导出 FinalPackage。`;
-  if (verdict === "WARN") return `审核有条件通过 (coverage ${pct})。请按 revision_checklist 补强后再导出。`;
-  if (verdict === "FAIL") return `审核未通过 (coverage ${pct})。建议先扩充证据 / 修复未支持声明, 再生成报告。`;
-  return verdict;
-}
-
-function explainUploadFailure(status, body) {
-  const code = parseInt(status, 10);
-  if (code === 413) return "文件超过 20MB 上限, 请压缩后重新上传。";
-  if (code === 415) return "文件类型不在白名单 (PDF / PNG / JPG / WEBP / TXT / MD), 请确认扩展名与 MIME。";
-  if (code === 422) return `请求格式错误: ${(body || "").slice(0, 120)}`;
-  if (code === 400) return `请求被拒绝: ${(body || "").slice(0, 120)}`;
-  if (code === 0 || !code) return "上传中断或网络异常, 请重试。";
-  return `上传失败 (HTTP ${code}): ${(body || "").slice(0, 120)}`;
+  return parts.join("；") + ".";
 }
 
 const state = {
@@ -110,7 +185,11 @@ function renderEvidenceRefs(refs, opts) {
   // Returns HTML string of small ref cards with remove / mark_core buttons.
   opts = opts || {};
   if (!refs || refs.length === 0) {
-    return '<div class="ref-empty">⚠ 无证据引用</div>';
+    return emptyStateHTML({
+      icon: "🔗", title: "无证据引用", kind: "warn",
+      hint: "工作台里还没有被 EvidenceRef 关联的证据.",
+      nextAction: "回到证据工作台, 把候选移到 accepted / core, 再回到此处.",
+    });
   }
   return refs.map(r => `
     <div class="ref-card ref-card--${escapeHtml(r.role)}" data-ref-id="${escapeHtml(r.evidence_id)}">
@@ -320,7 +399,11 @@ function renderResult(r) {
       </div>
       ${p.url ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener">📄 arXiv</a>` : ""}
     </div>
-  `).join("") || '<div class="evidence-empty">暂无论文</div>';
+  `).join("") || emptyStateHTML({
+    icon: "📑", title: "暂无论文候选", kind: "warn",
+    hint: "本次检索未发现相关 arXiv/OpenAlex 论文.",
+    nextAction: "运行多源检索 (paper scope) 或手动添加论文链接.",
+  });
   const datasetCards = (ev.datasets || []).map(d => `
     <div class="evidence-card">
       <div class="evidence-card__title">${escapeHtml(d.name || d.dataset_id)}
@@ -333,7 +416,11 @@ function renderResult(r) {
       </div>
       ${d.download ? `<a href="${escapeHtml(d.download)}" target="_blank" rel="noopener">⬇️ 下载</a>` : ""}
     </div>
-  `).join("") || '<div class="evidence-empty">暂无数据集</div>';
+  `).join("") || emptyStateHTML({
+    icon: "📦", title: "暂无数据集候选", kind: "warn",
+    hint: "未发现公开数据集; 这会显著影响可行性判断.",
+    nextAction: "运行多源检索 (dataset scope) 或手动添加 HuggingFace / Kaggle 链接.",
+  });
   const baselineCards = (ev.baselines || []).map(b => `
     <div class="evidence-card">
       <div class="evidence-card__title">${escapeHtml(b.name || b.baseline_id)}
@@ -346,7 +433,11 @@ function renderResult(r) {
       </div>
       ${b.repository_url ? `<a href="${escapeHtml(b.repository_url)}" target="_blank" rel="noopener">🔗 仓库</a>` : ""}
     </div>
-  `).join("") || '<div class="evidence-empty">暂无 baseline</div>';
+  `).join("") || emptyStateHTML({
+    icon: "🛠️", title: "暂无 GitHub baseline", kind: "warn",
+    hint: "未发现可复现的 GitHub 仓库.",
+    nextAction: "运行多源检索 (repo scope) 或手动添加 GitHub URL.",
+  });
 
   document.getElementById("block-evidence").innerHTML = `
     <div class="evidence-section__toolbar">
@@ -1509,7 +1600,21 @@ function renderRetrievalCandidates(run) {
   if (!el) return;
   const cands = run.candidates || [];
   if (!cands.length) {
-    el.innerHTML = `<p class="retrieval-panel__empty">未检索到候选 (status=${run.status})</p>`;
+    const partialFailure = run.source_failure || {};
+    const failedSources = Object.keys(partialFailure);
+    const explain = explainRetrievalFailure({
+      failed_sources: failedSources,
+      status: run.status,
+    });
+    el.innerHTML = emptyStateHTML({
+      icon: failedSources.length ? "⚠️" : "🔍",
+      title: failedSources.length ? "部分检索源失败" : "未检索到候选",
+      kind: failedSources.length ? "warn" : "info",
+      hint: explain,
+      nextAction: failedSources.length
+        ? "刷新一次, 或切换 refresh=False 复用上次结果; 也可手动添加链接."
+        : "换一组关键词, 或手动添加 GitHub / HuggingFace 链接.",
+    });
     return;
   }
   el.innerHTML = cands.map(c => {
@@ -1879,9 +1984,12 @@ function renderQualityReview(review) {
     verdictEl.hidden = false;
     verdictEl.className = "quality-panel__verdict quality-verdict--" + review.verdict;
     const cov = (typeof review.coverage_score === "number") ? review.coverage_score : null;
+    const eq = explainReportQuality(review.verdict, cov);
+    const nextHtml = eq.next_action ? `<div class="quality-explain__next">下一步: ${escapeHtml(eq.next_action)}</div>` : "";
     verdictEl.innerHTML = `
       <strong>${escapeHtml(review.verdict)}</strong> · 总分 <strong>${review.score.toFixed(1)}</strong> / 100
-      <div class="quality-explain">${escapeHtml(explainReportQuality(review.verdict, cov))}</div>
+      <div class="quality-explain">${escapeHtml(eq.message)}</div>
+      ${nextHtml}
     `;
   }
   if (checksEl) {
@@ -2200,7 +2308,9 @@ function renderMaterialsDrafts(drafts, materials) {
     el.innerHTML = emptyStateHTML({
       icon: "📎",
       title: "尚无资料草稿",
-      hint: "上传 PDF / 图片, 或粘贴网页文字 / 导师备注, 系统会生成待确认卡片。",
+      hint: "上传 PDF / 图片, 或粘贴网页文字 / 导师备注, 系统会生成待确认卡片.",
+      nextAction: "切换上方 3 个 tab (上传 / 文字 / 备注), 提交一条资料即可.",
+      kind: "info",
     });
     return;
   }
@@ -2303,7 +2413,8 @@ async function submitTextMaterial(sourceType) {
     });
     if (!r.ok) {
       const t = await r.text().catch(() => "");
-      showError(`提交失败: ${r.status} ${t.slice(0, 200)}`);
+      const u = explainUploadFailure(r.status, t);
+      showError(`提交失败: ${u.message} — ${u.next_action}`);
       return;
     }
     appendTrace({ type: "step", name: "materials-text", detail: `${sourceType} submitted` });
@@ -2338,7 +2449,8 @@ async function importMaterialDraft(draftId) {
     });
     if (!r.ok) {
       const t = await r.text().catch(() => "");
-      showError(`导入失败: ${r.status} ${t.slice(0, 200)}`);
+      const u = explainUploadFailure(r.status, t);
+      showError(`导入失败: ${u.message} — ${u.next_action}`);
       return;
     }
     const data = await r.json();

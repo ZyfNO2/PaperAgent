@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import HTTPException as FastAPIHTTPException
 
 from app.api.v1.one_topic import router as one_topic_router
 from app.api.v1.skills import router as skills_router
+from app.api.v1.health import router as health_router
+from app.errors import AppError, app_error_handler, http_exception_handler
 
 app = FastAPI(
     title="TopicPilot-CN OneTopic MVP",
@@ -28,10 +31,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Session 18: 统一错误处理
+app.add_exception_handler(AppError, app_error_handler)
+app.add_exception_handler(FastAPIHTTPException, http_exception_handler)
+
 app.include_router(one_topic_router)
 app.include_router(skills_router)
+app.include_router(health_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["meta"])
 def health() -> dict[str, str]:
-    return {"status": "ok", "phase": "one_topic_mvp"}
+    return {"status": "ok", "phase": "one_topic_mvp", "session": "18"}
