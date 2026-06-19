@@ -226,3 +226,40 @@ stop_all.bat
 # 清理 .runtime（可选，会丢 trace / materials）
 rm -rf .runtime/traces/* .runtime/materials/* .runtime/retrieval/*
 ```
+
+---
+
+## 演示项目的回归基线
+
+Session 17 已把这两个 Demo 固化为可重复执行的回归基线：
+
+```bash
+# 后端基线 (YOLO + 高风险 MLLM, 共 15 项合同断言)
+.venv/Scripts/python.exe -m pytest apps/api/tests/test_session17_demo_baseline.py -v
+
+# 前端主路径 (YOLO + 高风险, 共 10 项)
+.venv/Scripts/python.exe -m pytest apps/web/e2e/test_one_topic_session17_demo_baseline.py -v
+```
+
+基线文件位于 `docs/demo/baselines/`，详见该目录 README。
+
+---
+
+## 11.5 （补充）运行基线回归
+
+```bash
+# 仅基线
+.venv/Scripts/python.exe -m pytest apps/api/tests/test_session17_demo_baseline.py -v
+
+# Session 10-17 全量
+.venv/Scripts/python.exe -m pytest \
+  apps/api/tests/test_session10_verification.py \
+  apps/api/tests/test_session11_trace_persistence.py \
+  apps/api/tests/test_session12_report_quality.py \
+  apps/api/tests/test_session13_skill_registry.py \
+  apps/api/tests/test_session14_multi_source_retrieval.py \
+  apps/api/tests/test_session15_material_card_intake.py \
+  apps/api/tests/test_session17_demo_baseline.py -v
+```
+
+如果失败：检查 `verdict / 引用数 / coverage / 缺失证据` 是否仍在 `expected.json` 区间；如确认系统破坏，修复代码；如确认业务调整，按 [baselines/README.md](baselines/README.md) §4 更新基线。

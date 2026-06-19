@@ -225,11 +225,23 @@ revision_checklist:
 
 ---
 
-## Demo Case 与 Session 17 基线的关系
+## Demo Case 与 Session 17 基线
 
-Session 17 候选：
+Session 17 已把这两个 Case 固化为**结构化回归基线**，可重复执行：
 
-> 把 Case 1 的输入 / 候选证据 / 报告输出 / 质量审核结果固化为**回归基线 JSON**，
-> 后续每次修改跑一次，对比 coverage_score / verdict / 引用数，破坏基线即 fail。
+- `docs/demo/baselines/yolo_steel_defect_*` — Case 1 三件套（input / mock_sources / expected）；
+- `docs/demo/baselines/risky_mllm_industrial_*` — Case 2 三件套；
+- `docs/demo/baselines/README.md` — 基线维护规则；
+- `apps/api/tests/test_session17_demo_baseline.py` — 15 项后端合同断言；
+- `apps/web/e2e/test_one_topic_session17_demo_baseline.py` — 10 项 Playwright 主路径断言。
 
-详细见 [Session_16_Productization_Demo_验收报告 §16 下一 Session](../../Plan/reports/Session_16_Productization_Demo_验收报告.md)。
+每次改动代码，跑：
+
+```bash
+.venv/Scripts/python.exe -m pytest apps/api/tests/test_session17_demo_baseline.py -v
+.venv/Scripts/python.exe -m pytest apps/web/e2e/test_one_topic_session17_demo_baseline.py -v
+```
+
+即可判断是否破坏主流程。
+
+详见 [Session_17_Demo_Baseline_验收报告](../../Plan/reports/Session_17_Demo_Baseline_验收报告.md)。

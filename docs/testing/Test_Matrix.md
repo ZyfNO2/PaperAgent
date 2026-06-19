@@ -27,14 +27,13 @@
 | 13 | `test_session13_skill_registry.py` | Skill 注册表 + 健康检查 | ✅ 通过 |
 | 14 | `test_session14_multi_source_retrieval.py` | 多源检索 + 去重 + 导入 | ✅ 通过 |
 | 15 | `test_session15_material_card_intake.py` | PDF / 图片 / 网页 / 备注卡片化 | ✅ 通过 |
+| 17 | `test_session17_demo_baseline.py` | Demo 数据固化与回归基线 (YOLO + 高风险 MLLM) | ✅ 通过 |
 
-### Session 15 后端统计
+### Session 17 后端统计
 
 ```text
-后端 Session 10-15 全量回归：
-  - Session 15 新增：20 passed
-  - 全量：184 passed, 1 skipped
-  - skipped：1（Session 6 LLM 真实网络相关，本地默认 mock）
+后端 Session 17 baseline 测试：15 passed (含 YOLO + 高风险 MLLM 两 case 共 14 个合同断言 + 1 个 fixture 检查)
+全量后端回归：212 passed, 1 skipped
 ```
 
 ### 运行命令
@@ -78,6 +77,7 @@
 | 13 | `test_one_topic_session13_skill_registry.py` | Skill 注册 UI | ✅ 通过 |
 | 14 | `test_one_topic_session14_retrieval.py` | 多源检索 UI | ✅ 通过（59 passed 含 S7-S13） |
 | 15 | `test_one_topic_session15_material_cards.py` | 资料工作台 UI | ✅ 通过（10 passed） |
+| 17 | `test_one_topic_session17_demo_baseline.py` | Demo 主路径 + 高风险 UI 流程 | ✅ 通过（10 passed） |
 
 ### Session 15 前端统计
 

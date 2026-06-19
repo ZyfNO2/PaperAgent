@@ -1,0 +1,74 @@
+{
+  "baseline_version": "0.1.0",
+  "created_at": "2026-06-19",
+  "source_session": "Session 17",
+  "contract_type": "structural",
+  "case_id": "risky_mllm_industrial",
+  "feasibility": {
+    "verdict_allowed": ["暂缓", "可转向", "PARK", "PIVOT", "WARN", "需修改", "不建议"],
+    "verdict_forbidden": ["可做", "GO", "PASS", "通过"],
+    "confidence_max": 0.70,
+    "must_have_missing_evidence_any": [
+      "公开数据集",
+      "可复现 baseline",
+      "统一基准",
+      "推理资源",
+      "评价指标",
+      "数据集",
+      "baseline",
+      "基准"
+    ],
+    "min_pivot_routes": 2
+  },
+  "evidence_pool": {
+    "min_papers": 1,
+    "min_datasets": 0,
+    "min_repos": 0,
+    "max_datasets": 2,
+    "min_verified_or_partial": 1
+  },
+  "final_package": {
+    "required_sections": [
+      "研究背景",
+      "国内外研究现状",
+      "研究内容",
+      "技术路线",
+      "实验方案",
+      "风险预案",
+      "引用清单"
+    ],
+    "min_citation_count": 0,
+    "max_citation_count": 30,
+    "citation_required_fields": [
+      "evidence_id",
+      "verification_status"
+    ]
+  },
+  "report_quality": {
+    "verdict_allowed": ["有条件通过", "需修改", "WARN", "FAIL", "不建议", "暂缓"],
+    "verdict_forbidden": ["通过", "PASS"],
+    "min_revision_checklist_count": 1,
+    "defense_questions_min": 0
+  },
+  "trace_actions_required": [
+    "verify_project",
+    "final_package_build"
+  ],
+  "trace_actions_optional": [
+    "retrieval_run_started",
+    "retrieval_run_completed",
+    "verify_evidence"
+  ],
+  "supports_rule": {
+    "forbidden_conditions": [
+      "review_status=rejected",
+      "review_status=pending AND verification_status=unverified",
+      "verification_status=failed"
+    ]
+  },
+  "must_not_have": [
+    "无证据支持但 verdict=通过",
+    "没有 dataset/repo 仍生成 supports",
+    "未验证资料提升关键维度"
+  ]
+}

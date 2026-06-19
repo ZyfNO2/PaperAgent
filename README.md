@@ -139,10 +139,10 @@ Plan/reports/                  # Session 01-16 验收报告
 
 ---
 
-## 测试结果（截至 Session 15）
+## 测试结果（截至 Session 17）
 
-- 后端：`184 passed, 1 skipped`（覆盖 Session 01-15）
-- Playwright：Session 14 主路径 `59 passed`；Session 15 `10 passed`
+- 后端：`212 passed, 1 skipped`（覆盖 Session 01-17，含 YOLO + 高风险 MLLM baseline）
+- Playwright：Session 14 主路径 `59 passed`；Session 15 `10 passed`；Session 17 baseline `10 passed`
 - 详细矩阵：[docs/testing/Test_Matrix.md](docs/testing/Test_Matrix.md)
 
 ---
@@ -164,10 +164,10 @@ PaperAgent **不会**：
 
 ---
 
-## 后续路线（不在 Session 16 范围）
+## 后续路线（不在 Session 17 范围）
 
-- **Session 17 候选**：Demo 数据固化与回归基线 —— 把 1-2 条 Demo 项目的输入、候选证据、报告输出与质量审核结果固化为回归基线。
-- 不扩功能、不做新的智能体能力，专注**稳定、可复现、可比较**。
+- **Session 18 候选**：错误处理、空状态与可观测性整理 —— 统一错误码、本地 health endpoint、增强日志；
+- 不扩功能、不做新智能体能力，专注**稳定、可复现、可比较、可诊断**。
 
 ---
 

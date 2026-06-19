@@ -1,0 +1,103 @@
+{
+  "baseline_version": "0.1.0",
+  "case_id": "yolo_steel_defect",
+  "source_session": "Session 17",
+  "papers": [
+    {
+      "title": "YOLOv8: Better, Faster, Stronger",
+      "authors": ["Jocher G."],
+      "year": 2023,
+      "url": "https://arxiv.org/abs/2304.00501",
+      "doi": null,
+      "arxiv_id": "2304.00501",
+      "source": "openalex",
+      "expected_verification": "verified"
+    },
+    {
+      "title": "Steel Surface Defect Detection with Improved YOLO",
+      "authors": ["Wang L.", "Chen Y."],
+      "year": 2022,
+      "url": "https://arxiv.org/abs/2209.12345",
+      "arxiv_id": "2209.12345",
+      "source": "arxiv",
+      "expected_verification": "verified"
+    },
+    {
+      "title": "A Survey of Deep Learning for Industrial Quality Inspection",
+      "authors": ["Liu X."],
+      "year": 2023,
+      "url": "https://openalex.org/W12345",
+      "doi": "10.1109/ACCESS.2023.123456",
+      "source": "openalex",
+      "expected_verification": "partial"
+    },
+    {
+      "title": "Real-time Surface Defect Detection with Lightweight YOLO",
+      "authors": ["Sun H."],
+      "year": 2024,
+      "url": "https://arxiv.org/abs/2403.00099",
+      "arxiv_id": "2403.00099",
+      "source": "arxiv",
+      "expected_verification": "partial"
+    },
+    {
+      "title": "Edge-AI YOLO Deployment on Industrial Lines",
+      "authors": ["Park J."],
+      "year": 2023,
+      "url": "https://openalex.org/W67890",
+      "source": "openalex",
+      "expected_verification": "unverified",
+      "expected_import": false
+    }
+  ],
+  "datasets": [
+    {
+      "name": "NEU-DET (Steel Surface Defects)",
+      "download": "https://huggingface.co/datasets/Andyrasika/NEU-DET",
+      "license": "research-only",
+      "modality": ["image"],
+      "scale": "1800 images / 6 classes",
+      "source": "huggingface",
+      "expected_verification": "verified"
+    },
+    {
+      "name": "GC10-DET (Galvanized Steel)",
+      "download": "https://huggingface.co/datasets/paulgord/GC10-DET",
+      "license": "research-only",
+      "modality": ["image"],
+      "scale": "2300 images / 10 classes",
+      "source": "huggingface",
+      "expected_verification": "partial"
+    }
+  ],
+  "repos": [
+    {
+      "name": "ultralytics/ultralytics",
+      "repository_url": "https://github.com/ultralytics/ultralytics",
+      "license": "AGPL-3.0",
+      "has_readme": true,
+      "has_training_script": true,
+      "has_eval_script": true,
+      "source": "github",
+      "expected_verification": "verified"
+    },
+    {
+      "name": "yolov5-steel-defect-fork",
+      "repository_url": "https://github.com/example/yolov5-steel",
+      "license": "MIT",
+      "has_readme": true,
+      "has_training_script": true,
+      "has_eval_script": false,
+      "source": "github",
+      "expected_verification": "partial"
+    }
+  ],
+  "materials": [
+    {
+      "source_type": "manual_note",
+      "user_note": "导师备注: 优先做带钢表面划痕, 建议引入 NEU-DET; 兼顾轻量化以适配产线。",
+      "expected_draft_type": "note",
+      "expected_review_status": "pending"
+    }
+  ]
+}
