@@ -57,12 +57,25 @@ from ...schemas_quality import (
 )
 from ...services import report_quality as quality_service
 from ...services.retrieval import orchestrator as retrieval_service
+from ...services import materials as materials_service
 from ...schemas_retrieval import (
     RetrievalImportRequest,
     RetrievalImportResponse,
     RetrievalRun,
     RetrievalSearchRequest,
     RetrievalSummaryResponse,
+)
+from ...schemas_materials import (
+    DraftCardUpdate,
+    DraftEvidenceCard,
+    MaterialBuildCardsRequest,
+    MaterialImportRequest,
+    MaterialImportResponse,
+    MaterialItem,
+    MaterialListResponse,
+    MaterialTextRequest,
+    MaterialUploadRequest,
+    MaterialUploadResponse,
 )
 
 router = APIRouter(prefix="/api/v1/one-topic", tags=["one-topic"])
@@ -1239,3 +1252,145 @@ def run_retrieval_import(
     if ev_store.get_snapshot(project_id) is None:
         raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
     return retrieval_service.import_candidates(project_id, body)
+
+
+# ---------- Session 15: 全文资料与图片 / PDF / 网页卡片化 (SOP §18) ---------- #
+
+
+@router.post(
+    "/{project_id}/materials/upload",
+    response_model=MaterialUploadResponse,
+    summary="Session 15: 上传 PDF / 图片等资料 (base64 JSON 形式)",
+)
+def upload_material(
+    project_id: str,
+    body: MaterialUploadRequest,
+) -> MaterialUploadResponse:
+    """接收 base64 上传, 保存 + 解析 + (可选) 生成草稿."""
+
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    if not body.filename:
+        raise HTTPException(status_code=422, detail="缺少 filename")
+    try:
+        import base64
+
+        data = base64.b64decode(body.content_b64 or "", validate=True) if body.content_b64 else b""
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(status_code=422, detail=f"base64 解码失败: {e}") from e
+    if not data:
+        raise HTTPException(status_code=422, detail="文件为空")
+    result = materials_service.accept_upload(
+        project_id,
+        filename=body.filename,
+        data=data,
+        mime=body.mime,
+        user_note=body.user_note,
+        page_range=body.page_range,
+        auto_build_cards=body.auto_build_cards,
+        preferred_type=body.preferred_type,
+        material_id=body.material_id,
+    )
+    if result.get("error"):
+        raise HTTPException(status_code=422, detail=result["error"])
+    return MaterialUploadResponse(
+        material=result["material"],
+        draft_cards=result["draft_cards"],
+        message=result.get("message", ""),
+    )
+
+
+@router.post(
+    "/{project_id}/materials/text",
+    response_model=MaterialUploadResponse,
+    summary="Session 15: 提交文本 / URL+描述 / 导师备注",
+)
+def submit_text_material(
+    project_id: str,
+    body: MaterialTextRequest,
+) -> MaterialUploadResponse:
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    result = materials_service.accept_text(project_id, body)
+    return MaterialUploadResponse(
+        material=result["material"],
+        draft_cards=result["draft_cards"],
+        message=result.get("message", ""),
+    )
+
+
+@router.get(
+    "/{project_id}/materials",
+    response_model=MaterialListResponse,
+    summary="Session 15: 列出本项目所有 materials 与 drafts",
+)
+def list_project_materials(project_id: str) -> MaterialListResponse:
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    data = materials_service.list_materials(project_id)
+    return MaterialListResponse(
+        project_id=project_id,
+        materials=data["materials"],
+        drafts=data["drafts"],
+    )
+
+
+@router.get(
+    "/{project_id}/materials/{material_id}",
+    response_model=MaterialItem,
+    summary="Session 15: 单个 material",
+)
+def get_project_material(project_id: str, material_id: str) -> MaterialItem:
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    m = materials_service.get_material(project_id, material_id)
+    if m is None:
+        raise HTTPException(status_code=404, detail=f"material {material_id} 不存在")
+    return m
+
+
+@router.post(
+    "/{project_id}/materials/{material_id}/cards",
+    response_model=list[DraftEvidenceCard],
+    summary="Session 15: 显式生成草稿",
+)
+def build_project_draft_cards(
+    project_id: str,
+    material_id: str,
+    body: MaterialBuildCardsRequest,
+) -> list[DraftEvidenceCard]:
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    return materials_service.build_draft_cards(project_id, material_id, body)
+
+
+@router.patch(
+    "/{project_id}/materials/cards/{draft_card_id}",
+    response_model=DraftEvidenceCard,
+    summary="Session 15: 编辑草稿",
+)
+def edit_project_draft_card(
+    project_id: str,
+    draft_card_id: str,
+    body: DraftCardUpdate,
+) -> DraftEvidenceCard:
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    card = materials_service.edit_draft_card(project_id, draft_card_id, body)
+    if card is None:
+        raise HTTPException(status_code=404, detail=f"draft {draft_card_id} 不存在")
+    return card
+
+
+@router.post(
+    "/{project_id}/materials/cards/import",
+    response_model=MaterialImportResponse,
+    summary="Session 15: 导入草稿到 Evidence Ledger",
+)
+def import_project_drafts(
+    project_id: str,
+    body: MaterialImportRequest,
+) -> MaterialImportResponse:
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    return materials_service.import_drafts(project_id, body)

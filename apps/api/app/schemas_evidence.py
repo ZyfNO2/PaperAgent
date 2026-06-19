@@ -162,6 +162,11 @@ class EvidenceItem(BaseModel):
     scored_by_skill: str | None = None
     validated_by_skill: str | None = None
 
+    # Session 15 §16: 来源 materials / parse 信息
+    from_material_id: str | None = None
+    parse_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    page_refs: list[str] = Field(default_factory=list)
+
 
 # ---------- Session 10: Verification 模型 (§4.2) ---------- #
 

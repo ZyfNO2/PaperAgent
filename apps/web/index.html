@@ -241,6 +241,55 @@
         </div>
       </div>
 
+      <!-- Session 15: 全文资料与图片 / PDF / 网页卡片化 -->
+      <div class="materials-panel" id="materials-panel">
+        <header class="materials-panel__head">
+          <h3>📎 资料卡片化 (Session 15)</h3>
+          <span class="materials-panel__hint" id="materials-summary-hint">未提交资料</span>
+        </header>
+        <div class="materials-panel__row">
+          <label class="materials-panel__tab materials-panel__tab--active" data-mat-tab="upload">📤 上传文件</label>
+          <label class="materials-panel__tab" data-mat-tab="text">📝 文字 / URL</label>
+          <label class="materials-panel__tab" data-mat-tab="note">💬 导师备注</label>
+        </div>
+
+        <!-- 上传区 -->
+        <div class="materials-panel__pane" id="materials-pane-upload">
+          <input type="file" id="materials-file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.md" />
+          <input type="text" id="materials-upload-note" placeholder="说明 (可选) - 例如: 导师强调的论文" />
+          <button class="cta-mini" id="btn-materials-upload" type="button">⬆️ 上传并解析</button>
+          <div class="materials-panel__small">支持 PDF / PNG / JPG / WEBP / TXT / MD, 单文件 ≤ 20MB</div>
+        </div>
+
+        <!-- 文字 / URL 区 -->
+        <div class="materials-panel__pane" id="materials-pane-text" hidden>
+          <select id="materials-text-type">
+            <option value="web_text">网页正文</option>
+            <option value="url_note">URL + 描述</option>
+          </select>
+          <input type="text" id="materials-text-title" placeholder="标题 (可选)" />
+          <input type="text" id="materials-text-url" placeholder="URL (url_note 时必填)" />
+          <textarea id="materials-text-body" placeholder="粘贴正文 / 描述 (≤ 100K 字符)" rows="3"></textarea>
+          <input type="text" id="materials-text-note" placeholder="用户说明 (可选)" />
+          <button class="cta-mini" id="btn-materials-submit-text" type="button">📨 提交文字资料</button>
+        </div>
+
+        <!-- 备注区 -->
+        <div class="materials-panel__pane" id="materials-pane-note" hidden>
+          <input type="text" id="materials-note-title" placeholder="标题 (例如: 导师备注)" />
+          <textarea id="materials-note-body" placeholder="粘贴导师/合作者备注 (≤ 100K 字符)" rows="4"></textarea>
+          <input type="text" id="materials-note-note" placeholder="可选说明" />
+          <button class="cta-mini" id="btn-materials-submit-note" type="button">💬 提交备注</button>
+        </div>
+
+        <div class="materials-panel__drafts">
+          <h4 style="margin:10px 0 6px;font-size:13px;color:#cbd5e1">📋 草稿卡片</h4>
+          <div class="materials-panel__list" id="materials-draft-list">
+            <p class="materials-panel__empty">尚无草稿, 上传/提交资料后会生成待确认卡片</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Session 13: 内部 Skill Registry -->
       <div class="skill-panel" id="skill-panel">
         <header class="skill-panel__head">

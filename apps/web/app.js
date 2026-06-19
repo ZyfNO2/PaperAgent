@@ -132,6 +132,7 @@ function switchTab(name) {
     loadTraceHistory();
     loadSkillRegistry();
     loadRetrievalSummary();
+    loadMaterials();
   }
 }
 
@@ -2081,5 +2082,245 @@ document.addEventListener("click", async (e) => {
   if (!btn) return;
   if (btn.dataset.retrievalAction === "import") {
     await importRetrievalCandidate(btn.dataset.candId);
+  }
+});
+
+// Session 15: 全文资料与图片 / PDF / 网页卡片化 -------------------
+
+function _matToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const s = String(r.result || "");
+      // r.result is "data:<mime>;base64,<b64>"
+      const idx = s.indexOf("base64,");
+      resolve(idx >= 0 ? s.slice(idx + 7) : s);
+    };
+    r.onerror = () => reject(new Error("read failed"));
+    r.readAsDataURL(file);
+  });
+}
+
+function _showMaterialsPane(name) {
+  const map = { upload: "materials-pane-upload", text: "materials-pane-text", note: "materials-pane-note" };
+  for (const [k, id] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el) el.hidden = (k !== name);
+  }
+  document.querySelectorAll(".materials-panel__tab").forEach(t => {
+    t.classList.toggle("materials-panel__tab--active", t.dataset.matTab === name);
+  });
+}
+
+async function loadMaterials() {
+  if (!state.projectId) return;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/materials`);
+    if (!r.ok) return;
+    const data = await r.json();
+    renderMaterialsDrafts(data.drafts || [], data.materials || []);
+    const hintEl = document.getElementById("materials-summary-hint");
+    if (hintEl) {
+      const n = (data.materials || []).length;
+      const d = (data.drafts || []).length;
+      hintEl.textContent = `${n} materials · ${d} drafts`;
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
+function renderMaterialsDrafts(drafts, materials) {
+  const el = document.getElementById("materials-draft-list");
+  if (!el) return;
+  if (!drafts.length) {
+    el.innerHTML = `<p class="materials-panel__empty">尚无草稿, 上传/提交资料后会生成待确认卡片</p>`;
+    return;
+  }
+  el.innerHTML = drafts.map(d => {
+    const mat = materials.find(m => m.material_id === d.material_id);
+    const meta = mat ? `${mat.source_type} · ${mat.parse_status}` : "";
+    const conf = (d.extraction_confidence || 0).toFixed(2);
+    return `
+      <div class="materials-card" data-draft-id="${escapeHtml(d.draft_card_id)}">
+        <div class="materials-card__head">
+          <span class="materials-card__type">${escapeHtml(d.suggested_type)}</span>
+          <span class="materials-card__conf">conf=${conf}</span>
+          <span class="materials-card__status">${escapeHtml(d.status)}</span>
+        </div>
+        <div class="materials-card__title">${escapeHtml(d.title || "(无标题)")}</div>
+        <div class="materials-card__meta">${escapeHtml(meta)}</div>
+        <div class="materials-card__summary">${escapeHtml((d.summary || "").slice(0, 200))}</div>
+        ${d.page_refs && d.page_refs.length ? `<div class="materials-card__pages">页码: ${d.page_refs.map(escapeHtml).join(", ")}</div>` : ""}
+        ${d.warnings && d.warnings.length ? `<div class="materials-card__warns">⚠️ ${d.warnings.map(escapeHtml).join(" · ")}</div>` : ""}
+        <div class="materials-card__actions">
+          <button class="cta-mini" data-mat-action="import" data-draft-id="${escapeHtml(d.draft_card_id)}" ${d.status === "imported" ? "disabled" : ""}>📥 导入</button>
+          <button class="cta-mini" data-mat-action="reject" data-draft-id="${escapeHtml(d.draft_card_id)}">❌ 拒绝</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function uploadMaterialFile() {
+  if (!state.projectId) { showError("无 projectId"); return; }
+  const inp = document.getElementById("materials-file");
+  const noteEl = document.getElementById("materials-upload-note");
+  if (!inp || !inp.files || !inp.files.length) {
+    showError("请选择文件");
+    return;
+  }
+  const file = inp.files[0];
+  const note = (noteEl?.value || "").trim() || null;
+  const btn = document.getElementById("btn-materials-upload");
+  if (btn) { btn.disabled = true; btn.textContent = "⏳ 上传中..."; }
+  try {
+    const content_b64 = await _matToBase64(file);
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/materials/upload`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: file.name,
+        content_b64,
+        mime: file.type || null,
+        user_note: note,
+        auto_build_cards: true,
+      }),
+    });
+    if (!r.ok) {
+      const t = await r.text().catch(() => "");
+      showError(`上传失败: ${r.status} ${t.slice(0, 200)}`);
+      return;
+    }
+    appendTrace({ type: "step", name: "materials-upload", detail: `${file.name} uploaded` });
+    inp.value = "";
+    if (noteEl) noteEl.value = "";
+    await loadMaterials();
+    await loadWorkspaceBoard();
+    await refreshEvidence();
+  } catch (e) {
+    showError("上传异常: " + String(e).slice(0, 200));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "⬆️ 上传并解析"; }
+  }
+}
+
+async function submitTextMaterial(sourceType) {
+  if (!state.projectId) { showError("无 projectId"); return; }
+  let body = {
+    source_type: sourceType,
+    title: null,
+    text: "",
+    url: null,
+    user_note: null,
+  };
+  if (sourceType === "web_text" || sourceType === "url_note") {
+    const typeEl = document.getElementById("materials-text-type");
+    const realType = typeEl?.value || "web_text";
+    body.source_type = realType;
+    body.title = document.getElementById("materials-text-title")?.value || null;
+    body.text = document.getElementById("materials-text-body")?.value || "";
+    body.url = document.getElementById("materials-text-url")?.value || null;
+    body.user_note = document.getElementById("materials-text-note")?.value || null;
+  } else if (sourceType === "manual_note") {
+    body.source_type = "manual_note";
+    body.title = document.getElementById("materials-note-title")?.value || null;
+    body.text = document.getElementById("materials-note-body")?.value || "";
+    body.user_note = document.getElementById("materials-note-note")?.value || null;
+  }
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/materials/text`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) {
+      const t = await r.text().catch(() => "");
+      showError(`提交失败: ${r.status} ${t.slice(0, 200)}`);
+      return;
+    }
+    appendTrace({ type: "step", name: "materials-text", detail: `${sourceType} submitted` });
+    // 清空表单
+    if (sourceType === "manual_note") {
+      const a = document.getElementById("materials-note-title");
+      const b = document.getElementById("materials-note-body");
+      const c = document.getElementById("materials-note-note");
+      if (a) a.value = ""; if (b) b.value = ""; if (c) c.value = "";
+    } else {
+      ["materials-text-title","materials-text-url","materials-text-body","materials-text-note"].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = "";
+      });
+    }
+    await loadMaterials();
+  } catch (e) {
+    showError("提交异常: " + String(e).slice(0, 200));
+  }
+}
+
+async function importMaterialDraft(draftId) {
+  if (!state.projectId) return;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/materials/cards/import`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        draft_card_ids: [draftId],
+        workspace_lane: "user_preferred",
+        auto_verify: false,
+      }),
+    });
+    if (!r.ok) {
+      const t = await r.text().catch(() => "");
+      showError(`导入失败: ${r.status} ${t.slice(0, 200)}`);
+      return;
+    }
+    const data = await r.json();
+    appendTrace({ type: "step", name: "materials-import", detail: `${draftId} → imported=${data.imported}` });
+    await loadMaterials();
+    await loadWorkspaceBoard();
+    await refreshEvidence();
+    await loadTraceHistory();
+  } catch (e) {
+    showError("导入异常: " + String(e).slice(0, 200));
+  }
+}
+
+async function rejectMaterialDraft(draftId) {
+  if (!state.projectId) return;
+  try {
+    await fetch(`${API}/api/v1/one-topic/${state.projectId}/materials/cards/${draftId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "rejected" }),
+    });
+    await loadMaterials();
+  } catch (e) {
+    showError("拒绝异常: " + String(e).slice(0, 200));
+  }
+}
+
+// Session 15: materials 按钮代理
+document.addEventListener("click", async (e) => {
+  const tab = e.target.closest("[data-mat-tab]");
+  if (tab) {
+    _showMaterialsPane(tab.dataset.matTab);
+    return;
+  }
+  const btn = e.target.closest("[data-mat-action]");
+  if (btn) {
+    const id = btn.dataset.matAction;
+    const did = btn.dataset.draftId;
+    if (id === "import") await importMaterialDraft(did);
+    else if (id === "reject") await rejectMaterialDraft(did);
+    return;
+  }
+  // 顶层按钮 (id 匹配)
+  const directId = e.target.id;
+  if (directId === "btn-materials-upload") {
+    await uploadMaterialFile();
+  } else if (directId === "btn-materials-submit-text") {
+    await submitTextMaterial("web_text");
+  } else if (directId === "btn-materials-submit-note") {
+    await submitTextMaterial("manual_note");
   }
 });

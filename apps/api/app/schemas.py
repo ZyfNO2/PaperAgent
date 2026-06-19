@@ -332,6 +332,12 @@ class ReportCitation(BaseModel):
     verification_warnings: list[str] = Field(default_factory=list)
     # Session 13 §7.3: Skill 来源
     skill_sources: list[str] = Field(default_factory=list)
+    # Session 15 §16: 来源类型 (auto_search / manual / upload / assistant_intake / import)
+    source_mode: str | None = None
+    # Session 15 §16: 解析置信度 (材料类)
+    parse_confidence: float | None = None
+    # Session 15 §16: 页码 / 片段引用
+    page_refs: list[str] = Field(default_factory=list)
 
 
 class FinalPackageSummary(BaseModel):
