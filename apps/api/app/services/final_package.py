@@ -631,10 +631,11 @@ def _render_markdown(
     for sec in sections:
         if sec.key == "citations":
             # Session 10 §8: 证据清单增加 验证状态/置信度/警告 列
+            # Session 13/14 §15: 增加 Skill 列
             lines.append(f"## {sec.title}")
             lines.append("")
-            lines.append("| 编号 | 类型 | 标题 | 审核状态 | 验证 | 置信度 | 警告 | 链接 |")
-            lines.append("|---|---|---|---|---|---:|---|---|")
+            lines.append("| 编号 | 类型 | 标题 | 审核状态 | 验证 | 置信度 | Skill | 警告 | 链接 |")
+            lines.append("|---|---|---|---|---|---:|---|---|---|")
             for c in cite.values():
                 title_short = _short(c.title, 50)
                 url = c.url or "-"
@@ -642,9 +643,10 @@ def _render_markdown(
                 v_status = c.verification_status or "unverified"
                 v_conf = f"{c.verification_confidence:.2f}" if c.verification_confidence is not None else "-"
                 v_warn = _short("; ".join(c.verification_warnings[:2]), 40) if c.verification_warnings else "-"
+                skill_str = ", ".join(c.skill_sources[:3]) if c.skill_sources else "-"
                 lines.append(
                     f"| {c.ref_no} | {c.evidence_type} | {title_short} | "
-                    f"{c.review_status} | {v_status} | {v_conf} | {v_warn} | {url} |"
+                    f"{c.review_status} | {v_status} | {v_conf} | {skill_str} | {v_warn} | {url} |"
                 )
             lines.append("")
             continue

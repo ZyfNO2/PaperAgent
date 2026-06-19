@@ -131,6 +131,7 @@ function switchTab(name) {
     refreshVerificationSummary();
     loadTraceHistory();
     loadSkillRegistry();
+    loadRetrievalSummary();
   }
 }
 
@@ -1381,6 +1382,165 @@ async function regenerate(useConfirmedKw, useConfirmedPlan) {
   }
 }
 
+// Session 14: 多源检索增强 -------------------------------------------------
+
+function _selectedRetrievalScope() {
+  return Array.from(document.querySelectorAll("input[name=retrieval-scope]:checked")).map(i => i.value);
+}
+
+function _selectedRetrievalSources() {
+  return Array.from(document.querySelectorAll("input[name=retrieval-source]:checked")).map(i => i.value);
+}
+
+async function runRetrievalSearch() {
+  if (!state.projectId) {
+    showError("无 projectId, 请先跑分析");
+    return;
+  }
+  const btn = document.getElementById("btn-retrieval-run");
+  if (btn) { btn.disabled = true; btn.textContent = "⏳ 检索中..."; }
+  const scope = _selectedRetrievalScope();
+  const sources = _selectedRetrievalSources();
+  const autoVerify = !!document.getElementById("retrieval-auto-verify")?.checked;
+  appendTrace({ type: "step", name: "retrieval-run", detail: `scope=${scope.join(",")} sources=${sources.join(",")}` });
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/retrieval/search`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        scope, sources,
+        top_k_per_source: 6,
+        include_existing: false,
+        auto_import: false,
+        auto_verify: autoVerify,
+      }),
+    });
+    if (!r.ok) {
+      const txt = await r.text().catch(() => "");
+      showError(`检索失败: ${r.status} ${txt.slice(0, 200)}`);
+      return;
+    }
+    const run = await r.json();
+    renderRetrievalQueryPreview(run);
+    renderRetrievalCandidates(run);
+    state._lastRetrievalRunId = run.run_id;
+    await loadRetrievalSummary();
+    appendTrace({ type: "step", name: "retrieval-done", detail: `total=${run.total_candidates} status=${run.status}` });
+  } catch (e) {
+    showError("retrieval 异常: " + String(e).slice(0, 200));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "🚀 运行检索"; }
+  }
+}
+
+function renderRetrievalQueryPreview(run) {
+  const el = document.getElementById("retrieval-query-preview");
+  if (!el) return;
+  const plan = run.query_plan || {};
+  const all = [
+    ...(plan.paper_queries || []).flatMap(l => l.queries || []),
+    ...(plan.dataset_queries || []).flatMap(l => l.queries || []),
+    ...(plan.repo_queries || []).flatMap(l => l.queries || []),
+  ];
+  if (!all.length) { el.innerHTML = ""; return; }
+  el.innerHTML = `<div class="retrieval-panel__queries-row">${
+    all.slice(0, 8).map(q => `<span class="retrieval-panel__chip">${escapeHtml(q)}</span>`).join("")
+  }${all.length > 8 ? `<span class="retrieval-panel__more">+${all.length - 8}</span>` : ""}</div>`;
+}
+
+function renderRetrievalCandidates(run) {
+  const el = document.getElementById("retrieval-candidate-list");
+  if (!el) return;
+  const cands = run.candidates || [];
+  if (!cands.length) {
+    el.innerHTML = `<p class="retrieval-panel__empty">未检索到候选 (status=${run.status})</p>`;
+    return;
+  }
+  el.innerHTML = cands.map(c => {
+    const flags = [];
+    if (c.is_duplicate) flags.push(`<span class="retrieval-card__flag retrieval-card__flag--dup">duplicate</span>`);
+    if (c.already_in_ledger) flags.push(`<span class="retrieval-card__flag retrieval-card__flag--in">已在证据池</span>`);
+    return `
+      <div class="retrieval-card ${c.is_duplicate ? "retrieval-card--dup" : ""}" data-cand-id="${escapeHtml(c.candidate_id)}">
+        <div class="retrieval-card__head">
+          <span class="retrieval-card__type">${escapeHtml(c.candidate_type)}</span>
+          <span class="retrieval-card__source">${escapeHtml(c.source)}</span>
+          <span class="retrieval-card__score">score=${(c.retrieval_score || 0).toFixed(2)}</span>
+          ${flags.join("")}
+        </div>
+        <div class="retrieval-card__title">${escapeHtml(c.title || "(无标题)")}</div>
+        <div class="retrieval-card__meta">
+          ${c.year ? `<span>${c.year}</span>` : ""}
+          ${c.doi ? `<span>DOI ${escapeHtml(c.doi)}</span>` : ""}
+          ${c.arxiv_id ? `<span>arXiv:${escapeHtml(c.arxiv_id)}</span>` : ""}
+          ${c.repo_full_name ? `<span>${escapeHtml(c.repo_full_name)}</span>` : ""}
+          ${c.license ? `<span>${escapeHtml(c.license)}</span>` : ""}
+          ${c.stars ? `<span>⭐${c.stars}</span>` : ""}
+        </div>
+        ${c.url ? `<div class="retrieval-card__url"><a href="${escapeHtml(c.url)}" target="_blank" rel="noopener">${escapeHtml(c.url)}</a></div>` : ""}
+        <div class="retrieval-card__actions">
+          <button class="cta-mini" data-retrieval-action="import" data-cand-id="${escapeHtml(c.candidate_id)}" ${c.is_duplicate || c.already_in_ledger ? "disabled" : ""}>📥 导入</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function importRetrievalCandidate(candidateId) {
+  if (!state.projectId || !state._lastRetrievalRunId) {
+    showError("请先运行检索");
+    return;
+  }
+  const autoVerify = !!document.getElementById("retrieval-auto-verify")?.checked;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/retrieval/import`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        run_id: state._lastRetrievalRunId,
+        candidate_ids: [candidateId],
+        workspace_lane: "system_found",
+        auto_verify: autoVerify,
+      }),
+    });
+    if (!r.ok) {
+      const txt = await r.text().catch(() => "");
+      showError(`导入失败: ${r.status} ${txt.slice(0, 200)}`);
+      return;
+    }
+    const data = await r.json();
+    appendTrace({ type: "step", name: "retrieval-import", detail: `${candidateId} → imported=${data.imported} msg=${data.message || ""}` });
+    await loadWorkspaceBoard();
+    await refreshEvidence();
+    await loadRetrievalSummary();
+    await loadTraceHistory();
+  } catch (e) {
+    showError("import 异常: " + String(e).slice(0, 200));
+  }
+}
+
+async function loadRetrievalSummary() {
+  if (!state.projectId) return;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/retrieval/summary`);
+    if (!r.ok) return;
+    const s = await r.json();
+    state._lastRetrievalRunId = s.last_run_id;
+    const hintEl = document.getElementById("retrieval-summary-hint");
+    if (hintEl) {
+      if (!s.last_run_id) {
+        hintEl.textContent = "未运行";
+      } else {
+        const okSrcs = Object.keys(s.source_success || {}).length;
+        const failSrcs = Object.keys(s.source_failure || {}).length;
+        hintEl.textContent = `paper ${s.paper_candidates} / ds ${s.dataset_candidates} / repo ${s.repo_candidates} · dup ${s.duplicate_candidates} · ${okSrcs} ok ${failSrcs} fail`;
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
 // Session 3 关键词/检索词编辑: 用事件代理绑在 document 上
 document.addEventListener("click", async (e) => {
   // Session 7: ref-action 按钮优先匹配 (ref cards 在 data-action 区域外)
@@ -1908,5 +2068,18 @@ document.body.addEventListener("click", async (e) => {
     await loadSkillRegistry();
   } else if (id === "btn-skill-health") {
     await runSkillHealthCheck();
+  } else if (id === "btn-retrieval-run") {
+    await runRetrievalSearch();
+  } else if (id === "btn-retrieval-refresh-summary") {
+    await loadRetrievalSummary();
+  }
+});
+
+// Session 14: candidate import 按钮代理
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("[data-retrieval-action]");
+  if (!btn) return;
+  if (btn.dataset.retrievalAction === "import") {
+    await importRetrievalCandidate(btn.dataset.candId);
   }
 });

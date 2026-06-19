@@ -56,6 +56,14 @@ from ...schemas_quality import (
     ReportReviewSummary,
 )
 from ...services import report_quality as quality_service
+from ...services.retrieval import orchestrator as retrieval_service
+from ...schemas_retrieval import (
+    RetrievalImportRequest,
+    RetrievalImportResponse,
+    RetrievalRun,
+    RetrievalSearchRequest,
+    RetrievalSummaryResponse,
+)
 
 router = APIRouter(prefix="/api/v1/one-topic", tags=["one-topic"])
 
@@ -1163,3 +1171,71 @@ def download_report_review_markdown(project_id: str):
     }
     from fastapi.responses import Response
     return Response(content=md, media_type="text/markdown; charset=utf-8", headers=headers)
+
+
+# ---------- Session 14: 多源检索增强 (SOP §13) ---------- #
+
+
+@router.post(
+    "/{project_id}/retrieval/search",
+    response_model=RetrievalRun,
+    summary="Session 14: 多源检索",
+)
+async def run_retrieval_search(
+    project_id: str,
+    body: RetrievalSearchRequest,
+) -> RetrievalRun:
+    """按 SOP §13.1 启动一次多源检索.
+
+    raw_topic 自动从 OneTopic project snapshot 中取, 允许 extra_keywords 补充.
+    """
+
+    snapshot = ev_store.get_snapshot(project_id)
+    if snapshot is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"project_id {project_id} 不存在 (未跑过 analyze)",
+        )
+
+    raw_topic = ""
+    if snapshot.get("proposal_recommendation"):
+        raw_topic = snapshot["proposal_recommendation"].get("recommended_topic") or ""
+    if not raw_topic and snapshot.get("evidence_summary"):
+        # 退一步: 用 evidence_summary 中已有论文标题组合
+        pass
+    if not raw_topic and not body.extra_keywords:
+        raise HTTPException(
+            status_code=422,
+            detail="raw_topic 与 extra_keywords 都为空, 无法生成查询计划",
+        )
+
+    return await retrieval_service.run_retrieval(
+        project_id=project_id,
+        raw_topic=raw_topic,
+        request=body,
+    )
+
+
+@router.get(
+    "/{project_id}/retrieval/summary",
+    response_model=RetrievalSummaryResponse,
+    summary="Session 14: 检索摘要",
+)
+def get_retrieval_summary(project_id: str) -> RetrievalSummaryResponse:
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    return retrieval_service.get_summary(project_id)
+
+
+@router.post(
+    "/{project_id}/retrieval/import",
+    response_model=RetrievalImportResponse,
+    summary="Session 14: 导入候选到 Evidence Ledger",
+)
+def run_retrieval_import(
+    project_id: str,
+    body: RetrievalImportRequest,
+) -> RetrievalImportResponse:
+    if ev_store.get_snapshot(project_id) is None:
+        raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
+    return retrieval_service.import_candidates(project_id, body)

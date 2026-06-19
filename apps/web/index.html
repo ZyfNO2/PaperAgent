@@ -215,6 +215,32 @@
         <div class="evidence-trace-panel__list" id="evidence-trace-list"></div>
       </div>
 
+      <!-- Session 14: 多源检索增强 -->
+      <div class="retrieval-panel" id="retrieval-panel">
+        <header class="retrieval-panel__head">
+          <h3>🔎 多源检索 (Session 14)</h3>
+          <span class="retrieval-panel__hint" id="retrieval-summary-hint">未运行</span>
+        </header>
+        <div class="retrieval-panel__row">
+          <label><input type="checkbox" name="retrieval-scope" value="paper" checked> 论文</label>
+          <label><input type="checkbox" name="retrieval-scope" value="dataset" checked> 数据集</label>
+          <label><input type="checkbox" name="retrieval-scope" value="repo" checked> 工程</label>
+          <span class="retrieval-panel__sep">|</span>
+          <label><input type="checkbox" name="retrieval-source" value="openalex" checked> OpenAlex</label>
+          <label><input type="checkbox" name="retrieval-source" value="arxiv" checked> arXiv</label>
+          <label><input type="checkbox" name="retrieval-source" value="github" checked> GitHub</label>
+          <label><input type="checkbox" name="retrieval-source" value="huggingface" checked> HF</label>
+          <span class="retrieval-panel__sep">|</span>
+          <label><input type="checkbox" id="retrieval-auto-verify"> 导入后自动验证</label>
+          <button class="cta-mini" id="btn-retrieval-run" type="button">🚀 运行检索</button>
+          <button class="cta-mini" id="btn-retrieval-refresh-summary" type="button">🔄 摘要</button>
+        </div>
+        <div class="retrieval-panel__queries" id="retrieval-query-preview"></div>
+        <div class="retrieval-panel__list" id="retrieval-candidate-list">
+          <p class="retrieval-panel__empty">点击 "🚀 运行检索" 启动多源候选检索</p>
+        </div>
+      </div>
+
       <!-- Session 13: 内部 Skill Registry -->
       <div class="skill-panel" id="skill-panel">
         <header class="skill-panel__head">
