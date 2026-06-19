@@ -1,8 +1,58 @@
 // TopicPilot-CN OneTopic MVP — 极简前端
 // 流程: 输入题目 → 调 POST /analyze/stream → 边推 trace 边渲 5 区结果
 // 扩展: Session 2 加证据工作台 + tab 切换 + 手动添加/审核
+// Session 16 增: 前端空状态 / 错误提示稳定化 helper.
 
 const API = "http://127.0.0.1:18181";
+
+// ---------- Session 16: 通用提示 helper ----------
+
+function emptyStateHTML(opts) {
+  // opts: { icon, title, hint, actionHtml? }
+  const icon = opts?.icon || "📭";
+  const title = opts?.title || "暂无内容";
+  const hint = opts?.hint || "等用户操作后会出现在这里。";
+  const action = opts?.actionHtml || "";
+  return `<div class="empty-state">
+    <div class="empty-state__icon">${icon}</div>
+    <div class="empty-state__title">${escapeHtml(title)}</div>
+    <div class="empty-state__hint">${escapeHtml(hint)}</div>
+    ${action}
+  </div>`;
+}
+
+function explainVerificationFailure(result) {
+  // 把 verified/partial/failed/skipped 翻译成中文短解释
+  if (!result) return "";
+  const fail = result.failed || 0;
+  const skipped = result.skipped || 0;
+  const total = result.total || 0;
+  if (total === 0) return "本次没有匹配到任何证据, 验证未执行。";
+  if (fail === 0 && skipped === 0) return "全部证据已通过 URL 验证, 可信度良好。";
+  const parts = [];
+  if (fail > 0) parts.push(`${fail} 条 failed (URL 无效或来源异常, 不会进 supports)`);
+  if (skipped > 0) parts.push(`${skipped} 条 skipped (未配置外部校验源, 需手动确认)`);
+  return parts.join("；") + "。";
+}
+
+function explainReportQuality(verdict, score) {
+  if (!verdict) return "";
+  const pct = typeof score === "number" ? (score * 100).toFixed(0) + "%" : "—";
+  if (verdict === "PASS") return `审核通过 (coverage ${pct})。可导出 FinalPackage。`;
+  if (verdict === "WARN") return `审核有条件通过 (coverage ${pct})。请按 revision_checklist 补强后再导出。`;
+  if (verdict === "FAIL") return `审核未通过 (coverage ${pct})。建议先扩充证据 / 修复未支持声明, 再生成报告。`;
+  return verdict;
+}
+
+function explainUploadFailure(status, body) {
+  const code = parseInt(status, 10);
+  if (code === 413) return "文件超过 20MB 上限, 请压缩后重新上传。";
+  if (code === 415) return "文件类型不在白名单 (PDF / PNG / JPG / WEBP / TXT / MD), 请确认扩展名与 MIME。";
+  if (code === 422) return `请求格式错误: ${(body || "").slice(0, 120)}`;
+  if (code === 400) return `请求被拒绝: ${(body || "").slice(0, 120)}`;
+  if (code === 0 || !code) return "上传中断或网络异常, 请重试。";
+  return `上传失败 (HTTP ${code}): ${(body || "").slice(0, 120)}`;
+}
 
 const state = {
   result: null,
@@ -25,7 +75,11 @@ function renderTraceList() {
   const count = document.getElementById("trace-count");
   count.textContent = state.trace.length;
   if (state.trace.length === 0) {
-    list.innerHTML = '<div class="trace-empty">尚无 trace 事件</div>';
+    list.innerHTML = emptyStateHTML({
+      icon: "🛰️",
+      title: "尚无 trace 事件",
+      hint: "跑一次 “一题分析”、移动证据、上传资料后, 这里会出现操作时间线。",
+    });
     return;
   }
   list.innerHTML = state.trace.slice(-100).map(ev => {
@@ -814,6 +868,7 @@ function renderVerificationResult(result, scopeLabel) {
     <div><strong>${escapeHtml(scopeLabel || "验证结果")}</strong></div>
     <div>verified=${result.verified}, partial=${result.partial}, failed=${result.failed}, skipped=${result.skipped}, avg_confidence=${result.avg_confidence.toFixed(3)}</div>
     <div>证据验证率 (verified+partial / total): <strong>${(rate * 100).toFixed(0)}%</strong> (${result.verified + result.partial}/${result.total})</div>
+    <div class="verification-explain">${escapeHtml(explainVerificationFailure(result))}</div>
     ${riskHTML}
   `;
 }
@@ -1823,7 +1878,11 @@ function renderQualityReview(review) {
   if (verdictEl) {
     verdictEl.hidden = false;
     verdictEl.className = "quality-panel__verdict quality-verdict--" + review.verdict;
-    verdictEl.innerHTML = `<strong>${escapeHtml(review.verdict)}</strong> · 总分 <strong>${review.score.toFixed(1)}</strong> / 100`;
+    const cov = (typeof review.coverage_score === "number") ? review.coverage_score : null;
+    verdictEl.innerHTML = `
+      <strong>${escapeHtml(review.verdict)}</strong> · 总分 <strong>${review.score.toFixed(1)}</strong> / 100
+      <div class="quality-explain">${escapeHtml(explainReportQuality(review.verdict, cov))}</div>
+    `;
   }
   if (checksEl) {
     checksEl.innerHTML = (review.checks || []).map(c => `
@@ -1901,7 +1960,11 @@ function renderSkillList(data) {
   const el = document.getElementById("skill-list");
   if (!el) return;
   if (!data.skills || !data.skills.length) {
-    el.innerHTML = `<div style="color:#8b94a8;font-size:11px;padding:6px">暂无 skill</div>`;
+    el.innerHTML = emptyStateHTML({
+      icon: "🧩",
+      title: "Skill Registry 未加载",
+      hint: "检查后端是否在 18181 运行; skills/registry.json 缺失时会回退到内置 4 个 skill。",
+    });
     return;
   }
   el.innerHTML = data.skills.map(s => `
@@ -2134,7 +2197,11 @@ function renderMaterialsDrafts(drafts, materials) {
   const el = document.getElementById("materials-draft-list");
   if (!el) return;
   if (!drafts.length) {
-    el.innerHTML = `<p class="materials-panel__empty">尚无草稿, 上传/提交资料后会生成待确认卡片</p>`;
+    el.innerHTML = emptyStateHTML({
+      icon: "📎",
+      title: "尚无资料草稿",
+      hint: "上传 PDF / 图片, 或粘贴网页文字 / 导师备注, 系统会生成待确认卡片。",
+    });
     return;
   }
   el.innerHTML = drafts.map(d => {
@@ -2189,7 +2256,7 @@ async function uploadMaterialFile() {
     });
     if (!r.ok) {
       const t = await r.text().catch(() => "");
-      showError(`上传失败: ${r.status} ${t.slice(0, 200)}`);
+      showError(`上传失败: ${explainUploadFailure(r.status, t)}`);
       return;
     }
     appendTrace({ type: "step", name: "materials-upload", detail: `${file.name} uploaded` });
