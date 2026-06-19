@@ -135,21 +135,26 @@ async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
 
 
 async def http_exception_handler(request: Request, exc) -> JSONResponse:
-    """FastAPI HTTPException handler: 把 detail 包成统一错误结构 (如果 detail 已经是 dict)."""
+    """FastAPI HTTPException handler (向后兼容优先).
+
+    - detail 是含 error_code 的 dict → 透传 (新代码走 AppError 结构)
+    - detail 是普通 dict → 补 error_code / next_action 等结构化字段, 同时保留 detail 原值
+    - detail 是字符串 → 保持 FastAPI 默认 {"detail": str} (旧测试 / 前端读 r.json()['detail'])
+
+    新代码应优先抛 AppError 获得完整结构化错误.
+    """
 
     from fastapi import HTTPException
     if isinstance(exc, HTTPException):
         detail = exc.detail
         if isinstance(detail, dict) and "error_code" in detail:
             return JSONResponse(status_code=exc.status_code, content=detail)
-        return JSONResponse(
-            status_code=exc.status_code,
-            content=make_error(
-                INTERNAL_ERROR if exc.status_code >= 500 else "HTTP_ERROR",
-                str(detail),
-                detail={"raw": detail} if not isinstance(detail, dict) else detail,
-            ),
-        )
+        if isinstance(detail, dict):
+            code = INTERNAL_ERROR if exc.status_code >= 500 else "HTTP_ERROR"
+            body = make_error(code, detail.get("message", "HTTP error"))
+            body["detail"] = detail
+            return JSONResponse(status_code=exc.status_code, content=body)
+        return JSONResponse(status_code=exc.status_code, content={"detail": detail})
     return JSONResponse(
         status_code=500,
         content=make_error(INTERNAL_ERROR, "unexpected error", detail={"raw": str(exc)}),
