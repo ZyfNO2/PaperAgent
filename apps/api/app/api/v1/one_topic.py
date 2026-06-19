@@ -43,6 +43,19 @@ from ...services import one_topic as ot_service
 from ...services import workspace as ws_service
 from ...services import card_intake as ci_service
 from ...services import verification as ver_service
+from ...services import trace_store as trace_service
+from ...schemas_trace import (
+    TraceEvent,
+    TraceListResponse,
+    TraceSummaryResponse,
+    TraceTimelineResponse,
+)
+from ...schemas_quality import (
+    ReportQualityReview,
+    ReportReviewRequest,
+    ReportReviewSummary,
+)
+from ...services import report_quality as quality_service
 
 router = APIRouter(prefix="/api/v1/one-topic", tags=["one-topic"])
 
@@ -1052,3 +1065,101 @@ def _reload_evidence(data: dict) -> "EvidenceItem":
 
     from ...schemas_evidence import EvidenceItem
     return EvidenceItem(**data)
+
+
+# ---------- Session 11: Trace 持久化与操作回放 (§6) ---------- #
+
+
+@router.get(
+    "/{project_id}/trace",
+    response_model=TraceListResponse,
+    summary="Session 11 §6.1: 获取项目 Trace (按 action/actor/since 过滤)",
+)
+def get_project_trace(
+    project_id: str,
+    limit: int = 100,
+    action: str | None = None,
+    actor: str | None = None,
+    since: str | None = None,
+) -> TraceListResponse:
+    return trace_service.get_trace(
+        project_id=project_id,
+        limit=limit,
+        action=action,
+        actor=actor,
+        since=since,
+    )
+
+
+@router.get(
+    "/{project_id}/trace/summary",
+    response_model=TraceSummaryResponse,
+    summary="Session 11 §6.3: Trace 摘要 (含 user/system 动作数和 key_decisions)",
+)
+def get_project_trace_summary(project_id: str) -> TraceSummaryResponse:
+    return trace_service.get_trace_summary(project_id)
+
+
+@router.get(
+    "/{project_id}/evidence/{evidence_id}/timeline",
+    response_model=TraceTimelineResponse,
+    summary="Session 11 §6.2: 单条 evidence 的 timeline (按 evidence_id 过滤)",
+)
+def get_evidence_timeline(project_id: str, evidence_id: str) -> TraceTimelineResponse:
+    events = trace_service.get_evidence_timeline(project_id, evidence_id)
+    return TraceTimelineResponse(
+        project_id=project_id,
+        evidence_id=evidence_id,
+        events=events,
+    )
+
+
+# ---------- Session 12: 报告质量检查与低门槛委员会复核 (§7) ---------- #
+
+
+@router.post(
+    "/{project_id}/report/review",
+    response_model=ReportQualityReview,
+    summary="Session 12 §7.1: 构建报告质量审核 (8 维, verdict 4 档)",
+)
+def build_report_review(project_id: str, body: ReportReviewRequest | None = None) -> ReportQualityReview:
+    req = body or ReportReviewRequest()
+    review = quality_service.build_quality_review(project_id, req)
+    return review
+
+
+@router.get(
+    "/{project_id}/report/review",
+    response_model=ReportReviewSummary,
+    summary="Session 12 §7.2: 获取最近一次报告审核 (缩略)",
+)
+def get_report_review_summary(project_id: str) -> ReportReviewSummary:
+    summary = quality_service.get_quality_review_summary(project_id)
+    if not summary:
+        raise HTTPException(
+            status_code=409,
+            detail=f"project_id {project_id} 还没有 ReportQualityReview, 请先 POST /report/review",
+        )
+    return summary
+
+
+@router.get(
+    "/{project_id}/report/review/markdown",
+    summary="Session 12 §7.3: 独立导出 ReportQualityReview Markdown",
+)
+def download_report_review_markdown(project_id: str):
+    review = quality_service.get_quality_review(project_id)
+    if not review:
+        raise HTTPException(
+            status_code=409,
+            detail=f"project_id {project_id} 还没有 ReportQualityReview, 请先 POST /report/review",
+        )
+    md = quality_service.render_quality_markdown(review)
+    filename = f"quality_review_{project_id}.md"
+    headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Content-Type": "text/markdown; charset=utf-8",
+        "Cache-Control": "no-store",
+    }
+    from fastapi.responses import Response
+    return Response(content=md, media_type="text/markdown; charset=utf-8", headers=headers)

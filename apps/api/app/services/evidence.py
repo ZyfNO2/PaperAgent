@@ -508,6 +508,13 @@ def _score_one_item(item: EvidenceItem, keywords: dict) -> None:
     """原地给一条 evidence 算 score (session 5)."""
 
     from . import scoring  # 局部 import 避免循环
+    # Session 13: 根据 evidence_type 标 scored_by_skill
+    type_to_skill = {
+        "paper": "paper-card",
+        "dataset": "dataset-validation",
+        "repo": "github-baseline",
+    }
+    item.scored_by_skill = type_to_skill.get(item.evidence_type, "evidence-ledger")
     if item.evidence_type == "paper":
         paper_dict = {
             "title": item.title, "summary": item.abstract or "",
@@ -668,24 +675,42 @@ def dedup_check(project_id: str, body) -> dict:
     return {"is_duplicate": False, "existing_evidence_id": None, "reason": None}
 
 
-# ---------- Session 7 §7.3 Trace 记录 ---------- #
+# ---------- Session 7 §7.3 Trace 记录 (Session 11: 委托给 trace_store) ---------- #
 
 
-def append_trace(project_id: str, action: str, target_type: str, target_id: str,
+def append_trace(project_id: str, action: str, target_type: str | None = None, target_id: str | None = None,
                  evidence_id: str | None = None, reason: str | None = None,
-                 actor: str = "system") -> dict[str, Any]:
-    """追加一条 Trace 记录到 project 的 trace 日志 (in-memory).
+                 actor: str = "system",
+                 before: dict | None = None, after: dict | None = None,
+                 source: str | None = None, session: str | None = None) -> dict[str, Any]:
+    """追加一条 Trace 记录 (Session 11: 委托给 trace_store 持久化到 .runtime/traces/{pid}.jsonl).
 
-    - actor: system / user
-    - target_type: feasibility / pivot_route / work_package / review_check / proposal / coverage
-    - target_id: ref_idx / WP id / route level
+    - actor: system / user / agent
+    - target_type: feasibility / pivot_route / work_package / review_check / proposal / coverage / evidence_item / evidence_pool
+    - target_id: ref_idx / WP id / route level / scope / evidence_id
     - action: rebuild / remove_ref / mark_ref_core / mark_ref_wrong / replace_ref / coverage_change / etc
     """
 
-    from datetime import datetime, timezone
+    # 延迟 import 避免循环
+    from . import trace_store
 
-    event = {
-        "ts": datetime.now(timezone.utc).isoformat(),
+    event = trace_store.append_trace(
+        project_id=project_id,
+        action=action,
+        target_type=target_type,
+        target_id=target_id,
+        evidence_id=evidence_id,
+        reason=reason,
+        actor=actor,
+        before=before,
+        after=after,
+        source=source,
+        session=session,
+    )
+    # 保留向后兼容: 也写到旧 _TRACE 缓存 (供 session 7-10 老路径用)
+    from datetime import datetime, timezone
+    legacy = {
+        "ts": event["ts"],
         "actor": actor,
         "action": action,
         "target_type": target_type,
@@ -694,18 +719,32 @@ def append_trace(project_id: str, action: str, target_type: str, target_id: str,
         "reason": reason,
     }
     with _TRACE_LOCK:
-        _TRACE.setdefault(project_id, []).append(event)
+        _TRACE.setdefault(project_id, []).append(legacy)
     return event
 
 
 def get_trace(project_id: str) -> list[dict[str, Any]]:
+    """旧版接口: 返回 in-memory 缓存的事件 (向后兼容)."""
+
     with _TRACE_LOCK:
         return list(_TRACE.get(project_id, []))
 
 
+def get_trace_persisted(project_id: str) -> list[dict[str, Any]]:
+    """Session 11: 读 jsonl 持久化的 trace."""
+
+    from . import trace_store
+    resp = trace_store.get_trace(project_id, limit=10000)
+    return [e.model_dump() for e in resp.events]
+
+
 def clear_trace(project_id: str) -> None:
+    """清 in-memory 缓存 + jsonl 文件."""
+
+    from . import trace_store
     with _TRACE_LOCK:
         _TRACE.pop(project_id, None)
+    trace_store.reset_project_traces(project_id)
 
 
 # ---------- Session 7 §7: Snapshot (缓存最后一次 analyze 响应, 供 rebuild/coverage 用) ---------- #

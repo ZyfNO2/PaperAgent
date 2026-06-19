@@ -159,11 +159,27 @@ def intake_card(
     if card_type == "dataset" and download:
         item_kwargs["download"] = download
 
+    # Session 13: 标 created_by_skill
+    skill_map = {"paper": "paper-card", "dataset": "dataset-validation", "repo": "github-baseline", "note": "paper-card"}
+    item_kwargs["created_by_skill"] = skill_map.get(card_type, "paper-card")
+
     item = EvidenceItem(**item_kwargs)
 
     # 写入 evidence pool
     with ev_store._LEDGER_LOCK:
         proj = ev_store._get_project(project_id)
         proj.items[eid] = item
+
+    # Session 11: 写 trace (card_intake_created)
+    ev_store.append_trace(
+        project_id=project_id,
+        action="card_intake_created",
+        target_type="evidence_item",
+        target_id=eid,
+        evidence_id=eid,
+        reason=f"Agent 卡片类型={card_type}, confidence={confidence:.2f}, skill={item.created_by_skill}",
+        actor="agent",
+        after={"evidence_type": card_type, "title": title, "created_by_skill": item.created_by_skill},
+    )
 
     return item, card_type, confidence, warnings

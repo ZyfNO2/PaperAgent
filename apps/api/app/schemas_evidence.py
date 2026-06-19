@@ -157,6 +157,11 @@ class EvidenceItem(BaseModel):
     verification_warnings: list[str] = Field(default_factory=list)
     verification_metadata: dict = Field(default_factory=dict)
 
+    # Session 13 §7.1: Skill 来源
+    created_by_skill: str | None = None
+    scored_by_skill: str | None = None
+    validated_by_skill: str | None = None
+
 
 # ---------- Session 10: Verification 模型 (§4.2) ---------- #
 

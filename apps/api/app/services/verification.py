@@ -699,6 +699,15 @@ def build_summary(project_id: str, results: list[VerificationResult]) -> Verific
 def apply_verification(item: EvidenceItem, result: VerificationResult) -> EvidenceItem:
     """用验证结果原地更新 item (返回新 EvidenceItem). 不改 review_status."""
 
+    # Session 13: 根据 verification_source 标 validated_by_skill
+    source_to_skill = {
+        "arxiv": "paper-card",
+        "github": "github-baseline",
+        "huggingface": "dataset-validation",
+        "kaggle": "dataset-validation",
+        "http": "paper-card",
+        "manual": None,  # 手动确认不强制标 skill
+    }
     new_data = item.model_dump()
     new_data["url_verified"] = result.url_verified
     new_data["verification_status"] = result.verification_status
@@ -707,4 +716,7 @@ def apply_verification(item: EvidenceItem, result: VerificationResult) -> Eviden
     new_data["verification_checked_at"] = datetime.fromisoformat(result.checked_at)
     new_data["verification_warnings"] = list(result.warnings)
     new_data["verification_metadata"] = dict(result.metadata)
+    skill = source_to_skill.get(result.verification_source)
+    if skill and result.verification_source != "manual":
+        new_data["validated_by_skill"] = skill
     return EvidenceItem(**new_data)

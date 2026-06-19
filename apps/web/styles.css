@@ -410,6 +410,81 @@ html, body { background: #0b0d12; color: #e6e8ee; font-family: -apple-system, Bl
 .ws-card__verify-btn { padding: 2px 6px; background: #0d1117; border: 1px solid #6366f1; color: #a5b4fc; border-radius: 3px; font-size: 10px; cursor: pointer; margin-right: 4px; }
 .ws-card__verify-btn:hover { background: rgba(99,102,241,0.18); }
 
+/* Session 11: Trace 持久化 + 操作历史 (evidence tab) */
+.evidence-trace-panel { margin-top: 18px; padding: 14px 16px; background: #131722; border: 1px solid #2a3142; border-radius: 10px; }
+.evidence-trace-panel__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.evidence-trace-panel__head h3 { margin: 0; font-size: 15px; color: #f1f5f9; }
+.evidence-trace-panel__hint { font-size: 12px; color: #8b94a8; }
+.evidence-trace-panel__row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.evidence-trace-panel__filter { padding: 4px 8px; background: #0d1117; border: 1px solid #2a3142; color: #fff; border-radius: 4px; font-size: 12px; }
+.evidence-trace-panel__list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+.trace-row { padding: 8px 10px; background: #0d1117; border: 1px solid #2a3550; border-radius: 6px; font-size: 11px; color: #cbd5e1; }
+.trace-row__head { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.trace-row__ts { color: #8b94a8; font-size: 10px; }
+.trace-row__actor { font-weight: 600; padding: 1px 6px; border-radius: 3px; font-size: 10px; }
+.trace-row__actor--user { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+.trace-row__actor--system { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+.trace-row__actor--agent { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+.trace-row__action { font-weight: 500; color: #fff; }
+.trace-row__eid { color: #a5b4fc; font-family: monospace; }
+.trace-row__reason { color: #94a3b8; margin-top: 2px; }
+
+.timeline-modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65); z-index: 200; display: flex; align-items: center; justify-content: center; }
+.timeline-modal[hidden] { display: none !important; }
+.timeline-modal__card { background: #131722; border: 1px solid #2a3142; border-radius: 12px; padding: 20px; max-width: 720px; width: 90%; max-height: 80vh; overflow-y: auto; }
+.timeline-modal__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.timeline-modal__head h3 { margin: 0; font-size: 16px; color: #f1f5f9; }
+.timeline-modal__meta { font-size: 12px; color: #8b94a8; margin-bottom: 10px; }
+.timeline-modal__list { display: flex; flex-direction: column; gap: 6px; }
+
+/* Session 12: 报告质量检查 */
+.quality-panel { margin-top: 18px; padding: 14px 16px; background: #131722; border: 1px solid #2a3142; border-radius: 10px; }
+.quality-panel__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.quality-panel__head h3 { margin: 0; font-size: 15px; color: #f1f5f9; }
+.quality-panel__hint { font-size: 12px; color: #8b94a8; }
+.quality-panel__row { display: flex; gap: 8px; margin-bottom: 10px; }
+.quality-panel__verdict { padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
+.quality-verdict--通过 { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4); }
+.quality-verdict--有条件通过 { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+.quality-verdict--需修改 { background: rgba(249, 115, 22, 0.15); color: #fdba74; border: 1px solid rgba(249,115,22,0.4); }
+.quality-verdict--不建议 { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); }
+.quality-panel__checks { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.quality-check { padding: 8px 10px; background: #0d1117; border: 1px solid #2a3550; border-radius: 6px; font-size: 12px; color: #cbd5e1; }
+.quality-check__head { display: flex; gap: 8px; align-items: baseline; }
+.quality-check__dim { font-weight: 600; color: #fff; }
+.quality-check__score { font-family: monospace; color: #a5b4fc; }
+.quality-check__issues { margin-top: 4px; font-size: 11px; color: #fca5a5; }
+.quality-panel__revision h4, .quality-panel__defense h4 { font-size: 13px; color: #a5b4fc; margin: 8px 0 4px; }
+.quality-panel__revision ul { list-style: none; padding-left: 0; }
+.quality-panel__revision li { font-size: 12px; color: #cbd5e1; padding: 2px 0; border-bottom: 1px dashed rgba(148,163,184,0.2); }
+.defense-q { padding: 8px 10px; background: #0d1117; border: 1px solid #2a3550; border-radius: 6px; margin-bottom: 6px; }
+.defense-q__head { display: flex; gap: 6px; align-items: baseline; margin-bottom: 4px; }
+.defense-q__risk { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
+.defense-q__risk--高 { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.defense-q__risk--中 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+.defense-q__risk--低 { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+.defense-q__q { font-weight: 500; color: #fff; }
+.defense-q__a { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+/* Session 13: Skill Registry */
+.skill-panel { margin-top: 18px; padding: 14px 16px; background: #131722; border: 1px solid #2a3142; border-radius: 10px; }
+.skill-panel__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.skill-panel__head h3 { margin: 0; font-size: 15px; color: #f1f5f9; }
+.skill-panel__hint { font-size: 12px; color: #8b94a8; }
+.skill-panel__row { display: flex; gap: 8px; margin-bottom: 10px; }
+.skill-panel__list { display: flex; flex-direction: column; gap: 6px; }
+.skill-card { padding: 8px 10px; background: #0d1117; border: 1px solid #2a3550; border-radius: 6px; font-size: 12px; color: #cbd5e1; }
+.skill-card__head { display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+.skill-card__name { font-weight: 600; color: #fff; }
+.skill-card__pill { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 500; }
+.skill-card__pill--enabled { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+.skill-card__pill--disabled { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+.skill-card__pill--low { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+.skill-card__pill--medium { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+.skill-card__pill--high { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+.skill-card__desc { color: #8b94a8; font-size: 11px; }
+.skill-card__used { color: #a5b4fc; font-size: 11px; margin-top: 4px; }
+
 .feasibility__confidence {
   font-size: 12px;
   color: #8b94a8;

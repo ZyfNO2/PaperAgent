@@ -188,6 +188,66 @@
         <div class="verification-panel__result" id="verification-result" hidden></div>
       </div>
 
+      <!-- Session 11: Trace 持久化 + 操作历史 (evidence tab) -->
+      <div class="evidence-trace-panel" id="evidence-trace-panel">
+        <header class="evidence-trace-panel__head">
+          <h3>🕒 操作历史 (Session 11: Trace 持久化)</h3>
+          <span class="evidence-trace-panel__hint" id="evidence-trace-summary-hint">未加载</span>
+        </header>
+        <div class="evidence-trace-panel__row">
+          <button class="cta-mini" id="btn-evidence-trace-refresh" type="button">🔄 刷新历史</button>
+          <select class="evidence-trace-panel__filter" id="evidence-trace-filter-action">
+            <option value="">全部 action</option>
+            <option value="card_intake_created">card_intake_created</option>
+            <option value="workspace_patch">workspace_patch</option>
+            <option value="manual_verification">manual_verification</option>
+            <option value="verify_evidence">verify_evidence</option>
+            <option value="ref_rebuild">ref_rebuild</option>
+            <option value="final_package_build">final_package_build</option>
+          </select>
+          <select class="evidence-trace-panel__filter" id="evidence-trace-filter-actor">
+            <option value="">全部 actor</option>
+            <option value="user">user</option>
+            <option value="system">system</option>
+            <option value="agent">agent</option>
+          </select>
+        </div>
+        <div class="evidence-trace-panel__list" id="evidence-trace-list"></div>
+      </div>
+
+      <!-- Session 13: 内部 Skill Registry -->
+      <div class="skill-panel" id="skill-panel">
+        <header class="skill-panel__head">
+          <h3>🧩 内部科研 Skill (Session 13: Registry)</h3>
+          <span class="skill-panel__hint" id="skill-summary-hint">未加载</span>
+        </header>
+        <div class="skill-panel__row">
+          <button class="cta-mini" id="btn-skill-refresh" type="button">🔄 刷新 Skill 列表</button>
+          <button class="cta-mini" id="btn-skill-health" type="button">🩺 健康检查</button>
+        </div>
+        <div class="skill-panel__list" id="skill-list"></div>
+      </div>
+      <div class="quality-panel" id="quality-panel">
+        <header class="quality-panel__head">
+          <h3>🛡️ 报告质量检查 (Session 12: 低门槛委员会复核)</h3>
+          <span class="quality-panel__hint" id="quality-summary-hint">未审核</span>
+        </header>
+        <div class="quality-panel__row">
+          <button class="cta-mini" id="btn-quality-run" type="button">🛡️ 运行审核</button>
+          <button class="cta-mini" id="btn-quality-download" type="button">⬇ 下载审核 Markdown</button>
+        </div>
+        <div class="quality-panel__verdict" id="quality-verdict" hidden></div>
+        <div class="quality-panel__checks" id="quality-checks"></div>
+        <div class="quality-panel__revision" id="quality-revision" hidden>
+          <h4>修改清单</h4>
+          <ul id="quality-revision-list"></ul>
+        </div>
+        <div class="quality-panel__defense" id="quality-defense" hidden>
+          <h4>开题答辩追问</h4>
+          <div id="quality-defense-list"></div>
+        </div>
+      </div>
+
       <!-- Session 9: 双栏工作台 -->
       <div class="workspace-board" id="workspace-board">
         <header class="workspace-board__head">
@@ -239,6 +299,18 @@
             <div><h5>❌ 拒绝 (rejected)</h5><div class="ws-lane__list" id="ws-paper-rejected"></div><div class="ws-lane__list" id="ws-dataset-rejected"></div><div class="ws-lane__list" id="ws-repo-rejected"></div></div>
           </div>
         </details>
+      </div>
+
+      <!-- Session 11: timeline modal (证据路径) -->
+      <div class="timeline-modal" id="timeline-modal" hidden>
+        <div class="timeline-modal__card">
+          <header class="timeline-modal__head">
+            <h3>🛤️ 证据路径</h3>
+            <button class="cta-mini" id="timeline-close" type="button">✕ 关闭</button>
+          </header>
+          <div class="timeline-modal__meta" id="timeline-meta"></div>
+          <div class="timeline-modal__list" id="timeline-list"></div>
+        </div>
       </div>
 
       <!-- 池摘要 -->

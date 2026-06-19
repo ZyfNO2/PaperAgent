@@ -168,6 +168,10 @@ def _collect_evidence_pool(
                 "verification_status": d.get("verification_status") or "unverified",  # Session 10
                 "verification_confidence": d.get("verification_confidence"),
                 "verification_warnings": d.get("verification_warnings") or [],
+                # Session 13: skill 来源
+                "created_by_skill": d.get("created_by_skill"),
+                "scored_by_skill": d.get("scored_by_skill"),
+                "validated_by_skill": d.get("validated_by_skill"),
             })
 
     # 自动入池 (从 evidence_summary 的 papers/datasets/baselines, evidence_id 是合成 ID)
@@ -275,6 +279,12 @@ def _make_ref(item: dict[str, Any], role: str, reason: str) -> EvidenceRef:
     v_status = item.get("verification_status") or "unverified"
     v_conf = item.get("verification_confidence")
     v_warnings = list(item.get("verification_warnings") or [])
+    # Session 13 §7.2: 合并 skill_sources
+    skills: list[str] = []
+    for k in ("created_by_skill", "scored_by_skill", "validated_by_skill"):
+        v = item.get(k)
+        if v and v not in skills:
+            skills.append(v)
     return EvidenceRef(
         evidence_id=item.get("evidence_id", ""),
         evidence_type=item.get("evidence_type", "paper"),
@@ -288,6 +298,7 @@ def _make_ref(item: dict[str, Any], role: str, reason: str) -> EvidenceRef:
         verification_status=v_status,
         verification_confidence=v_conf,
         verification_warnings=v_warnings,
+        skill_sources=skills,
     )
 
 

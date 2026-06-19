@@ -168,6 +168,8 @@ class EvidenceRef(BaseModel):
     verification_status: str | None = None
     verification_confidence: float | None = None
     verification_warnings: list[str] = Field(default_factory=list)
+    # Session 13 §7.2: Skill 来源
+    skill_sources: list[str] = Field(default_factory=list)
 
 
 # ---------- 可行性判断 (§7) ---------- #
@@ -328,6 +330,8 @@ class ReportCitation(BaseModel):
     verification_status: str | None = None
     verification_confidence: float | None = None
     verification_warnings: list[str] = Field(default_factory=list)
+    # Session 13 §7.3: Skill 来源
+    skill_sources: list[str] = Field(default_factory=list)
 
 
 class FinalPackageSummary(BaseModel):

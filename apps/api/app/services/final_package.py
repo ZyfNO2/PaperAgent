@@ -43,6 +43,7 @@ SECTION_TITLES: list[tuple[str, str]] = [
     ("defense_qa", "十一、开题答辩可能追问"),
     ("citations", "十二、证据引用清单"),
     ("todo", "十三、待补证据与修改清单"),
+    ("decision_log", "十四、关键决策记录"),  # Session 11 §8
 ]
 
 
@@ -122,6 +123,14 @@ def _build_citation_map(
                 "verification_status": e.get("verification_status") or "unverified",
                 "verification_confidence": e.get("verification_confidence"),
                 "verification_warnings": list(e.get("verification_warnings") or []),
+                # Session 13 §7.3: skill 来源合并
+                "skill_sources": [
+                    s for s in [
+                        e.get("created_by_skill"),
+                        e.get("scored_by_skill"),
+                        e.get("validated_by_skill"),
+                    ] if s
+                ],
             }
 
     for ev_type, eid, title, url, rs, score, group in candidates:
@@ -141,6 +150,7 @@ def _build_citation_map(
             verification_status=v_meta.get("verification_status", "unverified"),
             verification_confidence=v_meta.get("verification_confidence"),
             verification_warnings=v_meta.get("verification_warnings", []),
+            skill_sources=v_meta.get("skill_sources", []),
         )
         used_in[eid] = set()
 
@@ -222,6 +232,7 @@ def _build_sections(
     cite: dict[str, ReportCitation],
     coverage_score: float,
     low_warning: bool,
+    project_id: str = "",
 ) -> list[ReportSection]:
     """按 SOP §4.2 的 13 节, 每节用结构化数据 + evidence_refs 拼 Markdown."""
 
@@ -525,6 +536,41 @@ def _build_sections(
     )
     sections.append(sec_todo)
 
+    # Session 11 §8: 十四、关键决策记录 (从 trace_store 拿)
+    pid = project_id or (snapshot.get("project_id", "") if isinstance(snapshot, dict) else "")
+    try:
+        from . import trace_store as _ts
+        summary = _ts.get_trace_summary(pid)
+    except Exception:
+        summary = None
+    if summary and summary.key_decisions:
+        decision_lines = [
+            f"| {i+1} | {line} |" for i, line in enumerate(summary.key_decisions)
+        ]
+        sec_decision = ReportSection(
+            key="decision_log",
+            title=SECTION_TITLES[13][1],
+            content=(
+                "本节汇总本项目的关键操作与决策 (来自持久化 Trace):\n\n"
+                f"- 用户操作: {summary.user_actions} 条\n"
+                f"- 系统操作: {summary.system_actions} 条\n"
+                f"- Agent 操作: {summary.agent_actions} 条\n"
+                f"- 总事件数: {summary.total}\n"
+                f"- 最近事件: {summary.last_event_ts or '(无)'}\n\n"
+                "关键决策:\n\n"
+                "| # | 决策 |\n"
+                "|---|---|\n"
+                + "\n".join(decision_lines)
+            ),
+        )
+    else:
+        sec_decision = ReportSection(
+            key="decision_log",
+            title=SECTION_TITLES[13][1],
+            content="(暂无持久化决策记录)",
+        )
+    sections.append(sec_decision)
+
     return sections
 
 
@@ -545,6 +591,15 @@ def _render_markdown(
     lines.append(f"> 生成时间: {generated_at}")
     lines.append(f"> 证据覆盖率: {coverage_score:.2f}")
     lines.append(f"> 状态: {'可提交草稿' if ready else '需补证据'}")
+    # Session 13 §7.3: 列出本报告使用的内部 Skill
+    try:
+        from . import skill_registry as _sr
+        enabled = _sr.list_skills(status="enabled")
+        if enabled.skills:
+            skill_names = ", ".join(s.name for s in enabled.skills)
+            lines.append(f"> 本报告使用内部 Skill: {skill_names}")
+    except Exception:
+        pass
     lines.append("")
 
     if low_warning:
@@ -660,7 +715,7 @@ def build_final_package(
     )
 
     # sections
-    sections = _build_sections(snapshot, cite, coverage, low_warning)
+    sections = _build_sections(snapshot, cite, coverage, low_warning, project_id=project_id)
 
     # revision checklist
     revision: list[str] = []
@@ -713,6 +768,17 @@ def build_final_package(
         generated_at=datetime.now(timezone.utc).isoformat(),
         cached=False,
     )
+
+    # Session 11: 写 trace (final_package_build)
+    ev_store.append_trace(
+        project_id=project_id,
+        action="final_package_build",
+        target_type="final_package",
+        target_id=project_id,
+        reason=f"FinalPackage build: chars={len(md)}, citations={len(cite)}, coverage={coverage:.2f}",
+        actor="system",
+    )
+
     return pkg
 
 

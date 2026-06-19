@@ -129,6 +129,8 @@ function switchTab(name) {
     refreshEvidence();
     loadWorkspaceBoard();
     refreshVerificationSummary();
+    loadTraceHistory();
+    loadSkillRegistry();
   }
 }
 
@@ -619,6 +621,7 @@ function workspaceCardHTML(it, boardType) {
       <div class="ws-card__verify-line">${vPill}${vMeta}</div>
       <div class="ws-card__actions">
         <button class="ws-card__verify-btn" data-ws-action="verify" data-ws-eid="${eid}">🔍 验证来源</button>
+        <button class="ws-card__verify-btn" data-ws-action="timeline" data-ws-eid="${eid}">🛤️ 查看路径</button>
         <button class="ws-card__btn ws-card__btn--left" data-ws-action="add_left" data-ws-eid="${eid}">加入左侧</button>
         <button class="ws-card__btn ws-card__btn--core" data-ws-action="mark_core" data-ws-eid="${eid}">标核心</button>
         <button class="ws-card__btn" data-ws-action="move_right" data-ws-eid="${eid}">移到系统</button>
@@ -847,6 +850,105 @@ async function manualConfirmVerification(evidenceId, newStatus, reason) {
   } catch (e) {
     showError("手动确认异常: " + String(e).slice(0, 200));
     return null;
+  }
+}
+
+
+// ---------- Session 11: Trace 持久化 + 操作历史 ---------- #
+
+async function loadTraceHistory() {
+  if (!state.projectId) return;
+  const actionFilter = document.getElementById("evidence-trace-filter-action")?.value || "";
+  const actorFilter = document.getElementById("evidence-trace-filter-actor")?.value || "";
+  const params = new URLSearchParams();
+  if (actionFilter) params.set("action", actionFilter);
+  if (actorFilter) params.set("actor", actorFilter);
+  params.set("limit", "200");
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/trace?${params}`);
+    if (!r.ok) return;
+    const data = await r.json();
+    renderTraceList(data.events || []);
+    const summary = await fetchTraceSummary();
+    if (summary) renderTraceSummary(summary);
+  } catch (e) {
+    appendTrace({ type: "warn", name: "trace", detail: String(e).slice(0, 200) });
+  }
+}
+
+async function fetchTraceSummary() {
+  if (!state.projectId) return null;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/trace/summary`);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderTraceList(events) {
+  const el = document.getElementById("evidence-trace-list");
+  if (!el) return;
+  // Session 11: events 可能是 undefined (来自 appendTrace() 无参调用)
+  if (!events || !events.length) {
+    el.innerHTML = `<div style="color:#8b94a8;font-size:11px;padding:6px">暂无 trace 事件</div>`;
+    return;
+  }
+  el.innerHTML = events.map(e => `
+    <div class="trace-row">
+      <div class="trace-row__head">
+        <span class="trace-row__ts">${escapeHtml((e.ts || "").slice(11, 19))}</span>
+        <span class="trace-row__actor trace-row__actor--${escapeHtml(e.actor || "system")}">${escapeHtml(e.actor || "system")}</span>
+        <span class="trace-row__action">${escapeHtml(e.action || "")}</span>
+        ${e.evidence_id ? `<span class="trace-row__eid">${escapeHtml(e.evidence_id)}</span>` : ""}
+      </div>
+      ${e.reason ? `<div class="trace-row__reason">${escapeHtml(e.reason)}</div>` : ""}
+    </div>
+  `).join("");
+}
+
+function renderTraceSummary(summary) {
+  const hint = document.getElementById("evidence-trace-summary-hint");
+  if (!hint) return;
+  hint.textContent =
+    `总 ${summary.total} 条 · user ${summary.user_actions} · system ${summary.system_actions} · agent ${summary.agent_actions}` +
+    (summary.last_event_ts ? ` · 最近 ${summary.last_event_ts.slice(11, 19)}` : "");
+}
+
+async function openEvidenceTimeline(eid) {
+  if (!state.projectId) return;
+  const modal = document.getElementById("timeline-modal");
+  const metaEl = document.getElementById("timeline-meta");
+  const listEl = document.getElementById("timeline-list");
+  if (!modal || !metaEl || !listEl) return;
+  metaEl.textContent = `evidence_id: ${eid}`;
+  listEl.innerHTML = `<div style="color:#8b94a8;font-size:11px">加载中...</div>`;
+  modal.hidden = false;
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/evidence/${encodeURIComponent(eid)}/timeline`);
+    if (!r.ok) {
+      listEl.innerHTML = `<div style="color:#fca5a5;font-size:11px">加载失败: HTTP ${r.status}</div>`;
+      return;
+    }
+    const data = await r.json();
+    const events = data.events || [];
+    if (!events.length) {
+      listEl.innerHTML = `<div style="color:#8b94a8;font-size:11px">该证据暂无 trace 事件</div>`;
+      return;
+    }
+    listEl.innerHTML = events.map(e => `
+      <div class="trace-row">
+        <div class="trace-row__head">
+          <span class="trace-row__ts">${escapeHtml((e.ts || "").slice(11, 19))}</span>
+          <span class="trace-row__actor trace-row__actor--${escapeHtml(e.actor || "system")}">${escapeHtml(e.actor || "system")}</span>
+          <span class="trace-row__action">${escapeHtml(e.action || "")}</span>
+        </div>
+        ${e.reason ? `<div class="trace-row__reason">${escapeHtml(e.reason)}</div>` : ""}
+      </div>
+    `).join("");
+  } catch (e) {
+    listEl.innerHTML = `<div style="color:#fca5a5;font-size:11px">异常: ${escapeHtml(String(e).slice(0, 100))}</div>`;
   }
 }
 
@@ -1520,6 +1622,167 @@ async function selectPivotRoute(level) {
 }
 
 // 事件代理: ev-card 内的按钮
+// ---------- Session 12: 报告质量检查 ---------- //
+
+async function runQualityReview() {
+  if (!state.projectId) {
+    showError("先跑一次分析");
+    return;
+  }
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/report/review`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: "light", use_llm: false, include_trace: true }),
+    });
+    if (!r.ok) {
+      showError("审核失败: " + (await r.text()).slice(0, 200));
+      return;
+    }
+    const review = await r.json();
+    renderQualityReview(review);
+    appendTrace({ type: "step", name: "quality-review", detail: `verdict=${review.verdict} score=${review.score}` });
+  } catch (e) {
+    showError("审核异常: " + String(e).slice(0, 200));
+  }
+}
+
+function renderQualityReview(review) {
+  const hintEl = document.getElementById("quality-summary-hint");
+  const verdictEl = document.getElementById("quality-verdict");
+  const checksEl = document.getElementById("quality-checks");
+  const revEl = document.getElementById("quality-revision");
+  const revListEl = document.getElementById("quality-revision-list");
+  const defEl = document.getElementById("quality-defense");
+  const defListEl = document.getElementById("quality-defense-list");
+
+  if (hintEl) {
+    hintEl.textContent = `verdict: ${review.verdict} · score ${review.score.toFixed(1)} · ${review.dimension_count || (review.checks || []).length} 维`;
+  }
+  if (verdictEl) {
+    verdictEl.hidden = false;
+    verdictEl.className = "quality-panel__verdict quality-verdict--" + review.verdict;
+    verdictEl.innerHTML = `<strong>${escapeHtml(review.verdict)}</strong> · 总分 <strong>${review.score.toFixed(1)}</strong> / 100`;
+  }
+  if (checksEl) {
+    checksEl.innerHTML = (review.checks || []).map(c => `
+      <div class="quality-check">
+        <div class="quality-check__head">
+          <span class="quality-check__dim">${escapeHtml(c.dimension)}</span>
+          <span class="quality-check__score">${c.score.toFixed(0)} 分</span>
+          <span style="color:#a5b4fc">${escapeHtml(c.result)}</span>
+        </div>
+        ${(c.issues || []).length ? `<div class="quality-check__issues">问题: ${c.issues.map(escapeHtml).join("; ")}</div>` : ""}
+        ${(c.suggestions || []).length ? `<div class="quality-check__issues" style="color:#94a3b8">建议: ${c.suggestions.map(escapeHtml).join("; ")}</div>` : ""}
+      </div>
+    `).join("");
+  }
+  if (revEl && revListEl) {
+    revEl.hidden = false;
+    revListEl.innerHTML = (review.revision_checklist || []).map(line => `<li>${escapeHtml(line)}</li>`).join("") || "<li>(无)</li>";
+  }
+  if (defEl && defListEl) {
+    defEl.hidden = false;
+    defListEl.innerHTML = (review.defense_questions || []).map(q => `
+      <div class="defense-q">
+        <div class="defense-q__head">
+          <span class="defense-q__risk defense-q__risk--${escapeHtml(q.risk_level)}">${escapeHtml(q.risk_level)} 风险</span>
+          <span class="defense-q__q">${escapeHtml(q.question)}</span>
+        </div>
+        <div class="defense-q__a">建议回答: ${escapeHtml(q.suggested_answer || "")}</div>
+        ${(q.evidence_refs || []).length ? `<div class="defense-q__a">关联证据: ${q.evidence_refs.map(r => escapeHtml(r.evidence_id)).join(", ")}</div>` : ""}
+      </div>
+    `).join("");
+  }
+}
+
+async function downloadQualityReview() {
+  if (!state.projectId) {
+    showError("先跑一次分析");
+    return;
+  }
+  // 先确保 review 存在
+  const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/report/review/markdown`);
+  if (!r.ok) {
+    showError("下载失败: " + (await r.text()).slice(0, 200));
+    return;
+  }
+  const md = await r.text();
+  const blob = new Blob([md], { type: "text/markdown" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `quality_review_${state.projectId}.md`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+}
+
+
+// ---------- Session 13: Skill Registry ---------- //
+
+async function loadSkillRegistry() {
+  try {
+    const r = await fetch(`${API}/api/v1/skills`);
+    if (!r.ok) return;
+    const data = await r.json();
+    renderSkillList(data);
+    const hintEl = document.getElementById("skill-summary-hint");
+    if (hintEl) {
+      hintEl.textContent = `total ${data.skills.length} · enabled ${data.enabled_count} · disabled ${data.disabled_count} · high_risk ${data.high_risk_count}`;
+    }
+  } catch (e) {
+    appendTrace({ type: "warn", name: "skill-registry", detail: String(e).slice(0, 200) });
+  }
+}
+
+function renderSkillList(data) {
+  const el = document.getElementById("skill-list");
+  if (!el) return;
+  if (!data.skills || !data.skills.length) {
+    el.innerHTML = `<div style="color:#8b94a8;font-size:11px;padding:6px">暂无 skill</div>`;
+    return;
+  }
+  el.innerHTML = data.skills.map(s => `
+    <div class="skill-card">
+      <div class="skill-card__head">
+        <span class="skill-card__name">${escapeHtml(s.name)}</span>
+        <span class="skill-card__pill skill-card__pill--${escapeHtml(s.status)}">${escapeHtml(s.status)}</span>
+        <span class="skill-card__pill skill-card__pill--${escapeHtml(s.risk_level)}">${escapeHtml(s.risk_level)} risk</span>
+        <span class="skill-card__pill" style="background:rgba(148,163,184,0.18);color:#cbd5e1">${escapeHtml(s.category)}</span>
+        <span class="skill-card__pill" style="background:rgba(99,102,241,0.18);color:#a5b4fc">v${escapeHtml(s.version)}</span>
+      </div>
+      <div class="skill-card__desc">${escapeHtml(s.description || "")}</div>
+      <div class="skill-card__used">used_by: ${(s.used_by || []).map(escapeHtml).join(", ") || "(无)"}</div>
+      ${s.summary ? `<details><summary style="cursor:pointer;color:#94a3b8;font-size:11px;margin-top:4px">SKILL.md 摘要</summary><div style="font-size:11px;color:#cbd5e1;margin-top:4px;white-space:pre-wrap">${escapeHtml(s.summary.slice(0, 200))}${s.summary.length > 200 ? "..." : ""}</div></details>` : ""}
+    </div>
+  `).join("");
+}
+
+async function runSkillHealthCheck() {
+  try {
+    const r = await fetch(`${API}/api/v1/skills/health`);
+    if (!r.ok) {
+      showError("健康检查失败: " + (await r.text()).slice(0, 200));
+      return;
+    }
+    const data = await r.json();
+    const el = document.getElementById("skill-list");
+    const hintEl = document.getElementById("skill-summary-hint");
+    if (hintEl) {
+      hintEl.textContent = `health: ${data.ok}/${data.total} ok · ${data.issues.length} issues`;
+    }
+    if (el) {
+      const issuesHTML = data.issues.map(i =>
+        `<div class="skill-card" style="border-color:#ef4444"><strong>${escapeHtml(i.skill)}</strong> · ${escapeHtml(i.status)}<br>${i.issues.map(escapeHtml).join("<br>")}</div>`
+      ).join("");
+      el.innerHTML = issuesHTML + `<div style="color:#8b94a8;font-size:11px;padding:6px">默认禁止动作: ${data.default_forbidden_actions.join(", ")}</div>` + el.innerHTML;
+    }
+  } catch (e) {
+    showError("健康检查异常: " + String(e).slice(0, 200));
+  }
+}
+
 document.body.addEventListener("click", async (e) => {
   const btn = e.target.closest("[data-action], [data-pivot-level]");
   if (btn) {
@@ -1555,7 +1818,10 @@ document.body.addEventListener("click", async (e) => {
         appendTrace({ type: "step", name: "verify", detail: `${eid} → ${r.verification_status} (${r.verification_source}, conf=${r.verification_confidence.toFixed(2)})` });
         await loadWorkspaceBoard();
         await refreshVerificationSummary();
+        await loadTraceHistory();
       }
+    } else if (action === "timeline") {
+      await openEvidenceTimeline(eid);
     } else if (action === "add_left") {
       await patchWorkspaceItem(eid, "user_preferred", "accepted", "用户加入左侧");
     } else if (action === "mark_core") {
@@ -1565,6 +1831,8 @@ document.body.addEventListener("click", async (e) => {
     } else if (action === "reject") {
       await patchWorkspaceItem(eid, "rejected", "rejected", "用户拒绝");
     }
+    // S11: 操作完成后刷新 trace history (PATCH workspace/item 已写 trace)
+    await loadTraceHistory();
     return;
   }
   if (e.target.dataset.wsTab) {
@@ -1627,5 +1895,18 @@ document.body.addEventListener("click", async (e) => {
     await refreshVerificationSummary();
     const sum = await fetchVerificationSummary();
     if (sum) renderVerificationResult(sum, "验证摘要");
+  } else if (id === "btn-evidence-trace-refresh") {
+    await loadTraceHistory();
+  } else if (id === "timeline-close") {
+    const modal = document.getElementById("timeline-modal");
+    if (modal) modal.hidden = true;
+  } else if (id === "btn-quality-run") {
+    await runQualityReview();
+  } else if (id === "btn-quality-download") {
+    await downloadQualityReview();
+  } else if (id === "btn-skill-refresh") {
+    await loadSkillRegistry();
+  } else if (id === "btn-skill-health") {
+    await runSkillHealthCheck();
   }
 });

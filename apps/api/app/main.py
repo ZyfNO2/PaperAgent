@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.one_topic import router as one_topic_router
+from app.api.v1.skills import router as skills_router
 
 app = FastAPI(
     title="TopicPilot-CN OneTopic MVP",
@@ -28,6 +29,7 @@ app.add_middleware(
 )
 
 app.include_router(one_topic_router)
+app.include_router(skills_router)
 
 
 @app.get("/health", tags=["meta"])
