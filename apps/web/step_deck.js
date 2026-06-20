@@ -403,6 +403,147 @@
     renderAll();
   }
 
+  // Session 23: Extended mock stream — query_plan + candidates steps.
+  // Fires after keyword_review approve. Returns events (does NOT auto-fire).
+  function startExtendedMockStream(rs) {
+    if (!rs) return [];
+    var deck = StepDeck;
+    var events = [];
+
+    // 1. keyword_review step_resumed
+    var ev = deck.makeEvent("step_resumed", { reason: "user approved" }, rs);
+    ev.step_key = "keyword_review";
+    events.push(ev);
+
+    // 2. query_plan step_started
+    var ev2 = deck.makeEvent("step_started", {}, rs);
+    ev2.step_key = "query_plan";
+    events.push(ev2);
+
+    // 3. query_plan token_delta
+    var ev3 = deck.makeEvent("token_delta", { text: "正在根据关键词生成检索计划..." }, rs);
+    ev3.step_key = "query_plan";
+    events.push(ev3);
+
+    // 4. query_plan card_delta — SearchQueryPlanCard
+    var ev4 = deck.makeEvent("card_delta", {
+      id: "card_query_plan",
+      component: "SearchQueryPlanCard",
+      props: {
+        queries: [
+          { source: "paper", query: "YOLO 钢材表面缺陷检测", priority: "high" },
+          { source: "paper", query: "YOLO steel defect detection", priority: "high" },
+          { source: "dataset", query: "NEU steel surface defect dataset", priority: "medium" },
+          { source: "dataset", query: "钢材缺陷 数据集", priority: "medium" },
+          { source: "repo", query: "ultralytics yolov8", priority: "low" },
+          { source: "repo", query: "yolo defect detection github", priority: "low" },
+        ],
+      },
+      actions: ["approve_step", "revise_step"],
+    }, rs);
+    ev4.step_key = "query_plan";
+    events.push(ev4);
+
+    // 5. query_plan step_pause
+    var ev5 = deck.makeEvent("step_pause", {
+      reason: "检索计划待确认",
+      available_actions: [
+        { id: "approve", event: "approve_step" },
+        { id: "revise", event: "revise_step" },
+      ],
+    }, rs);
+    ev5.step_key = "query_plan";
+    events.push(ev5);
+
+    return events;
+  }
+
+  // Session 23: Candidates mock stream — fired after query_plan approve.
+  function startCandidatesMockStream(rs) {
+    if (!rs) return [];
+    var deck = StepDeck;
+    var events = [];
+
+    // 1. query_plan step_resumed
+    var ev1 = deck.makeEvent("step_resumed", { reason: "user approved query_plan" }, rs);
+    ev1.step_key = "query_plan";
+    events.push(ev1);
+
+    // 2. candidates step_started
+    var ev2 = deck.makeEvent("step_started", {}, rs);
+    ev2.step_key = "candidates";
+    events.push(ev2);
+
+    // 3. candidates token_delta
+    var ev3 = deck.makeEvent("token_delta", { text: "正在检索候选资源..." }, rs);
+    ev3.step_key = "candidates";
+    events.push(ev3);
+
+    // 4. RetrievalCandidateCard (paper)
+    var ev4 = deck.makeEvent("card_delta", {
+      id: "card_cand_001",
+      component: "RetrievalCandidateCard",
+      props: {
+        kind: "paper",
+        title: "Steel Surface Defect Detection Using Improved YOLOv5",
+        url: "https://example.com/paper1",
+        source: "IEEE Access",
+        confidence: "high",
+        matched_keywords: ["YOLO", "钢材表面缺陷", "目标检测"],
+      },
+      actions: ["save_candidate", "reject_candidate", "open_drawer"],
+    }, rs);
+    ev4.step_key = "candidates";
+    events.push(ev4);
+
+    // 5. RetrievalCandidateCard (dataset)
+    var ev5 = deck.makeEvent("card_delta", {
+      id: "card_cand_002",
+      component: "RetrievalCandidateCard",
+      props: {
+        kind: "dataset",
+        title: "NEU Steel Surface Defect Database",
+        url: "https://example.com/dataset1",
+        source: "Kaggle",
+        confidence: "medium",
+        matched_keywords: ["钢材表面缺陷", "工业质检"],
+      },
+      actions: ["save_candidate", "reject_candidate", "open_drawer"],
+    }, rs);
+    ev5.step_key = "candidates";
+    events.push(ev5);
+
+    // 6. RetrievalCandidateCard (repo)
+    var ev6 = deck.makeEvent("card_delta", {
+      id: "card_cand_003",
+      component: "RetrievalCandidateCard",
+      props: {
+        kind: "repo",
+        title: "ultralytics/ultralytics",
+        url: "https://github.com/ultralytics/ultralytics",
+        source: "GitHub",
+        confidence: "high",
+        matched_keywords: ["YOLO", "ultralytics"],
+      },
+      actions: ["save_candidate", "reject_candidate", "open_drawer"],
+    }, rs);
+    ev6.step_key = "candidates";
+    events.push(ev6);
+
+    // 7. candidates step_pause
+    var ev7 = deck.makeEvent("step_pause", {
+      reason: "候选资源待审查",
+      available_actions: [
+        { id: "approve", event: "approve_step" },
+        { id: "revise", event: "revise_step" },
+      ],
+    }, rs);
+    ev7.step_key = "candidates";
+    events.push(ev7);
+
+    return events;
+  }
+
   // ---------- 对外接口 ----------
 
   global.StepDeckUI = {
@@ -410,6 +551,8 @@
     init: init,
     renderAll: renderAll,
     startMockStream: startMockStream,
+    startExtendedMockStream: startExtendedMockStream,
+    startCandidatesMockStream: startCandidatesMockStream,
     resetDeck: resetDeck,
     onPrev: onPrev,
     onNext: onNext,
