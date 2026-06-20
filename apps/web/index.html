@@ -15,6 +15,7 @@
       <nav class="hero__nav">
         <button class="tab tab--active" data-tab="analyze" type="button">一题分析</button>
         <button class="tab" data-tab="evidence" type="button" id="tab-evidence">证据工作台 <span class="tab__badge" id="tab-evidence-count" hidden>0</span></button>
+        <button class="tab" data-tab="step-deck" type="button" id="tab-step-deck">📑 步骤流 (BETA)</button>
       </nav>
     </div>
   </header>
@@ -137,8 +138,7 @@
     </section>
 
     <!-- Page 2: Evidence Workbench -->
-    <section class="page-section" id="page-evidence" hidden>
-      <div class="evidence-header">
+    <section class="page-section" id="page-evidence" hidden>      <div class="evidence-header">
         <div>
           <h2 class="evidence-header__title">证据工作台</h2>
           <p class="evidence-header__hint">
@@ -434,6 +434,27 @@
       </div>
     </section>
 
+    <!-- Page 3: Step Deck (Session 21) -->
+    <section class="page-section" id="page-step-deck" hidden>
+      <div class="step-deck">
+        <aside class="step-deck__rail" id="step-deck-rail"></aside>
+
+        <main class="step-deck__main">
+          <header class="step-deck__topbar">
+            <h2 class="step-deck__topbar-title">📑 Step Deck · 每次只判断一步</h2>
+            <div class="step-deck__topbar-actions">
+              <button class="cta-mini" id="btn-sd-start-stream" type="button">▶ 开始流式 (mock)</button>
+              <button class="cta-mini" id="btn-sd-reset" type="button">↺ 重置</button>
+              <button class="cta-mini" id="btn-sd-toggle-drawer" type="button">📂 抽屉</button>
+            </div>
+          </header>
+          <div class="step-deck__card" id="step-deck-card-wrap"></div>
+        </main>
+
+        <aside class="step-deck__drawer" id="step-deck-drawer"></aside>
+      </div>
+    </section>
+
   </main>
 
   <!-- 手动加论文弹窗 -->
@@ -566,6 +587,9 @@ GC10-DET"></textarea></label></div>
     <span>TopicPilot-CN OneTopic MVP · 2026-06-17</span>
   </footer>
 
+  <script src="run_state.js"></script>
+  <script src="render_protocol.js"></script>
+  <script src="step_deck.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -258,6 +258,8 @@ function switchTab(name) {
   });
   document.getElementById("page-analyze").hidden = (name !== "analyze");
   document.getElementById("page-evidence").hidden = (name !== "evidence");
+  const stepDeckPage = document.getElementById("page-step-deck");
+  if (stepDeckPage) stepDeckPage.hidden = (name !== "step-deck");
   if (name === "evidence" && state.projectId) {
     refreshEvidence();
     loadWorkspaceBoard();
@@ -266,6 +268,9 @@ function switchTab(name) {
     loadSkillRegistry();
     loadRetrievalSummary();
     loadMaterials();
+  }
+  if (name === "step-deck" && window.StepDeckUI && !window.StepDeckUI.isReady()) {
+    window.StepDeckUI.init();
   }
 }
 
