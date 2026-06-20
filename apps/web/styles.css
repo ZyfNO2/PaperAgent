@@ -298,7 +298,63 @@ html, body { background: #0b0d12; color: #e6e8ee; font-family: -apple-system, Bl
   display: flex;
   gap: 8px;
   margin: 12px 0;
+  align-items: center;
+  flex-wrap: wrap;
 }
+
+.report__template-select {
+  padding: 6px 10px;
+  background: #0d1117;
+  border: 1px solid #2a3550;
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-size: 13px;
+  min-width: 160px;
+}
+
+.report__template-info {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  background: #1a2336;
+  border: 1px solid #2a3550;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.report__template-info.is-hint {
+  border-left: 3px solid #f59e0b;
+  background: #3d2f1a;
+}
+
+.report__template-name {
+  font-weight: 600;
+  color: #fff;
+}
+
+.report__template-hint {
+  margin-top: 6px;
+  color: #fbbf24;
+}
+
+.report__template-hint li {
+  margin-left: 18px;
+  list-style: disc;
+}
+
+.report__actions .btn {
+  padding: 6px 12px;
+  background: #1f2937;
+  border: 1px solid #2a3550;
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.report__actions .btn:hover { background: #2a3550; }
+.report__actions .btn--primary { background: #1f3a5c; border-color: #6b9aff; color: #fff; }
+.report__actions .btn--primary:hover { background: #2d4a70; }
 
 .report__preview {
   margin-top: 12px;

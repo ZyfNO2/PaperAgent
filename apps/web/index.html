@@ -120,7 +120,11 @@
               <span class="report__chip">引用: <strong id="report-citations-val">--</strong></span>
               <span class="report__chip" id="report-warning-chip" hidden>⚠ 证据不足</span>
             </div>
+            <div id="report-template-info" class="report__template-info" hidden></div>
             <div class="report__actions">
+              <select id="report-template" class="report__template-select">
+                <option value="default" selected>通用模板</option>
+              </select>
               <button id="btn-build-report" type="button" class="btn btn--primary">生成报告</button>
               <button id="btn-rebuild-report" type="button" class="btn" hidden>重新生成</button>
               <button id="btn-download-report" type="button" class="btn" hidden>下载 Markdown</button>

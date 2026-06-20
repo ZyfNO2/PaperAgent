@@ -619,12 +619,14 @@ async function buildReport() {
   }
   const btn = document.getElementById("btn-build-report");
   if (btn) btn.disabled = true;
-  appendTrace({ type: "step", name: "build-report", detail: "生成开题报告" });
+  const templateSelect = document.getElementById("report-template");
+  const templateKey = templateSelect ? templateSelect.value : "default";
+  appendTrace({ type: "step", name: "build-report", detail: `生成开题报告 (template=${templateKey})` });
   try {
     const r = await fetch(`${API}/api/v1/one-topic/${state.projectId}/final-package/build`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ template_key: templateKey }),
     });
     if (!r.ok) {
       showError("生成报告失败: " + (await r.text()).slice(0, 200));
@@ -634,7 +636,7 @@ async function buildReport() {
     state.finalPackage = pkg;
     renderReportSummary(pkg);
     showReportPreview(pkg.proposal_markdown);
-    appendTrace({ type: "step", name: "report-built", detail: `共 ${pkg.proposal_markdown_chars} 字, ${pkg.citation_count} 引用` });
+    appendTrace({ type: "step", name: "report-built", detail: `template=${pkg.template_key}, 共 ${pkg.proposal_markdown_chars} 字, ${pkg.citation_count} 引用` });
   } catch (e) {
     showError("生成报告异常: " + String(e).slice(0, 200));
   } finally {
@@ -667,6 +669,8 @@ function renderReportSummary(pkg) {
   const btnRebuild = document.getElementById("btn-rebuild-report");
   const btnDownload = document.getElementById("btn-download-report");
   const btnPreview = document.getElementById("btn-preview-report");
+  const templateInfo = document.getElementById("report-template-info");
+  const templateSelect = document.getElementById("report-template");
 
   if (summary) summary.hidden = false;
   if (readyVal) readyVal.textContent = pkg.ready_for_proposal ? "可提交草稿" : "需补证据";
@@ -680,6 +684,60 @@ function renderReportSummary(pkg) {
   if (btnRebuild) btnRebuild.hidden = false;
   if (btnDownload) btnDownload.hidden = false;
   if (btnPreview) btnPreview.hidden = false;
+
+  // Session 19: 显示模板 key + 缺失证据提示
+  if (templateInfo) {
+    const hints = pkg.template_hints || [];
+    const templateName = state.reportTemplates?.[pkg.template_key]?.name || pkg.template_key;
+    templateInfo.hidden = false;
+    templateInfo.className = "report__template-info" + (hints.length ? " is-hint" : "");
+    templateInfo.innerHTML = `
+      <span class="report__template-name">📄 模板: ${escapeHtml(templateName)} (${escapeHtml(pkg.template_key || "default")})</span>
+      ${hints.length ? `<ul class="report__template-hint">${hints.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>` : ""}
+    `;
+  }
+  // 同步 selector 到 summary 返回的 template_key
+  if (templateSelect && pkg.template_key && !templateSelect.dataset.userChanged) {
+    templateSelect.value = pkg.template_key;
+  }
+}
+
+async function loadReportTemplates() {
+  try {
+    const r = await fetch(`${API}/api/v1/one-topic/report/templates`);
+    if (!r.ok) return;
+    const data = await r.json();
+    state.reportTemplates = {};
+    const select = document.getElementById("report-template");
+    if (!select) return;
+    select.innerHTML = "";
+    (data.templates || []).forEach(t => {
+      state.reportTemplates[t.template_key] = t;
+      const opt = document.createElement("option");
+      opt.value = t.template_key;
+      opt.textContent = `${t.name} (${t.template_key})`;
+      if (t.template_key === (data.default_key || "default")) opt.selected = true;
+      select.appendChild(opt);
+    });
+  } catch (e) {
+    appendTrace({ type: "warn", name: "load-templates", detail: String(e).slice(0, 200) });
+  }
+}
+
+// 用户手动切换模板后, 不再自动覆盖
+function _onTemplateSelectChange() {
+  const select = document.getElementById("report-template");
+  if (select) select.dataset.userChanged = "1";
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadReportTemplates);
+} else {
+  loadReportTemplates();
+}
+
+if (document.getElementById("report-template")) {
+  document.getElementById("report-template").addEventListener("change", _onTemplateSelectChange);
 }
 
 function showReportPreview(md) {

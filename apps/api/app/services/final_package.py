@@ -731,7 +731,8 @@ def build_final_package(
     )
 
     # template (Session 19)
-    template_key = tmpl_service.normalize_template_key(options.template_key)
+    raw_template_key = options.template_key if options is not None else "default"
+    template_key = tmpl_service.normalize_template_key(raw_template_key)
     template_hints = tmpl_service.check_template_readiness(
         template_key,
         paper_count=len(ev_sum.get("papers", []) or []),
