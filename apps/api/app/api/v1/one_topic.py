@@ -1462,3 +1462,124 @@ def list_report_templates() -> ReportTemplatesResponse:
         templates=rt_service.list_templates(),
         default_key=rt_service.DEFAULT_TEMPLATE_KEY,
     )
+
+
+# ---------- Session 27: RunEvent 持久化与回放 (SOP §2-5) ---------- #
+
+
+from ...schemas_run_event import (
+    RunCreateRequest,
+    RunCreateResponse,
+    RunEventAppendRequest,
+    RunEventAppendResponse,
+    RunEventListResponse,
+    RunResumeRequest,
+)
+from ...services import run_event as re_service
+
+
+@router.post(
+    "/runs",
+    response_model=RunCreateResponse,
+    summary="S27: 创建新 run",
+)
+def create_run(body: RunCreateRequest) -> RunCreateResponse:
+    return re_service.create_run(body)
+
+
+@router.post(
+    "/runs/{run_id}/events",
+    response_model=RunEventAppendResponse,
+    summary="S27: 追加事件到 run",
+)
+def append_run_event(run_id: str, body: RunEventAppendRequest) -> RunEventAppendResponse:
+    """追加事件，project_id 从路径或 header 推断（这里用固定 proj_demo）."""
+    project_id = "proj_demo"
+    try:
+        return re_service.append_event(project_id, run_id, body)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+
+
+@router.get(
+    "/runs/{run_id}/events",
+    response_model=RunEventListResponse,
+    summary="S27: 获取 run 事件列表（支持重放）",
+)
+def get_run_events(run_id: str, from_seq: int = 0) -> RunEventListResponse:
+    project_id = "proj_demo"
+    try:
+        return re_service.get_events(project_id, run_id, from_seq)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+
+
+@router.post(
+    "/runs/{run_id}/resume",
+    response_model=RunCreateResponse,
+    summary="S27: 恢复 run（用户 patch + 策略）",
+)
+def resume_run(run_id: str, body: RunResumeRequest) -> RunCreateResponse:
+    """恢复 run — 记录 user_patch，返回继续信息."""
+    project_id = "proj_demo"
+    try:
+        re_service.append_user_patch(
+            project_id, run_id, body.user_patch, body.from_seq, body.strategy
+        )
+        state = re_service.get_state(project_id, run_id)
+        return RunCreateResponse(
+            run_id=run_id,
+            project_id=project_id,
+            status=state.status,
+            events_url=f"/api/v1/runs/{run_id}/events",
+            stream_url=f"/api/v1/runs/{run_id}/stream",
+        )
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+
+
+@router.post(
+    "/runs/{run_id}/complete",
+    response_model=RunCreateResponse,
+    summary="S27: 标记 run 完成",
+)
+def complete_run(run_id: str, status: Literal["completed", "failed", "aborted"] = "completed") -> RunCreateResponse:
+    project_id = "proj_demo"
+    try:
+        state = re_service.update_run_status(project_id, run_id, status)
+        return RunCreateResponse(
+            run_id=run_id,
+            project_id=project_id,
+            status=state.status,
+            events_url=f"/api/v1/runs/{run_id}/events",
+            stream_url=f"/api/v1/runs/{run_id}/stream",
+        )
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+
+
+# ---------- Session 29: 开题报告草稿生成与证据绑定 (SOP §2-4) ---------- #
+
+
+from ...schemas_proposal_draft import (
+    ProposalDraft,
+    ProposalDraftRequest,
+)
+from ...services.proposal_draft import generate_proposal_draft
+from ...schemas_feasibility import FeasibilityAssessment
+
+
+@router.post(
+    "/proposal-draft",
+    response_model=ProposalDraft,
+    summary="S29: 生成开题报告草稿",
+)
+def create_proposal_draft(body: ProposalDraftRequest) -> ProposalDraft:
+    return generate_proposal_draft(
+        topic_title=body.topic_title,
+        sections=body.sections,
+        evidence_refs=body.evidence_refs,
+        selected_refs=body.selected_refs,
+        candidate_refs=body.candidate_refs,
+        feasibility=body.feasibility,
+    )
