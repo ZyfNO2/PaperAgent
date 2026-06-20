@@ -1,11 +1,17 @@
-// Session 21: Step Deck UI 控制器 (SOP §5).
+// Session 22: Step Deck UI 控制器 (SOP §4-6).
 //
 // - 左侧 Step Rail (9 步, 状态指示)
 // - 中间主卡 (单步可见, scroll-snap)
 // - 右侧 Evidence Drawer (可折叠)
 // - 底部 action bar (上一步 / 下一步 / 同意 / 重新跑)
 //
-// 21-a 范围: 纯前端 mock 事件流, 走 page-step-deck, 不影响 page-analyze.
+// Session 22: 集成 ComponentRegistry 统一渲染 6 类核心卡
+// - renderKeywordCardInteractive() → ComponentRegistry.renderCard()
+// - renderStepCard() → ComponentRegistry.renderCard() for step.blocks
+// - renderKeywordReviewCard() → ComponentRegistry.renderCard() for step.blocks
+// - renderStepCard() → ComponentRegistry.renderCard() for step.blocks
+// - renderKeywordCardInteractive() → ComponentRegistry.renderCard() for keyword cards
+// - renderKeywordReviewCard() → ComponentRegistry.renderCard() for keyword cards
 
 (function (global) {
   "use strict";
@@ -147,6 +153,11 @@
   }
 
   function renderKeywordCardInteractive(card) {
+    // Session 22: 使用 ComponentRegistry 统一渲染，不再手写 HTML
+    if (global.ComponentRegistry) {
+      return global.ComponentRegistry.renderCard(card);
+    }
+    // S21 fallback (registry 未加载时保底)
     const kws = (card.props && card.props.keywords) || [];
     const editable = card.props && card.props.editable;
     return '<div class="pa-card pa-card--KeywordReviewCard' + (editable ? ' is-editable' : '') + '">' +

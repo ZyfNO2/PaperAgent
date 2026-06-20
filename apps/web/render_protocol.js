@@ -1,4 +1,5 @@
 // Session 21: 安全 render block 解析器 (SOP §8).
+// Session 22: renderBlock / validateCard 代理给 ComponentRegistry.
 //
 // 支持的受控块:
 // - ```paperagent-card\n{ "component": "X", "props": {} }\n```
@@ -114,11 +115,16 @@
   function validateCard(parsed) {
     if (!parsed || typeof parsed !== "object") return "不是 JSON 对象";
     if (typeof parsed.component !== "string") return "缺 component 字段";
-    if (!WHITELIST.has(parsed.component)) return `component 不在白名单: ${parsed.component}`;
+    if (!WHITELIST.has(parsed.component)) return "component 不在白名单: " + parsed.component;
     if (parsed.props !== undefined && !isValidProps(parsed.props)) return "props 必须是 object";
     if (parsed.props) {
       const evt = containsEventHandlerKey(parsed.props, "props");
-      if (evt) return `含事件处理器 key (${evt}), 不允许`;
+      if (evt) return "含事件处理器 key (" + evt + "), 不允许";
+    }
+    // Session 22: 校验 props schema（如果有 ComponentRegistry）
+    if (global.ComponentRegistry && parsed.props) {
+      const v = global.ComponentRegistry.validateCard(parsed);
+      if (!v.ok) return v.error;
     }
     if (parsed.actions !== undefined) {
       if (!Array.isArray(parsed.actions)) return "actions 必须是数组";
@@ -126,7 +132,7 @@
         if (!a || typeof a !== "object" || typeof a.id !== "string" || typeof a.event !== "string") {
           return "action 缺 id / event";
         }
-        if (!KNOWN_ACTIONS.has(a.event)) return `action event 不在白名单: ${a.event}`;
+        if (!KNOWN_ACTIONS.has(a.event)) return "action event 不在白名单: " + a.event;
       }
     }
     return null;
@@ -244,12 +250,16 @@
 
   function renderBlock(block) {
     if (!block || !block.component) return "";
+    // Session 22: 优先使用 ComponentRegistry 渲染器
+    if (global.ComponentRegistry) {
+      return global.ComponentRegistry.renderCard(block);
+    }
+    // S21 fallback: 旧的 if/else 分支（registry 不存在时保底）
     const propsJson = escapeHtml(JSON.stringify(block.props || {}));
-    const meta = `<div class="pa-card-meta">
-      <span class="pa-card-component">${escapeHtml(block.component)}</span>
-      <span class="pa-card-id">${escapeHtml(block.id || "")}</span>
-    </div>`;
-    // 不直接渲染 props (避免任意 HTML), 只做摘要
+    const meta = '<div class="pa-card-meta">' +
+      '<span class="pa-card-component">' + escapeHtml(block.component) + '</span>' +
+      '<span class="pa-card-id">' + escapeHtml(block.id || "") + '</span>' +
+      '</div>';
     let bodyHtml = "";
     if (block.component === "KeywordReviewCard") {
       const kws = (block.props && block.props.keywords) || [];
@@ -258,7 +268,6 @@
           escapeHtml(k.text) + '</span>';
       }).join("") + '</div>';
     } else {
-      // 通用 JSON 摘要
       bodyHtml = '<pre class="pa-card-props">' + propsJson + '</pre>';
     }
     return '<div class="pa-card pa-card--' + escapeHtml(block.component) + '">' +
