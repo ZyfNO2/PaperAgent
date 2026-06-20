@@ -1583,3 +1583,95 @@ def create_proposal_draft(body: ProposalDraftRequest) -> ProposalDraft:
         candidate_refs=body.candidate_refs,
         feasibility=body.feasibility,
     )
+
+
+# ---------- Session 30: 委员会复核与 Revision Loop (SOP §2-4) ---------- #
+
+
+from ...schemas_review import (
+    ReviewRound,
+    ReviewRequest,
+    ReviewHistory,
+    RevisionActionRequest,
+)
+from ...services.review import run_review, get_review_history, clear_review_history
+
+
+@router.post(
+    "/review",
+    response_model=ReviewRound,
+    summary="S30: 委员会复核",
+)
+def create_review(body: ReviewRequest) -> ReviewRound:
+    return run_review(body)
+
+
+@router.get(
+    "/review/{topic_title}/history",
+    response_model=ReviewHistory,
+    summary="S30: 复核历史",
+)
+def review_history(topic_title: str) -> ReviewHistory:
+    return get_review_history(topic_title)
+
+
+# ---- S32: Export readiness ---- #
+
+from ...schemas_readiness import ReadinessReport, ReadinessRequest
+from ...services.readiness import check_readiness
+
+
+@router.post(
+    "/{project_id}/readiness",
+    response_model=ReadinessReport,
+    summary="S32: 导出前合规检查 (8 维 readiness)",
+)
+def check_export_readiness(project_id: str, body: ReadinessRequest) -> ReadinessReport:
+    """Run 8-dimension readiness check on the project's final-package."""
+    sections: list = []
+    citations_raw: list = []
+    proposal_md: str | None = None
+
+    # 1) Try FinalPackage cache (has sections + citations + markdown)
+    fp_cached = ev_store.get_final_package(project_id)
+    if fp_cached is None:
+        # Auto-build if snapshot exists
+        snapshot = ev_store.get_snapshot(project_id)
+        if snapshot:
+            try:
+                fp_cached = fp_service.build_final_package(
+                    project_id, FinalPackageBuildOptions()
+                )
+                ev_store.save_final_package(project_id, fp_cached)
+            except (ValueError, Exception):
+                fp_cached = None
+
+    if fp_cached:
+        sections = [
+            {"section_id": s.key, "content": s.content, "evidence_refs": [ref.evidence_id for ref in s.evidence_refs]}
+            for s in fp_cached.sections
+        ]
+        citations_raw = [
+            c.model_dump() if hasattr(c, "model_dump") else c
+            for c in fp_cached.citation_list
+        ]
+        proposal_md = fp_cached.proposal_markdown
+
+    # 2) Fallback: snapshot proposal_recommendation
+    if not sections:
+        snapshot = ev_store.get_snapshot(project_id) or {}
+        pr = snapshot.get("proposal_recommendation", {})
+        outline = pr.get("proposal_outline", [])
+        for item in outline:
+            if isinstance(item, dict):
+                sections.append(item)
+            elif isinstance(item, str):
+                sections.append({"section_id": item, "content": item})
+
+    return check_readiness(
+        sections=sections,
+        citations=citations_raw,
+        template_key=body.template_key,
+        proposal_markdown=proposal_md,
+        project_id=project_id,
+    )
