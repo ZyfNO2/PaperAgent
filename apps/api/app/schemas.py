@@ -302,6 +302,11 @@ class FinalPackageBuildOptions(BaseModel):
         description="proposal_mvp = 13 章节初稿; proposal_full = 后续扩展",
     )
     language: Literal["zh", "en"] = Field(default="zh", description="报告语言")
+    # Session 19: 开题报告模板 (default / engineering / cv_ai), 未知回退 default
+    template_key: str = Field(
+        default="default",
+        description="开题报告模板; 缺省/未知回退 default, 不报错",
+    )
 
 
 class ReportSection(BaseModel):
@@ -358,6 +363,9 @@ class FinalPackageSummary(BaseModel):
     revision_checklist_count: int
     generated_at: str
     cached: bool = Field(default=False, description="是否命中缓存 (未重新生成)")
+    # Session 19: 报告模板
+    template_key: str = Field(default="default", description="本次报告使用的模板 key")
+    template_hints: list[str] = Field(default_factory=list, description="模板缺失证据提示")
 
 
 class FinalPackage(FinalPackageSummary):
@@ -368,6 +376,9 @@ class FinalPackage(FinalPackageSummary):
     citation_list: list[ReportCitation] = Field(default_factory=list)
     unsupported_claims: list[str] = Field(default_factory=list)
     revision_checklist: list[str] = Field(default_factory=list)
+    # Session 19: 模板字段 (与 FinalPackageSummary 重复, 便于前端在 FinalPackage 直接读)
+    template_key: str = Field(default="default", description="本次报告使用的模板 key")
+    template_hints: list[str] = Field(default_factory=list, description="模板缺失证据提示")
 
 
 # ---------- Workspace Board (Session 9 §4.2-§4.3) ---------- #

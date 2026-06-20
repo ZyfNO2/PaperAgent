@@ -773,6 +773,29 @@ def review_ref(project_id: str, body: RefsReviewRequest) -> RefsReviewResponse:
     )
 
 
+# ---------- Session 19: 开题报告模板 (default / engineering / cv_ai) ---------- #
+
+
+class ReportTemplatesResponse(BaseModel):
+    """GET /report/templates 响应."""
+
+    templates: list[dict]
+    default_key: str = "default"
+
+
+@router.get(
+    "/report/templates",
+    response_model=ReportTemplatesResponse,
+    summary="Session 19: 列出可用开题报告模板",
+)
+def list_report_templates() -> ReportTemplatesResponse:
+    from ...services import report_templates as tmpl_service
+    return ReportTemplatesResponse(
+        templates=tmpl_service.list_templates(),
+        default_key=tmpl_service.DEFAULT_TEMPLATE_KEY,
+    )
+
+
 # ---------- Session 8: FinalPackage Markdown 导出 (§5) ---------- #
 
 
@@ -1394,3 +1417,48 @@ def import_project_drafts(
     if ev_store.get_snapshot(project_id) is None:
         raise HTTPException(status_code=404, detail=f"project_id {project_id} 不存在")
     return materials_service.import_drafts(project_id, body)
+
+
+# ---------- Session 19: 报告模板元数据 (GET /report/templates) ---------- #
+
+
+class ReportTemplateInfo(BaseModel):
+    """单个模板的元数据 (供前端选择器展示)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    template_key: str
+    name: str
+    version: str
+    applies_to: str
+    required_sections: list[str] = Field(default_factory=list)
+    evidence_required: bool = True
+    placeholders: list[str] = Field(default_factory=list)
+
+
+class ReportTemplatesResponse(BaseModel):
+    """GET /report/templates 响应."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    templates: list[dict] = Field(
+        default_factory=list,
+        description="模板元数据列表 (含 template_key / name / version / required_sections / ...)",
+    )
+    default_key: str = "default"
+
+
+@router.get(
+    "/report/templates",
+    response_model=ReportTemplatesResponse,
+    summary="Session 19: 列出全部开题报告模板元数据",
+)
+def list_report_templates() -> ReportTemplatesResponse:
+    """前端模板选择控件用. 不依赖具体 project_id, 全局可用."""
+
+    from ..services import report_templates as rt_service
+
+    return ReportTemplatesResponse(
+        templates=rt_service.list_templates(),
+        default_key=rt_service.DEFAULT_TEMPLATE_KEY,
+    )

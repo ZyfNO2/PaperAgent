@@ -25,6 +25,7 @@ from ..schemas import (
 )
 from . import evidence as ev_store
 from . import evidence_refs as refs_service
+from . import report_templates as tmpl_service
 
 
 # ---------- 章节模板 (SOP §4.2) ---------- #
@@ -589,12 +590,14 @@ def _render_markdown(
     low_warning: bool,
     generated_at: str,
     ready: bool,
+    template_key: str = "default",
 ) -> str:
     """按 SOP §4.2 渲染 13 章节 Markdown."""
 
     lines: list[str] = []
     lines.append(f"# 开题报告: {final_topic}")
     lines.append("")
+    lines.append(tmpl_service.template_header_line(template_key))
     lines.append(f"> 生成时间: {generated_at}")
     lines.append(f"> 证据覆盖率: {coverage_score:.2f}")
     lines.append(f"> 状态: {'可提交草稿' if ready else '需补证据'}")
@@ -727,10 +730,20 @@ def build_final_package(
         extras=[it.model_dump() for it in extras_pool],
     )
 
-    # sections
-    sections = _build_sections(snapshot, cite, coverage, low_warning, project_id=project_id)
+    # template (Session 19)
+    template_key = tmpl_service.normalize_template_key(options.template_key)
+    template_hints = tmpl_service.check_template_readiness(
+        template_key,
+        paper_count=len(ev_sum.get("papers", []) or []),
+        dataset_count=len(ev_sum.get("datasets", []) or []),
+        baseline_count=len(ev_sum.get("baselines", []) or []),
+    )
 
-    # revision checklist
+    # sections (模板重排)
+    sections = _build_sections(snapshot, cite, coverage, low_warning, project_id=project_id)
+    sections = tmpl_service.reorder_sections(template_key, sections)
+
+    # revision checklist (合并模板提示)
     revision: list[str] = []
     for missing in feas.get("missing_ref_reasons", []) or []:
         revision.append(f"补 dataset/repo 证据: {missing}")
@@ -739,6 +752,7 @@ def build_final_package(
             revision.append(f"工作包 {wp.get('wp_id', '?')}: {q}")
     if low_warning:
         revision.append("整体证据覆盖率不足, 建议至少补 1 个核心 dataset 或 repo 后重新生成报告。")
+    revision.extend(template_hints)
 
     # unsupported claims
     unsupported: list[str] = []
@@ -756,6 +770,7 @@ def build_final_package(
         low_warning=low_warning,
         generated_at=datetime.now(timezone.utc).isoformat(),
         ready=ready,
+        template_key=template_key,
     )
 
     # 修正 last section (citations / todo) 在 sections 里的 content 不再被 markdown 拼
@@ -780,15 +795,17 @@ def build_final_package(
         revision_checklist_count=len(revision),
         generated_at=datetime.now(timezone.utc).isoformat(),
         cached=False,
+        template_key=template_key,
+        template_hints=template_hints,
     )
 
-    # Session 11: 写 trace (final_package_build)
+    # Session 11: 写 trace (final_package_build) 包含模板 key
     ev_store.append_trace(
         project_id=project_id,
         action="final_package_build",
         target_type="final_package",
         target_id=project_id,
-        reason=f"FinalPackage build: chars={len(md)}, citations={len(cite)}, coverage={coverage:.2f}",
+        reason=f"FinalPackage build: chars={len(md)}, citations={len(cite)}, coverage={coverage:.2f}, template={template_key}",
         actor="system",
     )
 
@@ -817,4 +834,6 @@ def build_final_package_summary(project_id: str) -> FinalPackageSummary | None:
         revision_checklist_count=pkg.revision_checklist_count,
         generated_at=pkg.generated_at,
         cached=pkg.cached,
+        template_key=pkg.template_key,
+        template_hints=pkg.template_hints,
     )
