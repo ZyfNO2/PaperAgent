@@ -1621,6 +1621,24 @@ from ...schemas_readiness import ReadinessReport, ReadinessRequest
 from ...services.readiness import check_readiness
 
 
+# Mapping from FinalPackage section keys → readiness section keys.
+# Multiple FP keys can merge into one readiness key (e.g. feasibility + risks).
+_FP_KEY_TO_READINESS_KEY: dict[str, str] = {
+    "background": "background",
+    "related_work": "literature_review",
+    "research_question": "research_objectives",
+    "technical_route": "technical_approach",
+    "data_baseline_metric": "dataset_experiment",
+    "work_packages": "workload",
+    "innovation": "innovation",
+    "feasibility": "feasibility_risk",
+    "risks": "feasibility_risk",
+    "schedule": "workload",
+    "defense_qa": "missing_evidence",
+    "citations": "reference_resources",
+}
+
+
 @router.post(
     "/{project_id}/readiness",
     response_model=ReadinessReport,
@@ -1643,21 +1661,58 @@ def check_export_readiness(project_id: str, body: ReadinessRequest) -> Readiness
                     project_id, FinalPackageBuildOptions()
                 )
                 ev_store.save_final_package(project_id, fp_cached)
-            except (ValueError, Exception):
+            except Exception:
                 fp_cached = None
 
     if fp_cached:
-        sections = [
-            {"section_id": s.key, "content": s.content, "evidence_refs": [ref.evidence_id for ref in s.evidence_refs]}
-            for s in fp_cached.sections
-        ]
+        # Map FinalPackage sections → readiness section keys, merging as needed
+        merged: dict[str, dict] = {}
+        for s in fp_cached.sections:
+            rk = _FP_KEY_TO_READINESS_KEY.get(s.key)
+            if rk is None:
+                continue
+            if rk not in merged:
+                merged[rk] = {"section_id": rk, "content": "", "evidence_refs": []}
+            parts = []
+            if merged[rk]["content"]:
+                parts.append(merged[rk]["content"])
+            if s.content:
+                parts.append(s.content)
+            merged[rk]["content"] = "\n\n".join(parts)
+            merged[rk]["evidence_refs"].extend(
+                ref.evidence_id for ref in s.evidence_refs
+            )
+        sections = list(merged.values())
+
+        # Extract citations and markdown
         citations_raw = [
             c.model_dump() if hasattr(c, "model_dump") else c
             for c in fp_cached.citation_list
         ]
         proposal_md = fp_cached.proposal_markdown
 
-    # 2) Fallback: snapshot proposal_recommendation
+        # Add topic_direction from snapshot if available
+        snapshot = ev_store.get_snapshot(project_id) or {}
+        pr = snapshot.get("proposal_recommendation", {})
+        topic = pr.get("recommended_topic", "")
+        if topic:
+            sections.append({
+                "section_id": "topic_direction",
+                "content": topic,
+                "evidence_refs": [],
+            })
+
+        # If research_content is still missing, derive from technical_route
+        if not any(s["section_id"] == "research_content" for s in sections):
+            ta = next((s for s in sections if s["section_id"] == "technical_approach"), None)
+            if ta and ta["content"].strip():
+                sections.append({
+                    "section_id": "research_content",
+                    "content": f"研究内容详见技术路线章节。\n\n{ta['content']}",
+                    "evidence_refs": list(ta.get("evidence_refs", [])),
+                })
+
+    # 2) Fallback: snapshot proposal_recommendation (only when no FP available)
     if not sections:
         snapshot = ev_store.get_snapshot(project_id) or {}
         pr = snapshot.get("proposal_recommendation", {})
