@@ -208,3 +208,174 @@ LLM 服務層捕獲異常（`requests.exceptions.RequestException`），回傳 `
 | 6 | 缺技術路線 | Readiness (section_completeness / template_fit) | 是（不得匯出） | test_session32_readiness.py |
 | 7 | LLM 掛掉 | Heuristic Fallback | 否（降級） | test_session6_llm_path.py |
 | 8 | 多源檢索衝突 | Gate（使用者決策） | 否（提示） | test_session14_multi_source_retrieval.py |
+| 9 | 創新點用「填補空白」 | Readiness (innovation_claim_safety) | 是（不得匯出） | test_session32_readiness.py |
+| 10 | 風險章節缺失 | Readiness (risk_disclosure) | 是（不得匯出） | test_session32_readiness.py |
+| 11 | Memory 壓縮後 critical 事件丟失 | Memory Compression | 是（測試守護） | test_session35_agent_memory_replay.py |
+| 12 | MCP 工具調用越權（write_file） | MCP Permission | 是（直接拒） | test_session36_mcp_tools.py |
+| 13 | Multi-Agent 成本超限 | Cost Budget | 否（降級到單流程） | test_session37_multi_agent_design.py |
+| 14 | RAG 檢索為空 | Failure Detector | 否（fallback 擴展） | test_session34_rag_pipeline_eval.py |
+| 15 | Snapshot 重建後關鍵狀態丟失 | ProjectMemory | 是（測試守護） | test_session35_agent_memory_replay.py |
+| 16 | Step Deck 刷新後斷流 | Replay | 否（恢復按鈕） | test_one_topic_session35_memory_replay.py |
+
+---
+
+## Case 9：創新點用「填補空白」這種誇大詞
+
+**輸入：**  
+使用者輸入「基於改進 YOLOv8 的鋼材缺陷檢測」，在創新點章節寫「本研究填補了國內外學術界在該領域的空白」。
+
+**系統如何攔截：**  
+Readiness 維度 `innovation_claim_safety` 檢測到「填補空白」這種浮誇詞，標記為 warn。`export_allowed` 變為 false，導出按鈕置灰。
+
+**使用者看到什麼：**  
+- 「報告合規性」面板顯示「創新點描述」分項失敗，紅色標籤。  
+- 提示：「請用具體改進點描述創新，避免使用『填補空白』『國內外首創』等詞彙」。
+
+**面試怎麼解釋：**  
+「學術誠信是開題的底線。Readiness 維度把誇大詞列為硬阻擋項，因為這類詞在答辯時會被評審老師直接挑出來。系統不只判斷『內容是否完整』，還判斷『表述是否符合學術規範』。」
+
+**對應測試：**  
+- `test_session32_readiness.py::TestInnovationSafety::test_innovation_overclaim_blocks_export`
+
+---
+
+## Case 10：風險章節缺失
+
+**輸入：**  
+報告草稿未包含「風險與應對」章節，雖然有方法論、實驗設計、結果分析。
+
+**系統如何攔截：**  
+Readiness 維度 `risk_disclosure` 檢測到缺「風險」章節。`overall_status = fail`，`export_allowed = false`。
+
+**使用者看到什麼：**  
+- 「8 維合規性」面板顯示「風險披露」分項失敗。  
+- 提示：「請補充『可能遇到的困難與對策』章節」。
+
+**面試怎麼解釋：**  
+「開題答辯老師必問『你這個方案可能遇到什麼問題』。Readiness 把『風險章節』列為硬條件，強制要求學生提前思考困難。這是工程系統對學術標準的內化。」
+
+**對應測試：**  
+- `test_session32_readiness.py::TestRiskDisclosure::test_no_risk_section_blocks_export`
+
+---
+
+## Case 11：Memory 壓縮後 critical 事件丟失
+
+**輸入：**  
+事件數量超過 200 觸發自動壓縮，5 個 `user_patch` 事件混在 250 個普通事件中。
+
+**系統如何攔截：**  
+`compress_transcript()` 嚴格遵守 `keep_critical_types` 白名單，`user_patch` 永遠保留。測試斷言「5 個 gate 事件必須都在」。
+
+**使用者看到什麼：**  
+- 系統無 UI 提示（後台保證）  
+- 但審計時 Trace 仍可查到所有 user_patch
+
+**面試怎麼解釋：**  
+「用戶的修正意圖不能丟——這是審計 trail 的核心。所以 `user_patch` 屬於 critical event，永遠不被壓縮。同理 `evidence_promotion`、`url_verified`、`readiness_check`、`llm_call` 這 6 類都是 critical。設計哲學：默認丟普通事件，永遠保留決策路徑。」
+
+**對應測試：**  
+- `test_session35_agent_memory_replay.py::TestCriticalEventsPreserved::test_gate_events_not_compressed`
+
+---
+
+## Case 12：MCP 工具調用越權（外部 Agent 嘗試調 write_file）
+
+**輸入：**  
+外部 Agent 通過 MCP 發送 `tool_name=write_file`, `arguments={path: "/etc/passwd"}`。
+
+**系統如何攔截：**  
+`check_tool_allowed()` 檢測 `write_file` 在 `FORBIDDEN_TOOLS` 黑名單 → 直接返回 `error.code = "forbidden_tool"`，HTTP 200。
+
+**使用者看到什麼：**  
+- 外部 Agent 收到 `success: false` + `error.code: "forbidden_tool"`  
+- Trace 寫一條 `mcp_tool_call` action，actor=agent，包含失敗原因
+
+**面試怎麼解釋：**  
+「**默認拒絕，顯式允許**。MCP 服務器有 3 層權限：白名單（必須在 manifest）、黑名單（write_file 永拒）、Gate 前置（keyword gate / FinalPackage）。外部 Agent 不能調寫操作，所有嘗試都進 Trace 可審計。寫操作必須用戶在 Web UI 顯式確認。」
+
+**對應測試：**  
+- `test_session36_mcp_tools.py::TestForbiddenToolRejected`  
+- `test_one_topic_session36_mcp.py::TestMCPWriteFileRejected`
+
+---
+
+## Case 13：Multi-Agent 成本超限
+
+**輸入：**  
+理論上拆分後子 Agent 開始瘋狂調 LLM，3 輪就消耗 30 次 LLM 調用。
+
+**系統如何攔截：**  
+`check_budget()` 檢測 `llm_calls > max_llm_calls(20)` → 返回失敗。`should_fallback()` 觸發 `fallback_to_single_agent = True` → 回退到單流程。
+
+**使用者看到什麼：**  
+- 系統無 UI 提示（自動降級）  
+- Trace 記錄 `cost_exceeded` + `fallback_to_single_agent`
+
+**面試怎麼解釋：**  
+「Multi-Agent 容易燒錢，所以我們有 4 維硬限制 + 2 個降級開關。超限立即停止 + 回退單流程，不會無限循環燒 LLM 預算。設計哲學：寧可降級，不可失控。」
+
+**對應測試：**  
+- `test_session37_multi_agent_design.py::TestCostBudgetEnforcement::test_llm_calls_exceeded`  
+- `test_session37_multi_agent_design.py::TestFallback::test_cost_exceeded_triggers_fallback`
+
+---
+
+## Case 14：RAG 檢索為空
+
+**輸入：**  
+冷門題目，所有檢索源（paper/dataset/repo）都返回 0 個候選。
+
+**系統如何攔截：**  
+`rag_evaluator.detect_empty_retrieval()` 檢測 `items.length == 0`，標記 `failure_code: "empty_retrieval"`。**未來**：自動擴展關鍵詞；**當前**：標記後讓用戶決定是否繼續。
+
+**使用者看到什麼：**  
+- 評估報告顯示 `empty_retrieval: true`  
+- 提示用戶「檢索為空，建議調整關鍵詞或考慮 PIVOT」
+
+**面試怎麼解釋：**  
+「RAG 不是萬能。冷門領域、新興方向檢索一定為空。與其假裝「我找到了」返回空結果讓 LLM 編，不如明確告訴用戶「沒找到」並建議改方向。失敗檢測器是 RAG 系統穩定性的關鍵。」
+
+**對應測試：**  
+- `test_session34_rag_pipeline_eval.py`（多個 empty_retrieval 相關測試）
+
+---
+
+## Case 15：Snapshot 重建後關鍵狀態丟失
+
+**輸入：**  
+壓縮後重建 Snapshot，發現 `feasibility_verdict`、`accepted_evidence` 計數丟失。
+
+**系統如何攔截：**  
+`build_snapshot_from_run()` 反向掃描所有 events 取最後寫入值。測試斷言 `readiness_status` 在壓縮前後**都**保留。
+
+**使用者看到什麼：**  
+- 系統無 UI 提示（後台保證）  
+- 但測試覆蓋了這個回歸
+
+**面試怎麼解釋：**  
+「Snapshot 不是『丟掉舊的生成新的』，而是『反向掃描所有 events 重建』。這保證壓縮後關鍵狀態（feasibility verdict、accepted count、readiness status）不丟。ProjectMemorySnapshot 是有界且不可壓縮的，獨立於 Transcript。」
+
+**對應測試：**  
+- `test_session35_agent_memory_replay.py::TestReadinessStableAcrossCompression::test_readiness_status_preserved_in_snapshot`
+
+---
+
+## Case 16：Step Deck 刷新後斷流
+
+**輸入：**  
+用戶在前端運行到 candidate_review 時刷新瀏覽器。
+
+**系統如何攔截：**  
+前端 `run_state.json` 檢測 `last_seq` 與 SSE 連接中斷，顯示「恢復」按鈕。點擊後調 `/memory/replay` 拿 `step_states`，前端重建 Step Deck。
+
+**使用者看到什麼：**  
+- 「系統已斷流，點擊恢復」按鈕  
+- 點擊後自動跳到上次中斷的 step
+
+**面試怎麼解釋：**  
+「瀏覽器刷新是常見操作。我們不讓用戶從頭來，而是用 `replay_source` 告訴前端「從 snapshot + 最近的 events 恢復」。冷啟動時間 < 200ms，用戶無感知。這體現了 4 層 Memory 設計的價值。」
+
+**對應測試：**  
+- `test_one_topic_session35_memory_replay.py::TestReplayRestoresState`  
+- `test_one_topic_session35_memory_replay.py::TestRecoveryButton`
