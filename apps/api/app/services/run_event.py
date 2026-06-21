@@ -154,6 +154,15 @@ def get_events(
     )
 
 
+def list_events(
+    project_id: str,
+    run_id: str,
+    from_seq: int = 0,
+) -> RunEventListResponse:
+    """List events from events.jsonl (alias for get_events)."""
+    return get_events(project_id, run_id, from_seq)
+
+
 def append_user_patch(
     project_id: str,
     run_id: str,

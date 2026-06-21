@@ -1822,6 +1822,121 @@ def run_pipeline(
     )
 
 
+# ---- S35: Agent Memory / Transcript / Replay ---- #
+
+from ...schemas_memory import (
+    MemoryQueryRequest,
+    MemoryQueryResponse,
+    ReplayRequest,
+    ReplayState,
+)
+from ...services import project_memory as pm_service
+
+
+@router.post(
+    "/{project_id}/memory/replay",
+    response_model=ReplayState,
+    summary="S35: Agent 记忆 Replay — 恢复 step deck 状态",
+)
+def replay_memory(project_id: str, body: ReplayRequest) -> ReplayState:
+    """Replay project memory to restore step deck state after refresh/break."""
+    result = pm_service.replay_project(
+        project_id=project_id,
+        run_id=body.run_id,
+        from_seq=body.from_seq,
+        strategy=body.strategy,
+        skip_steps=body.skip_steps,
+    )
+    return ReplayState(
+        project_id=result["project_id"],
+        run_id=result["run_id"],
+        strategy=result["strategy"],
+        snapshot=result["snapshot"],
+        recent_events=result["recent_events"],
+        step_states=result["step_states"],
+        last_seq=result["last_seq"],
+        replay_source=result["replay_source"],
+    )
+
+
+@router.post(
+    "/{project_id}/memory/query",
+    response_model=MemoryQueryResponse,
+    summary="S35: 查询项目记忆层",
+)
+def query_memory(project_id: str, body: MemoryQueryRequest) -> MemoryQueryResponse:
+    """Query project memory layers (snapshot + evidence + transcript)."""
+    snapshot = pm_service.get_latest_snapshot(project_id) if "project_memory" in body.layers else None
+    evidence_list = pm_service.list_evidence_memory(project_id) if "evidence_memory" in body.layers else []
+    transcript_size = sum(
+        len(pm_service._load_transcript(project_id, run_id))
+        for run_id in {ev.run_id for ev in evidence_list}
+    ) if body.include_compressed else 0
+    return MemoryQueryResponse(
+        project_id=project_id,
+        snapshot=snapshot,
+        evidence_memory=evidence_list,
+        transcript_size=transcript_size,
+        compressed_size=0,
+    )
+
+
+@router.get(
+    "/{project_id}/memory/snapshot",
+    response_model=None,
+    summary="S35: 获取最新 ProjectMemorySnapshot",
+)
+def get_memory_snapshot(project_id: str):
+    """Return latest project memory snapshot."""
+    snap = pm_service.get_latest_snapshot(project_id)
+    if snap is None:
+        return {"project_id": project_id, "snapshot": None, "message": "no snapshot"}
+    return {"project_id": project_id, "snapshot": snap.model_dump()}
+
+
+@router.post(
+    "/{project_id}/memory/compress",
+    response_model=None,
+    summary="S35: 触发 transcript 压缩",
+)
+def compress_memory(project_id: str, run_id: str):
+    """Trigger transcript compression and return compression result."""
+    if not run_id:
+        return {"error": "run_id required"}
+    result = pm_service.compress_transcript(project_id, run_id)
+    return {
+        "project_id": result.project_id,
+        "run_id": result.run_id,
+        "compressed_count": result.compressed_count,
+        "kept_critical_count": result.kept_critical_count,
+        "kept_recent_count": result.kept_recent_count,
+        "snapshot_id": result.snapshot_id,
+        "compressed_at": result.compressed_at,
+    }
+
+
+@router.post(
+    "/{project_id}/memory/evidence",
+    response_model=None,
+    summary="S35: 添加 EvidenceMemory 单元（不可压缩）",
+)
+def add_evidence_memory(project_id: str, body: dict):
+    """Add an EvidenceMemory entry to the project's immutable memory layer."""
+    from ...schemas_memory import EvidenceMemoryEntry
+
+    entry = EvidenceMemoryEntry(
+        evidence_id=body.get("evidence_id", ""),
+        project_id=project_id,
+        evidence_type=body.get("evidence_type", "paper"),
+        title=body.get("title", ""),
+        url=body.get("url"),
+        review_status=body.get("review_status", "pending"),
+        verification_status=body.get("verification_status"),
+    )
+    pm_service.add_evidence_memory(entry)
+    return {"ok": True, "evidence_id": entry.evidence_id}
+
+
 @router.get(
     "/{project_id}/rag/eval-report",
     response_model=RagEvalReport,
