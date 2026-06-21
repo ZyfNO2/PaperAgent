@@ -1730,3 +1730,132 @@ def check_export_readiness(project_id: str, body: ReadinessRequest) -> Readiness
         proposal_markdown=proposal_md,
         project_id=project_id,
     )
+
+
+# ---- S34: RAG Pipeline + Evaluator ---- #
+
+from ...schemas_rag_eval import (
+    RagEvalReport,
+    RagPipelineConfig,
+    RagPipelineRequest,
+    RagPipelineResponse,
+    RetrievalCandidate as S34RetrievalCandidate,
+)
+from ...services.rag_pipeline import (
+    get_last_run as get_last_rag_run,
+    list_runs as list_rag_runs,
+    reset_rag_state as reset_rag_pipeline,
+    run_rag_pipeline,
+)
+from ...services.rag_evaluator import evaluate_rag
+
+
+@router.post(
+    "/{project_id}/rag/pipeline",
+    response_model=RagPipelineResponse,
+    summary="S34: 面试级 RAG Pipeline (Sparse+Dense+RRF+Rerank)",
+)
+def run_pipeline(
+    project_id: str,
+    body: RagPipelineRequest,
+) -> RagPipelineResponse:
+    """Run hybrid RAG pipeline on existing candidates from last retrieval run.
+
+    Reads the most recent retrieval run for the project, converts S14 candidates
+    to RAG candidates, and runs the full pipeline (sparse + dense + RRF + rerank).
+    """
+    # 1) Get candidates from last retrieval run
+    last_run = retrieval_service.get_last_run(project_id)
+    if last_run is None or not last_run.candidates:
+        return RagPipelineResponse(
+            project_id=project_id,
+            run_id="",
+            candidates=[],
+            eval_report=None,
+            status="failed",
+            message="未找到候选资源, 请先调用 /retrieval/search",
+        )
+
+    # 2) Extract query keywords from extra_keywords or paper_queries
+    query_keywords: list[str] = []
+    if last_run.query_plan and last_run.query_plan.paper_queries:
+        for layer in last_run.query_plan.paper_queries:
+            query_keywords.extend(layer.queries)
+    if not query_keywords:
+        # fallback to topic from snapshot
+        snap = ev_store.get_snapshot(project_id) or {}
+        pr = snap.get("proposal_recommendation", {})
+        topic = pr.get("recommended_topic", "")
+        if topic:
+            query_keywords = [topic]
+
+    # 3) Run pipeline
+    cfg = body.config or RagPipelineConfig()
+    result = run_rag_pipeline(
+        project_id=project_id,
+        s14_candidates=list(last_run.candidates),
+        query_keywords=query_keywords,
+        config=cfg,
+    )
+
+    # 4) Compute eval report
+    eval_report = evaluate_rag(
+        project_id=project_id,
+        run_id=result["run_id"],
+        candidates=result["candidates"],
+        ground_truth=None,  # 离线评估用, 在线场景不强依赖
+        ledger=ev_store.get_ledger(project_id),
+        cited_evidence_ids=None,
+        section_count=0,
+        bound_section_count=0,
+        imported_count=last_run.imported_count,
+        config=cfg,
+    )
+
+    return RagPipelineResponse(
+        project_id=project_id,
+        run_id=result["run_id"],
+        candidates=result["candidates"],
+        eval_report=eval_report,
+        status=result["status"],  # type: ignore[arg-type]
+        message=result["message"],
+    )
+
+
+@router.get(
+    "/{project_id}/rag/eval-report",
+    response_model=RagEvalReport,
+    summary="S34: 获取最近一次 RAG EvalReport",
+)
+def get_rag_eval_report(project_id: str) -> RagEvalReport:
+    """Return the most recent RAG evaluation report for the project."""
+    run = get_last_rag_run(project_id)
+    if run is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"project_id {project_id} 没有 RAG run 记录",
+        )
+    # Re-evaluate using current candidates (in-memory, no LLM)
+    # We need candidates — but pipeline only stores summary. Re-run from retrieval.
+    last_retrieval = retrieval_service.get_last_run(project_id)
+    if last_retrieval is None or not last_retrieval.candidates:
+        raise HTTPException(
+            status_code=422,
+            detail="未找到候选资源, 无法生成 eval report",
+        )
+    # 重新跑 pipeline 拿 candidates + eval
+    cfg = RagPipelineConfig(**run["config"]) if run.get("config") else RagPipelineConfig()
+    result = run_rag_pipeline(
+        project_id=project_id,
+        s14_candidates=list(last_retrieval.candidates),
+        query_keywords=[],
+        config=cfg,
+    )
+    return evaluate_rag(
+        project_id=project_id,
+        run_id=run["run_id"],
+        candidates=result["candidates"],
+        ledger=ev_store.get_ledger(project_id),
+        imported_count=last_retrieval.imported_count,
+        config=cfg,
+    )
