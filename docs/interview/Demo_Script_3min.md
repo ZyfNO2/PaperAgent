@@ -1,115 +1,57 @@
 # Demo Script 3分鐘
 
-> 使用題目：**基於 YOLO 的鋼材表面缺陷檢測**  
-> 目標：3 分鐘內走完主閉環，讓聽眾理解「輸入題目 → 可行性判斷 → 報告導出」的全流程。
+> 題目：**基於 YOLO 的鋼材表面缺陷檢測**
+> 目標：3 分鐘走完主閉環。
 
 ---
 
-## Phase 0（15 秒）— 打開頁面，輸入題目
+## Phase 0（15 秒）— 輸入題目
 
-**操作：** 打開瀏覽器 `http://127.0.0.1:18181`，輸入框已有預設題目。
+頁面輸入「基於YOLO的鋼材表面缺陷檢測」，選「保畢業」，點「開始」。
 
-**畫面：** 頂部一行輸入框，已填入「基於YOLO的鋼材表面缺陷檢測」；右側下拉可選目標檔位（保畢業）；下方一個「開始判斷能不能做」按鈕。
-
-**旁白：**  
-「這是 PaperAgent 的首頁。使用者只需要輸入一個論文題目，系統就會自動判斷這個題能不能開題。」
+旁白：只需輸入題目，系統自動判斷能不能開題。
 
 ---
 
-## Phase 1-2（30 秒）— 關鍵詞拆解，展示 Gate 1 + 2
+## Phase 1（30 秒）— 關鍵詞拆解
 
-**操作：** 點擊「開始判斷能不能做」。等待約 3–5 秒，頁面依序出現區塊。
+顯示 method/dataset/metric 三類關鍵詞。
 
-**畫面：**
+**核心邊界**：Candidate ≠ Evidence。
+候選未驗證 URL，不能直接寫進報告。
 
-- Block 1「題目理解」顯示 `intent_zh` 和主旨摘要。
-- Block 2「關鍵詞拆解」以表格顯示 method / task / object / risk 四類關鍵詞。
-- 底部浮現「關鍵詞確認」按鈕（Gate 1），點擊後進入下一步。
-
-**旁白：**  
-「系統自動拆解出 method_keywords 包含 YOLO、task_keywords 包含缺陷檢測、object_keywords 包含鋼材表面。使用者確認關鍵詞無誤後，進入 Gate 2——多源檢索階段。」
+旁白：拆出 YOLO/鋼材/缺陷，再去查論文和數據集。
 
 ---
 
-## Phase 3（30 秒）— 多源檢索，候選資源出現
+## Phase 2（45 秒）— 三線檢索
 
-**操作：** 確認關鍵詞後，系統自動觸發多源檢索。切換到「證據工作台」Tab。
+論文 / 數據集 / 代碼庫三線並行。
 
-**畫面：**
-
-- 候選論文（arXiv / OpenAlex）列出 5–8 篇，含標題、年份、URL。
-- 候選資料集（HuggingFace）列出 2–3 個，含規模、授權。
-- 候選 GitHub 倉庫列出 2–3 個，含星數、有無訓練腳本。
-- 每條資源顯示 `verification_status = unverified`（尚未驗證）。
-
-**旁白：**  
-「系統同時從 arXiv、OpenAlex、HuggingFace、GitHub 四個來源檢索，找到論文、公開資料集和可復現的 Baseline 程式碼。所有資源先以『未驗證』狀態出現——這是 Candidate 階段，還不是 Evidence。」
+旁白：每條線獨立 mock 來源，3-5 個候選。
 
 ---
 
-## Phase 4（30 秒）— 證據晉升：選定 → URL 驗證 → 證據狀態變化
+## Phase 3（45 秒）— 可行性裁決
 
-**操作：**
+**5 檔裁決**：GO / CONDITIONAL / PIVOT / PARK / STOP。
 
-1. 勾選 2–3 條論文、1 個資料集、1 個 GitHub 倉庫。
-2. 點擊「匯入到證據池」。
-3. 選中一條，點擊「URL 驗證」。
+**硬否決**：無數據集、無指標、無 baseline 都直接 PIVOT。
 
-**畫面：**
-
-- 匯入後資源出現在左欄 `system_found` 區域。
-- URL 驗證後，`verification_status` 從 `unverified` 變為 `verified` 或 `partial`。
-- 使用者確認選定後，該資源晉升為「證據」，產生 `evidence_id`（如 `E1`、`D1`）。
-
-**旁白：**  
-「Candidate 不等於 Evidence。使用者必須手動選擇、發起 URL 驗證、再確認，系統才產生 EvidenceRef。未驗證或驗證失敗的資源不會進入報告。」
+旁白：7 維風險評估，命中硬否決就給替代路線。
 
 ---
 
-## Phase 5（30 秒）— 可行性判斷：展示 Verdict，選擇 PIVOT 路線
+## Phase 4（30 秒）— 報告導出
 
-**操作：** 回到「一題分析」Tab，點擊「生成可行性判斷」。
+顯示 FinalPackage 預覽，**readiness 8 維**全綠才允許導出。
 
-**畫面：**
-
-- 可行性區塊出現 7 維評分（EvidenceSupport / DataAvailability / BaselineReadiness / …）。
-- 頂部 `verdict`：顯示「可做」（綠色）或「收縮後可做」（黃色）。
-- 分數 0.85，理由：方法成熟、公開資料充足、可復現 Baseline 多。
-- 若為「收縮後可做」，下方出現 3 條 PIVOT 路線（保守 / 平衡 / 進取）。
-
-**旁白：**  
-「可行性模組從 7 個維度打分。YOLO 鋼材缺陷檢測因為有 NEU-DET 公開資料集、有 Ultralytics 官方 Baseline，系統判斷『可做』。如果是高風險題目，系統會給出 PIVOT 路線，引導使用者收斂題目。」
+關鍵詞 Gate：未過 keyword gate 的 evidence 不會進報告。
 
 ---
 
-## Phase 6（30 秒）— 報告草稿生成 + 委員會複核
+## 收尾（15 秒）
 
-**操作：** 點擊「生成開題報告」→ 再點「委員會複核」。
+「PaperAgent 把『能不能做』變成可追溯、可審計、可降級的閉環。」
 
-**畫面：**
-
-- 報告草稿區出現 12 個章節（題目方向 / 背景 / 文獻回顧 / 研究內容 / 技術路線 / …）。
-- 委員會複核顯示三個視角：導師視角、實驗視角、風險視角。
-- 每個視角列出 issue（致命 / 高 / 中 / 低），含 `required_action`。
-
-**旁白：**  
-「報告草稿包含完整 12 章開題報告架構。委員會模擬導師、實驗、風險三個視角做審查，列出需要修改的項目——在導出之前先發現問題。」
-
----
-
-## Phase 7（15 秒）— Readiness 檢查 → 導出按鈕可用
-
-**操作：** 切換到「導出 Readiness」面板，選擇模板「default」。
-
-**畫面：**
-
-- 8 維 Readiness 狀態逐項顯示（section_completeness / evidence_binding / reference_integrity / …）。
-- 全部顯示綠色 `pass`。
-- `export_allowed = true`，導出按鈕可點擊。
-
-**旁白：**  
-「導出前 Readiness 檢查確保開題報告在格式、證據綁定、模板符合度、創新詞安全性等 8 個維度全部合格。綠燈亮起，即可匯出 Markdown 給導師審閱。」
-
----
-
-**總時長約 3 分鐘。**
+**演示文件**：`apps/web/src/views/OneTopicView.vue`、`apps/api/app/services/readiness.py`。
