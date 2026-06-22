@@ -13,14 +13,32 @@ import pytest
 
 DOCS_DIR = Path(__file__).resolve().parents[3] / "docs" / "interview"
 
+# Session 33始 7 份；Session 34-43 与 ARC 对标逐步扩充为 23 份合法面试文档。
+# 维护规则：新增 docs/interview/*.md 后在此清单登记，保持 test_no_extra_unexpected_files 绿。
 REQUIRED_FILES = [
     "Project_OnePager.md",
     "Architecture_Diagram.md",
     "Interview_QA_Cards.md",
+    "Interview_QA_Cards_Extended.md",
     "Demo_Script_3min.md",
     "Demo_Script_10min.md",
     "Failure_Cases.md",
     "Resume_Bullets.md",
+    "Reverse_Questions.md",
+    "Self_Introduction_1min.md",
+    "Self_Introduction_3min.md",
+    "Technical_Highlights.md",
+    "Project_DeepDive_Index.md",
+    "Known_Limitations_For_Interview.md",
+    "RAG_Design_Explainer.md",
+    "Agent_Memory_Explainer.md",
+    "MCP_FunctionCalling_Explainer.md",
+    "MultiAgent_Expansion_Design.md",
+    "Deep_Dive_QA_RAG.md",
+    "Deep_Dive_QA_Agent.md",
+    "Deep_Dive_QA_Memory.md",
+    "Deep_Dive_QA_MCP.md",
+    "AutoResearchClaw_对标与小型化移植.md",
 ]
 
 

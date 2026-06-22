@@ -1,57 +1,73 @@
-# Demo Script 3分鐘
+# Demo Script 3 分钟
 
-> 題目：**基於 YOLO 的鋼材表面缺陷檢測**
-> 目標：3 分鐘走完主閉環。
+> 场景：`Interview Mode`
+> 题目：`基于YOLO的钢材表面缺陷检测`
 
----
+## 0. 入口（20 秒）
 
-## Phase 0（15 秒）— 輸入題目
+- 打开 `http://127.0.0.1:18182/?mode=interview`
+- 点击“面试演示模式（加载 Demo Case）”
 
-頁面輸入「基於YOLO的鋼材表面缺陷檢測」，選「保畢業」，點「開始」。
+要点：
 
-旁白：只需輸入題目，系統自動判斷能不能開題。
+- 这是同一套工作台，不是单独的演示页面
+- Demo Case 是固定演示数据，用于稳定讲述
 
----
+## 1. Step Workbench（45 秒）
 
-## Phase 1（30 秒）— 關鍵詞拆解
+先看中间主工作台：
 
-顯示 method/dataset/metric 三類關鍵詞。
+- Step 1：题目理解
+- Step 2：关键词拆解
+- Step 3：候选证据
+- Step 4：可行性
+- Step 5：开题建议
 
-**核心邊界**：Candidate ≠ Evidence。
-候選未驗證 URL，不能直接寫進報告。
+要点：
 
-旁白：拆出 YOLO/鋼材/缺陷，再去查論文和數據集。
+- 我不是一次性生成整份报告
+- 每一步都可确认、可重跑、可回看
 
----
+## 2. Trace / Memory（35 秒）
 
-## Phase 2（45 秒）— 三線檢索
+切到右栏 `证据 Trace`。
 
-論文 / 數據集 / 代碼庫三線並行。
+要点：
 
-旁白：每條線獨立 mock 來源，3-5 個候選。
+- 用户确认会写进 Trace
+- 修改记录会保留
+- 后续被影响的步骤会变成 `stale`
 
----
+## 3. 对话式修改（40 秒）
 
-## Phase 3（45 秒）— 可行性裁決
+切到左栏 `LLM 思维 / 对话`。
 
-**5 檔裁決**：GO / CONDITIONAL / PIVOT / PARK / STOP。
+演示口径：
 
-**硬否決**：無數據集、無指標、無 baseline 都直接 PIVOT。
+- `仅讨论` 不会改状态
+- `生成修改建议` 会先出预览卡
+- 用户确认后才真正写入
 
-旁白：7 維風險評估，命中硬否決就給替代路線。
+核心句：
 
----
+> 我把聊天入口做成了可审计工作台操作，而不是让 LLM 直接改数据。
 
-## Phase 4（30 秒）— 報告導出
+## 4. 导出前检查（30 秒）
 
-顯示 FinalPackage 預覽，**readiness 8 維**全綠才允許導出。
+看 Step 6 导出区。
 
-關鍵詞 Gate：未過 keyword gate 的 evidence 不會進報告。
+要点：
 
----
+- 只有 Step 1-5 完成且没有 `stale` 才允许导出
+- 如果后端 `18181` 离线，前端会明确提示，不会伪装导出成功
 
-## 收尾（15 秒）
+## 收尾（10 秒）
 
-「PaperAgent 把『能不能做』變成可追溯、可審計、可降級的閉環。」
+> PaperAgent 把“能不能开题”做成了一个可追溯、可修改、可讲解的 Agent 工作台；面试模式只是把这套真实工作流变成了可稳定展示的入口。
 
-**演示文件**：`apps/web/src/views/OneTopicView.vue`、`apps/api/app/services/readiness.py`。
+
+##涉及文件
+
+- `apps/web/e2e/test_one_topic_session43_interview_mode.py`
+- `apps/web/step_workbench.js`
+- `docs/interview/Project_OnePager.md`
