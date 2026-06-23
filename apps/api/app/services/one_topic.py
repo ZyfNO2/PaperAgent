@@ -846,6 +846,18 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
     else:
         next_action = "重新选择方向, 当前题目不建议开题."
 
+    # Session 45: RealityCheck 现实约束 (资源四层 + 实验周期) + 融合降级
+    from . import reality_check as rc_service
+    reality = rc_service.assess_reality(keywords, ev, req.goal_level, req.raw_topic)
+    original_verdict = verdict
+    verdict = rc_service.apply_reality_to_verdict(verdict, reality)
+    if verdict != original_verdict:
+        reason += f" [RealityCheck 降级: {reality.graduation_risk}风险, {reality.resource_tier}, 周期{reality.experiment_cycle}]"
+        if verdict == "不建议":
+            next_action = "条件不可行或毕业风险过高, 不建议继续当前方向."
+        elif verdict == "暂缓":
+            next_action = "毕业风险高, 建议暂缓并收缩题目或更换方向."
+
     feasibility = FeasibilitySummary(
         verdict=verdict,
         reason=reason,
@@ -855,6 +867,7 @@ def judge_feasibility(req: OneTopicRequest, keywords: KeywordBreakdown, ev: Evid
         engineering_status=engineering_status,
         missing_evidence=missing,
         recommended_next_action=next_action,
+        reality_check=reality.model_dump(mode="json"),
     )
 
     # Session 7: 挂 evidence_refs / blocking_refs / confidence

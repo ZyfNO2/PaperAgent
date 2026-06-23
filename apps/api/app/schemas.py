@@ -7,12 +7,18 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 # ---------- 入参 ---------- #
 
-GoalLevel = Literal["保毕业", "稳中求新", "冲高水平"]
+GoalLevel = Literal["保毕业", "已有小论文"]
+
+# 旧值 → 新值兼容映射
+_GOAL_LEVEL_COMPAT = {
+    "稳中求新": "保毕业",
+    "冲高水平": "已有小论文",
+}
 
 
 class OneTopicRequest(BaseModel):
@@ -21,7 +27,7 @@ class OneTopicRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     raw_topic: str = Field(min_length=1, description="用户原始题目")
-    goal_level: GoalLevel = Field(default="保毕业", description="目标档位")
+    goal_level: GoalLevel = Field(default="保毕业", description="目标档位: 保毕业/已有小论文")
     major: str | None = Field(default=None, description="可选: 专业")
     advisor_direction: str | None = Field(default=None, description="可选: 导师方向")
     degree_type: Literal["本科", "硕士", "博士", "未知"] = Field(default="未知")
@@ -43,6 +49,14 @@ class OneTopicRequest(BaseModel):
         default=None,
         description="Session 3 regenerate: 沿用已有 project_id, 避免新生成",
     )
+
+    @field_validator("goal_level", mode="before")
+    @classmethod
+    def _compat_goal_level(cls, v):
+        """Session 45: 旧值兼容映射 (稳中求新→保毕业, 冲高水平→已有小论文)."""
+        if isinstance(v, str) and v in _GOAL_LEVEL_COMPAT:
+            return _GOAL_LEVEL_COMPAT[v]
+        return v
 
 
 # ---------- 题目理解 ---------- #
@@ -191,6 +205,8 @@ class FeasibilitySummary(BaseModel):
     blocking_refs: list[EvidenceRef] = Field(default_factory=list)
     missing_ref_reasons: list[str] = Field(default_factory=list)
     confidence: float = 0.0
+    # Session 45: RealityCheck 现实约束 (资源四层 + 实验周期)
+    reality_check: dict | None = Field(default=None, description="资源可达性+实验周期评估")
 
 
 # ---------- 开题建议 (§8) ---------- #
