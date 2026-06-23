@@ -19,7 +19,7 @@ def test_session43_query_param_enables_interview_shell(page: Page) -> None:
 
 def test_session43_demo_case_loads_stable_workbench(page: Page) -> None:
     page.goto("http://127.0.0.1:18182/?mode=interview", wait_until="domcontentloaded")
-    page.click("#btn-start-interview-demo")
+    page.click("#btn-interview-load-demo")
 
     page.wait_for_selector("#step-workbench:not([hidden])", timeout=10000)
     expect(page.locator("#interview-demo-banner")).to_contain_text("固定 Demo Case")
@@ -43,7 +43,7 @@ def test_session43_deep_dive_drawer_opens_with_code_test_doc_paths(page: Page) -
 
 def test_session43_checklist_focus_highlights_report_area(page: Page) -> None:
     page.goto("http://127.0.0.1:18182/?mode=interview", wait_until="domcontentloaded")
-    page.click("#btn-start-interview-demo")
+    page.click("#btn-interview-load-demo")
     page.click('[data-script-key="10min"]')
     page.click('[data-script-focus="report"]')
 

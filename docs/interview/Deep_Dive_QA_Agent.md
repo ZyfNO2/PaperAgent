@@ -247,3 +247,46 @@
 ---
 
 > **面试重点：** PaperAgent Agent 的核心是**「状态机 + 工具 + LLM」**，不是「LLM 随便调」。每一步都有 Gate 校验 + Trace 审计 + 失败降级。Multi-Agent 路径已就位但不强拆。
+
+---
+
+## Q21: 多 Agent 之间怎么通信？(ACP)
+
+**PaperAgent 的设计：**
+
+当前主线不走多 Agent 通信。但如果需要，设计层已定义 ACP 协议：
+
+- Agent A 发 `ACPMessage` 给 Agent B
+- 类型包括 `task_request`, `evidence_candidate`, `verification_report` 等
+- 写操作强制 `requires_human_gate = true`
+- 所有通信写入 Trace，可审计
+
+**关键约束：**
+
+```
+Main Agent ──→ Retrieval Agent (读)
+Main Agent ──→ Verifier Agent (读)
+Main Agent ──→ Evidence 写入 (强制 Gate)
+                                └── 不经过 ACP，直接走 Human Gate
+```
+
+**面试表达：**
+
+> 多 Agent 通信我用 ACP 的消息模型约束——每条消息知道谁发的、谁收的、什么类型、能不能绕过用户确认。但这不是当前 runtime，是通信治理层的设计。详见 `Plan/design/ACP_Interop_And_Agent_Communication.md`。
+
+## Q22: 当前 Single-Agent 到 Multi-Agent 的演进路径？
+
+**PaperAgent 的渐进路径：**
+
+1. **阶段 1（当前）**：Single-Agent + Gate → 顺序执行 + 用户确认
+2. **阶段 2（lightweight）**：将检索和验证拆为并行子 Agent → 通过 ACP task_request 通信
+3. **阶段 3（design-only）**：完整 Supervisor + 6 子 Agent → Supervisor 通过 ACP 消息总线调度
+
+**为什么阶段 1 就够了？**
+
+选题流程是强顺序的——你不可能在还没确定选题时就开始写报告。强顺序意味着子 Agent 之间大部分是串行依赖，拆多 Agent 收益有限。我选择把 Gate 和 Trace 做扎实，而不是为了面试拆出 5 个没什么实际并行度的子 Agent。
+
+**阶段 2 的触发条件：**
+- 检索源 ≥ 5 个
+- 评分模型 ≥ 3 个
+- 模板类型 ≥ 5 个

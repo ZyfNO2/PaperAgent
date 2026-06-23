@@ -46,7 +46,7 @@
 
 - implemented：Workflow、WorkspaceCommand、Failure、Tests
 - lightweight：RAG、Memory
-- design-only：LangGraph runtime、SubAgent Router、MCP 深挖
+- design-only：LangGraph runtime、SubAgent Router、MCP 深挖、ACP、A2A
 
 对应文件：
 
@@ -64,3 +64,22 @@
 - `apps/web/app.js`
 - `docs/interview/Known_Limitations_For_Interview.md`
 - `apps/web/e2e/test_one_topic_session43_interview_mode.py`
+
+## 亮点 6：Protocol Map — MCP / A2A / ACP 三层协议边界显式区分
+
+这样做是为了避免面试官问"协议区别"时散点回答：
+
+- **MCP**：Agent-to-Tool，当前已最小暴露（S36）
+- **A2A**：Agent-to-Agent 任务委派 + 能力发现，design-only
+- **ACP**：Agent-to-Agent Messaging + 异步流 + 多模态交换，design-only
+
+当前口径：
+
+- implemented：MCP 最小工具（4 个只读 tool）
+- design-only：A2A 任务委派、ACP 消息总线、ACP-Control
+- protocol_map 默认展示，acp_* 开关默认关闭
+
+对应文件：
+
+- `Plan/design/ACP_Interop_And_Agent_Communication.md`
+- `apps/web/e2e/test_one_topic_session44_protocols_acp.py`

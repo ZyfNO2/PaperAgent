@@ -13,6 +13,7 @@
 | Memory / Trace / Replay | lightweight | `apps/api/app/services/project_memory.py` | `apps/web/e2e/test_one_topic_session35_memory_replay.py` | `docs/interview/Agent_Memory_Explainer.md` | 什么能压缩，什么不能丢？ |
 | MCP / Tool Boundary | design-only | `apps/api/app/mcp/server.py` | `apps/web/e2e/test_one_topic_session36_mcp.py` | `docs/interview/MCP_FunctionCalling_Explainer.md` | 为什么默认不开放写工具？ |
 | Agent / LangGraph Mapping | design-only | `apps/api/app/services/agent_router.py` | `apps/web/e2e/test_one_topic_session43_interview_mode.py` | `docs/interview/Deep_Dive_QA_Agent.md` | 为什么现在不用 LangGraph runtime？ |
+| Protocols / MCP / A2A / ACP | design-only | `Plan/design/ACP_Interop_And_Agent_Communication.md` | `apps/web/e2e/test_one_topic_session44_protocols_acp.py` | `docs/interview/Deep_Dive_QA_MCP.md` | MCP / A2A / ACP 有什么区别？ |
 | Failure / Tests | implemented | `apps/web/app.js` | `apps/web/e2e/test_one_topic_session43_interview_mode.py` | `docs/interview/Known_Limitations_For_Interview.md` | 后端挂了怎么表现？ |
 
 ## 推荐打开顺序
@@ -29,7 +30,8 @@
 2. `RAG Pipeline`
 3. `Memory / Trace / Replay`
 4. `Agent / LangGraph Mapping`
-5. `Failure / Tests`
+5. `Protocols / MCP / A2A / ACP`
+6. `Failure / Tests`
 
 ## 当前真实口径
 
@@ -122,3 +124,9 @@
 - 代码：`apps/api/app/services/evidence_ledger.py`
 - 测试：`apps/api/tests/test_session4_evidence_ledger.py`
 - 文档：`docs/interview/Deep_Dive_QA_RAG.md`
+
+## 模块 13：Protocols / MCP / A2A / ACP
+
+- 代码：`Plan/design/ACP_Interop_And_Agent_Communication.md`
+- 测试：`apps/web/e2e/test_one_topic_session44_protocols_acp.py`
+- 文档：`docs/interview/Deep_Dive_QA_MCP.md`

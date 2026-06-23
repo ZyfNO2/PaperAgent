@@ -2566,3 +2566,14 @@ document.addEventListener("click", async (e) => {
     await submitTextMaterial("manual_note");
   }
 });
+
+// Session 44: Initialize Step Workbench + Interview Mode
+(function initStepWorkbench() {
+  if (typeof StepWorkbench !== "undefined" && StepWorkbench.init) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", StepWorkbench.init);
+    } else {
+      StepWorkbench.init();
+    }
+  }
+})();

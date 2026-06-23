@@ -128,6 +128,51 @@
       description: "只在面试深挖时解释外部工具边界，不在主链路默认暴露写能力。",
       note: "保持 read-mostly 叙事，避免扩大权限面。",
     },
+    {
+      key: "protocol_map",
+      label: "Protocol Map (MCP / A2A / ACP)",
+      status: "on",
+      mode: "主线默认",
+      cost: "低",
+      description: "面试模式默认展示 MCP / A2A / ACP 协议边界说明，不参与真实执行。",
+      note: "默认开启，只展示不执行。",
+    },
+    {
+      key: "acp_messaging",
+      label: "ACP Messaging",
+      status: "design-only",
+      mode: "深挖专用",
+      cost: "高",
+      description: "Agent 间消息模型、异步流、多模态交换，不接入真实 runtime。",
+      note: "仅作为架构预留，不参与当前执行。",
+    },
+    {
+      key: "acp_artifacts",
+      label: "ACP Artifacts",
+      status: "design-only",
+      mode: "深挖专用",
+      cost: "中",
+      description: "多模态 artifact 传递（论文/数据集/图片/PDF 片段等）。",
+      note: "仅作为架构预留，不参与当前执行。",
+    },
+    {
+      key: "acp_human_gate",
+      label: "ACP Human Gate",
+      status: "design-only",
+      mode: "深挖专用",
+      cost: "中",
+      description: "跨 Agent 人工确认协议映射，不允许 ACP 消息绕过 Gate。",
+      note: "仅作为架构预留，不参与当前执行。",
+    },
+    {
+      key: "acp_admission_control",
+      label: "ACP Admission Control",
+      status: "design-only",
+      mode: "深挖专用",
+      cost: "高",
+      description: "Agent 行为准入检查、能力授权、不可抵赖审计。",
+      note: "仅作为架构预留，不参与当前执行。",
+    },
   ];
 
   const INTERVIEW_MODULES = [
@@ -242,6 +287,21 @@
       testPaths: ["apps/web/e2e/test_one_topic_session42_workbench_chat_edit.py", "apps/web/e2e/test_one_topic_session43_interview_mode.py"],
       docPaths: ["docs/interview/Project_DeepDive_Index.md", "docs/interview/Demo_Script_10min.md"],
       boundary: "当前浏览器测试主要覆盖前端工作台与演示壳；后端全链路状态要单独说明。",
+    },
+    {
+      key: "protocols",
+      title: "Protocols / MCP / A2A / ACP",
+      status: "design-only",
+      summary: "MCP 解决 Agent 调工具；A2A 解决 Agent 间任务委派；ACP 解决 Agent 间消息治理。全部 protocol_map 默认展示。",
+      questions: [
+        "MCP / A2A / ACP 有什么区别？",
+        "PaperAgent 为什么当前只做 MCP，不接 ACP？",
+        "ACP 怎么保证不绕过 Human Gate？",
+      ],
+      codePaths: ["Plan/design/ACP_Interop_And_Agent_Communication.md", "apps/api/app/mcp/server.py"],
+      testPaths: ["apps/web/e2e/test_one_topic_session44_protocols_acp.py", "apps/web/e2e/test_one_topic_session36_mcp.py"],
+      docPaths: ["docs/interview/Deep_Dive_QA_MCP.md", "docs/interview/MCP_FunctionCalling_Explainer.md"],
+      boundary: "ACP 是 design-only 通信治理层，不接入真实 runtime，不参与当前主链路执行。",
     },
   ];
 
@@ -663,6 +723,9 @@
       appendToolUse(call.tool, call.purpose, call.source, call.step);
     });
     appendLlm("assistant_reply", DEMO_CASE.llmIntro, null);
+    // show the workbench container
+    var wb = el("step-workbench");
+    if (wb) wb.hidden = false;
     renderAll();
   }
 
@@ -831,10 +894,16 @@
     if (!interviewEnabled()) {
       shell.hidden = true;
       shell.innerHTML = "";
+      // hide workbench when exiting interview mode
+      var wb = el("step-workbench");
+      if (wb) wb.hidden = true;
       applyInterviewHighlight();
       return;
     }
     shell.hidden = false;
+    // show/hide step-workbench container: visible only when demo is loaded
+    var wb = el("step-workbench");
+    if (wb) wb.hidden = !state.demoLoaded;
     const modeLabel = state.uiMode === INTERVIEW_MODE.INTERVIEW ? "interview" : state.uiMode;
     const backendText = state.backendReachable === null
       ? "backend unknown"

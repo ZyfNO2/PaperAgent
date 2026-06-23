@@ -275,3 +275,33 @@ mcp_server.get_manifest() -> MCPServerManifest
 ---
 
 > **面试重点：** PaperAgent MCP 不是「接了个协议」，而是「把安全边界、审计、权限 Gate 都做进协议层」。和 OpenAI FC / LangChain Tools 的核心差异是「安全做进协议层 vs 留给业务方」。
+
+---
+
+## Q21: MCP / A2A / ACP 有什么区别？
+
+| 协议 | 解决什么 | PaperAgent 状态 | 类比 |
+|---|---|---|---|
+| MCP | Agent 调工具 | S36 最小工具暴露，可展示 | 工具接口标准化 |
+| A2A | Agent 发现、委派任务、协作 | design-only | 任务分派 |
+| ACP | Agent 间消息、异步流、多模态证据交换 | design-only | 消息总线 |
+
+**推荐回答：**
+
+> 我把它们分成三层。MCP 是 Agent 调工具；A2A 是 Agent 发现并委派任务；ACP 是消息治理层——关注多 Agent 之间怎么传消息、传状态、传多模态结果。PaperAgent 当前是 Single-Agent + Gate，所以 MCP 是最贴近的，A2A 和 ACP 作为 design-only 扩展位。协议边界表在 `Plan/design/ACP_Interop_And_Agent_Communication.md`。
+
+## Q22: ACP 在 PaperAgent 中的具体落点？
+
+**当前状态：design-only + schema-ready + interview-visible**
+
+已定义但不接入 runtime：
+
+- **ACPMessage**：`message_id`, `from/to_agent`, `message_type`, `payload`, `artifacts`, `requires_human_gate`, `security`
+- **消息类型**：11 种（`task_request`, `evidence_candidate`, `verification_report`, `workspace_command`, `human_gate_request` 等）
+- **Artifact 类型**：8 种（`paper`, `dataset`, `repo`, `webpage`, `image`, `pdf_excerpt`, `trace_slice`, `proposal_section`）
+- **Human Gate 不可绕过**：写操作强制 `requires_human_gate = true`
+- **Trace 全量记录**：所有 ACP 通信（包括被拦截的）写入 Trace
+
+**面试表达：**
+
+> ACP 在 PaperAgent 中是通信治理层。我定义了完整的消息模型和 artifact 类型，但不接入 runtime——因为主线是 Single-Agent，不需要 Agent 间消息总线。这样做的好处是：面试能讲清协议边界，又不把系统做重。详见 `Plan/design/ACP_Interop_And_Agent_Communication.md`。
