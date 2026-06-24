@@ -1,4 +1,4 @@
-"""Paper Library API (Session 46 + Session 47 + Session 48 + Session 49).
+"""Paper Library API (Session 46 + Session 47 + Session 48 + Session 49 + Session 50).
 
 Session 46 4 端点:
 - POST /api/v1/projects/{project_id}/paper-library/arxiv
@@ -17,11 +17,18 @@ Session 49 新增 3 端点 (Track B: 已有小论文扩展):
 - POST /api/v1/projects/{project_id}/paper-library/small-paper/extract
 - POST /api/v1/projects/{project_id}/paper-library/small-paper/extension-plan
 - POST /api/v1/projects/{project_id}/paper-library/small-paper/repeat-risks
+
+Session 50 新增 4 端点 (RAG 评估与回归基线):
+- POST /api/v1/projects/{project_id}/paper-library/eval/run
+- GET  /api/v1/projects/{project_id}/paper-library/eval/baseline
+- POST /api/v1/projects/{project_id}/paper-library/eval/baseline
+- POST /api/v1/projects/{project_id}/paper-library/eval/seed-library
 """
 
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 
@@ -53,11 +60,19 @@ from ...schemas_small_paper import (
     SmallPaperRepeatRisksRequest,
     SmallPaperRepeatRisksResponse,
 )
+from ...schemas_paper_rag_eval import (
+    RagEvalRunRequest,
+    RagEvalRunResponse,
+    RagEvalSeedLibraryRequest,
+    RagEvalSeedLibraryResponse,
+)
 from ...services import paper_library as pl_service
 from ...services.paper_library import (
     claim_grounding,
+    eval_baseline,
     indexer,
     paper_qa,
+    rag_eval_pipeline,
     reranker,
     retriever,
 )
@@ -468,3 +483,133 @@ def small_paper_repeat_risks(
     return SmallPaperRepeatRisksResponse(
         paper_id=card.paper_id, risks=risks, risk_count=len(risks),
     )
+
+
+# ===========================================================================
+# Session 50: RAG 评估与回归基线
+# ===========================================================================
+
+
+@router.post(
+    "/{project_id}/paper-library/eval/seed-library",
+    response_model=RagEvalSeedLibraryResponse,
+)
+def eval_seed_library(
+    project_id: str, body: RagEvalSeedLibraryRequest | None = None,
+) -> RagEvalSeedLibraryResponse:
+    """把 fixtures 里的 txt 论文加载到 project storage (供 eval 测试用).
+
+    body.fixtures_path 可选, 默认 tests/fixtures/paper_library_eval
+    resp: { project_id, paper_count, chunk_count, message }
+    """
+
+    fixtures_path = body.fixtures_path if body else None
+    fixtures_dir = Path(fixtures_path) if fixtures_path else _default_fixtures_dir()
+    if not fixtures_dir.exists():
+        raise HTTPException(status_code=400, detail=f"fixtures_dir 不存在: {fixtures_dir}")
+    try:
+        result = rag_eval_pipeline.seed_library_from_fixtures(project_id, fixtures_dir)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("eval_seed_library failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"seed_library failed: {exc}")
+    total_chunks = sum(result.values())
+    return RagEvalSeedLibraryResponse(
+        project_id=project_id,
+        paper_count=len(result),
+        chunk_count=total_chunks,
+        message=f"loaded {len(result)} papers / {total_chunks} chunks from {fixtures_dir}",
+    )
+
+
+@router.post(
+    "/{project_id}/paper-library/eval/run",
+    response_model=RagEvalRunResponse,
+)
+def eval_run(
+    project_id: str, body: RagEvalRunRequest | None = None,
+) -> RagEvalRunResponse:
+    """跑一次 RAG 评估, 产出 RagEvalReport.
+
+    body: { fixtures_path?, scope?, paper_ids?, llm_mock? }
+    resp: { report: RagEvalReport }
+
+    400: fixtures_dir 不存在
+    500: eval 失败
+    """
+
+    body = body or RagEvalRunRequest()
+    fixtures_path = body.fixtures_path if body else None
+    fixtures_dir = Path(fixtures_path) if fixtures_path else _default_fixtures_dir()
+    if not fixtures_dir.exists():
+        raise HTTPException(status_code=400, detail=f"fixtures_dir 不存在: {fixtures_dir}")
+    try:
+        report = rag_eval_pipeline.run_eval(
+            project_id=project_id,
+            fixtures_dir=fixtures_dir,
+            scope=body.scope,
+            paper_ids=body.paper_ids,
+            llm_mock=body.llm_mock,
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("eval_run failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"eval failed: {exc}")
+
+    # 顺便与 baseline diff
+    baseline = eval_baseline.load_baseline()
+    diff = eval_baseline.diff_against_baseline(report, baseline)
+    report = report.model_copy(update={
+        "baseline_diff": diff.get("deltas", {}),
+        "regressions": diff.get("regressions", []),
+    })
+
+    return RagEvalRunResponse(report=report)
+
+
+@router.get(
+    "/{project_id}/paper-library/eval/baseline",
+)
+def eval_get_baseline() -> dict:
+    """读当前 baseline.json (含 aggregate metrics + run_id)."""
+
+    return eval_baseline.load_baseline()
+
+
+@router.post(
+    "/{project_id}/paper-library/eval/baseline",
+)
+def eval_save_baseline(project_id: str) -> dict:
+    """跑一次 eval, 把结果存为 baseline (覆盖现有).
+
+    body: 无 (使用默认 fixtures)
+    resp: { saved_path, run_id, aggregate_* }
+    """
+
+    fixtures_dir = _default_fixtures_dir()
+    if not fixtures_dir.exists():
+        raise HTTPException(status_code=400, detail=f"fixtures_dir 不存在: {fixtures_dir}")
+    try:
+        report = rag_eval_pipeline.run_eval(
+            project_id=project_id,
+            fixtures_dir=fixtures_dir,
+            llm_mock=True,
+        )
+        saved = eval_baseline.save_baseline(report)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("eval_save_baseline failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"save baseline failed: {exc}")
+    return {
+        "saved_path": saved,
+        "run_id": report.run_id,
+        "aggregate_retrieval": report.aggregate_retrieval.model_dump(),
+        "aggregate_answer": report.aggregate_answer.model_dump(),
+        "aggregate_system": report.aggregate_system.model_dump(),
+        "item_count": len(report.items),
+    }
+
+
+def _default_fixtures_dir() -> Path:
+    """默认 fixtures 目录 (相对 repo root)."""
+
+    # 默认 tests/fixtures/paper_library_eval (相对于 apps/api 的父目录)
+    api_root = Path(__file__).resolve().parent.parent.parent.parent
+    return api_root / "tests" / "fixtures" / "paper_library_eval"

@@ -28,24 +28,24 @@ ChunkTypeStr = Literal[
 
 # 匹配诸如 "Abstract", "1 Introduction", "2.1 Method", "REFERENCES" 等
 _SECTION_PATTERNS: list[tuple[re.Pattern, str, ChunkType]] = [
-    # Abstract
-    (re.compile(r"^\s*(?:Abstract|ABSTRACT|摘要)\s*[:\.]?\s*$", re.IGNORECASE | re.MULTILINE), "Abstract", "abstract"),
+    # Abstract (with optional "##" / "Abstract:" prefix)
+    (re.compile(r"^\s*#*\s*(?:Abstract|ABSTRACT|摘要)\s*[:\.]?\s*$", re.IGNORECASE | re.MULTILINE), "Abstract", "abstract"),
     # 1 Introduction
-    (re.compile(r"^\s*\d+\.?\s+(Introduction|INTRODUCTION)\s*$", re.IGNORECASE | re.MULTILINE), "Introduction", "introduction"),
+    (re.compile(r"^\s*#*\s*\d+\.?\s+(Introduction|INTRODUCTION)\s*$", re.IGNORECASE | re.MULTILINE), "Introduction", "introduction"),
     # 2 Related Work / Background
-    (re.compile(r"^\s*\d+\.?\s+(Related\s+Work|Related\s+Works|Background|RELATED\s+WORK|BACKGROUND)\s*$", re.IGNORECASE | re.MULTILINE), "Related Work", "related_work"),
+    (re.compile(r"^\s*#*\s*\d+\.?\s+(Related\s+Work|Related\s+Works|Background|RELATED\s+WORK|BACKGROUND)\s*$", re.IGNORECASE | re.MULTILINE), "Related Work", "related_work"),
     # 3 Method / Methodology / Approach / Model
-    (re.compile(r"^\s*\d+\.?\s+(Method|Methods|Methodology|Approach|Model|Models|PROPOSED\s+METHOD|METHODOLOGY)\s*$", re.IGNORECASE | re.MULTILINE), "Method", "method"),
+    (re.compile(r"^\s*#*\s*\d+\.?\s+(Method|Methods|Methodology|Approach|Model|Models|PROPOSED\s+METHOD|METHODOLOGY)\s*$", re.IGNORECASE | re.MULTILINE), "Method", "method"),
     # 4 Experiment / Experiments / Experimental Setup / Evaluation
-    (re.compile(r"^\s*\d+\.?\s+(Experiment|Experiments|Experimental\s+Setup|Evaluation|Experimental|EXPERIMENTS|EVALUATION)\s*$", re.IGNORECASE | re.MULTILINE), "Experiment", "experiment"),
+    (re.compile(r"^\s*#*\s*\d+\.?\s+(Experiment|Experiments|Experimental\s+Setup|Evaluation|Experimental|EXPERIMENTS|EVALUATION)\s*$", re.IGNORECASE | re.MULTILINE), "Experiment", "experiment"),
     # 5 Results / Discussion
-    (re.compile(r"^\s*\d+\.?\s+(Results?|Result\s+and\s+Discussion|RESULTS|DISCUSSION)\s*$", re.IGNORECASE | re.MULTILINE), "Result", "result"),
+    (re.compile(r"^\s*#*\s*\d+\.?\s+(Results?|Result\s+and\s+Discussion|RESULTS|DISCUSSION)\s*$", re.IGNORECASE | re.MULTILINE), "Result", "result"),
     # 6 Limitation / Limitations
-    (re.compile(r"^\s*\d+\.?\s+(Limitations?|LIMITATIONS?)\s*$", re.IGNORECASE | re.MULTILINE), "Limitation", "limitation"),
+    (re.compile(r"^\s*#*\s*\d+\.?\s+(Limitations?|LIMITATIONS?)\s*$", re.IGNORECASE | re.MULTILINE), "Limitation", "limitation"),
     # 7 Conclusion / Conclusions / Concluding Remarks
-    (re.compile(r"^\s*\d+\.?\s+(Conclusions?|Conclusion\s+and\s+\w+|Concluding\s+Remarks|CONCLUSION)\s*$", re.IGNORECASE | re.MULTILINE), "Conclusion", "conclusion"),
+    (re.compile(r"^\s*#*\s*\d+\.?\s+(Conclusions?|Conclusion\s+and\s+\w+|Concluding\s+Remarks|CONCLUSION)\s*$", re.IGNORECASE | re.MULTILINE), "Conclusion", "conclusion"),
     # References (单独一节, 整块丢弃)
-    (re.compile(r"^\s*(References?|REFERENCES?|Bibliography|BIBLIOGRAPHY)\s*$", re.IGNORECASE | re.MULTILINE), "References", "reference"),
+    (re.compile(r"^\s*#*\s*(References?|REFERENCES?|Bibliography|BIBLIOGRAPHY)\s*$", re.IGNORECASE | re.MULTILINE), "References", "reference"),
 ]
 
 
