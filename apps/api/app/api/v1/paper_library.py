@@ -1,4 +1,4 @@
-"""Paper Library API (Session 46 + Session 47 + Session 48).
+"""Paper Library API (Session 46 + Session 47 + Session 48 + Session 49).
 
 Session 46 4 端点:
 - POST /api/v1/projects/{project_id}/paper-library/arxiv
@@ -12,6 +12,11 @@ Session 47 新增 2 端点 (Paper RAG):
 
 Session 48 新增 1 端点 (Claim Grounding):
 - POST /api/v1/projects/{project_id}/paper-library/ground-claims
+
+Session 49 新增 3 端点 (Track B: 已有小论文扩展):
+- POST /api/v1/projects/{project_id}/paper-library/small-paper/extract
+- POST /api/v1/projects/{project_id}/paper-library/small-paper/extension-plan
+- POST /api/v1/projects/{project_id}/paper-library/small-paper/repeat-risks
 """
 
 from __future__ import annotations
@@ -40,6 +45,14 @@ from ...schemas_paper_rag import (
     PaperRAGAnswer,
     PaperRAGAskRequest,
 )
+from ...schemas_small_paper import (
+    SmallPaperExtractRequest,
+    SmallPaperExtractResponse,
+    SmallPaperExtensionPlanRequest,
+    SmallPaperExtensionPlanResponse,
+    SmallPaperRepeatRisksRequest,
+    SmallPaperRepeatRisksResponse,
+)
 from ...services import paper_library as pl_service
 from ...services.paper_library import (
     claim_grounding,
@@ -48,6 +61,12 @@ from ...services.paper_library import (
     reranker,
     retriever,
 )
+from ...services.small_paper import (
+    build_extension_plan,
+    detect_repeat_risks,
+    extract_small_paper_card,
+)
+from ...services.small_paper import chapter_mapper as sp_chapter_mapper
 
 logger = logging.getLogger(__name__)
 
@@ -323,3 +342,129 @@ def ground_claims(project_id: str, body: ClaimGroundBatchRequest) -> ClaimGround
             )
         results.append(r)
     return ClaimGroundBatchResponse(results=results, total=len(results))
+
+
+# ===========================================================================
+# Session 49: Track B — 已有小论文扩展 (SmallPaper → Thesis)
+# ===========================================================================
+
+
+@router.post(
+    "/{project_id}/paper-library/small-paper/extract",
+    response_model=SmallPaperExtractResponse,
+)
+def small_paper_extract(
+    project_id: str, body: SmallPaperExtractRequest,
+) -> SmallPaperExtractResponse:
+    """抽小论文结构化卡片 (SmallPaperCard).
+
+    body: { paper_id, prefer?: auto | llm | heuristic }
+    resp: { paper_id, card, extraction_mode, extraction_confidence }
+
+    404: paper_id 不存在
+    500: 强制 LLM 但 LLM 不可用
+    """
+
+    try:
+        card = extract_small_paper_card(
+            project_id, body.paper_id, prefer=body.prefer,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        # LLMUnavailable 在 prefer=llm 时透传
+        from ...services.llm import LLMUnavailable as _LLMUnavail
+        if isinstance(exc, _LLMUnavail):
+            raise HTTPException(status_code=503, detail=f"LLM 不可用: {exc}")
+        logger.warning("small_paper_extract failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"extract failed: {exc}")
+
+    return SmallPaperExtractResponse(
+        paper_id=card.paper_id,
+        card=card,
+        extraction_mode=card.extraction_mode,
+        extraction_confidence=card.extraction_confidence,
+    )
+
+
+@router.post(
+    "/{project_id}/paper-library/small-paper/extension-plan",
+    response_model=SmallPaperExtensionPlanResponse,
+)
+def small_paper_extension_plan(
+    project_id: str, body: SmallPaperExtensionPlanRequest,
+) -> SmallPaperExtensionPlanResponse:
+    """生成大论文扩展规划 (ExtensionPlan).
+
+    body: { paper_id, target_chapter_count?: 5, prefer?: auto | heuristic }
+    resp: { paper_id, plan }
+
+    实现流程:
+    1) extract_small_paper_card 拿 card
+    2) chapter_mapper.map_chunks 拿 ChapterMapping 列表
+    3) extension_planner.build_extension_plan 拿 plan
+    4) repeat_risk.detect_repeat_risks → plan.reuse_risks
+
+    404: paper_id 不存在
+    """
+
+    try:
+        card = extract_small_paper_card(
+            project_id, body.paper_id, prefer=body.prefer,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        from ...services.llm import LLMUnavailable as _LLMUnavail
+        if isinstance(exc, _LLMUnavail):
+            raise HTTPException(status_code=503, detail=f"LLM 不可用: {exc}")
+        logger.warning("small_paper_extract for plan failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"extract failed: {exc}")
+
+    chunks = pl_service.get_paper_chunks(project_id, body.paper_id)
+    mappings = sp_chapter_mapper.map_chapters(chunks)
+    plan = build_extension_plan(
+        card, mappings,
+        paper_id=card.paper_id, project_id=project_id,
+        target_chapter_count=body.target_chapter_count,
+    )
+    risks = detect_repeat_risks(card, plan, mappings)
+    plan = plan.model_copy(update={"reuse_risks": [r.note for r in risks]})
+
+    return SmallPaperExtensionPlanResponse(paper_id=card.paper_id, plan=plan)
+
+
+@router.post(
+    "/{project_id}/paper-library/small-paper/repeat-risks",
+    response_model=SmallPaperRepeatRisksResponse,
+)
+def small_paper_repeat_risks(
+    project_id: str, body: SmallPaperRepeatRisksRequest,
+) -> SmallPaperRepeatRisksResponse:
+    """检测小论文被原样塞进大论文的重复风险.
+
+    body: { paper_id }
+    resp: { paper_id, risks: list[RepeatRiskWarning], risk_count }
+    """
+
+    try:
+        card = extract_small_paper_card(project_id, body.paper_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("small_paper_extract for risks failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"extract failed: {exc}")
+
+    chunks = pl_service.get_paper_chunks(project_id, body.paper_id)
+    mappings = sp_chapter_mapper.map_chapters(chunks)
+    # 构造空 plan 供 risk 推断 (无 extension)
+    from ...schemas_small_paper import ExtensionPlan as _EP
+    skeleton = _EP(
+        paper_id=card.paper_id, project_id=project_id,
+        covered_chapters=[m.thesis_chapter for m in mappings],
+        missing_chapters=[],
+    )
+    risks = detect_repeat_risks(card, skeleton, mappings)
+    return SmallPaperRepeatRisksResponse(
+        paper_id=card.paper_id, risks=risks, risk_count=len(risks),
+    )

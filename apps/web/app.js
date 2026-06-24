@@ -2577,3 +2577,168 @@ document.addEventListener("click", async (e) => {
     }
   }
 })();
+
+// Session 49: Track B (已有小论文) 入口 —— 切换显示 + 3 个按钮
+(function initTrackB() {
+  const goalEl = document.getElementById("input-goal");
+  const panel = document.getElementById("track-b-panel");
+  if (!goalEl || !panel) return;
+
+  function syncPanel() {
+    if (goalEl.value === "已有小论文") {
+      panel.hidden = false;
+    } else {
+      panel.hidden = true;
+    }
+  }
+  goalEl.addEventListener("change", syncPanel);
+  syncPanel();
+})();
+
+async function _trackBCall(path, body) {
+  const projectId = (typeof state !== "undefined" && state.projectId) || "";
+  if (!projectId) {
+    alert("先在分析页跑一次分析, 拿到 project_id");
+    return null;
+  }
+  const r = await fetch(`/api/v1/projects/${projectId}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error(`HTTP ${r.status}: ${txt.slice(0, 200)}`);
+  }
+  return r.json();
+}
+
+function _trackBRenderCard(data) {
+  const el = document.getElementById("track-b-card");
+  if (!el) return;
+  const card = data.card || {};
+  const c = card.contribution_points || [];
+  const mm = card.method_modules || [];
+  const ds = card.datasets || [];
+  const mt = card.metrics || [];
+  el.hidden = false;
+  el.innerHTML = `
+    <h3>小论文贡献卡片 <small>(mode=${data.extraction_mode}, conf=${data.extraction_confidence})</small></h3>
+    <p><b>标题</b>: ${card.title || "-"}</p>
+    <p><b>贡献点</b>: ${c.length ? "<ol><li>" + c.join("</li><li>") + "</li></ol>" : "(无)"}</p>
+    <p><b>方法</b>: ${mm.join(", ") || "-"}</p>
+    <p><b>数据集</b>: ${ds.join(", ") || "-"}</p>
+    <p><b>指标</b>: ${mt.join(", ") || "-"}</p>
+    <p><b>evidence_refs</b>: ${(card.evidence_refs || []).length} 条</p>
+  `;
+  const planBtn = document.getElementById("btn-track-b-plan");
+  const riskBtn = document.getElementById("btn-track-b-risks");
+  if (planBtn) planBtn.disabled = false;
+  if (riskBtn) riskBtn.disabled = false;
+}
+
+function _trackBRenderPlan(data) {
+  const el = document.getElementById("track-b-plan");
+  if (!el) return;
+  const plan = data.plan || {};
+  const exp = plan.extension_experiments || [];
+  const gap = plan.gap_analysis || [];
+  el.hidden = false;
+  el.innerHTML = `
+    <h3>大论文扩展规划</h3>
+    <p><b>已覆盖章节</b>: ${(plan.covered_chapters || []).join(", ") || "-"}</p>
+    <p><b>缺口章节</b>: ${(plan.missing_chapters || []).join(", ") || "-"}</p>
+    <p><b>缺口分析</b>: <ul>${gap.map((g) => "<li>" + g + "</li>").join("")}</ul></p>
+    <p><b>扩展实验 (${exp.length} 条)</b>:
+      <ol>${exp
+        .map(
+          (e) =>
+            "<li><b>" +
+            (e.title || "?") +
+            "</b> — " +
+            (e.description || "") +
+            " (fills: " +
+            (e.fills_chapter || "?") +
+            ", priority: " +
+            (e.priority || 3) +
+            ")</li>"
+        )
+        .join("")}</ol>
+    </p>
+    <p><b>第二工作包</b>: ${plan.second_work_package ? plan.second_work_package.title : "(无)"}</p>
+    <p><b>第三工作包</b>: ${plan.third_work_package ? plan.third_work_package.title : "(无)"}</p>
+    <p><b>重复风险</b>: <ul>${(plan.reuse_risks || []).map((r) => "<li>" + r + "</li>").join("") || "<li>(无)</li>"}</ul></p>
+  `;
+}
+
+function _trackBRenderRisks(data) {
+  const el = document.getElementById("track-b-risks");
+  if (!el) return;
+  const risks = data.risks || [];
+  el.hidden = false;
+  el.innerHTML = `
+    <h3>重复风险 (${risks.length} 条)</h3>
+    <ul>${risks
+      .map(
+        (r) =>
+          "<li><b>[" +
+          (r.severity || "?") +
+          "]</b> " +
+          (r.category || "?") +
+          ": " +
+          (r.note || "") +
+          "</li>"
+      )
+      .join("")}</ul>
+  `;
+}
+
+document.addEventListener("click", async (e) => {
+  const id = e.target && e.target.id;
+  if (id === "btn-track-b-extract") {
+    const paperId = document.getElementById("track-b-paper-id").value.trim();
+    if (!paperId) {
+      alert("先填 paper_id");
+      return;
+    }
+    try {
+      const data = await _trackBCall(
+        "/paper-library/small-paper/extract",
+        { paper_id: paperId, prefer: "auto" }
+      );
+      if (data) _trackBRenderCard(data);
+    } catch (err) {
+      alert("抽取失败: " + err.message);
+    }
+  } else if (id === "btn-track-b-plan") {
+    const paperId = document.getElementById("track-b-paper-id").value.trim();
+    if (!paperId) {
+      alert("先抽卡片");
+      return;
+    }
+    try {
+      const data = await _trackBCall(
+        "/paper-library/small-paper/extension-plan",
+        { paper_id: paperId, target_chapter_count: 5, prefer: "auto" }
+      );
+      if (data) _trackBRenderPlan(data);
+    } catch (err) {
+      alert("生成扩展规划失败: " + err.message);
+    }
+  } else if (id === "btn-track-b-risks") {
+    const paperId = document.getElementById("track-b-paper-id").value.trim();
+    if (!paperId) {
+      alert("先填 paper_id");
+      return;
+    }
+    try {
+      const data = await _trackBCall(
+        "/paper-library/small-paper/repeat-risks",
+        { paper_id: paperId }
+      );
+      if (data) _trackBRenderRisks(data);
+    } catch (err) {
+      alert("检测风险失败: " + err.message);
+    }
+  }
+});

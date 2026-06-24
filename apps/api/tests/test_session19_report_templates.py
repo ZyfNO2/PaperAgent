@@ -136,9 +136,10 @@ def test_08_list_templates_endpoint(client):
     assert r.status_code == 200
     body = r.json()
     assert "templates" in body
-    assert len(body["templates"]) == 3
+    assert len(body["templates"]) == 4  # default + engineering + cv_ai + paper_extension (S49)
     keys = [t["template_key"] for t in body["templates"]]
     assert "default" in keys
+    assert "paper_extension" in keys
     assert "engineering" in keys
     assert "cv_ai" in keys
     assert body["default_key"] == "default"

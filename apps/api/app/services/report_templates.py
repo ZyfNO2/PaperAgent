@@ -27,6 +27,8 @@ _TEMPLATE_FILES = {
     "default": "opening_report_default.md",
     "engineering": "opening_report_engineering.md",
     "cv_ai": "opening_report_cv_ai.md",
+    # Session 49: 已有小论文扩展 (Track B)
+    "paper_extension": "opening_report_paper_extension.md",
 }
 
 DEFAULT_TEMPLATE_KEY = "default"
@@ -228,3 +230,134 @@ def template_header_line(template_key: str | None) -> str:
 
     t = load_template(template_key)
     return f"> 报告模板: {t['name']} (`{t['template_key']}` v{t['version']})"
+
+
+# ---------- Session 49: paper_extension 模板渲染 ---------- #
+
+
+def render_paper_extension_sections(
+    *,
+    card: Any,
+    mappings: list[Any],
+    plan: Any,
+    risks: list[Any],
+    paper_excerpt: str = "",
+) -> dict[str, str]:
+    """渲染 paper_extension 模板的 6 个 placeholder 字段.
+
+    输入是 small_paper 服务的 Pydantic 模型 (避免循环 import, 用 Any).
+    返回: {placeholder_name: rendered_markdown, ...}
+    """
+
+    # 1) paper_info: 标题 + venue + publication_status
+    pub_status = getattr(card, "publication_status", "unknown") or "unknown"
+    venue = getattr(card, "venue", None) or "-"
+    paper_info = (
+        f"**标题**: {getattr(card, 'title', '(无标题)')}\n\n"
+        f"**发表状态**: {pub_status}\n\n"
+        f"**发表场所**: {venue}\n\n"
+        f"**paper_id**: `{getattr(card, 'paper_id', '')}`"
+    )
+
+    # 2) contributions: 贡献点 + 方法 + 数据集 + 指标
+    contrib_lines: list[str] = []
+    pts = getattr(card, "contribution_points", []) or []
+    for i, c in enumerate(pts, 1):
+        contrib_lines.append(f"{i}. {c}")
+    if not contrib_lines:
+        contrib_lines = ["(未抽取出贡献点, 抽取置信度 %.2f)" % getattr(card, "extraction_confidence", 0.0)]
+    methods = getattr(card, "method_modules", []) or []
+    datasets = getattr(card, "datasets", []) or []
+    metrics = getattr(card, "metrics", []) or []
+    contrib_md = "\n".join(contrib_lines) + "\n\n"
+    contrib_md += f"**方法模块**: {', '.join(methods) if methods else '-'}\n\n"
+    contrib_md += f"**数据集**: {', '.join(datasets) if datasets else '-'}\n\n"
+    contrib_md += f"**评价指标**: {', '.join(metrics) if metrics else '-'}"
+
+    # 3) chapter_mappings: 表格
+    map_lines = [
+        "| 小论文章节 | 大论文章节 | 复用方式 | 备注 |",
+        "|---|---|---|---|",
+    ]
+    for m in (mappings or []):
+        map_lines.append(
+            f"| {getattr(m, 'small_paper_section', '-')} "
+            f"| {getattr(m, 'thesis_chapter', '-')} "
+            f"| {getattr(m, 'reuse_type', '-')} "
+            f"| {getattr(m, 'note', '') or '-'} |"
+        )
+    if len(map_lines) == 2:
+        map_lines.append("| (无映射) | - | - | - |")
+    chapter_md = "\n".join(map_lines)
+
+    # 4) gap_analysis
+    gap_md = "\n".join(f"- {g}" for g in (getattr(plan, "gap_analysis", []) or [])) or "- (无)"
+
+    # 5) extension_experiments
+    exp_lines: list[str] = []
+    for e in (getattr(plan, "extension_experiments", []) or []):
+        exp_lines.append(
+            f"### {getattr(e, 'experiment_id', '?')}: {getattr(e, 'title', '')}\n\n"
+            f"- 描述: {getattr(e, 'description', '')}\n"
+            f"- 数据集: {', '.join(getattr(e, 'datasets', []) or []) or '-'}\n"
+            f"- Baselines: {', '.join(getattr(e, 'baselines', []) or []) or '-'}\n"
+            f"- 工作量: {getattr(e, 'estimated_effort', 'medium')}\n"
+            f"- 优先级: {getattr(e, 'priority', 3)}\n"
+            f"- 补章节: {getattr(e, 'fills_chapter', '?')}"
+        )
+    exp_md = "\n\n".join(exp_lines) or "(无扩展实验建议)"
+
+    # 6) repeat_risks
+    risk_lines: list[str] = []
+    for r in (risks or []):
+        risk_lines.append(
+            f"- **[{getattr(r, 'severity', '?')}]** {getattr(r, 'category', '?')}: "
+            f"{getattr(r, 'note', '')}"
+            + (f" (related: {getattr(r, 'related_section', '')})" if getattr(r, 'related_section', None) else "")
+        )
+    risk_md = "\n".join(risk_lines) or "- (无明显重复风险)"
+
+    # 7) work_packages
+    wp_lines: list[str] = []
+    swp = getattr(plan, "second_work_package", None)
+    twp = getattr(plan, "third_work_package", None)
+    if swp:
+        wp_lines.append(
+            f"### WP2: {getattr(swp, 'title', '')}\n\n"
+            f"- 目标: {getattr(swp, 'goal', '')}\n"
+            f"- 交付物: {getattr(swp, 'deliverable', '')}\n"
+            f"- 依赖: {', '.join(getattr(swp, 'dependencies', []) or []) or '-'}\n"
+            f"- 工作量: {getattr(swp, 'estimated_effort', 'medium')}"
+        )
+    if twp:
+        wp_lines.append(
+            f"### WP3: {getattr(twp, 'title', '')}\n\n"
+            f"- 目标: {getattr(twp, 'goal', '')}\n"
+            f"- 交付物: {getattr(twp, 'deliverable', '')}\n"
+            f"- 依赖: {', '.join(getattr(twp, 'dependencies', []) or []) or '-'}\n"
+            f"- 工作量: {getattr(twp, 'estimated_effort', 'medium')}"
+        )
+    wp_md = "\n\n".join(wp_lines) or "(无第二/第三工作包)"
+
+    # 8) chunk_refs
+    refs = getattr(card, "evidence_refs", []) or []
+    chunk_md = (
+        f"已挂载 chunk evidence: {len(refs)} 条\n\n"
+        + (f"- IDs: {', '.join(refs)}" if refs else "- (本卡未挂载 chunk evidence)")
+        + (f"\n\n**论文摘要片段**:\n\n> {paper_excerpt[:300]}..." if paper_excerpt else "")
+    )
+
+    # 9) thesis_outline
+    outline_md = "\n".join(f"- {line}" for line in (getattr(plan, "thesis_outline", []) or [])) or "- (无)"
+
+    return {
+        "paper_info": paper_info,
+        "contributions": contrib_md,
+        "chapter_mappings": chapter_md,
+        "gap_analysis": gap_md,
+        "extension_experiments": exp_md,
+        "repeat_risks": risk_md,
+        "work_packages": wp_md,
+        "chunk_refs": chunk_md,
+        "thesis_outline": outline_md,
+    }
