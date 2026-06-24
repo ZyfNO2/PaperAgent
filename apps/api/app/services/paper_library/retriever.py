@@ -240,20 +240,45 @@ def _accepted_paper_ids(project_id: str) -> set[str]:
     return out
 
 
+def _rejected_chunk_ids(project_id: str) -> set[str]:
+    """从 Evidence Ledger 找 review_status=rejected 的 paper_library_chunk 的 chunk_id.
+
+    这些 chunk 在任何 scope 下都不应被返回 (Session 48 Task 6: rejected 不引用).
+    """
+
+    try:
+        chunks = ev_store.list_paper_library_chunks(project_id)
+    except Exception:  # noqa: BLE001
+        return set()
+    return {
+        e.chunk_id
+        for e in chunks
+        if e.review_status == "rejected"
+        and bool(e.chunk_id)
+    }
+
+
 def _filter_by_scope(
     chunks_index: dict[str, dict],
     project_id: str,
     scope: AskScope,
     paper_ids: list[str] | None,
 ) -> dict[str, dict]:
-    """按 scope 过滤 chunks."""
+    """按 scope 过滤 chunks (chunk-level enforcement, Session 48)."""
+
+    # 1) 永远过滤掉 rejected 的 chunk (任何 scope 都不返回)
+    rejected_cids = _rejected_chunk_ids(project_id)
+    base = {
+        cid: meta for cid, meta in chunks_index.items()
+        if cid not in rejected_cids
+    }
 
     if scope == "all_papers":
-        return chunks_index
+        return base
     if scope == "specific":
         if not paper_ids:
             return {}
-        return {cid: meta for cid, meta in chunks_index.items() if meta.get("paper_id") in paper_ids}
+        return {cid: meta for cid, meta in base.items() if meta.get("paper_id") in paper_ids}
     if scope == "accepted_papers":
         # accepted_papers 通过 ledger 找 arxiv_id, 然后匹配 chunks 的 paper_id
         try:
@@ -271,11 +296,11 @@ def _filter_by_scope(
             rec = storage.load_record(project_id, pid)
             if rec and rec.arxiv_id and rec.arxiv_id in accepted_arxiv:
                 # 通过 paper_id 过滤
-                for cid, meta in chunks_index.items():
+                for cid, meta in base.items():
                     if meta.get("paper_id") == pid:
                         out[cid] = meta
         return out
-    return chunks_index
+    return base
 
 
 # ---------------------------------------------------------------------------

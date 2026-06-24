@@ -11,13 +11,15 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-EvidenceType = Literal["paper", "dataset", "repo", "note", "custom"]
-SourceMode = Literal["auto_search", "manual", "upload", "import", "assistant_intake"]
+EvidenceType = Literal["paper", "dataset", "repo", "note", "custom", "paper_library_chunk"]
+SourceMode = Literal["auto_search", "manual", "upload", "import", "assistant_intake", "paper_rag"]
 ReviewStatus = Literal["pending", "accepted", "core", "background", "rejected", "needs_check"]
 WorkspaceLane = Literal["user_preferred", "system_found", "selected", "rejected"]
-RawInputType = Literal["url", "text", "github", "dataset_page", "paper_page", "image", "pdf"]
+RawInputType = Literal["url", "text", "github", "dataset_page", "paper_page", "image", "pdf", "paper_chunk"]
 VerificationStatus = Literal["unverified", "verified", "failed", "partial", "skipped"]
 VerificationSource = Literal["http", "arxiv", "openalex", "github", "huggingface", "kaggle", "manual", "none"]
+# Session 48: paper_library_chunk 引用类型
+SupportType = Literal["direct", "indirect", "background", "contradiction"]
 
 
 def _utcnow() -> datetime:
@@ -166,6 +168,14 @@ class EvidenceItem(BaseModel):
     from_material_id: str | None = None
     parse_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
     page_refs: list[str] = Field(default_factory=list)
+
+    # Session 48 §3.1: paper_library_chunk 类型扩展 (向后兼容, 全 Optional)
+    paper_id: str | None = None
+    chunk_id: str | None = None
+    page_start: int | None = None
+    page_end: int | None = None
+    quote: str | None = Field(default=None, max_length=2000)
+    support_type: SupportType | None = None
 
 
 # ---------- Session 10: Verification 模型 (§4.2) ---------- #

@@ -84,6 +84,8 @@ def _summary(project_id: str) -> EvidenceLedgerResponse:
     datasets = [e for e in proj.items.values() if e.evidence_type == "dataset"]
     repos = [e for e in proj.items.values() if e.evidence_type == "repo"]
     notes = [e for e in proj.items.values() if e.evidence_type in ("note", "custom")]
+    # Session 48: paper_library_chunk 类型 (论文库 chunk 引用, 与 paper 区分, 不计入 paper_count)
+    paper_chunks = [e for e in proj.items.values() if e.evidence_type == "paper_library_chunk"]
     accepted = sum(1 for e in proj.items.values() if e.review_status in ("accepted", "core"))
     core = sum(1 for e in proj.items.values() if e.review_status == "core")
     rejected = sum(1 for e in proj.items.values() if e.review_status == "rejected")
@@ -368,6 +370,103 @@ def add_repo_manual(project_id: str, body: RepoManualCreate) -> EvidenceActionRe
         ledger_summary=_summary(project_id),
         message="仓库已入池",
     )
+
+
+# ---------- Session 48: paper_library_chunk 入池 (Task 2) ---------- #
+
+
+def add_paper_library_chunk(
+    project_id: str,
+    *,
+    paper_id: str,
+    chunk_id: str,
+    title: str,
+    quote: str | None = None,
+    page_start: int | None = None,
+    page_end: int | None = None,
+    support_type: str | None = None,
+    review_status: str = "pending",
+    url: str | None = None,
+    arxiv_id: str | None = None,
+    tags: list[str] | None = None,
+    verification_status: str = "unverified",
+    verification_confidence: float | None = None,
+    extra_tags: list[str] | None = None,
+) -> EvidenceActionResponse:
+    """把 RAG 命中 chunk 写入 Evidence Ledger, type=paper_library_chunk.
+
+    去重: chunk_id 相同 → 跳过, 返回已存在的 evidence_id.
+    默认 review_status=pending (RAG 自动产生待审核).
+    默认 tag=paper_rag, 配合 extra_tags 组合 (如 ["paper_rag", "paper_library"]).
+    """
+
+    proj = _get_project(project_id)
+    # chunk_id 去重 (RAG 反复命中同一 chunk 只入池一次)
+    for existing in proj.items.values():
+        if (
+            existing.evidence_type == "paper_library_chunk"
+            and existing.chunk_id == chunk_id
+            and existing.paper_id == paper_id
+        ):
+            return EvidenceActionResponse(
+                ok=False, evidence_id=existing.evidence_id, evidence=existing,
+                ledger_summary=_summary(project_id),
+                message=f"chunk_id {chunk_id} (paper={paper_id}) 已存在, 跳过重复入池",
+            )
+    eid = f"rag_chunk_{uuid.uuid4().hex[:10]}"
+    merged_tags = list(tags or [])
+    if "paper_rag" not in merged_tags:
+        merged_tags.append("paper_rag")
+    if extra_tags:
+        for t in extra_tags:
+            if t and t not in merged_tags:
+                merged_tags.append(t)
+    item = EvidenceItem(
+        evidence_id=eid, project_id=project_id,
+        evidence_type="paper_library_chunk", source_mode="paper_rag",
+        title=title or f"chunk:{chunk_id}",
+        url=url, arxiv_id=arxiv_id,
+        paper_id=paper_id, chunk_id=chunk_id,
+        page_start=page_start, page_end=page_end,
+        quote=quote, support_type=support_type,  # type: ignore[arg-type]
+        review_status=review_status,  # type: ignore[arg-type]
+        verification_status=verification_status,  # type: ignore[arg-type]
+        verification_confidence=verification_confidence,
+        tags=merged_tags,
+        workspace_lane="system_found",
+        created_by_skill="paper-rag-query",
+    )
+    proj.items[eid] = item
+    return EvidenceActionResponse(
+        ok=True, evidence_id=eid, evidence=item,
+        ledger_summary=_summary(project_id),
+        message="paper_library_chunk 已入池",
+    )
+
+
+def find_paper_library_chunk(
+    project_id: str,
+    paper_id: str,
+    chunk_id: str,
+) -> EvidenceItem | None:
+    """按 paper_id + chunk_id 查 ledger 中的 chunk evidence."""
+
+    proj = _get_project(project_id)
+    for e in proj.items.values():
+        if (
+            e.evidence_type == "paper_library_chunk"
+            and e.paper_id == paper_id
+            and e.chunk_id == chunk_id
+        ):
+            return e
+    return None
+
+
+def list_paper_library_chunks(project_id: str) -> list[EvidenceItem]:
+    """列出 project 全部 paper_library_chunk 类 evidence."""
+
+    proj = _get_project(project_id)
+    return [e for e in proj.items.values() if e.evidence_type == "paper_library_chunk"]
 
 
 # ---------- 审核 / 删除 ---------- #

@@ -4,6 +4,7 @@ build_context: 拼 chunks 为 LLM context
 answer_with_llm: 调 services/llm.chat_json, 解析 evidence_refs/unsupported_claims
 fallback_answer: LLM 失败时返回纯检索结果
 compute_confidence: supported_claim_count / total_claim_count (heuristic)
+write_answer_to_ledger: Session 48 Task 2 — 把 answer.evidence_refs 写入 Evidence Ledger
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ import re
 from typing import Any
 
 from ...schemas_paper_rag import EvidenceRef, PaperRAGAnswer, RetrievalMode, SupportType
+from .. import evidence as ev_store
 from .. import llm
 from . import storage
 
@@ -274,10 +276,105 @@ def load_paper_titles(project_id: str, paper_ids: list[str]) -> dict[str, str]:
     return out
 
 
+# ---------------------------------------------------------------------------
+# Session 48 Task 2: RAG answer → Evidence Ledger write-back
+# ---------------------------------------------------------------------------
+
+
+def write_answer_to_ledger(project_id: str, answer: PaperRAGAnswer) -> list[str]:
+    """把 PaperRAGAnswer.evidence_refs 写入 Evidence Ledger.
+
+    每条 ref → EvidenceItem(evidence_type=paper_library_chunk, review_status=pending,
+    tag=paper_rag). chunk_id 已存在 → 跳过 (RAG 反复命中同一 chunk).
+
+    Returns: list of evidence_id (新建的).
+    """
+
+    if not answer.evidence_refs:
+        return []
+    created: list[str] = []
+    for ref in answer.evidence_refs:
+        if not ref.chunk_id:
+            continue
+        # 标题: 优先用 paper_title, 否则用 ref.paper_id
+        rec = storage.load_record(project_id, ref.paper_id)
+        title = rec.title if rec else f"paper:{ref.paper_id}"
+        try:
+            resp = ev_store.add_paper_library_chunk(
+                project_id,
+                paper_id=ref.paper_id,
+                chunk_id=ref.chunk_id,
+                title=title,
+                quote=ref.quote or None,
+                page_start=ref.page_start,
+                page_end=ref.page_end,
+                support_type=ref.support_type,
+                review_status="pending",
+                url=(rec.url if rec else None),
+                arxiv_id=(rec.arxiv_id if rec else None),
+                tags=["paper_rag", "paper_library_chunk"],
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("add_paper_library_chunk failed for %s/%s: %s", ref.paper_id, ref.chunk_id, exc)
+            continue
+        if resp.ok and resp.evidence_id:
+            created.append(resp.evidence_id)
+    return created
+
+
+# ---------------------------------------------------------------------------
+# Session 48 Task 6: 引用规则强制 — 在 evidence_refs 上执行 rejected / pending / failed 检查
+# ---------------------------------------------------------------------------
+
+
+def filter_refs_by_citation_rules(
+    project_id: str,
+    refs: list[EvidenceRef],
+) -> tuple[list[EvidenceRef], list[str]]:
+    """按 Evidence Ledger 状态 + 引用规则过滤 refs.
+
+    Rules:
+    - rejected: 从输出中移除 (citation 规则)
+    - pending: 仅保留 support_type=background, 其他降级 / 移除
+    - failed verification: 移除 direct/indirect, 仅保留 background
+    - 论文库 chunk 不在 ledger 中 → 视为 pending (RAG 刚产生还没写)
+
+    Returns: (filtered_refs, warnings)
+    """
+
+    out: list[EvidenceRef] = []
+    warnings: list[str] = []
+    for ref in refs:
+        item = ev_store.find_paper_library_chunk(project_id, ref.paper_id, ref.chunk_id)
+        rs = item.review_status if item else "pending"
+        vs = item.verification_status if item else "unverified"
+        if rs == "rejected":
+            warnings.append(
+                f"chunk {ref.chunk_id} (paper={ref.paper_id}) rejected → 已移除"
+            )
+            continue
+        if rs == "pending" and ref.support_type == "direct":
+            warnings.append(
+                f"chunk {ref.chunk_id} (paper={ref.paper_id}) pending → "
+                f"direct 降级为 background"
+            )
+            ref = ref.model_copy(update={"support_type": "background"})
+        if vs == "failed" and ref.support_type in ("direct", "indirect"):
+            warnings.append(
+                f"chunk {ref.chunk_id} (paper={ref.paper_id}) verification failed → "
+                f"{ref.support_type} 降级为 background"
+            )
+            ref = ref.model_copy(update={"support_type": "background"})
+        out.append(ref)
+    return out, warnings
+
+
 __all__ = [
     "answer_with_llm",
     "build_context",
     "compute_confidence",
     "fallback_answer",
+    "filter_refs_by_citation_rules",
     "load_paper_titles",
+    "write_answer_to_ledger",
 ]

@@ -1,4 +1,4 @@
-"""Paper Library API (Session 46 + Session 47).
+"""Paper Library API (Session 46 + Session 47 + Session 48).
 
 Session 46 4 端点:
 - POST /api/v1/projects/{project_id}/paper-library/arxiv
@@ -9,6 +9,9 @@ Session 46 4 端点:
 Session 47 新增 2 端点 (Paper RAG):
 - POST /api/v1/projects/{project_id}/paper-library/{paper_id}/index
 - POST /api/v1/projects/{project_id}/paper-library/ask
+
+Session 48 新增 1 端点 (Claim Grounding):
+- POST /api/v1/projects/{project_id}/paper-library/ground-claims
 """
 
 from __future__ import annotations
@@ -17,6 +20,11 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 
+from ...schemas_claim_grounding import (
+    ClaimGroundBatchRequest,
+    ClaimGroundBatchResponse,
+    ClaimGroundingResult,
+)
 from ...schemas_paper_library import (
     ArxivIngestRequest,
     ArxivIngestResponse,
@@ -33,7 +41,13 @@ from ...schemas_paper_rag import (
     PaperRAGAskRequest,
 )
 from ...services import paper_library as pl_service
-from ...services.paper_library import indexer, paper_qa, reranker, retriever
+from ...services.paper_library import (
+    claim_grounding,
+    indexer,
+    paper_qa,
+    reranker,
+    retriever,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -254,4 +268,58 @@ def ask_paper_library(project_id: str, body: PaperRAGAskRequest) -> PaperRAGAnsw
         logger.info("paper_qa LLM fallback (reason=%s)", exc)
         answer = paper_qa.fallback_answer(question, top_chunks)
 
+    # 5.5) Session 48 Task 2 + Task 6: 把 evidence_refs 写回 Evidence Ledger
+    #       + 应用引用规则 (rejected 移除 / pending direct 降级 / failed 降级)
+    try:
+        # 引用规则
+        filtered_refs, _warnings = paper_qa.filter_refs_by_citation_rules(project_id, answer.evidence_refs)
+        answer = answer.model_copy(update={"evidence_refs": filtered_refs})
+        # 写 ledger (chunk_id 去重, 失败不影响 answer)
+        if filtered_refs:
+            paper_qa.write_answer_to_ledger(project_id, answer)
+    except Exception as exc:  # noqa: BLE001
+        logger.info("paper_qa write-to-ledger failed (non-fatal): %s", exc)
+
     return answer
+
+
+# ===========================================================================
+# Session 48: Claim Grounding
+# ===========================================================================
+
+
+@router.post(
+    "/{project_id}/paper-library/ground-claims",
+    response_model=ClaimGroundBatchResponse,
+)
+def ground_claims(project_id: str, body: ClaimGroundBatchRequest) -> ClaimGroundBatchResponse:
+    """对一批 report claim 调 ground_claim, 返回 grounding 判定.
+
+    body: { claims: [...], scope?, paper_ids?, top_k? }
+    resp: { results: ClaimGroundingResult[], total }
+    """
+
+    if not body.claims:
+        raise HTTPException(status_code=400, detail="claims 不能为空")
+    results: list[ClaimGroundingResult] = []
+    for claim in body.claims:
+        c = (claim or "").strip()
+        if not c:
+            continue
+        try:
+            r = claim_grounding.ground_claim(
+                claim=c,
+                project_id=project_id,
+                scope=body.scope,
+                paper_ids=body.paper_ids,
+                top_k=body.top_k,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("ground_claim failed for %r: %s", c[:60], exc)
+            r = ClaimGroundingResult(
+                claim=c, status="unsupported", verdict="unsupported",
+                confidence=0.0, reason=f"ground_claim exception: {exc}",
+                retrieval_mode="fallback",
+            )
+        results.append(r)
+    return ClaimGroundBatchResponse(results=results, total=len(results))
