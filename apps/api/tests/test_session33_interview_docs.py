@@ -40,6 +40,7 @@ REQUIRED_FILES = [
     "Deep_Dive_QA_MCP.md",
     "AutoResearchClaw_对标与小型化移植.md",
     "面经全解_2026.md",
+    "Deep_Dive_QA_2026新热点.md",
 ]
 
 
