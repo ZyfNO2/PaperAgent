@@ -1,0 +1,29 @@
+KG-Link: Temporal Knowledge Graph Link Prediction with Hierarchical Attention
+
+## 1 Introduction
+
+Knowledge graphs (KGs) represent facts as (head, relation, tail) triples. Many real-world KGs are temporal: facts have timestamps, and relations change over time. Predicting missing links in temporal KGs is crucial for applications like question answering and event forecasting. We propose KG-Link, a hierarchical attention model that captures both local triple structure and global temporal patterns. Our approach addresses two challenges: sparsity of recurring relations and noise in time annotations.
+
+## 2 Related Work
+
+Static KG link prediction methods (TransE, RotatE, ConvE) ignore temporal information. Temporal KG models can be grouped into three families: tensor decomposition (TNTComplEx), sequence-based (RE-NET, CyGNet), and reinforcement learning-based (TAgent). Recent work has explored transformer architectures for temporal KGs (TANGO, TempoQR). Our approach combines sequence-based reasoning with hierarchical attention.
+
+## 3 Method
+
+KG-Link has three components. The first is a triple encoder using RotatE, which represents entities and relations as complex vectors and models relations as rotations in complex space. The second is a temporal transformer that aggregates historical facts of an entity across time, using multi-head self-attention with rotary position embeddings to encode relative time. The third is a hierarchical attention layer that combines local triple scoring with global temporal context.
+
+The model is trained with a multi-class negative sampling loss, where each positive (h, r, t, τ) is contrasted with 50 negative tails sampled from the same timestamp. We use the Adam optimizer with learning rate 1e-3, embedding dimension 256, and 4 attention heads.
+
+## 4 Experiment
+
+We evaluate KG-Link on four standard temporal KG benchmarks: ICEWS14 (7k entities, 230 relations, 90k facts), ICEWS05-15 (10k entities, 251 relations, 461k facts), WIKIDATA12k (12k entities, 24 relations, 50k facts), and YAGO3-10 (12k entities, 37 relations, 110k facts). We follow the standard time-based split (80%/10%/10%).
+
+Baselines include TransE, RotatE, TNTComplEx, RE-NET, and TANGO. We report Mean Reciprocal Rank (MRR) and Hits@1/3/10. All models are trained for 100 epochs with early stopping on validation MRR.
+
+## 5 Result
+
+KG-Link achieves MRR of 0.624 on ICEWS14, 0.512 on ICEWS05-15, 0.487 on WIKIDATA12k, and 0.591 on YAGO3-10, outperforming the strongest baseline TANGO by 2.7%, 3.4%, 1.8%, and 2.1% MRR respectively. The temporal transformer contributes the most to the improvement, adding 4-6% MRR, while hierarchical attention adds 1-2% MRR. The model is robust to noise: with 10% randomly perturbed timestamps, MRR drops by less than 1.5%.
+
+## 6 Conclusion
+
+KG-Link combines triple-level reasoning with temporal attention for temporal KG link prediction. The model achieves state-of-the-art results on four benchmarks while remaining robust to time annotation noise. Future work will explore integration with large language models for zero-shot link prediction and uncertainty estimation over time.

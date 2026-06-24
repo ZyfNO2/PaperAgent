@@ -47,7 +47,9 @@
             目标档位
             <select id="input-goal">
               <option value="保毕业" selected>保毕业</option>
-              <option value="已有小论文">已有小论文</option>
+              <option value="稳中求新">稳中求新</option>
+              <option value="冲高水平">冲高水平</option>
+              <option value="已有小论文">已有小论文 (Track B)</option>
             </select>
           </label>
           <label>
@@ -63,6 +65,31 @@
         <button class="cta-primary" id="btn-analyze" type="button">🚀 开始判断能不能做</button>
         <div class="input-card__error" id="input-error" hidden></div>
       </div>
+
+      <!-- Session 49: Track B (已有小论文) 入口 -->
+      <section class="track-b" id="track-b-panel" hidden>
+        <header class="block__head">
+          <span class="block__num">B</span>
+          <h2 class="block__title">Track B · 已有小论文扩展</h2>
+        </header>
+        <div class="block__body">
+          <p class="input-card__hint">
+            上传 / 检索你的小论文 PDF, 系统抽取贡献、映射章节、检测缺口、规划扩展实验与第二/第三工作包.
+          </p>
+          <div class="track-b__row">
+            <label>
+              论文 paper_id
+              <input id="track-b-paper-id" type="text" placeholder="paper_ax_xxx 或 paper_up_xxx" />
+            </label>
+            <button class="cta-primary" id="btn-track-b-extract" type="button">抽取小论文卡片</button>
+            <button class="btn" id="btn-track-b-plan" type="button" disabled>生成扩展规划</button>
+            <button class="btn" id="btn-track-b-risks" type="button" disabled>检测重复风险</button>
+          </div>
+          <div id="track-b-card" class="track-b__card" hidden></div>
+          <div id="track-b-plan" class="track-b__card" hidden></div>
+          <div id="track-b-risks" class="track-b__card" hidden></div>
+        </div>
+      </section>
 
       <section class="result-grid" id="result-grid" hidden>
         <article class="block block--understanding">

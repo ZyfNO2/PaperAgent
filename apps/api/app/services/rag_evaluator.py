@@ -7,6 +7,16 @@
 - Evidence Precision = 引用了 evidence 的章节中, evidence 是 accepted/core 的比例
 - URL Verified Rate = url_verified=True 的比例
 - Candidate → Evidence Rate = imported/imported_total
+
+注意 (S50 关系):
+- S34 是 metadata-level RAG 评估: 评估对象是 RetrievalCandidate (论文/数据集/仓库/笔记) 的
+  检索质量与 Evidence Ledger 覆盖率, 用于 RAG 检索 skill 的端到端验证.
+- S50 是 paper-library level RAG 评估: 评估对象是 paper chunk 切块 + paper_qa 问答
+  (apps/api/app/services/paper_library/eval_metrics.py), 用于论文库问答系统的回归基线.
+- 两者不共享代码 (并行存在): S34 操作 RetrievalCandidate 列表 + Evidence Ledger,
+  S50 操作 PaperChunk 列表 + ground truth question set + baseline.json.
+- 如需统一, 应抽取一个公共层 (chunk/candidate 中间抽象), 但当前 S50 fixture 与 S34 metadata
+  schema 不同, 重构成本 > 收益, 故保持并行.
 """
 
 from __future__ import annotations
