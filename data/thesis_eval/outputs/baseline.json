@@ -1,0 +1,63 @@
+{
+  "subset": "smoke_20",
+  "aggregate_metrics": {
+    "task1": {
+      "url_fidelity_rate": 1.0,
+      "title_extract_rate": 1.0,
+      "year_extract_rate": 0.05,
+      "degrade_correct_rate": 1.0,
+      "thresholds": {
+        "url_fidelity": 0.98,
+        "title": 0.95,
+        "year": 0.9,
+        "degrade": 0.95
+      }
+    },
+    "task2": {
+      "macro_f1": 0.7111,
+      "data_risk_recall": 0.6,
+      "hw_risk_recall": 1.0,
+      "h100_misjudge_rate": 0.0,
+      "thresholds": {
+        "macro_f1": 0.75,
+        "data_risk_recall": 0.85,
+        "hw_risk_recall": 0.85,
+        "h100_misjudge": 0.05
+      }
+    },
+    "task3": {
+      "difficulty_acc": 0.55,
+      "difficulty_adjacent_acc": 0.85,
+      "cycle_adjacent_acc": 0.85,
+      "high_risk_recall": 0.8182,
+      "thresholds": {
+        "difficulty": 0.7,
+        "adjacent": 0.9,
+        "cycle_adjacent": 0.85,
+        "high_risk_recall": 0.85
+      }
+    },
+    "task4": {
+      "support_ratio": 1.0,
+      "hallucination_rate": 0.0,
+      "degradation_rate": 1.0,
+      "human_review_rate": 0.7857,
+      "thresholds": {
+        "support": 0.85,
+        "hallucination": 0.05,
+        "degradation": 0.8,
+        "human_review": 0.9
+      }
+    },
+    "key_metrics": {
+      "hallucination_rate": 0.0,
+      "url_fidelity_rate": 1.0,
+      "support_ratio": 1.0
+    }
+  },
+  "key_metrics": {
+    "hallucination_rate": 0.0,
+    "url_fidelity_rate": 1.0,
+    "support_ratio": 1.0
+  }
+}
