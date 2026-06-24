@@ -206,6 +206,13 @@ def ingest_arxiv(project_id: str, arxiv_id_or_url: str) -> IngestOutcome:
         record.evidence_id = evidence_id
         storage.save_paper_record(record)
 
+    # Session 47: 入库后自动建索引 (best-effort, 失败只 log 不报错)
+    try:
+        from . import indexer
+        indexer.build_index(project_id, paper_ids=[paper_id])
+    except Exception as exc:  # noqa: BLE001
+        logger.info("auto-index after arxiv ingest skipped: %s", exc)
+
     return IngestOutcome(
         paper_id=paper_id,
         parse_status=parse_status,
@@ -303,6 +310,13 @@ def ingest_upload(
     if evidence_id:
         record.evidence_id = evidence_id
         storage.save_paper_record(record)
+
+    # Session 47: 入库后自动建索引 (best-effort, 失败只 log 不报错)
+    try:
+        from . import indexer
+        indexer.build_index(project_id, paper_ids=[paper_id])
+    except Exception as exc:  # noqa: BLE001
+        logger.info("auto-index after upload ingest skipped: %s", exc)
 
     return IngestOutcome(
         paper_id=paper_id,

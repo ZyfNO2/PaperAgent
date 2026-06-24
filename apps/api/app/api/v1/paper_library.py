@@ -1,10 +1,14 @@
-"""Paper Library API (Session 46).
+"""Paper Library API (Session 46 + Session 47).
 
-4 个端点:
+Session 46 4 端点:
 - POST /api/v1/projects/{project_id}/paper-library/arxiv
 - POST /api/v1/projects/{project_id}/paper-library/upload
 - GET  /api/v1/projects/{project_id}/paper-library
 - GET  /api/v1/projects/{project_id}/paper-library/{paper_id}
+
+Session 47 新增 2 端点 (Paper RAG):
+- POST /api/v1/projects/{project_id}/paper-library/{paper_id}/index
+- POST /api/v1/projects/{project_id}/paper-library/ask
 """
 
 from __future__ import annotations
@@ -22,7 +26,14 @@ from ...schemas_paper_library import (
     PaperDetailResponse,
     PaperListResponse,
 )
+from ...schemas_paper_rag import (
+    PaperIndexRequest,
+    PaperIndexResponse,
+    PaperRAGAnswer,
+    PaperRAGAskRequest,
+)
 from ...services import paper_library as pl_service
+from ...services.paper_library import indexer, paper_qa, reranker, retriever
 
 logger = logging.getLogger(__name__)
 
@@ -133,3 +144,114 @@ def get_paper_detail(project_id: str, paper_id: str) -> PaperDetailResponse:
         full_text_excerpt=excerpt[:1500] if excerpt else "",
         chunk_total=len(chunks),
     )
+
+
+# ===========================================================================
+# Session 47: Paper RAG — Index + Ask
+# ===========================================================================
+
+
+@router.post(
+    "/{project_id}/paper-library/{paper_id}/index",
+    response_model=PaperIndexResponse,
+)
+def index_paper(project_id: str, paper_id: str, body: PaperIndexRequest | None = None) -> PaperIndexResponse:
+    """为指定 paper (或整个 project) 建 embedding 索引.
+
+    body.force=true 时强制重建 (忽略已索引).
+    """
+
+    force = bool(body.force) if body else False
+    try:
+        result = indexer.build_index(project_id, paper_ids=[paper_id], force=force)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("build_index failed for %s: %s", paper_id, exc)
+        raise HTTPException(status_code=500, detail=f"index failed: {exc}")
+    return PaperIndexResponse(
+        paper_id=paper_id,
+        chunk_count=int(result.get("chunk_count", 0)),
+        indexed=int(result.get("indexed", 0)),
+        skipped=int(result.get("skipped", 0)),
+        duration_ms=int(result.get("duration_ms", 0)),
+    )
+
+
+@router.post(
+    "/{project_id}/paper-library/ask",
+    response_model=PaperRAGAnswer,
+)
+def ask_paper_library(project_id: str, body: PaperRAGAskRequest) -> PaperRAGAnswer:
+    """Paper RAG 问答: query rewrite → retrieve → rerank → LLM → answer.
+
+    LLM 失败: 自动 fallback (retrieval_mode=fallback, confidence=0).
+    无命中: 明说"未在论文库中找到证据".
+    """
+
+    question = body.question.strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="question 不能为空")
+
+    # 1) 检索
+    try:
+        hits = retriever.retrieve(
+            project_id=project_id,
+            question=question,
+            scope=body.scope,
+            paper_ids=body.paper_ids,
+            top_k=body.top_k,
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("retrieve failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"retrieve failed: {exc}")
+
+    idx = indexer.load_index(project_id)
+    chunks_index = idx.get("chunks", {})
+
+    # 2) 还原 chunk 元数据 + 计算 paper year lookup
+    raw_chunks: list[dict] = []
+    paper_year_lookup: dict[str, int | None] = {}
+    for cid, _score in hits:
+        meta = chunks_index.get(cid)
+        if not meta:
+            continue
+        meta = dict(meta)
+        meta["chunk_id"] = cid
+        raw_chunks.append(meta)
+        pid = meta.get("paper_id")
+        if pid and pid not in paper_year_lookup:
+            rec = pl_service.get_paper(project_id, pid)
+            paper_year_lookup[pid] = rec.year if rec else None
+
+    # 3) reranker
+    reranked = reranker.rerank_chunks(
+        question,
+        [(meta, 0.0) for meta in raw_chunks],
+        paper_year_lookup=paper_year_lookup,
+    )
+    top_chunks = [meta for meta, _ in reranked[: body.top_k]]
+
+    if not top_chunks:
+        # 无命中: 返回 no-hit answer
+        from ...schemas_paper_rag import PaperRAGAnswer as _Answer
+        return _Answer(
+            question=question,
+            answer="未在论文库中找到证据，无法回答该问题。",
+            evidence_refs=[],
+            unsupported_claims=[],
+            confidence=0.0,
+            used_papers=[],
+            retrieval_mode="llm",  # type: ignore[arg-type]
+        )
+
+    # 4) 加载 paper titles 供 context
+    used_paper_ids = sorted({c.get("paper_id", "") for c in top_chunks if c.get("paper_id")})
+    paper_titles = paper_qa.load_paper_titles(project_id, used_paper_ids)
+
+    # 5) LLM 问答 (失败 → fallback)
+    try:
+        answer = paper_qa.answer_with_llm(question, top_chunks, paper_titles=paper_titles)
+    except Exception as exc:  # noqa: BLE001
+        logger.info("paper_qa LLM fallback (reason=%s)", exc)
+        answer = paper_qa.fallback_answer(question, top_chunks)
+
+    return answer
