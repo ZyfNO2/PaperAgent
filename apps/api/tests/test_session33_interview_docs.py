@@ -41,7 +41,8 @@ REQUIRED_FILES = [
     "AutoResearchClaw_对标与小型化移植.md",
     "面经全解_2026.md",
     "Deep_Dive_QA_2026新热点.md",
-]
+    "RAG_Data_Flow.md",
+]  # S50 added RAG_Data_Flow.md
 
 
 # -------------------------------------------------------------------

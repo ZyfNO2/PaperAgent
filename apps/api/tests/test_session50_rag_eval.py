@@ -433,8 +433,8 @@ def test_s50_11_baseline_save_load_roundtrip(seeded_project, tmp_lib_dir):
     assert loaded["item_count"] == 15
 
 
-def test_s50_11b_baseline_load_missing():
-    loaded = eval_baseline.load_baseline()
+def test_s50_11b_baseline_load_missing(tmp_path):
+    loaded = eval_baseline.load_baseline(path=tmp_path / "nonexistent.json")
     assert loaded == {}
 
 
