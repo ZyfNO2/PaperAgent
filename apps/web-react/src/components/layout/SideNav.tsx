@@ -1,4 +1,4 @@
-// Session 53/54: SideNav — 工作台内的左侧导航
+// Session 53/54/55: SideNav — 工作台内的左侧导航
 import { APP_CONFIG } from "../../app/config";
 import { navigate, type RouteName } from "../../app/routing";
 
@@ -11,6 +11,8 @@ export function SideNav({ currentMode }: Props) {
   const isHome = mode === "home";
   const isInterview = mode === "interview";
   const isProtocols = mode === "protocols";
+  const isRagEval = mode === "rag-eval";
+  const isThesisEval = mode === "thesis-eval";
   return (
     <nav className="pa-sidenav" data-testid="sidenav">
       <div className="pa-sidenav__section">工作台</div>
@@ -25,7 +27,8 @@ export function SideNav({ currentMode }: Props) {
       </a>
       <a
         className={
-          "pa-sidenav__item" + (isInterview ? " pa-sidenav__item--active" : "")
+          "pa-sidenav__item" +
+          (isInterview ? " pa-sidenav__item--active" : "")
         }
         href="#/?mode=interview"
         data-testid="nav-interview"
@@ -34,7 +37,28 @@ export function SideNav({ currentMode }: Props) {
       </a>
       <a
         className={
-          "pa-sidenav__item" + (isProtocols ? " pa-sidenav__item--active" : "")
+          "pa-sidenav__item" +
+          (isRagEval ? " pa-sidenav__item--active" : "")
+        }
+        href="#/?mode=rag-eval"
+        data-testid="nav-rag-eval"
+      >
+        RAG Eval
+      </a>
+      <a
+        className={
+          "pa-sidenav__item" +
+          (isThesisEval ? " pa-sidenav__item--active" : "")
+        }
+        href="#/?mode=thesis-eval"
+        data-testid="nav-thesis-eval"
+      >
+        ThesisEval
+      </a>
+      <a
+        className={
+          "pa-sidenav__item" +
+          (isProtocols ? " pa-sidenav__item--active" : "")
         }
         href="#/protocols"
         data-testid="nav-protocols"
@@ -54,10 +78,7 @@ export function SideNav({ currentMode }: Props) {
         StepWorkbench 1.0
       </span>
       <span className="pa-sidenav__item pa-sidenav__item--disabled">
-        RAG Eval
-      </span>
-      <span className="pa-sidenav__item pa-sidenav__item--disabled">
-        ThesisEval
+        Paper Library
       </span>
     </nav>
   );

@@ -759,3 +759,132 @@
 .pa-error-state__message {
   font-size: var(--pa-fs-small);
 }
+
+/* ============================================================
+   Session 55 — RAG Eval + ThesisEval 样式
+   ============================================================ */
+
+.pa-route-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pa-space-3);
+  padding: var(--pa-space-2);
+}
+
+.pa-rag-eval,
+.pa-thesis-eval {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pa-space-3);
+}
+
+/* metric table */
+.pa-metric-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--pa-fs-small);
+}
+.pa-metric-table th,
+.pa-metric-table td {
+  text-align: left;
+  padding: var(--pa-space-1) var(--pa-space-2);
+  border-bottom: 1px solid var(--pa-line);
+}
+.pa-metric-table th {
+  font-weight: var(--pa-fw-medium);
+  color: var(--pa-fg-muted);
+}
+.pa-metric-table tr[data-regression="yes"] {
+  background: var(--pa-err-soft);
+}
+
+/* thesis subset buttons */
+.pa-subset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--pa-space-2);
+}
+.pa-subset-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: var(--pa-space-2);
+  background: var(--pa-bg-soft);
+  border: 1px solid var(--pa-line);
+  border-radius: var(--pa-radius-sm);
+  cursor: pointer;
+  text-align: left;
+}
+.pa-subset-btn:hover {
+  background: var(--pa-bg-elev);
+}
+.pa-subset-btn--active {
+  border-color: var(--pa-brand);
+  background: var(--pa-brand-soft, var(--pa-bg-soft));
+}
+.pa-subset-btn strong {
+  font-size: var(--pa-fs-small);
+  color: var(--pa-fg);
+}
+
+/* thesis tags / metadata */
+.pa-thesis-meta {
+  display: flex;
+  gap: var(--pa-space-2);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--pa-space-1);
+}
+.pa-thesis-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pa-space-1);
+  margin-top: var(--pa-space-2);
+}
+.pa-thesis-warn {
+  margin-top: var(--pa-space-2);
+  padding: var(--pa-space-1) var(--pa-space-2);
+  background: var(--pa-warn-soft);
+  border-radius: var(--pa-radius-sm);
+}
+
+.pa-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pa-space-1);
+  margin-bottom: var(--pa-space-2);
+}
+.pa-input {
+  padding: var(--pa-space-1) var(--pa-space-2);
+  background: var(--pa-bg);
+  border: 1px solid var(--pa-line);
+  border-radius: var(--pa-radius-sm);
+  color: var(--pa-fg);
+  font: inherit;
+}
+.pa-input:focus {
+  outline: 2px solid var(--pa-brand);
+  outline-offset: 1px;
+}
+
+.pa-trace {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pa-space-1);
+}
+.pa-trace li {
+  padding: var(--pa-space-1) var(--pa-space-2);
+  background: var(--pa-bg-soft);
+  border-radius: var(--pa-radius-sm);
+  font-size: var(--pa-fs-small);
+}
+
+.pa-table.pa-tiny th,
+.pa-table.pa-tiny td {
+  font-size: var(--pa-fs-tiny);
+  padding: var(--pa-space-1);
+}

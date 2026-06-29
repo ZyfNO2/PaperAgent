@@ -66,9 +66,9 @@ export function HomePage() {
                     <Stepper
                       items={[
                         { key: "s52", title: "S52 脚手架", state: "done" },
-                        { key: "s53", title: "S53 设计系统", state: "active" },
-                        { key: "s54", title: "S54 StepWorkbench", state: "pending" },
-                        { key: "s55", title: "S55 RAG 接入", state: "pending" },
+                        { key: "s53", title: "S53 设计系统", state: "done" },
+                        { key: "s54", title: "S54 StepWorkbench", state: "done" },
+                        { key: "s55", title: "S55 RAG 接入", state: "active" },
                         { key: "s56", title: "S56 切换收口", state: "pending" },
                       ]}
                       testId="phase-stepper"
@@ -78,15 +78,37 @@ export function HomePage() {
                     <div className="pa-small pa-muted">
                       7 指标 (recall@5/MRR/NDCG/citation_precision/
                       evidence_coverage/unsupported_claim_rate/faithfulness)
-                      + 回归基线。S55 接入完整界面。
+                      + 回归基线。
                     </div>
                     <Badge tone="ok">baseline 0.68 / 0.76 / 1.0</Badge>
+                    <div className="pa-interview-actions">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => (window.location.hash = "#/?mode=rag-eval")}
+                        data-testid="home-go-rag-eval"
+                      >
+                        打开 RAG Eval
+                      </Button>
+                    </div>
                   </Card>
                   <Card title="S51 · ThesisEval" testId="card-s51">
                     <div className="pa-small pa-muted">
-                      100 篇工科学位论文测试集, 4 任务评估闭环。S55 接入。
+                      100 篇工科学位论文测试集, 4 任务评估闭环, 三态降级。
                     </div>
                     <Badge tone="info">100 papers · 4 tasks</Badge>
+                    <div className="pa-interview-actions">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() =>
+                          (window.location.hash = "#/?mode=thesis-eval")
+                        }
+                        data-testid="home-go-thesis-eval"
+                      >
+                        打开 ThesisEval
+                      </Button>
+                    </div>
                   </Card>
                 </div>
               ),

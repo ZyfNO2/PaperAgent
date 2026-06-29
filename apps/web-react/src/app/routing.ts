@@ -1,8 +1,18 @@
-// Session 54: hash 路由, 最小实现 — ponytail 拒绝引 react-router
-// 路由: #/, #/?mode=interview, #/protocols
+// Session 54/55: hash 路由, 最小实现 — ponytail 拒绝引 react-router
+// 路由:
+//   #/                   → home
+//   #/?mode=interview    → interview
+//   #/?mode=rag-eval     → rag-eval (S55)
+//   #/?mode=thesis-eval  → thesis-eval (S55)
+//   #/protocols          → protocols
 import { useEffect, useState } from "react";
 
-export type RouteName = "home" | "interview" | "protocols";
+export type RouteName =
+  | "home"
+  | "interview"
+  | "protocols"
+  | "rag-eval"
+  | "thesis-eval";
 
 export interface Route {
   name: RouteName;
@@ -13,12 +23,19 @@ function parseRoute(): Route {
   const hash = window.location.hash || "#/";
   const [pathPart, queryPart] = hash.split("?");
   const params = new URLSearchParams(queryPart ?? "");
-  const name =
-    pathPart === "#/interview" || params.get("mode") === "interview"
-      ? "interview"
-      : pathPart === "#/protocols"
-        ? "protocols"
-        : "home";
+  const mode = params.get("mode");
+  let name: RouteName;
+  if (pathPart === "#/protocols") {
+    name = "protocols";
+  } else if (mode === "rag-eval") {
+    name = "rag-eval";
+  } else if (mode === "thesis-eval") {
+    name = "thesis-eval";
+  } else if (mode === "interview") {
+    name = "interview";
+  } else {
+    name = "home";
+  }
   return { name, params };
 }
 
