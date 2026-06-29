@@ -1,0 +1,170 @@
+/* Session 52: 组件级样式 (后续 S53 拆到 design system) */
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--pa-border);
+  background: var(--pa-bg-elev);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-mark {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--pa-radius);
+  background: var(--pa-accent);
+  color: #0b1220;
+  font-weight: 700;
+  text-align: center;
+  line-height: 26px;
+  font-size: 12px;
+}
+.brand-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+.brand-tag {
+  margin-left: 6px;
+  color: var(--pa-fg-dim);
+  font-size: 12px;
+  padding: 1px 6px;
+  border: 1px solid var(--pa-border);
+  border-radius: 4px;
+}
+.topbar-meta {
+  font-size: 12px;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 220px 1fr 280px;
+  flex: 1;
+  min-height: 0;
+}
+.shell-left,
+.shell-center,
+.shell-right {
+  overflow: auto;
+  padding: 16px;
+}
+.shell-left {
+  border-right: 1px solid var(--pa-border);
+  background: var(--pa-bg-elev);
+}
+.shell-right {
+  border-left: 1px solid var(--pa-border);
+  background: var(--pa-bg-elev);
+}
+
+.sidenav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sidenav-section {
+  margin: 12px 0 4px;
+  color: var(--pa-fg-faint);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sidenav-item {
+  display: block;
+  padding: 6px 10px;
+  border-radius: var(--pa-radius);
+  color: var(--pa-fg);
+  font-size: 13px;
+}
+.sidenav-item:hover {
+  background: var(--pa-bg-elev-2);
+  text-decoration: none;
+}
+.sidenav-item.active {
+  background: var(--pa-accent-soft);
+  color: var(--pa-accent);
+}
+.sidenav-item.disabled {
+  color: var(--pa-fg-faint);
+  cursor: not-allowed;
+}
+
+.right-pane {
+  height: 100%;
+}
+
+.page-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.muted {
+  color: var(--pa-fg-dim);
+}
+.small {
+  font-size: 12px;
+}
+.error {
+  color: var(--pa-err);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--pa-gap-lg);
+  margin-top: 18px;
+}
+.card {
+  background: var(--pa-bg-elev);
+  border: 1px solid var(--pa-border);
+  border-radius: var(--pa-radius-lg);
+  padding: 14px 16px;
+}
+.card-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.card-body {
+  font-size: 13px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge.ok {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--pa-ok);
+}
+.badge.done {
+  background: rgba(74, 222, 128, 0.12);
+  color: var(--pa-ok);
+}
+.badge.todo {
+  background: var(--pa-bg-elev-2);
+  color: var(--pa-fg-dim);
+}
+
+.phase-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
