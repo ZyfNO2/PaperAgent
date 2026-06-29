@@ -1,7 +1,9 @@
 // Session 53: WorkbenchShell — 三栏工作台
 // 中间 (MainStage) children 切换时, 左右栏不 unmount
+// Session 59: 加上 DeveloperPanel — 开发者抽屉在所有路由可用 (Ctrl+` 触发)
 import type { ReactNode } from "react";
 import { TopBar } from "./TopBar";
+import { DeveloperPanel } from "../dev/DeveloperPanel";
 
 export interface WorkbenchShellProps {
   left: ReactNode;
@@ -41,6 +43,7 @@ export function WorkbenchShell({ left, center, right, testId }: WorkbenchShellPr
           {right}
         </div>
       </div>
+      <DeveloperPanel />
     </div>
   );
 }

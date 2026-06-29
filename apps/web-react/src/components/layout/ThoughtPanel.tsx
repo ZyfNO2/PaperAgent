@@ -1,8 +1,14 @@
-// Session 57: ThoughtPanel → TUI dark console (OpenCode agent 工作区感)
-// - 顶部窗口标题栏 (3 dot + PaperAgent | Topic feasibility workflow)
-// - 中间流式日志 (timestamp + tag + text)
-// - 底部命令行 prompt 输入框
+// Session 59: ThoughtPanel — 仅开发者窗口内渲染; 普通模式完全不出现.
+// ponytail: 状态来源 = localStorage + 自定义事件, 不引额外 context.
 import { useEffect, useState } from "react";
+import { DEV_MODE_STORAGE_KEY } from "../layout/TopBar";
+
+const STORAGE_KEY = DEV_MODE_STORAGE_KEY;
+
+function readDevOpen(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(STORAGE_KEY) === "1";
+}
 
 export interface ThoughtPanelProps {
   testId?: string;
@@ -16,9 +22,9 @@ interface Line {
 
 const SEED: Line[] = [
   { ts: "12:04:18", tag: "info", text: "booting paperagent · topic feasibility workflow" },
-  { ts: "12:04:18", tag: "info", text: "loading Session 57 OpenCode style · light theme + dark console" },
+  { ts: "12:04:18", tag: "info", text: "loading Session 59 user-minimal + dev-mode shell" },
   { ts: "12:04:19", tag: "tool", text: "intake: read project_intake.jsonl · ok" },
-  { ts: "12:04:19", tag: "info", text: "ready. type a topic to start or run `demo case1`" },
+  { ts: "12:04:19", tag: "info", text: "ready. dev console visible — user shell is hidden" },
 ];
 
 function nowTs() {
@@ -28,11 +34,22 @@ function nowTs() {
 }
 
 export function ThoughtPanel({ testId }: ThoughtPanelProps) {
+  const [open, setOpen] = useState<boolean>(() => readDevOpen());
   const [lines, setLines] = useState<Line[]>(SEED);
   const [input, setInput] = useState("");
 
-  // Append a synthetic streaming line every 6s so console feels alive in demo.
   useEffect(() => {
+    const onChange = () => setOpen(readDevOpen());
+    window.addEventListener("paperagent:dev-mode", onChange);
+    window.addEventListener("storage", onChange);
+    return () => {
+      window.removeEventListener("paperagent:dev-mode", onChange);
+      window.removeEventListener("storage", onChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
     const beats = [
       { tag: "info" as const, text: "planner: parse topic → 3 keywords" },
       { tag: "tool" as const, text: "retriever: openalex.search(query=k1+k2)" },
@@ -44,16 +61,15 @@ export function ThoughtPanel({ testId }: ThoughtPanelProps) {
       const beat = beats[i % beats.length];
       const tag: Line["tag"] = beat.tag;
       setLines((prev) => {
-        const next: Line[] = [
-          ...prev,
-          { ts: nowTs(), tag, text: beat.text },
-        ];
+        const next: Line[] = [...prev, { ts: nowTs(), tag, text: beat.text }];
         return next.slice(-50);
       });
       i += 1;
     }, 6000);
     return () => window.clearInterval(t);
-  }, []);
+  }, [open]);
+
+  if (!open) return null;
 
   function submit() {
     if (!input.trim()) return;
@@ -69,14 +85,14 @@ export function ThoughtPanel({ testId }: ThoughtPanelProps) {
     <aside
       className="pa-thought-panel"
       data-testid={testId ?? "thought-panel"}
-      aria-label="Agent console"
+      aria-label="Agent console (developer)"
     >
       <div className="pa-thought-panel__titlebar">
         <span className="pa-thought-panel__dot pa-thought-panel__dot--r" />
         <span className="pa-thought-panel__dot pa-thought-panel__dot--y" />
         <span className="pa-thought-panel__dot pa-thought-panel__dot--g" />
         <span className="pa-thought-panel__title">
-          PaperAgent | Topic feasibility workflow
+          PaperAgent | dev console
         </span>
       </div>
       <div className="pa-thought-panel__body" data-testid="thought-stream">
@@ -112,7 +128,7 @@ export function ThoughtPanel({ testId }: ThoughtPanelProps) {
         <span className="pa-thought-panel__sigil">›</span>
         <input
           className="pa-thought-panel__input"
-          placeholder="ask agent …  (e.g. demo case1)"
+          placeholder="ask agent …  (dev only)"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           data-testid="thought-input"
