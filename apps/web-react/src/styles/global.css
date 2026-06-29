@@ -20,11 +20,13 @@ body,
 }
 
 a {
-  color: var(--pa-accent);
-  text-decoration: none;
+  color: var(--pa-fg);
+  text-decoration: underline;
+  text-decoration-color: var(--pa-line-strong);
+  text-underline-offset: 2px;
 }
 a:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--pa-fg);
 }
 
 code {
@@ -44,6 +46,7 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
   font-weight: var(--pa-fw-semibold);
   line-height: var(--pa-lh-tight);
+  letter-spacing: -0.01em;
 }
 
 p {
@@ -52,7 +55,7 @@ p {
 
 /* === 通用工具类 === */
 .pa-muted {
-  color: var(--pa-fg-dim);
+  color: var(--pa-fg-muted);
 }
 .pa-faint {
   color: var(--pa-fg-faint);
@@ -66,6 +69,9 @@ p {
 .pa-err {
   color: var(--pa-err);
 }
+.pa-info {
+  color: var(--pa-info);
+}
 .pa-small {
   font-size: var(--pa-fs-small);
 }
@@ -74,6 +80,9 @@ p {
 }
 .pa-mono {
   font-family: var(--pa-mono);
+}
+.pa-sans {
+  font-family: var(--pa-sans);
 }
 
 .pa-h1 {
@@ -87,4 +96,11 @@ p {
 .pa-h3 {
   font-size: var(--pa-fs-h3);
   font-weight: var(--pa-fw-semibold);
+}
+
+/* OpenCode-ish 文档分隔 */
+.pa-rule {
+  border: 0;
+  border-top: 1px solid var(--pa-line);
+  margin: var(--pa-space-5) 0;
 }

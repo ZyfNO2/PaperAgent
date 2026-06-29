@@ -1,72 +1,123 @@
-// Session 53: ThoughtPanel — 右侧 LLM 思维 / 对话 / Skill 调用占位
-import { Badge } from "../ui/Badge";
-import { Collapse } from "../ui/Collapse";
-import { Tabs } from "../ui/Tabs";
+// Session 57: ThoughtPanel → TUI dark console (OpenCode agent 工作区感)
+// - 顶部窗口标题栏 (3 dot + PaperAgent | Topic feasibility workflow)
+// - 中间流式日志 (timestamp + tag + text)
+// - 底部命令行 prompt 输入框
+import { useEffect, useState } from "react";
 
 export interface ThoughtPanelProps {
   testId?: string;
 }
 
+interface Line {
+  ts: string;
+  tag: "info" | "tool" | "user" | "err";
+  text: string;
+}
+
+const SEED: Line[] = [
+  { ts: "12:04:18", tag: "info", text: "booting paperagent · topic feasibility workflow" },
+  { ts: "12:04:18", tag: "info", text: "loading Session 57 OpenCode style · light theme + dark console" },
+  { ts: "12:04:19", tag: "tool", text: "intake: read project_intake.jsonl · ok" },
+  { ts: "12:04:19", tag: "info", text: "ready. type a topic to start or run `demo case1`" },
+];
+
+function nowTs() {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
 export function ThoughtPanel({ testId }: ThoughtPanelProps) {
+  const [lines, setLines] = useState<Line[]>(SEED);
+  const [input, setInput] = useState("");
+
+  // Append a synthetic streaming line every 6s so console feels alive in demo.
+  useEffect(() => {
+    const beats = [
+      { tag: "info" as const, text: "planner: parse topic → 3 keywords" },
+      { tag: "tool" as const, text: "retriever: openalex.search(query=k1+k2)" },
+      { tag: "info" as const, text: "scorer: 6-dim evidence scoring · 4 candidates" },
+      { tag: "user" as const, text: "asking for confirmation …" },
+    ];
+    let i = 0;
+    const t = window.setInterval(() => {
+      const beat = beats[i % beats.length];
+      const tag: Line["tag"] = beat.tag;
+      setLines((prev) => {
+        const next: Line[] = [
+          ...prev,
+          { ts: nowTs(), tag, text: beat.text },
+        ];
+        return next.slice(-50);
+      });
+      i += 1;
+    }, 6000);
+    return () => window.clearInterval(t);
+  }, []);
+
+  function submit() {
+    if (!input.trim()) return;
+    const text = input.trim();
+    setLines((prev) => {
+      const next: Line[] = [...prev, { ts: nowTs(), tag: "user", text }];
+      return next.slice(-50);
+    });
+    setInput("");
+  }
+
   return (
     <aside
       className="pa-thought-panel"
       data-testid={testId ?? "thought-panel"}
-      aria-label="LLM 思维/对话"
+      aria-label="Agent console"
     >
-      <Tabs
-        testId="thought-tabs"
-        items={[
-          {
-            key: "thought",
-            label: "LLM 思维",
-            content: (
-              <div className="pa-thought-panel__block" data-testid="thought-stream">
-                <div className="pa-muted pa-small">
-                  流式思维区。S53 占位, S55 接入真实 LLM 输出。
-                </div>
-                <pre className="pa-thought-panel__demo pa-mono pa-tiny">
-                  {`[planner] parse: 一题 → 拆解\n[retriever] query: 关键词 x3\n[reality] tier: existing_env`}
-                </pre>
-              </div>
-            ),
-          },
-          {
-            key: "chat",
-            label: "对话",
-            content: (
-              <div className="pa-thought-panel__block" data-testid="chat-stream">
-                <div className="pa-muted pa-small">
-                  对话区, S54+ 接入 (Interview Mode / Tech Switches)。
-                </div>
-              </div>
-            ),
-          },
-          {
-            key: "skills",
-            label: "Skill",
-            content: (
-              <div className="pa-thought-panel__block" data-testid="skill-stream">
-                <Collapse title="claim_grounding" defaultOpen={true} testId="skill-claim-grounding">
-                  <div className="pa-small pa-muted">
-                    引用检查, evidence_refs 强制 (S48)
-                  </div>
-                </Collapse>
-                <Collapse title="feasibility_card" defaultOpen={false} testId="skill-feasibility">
-                  <div className="pa-small pa-muted">资源四层 (S45)</div>
-                </Collapse>
-                <Collapse title="small_paper_extractor" defaultOpen={false} testId="skill-small-paper">
-                  <div className="pa-small pa-muted">Track B 扩展 (S49)</div>
-                </Collapse>
-                <div className="pa-thought-panel__hint">
-                  <Badge tone="info" testId="skill-count">5</Badge>{" "}
-                  <span className="pa-muted pa-tiny">5 skill 注册 (S45/S48/S49/S51/...)</span>
-                </div>
-              </div>
-            ),
-          },
-        ]}
-      />
+      <div className="pa-thought-panel__titlebar">
+        <span className="pa-thought-panel__dot pa-thought-panel__dot--r" />
+        <span className="pa-thought-panel__dot pa-thought-panel__dot--y" />
+        <span className="pa-thought-panel__dot pa-thought-panel__dot--g" />
+        <span className="pa-thought-panel__title">
+          PaperAgent | Topic feasibility workflow
+        </span>
+      </div>
+      <div className="pa-thought-panel__body" data-testid="thought-stream">
+        {lines.map((l, idx) => (
+          <div className="pa-thought-panel__line" key={`${l.ts}-${idx}`}>
+            <span className="pa-thought-panel__ts">{l.ts}</span>
+            <span
+              className={
+                "pa-thought-panel__tag" +
+                (l.tag === "tool"
+                  ? " pa-thought-panel__tag--tool"
+                  : l.tag === "user"
+                    ? " pa-thought-panel__tag--user"
+                    : l.tag === "err"
+                      ? " pa-thought-panel__tag--err"
+                      : "")
+              }
+            >
+              {l.tag}
+            </span>
+            <span className="pa-thought-panel__text">{l.text}</span>
+          </div>
+        ))}
+      </div>
+      <form
+        className="pa-thought-panel__prompt"
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
+        data-testid="thought-prompt"
+      >
+        <span className="pa-thought-panel__sigil">›</span>
+        <input
+          className="pa-thought-panel__input"
+          placeholder="ask agent …  (e.g. demo case1)"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          data-testid="thought-input"
+        />
+      </form>
     </aside>
   );
 }

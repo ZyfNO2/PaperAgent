@@ -1,33 +1,40 @@
-/* Session 53: 设计 tokens 完整版 (S52 已建基础, 本轮补齐 spacing/typography/radius/shadow/state) */
+/* Session 57: OpenCode-like light tokens (override S53 dark theme) */
+/* 保留 dark console tokens (pa-console-*); 其它全部切到 paper-surface light. */
 :root {
-  /* === 颜色 === */
-  --pa-bg: #0f1115;
-  --pa-bg-elev: #181c23;
-  --pa-bg-elev-2: #1f242d;
-  --pa-bg-hover: #242a35;
-  --pa-border: #2a3038;
-  --pa-border-strong: #3a414c;
+  /* === 浅色 paper surface === */
+  --pa-bg: #f8f7f4;
+  --pa-bg-soft: #fbfaf8;
+  --pa-bg-elev: #ffffff;
+  --pa-bg-elev-2: #f1efe9;
+  --pa-bg-hover: #ece9e2;
 
-  --pa-fg: #e6e9ef;
-  --pa-fg-dim: #9aa3b2;
-  --pa-fg-faint: #5b6573;
-  --pa-fg-on-accent: #0b1220;
+  --pa-line: #ddd8cf;
+  --pa-line-strong: #c9c2b8;
 
-  --pa-accent: #4f9dff;
-  --pa-accent-hover: #6cadff;
-  --pa-accent-soft: rgba(79, 157, 255, 0.12);
-  --pa-accent-border: rgba(79, 157, 255, 0.35);
+  --pa-fg: #1f1d1d;
+  --pa-fg-muted: #76716b;
+  --pa-fg-faint: #aaa49c;
+  --pa-fg-on-accent: #ffffff;
 
-  --pa-ok: #4ade80;
-  --pa-ok-soft: rgba(74, 222, 128, 0.12);
-  --pa-warn: #f59e0b;
-  --pa-warn-soft: rgba(245, 158, 11, 0.12);
-  --pa-err: #f87171;
-  --pa-err-soft: rgba(248, 113, 113, 0.12);
-  --pa-info: #38bdf8;
-  --pa-info-soft: rgba(56, 189, 248, 0.12);
+  /* === 强调色: black + 单一深蓝 (克制) === */
+  --pa-accent: #1f1d1d;
+  --pa-accent-hover: #000000;
+  --pa-accent-soft: rgba(31, 29, 29, 0.06);
+  --pa-accent-border: rgba(31, 29, 29, 0.35);
+  --pa-brand: #1f1d1d;
+  --pa-brand-soft: rgba(31, 29, 29, 0.04);
 
-  /* === 间距 (4/8/12/16/24/32) === */
+  /* === 状态色: 必要风险仍保留, 但弱化 === */
+  --pa-ok: #2f7d4a;
+  --pa-ok-soft: rgba(47, 125, 74, 0.10);
+  --pa-warn: #a96a00;
+  --pa-warn-soft: rgba(169, 106, 0, 0.10);
+  --pa-err: #b03a2e;
+  --pa-err-soft: rgba(176, 58, 46, 0.10);
+  --pa-info: #2a5db0;
+  --pa-info-soft: rgba(42, 93, 176, 0.10);
+
+  /* === 间距 (沿用 S53 4/8/12/16/24/32) === */
   --pa-space-1: 4px;
   --pa-space-2: 8px;
   --pa-space-3: 12px;
@@ -37,13 +44,15 @@
   --pa-space-7: 32px;
   --pa-space-8: 40px;
 
-  /* === 字体 === */
-  --pa-font: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei",
-    Roboto, Helvetica, Arial, sans-serif;
+  /* === 字体: 全站等宽 + 中文 fallback (OpenCode 风格) === */
+  --pa-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Cascadia Mono", "PingFang SC", "Microsoft YaHei", monospace;
   --pa-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --pa-sans: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei",
+    Roboto, Helvetica, Arial, sans-serif;
 
-  --pa-fs-h1: 20px;
-  --pa-fs-h2: 16px;
+  --pa-fs-h1: 22px;
+  --pa-fs-h2: 17px;
   --pa-fs-h3: 14px;
   --pa-fs-body: 13px;
   --pa-fs-small: 12px;
@@ -54,25 +63,38 @@
   --pa-fw-bold: 700;
 
   --pa-lh-tight: 1.3;
-  --pa-lh-body: 1.5;
+  --pa-lh-body: 1.55;
 
-  /* === 圆角 (工具型 UI, 不超过 8) === */
-  --pa-radius-sm: 4px;
-  --pa-radius: 6px;
-  --pa-radius-lg: 8px;
+  /* === 圆角 (低圆角) === */
+  --pa-radius-sm: 3px;
+  --pa-radius: 5px;
+  --pa-radius-lg: 6px;
   --pa-radius-pill: 999px;
 
-  /* === 阴影 (少用, 优先边框) === */
-  --pa-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --pa-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --pa-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  /* === 阴影: 几乎不用, 改用 border === */
+  --pa-shadow-sm: none;
+  --pa-shadow-md: none;
+  --pa-shadow-lg: 0 1px 0 rgba(31, 29, 29, 0.05);
 
   /* === 状态色 (组件用) === */
   --pa-state-disabled-fg: var(--pa-fg-faint);
   --pa-state-disabled-bg: var(--pa-bg-elev-2);
 
-  /* === 布局 === */
-  --pa-shell-left: 260px;
-  --pa-shell-right: 320px;
-  --pa-shell-topbar: 48px;
+  /* === 布局 (S57 docs 化) === */
+  --pa-shell-left: 280px;
+  --pa-shell-right: 360px;
+  --pa-shell-topbar: 56px;
+
+  /* === Dark TUI console (SOP §3 保留深色终端容器) === */
+  --pa-console-bg: #0f0f0f;
+  --pa-console-line: #242424;
+  --pa-console-fg: #e8e8e8;
+  --pa-console-muted: #898989;
+  --pa-console-accent: #4d8cff;
+
+  /* === 兼容旧 token 名 (旧组件可能仍引用) === */
+  --pa-border: var(--pa-line);
+  --pa-border-strong: var(--pa-line-strong);
+  --pa-bg-elev-2-legacy: var(--pa-bg-elev-2);
+  --pa-fg-dim: var(--pa-fg-muted);
 }
