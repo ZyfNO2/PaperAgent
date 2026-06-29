@@ -46,6 +46,17 @@ from ...schemas_paper_library import (
     PaperDetailResponse,
     PaperListResponse,
 )
+from ...schemas_local_rag import (
+    IndexStatusResponse,
+    LocalAskRequest,
+    LocalAskResponse,
+    LocalEvidenceRef,
+    ManualIngestRequest,
+    ManualIngestResponse,
+    PaperIndexStatusEntry,
+    ProjectIndexRequest,
+    ProjectIndexResponse,
+)
 from ...schemas_paper_rag import (
     PaperIndexRequest,
     PaperIndexResponse,
@@ -71,6 +82,8 @@ from ...services.paper_library import (
     claim_grounding,
     eval_baseline,
     indexer,
+    local_rag,
+    manual_ingest,
     paper_qa,
     rag_eval_pipeline,
     reranker,
@@ -613,3 +626,161 @@ def _default_fixtures_dir() -> Path:
     # 默认 tests/fixtures/paper_library_eval (相对于 apps/api 的父目录)
     api_root = Path(__file__).resolve().parent.parent.parent.parent
     return api_root / "tests" / "fixtures" / "paper_library_eval"
+
+
+# ===========================================================================
+# Session 60: Local RAG 最小闭环
+# ===========================================================================
+# - POST /api/v1/projects/{project_id}/paper-library/manual
+# - POST /api/v1/projects/{project_id}/paper-library/index
+# - GET  /api/v1/projects/{project_id}/paper-library/index/status
+# - POST /api/v1/projects/{project_id}/paper-library/local-ask
+# ===========================================================================
+
+
+@router.post(
+    "/{project_id}/paper-library/manual",
+    response_model=ManualIngestResponse,
+)
+def manual_ingest_paper(
+    project_id: str, body: ManualIngestRequest,
+) -> ManualIngestResponse:
+    """手动入库 (S60 M1): 用户粘贴标题 + 文本 → PaperRecord + PaperChunk.
+
+    400: title/text 为空或太短
+    500: storage 异常
+    """
+
+    try:
+        outcome = manual_ingest.ingest_manual_text(
+            project_id=project_id,
+            title=body.title,
+            text=body.text,
+            url=body.url,
+            tags=body.tags,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("manual_ingest failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"manual ingest failed: {exc}")
+
+    return ManualIngestResponse(
+        paper_id=outcome.paper_id,
+        status=outcome.status,
+        parse_status=outcome.parse_status,
+        chunk_count=outcome.chunk_count,
+        is_duplicate=outcome.is_duplicate,
+        message=outcome.message,
+    )
+
+
+@router.post(
+    "/{project_id}/paper-library/index",
+    response_model=ProjectIndexResponse,
+)
+def build_project_index(
+    project_id: str, body: ProjectIndexRequest | None = None,
+) -> ProjectIndexResponse:
+    """S60 M2: 给整个 project (或指定 paper_ids) 建本地 embedding 索引.
+
+    body.force=true 时强制重建.
+    """
+
+    body = body or ProjectIndexRequest()
+    try:
+        result = local_rag.build_index_for_project(
+            project_id=project_id,
+            paper_ids=body.paper_ids,
+            force=body.force,
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("build_project_index failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"index failed: {exc}")
+
+    return ProjectIndexResponse(
+        chunk_count=int(result.get("chunk_count", 0)),
+        indexed=int(result.get("indexed", 0)),
+        skipped=int(result.get("skipped", 0)),
+        duration_ms=int(result.get("duration_ms", 0)),
+        paper_count=len(result.get("paper_ids", [])),
+        message=f"indexed {result.get('indexed', 0)} / {result.get('chunk_count', 0)} chunks",
+    )
+
+
+@router.get(
+    "/{project_id}/paper-library/index/status",
+    response_model=IndexStatusResponse,
+)
+def get_project_index_status(project_id: str) -> IndexStatusResponse:
+    """S60 M2: 汇总当前 project 的索引状态."""
+
+    status = local_rag.get_index_status(project_id)
+    return IndexStatusResponse(
+        project_id=status.project_id,
+        total_papers=status.total_papers,
+        total_chunks=status.total_chunks,
+        indexed_chunks=status.indexed_chunks,
+        unindexed_chunks=status.unindexed_chunks,
+        embedding_provider=status.embedding_provider,
+        papers=[
+            PaperIndexStatusEntry(
+                paper_id=p.paper_id,
+                title=p.title,
+                chunk_count=p.chunk_count,
+                indexed_chunk_count=p.indexed_chunk_count,
+                is_indexed=p.is_indexed,
+            )
+            for p in status.papers
+        ],
+    )
+
+
+@router.post(
+    "/{project_id}/paper-library/local-ask",
+    response_model=LocalAskResponse,
+)
+def ask_local_rag_endpoint(
+    project_id: str, body: LocalAskRequest,
+) -> LocalAskResponse:
+    """S60 M3: 纯本地 embedding 问答 (不依赖 LLM / Evidence Ledger).
+
+    无命中: 返回 answer="未在本地文献库中找到证据..." + retrieval_mode=no_hit.
+    """
+
+    question = body.question.strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="question 不能为空")
+
+    try:
+        outcome = local_rag.ask_local_rag(
+            project_id=project_id,
+            question=question,
+            top_k=body.top_k,
+            paper_ids=body.paper_ids,
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("local-ask failed: %s", exc)
+        raise HTTPException(status_code=500, detail=f"local-ask failed: {exc}")
+
+    return LocalAskResponse(
+        question=outcome.question,
+        answer=outcome.answer,
+        evidence_refs=[
+            LocalEvidenceRef(
+                paper_id=r.paper_id,
+                chunk_id=r.chunk_id,
+                section_title=r.section_title,
+                chunk_type=r.chunk_type,
+                page_start=r.page_start,
+                page_end=r.page_end,
+                quote=r.quote,
+                score=r.score,
+            )
+            for r in outcome.evidence_refs
+        ],
+        retrieval_mode=outcome.retrieval_mode,
+        confidence=outcome.confidence,
+        no_hit=outcome.no_hit,
+        message=outcome.message,
+    )

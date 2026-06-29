@@ -14,7 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-SourceMode = Literal["arxiv_download", "local_upload"]
+SourceMode = Literal["arxiv_download", "local_upload", "manual"]
 ParseStatus = Literal["pending", "parsed", "failed", "skipped"]
 MetadataStatus = Literal["resolved", "partial", "missing"]
 ChunkType = Literal[

@@ -169,6 +169,15 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
 # ---------------------------------------------------------------------------
 
 
+def get_vocab() -> list[str] | None:
+    """读当前 vocab (用于 query embed 与 index 维度对齐).
+
+    ponytail: 全局 vocab 由 embed_corpus 第一次调用时建立, 之后保持不变.
+    测试可 reset_vocab() 清理.
+    """
+    return _VOCAB
+
+
 def get_embedding_provider() -> str:
     """读取 EMBEDDING_PROVIDER env, 默认 'mock'.
 
@@ -191,6 +200,7 @@ __all__ = [
     "embed_text",
     "get_embedding_provider",
     "get_or_build_vocab",
+    "get_vocab",
     "reset_vocab",
     "tokenize",
 ]

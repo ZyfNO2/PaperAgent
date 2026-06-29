@@ -83,7 +83,19 @@ def test_s59_zone_a_topic_intake_runs(page: Page, react_url: str) -> None:
     page.get_by_test_id("topic-intake-input").fill("基于YOLO的钢材表面缺陷检测")
     expect(page.get_by_test_id("topic-intake-start")).to_be_enabled()
     page.get_by_test_id("topic-intake-start").click()
-    page.wait_for_timeout(300)
+    page.wait_for_function(
+        """() => {
+            const status = document.querySelector('[data-testid="uw-topic-status"]');
+            const analysis = document.querySelector('[data-testid="uw-analysis-results"]');
+            return Boolean(
+                status &&
+                status.textContent &&
+                status.textContent.includes('等待确认') &&
+                analysis
+            );
+        }""",
+        timeout=20000,
+    )
     # 题目当前展示
     expect(page.get_by_test_id("topic-intake-current")).to_contain_text("YOLO")
     # 状态徽章更新
@@ -144,30 +156,40 @@ def test_s59_zone_c_evidence_submit_and_status(page: Page, react_url: str) -> No
 
 
 def test_s59_zone_d_library_submit_tag_status_remove(page: Page, react_url: str) -> None:
-    """Zone D: 提交文献 → 切换 tag → 改 status → 标记重新索引 → 删除."""
+    """Zone D: S60 起改后端闭环 — 入库 → tag 切换 → 真实 paper_id 可见.
+
+    S59 旧版测的是 useState 本地闭环 (改 status / 标记重新索引 / 删除).
+    S60 后端接管后, 提交变成 POST /manual, 真实 paper_id 来自后端, 删除/状态字段
+    暂未对接 (M6 边界). 这里保留对 tag 切换和真实入库的最小验证.
+    """
     page.goto(react_url + "/#/", wait_until="domcontentloaded")
+    # 隔离项目目录避免污染其他 test
+    import shutil
+    from pathlib import Path
+    pd = Path("G:/PaperAgent/apps/api/.runtime/paper_library/demo_local_rag")
+    if pd.exists():
+        shutil.rmtree(pd, ignore_errors=True)
+    page.reload(wait_until="domcontentloaded")
     page.get_by_test_id("library-title").fill("YOLOv5 钢材表面缺陷检测")
     page.get_by_test_id("library-link").fill("https://arxiv.org/abs/2106.12345")
+    # S60 要求 text ≥ 10 字
+    page.get_by_test_id("library-text").fill(
+        "Abstract: YOLOv5 applied to steel surface defect detection on NEU-DET dataset."
+    )
     page.get_by_test_id("library-submit").click()
-    page.wait_for_timeout(200)
+    # 等后端入库 (S60 flash 出现)
+    page.wait_for_selector('[data-testid="library-flash"]', timeout=10000)
     items = page.get_by_test_id("library-list").locator(".pa-uw-library-item")
     expect(items).to_have_count(1)
-    # 切两个 tag
+    # 真实 paper_id 来自后端 (paper_mn_ 前缀)
+    pid_text = items.first.locator("[data-testid^='library-meta-paper_mn_']").text_content() or ""
+    assert "paper_mn_" in pid_text, f"期望后端 paper_id, got {pid_text}"
+    # tag 切换仍然可用 (本地 UI 状态)
     items.first.locator(".pa-uw-tag").nth(0).click()
     items.first.locator(".pa-uw-tag").nth(2).click()
     page.wait_for_timeout(100)
     on_tags = items.first.locator(".pa-uw-tag--on")
     expect(on_tags).to_have_count(2)
-    # 改 status
-    items.first.locator(".pa-uw-library-item__status").select_option("已入库")
-    # 标记重新索引
-    items.first.locator("[data-testid^='library-reindex-']").click()
-    page.wait_for_timeout(100)
-    expect(items.first.locator(".pa-uw-library-item__status")).to_have_value("待重新索引")
-    # 删除
-    items.first.locator("[data-testid^='library-remove-']").click()
-    page.wait_for_timeout(150)
-    expect(page.get_by_test_id("library-list").locator(".pa-uw-library-item")).to_have_count(0)
     _shoot(page, "s59_rag_library_edit.png")
 
 

@@ -1,0 +1,175 @@
+{
+  "session": "Session 60",
+  "title": "Local RAG minimal loop — real backend wiring + click verification",
+  "date": "2026-06-30",
+  "frontend_url": "http://127.0.0.1:18183",
+  "backend_url": "http://127.0.0.1:18181",
+  "test_id": "demo-local-rag",
+  "flow": [
+    {
+      "step": 1,
+      "name": "home_renders_local_rag_panel",
+      "action": "GET /",
+      "selector": "data-testid='uw-local-rag'",
+      "expected": "LocalRagAskPanel 可见, 含本地 RAG 问答标题",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_home_with_local_rag.png",
+      "result": "pass"
+    },
+    {
+      "step": 2,
+      "name": "manual_ingest",
+      "action": "POST /api/v1/projects/demo-local-rag/paper-library/manual",
+      "request_body": {
+        "title": "YOLO Steel Surface Defect Detection Note",
+        "text": "This paper studies steel surface defect detection using YOLO. The experiment uses the NEU-DET dataset and reports that lightweight YOLO variants can detect scratches, patches and crazing defects. The method section describes data augmentation and evaluation with precision and recall.",
+        "url": null,
+        "tags": []
+      },
+      "response": {
+        "paper_id": "paper_mn_*",
+        "status": "ingested",
+        "parse_status": "parsed",
+        "chunk_count": 1,
+        "is_duplicate": false,
+        "message": "manual 文本已入库 (1 chunks)"
+      },
+      "ui_selector": "data-testid='library-flash'",
+      "ui_assert": "flash contains '已入库'",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_add_paper.png",
+      "result": "pass"
+    },
+    {
+      "step": 3,
+      "name": "list_papers",
+      "action": "GET /api/v1/projects/demo-local-rag/paper-library",
+      "ui_selector": "data-testid^='library-item-paper_mn_'",
+      "ui_assert": "至少 1 个 item, meta 含 paper_id + chunk_count",
+      "result": "pass"
+    },
+    {
+      "step": 4,
+      "name": "build_index",
+      "action": "POST /api/v1/projects/demo-local-rag/paper-library/index",
+      "request_body": {"force": false},
+      "response": {
+        "chunk_count": ">=1",
+        "indexed": ">=1",
+        "skipped": 0,
+        "duration_ms": "<200",
+        "paper_count": 1
+      },
+      "ui_selector": "data-testid='library-flash' + data-testid='library-index-status-paper_mn_*'",
+      "ui_assert": "flash 含 '索引完成', status 显示 '已索引'",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_index_status.png",
+      "result": "pass"
+    },
+    {
+      "step": 5,
+      "name": "index_status",
+      "action": "GET /api/v1/projects/demo-local-rag/paper-library/index/status",
+      "response": {
+        "project_id": "demo-local-rag",
+        "total_papers": 1,
+        "total_chunks": 1,
+        "indexed_chunks": 1,
+        "unindexed_chunks": 0,
+        "embedding_provider": "mock",
+        "papers": [{"paper_id": "paper_mn_*", "title": "YOLO Steel...", "chunk_count": 1, "indexed_chunk_count": 1, "is_indexed": true}]
+      },
+      "result": "pass"
+    },
+    {
+      "step": 6,
+      "name": "refresh_persist",
+      "action": "page.reload()",
+      "ui_assert": "列表项仍在 (>=1)",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_after_refresh_persisted.png",
+      "result": "pass"
+    },
+    {
+      "step": 7,
+      "name": "local_ask_hit",
+      "action": "POST /api/v1/projects/demo-local-rag/paper-library/local-ask",
+      "request_body": {"question": "What dataset does this paper use?", "top_k": 3},
+      "response": {
+        "question": "What dataset does this paper use?",
+        "answer": "根据本地文献库检索, 与问题相关的片段摘录如下: [1] Body: This paper studies steel surface defect detection using YOLO. The experiment uses the NEU-DET dataset...",
+        "evidence_refs": [
+          {
+            "paper_id": "paper_mn_*",
+            "chunk_id": "chunk_*",
+            "section_title": "Body",
+            "chunk_type": "unknown",
+            "quote": "This paper studies steel surface defect detection using YOLO. The experiment uses the NEU-DET dataset...",
+            "score": 0.343
+          }
+        ],
+        "retrieval_mode": "local_embedding",
+        "confidence": 0.343,
+        "no_hit": false
+      },
+      "ui_selector": "data-testid='local-rag-mode' + data-testid='local-rag-answer' + data-testid^='local-rag-ref-'",
+      "ui_assert": "mode='local_embedding', answer 含 'NEU-DET', ref.quote 含 'NEU-DET'",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_local_rag_answer.png",
+      "result": "pass"
+    },
+    {
+      "step": 8,
+      "name": "no_hit_displays_empty",
+      "action": "POST /api/v1/projects/demo-local-rag/paper-library/local-ask",
+      "request_body": {"question": "completely unrelated quantum entanglement telescope", "top_k": 3},
+      "response": {
+        "retrieval_mode": "no_hit",
+        "no_hit": true,
+        "confidence": 0.0,
+        "evidence_refs": [],
+        "answer": "未在本地文献库中找到证据, 无法回答该问题."
+      },
+      "ui_selector": "data-testid='local-rag-no-hit'",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_local_rag_no_hit.png",
+      "result": "pass"
+    },
+    {
+      "step": 9,
+      "name": "api_error_shows_error_card",
+      "action": "fetch mock 503",
+      "ui_selector": "data-testid='local-rag-error'",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_local_rag_api_error.png",
+      "result": "pass"
+    },
+    {
+      "step": 10,
+      "name": "duplicate_ingest_flash",
+      "action": "POST /manual (same title twice)",
+      "ui_selector": "data-testid='library-flash' contains '重复'",
+      "ui_assert": "列表项数量不增长",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_duplicate_flash.png",
+      "result": "pass"
+    },
+    {
+      "step": 11,
+      "name": "pending_index_status",
+      "action": "submit only, no reindex",
+      "ui_selector": "data-testid^='library-index-status-paper_mn_' contains '待索引'",
+      "screenshot": "apps/web-react/e2e/screenshots/session60/s60_pending_status.png",
+      "result": "pass"
+    }
+  ],
+  "backend_tests": {
+    "file": "apps/api/tests/test_session60_local_rag.py",
+    "count": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "playwright_tests": {
+    "file": "apps/web-react/e2e/test_session60_local_rag.py",
+    "count": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "regression": {
+    "backend_s46_s47_s60": "99 passed, 0 failed",
+    "frontend_s59": "13 passed, 0 failed (updated zone_d test to backend flow)",
+    "frontend_s56_s57_s58": "pre-existing shell rename regressions (workbench-shell → user-shell), NOT Session 60 scope"
+  }
+}
