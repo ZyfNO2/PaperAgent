@@ -25,7 +25,7 @@ set "LOG_DIR=.runtime\logs"
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%" >nul 2>&1
 
 REM step 1: kill any leftover on 18181 / 18182 / 18183
-call stop_all.bat >nul
+call stop_all.bat
 timeout /t 1 /nobreak >nul
 
 REM step 2: start backend (uvicorn on 18181) hidden in background
