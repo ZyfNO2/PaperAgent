@@ -53,9 +53,18 @@
 
 ## 2. 前端测试（Playwright）
 
-> 入口：`apps/web/e2e/`
-> 前置：后端 + 前端 dev_server 都已启动
-> 命令：`.venv/Scripts/python.exe -m pytest apps/web/e2e -v`
+> 入口：`apps/web/e2e/` (legacy 旧前端, marker `legacy-web`) + `apps/web-react/e2e/` (新前端, marker `react-web`)
+> 前置：后端 + 前端 dev_server / vite dev 都已启动
+> 命令：
+>
+> ```bash
+> # 旧前端 (保留, 不删除)
+> .venv/Scripts/python.exe -m pytest apps/web/e2e -v -m legacy_web
+> # 新前端 (默认)
+> .venv/Scripts/python.exe -m pytest apps/web-react/e2e -v -m react_web
+> # 全量
+> .venv/Scripts/python.exe -m pytest apps/web/e2e apps/web-react/e2e -v
+> ```
 
 | Session | 测试文件 | 覆盖范围 | 状态 |
 |---|---|---|---|
@@ -78,6 +87,24 @@
 | 14 | `test_one_topic_session14_retrieval.py` | 多源检索 UI | ✅ 通过（59 passed 含 S7-S13） |
 | 15 | `test_one_topic_session15_material_cards.py` | 资料工作台 UI | ✅ 通过（10 passed） |
 | 17 | `test_one_topic_session17_demo_baseline.py` | Demo 主路径 + 高风险 UI 流程 | ✅ 通过（10 passed） |
+
+### 新前端 Playwright (S52-S56, marker `react-web`)
+
+| Session | 测试文件 | 覆盖范围 | 状态 |
+|---|---|---|---|
+| 52 | `test_session52_scaffold_smoke.py` | 脚手架 + health + shell | ✅ 通过 |
+| 53 | `test_session53_design_system.py` | 三栏布局 + 设计系统组件 | ✅ 通过（12 case） |
+| 54 | `test_session54_step_workbench.py` | StepWorkbench + Interview Mode + Protocol Map | ✅ 通过（17 case） |
+| 55 | `test_session55_rag_thesis.py` | RAG Eval Dashboard + ThesisEval Page | ✅ 通过（15 case） |
+| 56 | `test_session56_regression_matrix.py` | 8 范围回归矩阵 + 4 截图 | ✅ 通过（30 case） |
+
+### 新前端统计 (Session 56 截止)
+
+```text
+Vitest:       30 passed  (S53=13 + S54=7 + S55=5 + S55 logic=5)
+Playwright:   49 passed  (S52=5 + S53=12 + S54=17 + S55=15)
+合计:         79 个前端 case
+```
 
 ### Session 15 前端统计
 

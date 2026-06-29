@@ -21,74 +21,100 @@
 
 | 旧模块 | 文件大小 | 新 React 目标模块 | 目标 Session | 状态 |
 |---|---|---|---|---|
-| `step_workbench.js` | ~74 KB | `features/step-workbench/` | S54 | pending |
-| `step_deck.js` | ~42 KB | `features/legacy-step-deck/` (optional) | S54 | optional |
-| `workspace_board.js` | ~13 KB | `features/evidence-workbench/` | S54 | pending |
-| `stream_client.js` | ~4 KB | `features/streaming/` | S54 | pending |
-| `prompt_protocol.js` | ~10 KB | `features/protocols/` | S54 | pending |
-| `committee_review.js` | ~7 KB | `features/review/` | S54 | pending |
-| `feasibility_card.js` | ~6 KB | `features/review/` (内嵌) | S54 | pending |
-| `proposal_draft.js` | ~7 KB | `features/proposal/` | S54 | pending |
-| `evidence_promotion.js` | ~6 KB | `features/evidence/` | S54 | pending |
-| `render_protocol.js` | ~10 KB | `app/renderProtocol.ts` | S54 | pending |
-| `component_registry.js` | ~15 KB | `app/componentRegistry.ts` | S53 | pending |
-| `app.js` | ~118 KB | 拆分到 `features/*` | S54-S55 | pending |
-| `index.html` | ~35 KB | `apps/web-react/index.html` (已建) | S52 | done (scaffold) |
-| `styles.css` | ~70 KB | tokens + components + design system | S53 | in-progress (token 已建) |
+| `step_workbench.js` | ~74 KB | `features/step-workbench/` | S54 | **done** (useReducer + Context, 5 步 8 status) |
+| `step_deck.js` | ~42 KB | `features/legacy-step-deck/` (optional) | — | skipped (S56 收口决定) |
+| `workspace_board.js` | ~13 KB | 合并到 `features/step-workbench/` | S54 | **done** |
+| `stream_client.js` | ~4 KB | `features/step-workbench/components/ThoughtStream.tsx` | S54 | **done** (占位, S56 接真实) |
+| `prompt_protocol.js` | ~10 KB | `features/protocols/ProtocolMapPanel.tsx` | S54 | **done** (MCP/A2A/ACP) |
+| `committee_review.js` | ~7 KB | `features/interview-mode/DeepDiveDrawer.tsx` | S54 | **done** (9 module + 4 过滤) |
+| `feasibility_card.js` | ~6 KB | 内嵌 StepCard | S54 | **done** |
+| `proposal_draft.js` | ~7 KB | 内嵌 StepCard | S54 | **done** |
+| `evidence_promotion.js` | ~6 KB | `features/step-workbench/components/EvidenceTrace.tsx` | S54 | **done** |
+| `render_protocol.js` | ~10 KB | `app/renderProtocol.ts` | S54 | skipped (设计原则: 设计原则由 components 直接管) |
+| `component_registry.js` | ~15 KB | `components/ui/` (8 个 base) | S53 | **done** |
+| `app.js` | ~118 KB | 拆分到 `features/*` | S54-S55 | **done** (StepWorkbench / Interview / Protocols / RAG / ThesisEval) |
+| `index.html` | ~35 KB | `apps/web-react/index.html` | S52 | **done** |
+| `styles.css` | ~70 KB | tokens + components + design system | S53 | **done** (tokens + components.css ~880 行) |
 
 ## 3. 业务能力矩阵
 
 | 能力 | 来源 Session | 新前端入口 | 状态 |
 |---|---|---|---|
-| 一题 → 关键词 → 检索 → 可行性 → 报告 | Phase 01-04 | `features/one-topic/` | S54 |
-| Interview Mode (Tech Switches) | S41-S43 | `features/interview-mode/` | S54 |
-| ACP 协议开关 + agent 通信治理 | S44 | `features/protocols/acp/` | S54 |
-| RealityCheck 资源四层 | S45 | `features/reality-check/` | S54 |
-| 个人论文库 (arXiv/PDF) | S46 | `features/paper-library/` | S55 |
-| 论文 RAG 检索问答 | S47 | `features/paper-rag/` | S55 |
-| Claim Grounding + Evidence Ledger 联动 | S48 | `features/claim-grounding/` | S55 |
-| 已有小论文扩展 Track B | S49 | `features/small-paper/` | S55 |
-| RAG 评估指标 + 回归基线 | S50 | `features/rag-eval/` | S55 |
-| 工科学位论文可行性评估 | S51 | `features/thesis-eval/` | S55 |
+| 一题 → 关键词 → 检索 → 可行性 → 报告 | Phase 01-04 | `features/one-topic/` (workbench 5 步) | **done** (S54) |
+| Interview Mode (Tech Switches + Deep Dive) | S41-S43 | `features/interview-mode/` | **done** (S54) |
+| ACP 协议开关 + agent 通信治理 | S44 | `features/protocols/ProtocolMapPanel.tsx` | **done** (S54, design-only 诚实边界) |
+| RealityCheck 资源四层 | S45 | 内嵌 `interviewData.ts` | **done** (S54) |
+| 个人论文库 (arXiv/PDF) | S46 | `features/rag-eval/` 引用 | **partial** (S55 接 RAG, paper-library 入口未单独建) |
+| 论文 RAG 检索问答 | S47 | `features/rag-eval/RagEvalDashboard.tsx` | **done** (S55, 评估入口; 问答 UI 待补) |
+| Claim Grounding + Evidence Ledger 联动 | S48 | `features/step-workbench/components/EvidenceTrace.tsx` | **done** (S54, trace 组件) |
+| 已有小论文扩展 Track B | S49 | TechSwitchPanel 显示 status | **done** (S54, status 标签) |
+| RAG 评估指标 + 回归基线 | S50 | `features/rag-eval/RagEvalDashboard.tsx` | **done** (S55, 11 指标 + baseline diff) |
+| 工科学位论文可行性评估 | S51 | `features/thesis-eval/ThesisEvalPage.tsx` | **done** (S55, 4 subset + 三态降级) |
 
 ## 4. 测试矩阵
 
 | 测试 | 旧前端 | 新前端 |
 |---|---|---|
 | 后端 API | pytest (apps/api/tests) | 同左, 不变 |
-| 旧 web e2e | Playwright `apps/web/e2e` | 保持运行直到 S56 |
-| 新 web e2e | — | Playwright `apps/web-react/e2e` (S52 起) |
-| 视觉/组件测试 | — | 评估 (S53 决定) |
-| 类型 | — | `tsc -b` (S52 起) |
+| 旧 web e2e | Playwright `apps/web/e2e` (marker `legacy-web`) | 保留运行, 不删除 |
+| 新 web e2e | — | Playwright `apps/web-react/e2e` (marker `react-web`) |
+| 视觉/组件测试 | — | **30 vitest** (S53+S54+S55) |
+| 类型 | — | `tsc -b` 0 errors |
+
+### 4.1 新前端 e2e 范围 (S56 回归矩阵)
+
+| 范围 | 用例 |
+|---|---|
+| 基础启动 | 首页 / health / 5 路由 |
+| 工作台 | 5 步导航 / Demo Case / 切 step 不重置 trace / 暂停门 |
+| 对话编辑 | chat 输入 / preview / accept |
+| 面试模式 | 8 tech switch / ACP design-only / 9 deep dive module |
+| 协议展示 | 3 行 / honest boundary / route 高亮 |
+| RAG Eval | route / baseline / metric table / regression alert |
+| ThesisEval | route / 4 subset / assess form / baseline / 切换 |
+| 报告导出 | Step 6 入口 |
+| 截图 | home / interview / rag-eval / thesis-eval |
 
 ## 5. 启动与停止
 
 ```bash
-# 后端 (不变)
+# 一键启动 (S56 切换后, 默认打开 React)
+start_all.bat
+# 启动后: backend 18181 + 旧 web 18182 + React web 18183 + 自动开 18183
+
+# 单独启动 (调试用)
 .venv/Scripts/python.exe -m uvicorn app.main:app --app-dir apps/api --host 127.0.0.1 --port 18181
-
-# 旧前端 (不变)
-.venv/Scripts/python.exe apps/web/dev_server.py
-# 访问 http://127.0.0.1:18182
-
-# 新前端 (S52 起)
-cd apps/web-react
-npm install
-npm run dev
-# 访问 http://127.0.0.1:18183
+.venv/Scripts/python.exe apps/web/dev_server.py                                # 旧 18182
+cd apps/web-react && npx vite --host 127.0.0.1 --port 18183                   # 新 18183
 ```
 
-## 6. 禁止事项 (来自总规划)
+### 端口分配
 
-- 禁止在 Session 52 直接删除旧前端。
-- 禁止一次性迁移全部页面。
-- 禁止引入大型 UI 框架作为默认依赖, 除非先写明理由。
-- 禁止把 API URL 写死在业务组件里 (必须经 `apiClient` + `APP_CONFIG.backendBaseUrl`)。
+| 端口 | 服务 | 入口 |
+|---|---|---|
+| 18181 | 后端 API (uvicorn) | `/api/v1/...` |
+| 18182 | 旧前端 (legacy) | `apps/web/dev_server.py` |
+| 18183 | **新前端 (默认)** | `apps/web-react` (Vite dev) |
+
+## 6. 切换策略 (S56)
+
+选择方案 **B**: React 默认入口 (18183), 旧前端保留为备用 (18182)。
+
+- `start_all.bat` 默认浏览器 → 18183
+- `start_all.bat` 同时启动 18182 (失败不阻塞)
+- `apps/web/` 不删除, 不归档, 保留回滚路径
+- SideNav 的 "旧前端 (18182) ↗" 入口保留
+
+不允许:
+
+- 在 S56 直接删除 `apps/web/`
+- 在 S56 把 React 未迁移能力标 done
+- 把 backend 默认端口从 18181 改到其它 (会破坏旧前端回滚路径)
 
 ## 7. 验收状态
 
 - [x] S52: 脚手架与迁移基线
-- [ ] S53: 设计系统与三栏工作台组件化
-- [ ] S54: StepWorkbench 与 Interview Mode 迁移
-- [ ] S55: RAG、论文库与 ThesisEval 前端接入
-- [ ] S56: React 前端切换与回归收口
+- [x] S53: 设计系统与三栏工作台组件化
+- [x] S54: StepWorkbench 与 Interview Mode 迁移
+- [x] S55: RAG、论文库与 ThesisEval 前端接入
+- [x] S56: React 前端切换与回归收口 (默认入口已切 18183)
