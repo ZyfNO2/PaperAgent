@@ -6,5 +6,5 @@ export const APP_CONFIG = {
   currentSession: 52,
   backendBaseUrl: "/api", // dev: Vite proxy → http://127.0.0.1:18181
   legacyWebUrl: "http://127.0.0.1:18182",
-  migrationPhase: "S52: 脚手架与迁移基线",
+  migrationPhase: "S53: 设计系统与三栏工作台组件化",
 } as const;

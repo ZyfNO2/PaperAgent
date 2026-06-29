@@ -15,7 +15,7 @@ export function useHealth(): HealthState {
     const ctrl = new AbortController();
     const t0 = performance.now();
     apiClient
-      .get<{ status?: string; phase?: string }>("/health", { signal: ctrl.signal })
+      .get<{ status?: string; phase?: string }>("/api/v1/health", { signal: ctrl.signal })
       .then((payload) => {
         setState({
           status: "ok",

@@ -1,23 +1,37 @@
-// Session 52: 侧栏 — 未来扩展点 (StepWorkbench / RAG / ThesisEval / ACP)
-// 当前只展示占位, S54-S55 接入
+// Session 53: SideNav — 工作台内的左侧导航
 import { APP_CONFIG } from "../../app/config";
 
 export function SideNav() {
   return (
-    <nav className="sidenav" data-testid="sidenav">
-      <div className="sidenav-section">脚手架 (S52)</div>
-      <a className="sidenav-item active" href="#/">
-        首页
+    <nav className="pa-sidenav" data-testid="sidenav">
+      <div className="pa-sidenav__section">工作台</div>
+      <a className="pa-sidenav__item pa-sidenav__item--active" href="#/">
+        首页 / 总览
       </a>
-      <a className="sidenav-item" href={APP_CONFIG.legacyWebUrl}>
+      <a
+        className="pa-sidenav__item"
+        href={APP_CONFIG.legacyWebUrl}
+        target="_blank"
+        rel="noreferrer"
+      >
         旧前端 (18182) ↗
       </a>
-      <div className="sidenav-section">占位 (S53+)</div>
-      <span className="sidenav-item disabled">StepWorkbench</span>
-      <span className="sidenav-item disabled">Interview Mode</span>
-      <span className="sidenav-item disabled">ACP 协议开关</span>
-      <span className="sidenav-item disabled">RAG Eval</span>
-      <span className="sidenav-item disabled">ThesisEval</span>
+      <div className="pa-sidenav__section">规划中</div>
+      <span className="pa-sidenav__item pa-sidenav__item--disabled">
+        StepWorkbench
+      </span>
+      <span className="pa-sidenav__item pa-sidenav__item--disabled">
+        Interview Mode
+      </span>
+      <span className="pa-sidenav__item pa-sidenav__item--disabled">
+        ACP 协议开关
+      </span>
+      <span className="pa-sidenav__item pa-sidenav__item--disabled">
+        RAG Eval
+      </span>
+      <span className="pa-sidenav__item pa-sidenav__item--disabled">
+        ThesisEval
+      </span>
     </nav>
   );
 }
