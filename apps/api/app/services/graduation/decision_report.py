@@ -9,8 +9,8 @@ from datetime import datetime, timezone
 from .direction_planner import GraduationDirection, plan_directions
 from .risk_scorer import score_direction
 from .evidence_bundle import build_evidence_bundle
-from .baseline_advisor import recommend_baselines
-from .module_extension_advisor import recommend_modules
+from .baseline_advisor import recommend_baselines, BaselineRecommendation
+from .module_extension_advisor import recommend_modules, ExtensionModule
 from ...schemas_graduation_direction import (
     DirectionDecisionReport,
     GraduationDirection as GraduationDirectionOut,
@@ -45,6 +45,48 @@ def _module_to_pydantic(m) -> ExtensionModuleOut:
     )
 
 
+def _llm_baselines_to_dataclass(items: list[dict] | None) -> list[BaselineRecommendation] | None:
+    """把 LLM 返回的 baseline dict 列表转 dataclass (供 _to_output 优先消费)."""
+    if not items:
+        return None
+    from .baseline_advisor import BaselineRecommendation as _BR
+    out: list[_BR] = []
+    for b in items[:3]:
+        if not isinstance(b, dict) or not b.get("name"):
+            continue
+        out.append(_BR(
+            name=str(b["name"]),
+            rationale=str(b.get("rationale") or ""),
+            required_data=str(b.get("required_data") or ""),
+            reproducibility=str(b.get("reproducibility") or "medium"),
+            estimated_compute=str(b.get("estimated_compute") or ""),
+            risks=list(b.get("risks") or []),
+        ))
+    return out or None
+
+
+def _llm_modules_to_dataclass(items: list[dict] | None) -> list[ExtensionModule] | None:
+    if not items:
+        return None
+    from .module_extension_advisor import ExtensionModule as _EM
+    out: list[_EM] = []
+    for m in items[:4]:
+        if not isinstance(m, dict) or not m.get("name"):
+            continue
+        effort = str(m.get("effort") or "M")
+        if effort not in ("S", "M", "L"):
+            effort = "M"
+        out.append(_EM(
+            name=str(m["name"]),
+            attach_to=str(m.get("attach_to") or ""),
+            problem_solved=str(m.get("problem_solved") or ""),
+            ablation_plan=str(m.get("ablation_plan") or ""),
+            effort=effort,
+            risks=list(m.get("risks") or []),
+        ))
+    return out or None
+
+
 def _utcnow_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -68,6 +110,8 @@ def _to_output(
     has_dataset: bool,
     has_repo: bool,
     has_local_rag: bool,
+    llm_baselines: list[BaselineRecommendation] | None = None,
+    llm_modules: list[ExtensionModule] | None = None,
 ) -> GraduationDirectionOut:
     breakdown = score_direction(
         d,
@@ -76,8 +120,16 @@ def _to_output(
         has_repo=has_repo,
         has_local_rag=has_local_rag,
     )
-    baselines = recommend_baselines(d, has_dataset=has_dataset, max_n=3)
-    mods = recommend_modules(d, baselines, max_n=4)
+    # ponytail: 优先用 LLM 提供的 baseline + module (LLM 路径读懂题目,
+    # 不会硬塞 YOLO/U-Net). 仅在 LLM 未提供时才走 M4/M5 任务路径启发式.
+    if llm_baselines:
+        baselines = llm_baselines[:3]
+    else:
+        baselines = recommend_baselines(d, has_dataset=has_dataset, max_n=3)
+    if llm_modules:
+        mods = llm_modules[:4]
+    else:
+        mods = recommend_modules(d, baselines, max_n=4)
 
     return GraduationDirectionOut(
         direction_id=d.direction_id,
@@ -107,24 +159,25 @@ def build_decision_report(
     project_id: str,
     topic: str,
     *,
-    keywords: list[str] | None = None,
     use_last_retrieval: bool = True,
     use_local_rag: bool = True,
     local_rag_query: str | None = None,
     max_directions: int = 3,
+    prefer: str = "auto",
 ) -> DirectionDecisionReport:
-    """端到端: plan → score → bundle → baseline → module → report.
+    """端到端: plan (LLM) → score → bundle → baseline (LLM 优先) → module (LLM 优先) → report.
 
-    ponytail: 不暴露中间 dataclass 给前端, 全部走 pydantic model.
+    ponytail:
+    - plan 失败 → 直接抛 DirectionPlannerError (fail-fast, 不做物理分词 fallback)
+    - LLM 给的 baseline/module 优先于 M4/M5 启发式 (避免 M4 把 3D 题硬塞 YOLO/U-Net)
+    - DirectorResult.source + arxiv_refs 通过 evidence_sources 暴露给前端调试
     """
 
     if not topic or not topic.strip():
         raise ValueError("topic 不能为空")
 
-    # 1) 方向
-    directions_in = plan_directions(topic, keywords=keywords, max_directions=max_directions)
-    if not directions_in:
-        raise ValueError("无法生成任何毕业方向, 请检查题目")
+    # 1) 方向 (LLM-first, 失败抛 DirectionPlannerError)
+    directions_in, director_info = plan_directions(topic, max_directions=max_directions, prefer=prefer)
 
     # 2) 证据 (按方向共用同一份 bundle + 全局 evidence_flags)
     bundle, counts = build_evidence_bundle(
@@ -139,17 +192,20 @@ def build_decision_report(
     has_repo = counts["repo"] > 0
     has_local_rag = counts["rag_ref"] > 0
 
-    # 3) 输出方向
+    # 3) 输出方向 (LLM 给的 baseline/module 优先)
     directions_out: list[GraduationDirectionOut] = []
     for d in directions_in:
+        llm_b = _llm_baselines_to_dataclass(getattr(d, "_llm_baselines", None))
+        llm_m = _llm_modules_to_dataclass(getattr(d, "_llm_modules", None))
         out = _to_output(
             d,
             has_paper=has_paper,
             has_dataset=has_dataset,
             has_repo=has_repo,
             has_local_rag=has_local_rag,
+            llm_baselines=llm_b,
+            llm_modules=llm_m,
         )
-        # 共享同一份 evidence_bundle (它对每个方向都反映当前证据)
         out.evidence_bundle = bundle
         directions_out.append(out)
 
@@ -167,6 +223,7 @@ def build_decision_report(
     warnings: list[str] = []
     if not (has_paper or has_dataset or has_repo or has_local_rag):
         warnings.append("未找到任何证据候选, 当前方向仅供参考, 建议先补一轮检索")
+    warnings.append(f"方向生成来源: {director_info.source} (arxiv_refs={len(director_info.arxiv_refs)})")
 
     return DirectionDecisionReport(
         project_id=project_id,

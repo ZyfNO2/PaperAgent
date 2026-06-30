@@ -79,19 +79,13 @@ def _shoot_at(page: Page, name: str, selector: str) -> None:
 
 def _enter_topic(page: Page, react_url: str, topic: str) -> None:
     """输入题目 + 触发后端 analyze (拿到 project_id)."""
-    page.goto(react_url + "/#/", wait_until="domcontentloaded")
-    expect(page.get_by_test_id("user-shell")).to_be_visible()
-
-    # 填题目 (TopicIntake testid)
-    topic_input = page.get_by_test_id("topic-intake-input").first
-    expect(topic_input).to_be_visible()
-    topic_input.fill(topic)
-
-    # 点开始分析 (触发 OneTopic analyze 拿 project_id, 这是方向建议的前置条件)
+    page.goto(react_url + "/#/", wait_until="load")
+    # React hydration is async — wait for the actual rendered input, not DOMContentLoaded
+    page.wait_for_selector('[data-testid="topic-intake-input"]', timeout=15000)
+    page.wait_for_timeout(300)
+    page.get_by_test_id("topic-intake-input").first.fill(topic)
     page.get_by_test_id("topic-intake-start").first.click()
-
-    # 等分析返回 (analysis-results 出现)
-    expect(page.get_by_test_id("uw-analysis-results")).to_be_visible(timeout=15_000)
+    page.wait_for_selector('[data-testid="uw-analysis-results"]', timeout=20000)
 
 
 # ===========================================================================
@@ -100,8 +94,8 @@ def _enter_topic(page: Page, react_url: str, topic: str) -> None:
 
 
 def test_s62_home_shows_direction_panel(page: Page, react_url: str) -> None:
-    page.goto(react_url + "/#/", wait_until="domcontentloaded")
-    expect(page.get_by_test_id("user-shell")).to_be_visible()
+    page.goto(react_url + "/#/", wait_until="load")
+    page.wait_for_selector('[data-testid="uw-direction-panel"]', timeout=15000)
     # 即使没分析, panel 占位卡也要出现 (提示用户输入题目)
     expect(page.get_by_test_id("uw-direction-panel")).to_be_visible()
     _shoot(page, "s62_home_panel_present.png")

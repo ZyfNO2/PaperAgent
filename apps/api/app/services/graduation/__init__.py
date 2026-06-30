@@ -1,11 +1,11 @@
-"""Session 62: GraduationDirection planner/scorer/evidence/baseline/module/report.
+"""Session 62: GraduationDirection — LLM-first director + heuristic-fail-fast.
 
-ponytail: no LLM, no external state; pure heuristic.
+ponytail: 方向生成委托给 llm_director (走 arXiv + LLM), 失败直接抛 DirectionPlannerError.
 """
 from .direction_planner import (
     GraduationDirection,
     plan_directions,
-    RAW_TOPIC_TEMPLATES,
+    DirectionPlannerError,
 )
 from .risk_scorer import score_direction, RiskBreakdown, RiskLevel
 from .evidence_bundle import build_evidence_bundle, EvidenceBundle
@@ -16,7 +16,7 @@ from .decision_report import build_decision_report, DirectionDecisionReport
 __all__ = [
     "GraduationDirection",
     "plan_directions",
-    "RAW_TOPIC_TEMPLATES",
+    "DirectionPlannerError",
     "score_direction",
     "RiskBreakdown",
     "RiskLevel",

@@ -16,7 +16,7 @@ class GraduationDirectionRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    topic: str = Field(min_length=1, description="原始题目 (用于启发式匹配与 fallback)")
+    topic: str = Field(min_length=1, description="原始题目")
     use_last_retrieval: bool = Field(
         default=True,
         description="是否复用 S61 最近一次 retrieval run 的候选",
@@ -30,6 +30,10 @@ class GraduationDirectionRequest(BaseModel):
         ge=2,
         le=3,
         description="生成方向数量上限 (2-3)",
+    )
+    prefer: Literal["auto", "llm", "heuristic"] = Field(
+        default="auto",
+        description="auto=LLM-first; llm=强制 LLM; heuristic=显式禁用 LLM",
     )
 
 
