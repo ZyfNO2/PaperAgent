@@ -210,6 +210,30 @@ const ROLE_LABELS: Record<LiteratureRole, string> = {
   irrelevant: "不相关 (已过滤)",
 };
 
+// ponytail: 关键词匹配解释 — 把"score 0.10 / confidence 0.47"那种不可读的浮点
+// 翻译成"命中 X / 相关 Y / 缺失 Z / 疑似无关 W". 算法: 用 topicDraft 拆出的词
+// 去扫 title + abstract, 命中放进第一桶, 未命中但仍是题面词的进"相关", 后端 role
+// 里的 risk_notes 进"疑似无关".
+function explainMatch(
+  candidate: RetrievalCandidate,
+  topicAtoms: string[],
+  role: RoleAssignment | undefined,
+): { hit: string[]; related: string[]; missing: string[]; suspect: string[] } {
+  const haystack = `${candidate.title} ${candidate.abstract ?? ""}`.toLowerCase();
+  const atoms = topicAtoms.map((a) => a.toLowerCase()).filter((a) => a.length > 0);
+  const hit: string[] = [];
+  const related: string[] = [];
+  for (const a of atoms) {
+    if (haystack.includes(a)) hit.push(a);
+    else related.push(a);
+  }
+  const suspect: string[] = [];
+  if (role?.risk_notes && role.risk_notes.length > 0) {
+    suspect.push(...role.risk_notes.slice(0, 3));
+  }
+  return { hit, related, missing: [], suspect };
+}
+
 export function RetrievalCandidatePanel({
   testId,
   projectId = DEFAULT_PROJECT,
@@ -223,6 +247,7 @@ export function RetrievalCandidatePanel({
   const [run, setRun] = useState<RetrievalRun | null>(null);
   const [dimmed, setDimmed] = useState<Set<string>>(new Set());
   const [importedEid, setImportedEid] = useState<Map<string, string>>(new Map());
+  const [baselineEid, setBaselineEid] = useState<string | null>(null);
   const [actionBusy, setActionBusy] = useState<string | null>(null);
   const [devMode, setDevMode] = useState<boolean>(false);
 
@@ -330,15 +355,73 @@ export function RetrievalCandidatePanel({
     setFlash({ kind: "warn", text: `已标记不相关: ${candidate.title}` });
   }
 
-  function retrySimilar(candidate: RetrievalCandidate) {
+  // ponytail: "设为 Baseline" 复用 /retrieval/import (project 内 baseline 走 evidence ledger).
+  // 没有单独的后端 baseline-pin 路由; 通过 import 把它落到 ledger, 再用本地 baselineEid
+  // 在 UI 上标星. 后续若后端提供 /retrieval/{candidate_id}/baseline, 把这一行换掉即可.
+  async function setBaseline(candidate: RetrievalCandidate) {
+    if (!run) return;
+    setActionBusy(`baseline-${candidate.candidate_id}`);
+    setFlash(null);
+    try {
+      const resp = await apiClient.post<RetrievalImportResponse>(
+        `${apiPrefix}/one-topic/${projectId}/retrieval/import`,
+        {
+          run_id: run.run_id,
+          candidate_ids: [candidate.candidate_id],
+          workspace_lane: "user_preferred",
+          auto_verify: false,
+        },
+      );
+      const eid = resp.evidence_ids[0];
+      if (eid) {
+        setBaselineEid(eid);
+        setImportedEid((prev) => {
+          const next = new Map(prev);
+          next.set(candidate.candidate_id, eid);
+          return next;
+        });
+      }
+      setFlash({
+        kind: resp.imported > 0 ? "ok" : "warn",
+        text:
+          resp.imported > 0
+            ? `已设为 Baseline: ${eid ?? resp.message ?? "ok"}`
+            : `未设为 Baseline: ${resp.message || "重复或被拒"}`,
+      });
+    } catch (e) {
+      setFlash({ kind: "err", text: `设为 Baseline 失败: ${formatError(e)}` });
+    } finally {
+      setActionBusy(null);
+    }
+  }
+
+  // ponytail: 补搜基于 topicDraft 拆出的关键词, 绝不把候选标题塞进下一轮查询
+  // (避免一个不相关候选的标题污染后续检索). 三个槽位 (method/object/task) 都用同一
+  // 批原子, 只在尾部追加后缀, 确认弹窗让用户看清要重搜什么.
+  function retrySimilar(_candidate: RetrievalCandidate) {
+    const atoms = splitKeywords(topicDraft);
+    if (atoms.length === 0) {
+      setFlash({ kind: "warn", text: "当前检索关键词为空, 无可补搜原子" });
+      return;
+    }
+    const head = atoms.join(" ");
     const queries = [
-      `${candidate.title} implementation`,
-      `${candidate.title} survey`,
-      `${candidate.title} benchmark`,
+      `${head} implementation`,
+      `${head} github`,
+      `${head} benchmark`,
     ];
-    const merged = [...new Set([...splitKeywords(topicDraft), ...queries])];
-    setTopicDraft(merged.join(" "));
-    setFlash({ kind: "warn", text: `已补搜关键词, 点击"开始检索"重跑` });
+    const prompt = [
+      "将基于当前题目关键词补搜 (不会使用该候选标题):",
+      "",
+      `• ${queries[0]}`,
+      `• ${queries[1]}`,
+      `• ${queries[2]}`,
+      "",
+      "是否继续?",
+    ].join("\n");
+    if (typeof window !== "undefined" && !window.confirm(prompt)) return;
+    setTopicDraft(queries.join(" "));
+    setFlash({ kind: "warn", text: "已补搜关键词, 点击\"开始检索\"重跑" });
   }
 
   // ---- 角色分组: candidate_id -> RoleAssignment ---- //
@@ -387,6 +470,9 @@ export function RetrievalCandidatePanel({
 
   const cleanSummary = run?.clean_summary ?? null;
   const moduleMatrix = run?.module_matrix ?? null;
+
+  // 当前题面词 — 供列表内每个候选做命中/相关/缺失 解释
+  const topicAtoms = useMemo(() => splitKeywords(topicDraft), [topicDraft]);
 
   return (
     <section className="pa-uw-zone" data-testid={testId ?? "retrieval-panel"}>
@@ -512,6 +598,9 @@ export function RetrievalCandidatePanel({
               onAddLibrary={addToLibrary}
               onReject={markIrrelevant}
               onRetry={retrySimilar}
+              onSetBaseline={setBaseline}
+              topicAtoms={topicAtoms}
+              baselineEid={baselineEid}
             />
             <CandidateList
               testId="retrieval-datasets"
@@ -525,6 +614,9 @@ export function RetrievalCandidatePanel({
               onAddEvidence={addToEvidence}
               onReject={markIrrelevant}
               onRetry={retrySimilar}
+              onSetBaseline={setBaseline}
+              topicAtoms={topicAtoms}
+              baselineEid={baselineEid}
             />
             <CandidateList
               testId="retrieval-repos"
@@ -538,6 +630,9 @@ export function RetrievalCandidatePanel({
               onAddEvidence={addToEvidence}
               onReject={markIrrelevant}
               onRetry={retrySimilar}
+              onSetBaseline={setBaseline}
+              topicAtoms={topicAtoms}
+              baselineEid={baselineEid}
             />
           </div>
         ) : null}
@@ -565,6 +660,9 @@ export function RetrievalCandidatePanel({
                       onAddLibrary={addToLibrary}
                       onReject={markIrrelevant}
                       onRetry={retrySimilar}
+                      onSetBaseline={setBaseline}
+                      topicAtoms={topicAtoms}
+                      baselineEid={baselineEid}
                     />
                   ),
                 },
@@ -585,6 +683,9 @@ export function RetrievalCandidatePanel({
                       onAddLibrary={addToLibrary}
                       onReject={markIrrelevant}
                       onRetry={retrySimilar}
+                      onSetBaseline={setBaseline}
+                      topicAtoms={topicAtoms}
+                      baselineEid={baselineEid}
                     />
                   ),
                 },
@@ -614,6 +715,9 @@ export function RetrievalCandidatePanel({
                           onAddLibrary={addToLibrary}
                           onReject={markIrrelevant}
                           onRetry={retrySimilar}
+                          onSetBaseline={setBaseline}
+                          topicAtoms={topicAtoms}
+                          baselineEid={baselineEid}
                         />
                       )}
                       {moduleMatrix && Array.isArray(moduleMatrix.entries) && moduleMatrix.entries.length > 0 ? (
@@ -639,6 +743,9 @@ export function RetrievalCandidatePanel({
                         onAddEvidence={addToEvidence}
                         onReject={markIrrelevant}
                         onRetry={retrySimilar}
+                        onSetBaseline={setBaseline}
+                        topicAtoms={topicAtoms}
+                        baselineEid={baselineEid}
                       />
                       <CandidateList
                         testId="retrieval-repos"
@@ -652,6 +759,9 @@ export function RetrievalCandidatePanel({
                         onAddEvidence={addToEvidence}
                         onReject={markIrrelevant}
                         onRetry={retrySimilar}
+                        onSetBaseline={setBaseline}
+                        topicAtoms={topicAtoms}
+                        baselineEid={baselineEid}
                       />
                     </div>
                   ),
@@ -675,6 +785,9 @@ export function RetrievalCandidatePanel({
                             onAddLibrary={addToLibrary}
                             onReject={markIrrelevant}
                             onRetry={retrySimilar}
+                            onSetBaseline={setBaseline}
+                            topicAtoms={topicAtoms}
+                            baselineEid={baselineEid}
                           />
                         ),
                       },
@@ -745,10 +858,13 @@ interface CandidateListProps {
   importedEid: Map<string, string>;
   actionBusy: string | null;
   devMode: boolean;
+  topicAtoms: string[];
+  baselineEid: string | null;
   onAddEvidence: (c: RetrievalCandidate) => void;
   onAddLibrary?: (c: RetrievalCandidate) => void;
   onReject: (c: RetrievalCandidate) => void;
   onRetry: (c: RetrievalCandidate) => void;
+  onSetBaseline?: (c: RetrievalCandidate) => void;
 }
 
 function CandidateList({
@@ -760,10 +876,13 @@ function CandidateList({
   importedEid,
   actionBusy,
   devMode,
+  topicAtoms,
+  baselineEid,
   onAddEvidence,
   onAddLibrary,
   onReject,
   onRetry,
+  onSetBaseline,
 }: CandidateListProps) {
   if (candidates.length === 0) {
     return (
@@ -785,6 +904,8 @@ function CandidateList({
           const isDim = dimmed.has(c.candidate_id);
           const eid = importedEid.get(c.candidate_id);
           const role = roleById.get(c.candidate_id);
+          const isBaseline = !!eid && eid === baselineEid;
+          const match = explainMatch(c, topicAtoms, role);
           return (
             <li
               key={c.candidate_id}
@@ -796,16 +917,30 @@ function CandidateList({
                 <Badge tone="info" testId={`retrieval-source-badge-${c.candidate_id}`}>
                   {c.source}
                 </Badge>
-                <Badge
-                  tone={c.retrieval_score >= 0.5 ? "ok" : "neutral"}
-                  testId={`retrieval-score-${c.candidate_id}`}
-                >
-                  score {c.retrieval_score.toFixed(2)}
-                </Badge>
+                {isBaseline ? (
+                  <Badge tone="ok" testId={`retrieval-baseline-badge-${c.candidate_id}`}>
+                    ★ Baseline
+                  </Badge>
+                ) : null}
                 {role ? (
                   <Badge tone="neutral" testId={`retrieval-role-badge-${c.candidate_id}`}>
                     {ROLE_LABELS[role.role]}
                   </Badge>
+                ) : null}
+              </div>
+              <div className="pa-uw-result-item__meta" data-testid={`retrieval-match-${c.candidate_id}`}>
+                {match.hit.length > 0 ? (
+                  <span>命中关键词 {match.hit.length} 个 ({match.hit.slice(0, 4).join(", ")})
+                    {match.hit.length > 4 ? "…" : ""}</span>
+                ) : (
+                  <span>命中关键词 0 个</span>
+                )}
+                {match.related.length > 0 ? (
+                  <span> · 相关关键词 {match.related.length} 个 ({match.related.slice(0, 4).join(", ")})
+                    {match.related.length > 4 ? "…" : ""}</span>
+                ) : null}
+                {match.suspect.length > 0 ? (
+                  <span> · 疑似无关: {match.suspect.slice(0, 3).join("; ")}</span>
                 ) : null}
               </div>
               <div className="pa-uw-result-item__meta">
@@ -841,6 +976,21 @@ function CandidateList({
                 </div>
               ) : null}
               <div className="pa-uw-library-item__actions">
+                {onSetBaseline && (c.candidate_type === "paper" || c.candidate_type === "repo") ? (
+                  <button
+                    type="button"
+                    className="pa-btn pa-btn--secondary pa-btn--sm"
+                    onClick={() => onSetBaseline(c)}
+                    disabled={actionBusy === `baseline-${c.candidate_id}` || isBaseline}
+                    data-testid={`retrieval-set-baseline-${c.candidate_id}`}
+                  >
+                    {isBaseline
+                      ? "已是 Baseline"
+                      : actionBusy === `baseline-${c.candidate_id}`
+                        ? "设基中..."
+                        : "设为 Baseline"}
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   className="pa-btn pa-btn--primary pa-btn--sm"
@@ -991,7 +1141,9 @@ function DevPanel({ run, irrelevantPapers, roleById, cleanSummary }: DevPanelPro
                   <div className="pa-uw-result-item__head">
                     <strong>{c.title}</strong>
                     <Badge tone="info">{c.source}</Badge>
-                    <Badge tone="neutral">score {c.retrieval_score.toFixed(2)}</Badge>
+                    <span className="pa-small pa-muted">
+                      matched {c.matched_keywords.length} 个
+                    </span>
                   </div>
                   {role?.reason ? (
                     <div className="pa-uw-result-item__summary">reason: {role.reason}</div>
