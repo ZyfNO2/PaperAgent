@@ -303,15 +303,89 @@ e9d3649e Phase 65 T1+T2+T4: 3 new modules
 
 ---
 
-## 10. 结论
+## 10. ⚠️ 长截图发现的新问题（必须下一 Session 解决）
 
-**Phase 65 通过** — 12 个新模块，45 个后端测试 + 5 个 Playwright 测试全部通过。关键修复：
-- ✅ 关键词匹配解释替代浮点分数
-- ✅ Baseline 人工选择
-- ✅ 工作包 Brainstorm 不再默认 attention
-- ✅ 错误论文不进入关键证据
-- ✅ 搜索框不再被污染
-- ✅ 未实现功能有显式标记
+长截图（viewport 1800px + full_page）暴露出 4 个之前没发现的问题：
+
+### 10.1 三个面板持久化未实现
+**位置**: `UserWorkbenchPage.tsx` 方向建议区下方
+
+**实际显示**:
+> "下方三个面板仅作记录与展示，后端持久化与跨项目同步**暂未实现**"
+
+**影响**: 证据提交（C）、文献 RAG 库（D）、本地 RAG 问答（E）三面板只是 UI 占位，提交后数据未真正持久化，也不同步到其他项目。
+
+**下一 Session 必须**: 
+- 接通 `POST /paper-library/manual` → DB 持久化
+- 接通 `GET /paper-library/list` → 跨项目同步
+- 接通 `POST /paper-library/local-ask` → 本地 RAG 问答真正实现
+
+### 10.2 删除文献端点未实现
+**位置**: `UserWorkbenchPage.tsx` 文献 RAG 库
+
+**实际显示**:
+> "删除文献: 后端端点**暂未实现**，当前版本仅支持入库 / 重建索引. (后续 Session 接入.)"
+
+**影响**: 用户无法删除已入库的文献，会导致 RAG 库污染。
+
+**下一 Session 必须**: 
+- 实现 `DELETE /paper-library/{id}` 端点
+- 前端"删除"按钮接真实后端
+- 软删除 vs 硬删除策略
+
+### 10.3 截图上下半部分状态不一致
+**位置**: 题目输入区 vs 方向建议区
+
+**实际现象**:
+- 上半部分 "题目输入" 显示 "等待确认"（分析完成态）
+- 下半部分 "方向建议" 显示 "先在上方输入题目, 再点击'生成方向建议'"（初始态）
+
+**根因**: 方向建议需要用户**额外**点击"生成方向建议"按钮，题目输入区的分析完成不会自动触发方向建议生成。
+
+**影响**: 用户看到"已分析完成"但没看到方向建议，困惑为何没结果。
+
+**下一 Session 必须**:
+- 题目分析完成后自动跳到方向建议
+- 或在题目分析结果中显示"已生成方向建议"状态
+
+### 10.4 dev console 真实 trace 可见
+**位置**: 右下角 dev console
+
+**实际显示**:
+```
+12:04:18 info  booting paperagent · topic feasibility workflow
+12:04:18 info  loading Session 59 user-minimal + dev-mode shell
+12:04:19 tool  intake: read project_intake.jsonl · ok
+12:04:19 info  ready. dev console visible — user shell is hidden
+02:30:47 info  planner: parse topic → 3 keywords
+02:30:53 tool  retriever: openalex.search(query=k1+k2)
+02:30:59 info  scorer: 6-dim evidence scoring · 4 candidates
+02:31:05 user  asking for confirmation …
+02:31:11 info  planner: parse topic → 3 keywords
+```
+
+**评估**: ✅ **好消息** - 后端 trace 真实可见，planner/retriever/scorer 完整流程都在。
+**之前没发现**: 因为之前截的是上半部分视口，看不到右下角 dev console。
+**建议**: 下一 Session 可以把 dev console 的 trace 接到前端普通用户视图，让用户也能看到 planner/retriever/scorer 进度。
+
+---
+
+## 11. 结论
+
+**Phase 65 部分通过** — 12 个新模块、45 个后端测试 + 5 个 Playwright 测试通过。关键修复有效，但**长截图暴露 4 个新问题**需在 Session 66+ 处理。
+
+| 修复项 | 状态 |
+|--------|------|
+| ✅ 关键词匹配解释替代浮点分数 | 完成 |
+| ✅ Baseline 人工选择 | 完成 |
+| ✅ 工作包 Brainstorm 不再默认 attention | 完成 |
+| ✅ 错误论文不进入关键证据 | 完成 |
+| ✅ 搜索框不再被污染 | 完成 |
+| ✅ 未实现功能有显式标记 | 完成 |
+| ⚠️ 三个面板持久化 | **未实现 (S66+)** |
+| ⚠️ 删除文献端点 | **未实现 (S66+)** |
+| ⚠️ 方向建议状态不一致 | **未实现 (S66+)** |
+| ✅ dev console 真实 trace | 完成（需推广到普通用户视图）|
 
 **已知改进点**:
 - 用户选择 baseline 后，UI 自动滚动到 candidate panel 需优化
