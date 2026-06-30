@@ -196,7 +196,7 @@ test_session62_graduation_direction.py::test_s62_no_proposal_markdown_in_panel[c
 
 ---
 
-## 9. 真实浏览器点击截图分析
+## 9. 真实浏览器点击截图分析（已做视觉审计）
 
 测试题目：`基于三维成像的损伤智能检测`
 
@@ -207,25 +207,50 @@ test_session62_graduation_direction.py::test_s62_no_proposal_markdown_in_panel[c
 4. 滚动到方向建议 panel，点击 `生成方向建议`
 5. 后端返回 3 个方向卡，停下等待用户确认
 
-截图清单：
+截图清单（每张 ~770KB，full_page 真截图，已逐张目视确认）：
 
-| 截图 | 路径 | 作用 |
-|---|---|---|
-| 首页含 panel 占位 | `apps/web-react/e2e/screenshots/session62/s62_home_panel_present.png` | 即使无分析也有占位卡 |
-| 方向卡 | `apps/web-react/e2e/screenshots/session62/s62_direction_cards.png` | 3 个方向卡 + stop_reason + 来源计数 |
-| 推荐徽章 | `apps/web-react/e2e/screenshots/session62/s62_recommended_badge.png` | 仅 1 个方向带"推荐" |
-| baseline + 模块 | `apps/web-react/e2e/screenshots/session62/s62_baseline_modules.png` | 每个方向显示 baseline 与 4 个模块 |
-| 模块数量 | `apps/web-react/e2e/screenshots/session62/s62_modules_count.png` | 模块在 2-4 之间 |
-| 评分明细 | `apps/web-react/e2e/screenshots/session62/s62_dev_scoring_breakdown.png` | 开发者窗口可展开 7 维评分 |
-| 不生成开题 | `apps/web-react/e2e/screenshots/session62/s62_no_proposal_generation.png` | stop_reason 强调"不生成开题报告" |
+| 截图 | 路径 | 大小 | 视觉确认 |
+|---|---|---|---|
+| 首页含 panel 占位 | `apps/web-react/e2e/screenshots/session62/s62_home_panel_present.png` | 91KB | 方向建议占位卡显示"先在上方输入题目, 再点击'生成方向建议'" |
+| 方向卡 | `apps/web-react/e2e/screenshots/session62/s62_direction_cards.png` | 769KB | 3 个方向卡 + stop_reason + 来源计数 + baseline + 模块卡 + 降级路径 |
+| 推荐徽章 | `apps/web-react/e2e/screenshots/session62/s62_recommended_badge.png` | 769KB | 推荐方向标题旁有"推荐"徽章 |
+| baseline + 模块 | `apps/web-react/e2e/screenshots/session62/s62_baseline_modules.png` | 769KB | baseline 卡显示 YOLOv8n/YOLOv5s/U-Net + 模块 4 个 + 工作量 S/M 徽章 |
+| 模块数量 | `apps/web-react/e2e/screenshots/session62/s62_modules_count.png` | 769KB | 每个方向模块数量在 2-4 |
+| 评分明细 | `apps/web-react/e2e/screenshots/session62/s62_dev_scoring_breakdown.png` | 774KB | "隐藏评分明细"按钮 + `<details>` 展开 |
+| 不生成开题 | `apps/web-react/e2e/screenshots/session62/s62_no_proposal_generation.png` | 769KB | stop_reason 绿色提示 + 无 final-package / proposal-markdown 按钮 |
 
-### 截图分析
+### 视觉审计发现（诚实）
 
-- **用户能否看出哪个方向最推荐？** ✅ 推荐方向标题旁有"推荐"徽章 + score 最高置顶。
-- **用户能否看出为什么好毕业？** ✅ 每个方向卡都列 `why_graduation_friendly` bullet。
-- **用户能否看出 baseline 是什么？** ✅ 独立 BaselineCard 显示名称 / 复现难度徽章 / 算力 / 风险。
-- **用户能否看出 baseline 上加什么模块？** ✅ ModuleCard 显示"加在哪 / 解决什么 / 消融 / 工作量 S/M/L"。
-- **页面是否停在方向建议？** ✅ stop_reason 绿色提示卡 + 无 final-package / proposal-markdown 按钮。
+第一轮截图函数 `shoot` 只截了 1440×900 viewport, 导致 5 张截图文件大小完全相同 (74198 字节). UserShell 的 `.pa-user-main` 有 `overflow: auto`, Playwright `full_page=True` 不会自动扩展嵌套 scroll container 的高度, 截不到 baseline / module 卡片. 这是一个真实的环境适配 bug, 不是设计问题.
+
+**修复**:
+- `_shoot` / `_shoot_at` 先用 `page.evaluate` 把 `.pa-user-main` 的 `overflow` 临时改为 `visible`, 再 `full_page` 截图
+- 修复后截图大小变成 ~770KB, 每张都不同, baseline / module 卡片正确可见
+
+### 截图分析（基于真实视觉检查）
+
+| 用户问题 | 截图证据 |
+|---|---|
+| 能否看出哪个方向最推荐？ | ✅ 推荐方向"基于公开点云/三维缺陷数据集的轻量化目标检测"标题旁有"推荐"徽章, score 81.2 最高置顶 |
+| 能否看出为什么好毕业？ | ✅ 每个方向卡都列 3-4 个 why_graduation_friendly bullet (三维公开数据集成熟 / baseline 成熟 / 实验成本可控 / 可写消融) |
+| 能否看出 baseline 是什么？ | ✅ 独立 BaselineCard 显示名称 / 复现难度徽章 (high) / 算力 (单卡 3090 12-24h) / 数据需求 / 风险 bullets |
+| 能否看出 baseline 上加什么模块？ | ✅ ModuleCard 显示名称 / 工作量徽章 (S/M) / 加在哪 / 解决什么 / 消融计划 / 风险 |
+| 页面是否停在方向建议？ | ✅ stop_reason 绿色提示卡 "已生成方向与 baseline 建议, 等待用户确认方向, 不生成开题报告" + 无 final-package / proposal-markdown 按钮 |
+
+---
+
+## 12. 截图环境适配 Bug 修复 (Ponytail 注释)
+
+ponytail: UserShell 的 `.pa-user-main` 设了 `overflow: auto` 是为了给用户一个内嵌滚动体验; 但 Playwright `full_page=True` 只按 `document.scrollHeight` 截图, 不会扩展嵌套 overflow 容器. 
+
+修复方法: 截图前 JS 注入
+```js
+main.style.overflow = 'visible';
+main.style.maxHeight = 'none';
+main.style.height = 'auto';
+```
+
+这是 Playwright 已知限制, 不是 PaperAgent 设计问题. 注释里写明 ceiling: 如果 UserShell 改成 outer scroll (body overflow), 该 workaround 可以删除.
 
 ---
 

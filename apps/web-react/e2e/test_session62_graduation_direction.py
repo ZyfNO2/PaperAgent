@@ -35,10 +35,45 @@ def react_url() -> str:
     return "http://127.0.0.1:18183"
 
 
+def _expand_for_screenshot(page: Page) -> None:
+    """临时解除 .pa-user-main 的 overflow: auto 约束, 让 Playwright full_page 能截到全部内容.
+
+    ponytail: UserShell 把 .pa-user-main 设了 overflow: auto, 这是为了用户交互
+    的内部滚动; 但截图时这个约束会让 full_page 截不到内层内容. 临时改成 visible.
+    """
+    page.evaluate(
+        """
+        () => {
+            const main = document.querySelector('.pa-user-main');
+            if (main) {
+                main.style.overflow = 'visible';
+                main.style.maxHeight = 'none';
+                main.style.height = 'auto';
+            }
+        }
+        """
+    )
+    page.wait_for_timeout(150)
+
+
 def _shoot(page: Page, name: str) -> None:
+    """截图前先解除 .pa-user-main overflow, 再 full_page."""
+    page.wait_for_timeout(300)
+    page.set_viewport_size({"width": 1440, "height": 900})
+    page.wait_for_timeout(150)
+    _expand_for_screenshot(page)
+    page.screenshot(path=str(SCREENSHOT_DIR / name), full_page=True)
+
+
+def _shoot_at(page: Page, name: str, selector: str) -> None:
+    """滚到目标元素 + 解除 overflow + 全页截图."""
     page.wait_for_timeout(200)
     page.set_viewport_size({"width": 1440, "height": 900})
     page.wait_for_timeout(150)
+    el = page.locator(selector).first
+    el.scroll_into_view_if_needed()
+    page.wait_for_timeout(150)
+    _expand_for_screenshot(page)
     page.screenshot(path=str(SCREENSHOT_DIR / name), full_page=True)
 
 
@@ -151,7 +186,8 @@ def test_s62_baseline_cards_present(page: Page, react_url: str) -> None:
         """
     )
     assert len(baseline_ids) >= 2, baseline_ids
-    _shoot(page, "s62_baseline_modules.png")
+    # 滚到 baseline 区域, 确保截图能看到卡的内容
+    _shoot_at(page, "s62_baseline_modules.png", '[data-testid^="gd-baseline-"]')
 
 
 # ===========================================================================
