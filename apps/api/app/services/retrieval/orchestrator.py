@@ -7,10 +7,14 @@
 4. 跨候选去重
 5. 与 Evidence Ledger 去重
 6. 评分
-7. 持久化最近一次 run
-8. import -> Evidence Ledger
-9. 写 trace 事件
-10. (S61, enhanced=True) 生成 GapReport + 触发 1 轮 Retry
+7. (S64) candidate_cleaner: 清洗 keep/quarantine/reject
+8. (S64) web_dataset_search: dataset 不足时 WebSearch 兜底
+9. (S64) literature_role_classifier: 给论文分角色 (trace/UI 增强)
+10. (S64) paper_module_matrix: Base+ModuleA+B+Dataset 矩阵 (UI 增强)
+11. 持久化最近一次 run
+12. import -> Evidence Ledger
+13. 写 trace 事件
+14. (S61, enhanced=True) 生成 GapReport + 触发 1 轮 Retry
 """
 
 from __future__ import annotations
@@ -49,6 +53,27 @@ try:  # ponytail: 同上, retry planner 可选
     from .retry_planner import plan_retry  # type: ignore[import-not-found]
 except Exception:  # noqa: BLE001
     plan_retry = None  # type: ignore[assignment]
+
+try:  # ponytail: S64 T1 可选, 缺则跳过清洗
+    from .candidate_cleaner import clean_candidates  # type: ignore[import-not-found]
+except Exception:  # noqa: BLE001
+    clean_candidates = None  # type: ignore[assignment]
+
+try:  # ponytail: S64 T2 可选, 缺则不触发 websearch
+    from .web_dataset_search import search_web_datasets, seed_known_datasets  # type: ignore[import-not-found]
+except Exception:  # noqa: BLE001
+    search_web_datasets = None  # type: ignore[assignment]
+    seed_known_datasets = None  # type: ignore[assignment]
+
+try:  # ponytail: S64 T3 可选, 缺则跳过角色分类
+    from .literature_role_classifier import classify_literature  # type: ignore[import-not-found]
+except Exception:  # noqa: BLE001
+    classify_literature = None  # type: ignore[assignment]
+
+try:  # ponytail: S64 T4 可选, 缺则不构建矩阵
+    from .paper_module_matrix import build_module_matrix  # type: ignore[import-not-found]
+except Exception:  # noqa: BLE001
+    build_module_matrix = None  # type: ignore[assignment]
 
 
 # ---------- 状态 ---------- #
@@ -296,6 +321,189 @@ async def run_retrieval(
         )
     )
 
+    # 8.5) S64 T1: candidate_cleaner — 清洗 keep/quarantine/reject
+    #       仍然保留 deduped 全量, 但 keep-only 进入 UI/import 路径
+    clean_summary: dict[str, int] = {"keep": 0, "quarantine": 0, "reject": 0, "needs_manual": 0}
+    keep_candidates: list[RetrievalCandidate] = list(deduped)
+    if clean_candidates is not None:
+        try:
+            cdict_topic = {
+                "raw": raw_topic,
+                "object_terms": [],
+                "task_terms": [],
+                "method_terms": [],
+                "required": list(request.extra_keywords or []),
+            }
+            cand_dicts = [_candidate_to_dict(c) for c in deduped]
+            clean_results = clean_candidates(cand_dicts, cdict_topic, domain="vision_2d")
+            keep_ids: set[str] = set()
+            for cr in clean_results:
+                clean_summary[cr.clean_status] = clean_summary.get(cr.clean_status, 0) + 1
+                if cr.clean_status == "keep":
+                    keep_ids.add(cr.candidate_id)
+            if keep_ids:
+                keep_candidates = [c for c in deduped if c.candidate_id in keep_ids]
+            append_trace(
+                project_id,
+                action="retrieval_candidates_cleaned",
+                target_type="retrieval_run",
+                target_id=run_id,
+                actor="system",
+                after={
+                    "total": len(deduped),
+                    "keep": clean_summary.get("keep", 0),
+                    "quarantine": clean_summary.get("quarantine", 0),
+                    "reject": clean_summary.get("reject", 0),
+                    "needs_manual": clean_summary.get("needs_manual", 0),
+                },
+                reason="candidate_cleaner",
+            )
+        except Exception as exc:  # noqa: BLE001
+            append_trace(
+                project_id,
+                action="retrieval_candidate_cleaner_failed",
+                target_type="retrieval_run",
+                target_id=run_id,
+                actor="system",
+                reason=f"{type(exc).__name__}: {exc}",
+            )
+
+    # 8.6) S64 T2: web_dataset_search — dataset 不足时 WebSearch 兜底
+    #       ponytail: trigger 逻辑内联 (dataset_count<2 或 top_score<0.45), 避免依赖私有 _should_trigger
+    web_datasets_payload: list[dict] = []
+    dataset_cands = [c for c in keep_candidates if c.candidate_type == "dataset"]
+    if search_web_datasets is not None:
+        try:
+            ds_top_score = max(
+                (float(c.retrieval_score or 0.0) for c in dataset_cands),
+                default=0.0,
+            )
+            should_trigger = len(dataset_cands) < 2 or ds_top_score < 0.45
+            if should_trigger:
+                atoms_for_web = {
+                    "object_cn": "",
+                    "object_en": "",
+                    "engineering_objects": [],
+                    "placeholder": "",
+                    "raw": raw_topic,
+                    "object_terms": [],
+                    "task_terms": [],
+                    "method_terms": [],
+                    "required": list(request.extra_keywords or []),
+                }
+                web_results = search_web_datasets(atoms_for_web, domain="vision_2d")
+                web_datasets_payload = [w.model_dump() for w in web_results]
+                append_trace(
+                    project_id,
+                    action="web_dataset_search_triggered",
+                    target_type="retrieval_run",
+                    target_id=run_id,
+                    actor="system",
+                    after={
+                        "trigger": "dataset_count<2_or_top_score<0.45",
+                        "dataset_candidate_count": len(dataset_cands),
+                        "top_score": ds_top_score,
+                        "added_count": len(web_datasets_payload),
+                    },
+                    reason="websearch fallback",
+                )
+        except Exception as exc:  # noqa: BLE001
+            append_trace(
+                project_id,
+                action="web_dataset_search_failed",
+                target_type="retrieval_run",
+                target_id=run_id,
+                actor="system",
+                reason=f"{type(exc).__name__}: {exc}",
+            )
+
+    # 8.7) S64 T3: literature_role_classifier — 给 paper 分角色 (trace / UI 增强)
+    roles_payload: list[dict] = []
+    if classify_literature is not None:
+        try:
+            paper_cands = [c for c in keep_candidates if c.candidate_type == "paper"]
+            atoms_for_role = {
+                "object_terms": [],
+                "task_terms": [],
+                "method_terms": [],
+                "raw": raw_topic,
+                "required": list(request.extra_keywords or []),
+            }
+            role_results = classify_literature(
+                [_candidate_to_dict(c) for c in paper_cands],
+                atoms_for_role,
+            )
+            roles_payload = [r.model_dump() for r in role_results]
+            append_trace(
+                project_id,
+                action="literature_roles_classified",
+                target_type="retrieval_run",
+                target_id=run_id,
+                actor="system",
+                after={
+                    "paper_count": len(paper_cands),
+                    "roles_summary": _summarize_roles(roles_payload),
+                },
+                reason="literature_role_classifier",
+            )
+        except Exception as exc:  # noqa: BLE001
+            append_trace(
+                project_id,
+                action="literature_role_classifier_failed",
+                target_type="retrieval_run",
+                target_id=run_id,
+                actor="system",
+                reason=f"{type(exc).__name__}: {exc}",
+            )
+
+    # 8.8) S64 T4: paper_module_matrix — 构建 Base+Module 矩阵 (UI 增强)
+    module_matrix_payload: dict | None = None
+    if build_module_matrix is not None and roles_payload:
+        try:
+            parallel = [
+                {"title": r.get("candidate_id", ""), "abstract": "", "raw": {"base": r.get("base_framework")}}
+                for r in roles_payload if r.get("role") == "parallel_application_paper"
+            ]
+            modules = [
+                {"title": r.get("candidate_id", ""), "abstract": "", "raw": {"modules": r.get("modules_added")}}
+                for r in roles_payload if r.get("role") == "module_improvement_paper"
+            ]
+            baselines = [
+                {"name": r.get("candidate_id", ""), "source": "candidate", "url": r.get("code_url")}
+                for r in roles_payload
+                if r.get("role") in ("baseline_framework", "baseline_method")
+            ]
+            topic_atoms_for_matrix = {
+                "topic": raw_topic,
+                "domain": "vision_2d",
+            }
+            matrix = build_module_matrix(parallel, modules, baselines, topic_atoms_for_matrix)
+            module_matrix_payload = matrix.model_dump()
+            append_trace(
+                project_id,
+                action="module_matrix_built",
+                target_type="retrieval_run",
+                target_id=run_id,
+                actor="system",
+                after={
+                    "entries": len(matrix.entries),
+                    "recs": len(matrix.recommended_combinations),
+                },
+                reason="paper_module_matrix",
+            )
+        except Exception as exc:  # noqa: BLE001
+            append_trace(
+                project_id,
+                action="module_matrix_build_failed",
+                target_type="retrieval_run",
+                target_id=run_id,
+                actor="system",
+                reason=f"{type(exc).__name__}: {exc}",
+            )
+
+    # 用 keep_candidates 覆盖后续步骤 (import / summary 都只看 keep)
+    deduped = keep_candidates
+
     # 9) S61 M5/M6: GapReport + 1-round retry (hard cap)
     gap_report_payload: dict | None = None
     retry_round_used = 0
@@ -396,6 +604,10 @@ async def run_retrieval(
         candidates=deduped,
         gap_report=gap_report_payload,
         retry_round=retry_round_used,
+        clean_summary=clean_summary,
+        web_datasets=web_datasets_payload,
+        literature_roles=roles_payload,
+        module_matrix=module_matrix_payload,
     )
     _add_run(run)
 
@@ -720,6 +932,42 @@ def _post_import_patch(evidence_id: str, *, source_mode: str, workspace_lane: st
             if evidence_id in proj.items:
                 proj.items[evidence_id] = EvidenceItem(**new_data)
                 return
+
+
+# ---------- 辅助 (S64) ---------- #
+
+
+def _candidate_to_dict(cand: RetrievalCandidate) -> dict:
+    """把 RetrievalCandidate 拍扁成 dict, 喂给 candidate_cleaner / role_classifier."""
+
+    return {
+        "candidate_id": cand.candidate_id,
+        "candidate_type": cand.candidate_type,
+        "source": cand.source,
+        "title": cand.title,
+        "url": cand.url,
+        "abstract": cand.abstract,
+        "year": cand.year,
+        "doi": cand.doi,
+        "arxiv_id": cand.arxiv_id,
+        "authors": list(cand.authors or []),
+        "matched_keywords": list(cand.matched_keywords or []),
+        "matched_atoms": list(cand.matched_keywords or []),
+        "retrieval_score": float(cand.retrieval_score or 0.0),
+        "license": cand.license,
+        "repo_full_name": cand.repo_full_name,
+        "code_url": cand.url,
+    }
+
+
+def _summarize_roles(roles: list[dict]) -> dict[str, int]:
+    """统计每个 role 的命中数量."""
+
+    out: dict[str, int] = {}
+    for r in roles:
+        role = str(r.get("role", "unknown"))
+        out[role] = out.get(role, 0) + 1
+    return out
 
 
 # ---------- 测试用 ---------- #
