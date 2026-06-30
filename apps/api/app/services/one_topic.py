@@ -1095,7 +1095,10 @@ def generate_pivot_routes(
 def recommend_proposal(
     req: OneTopicRequest, keywords: KeywordBreakdown, ev: EvidenceSummary, feas: FeasibilitySummary,
 ) -> ProposalRecommendation:
-    """Session 6 §3: 优先 LLM 写推荐 + 工作包, 失败 fallback 启发式模板."""
+    """Session 6 §3: 优先 LLM 写推荐 + 工作包, 失败 fallback 启发式模板.
+
+    Session 65 T7: 未选 baseline 不生成工作包 (避免"默认 attention"式硬编码).
+    """
 
     # 启发式 fallback 模板 (保留作为兜底)
     method = keywords.method_keywords[0] if keywords.method_keywords else "深度学习方法"
@@ -1117,40 +1120,110 @@ def recommend_proposal(
     if not reasons:
         reasons.append("已根据启发式给出基本建议, 仍需补充证据.")
 
-    wp1 = WorkPackageSuggestion(
-        wp_id="WP1",
-        title=f"基于公开数据集复现 {method} baseline",
-        research_question=f"{method} 在 {obj} 上的标准 baseline 表现如何?",
-        method_approach=f"采用 {method} 标准实现, 在公开数据集上训练/验证.",
-        data_source=(ev.datasets[0].name if ev.datasets and ev.datasets[0].dataset_id != "DS99" else "待确认公开数据集"),
-        experiment_plan=f"按标准 split 训练, 报告 {', '.join(ev.metrics[:3])} 等指标.",
-        chapter="第三章",
+    # Session 65 T7: 检查用户是否已选定 baseline. 未选则不生成工作包, 避免硬编码 attention/轻量化等模块.
+    from .retrieval.baseline_selection import get_selected_baselines
+    from .proposal.work_package_brainstormer import brainstorm_work_packages
+
+    project_id = req.project_id_override or "ot_pending"
+    selected = get_selected_baselines(project_id)
+
+    if not selected:
+        # 没选 baseline → 不生成工作包, 推荐理由里说明
+        if not any("请先从候选论文" in r for r in reasons):
+            reasons.append("暂不生成工作包：请先从候选论文 / 仓库中选择主 Baseline")
+
+        from . import evidence_refs as refs_service
+        proposal_no_wp = ProposalRecommendation(
+            recommended_topic=recommended,
+            recommendation_reason=reasons,
+            work_packages=[],
+            proposal_outline=[],
+            pivot_routes=[],
+        )
+        proposal_no_wp, _unsupported = refs_service.build_proposal_refs(
+            proposal_no_wp, ev.papers, ev.datasets, ev.baselines,
+        )
+        return proposal_no_wp
+
+    # 有 baseline: 用 brainstormer 生成工作包选项 (模块来自 parallel/module papers, 无硬编码)
+    parallel_papers = [p for p in ev.papers if getattr(p, "literature_role", "") == "parallel_application_paper"]
+    module_papers = [p for p in ev.papers if getattr(p, "literature_role", "") == "module_improvement_paper"]
+
+    brainstorm = brainstorm_work_packages(
+        selected_baselines=[s.model_dump() for s in selected],
+        parallel_papers=[p.model_dump() for p in parallel_papers],
+        module_papers=[p.model_dump() for p in module_papers],
+        datasets=[d.model_dump() for d in ev.datasets],
+        user_constraints={},
     )
-    wp2_method = "轻量化模块" if "yolo" in method.lower() else "注意力机制"
-    wp2 = WorkPackageSuggestion(
-        wp_id="WP2",
-        title=f"引入 {wp2_method} 并进行消融实验",
-        research_question=f"在 baseline 基础上加入 {wp2_method} 是否能进一步提升 {metric}?",
-        method_approach=f"在 {method} 主干中插入 {wp2_method} 模块, 保持其他超参一致.",
-        data_source="同 WP1 公开数据集",
-        experiment_plan=f"消融实验: 关闭 vs 开启 {wp2_method}; 多组 {metric} 对比.",
-        chapter="第四章",
+
+    # 把 BrainstormResult.options 映射为 WorkPackageSuggestion (仅 status=='ok' 时)
+    wp_from_brainstorm: list[WorkPackageSuggestion] = []
+    if brainstorm.status == "ok":
+        for idx, opt in enumerate(brainstorm.options):
+            wp_id = f"WP{idx + 1}"
+            experiment_plan_str = "; ".join(opt.experiment_plan) if opt.experiment_plan else ""
+            risk_str = "; ".join(opt.risk) if opt.risk else ""
+            wp_from_brainstorm.append(WorkPackageSuggestion(
+                wp_id=wp_id,
+                title=opt.title,
+                research_question=f"基于 {opt.baseline_name} 引入模块 {', '.join(opt.module_candidates) or '基线优化'} 是否能提升指标?",
+                method_approach=f"在 {opt.baseline_name} 上接入模块: {', '.join(opt.module_candidates) or '(无模块, 仅基线复现)'}",
+                data_source=opt.dataset or "待确认数据集",
+                experiment_plan=experiment_plan_str,
+                chapter="第三章" if idx == 0 else "第四章",
+            ))
+        if wp_from_brainstorm:
+            reasons.append(f"已根据选定的 {len(selected)} 个 baseline + {len(parallel_papers)} 篇 parallel / {len(module_papers)} 篇 module 论文生成 {len(wp_from_brainstorm)} 个工作包.")
+
+    if brainstorm.status == "needs_baseline_selection":
+        # brainstorm 兜底 (理论上前面 selected 已非空不会进这分支, 保险)
+        reasons.append("Brainstormer 也判定缺 baseline, 已返回空工作包.")
+    elif brainstorm.status == "need_more_search":
+        reasons.append(f"证据不足: {'; '.join(brainstorm.missing)}")
+
+    # 启发式兜底: 如果 brainstorm 没产出 options, 用 baseline 名 + dataset 拼最简版本 (不引入 attention 等通用词)
+    if not wp_from_brainstorm:
+        bl_name = selected[0].candidate_id  # 兜底用 id
+        primary_dataset = (ev.datasets[0].name if ev.datasets and ev.datasets[0].dataset_id != "DS99" else "待确认公开数据集")
+        wp_from_brainstorm = [
+            WorkPackageSuggestion(
+                wp_id="WP1",
+                title=f"复现 {bl_name} baseline 并建立基线指标",
+                research_question=f"{bl_name} 在 {primary_dataset} 上的标准基线表现?",
+                method_approach=f"采用 {bl_name} 标准实现, 在 {primary_dataset} 上训练/验证.",
+                data_source=primary_dataset,
+                experiment_plan=f"按标准 split 训练, 报告 {', '.join(ev.metrics[:3]) or metric} 等指标.",
+                chapter="第三章",
+            ),
+        ]
+
+    # Session 7: heuristic fallback 也挂 refs
+    from . import evidence_refs as refs_service
+    for wp in wp_from_brainstorm:
+        wp = refs_service.build_wp_refs(wp, ev.papers, ev.datasets, ev.baselines)
+
+    proposal_for_refs = ProposalRecommendation(
+        recommended_topic=recommended,
+        recommendation_reason=reasons,
+        work_packages=wp_from_brainstorm,
+        proposal_outline=[
+            "1. 研究背景与意义",
+            "2. 国内外研究现状 (基于检索到的 arXiv 论文综述)",
+            f"3. 研究内容与目标 ({len(wp_from_brainstorm)} 个工作包, 基于选定 baseline)",
+            "4. 技术路线 (选定 baseline → 接入模块 → 消融)",
+            "5. 实验方案 (数据集 / 评价指标 / baseline 对比)",
+            "6. 预期创新点",
+            "7. 进度计划",
+            "8. 风险预案",
+        ],
+        pivot_routes=[],
+    )
+    proposal_for_refs, _unsupported = refs_service.build_proposal_refs(
+        proposal_for_refs, ev.papers, ev.datasets, ev.baselines,
     )
 
-    outline = [
-        "1. 研究背景与意义",
-        "2. 国内外研究现状 (基于检索到的 arXiv 论文综述)",
-        "3. 研究内容与目标 (WP1 + WP2)",
-        "4. 技术路线 (baseline → 改进 → 消融)",
-        "5. 实验方案 (数据集 / 评价指标 / baseline 对比)",
-        "6. 预期创新点",
-        "7. 进度计划",
-        "8. 风险预案",
-    ]
-
-    pivot_routes = generate_pivot_routes(req, keywords, ev, feas)
-
-    # Session 6: LLM 路径覆盖启发式
+    # Session 6: LLM 路径覆盖启发式 (有 baseline 时才走, 因为 LLM 也会用 brainstorm 的输入)
     if req.prefer != "heuristic":
         from . import llm_content
         llm_result = llm_content.recommend_proposal_llm(
@@ -1168,14 +1241,13 @@ def recommend_proposal(
             paper_count=ev.paper_count,
             dataset_names=[d.name for d in ev.datasets],
             has_dataset=ev.has_public_dataset,
-            baseline_names=[b.name for b in ev.baselines],
-            has_baseline=ev.has_repro_baseline,
+            baseline_names=[s.candidate_id for s in selected],
+            has_baseline=True,
             metrics=ev.metrics,
             verdict=feas.verdict,
             feas_reason=feas.reason,
         )
         if llm_result:
-            # 解析 WP
             llm_wps = []
             for wp_dict in llm_result.get("work_packages") or []:
                 if not isinstance(wp_dict, dict):
@@ -1194,36 +1266,20 @@ def recommend_proposal(
                     logger.warning("LLM WP 解析失败: %s", exc)
                     continue
             if llm_wps:
-                # Session 7: 挂 evidence_refs
-                from . import evidence_refs as refs_service
                 for wp in llm_wps:
                     wp = refs_service.build_wp_refs(wp, ev.papers, ev.datasets, ev.baselines)
-                proposal_for_refs = ProposalRecommendation(
+                proposal_llm = ProposalRecommendation(
                     recommended_topic=str(llm_result.get("recommended_topic") or recommended),
                     recommendation_reason=list(llm_result.get("recommendation_reasons") or reasons),
                     work_packages=llm_wps,
-                    proposal_outline=outline,
-                    pivot_routes=pivot_routes,
+                    proposal_outline=proposal_for_refs.proposal_outline,
+                    pivot_routes=[],
                 )
-                proposal_for_refs, _unsupported = refs_service.build_proposal_refs(
-                    proposal_for_refs, ev.papers, ev.datasets, ev.baselines,
+                proposal_llm, _unsupported = refs_service.build_proposal_refs(
+                    proposal_llm, ev.papers, ev.datasets, ev.baselines,
                 )
-                return proposal_for_refs
+                return proposal_llm
 
-    # Session 7: heuristic fallback 也挂 refs
-    from . import evidence_refs as refs_service
-    for wp in (wp1, wp2):
-        wp = refs_service.build_wp_refs(wp, ev.papers, ev.datasets, ev.baselines)
-    proposal_for_refs = ProposalRecommendation(
-        recommended_topic=recommended,
-        recommendation_reason=reasons,
-        work_packages=[wp1, wp2],
-        proposal_outline=outline,
-        pivot_routes=pivot_routes,
-    )
-    proposal_for_refs, _unsupported = refs_service.build_proposal_refs(
-        proposal_for_refs, ev.papers, ev.datasets, ev.baselines,
-    )
     return proposal_for_refs
 
 
