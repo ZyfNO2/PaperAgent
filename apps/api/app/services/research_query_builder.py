@@ -526,6 +526,12 @@ def build_query_pack(topic_parse: dict, max_queries: int = 40) -> dict:
     return pack
 
 
+_BUCKET_KEYS = (
+    "paper_queries", "dataset_queries", "repo_queries",
+    "baseline_queries", "classic_tool_queries", "emerging_method_queries",
+)
+
+
 def _ensure_domain_coverage(pack: dict, topic_parse: dict) -> dict:
     """Inject domain-required positive terms if LLM/rule pack missed them.
 
@@ -554,20 +560,36 @@ def _ensure_domain_coverage(pack: dict, topic_parse: dict) -> dict:
     if not missing:
         return pack
 
-    # Splice missing methods into repo_queries (most natural home for repos)
+    # Priority order: domain-critical first (3DGS, DUSt3R for vision_3d etc.)
+    # followed by other required methods. Append at end (don't cap-truncate)
+    # so injected queries survive truncation by _truncate_pack.
+    PRIORITY_TERMS = {
+        "vision_3d": ["3D Gaussian Splatting", "DUSt3R", "FoundationStereo", "COLMAP"],
+        "vision_2d": ["YOLO", "Faster R-CNN"],
+        "nlp_llm": ["BERT", "RoBERTa", "LoRA"],
+    }
+    priority = PRIORITY_TERMS.get(domain, [])
     repo = list(pack.get("repo_queries", []))
-    for m in missing[:3]:  # cap to avoid bloat
+    injected = 0
+    for m in priority:
+        if injected >= 5:
+            break
+        if not _has_method(all_q_lower, m):
+            q = f"{m} github implementation"
+            if q not in repo:
+                repo.append(q)
+                injected += 1
+    for m in missing:
+        if injected >= 5:
+            break
+        if m in priority:
+            continue
         q = f"{m} github implementation"
         if q not in repo:
             repo.append(q)
-    pack["repo_queries"] = repo[:6]
+            injected += 1
+    pack["repo_queries"] = repo  # no cap; _truncate_pack will cap at max_queries
     return pack
-
-
-_BUCKET_KEYS = (
-    "paper_queries", "dataset_queries", "repo_queries",
-    "baseline_queries", "classic_tool_queries", "emerging_method_queries",
-)
 
 
 def _truncate_pack(pack: dict, max_total: int) -> dict:
