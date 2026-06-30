@@ -1,14 +1,18 @@
 // Session 61: RetrievalCandidatePanel — 用户侧多源检索候选面板.
+// Session 64 T6: 按角色分组展示 (baseline / parallel / modules / datasets / dev)
 // ponytail:
 // - 不引 store / context, useState 局部足够
 // - 不调 LLM; 不复用 RAG Eval 的 metric 表格
 // - "加入证据" 复用现有 retrieval/import (M7 candidate_actions 暂未上线为路由)
 // - "加入文献库" 复用现有 paper-library/manual
 // - "标记不相关" 仅 UI 灰化, 不发请求 (M7 标 irrelevant 后端尚未挂路由)
+// - 角色分组复用后端 literature_roles (S64 T3); 模块矩阵复用 module_matrix (S64 T4)
+// - 开发者模式: 展示 clean_summary 计数 + 原始 score + source 轨迹; 不再发请求
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ApiError, apiClient } from "../../app/apiClient";
 import { Badge } from "../../components/ui/Badge";
+import { Tabs } from "../../components/ui/Tabs";
 
 const DEFAULT_PROJECT = "demo-local-rag";
 const API_PREFIX = "/api/v1";
@@ -25,6 +29,49 @@ type Source =
   | "kaggle"
   | "manual_fallback";
 type RetrievalStatus = "running" | "completed" | "partial" | "failed";
+type LiteratureRole =
+  | "baseline_framework"
+  | "baseline_method"
+  | "parallel_application_paper"
+  | "module_improvement_paper"
+  | "dataset_paper"
+  | "survey"
+  | "irrelevant";
+
+interface RoleAssignment {
+  candidate_id: string;
+  role: LiteratureRole;
+  base_framework?: string | null;
+  modules_added?: string[];
+  datasets?: string[];
+  metrics?: string[];
+  code_url?: string | null;
+  reproducibility?: string | null;
+  borrowable_ideas?: string[];
+  risk_notes?: string[];
+  reason?: string;
+}
+
+interface ModuleEntry {
+  base?: string;
+  module_a?: string;
+  module_b?: string | null;
+  dataset?: string;
+  metrics?: string[];
+  paper_title?: string;
+  paper_url?: string | null;
+  improvement_description?: string;
+  risk_notes?: string;
+}
+
+interface ModuleMatrix {
+  topic?: string;
+  domain?: string;
+  entries?: ModuleEntry[];
+  missing_module_types?: string[];
+  baseline_options?: Array<Record<string, unknown>>;
+  recommended_combinations?: Array<Record<string, unknown>>;
+}
 
 interface RetrievalCandidate {
   candidate_id: string;
@@ -86,6 +133,11 @@ interface RetrievalRun {
   candidates: RetrievalCandidate[];
   gap_report: { gaps?: GapItem[] } | null;
   retry_round: number;
+  // S64: 后端 orchestrator 已挂上, 旧 schema 默认值保证向后兼容
+  clean_summary?: Record<string, number> | null;
+  web_datasets?: Array<Record<string, unknown>>;
+  literature_roles?: RoleAssignment[];
+  module_matrix?: ModuleMatrix | null;
 }
 
 interface RetrievalImportResponse {
@@ -148,6 +200,16 @@ function splitKeywords(text: string): string[] {
   return parts.length > 0 ? parts : [text.trim()].filter(Boolean);
 }
 
+const ROLE_LABELS: Record<LiteratureRole, string> = {
+  baseline_framework: "Baseline 框架",
+  baseline_method: "Baseline 方法",
+  parallel_application_paper: "平行应用论文",
+  module_improvement_paper: "模块改进论文",
+  dataset_paper: "数据集论文",
+  survey: "综述 (Survey)",
+  irrelevant: "不相关 (已过滤)",
+};
+
 export function RetrievalCandidatePanel({
   testId,
   projectId = DEFAULT_PROJECT,
@@ -162,6 +224,7 @@ export function RetrievalCandidatePanel({
   const [dimmed, setDimmed] = useState<Set<string>>(new Set());
   const [importedEid, setImportedEid] = useState<Map<string, string>>(new Map());
   const [actionBusy, setActionBusy] = useState<string | null>(null);
+  const [devMode, setDevMode] = useState<boolean>(false);
 
   useEffect(() => {
     if (topic && topic.length > 0 && topicDraft.length === 0) {
@@ -278,9 +341,52 @@ export function RetrievalCandidatePanel({
     setFlash({ kind: "warn", text: `已补搜关键词, 点击"开始检索"重跑` });
   }
 
+  // ---- 角色分组: candidate_id -> RoleAssignment ---- //
+  const roleById = useMemo(() => {
+    const map = new Map<string, RoleAssignment>();
+    (run?.literature_roles ?? []).forEach((r) => map.set(r.candidate_id, r));
+    return map;
+  }, [run?.literature_roles]);
+
+  const roleOf = (c: RetrievalCandidate): LiteratureRole | null =>
+    roleById.get(c.candidate_id)?.role ?? null;
+
   const papers = (run?.candidates ?? []).filter((c) => c.candidate_type === "paper");
   const datasets = (run?.candidates ?? []).filter((c) => c.candidate_type === "dataset");
   const repos = (run?.candidates ?? []).filter((c) => c.candidate_type === "repo");
+
+  // 论文按角色分桶 (survey 仅背景, irrelevant 不入主视图)
+  const papersByRole = useMemo(() => {
+    const buckets: Record<LiteratureRole, RetrievalCandidate[]> = {
+      baseline_framework: [],
+      baseline_method: [],
+      parallel_application_paper: [],
+      module_improvement_paper: [],
+      dataset_paper: [],
+      survey: [],
+      irrelevant: [],
+    };
+    papers.forEach((p) => {
+      const r = roleOf(p);
+      if (r) buckets[r].push(p);
+      else buckets.parallel_application_paper.push(p); // 没角色的论文默认归"平行"
+    });
+    return buckets;
+  }, [papers, roleById]);
+
+  const surveyPapers = papersByRole.survey;
+  const irrelevantPapers = papersByRole.irrelevant;
+
+  // 主视图: baseline + parallel + module (保持 keep, 不含 survey / irrelevant)
+  const baselinePapers = [
+    ...papersByRole.baseline_framework,
+    ...papersByRole.baseline_method,
+  ];
+  const parallelPapers = papersByRole.parallel_application_paper;
+  const modulePapers = papersByRole.module_improvement_paper;
+
+  const cleanSummary = run?.clean_summary ?? null;
+  const moduleMatrix = run?.module_matrix ?? null;
 
   return (
     <section className="pa-uw-zone" data-testid={testId ?? "retrieval-panel"}>
@@ -319,6 +425,17 @@ export function RetrievalCandidatePanel({
                 run_id: {run.run_id}
               </span>
             ) : null}
+            <button
+              type="button"
+              className={
+                "pa-btn pa-btn--ghost pa-btn--md" + (devMode ? " pa-btn--active" : "")
+              }
+              onClick={() => setDevMode((v) => !v)}
+              data-testid="retrieval-dev-toggle"
+              title="开发者模式: 显示已过滤候选 / clean 原因 / source 轨迹 / 原始分数"
+            >
+              {devMode ? "开发者模式 ON" : "开发者模式"}
+            </button>
           </div>
         </div>
 
@@ -386,9 +503,11 @@ export function RetrievalCandidatePanel({
               testId="retrieval-papers"
               title={`论文 (${papers.length})`}
               candidates={papers}
+              roleById={roleById}
               dimmed={dimmed}
               importedEid={importedEid}
               actionBusy={actionBusy}
+              devMode={devMode}
               onAddEvidence={addToEvidence}
               onAddLibrary={addToLibrary}
               onReject={markIrrelevant}
@@ -398,9 +517,11 @@ export function RetrievalCandidatePanel({
               testId="retrieval-datasets"
               title={`数据集 (${datasets.length})`}
               candidates={datasets}
+              roleById={roleById}
               dimmed={dimmed}
               importedEid={importedEid}
               actionBusy={actionBusy}
+              devMode={devMode}
               onAddEvidence={addToEvidence}
               onReject={markIrrelevant}
               onRetry={retrySimilar}
@@ -409,12 +530,173 @@ export function RetrievalCandidatePanel({
               testId="retrieval-repos"
               title={`Repo (${repos.length})`}
               candidates={repos}
+              roleById={roleById}
               dimmed={dimmed}
               importedEid={importedEid}
               actionBusy={actionBusy}
+              devMode={devMode}
               onAddEvidence={addToEvidence}
               onReject={markIrrelevant}
               onRetry={retrySimilar}
+            />
+          </div>
+        ) : null}
+
+        {run ? (
+          <div data-testid="retrieval-role-tabs">
+            <Tabs
+              testId="retrieval-role-tabs-root"
+              defaultKey="baseline"
+              items={[
+                {
+                  key: "baseline",
+                  label: `Baseline (${baselinePapers.length})`,
+                  content: (
+                    <CandidateList
+                      testId="retrieval-baseline"
+                      title="Baseline 框架 / 方法"
+                      candidates={baselinePapers}
+                      roleById={roleById}
+                      dimmed={dimmed}
+                      importedEid={importedEid}
+                      actionBusy={actionBusy}
+                      devMode={devMode}
+                      onAddEvidence={addToEvidence}
+                      onAddLibrary={addToLibrary}
+                      onReject={markIrrelevant}
+                      onRetry={retrySimilar}
+                    />
+                  ),
+                },
+                {
+                  key: "parallel",
+                  label: `平行论文 (${parallelPapers.length})`,
+                  content: (
+                    <CandidateList
+                      testId="retrieval-parallel"
+                      title="平行应用论文"
+                      candidates={parallelPapers}
+                      roleById={roleById}
+                      dimmed={dimmed}
+                      importedEid={importedEid}
+                      actionBusy={actionBusy}
+                      devMode={devMode}
+                      onAddEvidence={addToEvidence}
+                      onAddLibrary={addToLibrary}
+                      onReject={markIrrelevant}
+                      onRetry={retrySimilar}
+                    />
+                  ),
+                },
+                {
+                  key: "modules",
+                  label: `模块论文 (${modulePapers.length})`,
+                  content: (
+                    <>
+                      {modulePapers.length === 0 && (!moduleMatrix?.entries || moduleMatrix.entries.length === 0) ? (
+                        <div className="pa-uw-zone">
+                          <div className="pa-uw-zone__head">
+                            <h3 className="pa-uw-zone__title">模块论文</h3>
+                          </div>
+                          <div className="pa-faint">暂无候选</div>
+                        </div>
+                      ) : (
+                        <CandidateList
+                          testId="retrieval-modules"
+                          title="模块改进论文"
+                          candidates={modulePapers}
+                          roleById={roleById}
+                          dimmed={dimmed}
+                          importedEid={importedEid}
+                          actionBusy={actionBusy}
+                          devMode={devMode}
+                          onAddEvidence={addToEvidence}
+                          onAddLibrary={addToLibrary}
+                          onReject={markIrrelevant}
+                          onRetry={retrySimilar}
+                        />
+                      )}
+                      {moduleMatrix && Array.isArray(moduleMatrix.entries) && moduleMatrix.entries.length > 0 ? (
+                        <ModuleMatrixView matrix={moduleMatrix} />
+                      ) : null}
+                    </>
+                  ),
+                },
+                {
+                  key: "datasets",
+                  label: `数据集 (${datasets.length + repos.length})`,
+                  content: (
+                    <div className="pa-uw-analysis-grid pa-uw-analysis-grid--double">
+                      <CandidateList
+                        testId="retrieval-datasets"
+                        title={`数据集 (${datasets.length})`}
+                        candidates={datasets}
+                        roleById={roleById}
+                        dimmed={dimmed}
+                        importedEid={importedEid}
+                        actionBusy={actionBusy}
+                        devMode={devMode}
+                        onAddEvidence={addToEvidence}
+                        onReject={markIrrelevant}
+                        onRetry={retrySimilar}
+                      />
+                      <CandidateList
+                        testId="retrieval-repos"
+                        title={`Repo (${repos.length})`}
+                        candidates={repos}
+                        roleById={roleById}
+                        dimmed={dimmed}
+                        importedEid={importedEid}
+                        actionBusy={actionBusy}
+                        devMode={devMode}
+                        onAddEvidence={addToEvidence}
+                        onReject={markIrrelevant}
+                        onRetry={retrySimilar}
+                      />
+                    </div>
+                  ),
+                },
+                ...(surveyPapers.length > 0
+                  ? [
+                      {
+                        key: "survey",
+                        label: `Survey (${surveyPapers.length})`,
+                        content: (
+                          <CandidateList
+                            testId="retrieval-survey"
+                            title="综述 (Survey — 仅背景)"
+                            candidates={surveyPapers}
+                            roleById={roleById}
+                            dimmed={dimmed}
+                            importedEid={importedEid}
+                            actionBusy={actionBusy}
+                            devMode={devMode}
+                            onAddEvidence={addToEvidence}
+                            onAddLibrary={addToLibrary}
+                            onReject={markIrrelevant}
+                            onRetry={retrySimilar}
+                          />
+                        ),
+                      },
+                    ]
+                  : []),
+                ...(devMode
+                  ? [
+                      {
+                        key: "dev",
+                        label: "开发者模式",
+                        content: (
+                          <DevPanel
+                            run={run}
+                            irrelevantPapers={irrelevantPapers}
+                            roleById={roleById}
+                            cleanSummary={cleanSummary}
+                          />
+                        ),
+                      },
+                    ]
+                  : []),
+              ]}
             />
           </div>
         ) : null}
@@ -436,7 +718,7 @@ export function RetrievalCandidatePanel({
                     <div className="pa-uw-result-item__summary">{g.reason}</div>
                   ) : null}
                   {Array.isArray(g.next_step_queries) && g.next_step_queries.length > 0 ? (
-                    <ul className="pa-uw-checklist">
+                    <ul className="pa-checklist">
                       {g.next_step_queries.map((q, j) => (
                         <li key={`${i}-${j}`}>{q}</li>
                       ))}
@@ -458,9 +740,11 @@ interface CandidateListProps {
   testId: string;
   title: string;
   candidates: RetrievalCandidate[];
+  roleById: Map<string, RoleAssignment>;
   dimmed: Set<string>;
   importedEid: Map<string, string>;
   actionBusy: string | null;
+  devMode: boolean;
   onAddEvidence: (c: RetrievalCandidate) => void;
   onAddLibrary?: (c: RetrievalCandidate) => void;
   onReject: (c: RetrievalCandidate) => void;
@@ -471,9 +755,11 @@ function CandidateList({
   testId,
   title,
   candidates,
+  roleById,
   dimmed,
   importedEid,
   actionBusy,
+  devMode,
   onAddEvidence,
   onAddLibrary,
   onReject,
@@ -498,6 +784,7 @@ function CandidateList({
         {candidates.map((c) => {
           const isDim = dimmed.has(c.candidate_id);
           const eid = importedEid.get(c.candidate_id);
+          const role = roleById.get(c.candidate_id);
           return (
             <li
               key={c.candidate_id}
@@ -515,6 +802,11 @@ function CandidateList({
                 >
                   score {c.retrieval_score.toFixed(2)}
                 </Badge>
+                {role ? (
+                  <Badge tone="neutral" testId={`retrieval-role-badge-${c.candidate_id}`}>
+                    {ROLE_LABELS[role.role]}
+                  </Badge>
+                ) : null}
               </div>
               <div className="pa-uw-result-item__meta">
                 {c.year ?? "—"} · {c.authors.slice(0, 3).join(", ") || "—"}
@@ -524,6 +816,15 @@ function CandidateList({
               {c.abstract ? (
                 <div className="pa-uw-result-item__summary">
                   {c.abstract.length > 160 ? `${c.abstract.slice(0, 160)}...` : c.abstract}
+                </div>
+              ) : null}
+              {devMode && role ? (
+                <div className="pa-uw-result-item__meta" data-testid={`retrieval-role-detail-${c.candidate_id}`}>
+                  {role.base_framework ? `base=${role.base_framework} · ` : ""}
+                  {role.modules_added && role.modules_added.length > 0
+                    ? `modules=[${role.modules_added.join(", ")}] · `
+                    : ""}
+                  {role.reason ? `reason=${role.reason.slice(0, 60)}` : ""}
                 </div>
               ) : null}
               {c.url ? (
@@ -582,6 +883,137 @@ function CandidateList({
           );
         })}
       </ul>
+    </div>
+  );
+}
+
+// ---------------- 模块矩阵视图 ---------------- //
+
+interface ModuleMatrixViewProps {
+  matrix: ModuleMatrix;
+}
+
+function ModuleMatrixView({ matrix }: ModuleMatrixViewProps) {
+  return (
+    <div className="pa-uw-zone" data-testid="retrieval-module-matrix">
+      <div className="pa-uw-zone__head">
+        <h3 className="pa-uw-zone__title">模块矩阵 (Base + Module 组合)</h3>
+        <div className="pa-uw-zone__meta">
+          {matrix.topic ? `topic=${matrix.topic}` : ""}
+          {matrix.domain ? ` · domain=${matrix.domain}` : ""}
+        </div>
+      </div>
+      {Array.isArray(matrix.entries) && matrix.entries.length > 0 ? (
+        <table className="pa-table pa-table--compact">
+          <thead>
+            <tr>
+              <th>Base</th>
+              <th>Module A</th>
+              <th>Module B</th>
+              <th>Dataset</th>
+              <th>Metrics</th>
+              <th>Improvement</th>
+            </tr>
+          </thead>
+          <tbody>
+            {matrix.entries.map((e, i) => (
+              <tr key={i} data-testid={`retrieval-module-row-${i}`}>
+                <td>{e.base ?? "—"}</td>
+                <td>{e.module_a ?? "—"}</td>
+                <td>{e.module_b ?? "—"}</td>
+                <td>{e.dataset ?? "—"}</td>
+                <td>
+                  {Array.isArray(e.metrics) && e.metrics.length > 0
+                    ? e.metrics.join(", ")
+                    : "—"}
+                </td>
+                <td>{e.improvement_description ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      {Array.isArray(matrix.missing_module_types) && matrix.missing_module_types.length > 0 ? (
+        <div className="pa-uw-result-item__summary" data-testid="retrieval-module-missing">
+          缺失模块类型: {matrix.missing_module_types.join(", ")}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// ---------------- 开发者模式面板 ---------------- //
+
+interface DevPanelProps {
+  run: RetrievalRun;
+  irrelevantPapers: RetrievalCandidate[];
+  roleById: Map<string, RoleAssignment>;
+  cleanSummary: Record<string, number> | null;
+}
+
+function DevPanel({ run, irrelevantPapers, roleById, cleanSummary }: DevPanelProps) {
+  return (
+    <div className="pa-uw-zone" data-testid="retrieval-dev-panel">
+      <div className="pa-uw-zone__head">
+        <h3 className="pa-uw-zone__title">开发者模式 — 过滤 / 清洗 / 轨迹</h3>
+      </div>
+
+      <div className="pa-uw-result-group" data-testid="retrieval-clean-summary">
+        <div className="pa-uw-result-group__title">清洗状态汇总 (clean_summary)</div>
+        {cleanSummary && Object.keys(cleanSummary).length > 0 ? (
+          <ul className="pa-uw-result-list">
+            {Object.entries(cleanSummary).map(([k, v]) => (
+              <li key={k} className="pa-uw-result-item">
+                <strong>{k}</strong>
+                <span className="pa-muted">: {v}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="pa-faint">后端未返回 clean_summary (旧版本或未启用清洗)</div>
+        )}
+      </div>
+
+      <div className="pa-uw-result-group" data-testid="retrieval-irrelevant-section">
+        <div className="pa-uw-result-group__title">不相关候选 (role=irrelevant)</div>
+        {irrelevantPapers.length === 0 ? (
+          <div className="pa-faint">无</div>
+        ) : (
+          <ul className="pa-uw-result-list">
+            {irrelevantPapers.map((c) => {
+              const role = roleById.get(c.candidate_id);
+              return (
+                <li
+                  key={c.candidate_id}
+                  className="pa-uw-result-item"
+                  data-testid={`retrieval-irrelevant-${c.candidate_id}`}
+                >
+                  <div className="pa-uw-result-item__head">
+                    <strong>{c.title}</strong>
+                    <Badge tone="info">{c.source}</Badge>
+                    <Badge tone="neutral">score {c.retrieval_score.toFixed(2)}</Badge>
+                  </div>
+                  {role?.reason ? (
+                    <div className="pa-uw-result-item__summary">reason: {role.reason}</div>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      <div className="pa-uw-result-group" data-testid="retrieval-source-trace">
+        <div className="pa-uw-result-group__title">来源轨迹 (原始分数 / 候选数)</div>
+        <ul className="pa-uw-result-list">
+          {run.source_results.map((sr) => (
+            <li key={sr.source} className="pa-uw-result-item">
+              <strong>{sr.source}</strong>: status={sr.status} · {sr.candidate_count} candidates · {sr.duration_ms}ms
+              {sr.error ? ` · err=${sr.error}` : ""}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
