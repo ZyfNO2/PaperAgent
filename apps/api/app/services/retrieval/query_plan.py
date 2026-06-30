@@ -47,7 +47,28 @@ _OBJECT_HINTS: list[tuple[str, str]] = [
     ("时间序列", "time series"),
     ("金融", "financial"),
     ("电商", "ecommerce"),
+    # S61: 三维成像 / 损伤 / 桥梁 / SHM
+    ("三维成像", "3d imaging"),
+    ("三维重建", "3d reconstruction"),
+    ("三维点云", "3d point cloud"),
+    ("深度成像", "depth imaging"),
+    ("激光扫描", "laser scanning"),
+    ("激光雷达", "lidar"),
+    ("损伤检测", "damage detection"),
+    ("裂缝检测", "crack detection"),
+    ("混凝土裂缝", "concrete crack"),
+    ("桥梁损伤", "bridge damage"),
+    ("表面缺陷", "surface defect"),
+    ("结构缺陷", "structural defect"),
+    ("桥梁", "bridge"),
+    ("混凝土结构", "concrete structure"),
+    ("结构健康监测", "structural health monitoring"),
+    ("基础设施", "infrastructure"),
 ]
+
+# S61: dataset / repo query 必须包含的下游关键词
+_DATASET_TOKENS = {"dataset", "benchmark", "public", "kaggle", "huggingface"}
+_REPO_TOKENS = {"github", "pytorch", "implementation", "baseline", "code", "train"}
 
 
 def _split_topic_to_tokens(raw: str) -> list[str]:
@@ -212,6 +233,14 @@ def build_query_plan(
         dataset_queries.append(" ".join(en_hints[:1] + tasks[:1] + ["benchmark"]))
     if extras:
         dataset_queries.extend(extras[:1])
+    # S61: 没有 en_hints 时退化到 "public dataset", 保证 dataset query 至少含一个下游 token
+    if not dataset_queries:
+        dataset_queries.append("public dataset")
+    else:
+        # 任何一条 dataset query 都至少要含 dataset/benchmark/public/kaggle/huggingface 之一
+        for i, q in enumerate(dataset_queries):
+            if not any(tok in q.lower() for tok in _DATASET_TOKENS):
+                dataset_queries[i] = (q + " benchmark").strip()
     dataset_queries = _dedup_keep_order(dataset_queries)[:max_dataset_queries]
     dataset_layers.append(QueryPlanLayer(layer="dataset", queries=dataset_queries))
 
@@ -225,6 +254,14 @@ def build_query_plan(
         repo_queries.append(" ".join(en_hints[:2] + ["baseline", "pytorch"]))
     if extras:
         repo_queries.extend(extras[:1])
+    # S61: methods 与 en_hints 都为空时, 补一条泛 github/pytorch baseline
+    if not (methods or en_hints):
+        repo_queries.append("github pytorch baseline")
+    else:
+        # 任何一条 repo query 都至少要含 github/pytorch/implementation/baseline/code/train 之一
+        for i, q in enumerate(repo_queries):
+            if not any(tok in q.lower() for tok in _REPO_TOKENS):
+                repo_queries[i] = (q + " github").strip()
     repo_queries = _dedup_keep_order(repo_queries)[:max_repo_queries]
     repo_layers.append(QueryPlanLayer(layer="repo", queries=repo_queries))
 

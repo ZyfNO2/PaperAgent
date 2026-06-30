@@ -119,7 +119,7 @@ class SourceResult(BaseModel):
 
 
 class RetrievalRun(BaseModel):
-    """一次检索运行的完整结果 (SOP §6.4)."""
+    """一次检索运行的完整结果 (SOP §6.4 + S61)."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -135,6 +135,9 @@ class RetrievalRun(BaseModel):
     imported_count: int = 0
     errors: list[str] = Field(default_factory=list)
     candidates: list[RetrievalCandidate] = Field(default_factory=list)
+    # S61: 增强检索产物, 默认 None/0 不破坏旧调用
+    gap_report: dict | None = Field(default=None)
+    retry_round: int = Field(default=0)
 
 
 class RetrievalSummaryResponse(BaseModel):

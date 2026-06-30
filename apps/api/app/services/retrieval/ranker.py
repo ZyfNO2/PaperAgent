@@ -186,7 +186,7 @@ def score_paper(c: RetrievalCandidate, *, query_keywords: list[str] | None = Non
 
 
 def score_dataset(c: RetrievalCandidate, *, query_keywords: list[str] | None = None) -> float:
-    """SOP §11.2."""
+    """SOP §11.2 + S61 enhancements."""
 
     kws = query_keywords or c.matched_keywords or []
     object_match = _contains(c.title, kws)
@@ -196,6 +196,10 @@ def score_dataset(c: RetrievalCandidate, *, query_keywords: list[str] | None = N
     usage = _usage_signal(c)
     recency = _recency_score(c.year)
     src = _source_reliability(c)
+    # S61: benchmark + download hints
+    raw = c.raw or {}
+    is_benchmark_hint = 0.05 if bool(raw.get("benchmark")) else 0.0
+    download_hint = 0.05 if (raw.get("download") or c.url) else 0.0
 
     score = (
         0.25 * object_match
@@ -205,12 +209,14 @@ def score_dataset(c: RetrievalCandidate, *, query_keywords: list[str] | None = N
         + 0.10 * usage
         + 0.10 * recency
         + 0.05 * src
+        + is_benchmark_hint
+        + download_hint
     )
     return round(_clip01(score), 4)
 
 
 def score_repo(c: RetrievalCandidate, *, query_keywords: list[str] | None = None) -> float:
-    """SOP §11.3."""
+    """SOP §11.3 + S61: stars weight reduced to 0.05; +has_training_script."""
 
     kws = query_keywords or c.matched_keywords or []
     task_match = _contains(" ".join([c.title or "", c.abstract or ""]), kws)
@@ -221,15 +227,20 @@ def score_repo(c: RetrievalCandidate, *, query_keywords: list[str] | None = None
     recent = _recent_activity(c.updated_at)
     lang = _language_match(c)
     framework = _framework_hint(c)
+    # S61: training script / train kw hint
+    raw = c.raw or {}
+    has_train = bool(raw.get("has_train")) or "train" in (raw.get("description") or "").lower()
+    train_hint = 0.10 if has_train else 0.0
 
     score = (
         0.20 * task_match
         + 0.15 * method_match
         + 0.15 * readme
         + 0.10 * lic
-        + 0.10 * stars
+        + 0.05 * stars  # S61: reduced from 0.10 -> 0.05
         + 0.10 * recent
         + 0.10 * lang
         + 0.10 * framework
+        + train_hint
     )
     return round(_clip01(score), 4)

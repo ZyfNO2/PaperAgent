@@ -8,17 +8,35 @@ import { ThoughtPanel } from "../layout/ThoughtPanel";
 
 const STORAGE_KEY = DEV_MODE_STORAGE_KEY;
 
+interface DevNavItem {
+  label: string;
+  href: string;
+  testId: string;
+  external?: boolean;
+}
+
+interface DevNavSection {
+  title: string;
+  items: DevNavItem[];
+}
+
 function readDevOpen(): boolean {
   if (typeof window === "undefined") return false;
   return window.localStorage.getItem(STORAGE_KEY) === "1";
 }
 
-const NAV_GROUPS = [
+const NAV_GROUPS: DevNavSection[] = [
   {
     title: "评估",
     items: [
       { label: "RAG Eval", href: "#/?mode=rag-eval", testId: "dev-nav-rag-eval" },
       { label: "ThesisEval", href: "#/?mode=thesis-eval", testId: "dev-nav-thesis-eval" },
+    ],
+  },
+  {
+    title: "检索",
+    items: [
+      { label: "Retrieval Debug", href: "#/?mode=retrieval-debug", testId: "dev-nav-retrieval-debug" },
     ],
   },
   {

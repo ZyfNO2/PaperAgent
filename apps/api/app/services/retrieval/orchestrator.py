@@ -10,6 +10,7 @@
 7. 持久化最近一次 run
 8. import -> Evidence Ledger
 9. 写 trace 事件
+10. (S61, enhanced=True) 生成 GapReport + 触发 1 轮 Retry
 """
 
 from __future__ import annotations
@@ -38,6 +39,19 @@ from .dedup import dedup_candidates, is_duplicate_in_ledger
 from .normalizer import normalize_candidate
 from .query_plan import build_query_plan
 from .ranker import score_dataset, score_paper, score_repo
+
+try:  # ponytail: M5/M6 可选依赖, 缺则静默退化
+    from .gap_report import build_gap_report  # type: ignore[import-not-found]
+except Exception:  # noqa: BLE001
+    build_gap_report = None  # type: ignore[assignment]
+
+try:  # ponytail: 同上, retry planner 可选
+    from .retry_planner import plan_retry  # type: ignore[import-not-found]
+except Exception:  # noqa: BLE001
+    plan_retry = None  # type: ignore[assignment]
+
+
+# ---------- 状态 ---------- #
 
 
 # ---------- 状态 ---------- #
@@ -78,6 +92,58 @@ _TYPE_TO_SKILL: dict[CandidateType, str] = {
 
 
 # ---------- 检索运行 ---------- #
+
+
+async def _retry_empty_types(
+    project_id: str,
+    request: RetrievalSearchRequest,
+    extra_queries_by_type: dict[CandidateType, list[str]],
+    *,
+    client: Any | None = None,
+) -> list[RetrievalCandidate]:
+    """M6: 一次性补搜 (SOP hard cap 1 round).
+
+    对每个空缺的 candidate_type 调用对应 source runner, 归一化后返回新候选.
+    不更新 source_results / 不写 trace (调用方负责).
+    """
+
+    type_to_sources: dict[CandidateType, list[SearchSource]] = {
+        "paper": ["openalex", "arxiv"],
+        "dataset": ["huggingface", "kaggle"],
+        "repo": ["github"],
+    }
+
+    out: list[RetrievalCandidate] = []
+    for ctype, queries in extra_queries_by_type.items():
+        if not queries:
+            continue
+        sources = type_to_sources.get(ctype, [])
+        for src in sources:
+            runner = REGISTRY.get(src)
+            if runner is None:
+                continue
+            try:
+                raws = await runner(list(queries), request.top_k_per_source, client=client)
+            except Exception:  # noqa: BLE001
+                continue
+            for raw in (raws or []):
+                if not isinstance(raw, dict):
+                    continue
+                cid = f"cand_{uuid.uuid4().hex[:10]}"
+                cand = normalize_candidate(
+                    raw,
+                    project_id=project_id,
+                    source=src,
+                    candidate_id=cid,
+                )
+                if cand.candidate_type == ctype:
+                    for kw in request.extra_keywords or []:
+                        if kw and (kw.lower() in (cand.title or "").lower()
+                                   or kw.lower() in (cand.abstract or "").lower()):
+                            if kw not in cand.matched_keywords:
+                                cand.matched_keywords.append(kw)
+                    out.append(cand)
+    return out
 
 
 async def run_retrieval(
@@ -230,6 +296,84 @@ async def run_retrieval(
         )
     )
 
+    # 9) S61 M5/M6: GapReport + 1-round retry (hard cap)
+    gap_report_payload: dict | None = None
+    retry_round_used = 0
+    if build_gap_report is not None and plan_retry is not None:
+        paper_n = sum(1 for c in deduped if c.candidate_type == "paper")
+        dataset_n = sum(1 for c in deduped if c.candidate_type == "dataset")
+        repo_n = sum(1 for c in deduped if c.candidate_type == "repo")
+        try:
+            gap_report_obj = build_gap_report(paper_n, dataset_n, repo_n, source_results)
+        except Exception:  # noqa: BLE001
+            gap_report_obj = None
+        if gap_report_obj is not None:
+            # ponytail: dataclass -> dict for schema (extra='forbid', so use known keys only)
+            gap_report_payload = {
+                "summary": getattr(gap_report_obj, "summary_text", ""),
+                "gaps": [
+                    {"category": getattr(g, "category", ""), "details": getattr(g, "details", "")}
+                    for g in getattr(gap_report_obj, "gaps", [])
+                ],
+                "next_step_queries": list(getattr(gap_report_obj, "next_step_queries", []) or []),
+                "counts": {"paper": paper_n, "dataset": dataset_n, "repo": repo_n},
+            }
+            try:
+                retry_plan = plan_retry(gap_report_obj, raw_topic)
+            except Exception:  # noqa: BLE001
+                retry_plan = None
+            if retry_plan is not None and getattr(retry_plan, "should_retry", False):
+                # 1-shot retry: per empty candidate_type, run extra_queries ONCE
+                _run_one_retry = getattr(retry_plan, "extra_queries_by_type", {}) or {}
+                retry_sources: dict[CandidateType, list[str]] = {}
+                for ctype, qs in _run_one_retry.items():
+                    if qs and (ctype == "paper" and paper_n == 0
+                               or ctype == "dataset" and dataset_n == 0
+                               or ctype == "repo" and repo_n == 0):
+                        retry_sources[ctype] = list(qs)
+                if retry_sources:
+                    retry_round_used = 1  # hard cap: 1 round regardless of result
+                    new_cands = await _retry_empty_types(
+                        project_id, request, retry_sources, client=client,
+                    )
+                    if new_cands:
+                        # 重新评分 + 去重 + 合并 (不替换)
+                        for cand in new_cands:
+                            if cand.candidate_type == "paper":
+                                cand.retrieval_score = score_paper(cand, query_keywords=request.extra_keywords)
+                            elif cand.candidate_type == "dataset":
+                                cand.retrieval_score = score_dataset(cand, query_keywords=request.extra_keywords)
+                            elif cand.candidate_type == "repo":
+                                cand.retrieval_score = score_repo(cand, query_keywords=request.extra_keywords)
+                            else:
+                                cand.retrieval_score = 0.3
+                        merged = dedup_candidates(list(deduped) + new_cands)
+                        for cand in merged:
+                            if is_duplicate_in_ledger(cand, ledger_items):
+                                cand.already_in_ledger = True
+                        merged.sort(
+                            key=lambda c: (
+                                c.is_duplicate,
+                                c.already_in_ledger,
+                                -c.retrieval_score,
+                            )
+                        )
+                        deduped = merged
+                        append_trace(
+                            project_id,
+                            action="retrieval_retry_round",
+                            target_type="retrieval_run",
+                            target_id=run_id,
+                            actor="system",
+                            after={
+                                "retry_round": 1,
+                                "retry_sources": list(retry_sources.keys()),
+                                "added": len(new_cands),
+                                "total_after": len(deduped),
+                            },
+                            reason=getattr(retry_plan, "reason", ""),
+                        )
+
     finished_at = _now_iso()
     overall_status: RetrievalStatus = "completed"
     if any(r.status == "failed" for r in source_results):
@@ -250,6 +394,8 @@ async def run_retrieval(
         imported_count=0,
         errors=[r.error for r in source_results if r.error],
         candidates=deduped,
+        gap_report=gap_report_payload,
+        retry_round=retry_round_used,
     )
     _add_run(run)
 

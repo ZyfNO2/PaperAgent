@@ -171,15 +171,27 @@ def dense_retrieve(
     vectors: dict[str, list[float]],
     query_text: str,
     top_k: int = 20,
+    vocab: list[str] | None = None,
 ) -> list[tuple[str, float]]:
-    """对已有 embedding 做 cosine 检索."""
+    """对已有 embedding 做 cosine 检索.
+
+    Args:
+        vectors: chunk_id → 词袋向量 (corpus 维度).
+        query_text: query 文本.
+        top_k: 返回 top_k.
+        vocab: 与 corpus 同一份维度表 (None = 用 hash 桶 256, 与 index 维度不一致,
+               仅作回退; caller 应传 `embedding.get_vocab()` 与 index 对齐).
+
+    ponytail: Session 60 在 local_rag.ask_local_rag 复刻过这段 — 根因是
+    dense_retrieve 缺 vocab 参数, 让所有 caller 走对路径.
+    """
 
     if not vectors or not query_text:
         return []
-    # query 自身 embed (沿用与 index 一致的 vocab — 这里偷懒用 hash 桶 256)
-    # 实际生产应该把 vocab 持久化, 这里采用 length 推断: 与 corpus 维度对齐
+    # query 自身 embed. vocab 给定 = 与 corpus 同一维度, 给 None = 256 维 hash 桶
+    # (corpus vocab 通常 <256 维, 截断后与 corpus 向量是随机噪声).
     sample_vec = next(iter(vectors.values()))
-    qv = embedding.embed_text(query_text, vocab=None)
+    qv = embedding.embed_text(query_text, vocab=vocab)
     # 对齐维度 (embed_text 无 vocab 是 256, 截断/补零)
     if len(qv) < len(sample_vec):
         qv = qv + [0.0] * (len(sample_vec) - len(qv))
@@ -336,7 +348,12 @@ def retrieve(
     keywords = rewrite_query(question)
 
     sparse = keyword_retrieve(filtered, keywords, top_k=max(top_k * 3, 20))
-    dense = dense_retrieve(filtered_vectors, question, top_k=max(top_k * 3, 20))
+    # Session 61 M0: 传 vocab 让 dense 与 index 维度对齐
+    dense = dense_retrieve(
+        filtered_vectors, question,
+        top_k=max(top_k * 3, 20),
+        vocab=embedding.get_vocab(),
+    )
 
     fused_ids = rrf_fuse(sparse, dense, k=60)
     return [(cid, 0.0) for cid in fused_ids[:top_k]]

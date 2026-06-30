@@ -230,31 +230,18 @@ def ask_local_rag(
             message="指定 paper_ids 无索引",
         )
 
-    # 3) 调用既有 keyword_retrieve (轻量 utility) + 本地 vocab-aware dense
-    #    不调 retriever.retrieve —— 它依赖 Evidence Ledger scope 过滤 (M3 禁止),
-    #    且 dense_retrieve 用 vocab=None 与实际 index 维度不一致, 会产生伪命中.
+    # 3) 调用既有 keyword_retrieve + dense_retrieve (Session 61 M0 修复后,
+    #    dense_retrieve 支持 vocab 参数, 这里传 embedding.get_vocab() 与 index 对齐).
+    #    不调 retriever.retrieve — 它依赖 Evidence Ledger scope 过滤 (M3 禁止).
     from . import retriever as _retriever
     keywords = _retriever.rewrite_query(question)
     sparse = _retriever.keyword_retrieve(filtered_chunks_index, keywords, top_k=max(top_k * 3, 20))
-
-    # 用 chunks_index + vectors 直接做 vocab-aware dense (复用 indexer.embed_corpus 的 vocab)
-    vocab = embedding.get_vocab()
-    sample_vec = next(iter(vectors.values()), None) if vectors else None
-    dense: list[tuple[str, float]] = []
-    if sample_vec is not None:
-        qv = embedding.embed_text(question, vocab=vocab) if vocab else embedding.embed_text(question, vocab=None)
-        if len(qv) < len(sample_vec):
-            qv = qv + [0.0] * (len(sample_vec) - len(qv))
-        elif len(qv) > len(sample_vec):
-            qv = qv[: len(sample_vec)]
-        for cid, vec in vectors.items():
-            if cid not in filtered_chunks_index:
-                continue
-            if not vec:
-                continue
-            dense.append((cid, embedding.cosine_similarity(qv, vec)))
-        dense.sort(key=lambda x: x[1], reverse=True)
-        dense = dense[: max(top_k * 3, 20)]
+    dense = _retriever.dense_retrieve(
+        {cid: vectors[cid] for cid in filtered_chunks_index if cid in vectors},
+        question,
+        top_k=max(top_k * 3, 20),
+        vocab=embedding.get_vocab(),
+    )
 
     fused_ids = _retriever.rrf_fuse(sparse, dense, k=60)
     hits: list[tuple[str, float]] = [(cid, 0.0) for cid in fused_ids[:top_k]]
@@ -269,27 +256,28 @@ def ask_local_rag(
             message="retriever 未返回命中",
         )
 
-    # 4) 取 top chunks 元数据 (过滤 score=0 的"假命中")
+    # 4) 取 top chunks 元数据 + 用 dense_retrieve 同一份 vocab-aware cosine 重算 score
+    #    (RRF 出来的 fused 列表里 score 字段为占位 0.0, 这里用真正的 cosine 当最终置信度)
+    vocab = embedding.get_vocab()
     top_chunk_metas: list[dict] = []
     refs: list[LocalEvidenceRef] = []
-    for rank, (cid, score) in enumerate(hits[:top_k]):
+    for rank, (cid, _rrf_score) in enumerate(hits[:top_k]):
         meta = chunks_index.get(cid)
         if not meta:
             continue
         meta = dict(meta)
         meta["chunk_id"] = cid
         meta["rank"] = rank
-        # 用 vocab-aware cosine (与 index 一致) — vocab=None 会产出 hash-bucket 256 维,
-        # 与 chunk 的 vocab-based 维度不一致, 截断后是随机噪声, score ≈ 0 → 误判 no_hit.
-        if cid in vectors:
-            qv2 = embedding.embed_text(question, vocab=vocab) if vocab else embedding.embed_text(question, vocab=None)
+        if cid in vectors and vectors[cid]:
+            # 与 dense_retrieve 用同一份 vocab 路径, 保证 score 与 RRF 排序一致
+            qv = embedding.embed_text(question, vocab=vocab) if vocab else embedding.embed_text(question, vocab=None)
             sv = vectors[cid]
-            if qv2 and sv:
-                if len(qv2) < len(sv):
-                    qv2 = qv2 + [0.0] * (len(sv) - len(qv2))
-                elif len(qv2) > len(sv):
-                    qv2 = qv2[: len(sv)]
-                meta["score"] = embedding.cosine_similarity(qv2, sv)
+            if qv and sv:
+                if len(qv) < len(sv):
+                    qv = qv + [0.0] * (len(sv) - len(qv))
+                elif len(qv) > len(sv):
+                    qv = qv[: len(sv)]
+                meta["score"] = embedding.cosine_similarity(qv, sv)
             else:
                 meta["score"] = 0.0
         else:

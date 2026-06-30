@@ -3,6 +3,7 @@ import { apiClient, ApiError } from "../../app/apiClient";
 import { Badge } from "../../components/ui/Badge";
 import { Card } from "../../components/ui/Card";
 import { EvidenceSubmitPanel } from "../evidence/EvidenceSubmitPanel";
+import { RetrievalCandidatePanel } from "../evidence/RetrievalCandidatePanel";
 import { PaperLibraryEditor } from "../paper-library/PaperLibraryEditor";
 import { LocalRagAskPanel } from "../paper-library/LocalRagAskPanel";
 import { TopicIntake } from "../step-workbench/components/TopicIntake";
@@ -710,6 +711,11 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
 
           {analysisError ? <AnalysisError error={analysisError} /> : null}
           {analysis ? <AnalysisResults analysis={analysis} /> : null}
+
+          <RetrievalCandidatePanel
+            testId="uw-retrieval"
+            topic={analysis?.topic_understanding.normalized_topic ?? topic}
+          />
 
           <div className="pa-uw-grid" data-testid="uw-grid-cd">
             <EvidenceSubmitPanel testId="uw-evidence" />
