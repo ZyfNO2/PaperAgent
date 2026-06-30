@@ -8,6 +8,7 @@ import { PaperLibraryEditor } from "../paper-library/PaperLibraryEditor";
 import { LocalRagAskPanel } from "../paper-library/LocalRagAskPanel";
 import { TopicIntake } from "../step-workbench/components/TopicIntake";
 import { WorkbenchChat } from "../step-workbench/components/WorkbenchChat";
+import { DirectionDecisionPanel } from "../graduation-direction/DirectionDecisionPanel";
 import type { CommandPreview } from "../step-workbench/stepWorkbenchReducer";
 import type { ChatMessage } from "../step-workbench/stepTypes";
 
@@ -715,6 +716,12 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
           <RetrievalCandidatePanel
             testId="uw-retrieval"
             topic={analysis?.topic_understanding.normalized_topic ?? topic}
+          />
+
+          <DirectionDecisionPanel
+            testId="uw-direction-panel"
+            topic={analysis?.topic_understanding.normalized_topic ?? topic}
+            projectId={analysis?.project_id ?? null}
           />
 
           <div className="pa-uw-grid" data-testid="uw-grid-cd">

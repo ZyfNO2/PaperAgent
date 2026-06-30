@@ -12,6 +12,7 @@ from app.api.v1.health import router as health_router
 from app.api.v1.mcp import router as mcp_router  # Session 36: MCP tools
 from app.api.v1.thesis_eval import router as thesis_eval_router  # Session 51
 from app.api.v1.paper_library import router as paper_library_router  # Session 46
+from app.api.v1.graduation_direction import router as graduation_direction_router  # Session 62
 from app.errors import AppError, app_error_handler, http_exception_handler
 
 app = FastAPI(
@@ -44,6 +45,7 @@ app.include_router(health_router, prefix="/api/v1")
 app.include_router(mcp_router)  # Session 36: MCP tools
 app.include_router(thesis_eval_router)  # Session 51
 app.include_router(paper_library_router)  # Session 46
+app.include_router(graduation_direction_router)  # Session 62
 
 
 @app.get("/health", tags=["meta"])
