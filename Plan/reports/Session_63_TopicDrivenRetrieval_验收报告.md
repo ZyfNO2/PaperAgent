@@ -129,7 +129,9 @@ test_nlp_llm_topic_generates_text_route PASSED
 - [x] 候选筛选只能保留真实 tool 返回的 candidate_id
 - [x] T7: retrieval 层集成
 - [x] T9: 前端分步确认流程
-- [x] T10: 13/13 tests passed
+- [x] T10: 13/13 backend tests passed
+- [x] T11: 5/5 Playwright tests passed, 5 screenshots captured
+- [x] CLAUDE.md 已添加 Playwright 测试强制规则
 - [x] 固定 YOLO query 已移除
 - [x] 跨域隔离验证通过
 
