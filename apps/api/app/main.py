@@ -13,6 +13,7 @@ from app.api.v1.mcp import router as mcp_router  # Session 36: MCP tools
 from app.api.v1.thesis_eval import router as thesis_eval_router  # Session 51
 from app.api.v1.paper_library import router as paper_library_router  # Session 46
 from app.api.v1.graduation_direction import router as graduation_direction_router  # Session 62
+from app.api.v1.topic_research import router as topic_research_router  # Session 66
 from app.errors import AppError, app_error_handler, http_exception_handler
 
 app = FastAPI(
@@ -46,6 +47,7 @@ app.include_router(mcp_router)  # Session 36: MCP tools
 app.include_router(thesis_eval_router)  # Session 51
 app.include_router(paper_library_router)  # Session 46
 app.include_router(graduation_direction_router)  # Session 62
+app.include_router(topic_research_router)  # Session 66
 
 
 # S62 self-audit: 开发/CI 环境无 LLM key 时, 用测试桩让 e2e 可跑.
