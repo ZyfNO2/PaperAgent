@@ -119,7 +119,7 @@ class SourceResult(BaseModel):
 
 
 class RetrievalRun(BaseModel):
-    """一次检索运行的完整结果 (SOP §6.4 + S61)."""
+    """一次检索运行的完整结果 (SOP §6.4 + S61 + S64)."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -138,6 +138,11 @@ class RetrievalRun(BaseModel):
     # S61: 增强检索产物, 默认 None/0 不破坏旧调用
     gap_report: dict | None = Field(default=None)
     retry_round: int = Field(default=0)
+    # S64: 候选清洗 + WebSearch 兜底 + 角色分类 + 模块矩阵
+    clean_summary: dict | None = Field(default=None)
+    web_datasets: list[dict] = Field(default_factory=list)
+    literature_roles: list[dict] = Field(default_factory=list)
+    module_matrix: dict | None = Field(default=None)
 
 
 class RetrievalSummaryResponse(BaseModel):
