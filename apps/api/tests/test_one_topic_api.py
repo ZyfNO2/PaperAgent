@@ -20,7 +20,10 @@ def test_health() -> None:
 
 
 def test_analyze_yolo_steel_happy_path() -> None:
-    """示例题目 1: YOLO 钢材 (应有真实启发式拆解 + 公开数据集命中)."""
+    """示例题目 1: YOLO 钢材 (应有真实启发式拆解 + 公开数据集命中).
+
+    Session 65 T7: 未选 baseline 时 work_packages 应为空, 但推荐理由里应说明.
+    """
 
     r = client.post("/api/v1/one-topic/analyze", json={
         "raw_topic": "基于YOLO的钢材表面缺陷检测",
@@ -51,7 +54,11 @@ def test_analyze_yolo_steel_happy_path() -> None:
     # 推荐
     rec = body["proposal_recommendation"]
     assert "钢材" in rec["recommended_topic"] or "YOLO" in rec["recommended_topic"]
-    assert len(rec["work_packages"]) >= 1
+    # Session 65 T7: 没选 baseline → work_packages 应为空, 推荐理由应提示先选 baseline
+    assert rec["work_packages"] == [], "未选 baseline 时不应生成工作包"
+    assert any("请先从候选论文" in r for r in rec["recommendation_reason"]), (
+        "未选 baseline 时推荐理由应提示用户先选 baseline"
+    )
     # 审核
     rev = body["light_review"]
     assert rev["verdict"] in ("通过", "有条件通过", "需修改", "不建议")
