@@ -13,6 +13,9 @@
   - assistant_intake + unverified 不得作为 supports
   - manual + user_preferred + unverified 可 background/warns, 不支撑关键结论
   - selected/core + partial 可 supports, Markdown 需显示 warning
+- Session 65 §6.2: clean_status in (reject, quarantine) 不得进 supports;
+  literature_role in (survey, irrelevant) 不得进 supports;
+  reason 不再写"相关性 X.XX", 改写"命中关键词 / 缺失关键词"格式
 """
 
 from __future__ import annotations
@@ -305,13 +308,97 @@ def _make_ref(item: dict[str, Any], role: str, reason: str) -> EvidenceRef:
 # ---------- FeasibilitySummary 挂载 (§5.2) ---------- #
 
 
+# Session 65 §6.2: 清洗门控常量
+_REJECTED_CLEAN_STATUSES = frozenset({"reject", "quarantine"})
+_NON_SUPPORT_LITERATURE_ROLES = frozenset({"survey", "irrelevant"})
+
+
+def _filter_valid_evidence(papers: list[Any]) -> list[dict[str, Any]]:
+    """Session 65 §6.2: 只保留 clean 且 role 可支持关键证据的 paper.
+
+    过滤规则:
+    - clean_status in (reject, quarantine)  → 排除
+    - literature_role in (survey, irrelevant) → 排除
+    - 其余 (含 needs_manual / keep) 保留, 由下游 _select_role 决定 supports/warns/blocks
+    """
+    valid: list[dict[str, Any]] = []
+    for p in papers:
+        if isinstance(p, dict):
+            clean_status = p.get("clean_status", "keep")
+            role = p.get("literature_role", "parallel_application_paper")
+        else:
+            clean_status = getattr(p, "clean_status", "keep") or "keep"
+            role = getattr(p, "literature_role", "parallel_application_paper") or "parallel_application_paper"
+        if clean_status in _REJECTED_CLEAN_STATUSES:
+            continue
+        if role in _NON_SUPPORT_LITERATURE_ROLES:
+            continue
+        # 落回 dict (下游消费)
+        if isinstance(p, dict):
+            valid.append(p)
+        elif hasattr(p, "model_dump"):
+            valid.append(p.model_dump())
+        else:
+            # Pydantic v2 / SimpleNamespace / dataclass 等: 用 __dict__ 快照
+            valid.append({k: v for k, v in vars(p).items()})
+    return valid
+
+
+def _build_keyword_reason(item: dict[str, Any], topic_keywords: list[str] | None = None) -> str:
+    """Session 65 §6.2: 替代 `arXiv 命中, 相关性 0.10` 的关键词命中解释.
+
+    拼接格式: 命中关键词: A / B；缺失: C / D；状态: 待人工确认
+    """
+    title = (item.get("title") or "").lower()
+    abstract = (item.get("abstract") or "").lower() if isinstance(item.get("abstract"), str) else ""
+    text_blob = f"{title} {abstract}"
+
+    # 关键词来源: 优先 topic_keywords, 否则从 item 自己取 (matched_keywords / topic_atoms)
+    kws: list[str] = []
+    if topic_keywords:
+        kws = [k for k in topic_keywords if k]
+    if not kws:
+        mk = item.get("matched_keywords") or item.get("topic_atoms") or []
+        if isinstance(mk, list):
+            kws = [str(k) for k in mk if k]
+        elif isinstance(mk, str) and mk:
+            kws = [mk]
+
+    matched: list[str] = []
+    missing: list[str] = []
+    for kw in kws:
+        if kw and kw.lower() in text_blob:
+            matched.append(kw)
+        else:
+            missing.append(kw)
+
+    # 兜底: 没有任何关键词时, 至少说"已搜到, 待人工确认"
+    if not matched and not missing:
+        return "命中关键词: (无题目录入)；状态: 待人工确认"
+
+    matched_part = "命中关键词: " + " / ".join(matched) if matched else "命中关键词: (无)"
+    missing_part = "缺失: " + " / ".join(missing) if missing else "缺失: (无)"
+    return f"{matched_part}；{missing_part}；状态: 待人工确认"
+
+
 def build_feasibility_refs(
     feasibility: FeasibilitySummary,
     papers: list[Any], datasets: list[Any], repos: list[Any], *,
     extras: list[dict[str, Any]] | None = None,
     project_id: str = "",
+    topic_keywords: list[str] | None = None,
 ) -> FeasibilitySummary:
-    """§5.2: 给 FeasibilitySummary 挂 evidence_refs / blocking_refs / confidence."""
+    """§5.2: 给 FeasibilitySummary 挂 evidence_refs / blocking_refs / confidence.
+
+    Session 65 §6.2 改造:
+    - papers 先经过 _filter_valid_evidence (clean_status / literature_role 门控)
+    - reason 不再写 `相关性 X.XX`, 改写关键词命中解释
+    - 若所有 paper 都被过滤, 触发"证据不足" fallback
+    """
+
+    # 1) 自动 paper 走清洗门控; extras 信任用户
+    valid_papers = _filter_valid_evidence(papers)
+    n_filtered = len(papers) - len(valid_papers)
 
     pool = _collect_evidence_pool(papers, datasets, repos, extras=extras, project_id=project_id)
     if not pool:
@@ -321,11 +408,35 @@ def build_feasibility_refs(
         feasibility.missing_ref_reasons = ["evidence pool 为空, 无法挂载 refs"]
         return feasibility
 
+    # Session 65 §6.2: 全部自动 paper 被清洗门控挡掉时, 走"证据不足" fallback
+    # (extras 是用户手动入池, 信任用户, 不算"被门控挡掉")
+    extras_has_paper = any(e.get("evidence_type") == "paper" for e in (extras or []))
+    if not valid_papers and not extras_has_paper and n_filtered > 0:
+        feasibility.evidence_refs = []
+        feasibility.blocking_refs = []
+        feasibility.confidence = 0.0
+        feasibility.missing_ref_reasons = [
+            "证据不足：未找到与题目匹配的论文候选",
+            f"过滤掉 {n_filtered} 个无关 / survey / 拒收候选；状态: 待人工确认",
+        ]
+        if feasibility.verdict == "可做":
+            feasibility.verdict = "收缩后可做"
+            feasibility.reason += " (Session 65 证据挂接: paper 全被门控挡掉)"
+        return feasibility
+
     # 按 ref_priority 排序
     pool.sort(key=_ref_priority, reverse=True)
     by_type: dict[str, list[dict]] = {"paper": [], "dataset": [], "repo": []}
+    valid_paper_eids = {id(p) for p in valid_papers}
+    valid_paper_eid_strs = {p.get("evidence_id") or p.get("paper_id") for p in valid_papers}
     for it in pool:
-        by_type[it.get("evidence_type", "paper")].append(it)
+        ev_type = it.get("evidence_type", "paper")
+        # Session 65 §6.2: paper 类型, 还要过门控
+        if ev_type == "paper" and it.get("source_mode") == "auto_search":
+            # 自动 paper: 只在 valid_papers 池内才进 supports/background
+            if it.get("evidence_id") not in valid_paper_eid_strs:
+                continue
+        by_type[ev_type].append(it)
 
     supports: list[EvidenceRef] = []
     blocks: list[EvidenceRef] = []
@@ -335,11 +446,11 @@ def build_feasibility_refs(
     for p in by_type["paper"][:3]:
         role = _select_role(p.get("review_status", "pending"), p.get("relevance_score"), "paper", p.get("workspace_lane", "system_found"), p.get("source_mode", ""), p.get("verification_status") or "unverified")
         if role == "supports":
-            supports.append(_make_ref(p, "supports", f"arXiv 命中, 相关性 {p.get('relevance_score', 0):.2f}"))
+            supports.append(_make_ref(p, "supports", _build_keyword_reason(p, topic_keywords)))
         elif role in ("warns", "blocks"):
-            blocks.append(_make_ref(p, role, f"论文相关度低或待核查 (score={p.get('relevance_score')})"))
+            blocks.append(_make_ref(p, role, _build_keyword_reason(p, topic_keywords)))
         else:
-            supports.append(_make_ref(p, "background", f"论文 (paper_type={p.get('paper_type')})"))
+            supports.append(_make_ref(p, "background", _build_keyword_reason(p, topic_keywords)))
 
     # 数据集 supports (取 top 1)
     if by_type["dataset"]:
