@@ -209,7 +209,7 @@ def _hard_rule_check(
 
 
 def _llm_refine(candidate: dict, topic_atoms: dict) -> CandidateCleanResult:
-    """LLM 细化分类 (规则未命中时调用). 失败则降级为 keep."""
+    """LLM 细化分类 (规则未命中时调用). 失败则返回 needs_manual."""
     cid = candidate.get("candidate_id", "")
     title = candidate.get("title", "")
     abstract = (candidate.get("abstract") or "")[:1200]
@@ -225,38 +225,38 @@ def _llm_refine(candidate: dict, topic_atoms: dict) -> CandidateCleanResult:
         f"已匹配 atoms: {matched}\n"
         f"必需 atoms: {required}\n\n"
         "判断这篇论文是否与题目相关. 输出 JSON:\n"
-        '{"clean_status": "keep|quarantine", "mismatch_type": "none|wrong_domain|wrong_task|'
-        'metadata_mismatch|low_relevance", "matched_atoms": [...], '
+        '{"clean_status": "keep|quarantine|reject|needs_manual", "mismatch_type": "none|wrong_domain|wrong_task|'
+        'wrong_url|not_paper|metadata_mismatch|low_relevance|source_failed", "matched_atoms": [...], '
         '"missing_required_atoms": [...], "reason": "...", "confidence": 0.0-1.0}'
     )
 
     try:
         data = chat_json(prompt, system=system, temperature=0.1, max_tokens=400, timeout=20.0)
     except LLMUnavailable as exc:
-        logger.warning("candidate_cleaner: LLM 不可用, 降级为 keep: %s", exc)
+        logger.warning("candidate_cleaner: LLM 不可用, 返回 needs_manual: %s", exc)
         return CandidateCleanResult(
             candidate_id=cid,
-            clean_status="keep",
-            mismatch_type="none",
+            clean_status="needs_manual",
+            mismatch_type="low_relevance",
             matched_atoms=matched,
             missing_required_atoms=[a for a in required if a not in matched],
-            reason="LLM 不可用, 默认 keep",
-            confidence=0.5,
+            reason=f"LLM unavailable; manual review required before using as evidence: {exc}",
+            confidence=0.0,
         )
     except Exception as exc:  # noqa: BLE001
-        logger.warning("candidate_cleaner: LLM 调用异常, 降级为 keep: %s", exc)
+        logger.warning("candidate_cleaner: LLM 调用异常, 返回 needs_manual: %s", exc)
         return CandidateCleanResult(
             candidate_id=cid,
-            clean_status="keep",
-            mismatch_type="none",
+            clean_status="needs_manual",
+            mismatch_type="low_relevance",
             matched_atoms=matched,
             missing_required_atoms=[a for a in required if a not in matched],
-            reason=f"LLM 调用异常: {exc!r}, 默认 keep",
-            confidence=0.5,
+            reason=f"LLM unavailable; manual review required before using as evidence: {exc!r}",
+            confidence=0.0,
         )
 
     status = data.get("clean_status", "keep")
-    if status not in {"keep", "quarantine"}:
+    if status not in {"keep", "quarantine", "reject", "needs_manual"}:
         status = "keep"
     mismatch = data.get("mismatch_type", "none")
     if mismatch not in {
