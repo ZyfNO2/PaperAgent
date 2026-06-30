@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from typing import Any
+from urllib.parse import urlencode
 from xml.etree import ElementTree as ET
 
 from .._http import HttpError, fetch_with_timeout
 
+logger = logging.getLogger(__name__)
 
 ARXIV_API = "http://export.arxiv.org/api/query"
 _ATOM_NS = "{http://www.w3.org/2005/Atom}"
@@ -60,30 +63,71 @@ def _parse_entry(entry: ET.Element) -> dict | None:
     }
 
 
+def _parse_arxiv_xml(xml_text: str, source_query: str) -> list[dict]:
+    """Parse arXiv Atom XML, tag entries with source_query."""
+    papers: list[dict] = []
+    try:
+        root = ET.fromstring(xml_text)
+    except ET.ParseError as exc:
+        logger.warning("arxiv xml parse failed: %s", exc)
+        return papers
+    for entry in root.findall(f"{_ATOM_NS}entry"):
+        d = _parse_entry(entry)
+        if d:
+            d["source_query"] = source_query
+            papers.append(d)
+    return papers
+
+
 async def arxiv_search(
     queries: list[str],
     top_k: int = 8,
     *,
     client: Any | None = None,
 ) -> list[dict]:
-    """从 arXiv 检索 paper 原始 dict 列表."""
+    """从 arXiv 检索 paper 原始 dict 列表.
 
-    results: list[dict] = []
-    qs = queries[:1] if queries else []
+    Runs up to 3 queries with URL encoding + relevance sort, dedupes by arxiv_id.
+    """
+    qs = [q.strip() for q in (queries or []) if q and q.strip()][:3]
+    if not qs:
+        return []
+
+    # Per-query cap so 3 queries * max_per_query <= top_k comfortably
+    max_per_query = max(1, top_k)
+    max_total = top_k
+
+    papers: list[dict] = []
+    seen_ids: set[str] = set()
+
     for q in qs:
-        url = f"{ARXIV_API}?search_query=all:{q}&start=0&max_results={top_k}"
+        if len(papers) >= max_total:
+            break
+        params = {
+            "search_query": f"all:{q}",
+            "start": 0,
+            "max_results": max_per_query,
+            "sortBy": "relevance",
+            "sortOrder": "descending",
+        }
+        url = f"{ARXIV_API}?{urlencode(params)}"
         try:
             data = await fetch_with_timeout(url, client=client, timeout=10.0)
-        except HttpError:
-            raise
+        except HttpError as exc:
+            logger.warning("arxiv fetch failed (HttpError): %s | query=%s", exc, q)
+            continue
+        except Exception as exc:  # ponytail: catch unexpected so one bad query doesn't kill the loop
+            logger.warning("arxiv query failed: %s | query=%s", exc, q)
+            continue
         if not isinstance(data, str):
             continue
-        try:
-            root = ET.fromstring(data)
-        except ET.ParseError:
-            continue
-        for entry in root.findall(f"{_ATOM_NS}entry"):
-            d = _parse_entry(entry)
-            if d:
-                results.append(d)
-    return results[:top_k]
+        parsed = _parse_arxiv_xml(data, source_query=q)
+        for p in parsed:
+            pid = p.get("arxiv_id")
+            if pid and pid not in seen_ids:
+                seen_ids.add(pid)
+                papers.append(p)
+                if len(papers) >= max_total:
+                    break
+
+    return papers
