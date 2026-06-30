@@ -52,6 +52,13 @@ PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe scripts/full_smoke.py
 > 每个 Session 结束时，新前端 (`apps/web-react`, 18183) 的**每个可点击 / 可输入控件
 > 必须有真实交互测试**，不能只断言"可见"。下列契约必须遵守。
 
+**【强制规则】每次新增或修改前端控件后，必须执行并通过 Playwright 全流程点击测试 + 截图：**
+- 测试文件: `apps/web-react/e2e/test_session<N>_topic_driven_retrieval.py`
+- 截图目录: `apps/web-react/e2e/screenshots/session<N>/`
+- 测试内容: 输入 3 个金样例题目 → 点击分析 → 验证关键词拆解 → 验证候选变化
+- 断言: 3D题显示MVTec 3D-AD/COLMAP/3DGS, YOLO题不混3D, NLP题显示BERT/RoBERTa
+- **禁止跳过此测试** — 任何以"scope限制"或"时间不足"跳过的理由无效，必须补做
+
 **TopBar 5 nav (工作台 / RAG / ThesisEval / 面试 / 协议)**:
 
 - 点击后路由必须跳转 (`#/` / `#/?mode=...` / `#/workbench` / `#/protocols`)
