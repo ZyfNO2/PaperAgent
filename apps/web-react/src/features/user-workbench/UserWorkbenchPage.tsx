@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { apiClient, ApiError } from "../../app/apiClient";
 import { Badge } from "../../components/ui/Badge";
 import { Card } from "../../components/ui/Card";
 import { EvidenceSubmitPanel } from "../evidence/EvidenceSubmitPanel";
@@ -21,14 +20,18 @@ const QUICK_ACTIONS = [
 
 const NOTES_KEY = "paperagent:notes";
 
-interface TopicUnderstanding {
-  raw_topic: string;
-  normalized_topic: string;
-  intent_zh: string;
-  is_specific_object: boolean;
-}
+// ponytail: Session 66 T1-T3 — new main flow replaces legacy one-shot /analyze.
+// T1-T3 covers only the state skeleton + the first transition (idle -> keywords_review).
+// Retrieval / baseline / work-advice endpoints come in T4+.
+type MainFlowStep =
+  | "idle"
+  | "keywords_review"
+  | "retrieval_review"
+  | "baseline_select"
+  | "work_advice"
+  | "stopped";
 
-interface KeywordBreakdown {
+interface ParsedKeywords {
   method_keywords: string[];
   task_keywords: string[];
   object_keywords: string[];
@@ -37,119 +40,6 @@ interface KeywordBreakdown {
   risk_terms: string[];
   query_keywords_zh: string[];
   query_keywords_en: string[];
-}
-
-interface EvidenceRef {
-  evidence_id: string;
-  evidence_type: string;
-  title: string;
-  reason: string;
-  role: string;
-  score?: number | null;
-  review_status?: string;
-  url?: string | null;
-}
-
-interface PaperHit {
-  paper_id: string;
-  title: string;
-  year?: number | null;
-  url?: string | null;
-  source?: string;
-  relevance_score?: number | null;
-  summary_zh?: string | null;
-}
-
-interface DatasetHit {
-  dataset_id: string;
-  name: string;
-  download?: string | null;
-  fit?: string;
-  quality_score?: number | null;
-  dataset_status?: string | null;
-}
-
-interface BaselineHit {
-  baseline_id: string;
-  name: string;
-  repository_url?: string | null;
-  quality_score?: number | null;
-  repo_type?: string | null;
-}
-
-interface EvidenceSummary {
-  papers: PaperHit[];
-  datasets: DatasetHit[];
-  baselines: BaselineHit[];
-  metrics: string[];
-  paper_count: number;
-  dataset_count: number;
-  baseline_count: number;
-  has_public_dataset: boolean;
-  has_repro_baseline: boolean;
-}
-
-interface WorkPackageSuggestion {
-  wp_id: string;
-  title: string;
-  research_question: string;
-  method_approach: string;
-  data_source: string;
-  experiment_plan: string;
-  chapter: string;
-  open_questions: string[];
-  status: string;
-}
-
-interface PivotRoute {
-  level: string;
-  new_topic: string;
-  tradeoff: string;
-}
-
-interface ProposalRecommendation {
-  recommended_topic: string;
-  recommendation_reason: string[];
-  work_packages: WorkPackageSuggestion[];
-  proposal_outline: string[];
-  pivot_routes: PivotRoute[];
-}
-
-interface ReviewCheck {
-  dimension: string;
-  result: string;
-  comment: string;
-}
-
-interface LightReview {
-  verdict: string;
-  summary: string;
-  checks: ReviewCheck[];
-  revision_checklist: string[];
-}
-
-interface FeasibilitySummary {
-  verdict: string;
-  reason: string;
-  paper_status: string;
-  dataset_status: string;
-  baseline_status: string;
-  engineering_status: string;
-  missing_evidence: string[];
-  recommended_next_action: string;
-  evidence_refs: EvidenceRef[];
-  blocking_refs: EvidenceRef[];
-  confidence: number;
-}
-
-interface AnalyzeResponse {
-  project_id: string;
-  topic_understanding: TopicUnderstanding;
-  keyword_breakdown: KeywordBreakdown;
-  evidence_summary: EvidenceSummary;
-  feasibility: FeasibilitySummary;
-  proposal_recommendation: ProposalRecommendation;
-  light_review: LightReview;
 }
 
 function loadNotes(): string[] {
@@ -167,27 +57,6 @@ function saveNotes(notes: string[]): void {
   window.localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
 }
 
-function compactList(...groups: Array<string[] | undefined>): string[] {
-  return groups.flatMap((group) => group ?? []).filter(Boolean);
-}
-
-function formatError(error: unknown): string {
-  if (error instanceof ApiError) {
-    if (typeof error.body === "string") return error.body;
-    if (error.body && typeof error.body === "object") {
-      return JSON.stringify(error.body, null, 2);
-    }
-    return error.message;
-  }
-  if (error instanceof Error) return error.message;
-  return "未知错误";
-}
-
-function scoreText(score?: number | null): string | null {
-  if (typeof score !== "number") return null;
-  return score.toFixed(2);
-}
-
 function stripPrefix(text: string, patterns: RegExp[]): string {
   let output = text;
   for (const pattern of patterns) {
@@ -196,320 +65,6 @@ function stripPrefix(text: string, patterns: RegExp[]): string {
   return output.trim();
 }
 
-function buildRetrieveReply(analysis: AnalyzeResponse): string {
-  const paperTitles = analysis.evidence_summary.papers.slice(0, 2).map((item) => item.title);
-  const datasetNames = analysis.evidence_summary.datasets.slice(0, 2).map((item) => item.name);
-  const repoNames = analysis.evidence_summary.baselines.slice(0, 2).map((item) => item.name);
-  const lines = [
-    `我已经找到 ${analysis.evidence_summary.paper_count} 篇论文、${analysis.evidence_summary.dataset_count} 个数据集、${analysis.evidence_summary.baseline_count} 个 baseline。`,
-  ];
-  if (paperTitles.length) lines.push(`论文优先看：${paperTitles.join(" / ")}`);
-  if (datasetNames.length) lines.push(`数据集优先看：${datasetNames.join(" / ")}`);
-  if (repoNames.length) lines.push(`工程 baseline：${repoNames.join(" / ")}`);
-  if (analysis.feasibility.missing_evidence.length) {
-    lines.push(`当前还缺：${analysis.feasibility.missing_evidence.join("；")}`);
-  }
-  return lines.join("\n");
-}
-
-function buildNextStepReply(analysis: AnalyzeResponse): string {
-  const outline = analysis.proposal_recommendation.proposal_outline.slice(0, 3);
-  const checklist = analysis.light_review.revision_checklist.slice(0, 3);
-  const lines = [
-    `当前可行性：${analysis.feasibility.verdict}。${analysis.feasibility.recommended_next_action}`,
-  ];
-  if (outline.length) lines.push(`建议先推进：${outline.join(" / ")}`);
-  if (checklist.length) lines.push(`优先补齐：${checklist.join("；")}`);
-  return lines.join("\n");
-}
-
-function AnalysisError({ error }: { error: string }) {
-  return (
-    <Card title="分析失败" testId="uw-analysis-error">
-      <div className="pa-error-card__summary">后端分析未返回可用结果，请先检查输入或后端状态。</div>
-      <pre className="pa-error-card__debug">{error}</pre>
-    </Card>
-  );
-}
-
-function KeywordGroup({ title, items }: { title: string; items: string[] }) {
-  if (!items.length) return null;
-  return (
-    <div className="pa-uw-result-group">
-      <div className="pa-uw-result-group__title">{title}</div>
-      <div className="pa-uw-chip-row">
-        {items.map((item) => (
-          <span key={`${title}-${item}`} className="pa-uw-chip">
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function EvidenceList({
-  title,
-  items,
-}: {
-  title: string;
-  items: Array<{
-    id: string;
-    name: string;
-    href?: string | null;
-    score?: number | null;
-    meta?: string[];
-    summary?: string | null;
-  }>;
-}) {
-  return (
-    <Card title={title}>
-      {items.length === 0 ? (
-        <div className="pa-faint">暂无结果</div>
-      ) : (
-        <ul className="pa-uw-result-list">
-          {items.map((item) => (
-            <li key={item.id} className="pa-uw-result-item">
-              <div className="pa-uw-result-item__head">
-                <strong>{item.name}</strong>
-                {scoreText(item.score) ? (
-                  <Badge tone="info">score {scoreText(item.score)}</Badge>
-                ) : null}
-              </div>
-              {item.meta && item.meta.length ? (
-                <div className="pa-uw-result-item__meta">{item.meta.join(" / ")}</div>
-              ) : null}
-              {item.summary ? <div className="pa-uw-result-item__summary">{item.summary}</div> : null}
-              {item.href ? (
-                <a href={item.href} target="_blank" rel="noreferrer" className="pa-link">
-                  打开链接
-                </a>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      )}
-    </Card>
-  );
-}
-
-function AnalysisResults({ analysis }: { analysis: AnalyzeResponse }) {
-  const keyword = analysis.keyword_breakdown;
-  const topEvidence = analysis.feasibility.evidence_refs.slice(0, 4);
-  return (
-    <div className="pa-uw-analysis" data-testid="uw-analysis-results">
-      <div className="pa-uw-analysis-grid">
-        <Card title="题目理解" testId="uw-topic-understanding">
-          <div className="pa-uw-kv">
-            <div>
-              <span className="pa-faint">规范题目</span>
-              <div>{analysis.topic_understanding.normalized_topic}</div>
-            </div>
-            <div>
-              <span className="pa-faint">是否已指向具体对象</span>
-              <div>{analysis.topic_understanding.is_specific_object ? "是" : "否"}</div>
-            </div>
-          </div>
-          <p className="pa-uw-paragraph">{analysis.topic_understanding.intent_zh}</p>
-        </Card>
-
-        <Card title="可行性判断" testId="uw-feasibility">
-          <div className="pa-uw-result-item__head">
-            <strong>{analysis.feasibility.verdict}</strong>
-            <Badge tone={analysis.feasibility.verdict.includes("不") ? "err" : analysis.feasibility.verdict.includes("可转") ? "warn" : "ok"}>
-              confidence {analysis.feasibility.confidence.toFixed(2)}
-            </Badge>
-          </div>
-          <p className="pa-uw-paragraph">{analysis.feasibility.reason}</p>
-          <div className="pa-uw-kv pa-uw-kv--stack">
-            <div>论文：{analysis.feasibility.paper_status}</div>
-            <div>数据集：{analysis.feasibility.dataset_status}</div>
-            <div>Baseline：{analysis.feasibility.baseline_status}</div>
-            <div>工程：{analysis.feasibility.engineering_status}</div>
-          </div>
-          {analysis.feasibility.missing_evidence.length ? (
-            <ul className="pa-uw-checklist">
-              {analysis.feasibility.missing_evidence.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          ) : null}
-        </Card>
-      </div>
-
-      <Card title="关键词拆解" testId="uw-keywords">
-        <KeywordGroup title="方法词" items={keyword.method_keywords} />
-        <KeywordGroup title="任务词" items={keyword.task_keywords} />
-        <KeywordGroup title="对象词" items={keyword.object_keywords} />
-        <KeywordGroup title="场景词" items={keyword.scenario_keywords} />
-        <KeywordGroup title="指标词" items={keyword.metric_keywords} />
-        <KeywordGroup title="风险词" items={keyword.risk_terms} />
-        <KeywordGroup title="中文检索词" items={keyword.query_keywords_zh} />
-        <KeywordGroup title="英文检索词" items={keyword.query_keywords_en} />
-      </Card>
-
-      <div className="pa-uw-analysis-grid pa-uw-analysis-grid--triple">
-        <EvidenceList
-          title={`论文候选 (${analysis.evidence_summary.paper_count})`}
-          items={analysis.evidence_summary.papers.map((item) => ({
-            id: item.paper_id,
-            name: item.title,
-            href: item.url,
-            score: item.relevance_score,
-            meta: compactList(
-              item.year ? [String(item.year)] : undefined,
-              item.source ? [item.source] : undefined,
-            ),
-            summary: item.summary_zh ?? null,
-          }))}
-        />
-        <EvidenceList
-          title={`数据集候选 (${analysis.evidence_summary.dataset_count})`}
-          items={analysis.evidence_summary.datasets.map((item) => ({
-            id: item.dataset_id,
-            name: item.name,
-            href: item.download,
-            score: item.quality_score,
-            meta: compactList(item.fit ? [`fit ${item.fit}`] : undefined, item.dataset_status ? [item.dataset_status] : undefined),
-          }))}
-        />
-        <EvidenceList
-          title={`Baseline / Repo (${analysis.evidence_summary.baseline_count})`}
-          items={analysis.evidence_summary.baselines.map((item) => ({
-            id: item.baseline_id,
-            name: item.name,
-            href: item.repository_url,
-            score: item.quality_score,
-            meta: compactList(item.repo_type ? [item.repo_type] : undefined),
-          }))}
-        />
-      </div>
-
-      <div className="pa-uw-analysis-grid">
-        <Card title="开题解析 / 题目推荐" testId="uw-proposal-recommendation">
-          <div className="pa-uw-result-item__head">
-            <strong>{analysis.proposal_recommendation.recommended_topic}</strong>
-          </div>
-          {analysis.proposal_recommendation.recommendation_reason.length ? (
-            <ul className="pa-uw-checklist">
-              {analysis.proposal_recommendation.recommendation_reason.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          ) : null}
-          {analysis.proposal_recommendation.proposal_outline.length ? (
-            <>
-              <div className="pa-uw-result-group__title">开题结构建议</div>
-              <ol className="pa-uw-number-list">
-                {analysis.proposal_recommendation.proposal_outline.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ol>
-            </>
-          ) : null}
-        </Card>
-
-        <Card title="低门槛审核" testId="uw-light-review">
-          <div className="pa-uw-result-item__head">
-            <strong>{analysis.light_review.verdict}</strong>
-          </div>
-          <p className="pa-uw-paragraph">{analysis.light_review.summary}</p>
-          <ul className="pa-uw-checklist">
-            {analysis.light_review.checks.map((item) => (
-              <li key={`${item.dimension}-${item.result}`}>
-                <strong>{item.dimension}</strong>：{item.result}，{item.comment}
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-
-      <div className="pa-uw-analysis-grid">
-        <Card title="工作包建议" testId="uw-work-packages">
-          {analysis.proposal_recommendation.work_packages.length === 0 ? (
-            <div className="pa-faint">暂无工作包</div>
-          ) : (
-            <div className="pa-uw-package-list">
-              {analysis.proposal_recommendation.work_packages.map((item) => (
-                <div key={item.wp_id} className="pa-uw-package">
-                  <div className="pa-uw-result-item__head">
-                    <strong>{item.title}</strong>
-                    <Badge tone={item.status === "ready" ? "ok" : "warn"}>{item.status}</Badge>
-                  </div>
-                  <div className="pa-uw-package__line"><span className="pa-faint">研究问题</span>{item.research_question}</div>
-                  <div className="pa-uw-package__line"><span className="pa-faint">方法路线</span>{item.method_approach}</div>
-                  <div className="pa-uw-package__line"><span className="pa-faint">数据来源</span>{item.data_source}</div>
-                  <div className="pa-uw-package__line"><span className="pa-faint">实验计划</span>{item.experiment_plan}</div>
-                  <div className="pa-uw-package__line"><span className="pa-faint">章节</span>{item.chapter}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-
-        <Card title="退化 / 转向路线" testId="uw-pivot-routes">
-          {analysis.proposal_recommendation.pivot_routes.length === 0 ? (
-            <div className="pa-faint">暂无退化路线</div>
-          ) : (
-            <div className="pa-uw-package-list">
-              {analysis.proposal_recommendation.pivot_routes.map((item) => (
-                <div key={`${item.level}-${item.new_topic}`} className="pa-uw-package">
-                  <div className="pa-uw-result-item__head">
-                    <strong>{item.level}</strong>
-                    <Badge tone="info">{item.new_topic}</Badge>
-                  </div>
-                  <div className="pa-uw-package__line">{item.tradeoff}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      </div>
-
-      <Card title="关键证据引用" testId="uw-evidence-refs">
-        {topEvidence.length === 0 ? (
-          <div className="pa-faint">暂无关键证据</div>
-        ) : (
-          <ul className="pa-uw-result-list">
-            {topEvidence.map((item) => (
-              <li key={item.evidence_id} className="pa-uw-result-item">
-                <div className="pa-uw-result-item__head">
-                  <strong>{item.title}</strong>
-                  <Badge tone={item.role === "warns" ? "warn" : "info"}>{item.role}</Badge>
-                </div>
-                <div className="pa-uw-result-item__meta">
-                  {item.evidence_type} / {item.review_status ?? "unreviewed"}
-                  {scoreText(item.score) ? ` / score ${scoreText(item.score)}` : ""}
-                </div>
-                <div className="pa-uw-result-item__summary">{item.reason}</div>
-                {item.url ? (
-                  <a href={item.url} target="_blank" rel="noreferrer" className="pa-link">
-                    打开链接
-                  </a>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
-    </div>
-  );
-}
-
-interface SearchPlan {
-  paper_queries: string[];
-  dataset_queries: string[];
-  repo_queries: string[];
-}
-
-interface DirectionAdvice {
-  safe_path: { name: string; reason: string; baseline?: string | null }[];
-  enhancement_path: { name: string; reason: string; risk: string }[];
-  fallback_path: { name: string; reason: string }[];
-}
-
-type ResearchState = 'idle' | 'parsing' | 'keywords_confirm' | 'searching' | 'evidence' | 'direction' | 'confirmed';
-
 export interface UserWorkbenchPageProps {
   testId?: string;
 }
@@ -517,27 +72,26 @@ export interface UserWorkbenchPageProps {
 export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
   const [topicInput, setTopicInput] = useState("");
   const [topic, setTopic] = useState("");
-  const [status, setStatus] = useState<"尚未开始" | "正在分析" | "等待确认" | "已确认">("尚未开始");
   const [notes, setNotes] = useState<string[]>(() => loadNotes());
   const [chatDraft, setChatDraft] = useState("");
   const [chatPreview, setChatPreview] = useState<CommandPreview | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [analysis, setAnalysis] = useState<AnalyzeResponse | null>(null);
-  const [analysisError, setAnalysisError] = useState<string | null>(null);
+
+  // ponytail: Session 66 T1-T3 — replace legacy one-shot analysis state.
+  const [flowStep, setFlowStep] = useState<MainFlowStep>("idle");
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [keywords, setKeywords] = useState<ParsedKeywords | null>(null);
   const [loading, setLoading] = useState(false);
+  const [flowError, setFlowError] = useState<string | null>(null);
 
-  // ponytail: step-by-step confirmation state machine
-  const [researchState, setResearchState] = useState<ResearchState>('idle');
-  const [parsedKeywords, setParsedKeywords] = useState<KeywordBreakdown | null>(null);
-  const [searchPlan, setSearchPlan] = useState<SearchPlan | null>(null);
-  const [evidenceData, setEvidenceData] = useState<EvidenceSummary | null>(null);
-  const [direction, setDirection] = useState<DirectionAdvice | null>(null);
-
-  const statusTone = useMemo(() => {
-    if (status === "已确认") return "ok";
-    if (status === "尚未开始") return "neutral";
-    return "info";
-  }, [status]);
+  const statusLabel = useMemo(() => {
+    if (flowStep === "idle") return "尚未开始";
+    if (flowStep === "keywords_review") return "等待确认关键词";
+    if (flowStep === "retrieval_review") return "等待确认检索";
+    if (flowStep === "baseline_select") return "等待选择基线";
+    if (flowStep === "work_advice") return "等待确认工作建议";
+    return "已停止";
+  }, [flowStep]);
 
   function pushMsg(role: ChatMessage["role"], text: string) {
     setMessages((prev) => [
@@ -559,101 +113,50 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
     pushMsg("system", text);
   }
 
+  // ponytail: Session 66 T1-T3 stub — keywords endpoint arrives in T4.
+  // For now: transition to keywords_review with an empty skeleton so the UI compiles.
   async function onStart() {
     const nextTopic = topicInput.trim();
     if (!nextTopic || loading) return;
     setTopic(nextTopic);
-    setStatus("正在分析");
     setLoading(true);
-    setAnalysisError(null);
-    setResearchState('parsing');
+    setFlowError(null);
 
     try {
-      const resp = await apiClient.post<AnalyzeResponse>("/api/v1/one-topic/analyze", {
-        raw_topic: nextTopic,
-        prefer: "heuristic",
+      // TODO(Phase 66 T4): replace with POST /api/v1/keywords (LLM + heuristic fallback).
+      setKeywords({
+        method_keywords: [],
+        task_keywords: [],
+        object_keywords: [],
+        scenario_keywords: [],
+        metric_keywords: [],
+        risk_terms: [],
+        query_keywords_zh: [],
+        query_keywords_en: [],
       });
-      setAnalysis(resp);
-      setParsedKeywords(resp.keyword_breakdown);
-      setStatus("等待确认");
-      setResearchState('keywords_confirm');
-      pushAssistant(
-        `我已经完成题目理解、关键词拆解、资料检索和开题初判。当前结论是：${resp.feasibility.verdict}。`,
-      );
+      setActiveProjectId(null);
+      setFlowStep("keywords_review");
+      pushAssistant(`已收到题目：「${nextTopic}」。等待关键词拆解完成后进入确认环节。`);
     } catch (error) {
-      setAnalysis(null);
-      setAnalysisError(formatError(error));
-      setStatus("尚未开始");
-      setResearchState('idle');
-      pushSystem("后端分析失败，请先检查接口状态或输入格式。");
+      const message = error instanceof Error ? error.message : "未知错误";
+      setFlowError(message);
+      setFlowStep("idle");
+      pushSystem(`启动失败：${message}`);
     } finally {
       setLoading(false);
     }
   }
 
-  // ponytail: derive search plan + evidence + direction from existing analyze response;
-  // no new API calls — the step-by-step UI is the deliverable.
-  function confirmKeywords() {
-    if (!parsedKeywords || !analysis) return;
-    setSearchPlan({
-      paper_queries: compactList(parsedKeywords.query_keywords_en, parsedKeywords.query_keywords_zh),
-      dataset_queries: compactList(parsedKeywords.object_keywords, parsedKeywords.task_keywords),
-      repo_queries: compactList(parsedKeywords.method_keywords),
-    });
-    setResearchState('searching');
-  }
-
-  function confirmSearchPlan() {
-    if (!analysis) return;
-    setEvidenceData(analysis.evidence_summary);
-    setResearchState('evidence');
-  }
-
-  function buildDirectionFromAnalysis(): DirectionAdvice {
-    const kb = parsedKeywords;
-    const safeMethods = (kb?.method_keywords ?? []).slice(0, 2);
-    const riskTerms = kb?.risk_terms ?? [];
-    const safe: DirectionAdvice['safe_path'] = [
-      { name: "PointNet++", reason: "成熟 3D 点云基线，工程门槛低", baseline: "pointnet2" },
-      { name: "COLMAP", reason: "经典 SfM/MVS 重建，文献与工程支持充足", baseline: "colmap" },
-    ];
-    if (safeMethods.length) {
-      safe.unshift({ name: safeMethods[0], reason: "匹配当前题目方法词，工程可行", baseline: null });
-    }
-    const enhancement: DirectionAdvice['enhancement_path'] = [
-      { name: "3D Gaussian Splatting", reason: "渲染质量更高、可微调", risk: riskTerms.includes("3DGS") ? "已识别风险" : "训练资源要求较高" },
-      { name: "DUSt3R", reason: "端到端几何恢复，无需标定", risk: "极端场景退化时精度下降" },
-    ];
-    const fallback: DirectionAdvice['fallback_path'] = [
-      { name: "降级到 2D 检测", reason: "3D 管线受阻时保留单目方案" },
-      { name: "合成数据 + 简化模型", reason: "数据采集受限时保持实验推进" },
-    ];
-    return { safe_path: safe, enhancement_path: enhancement, fallback_path: fallback };
-  }
-
-  function collectEvidence() {
-    if (!analysis) return;
-    setEvidenceData(analysis.evidence_summary);
-    setDirection(buildDirectionFromAnalysis());
-    setResearchState('direction');
-  }
-
-  function confirmDirection() {
-    setStatus("已确认");
-    setResearchState('confirmed');
-    pushSystem("方向已确认。流程到此结束，未生成开题建议。");
-  }
-
-  function removeKeyword(group: keyof KeywordBreakdown, index: number) {
-    if (!parsedKeywords) return;
-    const nextList = [...parsedKeywords[group]];
+  function removeKeyword(group: keyof ParsedKeywords, index: number) {
+    if (!keywords) return;
+    const nextList = [...keywords[group]];
     nextList.splice(index, 1);
-    setParsedKeywords({ ...parsedKeywords, [group]: nextList });
+    setKeywords({ ...keywords, [group]: nextList });
   }
 
-  function renderKeywordGroup(group: keyof KeywordBreakdown, label: string) {
-    if (!parsedKeywords) return null;
-    const items = parsedKeywords[group];
+  function renderKeywordGroup(group: keyof ParsedKeywords, label: string) {
+    if (!keywords) return null;
+    const items = keywords[group];
     if (!items.length) return null;
     return (
       <div className="pa-uw-result-group" key={group}>
@@ -678,7 +181,8 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
     );
   }
 
-  function renderKeywordsConfirm() {
+  function renderKeywordsReview() {
+    if (!keywords) return null;
     return (
       <Card title="关键词确认" testId="uw-keywords-confirm">
         {renderKeywordGroup("method_keywords", "方法词")}
@@ -687,164 +191,10 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
         {renderKeywordGroup("scenario_keywords", "场景词")}
         {renderKeywordGroup("metric_keywords", "指标词")}
         {renderKeywordGroup("risk_terms", "风险词")}
-        <div className="pa-uw-actions">
-          <button
-            type="button"
-            className="pa-btn pa-btn--primary"
-            onClick={confirmKeywords}
-            data-testid="uw-confirm-keywords"
-          >
-            确认关键词，进入检索
-          </button>
-        </div>
-      </Card>
-    );
-  }
-
-  function renderSearchPlan() {
-    if (!searchPlan) return null;
-    const sections: Array<{ key: keyof SearchPlan; title: string }> = [
-      { key: "paper_queries", title: "论文检索词" },
-      { key: "dataset_queries", title: "数据集检索词" },
-      { key: "repo_queries", title: "代码仓库检索词" },
-    ];
-    return (
-      <Card title="检索方案确认" testId="uw-search-plan">
-        {sections.map((section) => {
-          const items = searchPlan[section.key];
-          return (
-            <details key={section.key} className="pa-uw-details" open>
-              <summary className="pa-uw-details__summary">{section.title} ({items.length})</summary>
-              <div className="pa-uw-chip-row">
-                {items.map((item, idx) => (
-                  <span key={`${section.key}-${idx}-${item}`} className="pa-uw-chip">{item}</span>
-                ))}
-              </div>
-            </details>
-          );
-        })}
-        <div className="pa-uw-actions">
-          <button
-            type="button"
-            className="pa-btn pa-btn--primary"
-            onClick={confirmSearchPlan}
-            data-testid="uw-confirm-search-plan"
-          >
-            确认检索方案
-          </button>
-        </div>
-      </Card>
-    );
-  }
-
-  function renderEvidence() {
-    if (!evidenceData) return null;
-    return (
-      <div className="pa-uw-analysis-grid pa-uw-analysis-grid--triple" data-testid="uw-evidence-cards">
-        <EvidenceList
-          title={`论文候选 (${evidenceData.paper_count})`}
-          items={evidenceData.papers.map((item) => ({
-            id: item.paper_id,
-            name: item.title,
-            href: item.url,
-            score: item.relevance_score,
-            meta: compactList(
-              item.year ? [String(item.year)] : undefined,
-              item.source ? [item.source] : undefined,
-            ),
-            summary: item.summary_zh ?? null,
-          }))}
-        />
-        <EvidenceList
-          title={`数据集候选 (${evidenceData.dataset_count})`}
-          items={evidenceData.datasets.map((item) => ({
-            id: item.dataset_id,
-            name: item.name,
-            href: item.download,
-            score: item.quality_score,
-            meta: compactList(item.fit ? [`fit ${item.fit}`] : undefined, item.dataset_status ? [item.dataset_status] : undefined),
-          }))}
-        />
-        <EvidenceList
-          title={`Baseline / Repo (${evidenceData.baseline_count})`}
-          items={evidenceData.baselines.map((item) => ({
-            id: item.baseline_id,
-            name: item.name,
-            href: item.repository_url,
-            score: item.quality_score,
-            meta: compactList(item.repo_type ? [item.repo_type] : undefined),
-          }))}
-        />
-        <div className="pa-uw-actions pa-uw-actions--full">
-          <button
-            type="button"
-            className="pa-btn pa-btn--primary"
-            onClick={collectEvidence}
-            data-testid="uw-collect-evidence"
-          >
-            汇总证据，生成方向建议
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  function renderDirection() {
-    if (!direction) return null;
-    return (
-      <div className="pa-uw-direction" data-testid="uw-direction-cards">
-        <Card title="稳妥路径" testId="uw-direction-safe">
-          <ul className="pa-uw-result-list">
-            {direction.safe_path.map((item, idx) => (
-              <li key={`safe-${idx}`} className="pa-uw-result-item">
-                <div className="pa-uw-result-item__head">
-                  <strong>{item.name}</strong>
-                  {item.baseline ? <Badge tone="info">{item.baseline}</Badge> : null}
-                </div>
-                <div className="pa-uw-result-item__summary">{item.reason}</div>
-              </li>
-            ))}
-          </ul>
-        </Card>
-        <Card title="增强路径" testId="uw-direction-enhancement">
-          <ul className="pa-uw-result-list">
-            {direction.enhancement_path.map((item, idx) => (
-              <li key={`enh-${idx}`} className="pa-uw-result-item">
-                <div className="pa-uw-result-item__head">
-                  <strong>{item.name}</strong>
-                  <Badge tone="warn">{item.risk}</Badge>
-                </div>
-                <div className="pa-uw-result-item__summary">{item.reason}</div>
-              </li>
-            ))}
-          </ul>
-        </Card>
-        <Card title="退化路径" testId="uw-direction-fallback">
-          <ul className="pa-uw-result-list">
-            {direction.fallback_path.map((item, idx) => (
-              <li key={`fb-${idx}`} className="pa-uw-result-item">
-                <div className="pa-uw-result-item__head">
-                  <strong>{item.name}</strong>
-                </div>
-                <div className="pa-uw-result-item__summary">{item.reason}</div>
-              </li>
-            ))}
-          </ul>
-        </Card>
         <div className="pa-faint pa-uw-direction__note">
-          方向建议到此为止 — 流程未触发开题生成，等待你确认或调整。
+          T4+ 接入关键词确认后的检索 / 基线 / 工作建议流程。
         </div>
-        <div className="pa-uw-actions">
-          <button
-            type="button"
-            className="pa-btn pa-btn--primary"
-            onClick={confirmDirection}
-            data-testid="uw-confirm-direction"
-          >
-            确认方向，结束流程
-          </button>
-        </div>
-      </div>
+      </Card>
     );
   }
 
@@ -874,30 +224,12 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
       return;
     }
 
-    if (/(让\s*AI\s*查|请(?:帮我)?查(?:证|找)?|检索|查询)/i.test(nextText)) {
-      if (!analysis) {
-        pushAssistant("请先点击“开始分析”，我才能基于真实后端结果继续给你找资料。");
-      } else {
-        pushAssistant(buildRetrieveReply(analysis));
-      }
-      setChatPreview(null);
-      return;
-    }
-
-    if (/下一步建议|下一步/.test(nextText)) {
-      if (!analysis) {
-        pushAssistant("请先完成一次分析，我再根据后端结果给你下一步建议。");
-      } else {
-        pushAssistant(buildNextStepReply(analysis));
-      }
-      setChatPreview(null);
-      return;
-    }
-
+    // ponytail: legacy "查证据 / 下一步建议" paths removed with /one-topic/analyze.
+    // T4+ will wire these to the new retrieval / work-advice endpoints.
     setChatPreview({
       kind: "unsupported",
       intent: "未识别指令",
-      description: `当前只支持：修改题目 / 补充约束 / 查证据 / 下一步建议。`,
+      description: "当前只支持：修改题目 / 补充约束。查证据 / 下一步建议将在 T4+ 接入。",
     });
   }
 
@@ -907,9 +239,9 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
     if (chatPreview.kind === "set_topic") {
       setTopic(chatPreview.description);
       setTopicInput(chatPreview.description);
-      setAnalysis(null);
-      setAnalysisError(null);
-      setStatus("尚未开始");
+      setFlowStep("idle");
+      setKeywords(null);
+      setActiveProjectId(null);
       pushSystem(`题目已更新为：${chatPreview.description}。请重新点击“开始分析”。`);
     } else if (chatPreview.kind === "add_note") {
       const note = chatPreview.payload ?? chatPreview.description;
@@ -945,9 +277,9 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
               <div
                 className="pa-uw-zone__hint"
                 data-testid="uw-zone-b-partial-hint"
-                title="暂未实现完整对话，仅支持：修改题目 / 补充约束 / 查证据 / 下一步建议"
+                title="当前支持：修改题目 / 补充约束。查证据 / 下一步建议将在 Phase 66 后续任务接入。"
               >
-                暂未实现完整对话，仅支持：修改题目 / 补充约束 / 查证据 / 下一步建议
+                当前支持：修改题目 / 补充约束。查证据 / 下一步建议将在 Phase 66 后续任务接入。
               </div>
               <div className="pa-uw-quick">
                 {QUICK_ACTIONS.map((item) => (
@@ -980,8 +312,11 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
             <header className="pa-uw-zone__head">
               <span className="pa-uw-zone__cap">A</span>
               <h2 className="pa-uw-zone__title">题目输入</h2>
-              <span className={`pa-uw-zone__status pa-uw-zone__status--${statusTone}`} data-testid="uw-topic-status">
-                {status}
+              <span
+                className={`pa-uw-zone__status pa-uw-zone__status--info`}
+                data-testid="uw-topic-status"
+              >
+                {statusLabel}
               </span>
             </header>
             <div className="pa-uw-zone__body">
@@ -993,32 +328,31 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
                 onStart={onStart}
                 testId="uw-topic-intake"
               />
-              {loading ? <div className="pa-faint">正在调用后端分析，请稍等…</div> : null}
-              {analysis ? (
+              {loading ? <div className="pa-faint">正在调用后端，请稍等…</div> : null}
+              {activeProjectId ? (
                 <div className="pa-small pa-muted" data-testid="uw-project-id">
-                  project_id: {analysis.project_id}
+                  project_id: {activeProjectId}
                 </div>
+              ) : null}
+              {flowError ? (
+                <Card title="启动失败" testId="uw-flow-error">
+                  <pre className="pa-error-card__debug">{flowError}</pre>
+                </Card>
               ) : null}
             </div>
           </section>
 
-          {analysisError ? <AnalysisError error={analysisError} /> : null}
-          {analysis ? <AnalysisResults analysis={analysis} /> : null}
-
-          {researchState === 'keywords_confirm' ? renderKeywordsConfirm() : null}
-          {researchState === 'searching' ? renderSearchPlan() : null}
-          {researchState === 'evidence' ? renderEvidence() : null}
-          {researchState === 'direction' || researchState === 'confirmed' ? renderDirection() : null}
+          {flowStep === "keywords_review" ? renderKeywordsReview() : null}
 
           <RetrievalCandidatePanel
             testId="uw-retrieval"
-            topic={analysis?.topic_understanding.normalized_topic ?? topic}
+            topic={topic}
           />
 
           <DirectionDecisionPanel
             testId="uw-direction-panel"
-            topic={analysis?.topic_understanding.normalized_topic ?? topic}
-            projectId={analysis?.project_id ?? null}
+            topic={topic}
+            projectId={activeProjectId}
           />
 
           <div className="pa-uw-grid" data-testid="uw-grid-cd">
