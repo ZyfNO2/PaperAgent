@@ -937,8 +937,18 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
             <header className="pa-uw-zone__head">
               <span className="pa-uw-zone__cap">B</span>
               <h2 className="pa-uw-zone__title">与 AI 的交互</h2>
+              <Badge tone="warn" testId="uw-zone-b-partial-badge">
+                部分实现
+              </Badge>
             </header>
             <div className="pa-uw-zone__body pa-uw-zone__body--b">
+              <div
+                className="pa-uw-zone__hint"
+                data-testid="uw-zone-b-partial-hint"
+                title="暂未实现完整对话，仅支持：修改题目 / 补充约束 / 查证据 / 下一步建议"
+              >
+                暂未实现完整对话，仅支持：修改题目 / 补充约束 / 查证据 / 下一步建议
+              </div>
               <div className="pa-uw-quick">
                 {QUICK_ACTIONS.map((item) => (
                   <button
@@ -1012,6 +1022,9 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
           />
 
           <div className="pa-uw-grid" data-testid="uw-grid-cd">
+            <div className="pa-uw-grid__hint" data-testid="uw-grid-cd-hint" title="下方三个面板仅作记录与展示，后端持久化与跨项目同步暂未实现">
+              下方三个面板仅作记录与展示，后端持久化与跨项目同步暂未实现。
+            </div>
             <EvidenceSubmitPanel testId="uw-evidence" />
             <PaperLibraryEditor testId="uw-library" />
             <LocalRagAskPanel testId="uw-local-rag" />
