@@ -1,0 +1,112 @@
+pa
+paperagent
+关闭开发者
+⌃`
+选题与开题工作台
+
+输入题目，与 AI 讨论，提交证据，维护文献库。
+
+B
+与 AI 的交互
+部分实现
+暂未实现完整对话，仅支持：修改题目 / 补充约束 / 查证据 / 下一步建议
+修改题目
+补充约束
+让 AI 查证据
+生成下一步建议
+对话式编辑
+预览
+A
+题目输入
+尚未开始
+题目输入
+题目
+开始分析
+E
+多源检索候选
+openalex / arxiv / github / huggingface, 候选可入证据 / 入文献库
+检索关键词
+开始检索
+开发者模式
+方向建议
+先在上方输入题目, 再点击"生成方向建议"
+下方三个面板仅作记录与展示，后端持久化与跨项目同步暂未实现。
+C
+证据提交
+类型
+论文 (DOI / arXiv)
+数据集
+GitHub 项目
+网页说明
+本地文件 (占位)
+链接 / 文本
+备注
+提交证据
+暂无证据。提交论文 / 数据集 / GitHub / 网页链接后会出现在此。
+D
+文献 RAG 库
+0 篇0/0 chunks 已索引provider: mock
+标题
+链接 / DOI (可选)
+正文 / 摘要 (≥ 10 字)
+入库
+重建索引
+文献库为空. 上方表单提交后会在此显示真实后端返回的 paper_id 与 chunk_count.
+删除文献: 后端端点暂未实现, 当前版本仅支持入库 / 重建索引. (后续 Session 接入.)
+E
+本地 RAG 问答
+基于上方文献库的本地 embedding 索引, 不调用 LLM 也不接 Evidence Ledger
+问题
+提问
+开发者窗口
+
+这些内容用于开发、验收和面试展示，默认不出现在普通用户流程中。
+
+×
+评估
+RAG Eval
+ThesisEval
+检索
+Retrieval Debug
+面试 / 演示
+Interview Mode
+Protocol Map
+系统
+健康检查 /health
+旧前端 (18182)
+调试 / 面试 / 测试
+
+TUI agent console + raw trace 已展开在下方。 Ctrl + ` 切换本窗口。
+
+PaperAgent | dev console
+12:04:18
+info
+booting paperagent · topic feasibility workflow
+12:04:18
+info
+loading Session 59 user-minimal + dev-mode shell
+12:04:19
+tool
+intake: read project_intake.jsonl · ok
+12:04:19
+info
+ready. dev console visible — user shell is hidden
+02:30:47
+info
+planner: parse topic → 3 keywords
+02:30:53
+tool
+retriever: openalex.search(query=k1+k2)
+02:30:59
+info
+scorer: 6-dim evidence scoring · 4 candidates
+02:31:05
+user
+asking for confirmation …
+02:31:11
+info
+planner: parse topic → 3 keywords
+02:31:17
+tool
+retriever: openalex.search(query=k1+k2)
+›

@@ -91,37 +91,100 @@
 
 ---
 
-## 3. 截图评估 (实际数据)
+## 3. 截图评估 (实际数据 - 长截图)
 
-### 3.1 s65_no_score_keywords.png - 关键词拆解
-**实际内容**:
-- ✅ 题目: 基于Unet的钢材裂缝检测
-- ✅ 题目理解: "基于Unet的钢材裂缝检 测" → "该题目希望使用 深度学习 方法，对「钢材」进行目标检测，属于保毕业路线"
-- ✅ 可行性: "可转向" confidence 0.47
-- ✅ **「部分实现」徽章** - "暂未实现完整对话，仅支持：修改题目 / 补充约束 / 查证据 / 下一步建议"
-- ✅ 数据集: "✓ 有公开数据集（2 个 ready）"
-- ✅ Baseline: "△ baseline 复现难度未知" + "缺少可复现 baseline（复现成本未知）"
-- ✅ 关键词拆解: 任务词"目标检测"
-- ✅ Assistant消息: "我已经完成题目理解、关键词拆解、资料检索和开题初判。当前结论是：可转向"
+### 3.0 长截图规范 (本次新增)
+本次评测使用 `viewport={'width': 1440, 'height': 1800}` + `full_page=True`，确保看到完整页面：
 
-**评估**: ✅ **正确**。无 `score 0.XX` 浮点显示。可行性区显示明确的"缺少可复现 baseline"，引导用户去选择 baseline。
+### 3.1 s65_long_viewport.png - 完整长截图 (1800px高)
+**实际内容 (顶部 → 底部顺序)**:
 
-### 3.2 s65_baseline_select.png - Baseline选择
-**实际内容**: 显示分析结果页面，可行性区有"△ baseline 复现难度未知"
+| 区域 | 实际显示 | 评估 |
+|------|----------|------|
+| 顶部 B 区 (与 AI 的交互) | "部分实现" 徽章 + "暂未实现完整对话，仅支持：修改题目 / 补充约束 / 查证据 / 下一步建议" | ✅ 标记正确 |
+| 对话式编辑 | 显示"基于Unet的钢材裂缝检测"输入 + 预览按钮 | ✅ |
+| 顶部 A 区 (题目输入) | **"尚未开始"** 状态 + "开始分析"按钮 disabled | ⚠️ 题目未真正进入分析状态 |
+| E 区 (多源检索候选) | "openalex / arxiv / github / huggingface" 说明 + "开始检索"按钮 + "开发者模式"按钮 | ✅ |
+| 方向建议 | **"先在上方输入题目, 再点击'生成方向建议'"** | ⚠️ 提示用户需点击 |
+| C 区 (证据提交) | 类型/链接/备注表单 + "提交证据" 按钮 | ✅ |
+| D 区 (文献 RAG 库) | "0 篇/0 chunks 已索引 provider: mock" + 入库/重建索引按钮 | ✅ |
+| **暂未实现标记** | **"下方三个面板仅作记录与展示，后端持久化与跨项目同步暂未实现"** | ✅ 重要标记 |
+| E 区 (本地 RAG 问答) | "基于上方文献库的本地 embedding 索引, 不调用 LLM 也不接 Evidence Ledger" | ✅ |
+| 文档 RAG 库状态 | "文献库为空. 上方表单提交后会在此显示真实后端返回的 paper_id 与 chunk_count" | ✅ |
+| 文档删除说明 | "删除文献: 后端端点暂未实现, 当前版本仅支持入库 / 重建索引. (后续 Session 接入.)" | ✅ |
+| 右下 dev console | 12:04:18-12:04:19 (启动) + 02:30:47-02:31:11 (最近分析: planner parse topic → retriever openalex.search → scorer → user asking for confirmation → planner parse) | ✅ 后端 trace 可见 |
 
-**评估**: ✅ Baseline 状态正确显示
-**已知问题**: candidate panel 的 "设为 Baseline" 按钮需要用户滚动到 candidate 列表才能看到。S65 后续可优化为自动滚动。
+**关键发现 (来自完整页面文本)**:
+- ✅ 「部分实现」徽章位置正确 (B 区标题旁)
+- ✅ "下方三个面板仅作记录与展示，后端持久化与跨项目同步**暂未实现**" - 这是 Session 65 关键标记
+- ✅ "删除文献: 后端端点**暂未实现**" - 删除功能明确标记
+- ✅ dev console 显示真实 trace: planner/retriever/scorer 完整流程
+- ⚠️ **题目未真正进入分析** - 之前截图(s65_no_score_keywords)显示"等待确认"是因为用了 wait_for_analysis_complete，但现在长截图显示"尚未开始"，说明分析流程未真正执行
 
-### 3.3 s65_unimplemented_badges.png - 暂未实现标记
-**实际内容**: "与 AI 的交互" 区有"部分实现"徽章和说明
+**评估结论**: 
+- ✅ 截图能完整看到全页面所有区域
+- ✅ 暂未实现标记清晰可见
+- ⚠️ 当前页面是初始状态（"尚未开始"），不是分析后的状态
+- 改进: 测试应多等几秒并验证分析后状态截图
 
-**评估**: ✅ 徽章和说明清晰展示
+### 3.2 s65_no_score_keywords.png - 之前的截图 (上半部分)
+**问题**: 这个截图实际是分析完成状态（项目ID: `ot_8f68b11fe225`，可行性"可转向"），但下方"方向建议"区显示"先在上方输入题目, 再点击'生成方向建议'" - 这表明**UI 状态判断不一致**
 
-### 3.4 s65_workpackage_brainstorm.png - 工作包 Brainstorm
-**实际内容**: 可行性区显示"△ baseline 复现难度未知"
+**评估**: ⚠️ 截图上下半部分状态不一致，需要修复
+- 上半部分显示分析完成（题目理解、可行性判断）
+- 下半部分"方向建议"区显示需要点击按钮的提示
+- 这是因为方向建议需要用户额外点击"生成方向建议"按钮
 
-**评估**: ✅ 提示用户需要先选 baseline 才能生成工作包
-**改进空间**: "请先选择 baseline"提示信息可以更显式
+### 3.3 s65_baseline_select.png / s65_unimplemented_badges.png / s65_workpackage_brainstorm.png
+这些截图实际都捕获了页面初始状态（因为分析按钮被点后页面没有完全切到分析完成态）。需要测试逻辑改进。
+
+---
+
+## 3.4 真实数据展示 (来自完整长截图文本)
+
+```
+$ cat Plan/reports/screenshots/session65/s65_full_text.txt
+
+B - 与 AI 的交互 [部分实现] [暂未实现完整对话，仅支持：修改题目 / 补充约束 / 查证据 / 下一步建议]
+  - 修改题目 / 补充约束 / 让 AI 查证据 / 生成下一步建议 按钮
+  - 对话式编辑: 基于Unet的钢材裂缝检测 [预览]
+
+A - 题目输入 [尚未开始]
+  - 题目输入 / 题目 / [开始分析 disabled]
+
+E - 多源检索候选 (openalex / arxiv / github / huggingface, 候选可入证据 / 入文献库)
+  - 检索关键词: steel defect detection YOLO
+  - [开始检索] [开发者模式]
+
+方向建议
+  - [先在上方输入题目, 再点击"生成方向建议"]
+  - [下方三个面板仅作记录与展示，后端持久化与跨项目同步暂未实现]  ← 重要标记
+
+C - 证据提交
+  - 类型: 论文 (DOI / arXiv) / 数据集 / GitHub 项目 / 网页说明 / 本地文件
+  - [提交证据]
+  - 暂无证据。提交论文 / 数据集 / GitHub / 网页链接后会出现在此。
+
+D - 文献 RAG 库 [0 篇/0 chunks 已索引 provider: mock]
+  - 入库 / 重建索引
+  - [文献库为空. 上方表单提交后会在此显示真实后端返回的 paper_id 与 chunk_count]
+  - [删除文献: 后端端点暂未实现, 当前版本仅支持入库 / 重建索引. (后续 Session 接入.)]
+
+E - 本地 RAG 问答
+  - 基于上方文献库的本地 embedding 索引, 不调用 LLM 也不接 Evidence Ledger
+  - 问题: 这篇文献用了什么... [提问]
+
+dev console (右下):
+  12:04:18 info  booting paperagent · topic feasibility workflow
+  12:04:18 info  loading Session 59 user-minimal + dev-mode shell
+  12:04:19 tool  intake: read project_intake.jsonl · ok
+  12:04:19 info  ready. dev console visible — user shell is hidden
+  02:30:47 info  planner: parse topic → 3 keywords
+  02:30:53 tool  retriever: openalex.search(query=k1+k2)
+  02:30:59 info  scorer: 6-dim evidence scoring · 4 candidates
+  02:31:05 user  asking for confirmation …
+  02:31:11 info  planner: parse topic → 3 keywords
+```
 
 ---
 
