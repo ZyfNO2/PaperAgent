@@ -7,6 +7,13 @@ from typing import Iterable
 
 from ...schemas_retrieval import QueryPlan, QueryPlanLayer
 
+try:  # ponytail: T7 可选, 缺则静默退回启发式
+    from app.services.research_topic_parser import parse_topic_rule_based
+    from app.services.research_query_builder import rule_fill_query_pack
+    HAS_RESEARCH_MODULES = True
+except ImportError:
+    HAS_RESEARCH_MODULES = False
+
 
 # 简单中英停用词 + 常见方法词 (用于 L2/L3/L4 查询构建)
 _METHOD_WORDS = {
@@ -161,6 +168,8 @@ def build_query_plan(
     """按 SOP §7 生成 L0..L5 查询计划.
 
     中文 / 英文 / 混合题目均能生成有意义的查询, 但空 raw_topic 也能返回空计划.
+    T7: 若 research 模块可用, 用 domain-aware research_pack 注入到 plan 顶部;
+    启发式层始终保留作 fallback/补搜.
     """
 
     raw = (raw_topic or "").strip()
@@ -174,6 +183,24 @@ def build_query_plan(
     paper_layers: list[QueryPlanLayer] = []
     dataset_layers: list[QueryPlanLayer] = []
     repo_layers: list[QueryPlanLayer] = []
+
+    # ---------- T7: research 模块可选注入 ---------- #
+    # ponytail: 顶层放一条 "research" 层 (domain-aware), 启发式层仍作为后备补搜
+    if HAS_RESEARCH_MODULES and raw:
+        try:
+            topic_parse = parse_topic_rule_based(raw)
+            research_pack = rule_fill_query_pack(topic_parse)
+            rq_paper = _dedup_keep_order(research_pack.get("paper_queries") or [])[:max_paper_queries]
+            rq_dataset = _dedup_keep_order(research_pack.get("dataset_queries") or [])[:max_dataset_queries]
+            rq_repo = _dedup_keep_order(research_pack.get("repo_queries") or [])[:max_repo_queries]
+            if rq_paper:
+                paper_layers.append(QueryPlanLayer(layer="research", queries=rq_paper))
+            if rq_dataset:
+                dataset_layers.append(QueryPlanLayer(layer="research", queries=rq_dataset))
+            if rq_repo:
+                repo_layers.append(QueryPlanLayer(layer="research", queries=rq_repo))
+        except Exception:  # noqa: BLE001
+            pass  # 静默退回纯启发式
 
     # ---------- 论文查询 (L0..L5) ---------- #
     paper_queries: list[str] = []
