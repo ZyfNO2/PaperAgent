@@ -62,6 +62,9 @@ _METHOD_HINTS = {
     "wgan": "GAN", "cyclegan": "GAN", "stylegan": "GAN",
     "snn": "脉冲神经网络", "脉冲": "脉冲神经网络", "spiking": "脉冲神经网络",
     "neural ode": "Neural ODE", "ode": "Neural ODE", "pde": "PDE",
+    "pointnet": "PointNet++", "pointrcnn": "PointRCNN",
+    "votenet": "VoteNet", "3dgs": "3DGS", "dust3r": "DUSt3R",
+    "colmap": "COLMAP", "mvsnet": "MVSNet",
 }
 _TASK_HINTS = {
     "检测": "目标检测", "识别": "图像识别", "分类": "图像分类",
@@ -109,6 +112,10 @@ _OBJECT_HINTS = {
     "机电": "机电系统",
     "传感器": "传感器信号", "振动": "振动信号", "时序": "时序信号", "时间序列": "时序信号",
     "推荐": "推荐系统", "排序": "推荐系统", "知识图谱": "知识图谱",
+    # 3D imaging related
+    "三维成像": "三维成像", "三维重建": "三维重建",
+    "点云": "点云", "rgb-d": "RGB-D",
+    "深度": "深度", "stereo": "stereo",
 }
 _SCENARIO_HINTS = {
     "工业": "工业质检", "质检": "工业质检", "制造": "智能制造",
@@ -424,7 +431,6 @@ def build_search_plan(keywords: KeywordBreakdown) -> SearchPlan:
     ]
     eng_en = [
         f"{method_en} {obj_en} github",
-        "ultralytics yolov8 defect detection",
     ]
 
     plan = SearchPlan(
@@ -464,9 +470,41 @@ def _heuristic_papers(keywords: KeywordBreakdown) -> list[PaperHit]:
     ]
 
 
+def _is_3d_topic(text: str) -> bool:
+    """Detect if topic is about 3D vision."""
+    low = text.lower()
+    indicators = ["三维", "点云", "rgb-d", "3d", "depth", "stereo",
+                  "colmap", "mvsnet", "pointnet", "votenet", "3dgs", "dust3r",
+                  "sfm", "mvs", "slam", "lidar", "激光"]
+    return any(ind in low for ind in indicators)
+
+
 def _heuristic_datasets(keywords: KeywordBreakdown) -> list[DatasetHit]:
     obj = keywords.object_keywords[0] if keywords.object_keywords else ""
     datasets: list[DatasetHit] = []
+    # Check if 3D topic
+    raw_text = keywords.object_keywords[0] if keywords.object_keywords else ""
+    if _is_3d_topic(raw_text + " " + " ".join(keywords.method_keywords)):
+        datasets.append(DatasetHit(
+            dataset_id="DS3D01", name="MVTec 3D-AD", scale="RGB+3D point cloud",
+            license="MVTec TOS", download="https://www.mvtec.com/research-teaching/datasets/mvtec-3d-ad",
+            fit="高", source="public-known",
+        ))
+        datasets.append(DatasetHit(
+            dataset_id="DS3D02", name="Real3D-AD", scale="Real 3D point cloud anomaly",
+            license="MIT", download="https://github.com/M-3LAB/Real3D-AD",
+            fit="高", source="public-known",
+        ))
+        datasets.append(DatasetHit(
+            dataset_id="DS3D03", name="ModelNet40", scale="12,311 meshes, 40 classes",
+            license="Academic", download="https://modelnet.princeton.edu/",
+            fit="中", source="public-known",
+        ))
+        datasets.append(DatasetHit(
+            dataset_id="DS3D04", name="ScanNet", scale="1500+ scans, RGB-D",
+            license="CC BY", download="http://www.scan-net.org/",
+            fit="中", source="public-known",
+        ))
     if any(k in obj for k in ("钢", "带钢", "钢板")):
         datasets += [
             DatasetHit(dataset_id="DS01", name="NEU-DET", scale="1800 张 / 6 类缺陷",
@@ -509,6 +547,35 @@ def _heuristic_datasets(keywords: KeywordBreakdown) -> list[DatasetHit]:
 
 def _heuristic_baselines(keywords: KeywordBreakdown) -> list[BaselineHit]:
     method = (keywords.method_keywords[0] or "").lower() if keywords.method_keywords else ""
+    # Check if 3D topic
+    raw_text = " ".join(keywords.method_keywords) + " " + " ".join(keywords.object_keywords)
+    if _is_3d_topic(raw_text):
+        return [
+            BaselineHit(baseline_id="BL3D01", name="COLMAP",
+                        paper_title="COLMAP", repository_url="https://github.com/colmap/colmap",
+                        license="BSD", reproduce_difficulty="低", source="github"),
+            BaselineHit(baseline_id="BL3D02", name="MVSNet",
+                        repository_url="https://github.com/Yohei222/MVSNet",
+                        reproduce_difficulty="中", source="github"),
+            BaselineHit(baseline_id="BL3D03", name="PointNet++",
+                        repository_url="https://github.com/erikwijmans/Pointnet2_PyTorch",
+                        license="MIT", reproduce_difficulty="低", source="github"),
+            BaselineHit(baseline_id="BL3D04", name="VoteNet",
+                        paper_title="Deep Hough Voting for 3D Object Detection",
+                        repository_url="https://github.com/facebookresearch/votenet",
+                        reproduce_difficulty="中", source="github"),
+            BaselineHit(baseline_id="BL3D05", name="OpenPCDet",
+                        repository_url="https://github.com/open-mmlab/OpenPCDet",
+                        license="Apache 2.0", reproduce_difficulty="低", source="github"),
+            BaselineHit(baseline_id="BL3D06", name="3D Gaussian Splatting",
+                        paper_title="3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+                        repository_url="https://github.com/graphdeco-inria/gaussian-splatting",
+                        license="CC BY-NC-SA", reproduce_difficulty="高", source="github"),
+            BaselineHit(baseline_id="BL3D07", name="DUSt3R",
+                        paper_title="DUSt3R: Geometric 3D Vision Made Easy",
+                        repository_url="https://github.com/naver/dust3r",
+                        license="Apache 2.0", reproduce_difficulty="高", source="github"),
+        ]
     if "yolo" in method:
         return [
             BaselineHit(baseline_id="BL01", name="YOLOv8 (Ultralytics 官方)",
