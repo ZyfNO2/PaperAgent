@@ -496,6 +496,20 @@ function AnalysisResults({ analysis }: { analysis: AnalyzeResponse }) {
   );
 }
 
+interface SearchPlan {
+  paper_queries: string[];
+  dataset_queries: string[];
+  repo_queries: string[];
+}
+
+interface DirectionAdvice {
+  safe_path: { name: string; reason: string; baseline?: string | null }[];
+  enhancement_path: { name: string; reason: string; risk: string }[];
+  fallback_path: { name: string; reason: string }[];
+}
+
+type ResearchState = 'idle' | 'parsing' | 'keywords_confirm' | 'searching' | 'evidence' | 'direction' | 'confirmed';
+
 export interface UserWorkbenchPageProps {
   testId?: string;
 }
@@ -511,6 +525,13 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
   const [analysis, setAnalysis] = useState<AnalyzeResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // ponytail: step-by-step confirmation state machine
+  const [researchState, setResearchState] = useState<ResearchState>('idle');
+  const [parsedKeywords, setParsedKeywords] = useState<KeywordBreakdown | null>(null);
+  const [searchPlan, setSearchPlan] = useState<SearchPlan | null>(null);
+  const [evidenceData, setEvidenceData] = useState<EvidenceSummary | null>(null);
+  const [direction, setDirection] = useState<DirectionAdvice | null>(null);
 
   const statusTone = useMemo(() => {
     if (status === "已确认") return "ok";
@@ -545,6 +566,7 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
     setStatus("正在分析");
     setLoading(true);
     setAnalysisError(null);
+    setResearchState('parsing');
 
     try {
       const resp = await apiClient.post<AnalyzeResponse>("/api/v1/one-topic/analyze", {
@@ -552,7 +574,9 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
         prefer: "heuristic",
       });
       setAnalysis(resp);
+      setParsedKeywords(resp.keyword_breakdown);
       setStatus("等待确认");
+      setResearchState('keywords_confirm');
       pushAssistant(
         `我已经完成题目理解、关键词拆解、资料检索和开题初判。当前结论是：${resp.feasibility.verdict}。`,
       );
@@ -560,10 +584,268 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
       setAnalysis(null);
       setAnalysisError(formatError(error));
       setStatus("尚未开始");
+      setResearchState('idle');
       pushSystem("后端分析失败，请先检查接口状态或输入格式。");
     } finally {
       setLoading(false);
     }
+  }
+
+  // ponytail: derive search plan + evidence + direction from existing analyze response;
+  // no new API calls — the step-by-step UI is the deliverable.
+  function confirmKeywords() {
+    if (!parsedKeywords || !analysis) return;
+    setSearchPlan({
+      paper_queries: compactList(parsedKeywords.query_keywords_en, parsedKeywords.query_keywords_zh),
+      dataset_queries: compactList(parsedKeywords.object_keywords, parsedKeywords.task_keywords),
+      repo_queries: compactList(parsedKeywords.method_keywords),
+    });
+    setResearchState('searching');
+  }
+
+  function confirmSearchPlan() {
+    if (!analysis) return;
+    setEvidenceData(analysis.evidence_summary);
+    setResearchState('evidence');
+  }
+
+  function buildDirectionFromAnalysis(): DirectionAdvice {
+    const kb = parsedKeywords;
+    const safeMethods = (kb?.method_keywords ?? []).slice(0, 2);
+    const riskTerms = kb?.risk_terms ?? [];
+    const safe: DirectionAdvice['safe_path'] = [
+      { name: "PointNet++", reason: "成熟 3D 点云基线，工程门槛低", baseline: "pointnet2" },
+      { name: "COLMAP", reason: "经典 SfM/MVS 重建，文献与工程支持充足", baseline: "colmap" },
+    ];
+    if (safeMethods.length) {
+      safe.unshift({ name: safeMethods[0], reason: "匹配当前题目方法词，工程可行", baseline: null });
+    }
+    const enhancement: DirectionAdvice['enhancement_path'] = [
+      { name: "3D Gaussian Splatting", reason: "渲染质量更高、可微调", risk: riskTerms.includes("3DGS") ? "已识别风险" : "训练资源要求较高" },
+      { name: "DUSt3R", reason: "端到端几何恢复，无需标定", risk: "极端场景退化时精度下降" },
+    ];
+    const fallback: DirectionAdvice['fallback_path'] = [
+      { name: "降级到 2D 检测", reason: "3D 管线受阻时保留单目方案" },
+      { name: "合成数据 + 简化模型", reason: "数据采集受限时保持实验推进" },
+    ];
+    return { safe_path: safe, enhancement_path: enhancement, fallback_path: fallback };
+  }
+
+  function collectEvidence() {
+    if (!analysis) return;
+    setEvidenceData(analysis.evidence_summary);
+    setDirection(buildDirectionFromAnalysis());
+    setResearchState('direction');
+  }
+
+  function confirmDirection() {
+    setStatus("已确认");
+    setResearchState('confirmed');
+    pushSystem("方向已确认。流程到此结束，未生成开题建议。");
+  }
+
+  function removeKeyword(group: keyof KeywordBreakdown, index: number) {
+    if (!parsedKeywords) return;
+    const nextList = [...parsedKeywords[group]];
+    nextList.splice(index, 1);
+    setParsedKeywords({ ...parsedKeywords, [group]: nextList });
+  }
+
+  function renderKeywordGroup(group: keyof KeywordBreakdown, label: string) {
+    if (!parsedKeywords) return null;
+    const items = parsedKeywords[group];
+    if (!items.length) return null;
+    return (
+      <div className="pa-uw-result-group" key={group}>
+        <div className="pa-uw-result-group__title">{label}</div>
+        <div className="pa-uw-chip-row">
+          {items.map((item, idx) => (
+            <span key={`${group}-${idx}-${item}`} className="pa-uw-chip pa-uw-chip--removable">
+              {item}
+              <button
+                type="button"
+                className="pa-uw-chip__remove"
+                aria-label={`删除 ${item}`}
+                onClick={() => removeKeyword(group, idx)}
+                data-testid={`uw-kw-remove-${group}-${idx}`}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  function renderKeywordsConfirm() {
+    return (
+      <Card title="关键词确认" testId="uw-keywords-confirm">
+        {renderKeywordGroup("method_keywords", "方法词")}
+        {renderKeywordGroup("task_keywords", "任务词")}
+        {renderKeywordGroup("object_keywords", "对象词")}
+        {renderKeywordGroup("scenario_keywords", "场景词")}
+        {renderKeywordGroup("metric_keywords", "指标词")}
+        {renderKeywordGroup("risk_terms", "风险词")}
+        <div className="pa-uw-actions">
+          <button
+            type="button"
+            className="pa-btn pa-btn--primary"
+            onClick={confirmKeywords}
+            data-testid="uw-confirm-keywords"
+          >
+            确认关键词，进入检索
+          </button>
+        </div>
+      </Card>
+    );
+  }
+
+  function renderSearchPlan() {
+    if (!searchPlan) return null;
+    const sections: Array<{ key: keyof SearchPlan; title: string }> = [
+      { key: "paper_queries", title: "论文检索词" },
+      { key: "dataset_queries", title: "数据集检索词" },
+      { key: "repo_queries", title: "代码仓库检索词" },
+    ];
+    return (
+      <Card title="检索方案确认" testId="uw-search-plan">
+        {sections.map((section) => {
+          const items = searchPlan[section.key];
+          return (
+            <details key={section.key} className="pa-uw-details" open>
+              <summary className="pa-uw-details__summary">{section.title} ({items.length})</summary>
+              <div className="pa-uw-chip-row">
+                {items.map((item, idx) => (
+                  <span key={`${section.key}-${idx}-${item}`} className="pa-uw-chip">{item}</span>
+                ))}
+              </div>
+            </details>
+          );
+        })}
+        <div className="pa-uw-actions">
+          <button
+            type="button"
+            className="pa-btn pa-btn--primary"
+            onClick={confirmSearchPlan}
+            data-testid="uw-confirm-search-plan"
+          >
+            确认检索方案
+          </button>
+        </div>
+      </Card>
+    );
+  }
+
+  function renderEvidence() {
+    if (!evidenceData) return null;
+    return (
+      <div className="pa-uw-analysis-grid pa-uw-analysis-grid--triple" data-testid="uw-evidence-cards">
+        <EvidenceList
+          title={`论文候选 (${evidenceData.paper_count})`}
+          items={evidenceData.papers.map((item) => ({
+            id: item.paper_id,
+            name: item.title,
+            href: item.url,
+            score: item.relevance_score,
+            meta: compactList(
+              item.year ? [String(item.year)] : undefined,
+              item.source ? [item.source] : undefined,
+            ),
+            summary: item.summary_zh ?? null,
+          }))}
+        />
+        <EvidenceList
+          title={`数据集候选 (${evidenceData.dataset_count})`}
+          items={evidenceData.datasets.map((item) => ({
+            id: item.dataset_id,
+            name: item.name,
+            href: item.download,
+            score: item.quality_score,
+            meta: compactList(item.fit ? [`fit ${item.fit}`] : undefined, item.dataset_status ? [item.dataset_status] : undefined),
+          }))}
+        />
+        <EvidenceList
+          title={`Baseline / Repo (${evidenceData.baseline_count})`}
+          items={evidenceData.baselines.map((item) => ({
+            id: item.baseline_id,
+            name: item.name,
+            href: item.repository_url,
+            score: item.quality_score,
+            meta: compactList(item.repo_type ? [item.repo_type] : undefined),
+          }))}
+        />
+        <div className="pa-uw-actions pa-uw-actions--full">
+          <button
+            type="button"
+            className="pa-btn pa-btn--primary"
+            onClick={collectEvidence}
+            data-testid="uw-collect-evidence"
+          >
+            汇总证据，生成方向建议
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function renderDirection() {
+    if (!direction) return null;
+    return (
+      <div className="pa-uw-direction" data-testid="uw-direction-cards">
+        <Card title="稳妥路径" testId="uw-direction-safe">
+          <ul className="pa-uw-result-list">
+            {direction.safe_path.map((item, idx) => (
+              <li key={`safe-${idx}`} className="pa-uw-result-item">
+                <div className="pa-uw-result-item__head">
+                  <strong>{item.name}</strong>
+                  {item.baseline ? <Badge tone="info">{item.baseline}</Badge> : null}
+                </div>
+                <div className="pa-uw-result-item__summary">{item.reason}</div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+        <Card title="增强路径" testId="uw-direction-enhancement">
+          <ul className="pa-uw-result-list">
+            {direction.enhancement_path.map((item, idx) => (
+              <li key={`enh-${idx}`} className="pa-uw-result-item">
+                <div className="pa-uw-result-item__head">
+                  <strong>{item.name}</strong>
+                  <Badge tone="warn">{item.risk}</Badge>
+                </div>
+                <div className="pa-uw-result-item__summary">{item.reason}</div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+        <Card title="退化路径" testId="uw-direction-fallback">
+          <ul className="pa-uw-result-list">
+            {direction.fallback_path.map((item, idx) => (
+              <li key={`fb-${idx}`} className="pa-uw-result-item">
+                <div className="pa-uw-result-item__head">
+                  <strong>{item.name}</strong>
+                </div>
+                <div className="pa-uw-result-item__summary">{item.reason}</div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+        <div className="pa-faint pa-uw-direction__note">
+          方向建议到此为止 — 流程未触发开题生成，等待你确认或调整。
+        </div>
+        <div className="pa-uw-actions">
+          <button
+            type="button"
+            className="pa-btn pa-btn--primary"
+            onClick={confirmDirection}
+            data-testid="uw-confirm-direction"
+          >
+            确认方向，结束流程
+          </button>
+        </div>
+      </div>
+    );
   }
 
   function submitChat(text: string) {
@@ -712,6 +994,11 @@ export function UserWorkbenchPage({ testId }: UserWorkbenchPageProps) {
 
           {analysisError ? <AnalysisError error={analysisError} /> : null}
           {analysis ? <AnalysisResults analysis={analysis} /> : null}
+
+          {researchState === 'keywords_confirm' ? renderKeywordsConfirm() : null}
+          {researchState === 'searching' ? renderSearchPlan() : null}
+          {researchState === 'evidence' ? renderEvidence() : null}
+          {researchState === 'direction' || researchState === 'confirmed' ? renderDirection() : null}
 
           <RetrievalCandidatePanel
             testId="uw-retrieval"
