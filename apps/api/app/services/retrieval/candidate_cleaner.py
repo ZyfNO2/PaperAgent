@@ -31,11 +31,12 @@ CIVIL_OBJECT_TOKENS = (
 
 # 明显跑题的标题模式 (大小写不敏感)
 IRRELEVANT_TITLE_PATTERNS = [
-    r"\bAGN\b",
+    r"\bagn\b",
     r"active galactic nuclei",
     r"\bastronomy\b",
     r"\bastrophysics\b",
     r"\bgalaxy\b",
+    r"\bgalaxies\b",
     r"\bcosmology\b",
     r"\bgerman\b.*\bsurvey\b",
     r"\bgerman\b.*\bcoding\b",
@@ -167,8 +168,8 @@ def _hard_rule_check(
             confidence=0.92,
         )
 
-    # 规则 3: URL 打不开或跳转无关页面 → quarantine
-    if source_status in {"fetch_failed", "redirect_offtopic", "dead"} or not url:
+    # 规则 3: URL 打不开或跳转无关页面 → quarantine (仅当 source_status 显式失败)
+    if source_status in {"fetch_failed", "redirect_offtopic", "dead"}:
         return CandidateCleanResult(
             candidate_id=cid,
             clean_status="quarantine",
