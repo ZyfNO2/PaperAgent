@@ -79,6 +79,12 @@ test_nlp_llm_topic_generates_text_route PASSED
 | Baseline (检测) | PointNet++, VoteNet, OpenPCDet | ✅ |
 | Baseline (新锐) | 3DGS (高), DUSt3R (高) | ✅ |
 
+**Query Pack (35条)**:
+- paper_queries: 3D damage detection point cloud, 3D anomaly detection industrial, 3D reconstruction damage inspection, RGB-D defect detection
+- dataset_queries: MVTec 3D-AD anomaly detection, Real3D-AD point cloud dataset, 3D industrial anomaly dataset
+- repo_queries: OpenPCDet 3D object detection, PointNet++ point cloud github, COLMAP 3D reconstruction github, 3D Gaussian Splatting github
+- NO: ultralytics yolov8 defect detection ✅
+
 ### Case B: YOLO 钢材缺陷检测
 
 **输入**: `基于YOLO的钢材表面缺陷检测`
@@ -95,6 +101,12 @@ test_nlp_llm_topic_generates_text_route PASSED
 | 数据集 | NEU-DET, GC10-DET | MVTec 3D-AD | ✅ |
 | Baseline | YOLOv8, Faster R-CNN | 3DGS, DUSt3R | ✅ |
 
+**Query Pack (30条)**:
+- paper_queries: YOLO steel surface defect detection, industrial surface defect detection, steel defect detection survey
+- dataset_queries: NEU-DET steel surface defect, GC10-DET dataset
+- repo_queries: YOLOv8 defect detection github, Faster R-CNN object detection
+- NO: COLMAP, 3DGS, DUSt3R ✅
+
 ### Case C: NLP 舆情情感分析
 
 **输入**: `基于大语言模型的中文舆情情感分析`
@@ -103,6 +115,7 @@ test_nlp_llm_topic_generates_text_route PASSED
 - method_terms: 大语言模型, LLM
 - task_terms: 情感分析, 文本分类
 - object_terms: 中文舆情文本
+- modality_terms: text, NLP
 - detected_domain: nlp_llm
 
 **候选证据**:
@@ -110,6 +123,24 @@ test_nlp_llm_topic_generates_text_route PASSED
 |------|----------|--------|------|
 | 数据集 | ChnSentiCorp, CLUE/TNEWS | 图像数据集 | ✅ |
 | Baseline | BERT, RoBERTa, LoRA | YOLO, PointNet | ✅ |
+
+**Query Pack (32条)**:
+- paper_queries: Chinese sentiment analysis LLM, BERT text classification, Chinese NLP sentiment
+- dataset_queries: ChnSentiCorp sentiment dataset, CLUE text classification
+- repo_queries: BERT pytorch github, HuggingFace transformers, LoRA fine-tuning
+- NO: YOLO, U-Net, PointNet, COLMAP ✅
+
+## 5. Playwright 截图测试结果
+
+| 测试 | 输入题目 | 验证内容 | 截图 | 结果 |
+|------|----------|----------|------|------|
+| test_3d_topic_shows_3d_candidates | 基于三维成像的损伤智能检测 | 3D关键词 + uw-analysis-results | s63_3d_analysis.png | ✅ |
+| test_yolo_steel_topic | 基于YOLO的钢材表面缺陷检测 | YOLO/NEU-DET + 无3D | s63_yolo_analysis.png | ✅ |
+| test_nlp_topic | 基于大语言模型的中文舆情情感分析 | BERT/情感 + 无YOLO | s63_nlp_analysis.png | ✅ |
+| test_keywords_confirmation_visible | 基于三维成像的损伤智能检测 | 关键词拆解可见 | s63_step_keywords.png | ✅ |
+| test_analysis_produces_results | 基于YOLO的钢材表面缺陷检测 | 结果卡片>0 | s63_full_analysis.png | ✅ |
+
+**截图位置**: `apps/web-react/e2e/screenshots/session63/` |
 
 ## 5. 硬性检查清单
 
