@@ -1,0 +1,92 @@
+{
+  "topic": "55 无条件稳定FDTD在微波传输线中的应用研究",
+  "elapsed_sec": 71.54,
+  "llm_calls": 4,
+  "llm_failures": 0,
+  "domain_route": "signal_timeseries",
+  "query_atoms_en": [
+    "unconditionally stable FDTD microwave transmission line",
+    "Crank-Nicolson FDTD microstrip",
+    "split-step FDTD coupled transmission line",
+    "ADI-FDTL dispersive waveguide",
+    "numerical dispersion FDTD microwave",
+    "stability analysis FDTD transmission line"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 8,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 0
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [
+    [
+      "openalex",
+      "1970-01-02 00:12:42"
+    ]
+  ],
+  "buckets": {
+    "baseline_papers": [
+      "Unconditionally stable implicit FDTD methods",
+      "Unconditionally Stable Multiple One-Dimensional ADI-FDTD Method for Coupled Transmission Lines",
+      "Time‐domain analysis of extended composite right/left handed transmission line excited by modulated signal using unconditionally stable FDTD algorithm"
+    ],
+    "parallel_papers": [
+      "Unconditionally stable alternate-direction-explicit 2D FDTD algorithm",
+      "Unconditionally stable ADI-FDTD formulations of the PML for left-handed materials"
+    ],
+    "module_papers": [
+      "Generalized unconditionally stable Crank-Nicolson PML formulations for truncating FDTD domains",
+      "Unconditionally Stable ADE‐CNAD‐FDTD Method for Cole‐Cole media"
+    ],
+    "reference_papers": [
+      "A Stable FDTD Subgridding Scheme with SBP-SAT for Transient Electromagnetic Analysis"
+    ],
+    "dataset_candidates": [],
+    "repo_candidates": []
+  },
+  "evidence_gaps": [
+    "RATE_LIMITED: openalex suspended until 1970-01-02 00:12:42",
+    "No GitHub repos returned: missing reproducible open-source implementations of unconditionally stable FDTD for microwave transmission lines (e.g., CN-FDTD or ADI-FDTD microstrip code).",
+    "OpenAlex returned 0 hits; cross-ref metadata lacks year and citation counts, making recency filtering impossible without manual lookup.",
+    "No benchmark dataset (e.g., measured S-parameters of microstrip or coupled lines) appears in raw output; student must source reference measurement data externally.",
+    "Many candidate FDTD/two-fluid papers (e.g., photonic benchmarking, microwave resonator crosstalk, potato NDT) are cross-domain false positives and were rejected."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [
+        "Unconditionally stable FDTD for transmission line analysis",
+        "FDTD Method for Microwave Transmission Lines"
+      ],
+      "miss": []
+    },
+    "papers_parallel": {
+      "hit": [],
+      "miss": [
+        "Alternating-direction-implicit FDTD for microwave structures",
+        "Crank-Nicolson FDTD for waveguide analysis"
+      ]
+    },
+    "datasets": {
+      "hit": [],
+      "miss": [
+        "openEMS benchmark",
+        "Meep reference benchmarks"
+      ]
+    },
+    "repos": {
+      "hit": [],
+      "miss": [
+        "thliebig/openEMS",
+        "NanoComp/meep",
+        "gprMax/gprMax"
+      ]
+    }
+  },
+  "total": {
+    "gt": 9,
+    "hit": 2,
+    "rate": 0.22
+  }
+}

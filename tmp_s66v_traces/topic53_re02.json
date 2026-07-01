@@ -1,0 +1,91 @@
+{
+  "topic": "53 基于国六标准的重型柴油车远程排放监控系统研发",
+  "elapsed_sec": 77.7,
+  "llm_calls": 4,
+  "llm_failures": 0,
+  "domain_route": "energy_power",
+  "query_atoms_en": [
+    "remote emission monitoring heavy-duty diesel vehicle China VI",
+    "PEMS heavy-duty diesel real driving emissions",
+    "OBD-II remote emission data upload diesel truck",
+    "on-board emission monitoring system diesel China 6",
+    "real driving emissions heavy-duty diesel compliance",
+    "diesel engine NOx emission remote sensing monitoring"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 8,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 0
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [
+    [
+      "openalex",
+      "1970-01-02 00:12:42"
+    ]
+  ],
+  "buckets": {
+    "baseline_papers": [
+      "Evaluating the Real-World NOx Emission from a China VI Heavy-Duty Diesel Vehicle",
+      "Using Multi-Source Data to Identify High-Emitting Heavy-Duty Diesel Vehicles"
+    ],
+    "parallel_papers": [
+      "Research on Technical Characteristics of CDPF + SCR for China-III Heavy-Duty Diesel Vehicles Emission Retrofit Based on Remote Monitoring Method",
+      "Research on NOx Emission Characteristics of Off-Road Diesel Machinery Based on Remote Monitoring Technology",
+      "On-road Evaluations for the Effect of Emission Control Regulations on Heavy-duty Diesel Trucks: from China V to China VI",
+      "Combustion and emission of diesel/PODE/gasoline blended fuel in a diesel engine that meet the China VI emission standards",
+      "Combustion and emission characteristics of diesel with different distillation ranges on the China-VI diesel engine"
+    ],
+    "module_papers": [],
+    "reference_papers": [
+      "An Investigation of Natural Gas as a Substitute for Diesel in Heavy Duty Trucks and Associated Considerations"
+    ],
+    "dataset_candidates": [],
+    "repo_candidates": []
+  },
+  "evidence_gaps": [
+    "Three baseline/parallel entries have null year — re-verify publication years via DOI metadata before citing as reproducible first-rung.",
+    "No dataset_candidates returned despite China VI PEMS+OBD time-series being central — search mee.gov.cn, CNKI, and SAE J2731 sources.",
+    "No repo_candidates returned — search GitHub for OBD-II telematics or PEMS data-logger implementations targeting heavy-duty trucks."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [
+        "OBD-based remote diesel emission monitoring"
+      ],
+      "miss": [
+        "Heavy-duty diesel engine OBD remote diagnostics framework"
+      ]
+    },
+    "papers_parallel": {
+      "hit": [],
+      "miss": [
+        "Telematics-based vehicle emission analytics",
+        "Remote OBD monitoring for compliance reporting"
+      ]
+    },
+    "datasets": {
+      "hit": [],
+      "miss": [
+        "OBD-II fault dataset",
+        "China-VI compliance dataset",
+        "fleet telematics dataset"
+      ]
+    },
+    "repos": {
+      "hit": [],
+      "miss": [
+        "python-OBD/python-OBD",
+        "eclipse-sumo/sumo",
+        "cantools/cantools"
+      ]
+    }
+  },
+  "total": {
+    "gt": 10,
+    "hit": 1,
+    "rate": 0.1
+  }
+}

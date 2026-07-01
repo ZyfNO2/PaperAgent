@@ -1,0 +1,120 @@
+{
+  "topic": "59 机器学习在水声数据分类识别中的应用",
+  "elapsed_sec": 118.88,
+  "llm_calls": 4,
+  "llm_failures": 1,
+  "domain_route": "signal_timeseries",
+  "query_atoms_en": [
+    "underwater acoustic target classification CNN",
+    "ship-radiated noise recognition deep learning",
+    "mel-spectrogram underwater acoustic classification",
+    "passive sonar signal machine learning",
+    "hydrophone audio classification neural network",
+    "underwater acoustic event detection"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 12,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 8
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [
+    [
+      "openalex",
+      "1970-01-02 00:12:42"
+    ]
+  ],
+  "buckets": {
+    "baseline_papers": [
+      "Underwater Acoustic Target Recognition in Passive Sonar Using Spectrogram and Modified MobileNet Network Classifier",
+      "Underwater Acoustic Target Recognition Using Spectrogram ROI Approximation And Mobilenet One-Dimensional And Two-Dimensional Networks",
+      "A spatio-temporal deep learning approach for underwater acoustic signals classification",
+      "DSCANet: Underwater Acoustic Target Recognition Using the Depthwise Separable Convolutional Attention Module",
+      "An Investigation of Preprocessing Filters and Deep Learning Methods for Vessel Type Classification With Underwater Acoustic Data"
+    ],
+    "parallel_papers": [
+      "Time-Series Acoustic Network for Underwater Acoustic Target Recognition",
+      "UATR-DIFF-Transformer: Enhanced Differential Optimization for Underwater Acoustic Target Recognition",
+      "Guiding the underwater acoustic target recognition with interpretable contrastive learning",
+      "Acoustic Communication Underwater Mimicking Sea Classification by Multiscale Deep Features Aggregation and Low Complexity, and Data Augmentation",
+      "SonAIr: Real-Time Deep Learning For Underwater Acoustic Spectrum Sensing and Classification,"
+    ],
+    "module_papers": [
+      "Receptive-field-regularized CNN variants for acoustic scene classification",
+      "Multi-Temporal Resolution Convolutional Neural Networks for Acoustic Scene Classification",
+      "Ensemble Of Deep Neural Networks For Acoustic Scene Classification",
+      "An Entropy-Guided Curriculum Learning Strategy for Data-Efficient Acoustic Scene Classification under Domain Shift",
+      "On The Effect Of Coding Artifacts On Acoustic Scene Classification"
+    ],
+    "reference_papers": [
+      "Analysis Acoustic Features for Acoustic Scene Classification and Score fusion of multi-classification systems applied to DCASE 2016 challenge",
+      "A distributed motion planning approach to cooperative underwater acoustic source tracking",
+      "Underwater Acoustic Networks: Channel Models and Network Coding based Lower Bound to Transmission Power for Multicast",
+      "Underwater-Acoustic-Target-Classification-Based-on-Dense-Convolutional-Neural-Network",
+      "ShipClassification",
+      "Underwater_acoustic_target_classification",
+      "SHIPSEAR-AUDIO-CLASSIFICATION",
+      "Observation of the rare $B^0_s\\to\\mu^+\\mu^-$ decay from the combined analysis of CMS and LHCb data"
+    ],
+    "dataset_candidates": [
+      "wineslab/sonair-dataset"
+    ],
+    "repo_candidates": [
+      "zakaria76al/USC",
+      "lucascesarfd/underwater_snd",
+      "doans/Underwater-Acoustic-Target-Classification-Based-on-Dense-Convolutional-Neural-Network",
+      "aridepai17/SHIPSEAR-AUDIO-CLASSIFICATION",
+      "devichand579/Underwater_acoustic_target_classification"
+    ]
+  },
+  "evidence_gaps": [
+    "RATE_LIMITED: openalex suspended until 1970-01-02 00:12:42",
+    "No OpenAlex results returned; cross-domain (high-energy physics, gravitational waves, network coding) arxiv entries were filtered as false positives, leaving no arxiv papers on underwater acoustic target recognition itself.",
+    "No ShipsEar, DeepShip, or WhaleFM-style dataset card appeared in raw output; only SonAIr dataset repo is confirmed, so dataset coverage is thin.",
+    "No survey or benchmark paper on underwater acoustic ML classification was retrieved; consider manually searching IEEE Xplore / JASA for a recent review.",
+    "Classical ML baselines (SVM, Random Forest on hand-crafted features) were not surfaced by the backends; student must locate them via Google Scholar / IEEE."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [
+        "A Spatio-temporal Deep Learning Approach for Underwater Acoustic Signals Classification",
+        "An Investigation of Preprocessing Filters and Deep Learning Methods for Vessel Type Classification With Underwater Acoustic Data"
+      ],
+      "miss": []
+    },
+    "papers_parallel": {
+      "hit": [
+        "Underwater Acoustic Target Recognition based on Smoothness-inducing Regularization",
+        "Underwater Acoustic Target Recognition on ShipsEar Dataset"
+      ],
+      "miss": [
+        "Cross-Domain Knowledge Transfer for Underwater Acoustic Classification Using Pre-trained Models"
+      ]
+    },
+    "datasets": {
+      "hit": [
+        "ShipsEar",
+        "SonAIr"
+      ],
+      "miss": [
+        "DeepShip"
+      ]
+    },
+    "repos": {
+      "hit": [
+        "zakaria76al/USC",
+        "lucascesarfd/underwater_snd"
+      ],
+      "miss": [
+        "PANN_Models_DeepShip"
+      ]
+    }
+  },
+  "total": {
+    "gt": 11,
+    "hit": 8,
+    "rate": 0.73
+  }
+}
