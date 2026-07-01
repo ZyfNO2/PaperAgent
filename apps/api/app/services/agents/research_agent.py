@@ -756,7 +756,7 @@ def _promote_survey_papers(buckets: dict, raw: dict) -> dict:
             key = t.lower()
             if key in seen:
                 continue
-            if len(ref) >= 8:
+            if len(ref) >= 20:
                 break
             ref.append({
                 "title": t,
@@ -842,7 +842,7 @@ def _attach_repos_to_papers(buckets: dict, raw: dict) -> dict:
     seen_keys = {_repo_key(r) for r in repo}
 
     def _add_associated_repo(key: str, origin_paper_title: str, origin_cat: str) -> bool:
-        if key in seen_keys or len(repo) >= 5:
+        if key in seen_keys or len(repo) >= 20:
             return False
         gh = repo_obj.get(key)
         if not gh:
@@ -866,7 +866,7 @@ def _attach_repos_to_papers(buckets: dict, raw: dict) -> dict:
 
     def _add_raw_repo(gh: dict) -> bool:
         key = _repo_key(gh)
-        if not key or key in seen_keys or len(repo) >= 5:
+        if not key or key in seen_keys or len(repo) >= 20:
             return False
         repo.append({
             "title": gh.get("full_name") or gh.get("name"),
@@ -892,7 +892,7 @@ def _attach_repos_to_papers(buckets: dict, raw: dict) -> dict:
 
     # Second pass: any remaining raw github items not yet surfaced.
     for gh in raw.get("github") or []:
-        if len(repo) >= 5:
+        if len(repo) >= 20:
             break
         _add_raw_repo(gh)
 
@@ -944,6 +944,111 @@ _DATASET_WHITELIST_BY_DOMAIN: dict[str, tuple[str, ...]] = {
 }
 
 
+def _to_5grams(title: str) -> set[str]:
+    """Split a title into the set of 5-token sliding-window substrings.
+
+    Used for cheap semantic-relatedness between paper titles. Tokens are
+    whitespace-separated; case is lowered. Titles shorter than 5 tokens
+    yield an empty set.
+    """
+    t = (title or "").strip().lower()
+    if not t:
+        return set()
+    words = t.split()
+    if len(words) < 5:
+        return set()
+    return {" ".join(words[i:i + 5]) for i in range(len(words) - 4)}
+
+
+def _papers_share_5grams(a_title: str, b_title: str, *, min_overlap: int = 2, min_ratio: float = 0.4) -> bool:
+    """5-gram overlap rule: are two paper titles likely related?
+
+    "Related" here means either (a) they share methodology phrasing — e.g.
+    a follow-up paper "Deep Multi-View Stereo Using Depth Map Fusion"
+    vs the original "Multi-View Stereo Using Depth Map Fusion" — or
+    (b) the abstracts (not parsed here) would likely share several
+    bibliographic references. The threshold is intentionally strict:
+    at least `min_overlap` distinct 5-grams AND at least `min_ratio`
+    overlap against the smaller title.
+
+    Defaults: min_overlap=2, min_ratio=0.4. On a 20-word title, 0.4
+    means ≥ 6 shared 5-grams out of 16 — clearly "borrowed phrases",
+    not coincidence.
+    """
+    a = _to_5grams(a_title)
+    b = _to_5grams(b_title)
+    if not a or not b:
+        return False
+    inter = a & b
+    if len(inter) < min_overlap:
+        return False
+    ratio = len(inter) / min(len(a), len(b))
+    return ratio >= min_ratio
+
+
+def _link_paper_ancestors(buckets: dict, raw: dict) -> dict:
+    """Re01.1-T6. Discover paper-to-paper ancestry from raw text 5-gram overlap.
+
+    A baseline / parallel paper entry may reference (in its abstract) or
+    borrow phrasing from another paper in the same domain. We compute
+    5-gram overlap between every pair of paper entries in
+    baseline_papers ∪ parallel_papers ∪ module_papers ∪ reference_papers
+    AND against titles in the raw arxiv / crossref pool. When overlap is
+    high enough, we add a `_related_works` list on the entry listing the
+    related paper titles — a structural metadata, not a score.
+
+    The LLM synthesize pass may already have inferred relatedness; we
+    add ours only if `_related_works` is absent or below the
+    min_overlap threshold.
+    """
+    paper_buckets = ("baseline_papers", "parallel_papers", "module_papers", "reference_papers")
+    # Map lower-cased title → entry (first occurrence wins)
+    title_to_entry: dict[str, dict] = {}
+    for cat in paper_buckets:
+        for r in buckets.get(cat) or []:
+            t = (r.get("title") or "").strip()
+            if t and t.lower() not in title_to_entry:
+                title_to_entry[t.lower()] = r
+
+    # Build candidate pool: titles already in the buckets + raw arxiv/crossref titles
+    pool: list[tuple[str, str]] = []  # (title_lower, source)
+    for t_low in title_to_entry:
+        pool.append((t_low, "bucket"))
+    for adapter_name, items in (raw or {}).items():
+        if adapter_name == "github":
+            continue
+        for it in items:
+            t = (it.get("title") or "").strip()
+            if t:
+                pool.append((t.lower(), adapter_name))
+
+    n_links_added = 0
+    for cat in paper_buckets:
+        for r in buckets.get(cat) or []:
+            t_low = (r.get("title") or "").strip().lower()
+            if not t_low:
+                continue
+            existing = set(r.get("_related_works") or [])
+            for other_t_low, src in pool:
+                if other_t_low == t_low:
+                    continue
+                # Already linked — skip
+                if other_t_low in existing:
+                    continue
+                if _papers_share_5grams(t_low, other_t_low):
+                    existing.add(other_t_low)
+                    n_links_added += 1
+            r["_related_works"] = list(existing)[:8]
+
+    if n_links_added:
+        gaps = list(buckets.get("evidence_gaps") or [])
+        msg = f"paper-ancestor: linked {n_links_added} paper-to-paper 5-gram overlap relations"
+        if msg not in gaps:
+            gaps.insert(0, msg)
+        buckets["evidence_gaps"] = gaps[:5]
+    return buckets
+
+
 def _promote_whitelisted_datasets(buckets: dict, raw: dict) -> dict:
     """Re01-T2. Look at `dataset_candidates` and `evidence_gaps` for any
     canonical dataset name in the domain whitelist. If the LLM already
@@ -989,7 +1094,7 @@ def _promote_whitelisted_datasets(buckets: dict, raw: dict) -> dict:
             continue
         if name.lower() not in raw_text and name not in blob_l:
             continue
-        if len(dataset) >= 5:
+        if len(dataset) >= 20:
             break
         dataset.append({
             "name": name,
@@ -1021,10 +1126,10 @@ def _promote_whitelisted_datasets(buckets: dict, raw: dict) -> dict:
                     paper_seen.add(sid.lower())
 
     paper_caps = {
-        "baseline_papers": 5,
-        "parallel_papers": 5,
-        "module_papers": 5,
-        "reference_papers": 8,
+        "baseline_papers": 20,
+        "parallel_papers": 20,
+        "module_papers": 20,
+        "reference_papers": 20,
     }
     for ds_entry in dataset:
         ds_name = (ds_entry.get("name") or "").strip()
@@ -1321,14 +1426,20 @@ def _normalize_buckets(out: dict) -> dict:
             buckets[k] = v
         else:
             buckets[k] = []
-    # Hard caps (8/5/5/8/5/5/5).
+    # Re01.2: soft caps. The verifier (a structural integrity gate) has
+    # already dropped anything not grounded in raw tool output. We no
+    # longer hard-cap at 5/8 — a paper / repo / dataset that survives
+    # the verifier is allowed to stay so the user can later build a
+    # relationship graph / mind map. We DO keep a soft cap of 20 per
+    # bucket to avoid runaway LLM output; entries beyond 20 are
+    # truncated, with the count noted in evidence_gaps.
     caps = {
-        "baseline_papers": 5,
-        "parallel_papers": 5,
-        "module_papers": 5,
-        "reference_papers": 8,
-        "dataset_candidates": 5,
-        "repo_candidates": 5,
+        "baseline_papers": 20,
+        "parallel_papers": 20,
+        "module_papers": 20,
+        "reference_papers": 20,
+        "dataset_candidates": 20,
+        "repo_candidates": 20,
         "evidence_gaps": 5,
     }
     for k, cap in caps.items():
@@ -1567,6 +1678,12 @@ async def run_research_agent(
     # for each baseline. This does NOT add a scoring field; it is a
     # structural rebalance based on raw tool output.
     buckets = _attach_repos_to_papers(buckets, raw)
+
+    # Re01.1-T6: 5-gram paper-to-paper ancestry. Look at every paper entry
+    # in the 4 paper buckets and link it to related papers in the raw pool
+    # via 5-gram overlap. Output is a `_related_works` list on each entry.
+    # No scoring field added.
+    buckets = _link_paper_ancestors(buckets, raw)
 
     # 4b. verifier — drop any synthesize entry whose title doesn't appear in
     # any adapter's raw output. This is the load-bearing academic-integrity
