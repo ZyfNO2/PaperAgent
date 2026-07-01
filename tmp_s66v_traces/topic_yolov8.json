@@ -1,0 +1,103 @@
+{
+  "topic": "基于yolov8的钢材表面缺陷目标检测",
+  "elapsed_sec": 94.98,
+  "llm_calls": 4,
+  "llm_failures": 1,
+  "domain_route": "vision_2d",
+  "query_atoms_en": [
+    "YOLOv8 steel surface defect detection",
+    "YOLOv8 metal defect object detection",
+    "steel surface defect dataset NEU-DET",
+    "industrial surface defect deep learning",
+    "YOLOv8 small object detection manufacturing",
+    "hot-rolled steel strip defect detection"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 12,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 8
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [
+    [
+      "openalex",
+      "1970-01-01 09:23:45"
+    ]
+  ],
+  "buckets": {
+    "baseline_papers": [
+      "Improved YOLOv8-Based Defect Detection Model for Hot Rolled Strip Steel",
+      "YOLOv8-FCS: A more focused YOLOv8 model for defect detection in images of steel surface",
+      "Steel surface defect detection based on improved YOLOv8 neural network",
+      "Improved Steel Surface Defect Detection Algorithm Based on YOLOv8",
+      "A Steel Surface Defect Detection Method Based on Lightweight Convolution Optimization"
+    ],
+    "parallel_papers": [
+      "Mpa-Yolo: Steel Surface Defect Detection Based on Improved Yolov8",
+      "YOLOv8-LSD:A Steel Surface Defect Detection Algorithm Based On YOLOv8",
+      "Surface Defect Detection on Strip Steel Based on Hybrid Attention Mechanism and Yolov8",
+      "MINet: Multi-scale Interactive Network for Real-time Salient Object Detection of Strip Steel Surface Defects",
+      "Deep Learning Based Steel Pipe Weld Defect Detection"
+    ],
+    "module_papers": [
+      "Metal Surface Defect Detection Using SLF-YOLO Enhanced YOLOv8 Model.",
+      "Defect Image Sample Generation With Diffusion Prior for Steel Surface Defect Recognition",
+      "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+      "Developing a Resource-Constraint EdgeAI model for Surface Defect Detection",
+      "TLU-Net: A Deep Learning Approach for Automatic Steel Surface Defect Detection"
+    ],
+    "reference_papers": [
+      "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+      "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+      "Lightweight Rail Surface Defect Detection Algorithm Based on an Improved YOLOv8",
+      "YOLOv8-YOLOv11-Segmentation-Studio/Wafer-Defect128",
+      "PCB-2.0-YOLOV8-STREAMLIT is app build to detect six types of defects in printed circuit boards (PCBs) using the YOLOv8 object detection model."
+    ],
+    "dataset_candidates": [
+      "Marfbin/NEU-DET-with-yolov8",
+      "YOLOv8-YOLOv11-Segmentation-Studio/Wafer-Defect128",
+      "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+      "ImageNet",
+      "NEU-DET"
+    ],
+    "repo_candidates": [
+      "LZY-233/yolov8_Imporved-Defect_detection",
+      "zacianfans/SLF-YOLO",
+      "haichao67/GD-YOLOv8",
+      "Marfbin/NEU-DET-with-yolov8",
+      "mehulnaik16/PCB-2.0-YOLOV8-STREAMLIT"
+    ]
+  },
+  "evidence_gaps": [
+    "paper-ancestor: linked 8 paper-to-paper 5-gram overlap relations",
+    "RATE_LIMITED: openalex suspended until 1970-01-01 09:23:45",
+    "No raw entry contains the canonical NEU-DET, GC10-DET, or Severstal steel defect dataset metadata; only NEU-DET is referenced indirectly via Marfbin repo.",
+    "No raw entry is the original YOLOv8 paper (Ultralytics, Jocher et al.); student must fetch it separately for the primary baseline architecture.",
+    "No raw entry reports benchmark mAP numbers on NEU-DET/GC10-DET for YOLOv8 variants; quantitative comparison table must be assembled by the student."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [],
+      "miss": []
+    },
+    "papers_parallel": {
+      "hit": [],
+      "miss": []
+    },
+    "datasets": {
+      "hit": [],
+      "miss": []
+    },
+    "repos": {
+      "hit": [],
+      "miss": []
+    }
+  },
+  "total": {
+    "gt": 0,
+    "hit": 0,
+    "rate": 0.0
+  }
+}
