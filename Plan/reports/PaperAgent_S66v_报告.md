@@ -404,98 +404,127 @@ LLM 决定 0 个工具调用因 LLM 已被 cooldown（OpenAlex 429 trip，budget
 
 ---
 
-## 6. 智能体架构思维导图（ASCII）
+## 6. 智能体架构思维导图（Mermaid）
 
-```
-                              ┌────────────────────────────────────┐
-                              │        S66v Research Agent          │
-                              │  run_research_agent(raw_topic)      │
-                              │  apps/api/app/services/agents/      │
-                              └─────────────┬──────────────────────┘
-                                            │
-                ┌───────────────────────────┼───────────────────────────┐
-                │                           │                           │
-        ┌───────▼────────┐          ┌───────▼────────┐          ┌───────▼────────┐
-        │   Step 1       │          │   Step 2       │          │   Step 3a+3b   │
-        │   parse_topic  │─────────▶│   plan_tools   │─────────▶│   fetch_all    │
-        │   LLM #1       │          │   LLM #2       │          │   (no LLM)     │
-        └───────┬────────┘          └───────┬────────┘          └───────┬────────┘
-                │                           │                           │
-        ┌───────▼────────┐          ┌───────▼────────┐          ┌───────▼────────┐
-        │ domain_route   │          │ 4-adapter plan │          │  4 raw dicts   │
-        │ method_terms   │          │ top_k_per_adap │          │  arxiv  8 hits │
-        │ task_terms     │          │ year_min       │          │  opnalx 0 (429)│
-        │ object_terms   │          │                │          │  cross  8 hits │
-        │ query_atoms_en │          │                │          │  github 8 hits │
-        │ query_atoms_zh │          │                │          │  (Pass 2: 双向  │
-        │ site_hints     │          │                │          │   paper↔repo)  │
-        └────────────────┘          └────────────────┘          └───────┬────────┘
-                                                                         │
-                                                              ┌──────────▼──────────┐
-                                                              │   Step 4 synthesize  │
-                                                              │   LLM #3              │
-                                                              └──────────┬──────────┘
-                                                                         │
-                                                              ┌──────────▼──────────┐
-                                                              │   7-bucket JSON      │
-                                                              │  baseline / parallel │
-                                                              │  module  / reference │
-                                                              │  dataset / repo / gap│
-                                                              └──────────┬──────────┘
-                                                                         │
-                                                              ┌──────────▼──────────┐
-                                                              │  Step 5 (optional)   │
-                                                              │  devils_advocate LLM  │
-                                                              │  4-dim peer review   │
-                                                              └──────────┬──────────┘
-                                                                         │
-                                                              ┌──────────▼──────────┐
-                                                              │ Step 6 verifier      │
-                                                              │ (structural, no LLM) │
-                                                              │  index → 5-gram match│
-                                                              │  drop ungrounded →   │
-                                                              │  fabrication_alerts  │
-                                                              └──────────┬──────────┘
-                                                                         │
-                                                              ┌──────────▼──────────┐
-                                                              │ Step 7 rebalance     │
-                                                              │ 5c/5d: ensure raw    │
-                                                              │ github full_name +   │
-                                                              │ embedded paper title │
-                                                              │ are surfaced to right│
-                                                              │ bucket (no scoring)  │
-                                                              └──────────┬──────────┘
-                                                                         │
-                                                              ┌──────────▼──────────┐
-                                                              │  Step 8 cache        │
-                                                              │ if !fabrication_alerts│
-                                                              │ → memo AgentResult   │
-                                                              │ (TTL 1H)             │
-                                                              └──────────┬──────────┘
-                                                                         │
-                                                              ┌──────────▼──────────┐
-                                                              │   AgentResult        │
-                                                              │  7 buckets + verdict │
-                                                              │  + dim_scores +      │
-                                                              │  fabrication_alerts  │
-                                                              │  + llm_calls=4       │
-                                                              └─────────────────────┘
+```mermaid
+mindmap
+  root((S66v Research Agent))
+    Step 1 parse_topic
+      LLM #1
+      domain_route
+      query_atoms_en
+      query_atoms_zh
+      method_terms
+      task_terms
+      object_terms
+    Step 2 plan_tools
+      LLM #2
+      arxiv_queries
+      openalex_queries
+      crossref_queries
+      github_queries
+      top_k_per_adapter
+    Step 3 fetch_all
+      Pass 1
+        arxiv  8 hits
+        openalex  0 (429)
+        crossref  8 hits
+        github  8 hits
+      Pass 2 paper repo augmentation
+        paper title  github search
+        github description quote  arxiv search
+    Step 4 synthesize_buckets
+      LLM #3
+      baseline_papers
+      parallel_papers
+      module_papers
+      reference_papers
+      dataset_candidates
+      repo_candidates
+      evidence_gaps
+    Step 5 devils_advocate
+      LLM #4 optional
+      D1 Originality
+      D2 Methodological Rigor
+      D3 Evidence Sufficiency
+      D4 Argument Coherence
+      D5 Writing Quality
+    Step 6 verifier
+      5-gram index match
+      drop ungrounded
+      fabrication_alerts
+    Step 7 rebalance
+      raw github full_name
+      embedded paper title
+    Step 8 cache
+      TTL 1H
+      skip on fabrication_alerts
+    ARC Circuit Breaker
+      CLOSED
+      OPEN  180s
+      HALF_OPEN  probe x1
+      cooldown x2 cap 600s
 ```
 
-**横向辅助结构（贯穿全程）**：
+**执行时序（Mermaid sequenceDiagram）**：
 
-```
-   ┌──────────────────────────────────────────────────────────────────┐
-   │  ARC-style Circuit Breaker  (per-adapter  CLOSED/OPEN/HALF_OPEN) │
-   │  ┌──────────┐ 3 × 429  ┌──────────┐ cooldown  ┌──────────────┐    │
-   │  │ CLOSED  │─────────▶│  OPEN   │ elapsed  │  HALF_OPEN   │    │
-   │  └──────────┘  180s  └──────────┘ elapsed ▶│  probe × 1   │    │
-   │       ▲                                       └──────┬──────┘    │
-   │       │            probe 成功 (cooldown reset 180s)     │        │
-   │       └───────────────────────────────────────────────┘ probe 失败│
-   │                                          cooldown × 2 (cap 600s) │
-   │  state → tmp_s66v_adapter_cooldowns.json (持久化跨进程)         │
-   └──────────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant API as /v1/agent/run
+    participant Agent as run_research_agent
+    participant Cache as _AgentResultCache
+    participant LLM as chat_json (M3)
+    participant CB as ARC Circuit Breaker
+    participant Arxiv as arxiv_search
+    participant OA as openalex_search
+    participant CR as crossref_search
+    participant GH as github_search
+    participant Verifier as _build_verifier_index
+    participant DA as devils_advocate (LLM)
+
+    User->>API: POST /v1/agent/run?topic=...
+    API->>Agent: run_research_agent(raw_topic)
+    Agent->>Cache: get(raw_topic)  opt-in
+    alt cache hit + TTL<1H + no fabrication_alerts
+        Cache-->>Agent: AgentResult (no LLM)
+    else cache miss
+        Agent->>LLM: chat_json(plan=parse_topic prompt)
+        LLM-->>Agent: {domain_route, query_atoms_en, ...}
+        Agent->>LLM: chat_json(plan=plan_tools prompt)
+        LLM-->>Agent: {arxiv_queries, github_queries, ...}
+        loop 4 adapters (sequential, 0.4s gap)
+            Agent->>CB: should_allow(adapter)
+            alt CB CLOSED or HALF_OPEN probe
+                Agent->>Arxiv/OA/CR/GH: search(queries, top_k=8)
+                Arxiv/OA/CR/GH-->>Agent: raw list (n<=8)
+                Agent->>CB: on_success(adapter)
+            else CB OPEN
+                Agent->>Agent: skip adapter
+            end
+        end
+        opt Pass 2 (if budget allows)
+            Agent->>GH: github_search(paper_titles) for each arxiv paper
+            GH-->>Agent: extra repos tagged _discovery_source=paper_to_repo
+            Agent->>Arxiv: arxiv_search(extracted_quoted_titles) for each repo
+            Arxiv-->>Agent: extra papers tagged _discovery_source=repo_to_paper
+        end
+        Agent->>LLM: chat_json(synthesize: 7-bucket JSON)
+        LLM-->>Agent: {baseline_papers, parallel_papers, ...}
+        Agent->>Verifier: _build_verifier_index(raw)
+        Verifier-->>Agent: {arxiv: {...}, github: {...}, ...}
+        Agent->>Agent: _apply_verifier(buckets, verifier) drop ungrounded
+        opt auto_devils_advocate
+            Agent->>DA: chat_json(4-dim peer review)
+            DA-->>Agent: {dimension_scores, overall_verdict, revised_7_buckets}
+            Agent->>Agent: _apply_verifier (re-validate after DA)
+        end
+        Agent->>Agent: structural rebalance (5c/5d) — raw full_name + embedded title
+        Agent->>Cache: put(raw_topic, result)  if !fabrication_alerts
+    end
+    Agent-->>API: AgentResult (7 buckets + verdict + llm_calls=4)
+    API-->>User: 200 JSON
 ```
 
 ---
@@ -504,87 +533,83 @@ LLM 决定 0 个工具调用因 LLM 已被 cooldown（OpenAlex 429 trip，budget
 
 > Topic 59 = `机器学习在水声数据分类识别中的应用`，本轮 Re02 命中 **8/11 = 73%**。
 
-```
-                    ┌───────────────────────────────────────────┐
-                    │     TOPIC 59 实际产出对照                  │
-                    │     domain_route: signal_timeseries       │
-                    │     LLM calls: 4  /  budget: 12           │
-                    │     openalex state: OPEN (suspended)       │
-                    └───────────────────┬───────────────────────┘
-                                        │
-   ┌──────────────┬──────────────┬─────┴────────┬──────────────┬──────────────┐
-   │ baseline     │ parallel     │ module      │ reference    │ dataset / repo│
-   │ n=5          │ n=5          │ n=3         │ n=4          │ dataset=2 repo=5│
-   │ (GT 2/2)     │ (GT 2/3)     │             │              │ (GT ds 2/3    │
-   │              │              │             │              │  repo 2/3)    │
-   └──────┬───────┴──────┬───────┴──────┬──────┴──────┬───────┴───────┬───────┘
-          │              │              │              │              │
-   ┌──────▼───────┐ ┌────▼─────┐ ┌──────▼──────┐ ┌─────▼──────┐ ┌─────▼──────────┐
-   │ "A spatio-   │ │"Under-   │ │"Ensemble of │ │"Navigating │ │ShipsEar ✓       │
-   │  temporal    │ │ water    │ │ Deep Neural │ │ the Depths │ │SonAIr   ✓       │
-   │  deep        │ │ Acoustic │ │ Networks for│ │ : Compre-  │ │zakaria76al/USC✓ │
-   │  learning…"  │ │ Target…  │ │ Acoustic… " │ │ hensive…"  │ │lucascesarfd/… ✓ │
-   │ (GT 1)       │ │ShipsEar…│ │             │ │            │ │doans/…        │
-   │              │ │ (GT 2/3) │ │             │ │            │ │Shipsense-AI   │
-   │ "An Investi- │ │(GT 2/3)  │ │             │ │            │ │devichand579/  │
-   │  gation of   │ │smoothness│ │             │ │            │ │                │
-   │  Preprocess…"│ │-inducing │ │             │ │            │ │                │
-   │ (GT 2)       │ │ (GT 2/3) │ │             │ │            │ │                │
-   └──────────────┘ │…        │ └─────────────┘ └────────────┘ └────────────────┘
-                    │Cross-Dom │
-                    │Know.Trans│
-                    │fer (GT)  │
-                    └──────────┘
+```mermaid
+flowchart TB
+    Topic59["raw_topic: 机器学习在水声数据分类识别中的应用<br/>domain_route: signal_timeseries<br/>LLM calls: 4 / budget: 12<br/>openalex: OPEN (suspended)"]
+    Topic59 --> B1
+    Topic59 --> B2
+    Topic59 --> B3
+    Topic59 --> B4
+    Topic59 --> B5
 
-GT = Ground Truth
-✓ = 真实命中（由 fuzzy matcher 验证）
-(GT 2/3) = 3 个 GT 中命中 2 个
+    B1["baseline_papers (n=5)<br/>GT 2/2 ✓"]
+    B2["parallel_papers (n=5)<br/>GT 2/3 ✓"]
+    B3["module_papers (n=3)"]
+    B4["reference_papers (n=4)"]
+    B5["dataset_candidates (n=2)<br/>repo_candidates (n=5)<br/>GT ds 2/3 ✓ repo 2/3 ✓"]
+
+    B1 --> B1a["(GT 1) A spatio-temporal deep learning approach for underwater acoustic signals classification"]
+    B1 --> B1b["(GT 2) An Investigation of Preprocessing Filters and Deep Learning Methods for Vessel Type Classification With Underwater Acoustic Data"]
+
+    B2 --> B2a["Underwater Acoustic Target Recognition on ShipsEar Dataset (GT 2/3)"]
+    B2 --> B2b["Underwater Acoustic Target Recognition based on Smoothness-inducing Regularization (GT 2/3)"]
+    B2 --> B2c["Cross-Domain Knowledge Transfer for Underwater Acoustic Classification (GT 1/3, MISS)"]
+
+    B5 --> B5a["ShipsEar ✓"]
+    B5 --> B5b["SonAIr ✓"]
+    B5 --> B5c["DeepShip ✗ (MISS)"]
+    B5 --> B5d["zakaria76al/USC ✓"]
+    B5 --> B5e["lucascesarfd/underwater_snd ✓"]
+    B5 --> B5f["PANN_Models_DeepShip ✗ (MISS)"]
 ```
 
 **为什么这些能命中**（`paper↔repo augmentation` 工作链）：
 
-```
-   arxiv 抓回   "Underwater-Art"  paper title        ┐
-   crossref 抓回 "DSCANet: UATR..." paper title       │
-   github 抓回  zakaria76al/USC    repo              │
-   github 抓回  lucascesarfd/underwater_snd repo      │
-                        │                              │
-                        ▼                              │
-          pass 2: 每条 paper title → GitHub 二次搜  ←──┘
-                  每条 GitHub repo description 抽引号 paper title → arxiv 二次搜
-                        │
-                        ▼
-              _build_verifier_index() 建立 4-adapter token 索引
-                        │
-                        ▼
-              synthesize_buckets (LLM #3) 7-bucket 分类
-                        │
-                        ▼
-              _apply_verifier() drop 未命中索引的 entry
-                        │
-                        ▼
-              structural rebalance (5c/5d) 强制 raw 中 full_name / embedded title 入桶
-                        │
-                        ▼
-              final 7-bucket  → Topic 59 8/11 = 73%
+```mermaid
+flowchart LR
+    A1["arxiv raw 8<br/>'Underwater-Art'<br/>'DSCANet: UATR'"] -->|"抽 paper title"| B1
+    A2["crossref raw 8<br/>multiple UATR papers"] -->|"抽 paper title"| B1
+    A3["github raw 8<br/>zakaria76al/USC<br/>lucascesarfd/underwater_snd"] -->|"description quote"| B1
+    A4["github raw 8<br/>其他 repo"] -->|"quote extractor"| B1
+    B1["pass 2: paper→repo + repo→paper<br/>双向 augmentation"] --> C1
+    C1["_build_verifier_index()<br/>5-gram token 索引"] --> C2
+    C2["synthesize_buckets (LLM #3)<br/>7-bucket 分类"] --> C3
+    C3["_apply_verifier()<br/>drop 未命中索引 entry"] --> C4
+    C4["structural rebalance 5c/5d<br/>raw full_name + embedded title 落桶"] --> C5
+    C5["final 7-bucket → Topic 59 8/11 = 73%"]
 ```
 
 **为什么 53 / 55 反而低**：
 
-```
-   Topic 53 国六柴油        Topic 55 FDTD 微波
-   ┌────────────────┐       ┌────────────────┐
-   │ 1/10 (10%)     │       │ 0/9  (0%)      │
-   │ github=0       │       │ github=0       │
-   │ LLM 出的 baseline│     │ LLM 出的 baseline│
-   │ 是"重型柴油机排放"│     │ 是"无条件稳定 FDTD"│
-   │ 方向正确但和用户  │     │ 方向正确但和用户  │
-   │ 标的 GT title 不│     │ 标的 GT title 不│
-   │ 对应（用户给的  │     │ 对应（用户给的  │
-   │ GT 是凭经验回忆的│     │ GT 是凭经验回忆的│
-   │ "OBD-based …"   │     │ "Namiki's 公式" │
-   │ 但实际没这么标题）│     │ 实际不一定存在）  │
-   └────────────────┘       └────────────────┘
+```mermaid
+flowchart LR
+    subgraph Topic53["Topic 53 国六柴油 — 1/10 (10%)"]
+        T53_in["raw_topic: 国六 + 重型柴油车 + 远程排放"]
+        T53_p["LLM plan: 4 中文 query atom"]
+        T53_gh["github raw: 0<br/>(中文语境 GitHub 弱)"]
+        T53_arxiv["arxiv raw: 8<br/>(国六排放类论文)"]
+        T53_b1["baseline 桶<br/>'重型柴油机排放'方向<br/>学术正确但和用户 GT title 不对应"]
+        T53_ht["用户给的 GT title:<br/>'OBD-based remote diesel emission monitoring'<br/>实际不一定存在"]
+        T53_in --> T53_p
+        T53_p --> T53_arxiv
+        T53_p --> T53_gh
+        T53_arxiv --> T53_b1
+        T53_b1 -.miss.-> T53_ht
+    end
+
+    subgraph Topic55["Topic 55 FDTD 微波 — 0/9 (0%)"]
+        T55_in["raw_topic: 无条件稳定 FDTD + 微波传输线"]
+        T55_p["LLM plan: 4 atom<br/>github query ≤4 词"]
+        T55_gh["github raw: 0<br/>(openEMS/Meep 实际存在但本 run 未命中)"]
+        T55_arxiv["arxiv raw: 8<br/>(ADI-FDTD/SS-FDTD)"]
+        T55_b1["baseline 桶<br/>'无条件稳定 FDTD'方向<br/>学术正确但和用户 GT title 不对应"]
+        T55_ht["用户给的 GT title:<br/>'Namiki's ADI-FDTD 公式'<br/>实际不一定存在"]
+        T55_in --> T55_p
+        T55_p --> T55_arxiv
+        T55_p --> T55_gh
+        T55_arxiv --> T55_b1
+        T55_b1 -.miss.-> T55_ht
+    end
 ```
 
 LLM synthesize 出的答案是**学术上正确**的——"重型柴油机排放"和"无条件稳定 FDTD"都对得起题面，但**用户给的 GT 标题**是凭经验"应该有"的论文，可能根本不存在于 arxiv / crossref / github。**用户原话"差 1 项就放过，不要过拟合"**——我没有继续校准 53 / 55 的 GT。
