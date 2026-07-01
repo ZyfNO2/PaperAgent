@@ -12,6 +12,18 @@
         ]
       }
     ],
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python .claude/hooks/pre_report_audit.py 2>&1 || python .claude/hooks/pre_report_audit.py 2>&1",
+            "description": "写 *完工报告*.md 前自检：代码 bug / 规划如此 / 5 次失败停手 三选一 + 证据，禁止拿 LLM 死路径当真实数据"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",

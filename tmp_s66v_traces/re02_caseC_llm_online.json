@@ -1,0 +1,3255 @@
+{
+ "raw_topic": "基于大语言模型的中文主观题自动评分",
+ "project_id": "agent-re02-ec6987c6",
+ "parsed_topic": {
+  "raw_topic": "基于大语言模型的中文主观题自动评分",
+  "normalized_topic": "Automatic scoring of Chinese subjective questions using Large Language Models",
+  "domain_route": "nlp_llm",
+  "domain_confidence": 0.92,
+  "method_terms": [
+   "LLM prompt engineering",
+   "zero-shot scoring",
+   "few-shot in-context learning",
+   "fine-tuned BERT",
+   "chain-of-thought prompting",
+   "GPT-4 evaluation"
+  ],
+  "task_terms": [
+   "automated essay scoring",
+   "short-answer grading",
+   "subjective question scoring",
+   "Chinese text evaluation"
+  ],
+  "object_terms": [
+   "Chinese subjective answers",
+   "student essays",
+   "exam responses",
+   "Chinese language corpora"
+  ],
+  "query_atoms_en": [
+   "LLM automated essay scoring",
+   "Chinese short answer grading LLM",
+   "GPT-4 essay scoring Chinese",
+   "BERT Chinese subjective answer scoring",
+   "zero-shot LLM text evaluation",
+   "few-shot prompting automatic grading"
+  ],
+  "query_atoms_zh": [
+   "大语言模型 自动评分",
+   "中文主观题 评分",
+   "LLM 作文评分",
+   "中文短答案 自动阅卷",
+   "预训练模型 主观题评分",
+   "提示学习 中文阅卷"
+  ],
+  "needs_clarification": [],
+  "site_hints": [
+   "aclanthology.org",
+   "arxiv.org",
+   "cnki.net"
+  ]
+ },
+ "plan": {
+  "rounds": [
+   {
+    "round": 1,
+    "name": "broad_recall",
+    "goal": "wide initial sweep across paper + repo backends for LLM-based subjective answer scoring",
+    "calls": [
+     {
+      "tool": "search_arxiv",
+      "query": "LLM automated essay scoring",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "arxiv is the spine; this surfaces the main LLM-AES literature",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_arxiv",
+      "query": "Chinese short answer grading LLM",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "narrow to Chinese-language subjective QA grading with LLMs",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_openalex",
+      "query": "few-shot prompting automatic grading",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "openalex broadens to educational data mining venues beyond arxiv",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_crossref",
+      "query": "GPT-4 essay scoring Chinese",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "crossref catches peer-reviewed NLP/education journals and CN-cited works",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     }
+    ]
+   },
+   {
+    "round": 2,
+    "name": "reference_expansion",
+    "goal": "expand coverage via benchmark, survey, and recent-advances noun-phrase queries",
+    "calls": [
+     {
+      "tool": "search_arxiv",
+      "query": "automated essay scoring survey",
+      "target_role": "survey",
+      "why_call": "locate canonical AES surveys for citation backbone",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_arxiv",
+      "query": "prompt engineering scoring benchmark",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "find benchmark studies that evaluate prompting strategies for grading",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_openalex",
+      "query": "chain-of-thought evaluation grading",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "openalex extension to surface CoT prompting applied to scoring tasks",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_crossref",
+      "query": "Chinese subjective answer corpus",
+      "target_role": "dataset",
+      "why_call": "hunt Chinese short-answer / essay datasets referenced in pedagogy papers",
+      "expected_output": "dataset",
+      "fallback_tool": ""
+     }
+    ]
+   },
+   {
+    "round": 3,
+    "name": "repo_dataset_followup",
+    "goal": "find runnable code + Chinese datasets for LLM-based subjective scoring",
+    "calls": [
+     {
+      "tool": "search_github",
+      "query": "LLM essay scoring",
+      "target_role": "repo",
+      "why_call": "concrete method-object phrase to surface runnable AES-with-LLM codebases",
+      "expected_output": "repo",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_github",
+      "query": "Chinese grading BERT",
+      "target_role": "repo",
+      "why_call": "find pretrained models / scoring scripts for Chinese subjective answers",
+      "expected_output": "repo",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_github",
+      "query": "short answer grading",
+      "target_role": "repo",
+      "why_call": "broader method-term query for short-answer scoring implementations",
+      "expected_output": "repo",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_openalex",
+      "query": "Chinese exam response dataset",
+      "target_role": "dataset",
+      "why_call": "openalex follow-up to surface Chinese exam-response datasets/benchmarks",
+      "expected_output": "dataset",
+      "fallback_tool": ""
+     }
+    ]
+   }
+  ],
+  "year_min": 2018,
+  "top_k_per_adapter": 8,
+  "site_keywords": [
+   "aclanthology.org",
+   "arxiv.org",
+   "cnki.net"
+  ],
+  "arxiv_queries": [
+   "LLM automated essay scoring",
+   "Chinese short answer grading LLM",
+   "automated essay scoring survey",
+   "prompt engineering scoring benchmark"
+  ],
+  "openalex_queries": [
+   "few-shot prompting automatic grading",
+   "chain-of-thought evaluation grading",
+   "Chinese exam response dataset"
+  ],
+  "crossref_queries": [
+   "GPT-4 essay scoring Chinese",
+   "Chinese subjective answer corpus"
+  ],
+  "github_queries": [
+   "LLM essay scoring",
+   "Chinese grading BERT",
+   "short answer grading"
+  ]
+ },
+ "raw_tool_results": {
+  "arxiv": [
+   {
+    "title": "Automated Scoring for Reading Comprehension via In-context BERT Tuning",
+    "abstract": "Automated scoring of open-ended student responses has the potential to significantly reduce human grader effort. Recent advances in automated scoring often leverage textual representations based on pre-trained language models such as BERT and GPT as input to scoring models. Most existing approaches train a separate model for each item/question, which is suitable for scenarios such as essay scoring where items can be quite different from one another. However, these approaches have two limitations: 1) they fail to leverage item linkage for scenarios such as reading comprehension where multiple items may share a reading passage; 2) they are not scalable since storing one model per item becomes difficult when models have a large number of parameters. In this paper, we report our (grand prize-winning) solution to the National Assessment of Education Progress (NAEP) automated scoring challenge for reading comprehension. Our approach, in-context BERT fine-tuning, produces a single shared scoring model for all items with a carefully-designed input structure to provide contextual information on each item. We demonstrate the effectiveness of our approach via local evaluations using the training dataset provided by the challenge. We also discuss the biases, common error types, and limitations of our approach.",
+    "authors": [
+     "Nigel Fernandez",
+     "Aritra Ghosh",
+     "Naiming Liu",
+     "Zichao Wang",
+     "Benoît Choffin",
+     "Richard Baraniuk",
+     "Andrew Lan"
+    ],
+    "arxiv_id": "2205.09864v2",
+    "url": "http://arxiv.org/abs/2205.09864v2",
+    "published": "2022-05-19T21:16:15Z",
+    "year": 2022,
+    "source_query": "LLM automated essay scoring",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Review of feedback in Automated Essay Scoring",
+    "abstract": "The first automated essay scoring system was developed 50 years ago. Automated essay scoring systems are developing into systems with richer functions than the previous simple scoring systems. Its purpose is not only to score essays but also as a learning tool to improve the writing skill of users. Feedback is the most important aspect of making an automated essay scoring system useful in real life. The importance of feedback was already emphasized in the first AES system. This paper reviews research on feedback including different feedback types and essay traits on automated essay scoring. We also reviewed the latest case studies of the automated essay scoring system that provides feedback.",
+    "authors": [
+     "You-Jin Jong",
+     "Yong-Jin Kim",
+     "Ok-Chol Ri"
+    ],
+    "arxiv_id": "2307.05553v1",
+    "url": "http://arxiv.org/abs/2307.05553v1",
+    "published": "2023-07-09T11:04:13Z",
+    "year": 2023,
+    "source_query": "LLM automated essay scoring",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Improving Performance of Automated Essay Scoring by using back-translation essays and adjusted scores",
+    "abstract": "Automated essay scoring plays an important role in judging students' language abilities in education. Traditional approaches use handcrafted features to score and are time-consuming and complicated. Recently, neural network approaches have improved performance without any feature engineering. Unlike other natural language processing tasks, only a small number of datasets are publicly available for automated essay scoring, and the size of the dataset is not sufficiently large. Considering that the performance of a neural network is closely related to the size of the dataset, the lack of data limits the performance improvement of the automated essay scoring model. In this paper, we proposed a method to increase the number of essay-score pairs using back-translation and score adjustment and applied it to the Automated Student Assessment Prize dataset for augmentation. We evaluated the effectiveness of the augmented data using models from prior work. In addition, performance was evaluated in a model using long short-term memory, which is widely used for automated essay scoring. The performance of the models was improved by using augmented data to train the models.",
+    "authors": [
+     "You-Jin Jong",
+     "Yong-Jin Kim",
+     "Ok-Chol Ri"
+    ],
+    "arxiv_id": "2203.00354v2",
+    "url": "http://arxiv.org/abs/2203.00354v2",
+    "published": "2022-03-01T11:05:43Z",
+    "year": 2022,
+    "source_query": "LLM automated essay scoring",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Rationale Behind Essay Scores: Enhancing S-LLM's Multi-Trait Essay Scoring with Rationale Generated by LLMs",
+    "abstract": "Existing automated essay scoring (AES) has solely relied on essay text without using explanatory rationales for the scores, thereby forgoing an opportunity to capture the specific aspects evaluated by rubric indicators in a fine-grained manner. This paper introduces Rationale-based Multiple Trait Scoring (RMTS), a novel approach for multi-trait essay scoring that integrates prompt-engineering-based large language models (LLMs) with a fine-tuning-based essay scoring model using a smaller large language model (S-LLM). RMTS uses an LLM-based trait-wise rationale generation system where a separate LLM agent generates trait-specific rationales based on rubric guidelines, which the scoring model uses to accurately predict multi-trait scores. Extensive experiments on benchmark datasets, including ASAP, ASAP++, and Feedback Prize, show that RMTS significantly outperforms state-of-the-art models and vanilla S-LLMs in trait-specific scoring. By assisting quantitative assessment with fine-grained qualitative rationales, RMTS enhances the trait-wise reliability, providing partial explanations about essays. The code is available at https://github.com/BBeeChu/RMTS.git.",
+    "authors": [
+     "SeongYeub Chu",
+     "JongWoo Kim",
+     "Bryan Wong",
+     "MunYong Yi"
+    ],
+    "arxiv_id": "2410.14202v3",
+    "url": "http://arxiv.org/abs/2410.14202v3",
+    "published": "2024-10-18T06:35:17Z",
+    "year": 2024,
+    "source_query": "LLM automated essay scoring",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Exploration of Summarization by Generative Language Models for Automated Scoring of Long Essays",
+    "abstract": "BERT and its variants are extensively explored for automated scoring. However, a limit of 512 tokens for these encoder-based models showed the deficiency in automated scoring of long essays. Thus, this research explores generative language models for automated scoring of long essays via summarization and prompting. The results revealed great improvement of scoring accuracy with QWK increased from 0.822 to 0.8878 for the Learning Agency Lab Automated Essay Scoring 2.0 dataset.",
+    "authors": [
+     "Haowei Hua",
+     "Hong Jiao",
+     "Xinyi Wang"
+    ],
+    "arxiv_id": "2510.22830v4",
+    "url": "http://arxiv.org/abs/2510.22830v4",
+    "published": "2025-10-26T20:59:22Z",
+    "year": 2025,
+    "source_query": "LLM automated essay scoring",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Rank-Then-Score: Enhancing Large Language Models for Automated Essay Scoring",
+    "abstract": "In recent years, large language models (LLMs) achieve remarkable success across a variety of tasks. However, their potential in the domain of Automated Essay Scoring (AES) remains largely underexplored. Moreover, compared to English data, the methods for Chinese AES is not well developed. In this paper, we propose Rank-Then-Score (RTS), a fine-tuning framework based on large language models to enhance their essay scoring capabilities. Specifically, we fine-tune the ranking model (Ranker) with feature-enriched data, and then feed the output of the ranking model, in the form of a candidate score set, with the essay content into the scoring model (Scorer) to produce the final score. Experimental results on two benchmark datasets, HSK and ASAP, demonstrate that RTS consistently outperforms the direct prompting (Vanilla) method in terms of average QWK across all LLMs and datasets, and achieves the best performance on Chinese essay scoring using the HSK dataset.",
+    "authors": [
+     "Yida Cai",
+     "Kun Liang",
+     "Sanwoo Lee",
+     "Qinghan Wang",
+     "Yunfang Wu"
+    ],
+    "arxiv_id": "2504.05736v1",
+    "url": "http://arxiv.org/abs/2504.05736v1",
+    "published": "2025-04-08T07:10:51Z",
+    "year": 2025,
+    "source_query": "LLM automated essay scoring",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Activations as Features: Probing LLMs for Generalizable Essay Scoring Representations",
+    "abstract": "Automated essay scoring (AES) is a challenging task in cross-prompt settings due to the diversity of scoring criteria. While previous studies have focused on the output of large language models (LLMs) to improve scoring accuracy, we believe activations from intermediate layers may also provide valuable information. To explore this possibility, we evaluated the discriminative power of LLMs' activations in cross-prompt essay scoring task. Specifically, we used activations to fit probes and further analyzed the effects of different models and input content of LLMs on this discriminative power. By computing the directions of essays across various trait dimensions under different prompts, we analyzed the variation in evaluation perspectives of large language models concerning essay types and traits. Results show that the activations possess strong discriminative power in evaluating essay quality and that LLMs can adapt their evaluation perspectives to different traits and essay types, effectively handling the diversity of scoring criteria in cross-prompt settings.",
+    "authors": [
+     "Jinwei Chi",
+     "Ke Wang",
+     "Yu Chen",
+     "Xuanye Lin",
+     "Qiang Xu"
+    ],
+    "arxiv_id": "2512.19456v1",
+    "url": "http://arxiv.org/abs/2512.19456v1",
+    "published": "2025-12-22T15:01:07Z",
+    "year": 2025,
+    "source_query": "LLM automated essay scoring",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Exploring Automated Essay Scoring for Nonnative English Speakers",
+    "abstract": "Automated Essay Scoring (AES) has been quite popular and is being widely used. However, lack of appropriate methodology for rating nonnative English speakers' essays has meant a lopsided advancement in this field. In this paper, we report initial results of our experiments with nonnative AES that learns from manual evaluation of nonnative essays. For this purpose, we conducted an exercise in which essays written by nonnative English speakers in test environment were rated both manually and by the automated system designed for the experiment. In the process, we experimented with a few features to learn about nuances linked to nonnative evaluation. The proposed methodology of automated essay evaluation has yielded a correlation coefficient of 0.750 with the manual evaluation.",
+    "authors": [
+     "Amber Nigam"
+    ],
+    "arxiv_id": "1706.03335v3",
+    "url": "http://arxiv.org/abs/1706.03335v3",
+    "published": "2017-06-11T10:18:46Z",
+    "year": 2017,
+    "source_query": "LLM automated essay scoring",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+    "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+    "authors": [
+     "Leah von der Heyde",
+     "Anna-Carolina Haensch",
+     "Bernd Weiß",
+     "Jessica Daikeler"
+    ],
+    "arxiv_id": "2506.14634v3",
+    "url": "http://arxiv.org/abs/2506.14634v3",
+    "published": "2025-06-17T15:28:53Z",
+    "year": 2025,
+    "source_query": "automated essay scoring survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "Data Augmentation for Automated Essay Scoring using Transformer Models",
+    "abstract": "Automated essay scoring is one of the most important problem in Natural Language Processing. It has been explored for a number of years, and it remains partially solved. In addition to its economic and educational usefulness, it presents research problems. Transfer learning has proved to be beneficial in NLP. Data augmentation techniques have also helped build state-of-the-art models for automated essay scoring. Many works in the past have attempted to solve this problem by using RNNs, LSTMs, etc. This work examines the transformer models like BERT, RoBERTa, etc. We empirically demonstrate the effectiveness of transformer models and data augmentation for automated essay grading across many topics using a single model.",
+    "authors": [
+     "Kshitij Gupta"
+    ],
+    "arxiv_id": "2210.12809v5",
+    "url": "http://arxiv.org/abs/2210.12809v5",
+    "published": "2022-10-23T18:13:30Z",
+    "year": 2022,
+    "source_query": "automated essay scoring survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   }
+  ],
+  "openalex": [],
+  "crossref": [
+   {
+    "title": "The IntelliMetric™ Automated Essay Scoring Engine – A Review and an Application to Chinese Essay Scoring",
+    "doi": "10.4324/9780203122761-14",
+    "DOI": "10.4324/9780203122761-14",
+    "authors": [],
+    "author": [],
+    "venue": "Handbook of Automated Essay Evaluation",
+    "container-title": [
+     "Handbook of Automated Essay Evaluation"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.4324/9780203122761-14",
+    "URL": "https://doi.org/10.4324/9780203122761-14",
+    "year": 2013,
+    "publication_year": 2013,
+    "citation_count": 0,
+    "_crossref_type": "book-chapter",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Taibah at TAQEEM 2025: Leveraging GPT-4o for Arabic Essay Scoring",
+    "doi": "10.18653/v1/2025.arabicnlp-sharedtasks.137",
+    "DOI": "10.18653/v1/2025.arabicnlp-sharedtasks.137",
+    "authors": [
+     "Nada Almarwani",
+     "Alaa Alharbi",
+     "Samah Aloufi"
+    ],
+    "author": [
+     {
+      "given": "Nada",
+      "family": "Almarwani",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Alaa",
+      "family": "Alharbi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Samah",
+      "family": "Aloufi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Proceedings of The Third Arabic Natural Language Processing Conference: Shared Tasks",
+    "container-title": [
+     "Proceedings of The Third Arabic Natural Language Processing Conference: Shared Tasks"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.18653/v1/2025.arabicnlp-sharedtasks.137",
+    "URL": "https://doi.org/10.18653/v1/2025.arabicnlp-sharedtasks.137",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Is GPT-4 Alone Sufficient for Automated Essay Scoring?: A Comparative Judgment Approach Based on Rater Cognition",
+    "doi": "10.1145/3657604.3664703",
+    "DOI": "10.1145/3657604.3664703",
+    "authors": [
+     "Seungju Kim",
+     "Meounggun Jo"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0001-7948-5909",
+      "authenticated-orcid": false,
+      "given": "Seungju",
+      "family": "Kim",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Institute for Korean Language and Literature Education, Korea National University of Education, Cheongju, Republic of Korea"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0009-0007-0978-770X",
+      "authenticated-orcid": false,
+      "given": "Meounggun",
+      "family": "Jo",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "The Department of Innovation and Convergence, Hoseo University, Cheonan, Republic of Korea"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Proceedings of the Eleventh ACM Conference on Learning @ Scale",
+    "container-title": [
+     "Proceedings of the Eleventh ACM Conference on Learning @ Scale"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1145/3657604.3664703",
+    "URL": "https://doi.org/10.1145/3657604.3664703",
+    "year": 2024,
+    "publication_year": 2024,
+    "citation_count": 15,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "The E-rater® Scoring Engine: Automated Essay Scoring With Natural Language Processing",
+    "doi": "10.4324/9781410606860-16",
+    "DOI": "10.4324/9781410606860-16",
+    "authors": [],
+    "author": [],
+    "venue": "Automated Essay Scoring",
+    "container-title": [
+     "Automated Essay Scoring"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.4324/9781410606860-16",
+    "URL": "https://doi.org/10.4324/9781410606860-16",
+    "year": 2003,
+    "publication_year": 2003,
+    "citation_count": 3,
+    "_crossref_type": "book-chapter",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Validity of Automated Essay Scoring Systems",
+    "doi": "10.4324/9781410606860-19",
+    "DOI": "10.4324/9781410606860-19",
+    "authors": [],
+    "author": [],
+    "venue": "Automated Essay Scoring",
+    "container-title": [
+     "Automated Essay Scoring"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.4324/9781410606860-19",
+    "URL": "https://doi.org/10.4324/9781410606860-19",
+    "year": 2003,
+    "publication_year": 2003,
+    "citation_count": 1,
+    "_crossref_type": "book-chapter",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Norming and Scaling for Automated Essay Scoring",
+    "doi": "10.4324/9781410606860-20",
+    "DOI": "10.4324/9781410606860-20",
+    "authors": [],
+    "author": [],
+    "venue": "Automated Essay Scoring",
+    "container-title": [
+     "Automated Essay Scoring"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.4324/9781410606860-20",
+    "URL": "https://doi.org/10.4324/9781410606860-20",
+    "year": 2003,
+    "publication_year": 2003,
+    "citation_count": 0,
+    "_crossref_type": "book-chapter",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "An intelligent educational platform for essay scoring and feedback generation integrating GPT-3.5 and reinforcement learning (DQN).",
+    "doi": "10.1145/3795154.3795328",
+    "DOI": "10.1145/3795154.3795328",
+    "authors": [
+     "Xiaoli Yang"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-1707-8707",
+      "authenticated-orcid": false,
+      "given": "Xiaoli",
+      "family": "Yang",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Guangdong University of Science and Technology, Dongguan, Guangdong, China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Proceedings of the 2025 6th International Conference on Computer Science and Management Technology",
+    "container-title": [
+     "Proceedings of the 2025 6th International Conference on Computer Science and Management Technology"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1145/3795154.3795328",
+    "URL": "https://doi.org/10.1145/3795154.3795328",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   }
+  ],
+  "github": [
+   {
+    "id": 741750247,
+    "node_id": "R_kgDOLDY15w",
+    "name": "LLM-AES",
+    "full_name": "Xiaochr/LLM-AES",
+    "private": false,
+    "owner": {
+     "login": "Xiaochr",
+     "id": 48386178,
+     "node_id": "MDQ6VXNlcjQ4Mzg2MTc4",
+     "avatar_url": "https://avatars.githubusercontent.com/u/48386178?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/Xiaochr",
+     "html_url": "https://github.com/Xiaochr",
+     "followers_url": "https://api.github.com/users/Xiaochr/followers",
+     "following_url": "https://api.github.com/users/Xiaochr/following{/other_user}",
+     "gists_url": "https://api.github.com/users/Xiaochr/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/Xiaochr/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/Xiaochr/subscriptions",
+     "organizations_url": "https://api.github.com/users/Xiaochr/orgs",
+     "repos_url": "https://api.github.com/users/Xiaochr/repos",
+     "events_url": "https://api.github.com/users/Xiaochr/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/Xiaochr/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/Xiaochr/LLM-AES",
+    "description": "[LAK25] Human-AI Collaborative Essay Scoring: A Dual-Process Framework with LLMs",
+    "fork": false,
+    "url": "https://api.github.com/repos/Xiaochr/LLM-AES",
+    "forks_url": "https://api.github.com/repos/Xiaochr/LLM-AES/forks",
+    "keys_url": "https://api.github.com/repos/Xiaochr/LLM-AES/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Xiaochr/LLM-AES/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Xiaochr/LLM-AES/teams",
+    "hooks_url": "https://api.github.com/repos/Xiaochr/LLM-AES/hooks",
+    "issue_events_url": "https://api.github.com/repos/Xiaochr/LLM-AES/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Xiaochr/LLM-AES/events",
+    "assignees_url": "https://api.github.com/repos/Xiaochr/LLM-AES/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Xiaochr/LLM-AES/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Xiaochr/LLM-AES/tags",
+    "blobs_url": "https://api.github.com/repos/Xiaochr/LLM-AES/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Xiaochr/LLM-AES/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Xiaochr/LLM-AES/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Xiaochr/LLM-AES/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Xiaochr/LLM-AES/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Xiaochr/LLM-AES/languages",
+    "stargazers_url": "https://api.github.com/repos/Xiaochr/LLM-AES/stargazers",
+    "contributors_url": "https://api.github.com/repos/Xiaochr/LLM-AES/contributors",
+    "subscribers_url": "https://api.github.com/repos/Xiaochr/LLM-AES/subscribers",
+    "subscription_url": "https://api.github.com/repos/Xiaochr/LLM-AES/subscription",
+    "commits_url": "https://api.github.com/repos/Xiaochr/LLM-AES/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Xiaochr/LLM-AES/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Xiaochr/LLM-AES/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Xiaochr/LLM-AES/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Xiaochr/LLM-AES/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Xiaochr/LLM-AES/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Xiaochr/LLM-AES/merges",
+    "archive_url": "https://api.github.com/repos/Xiaochr/LLM-AES/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Xiaochr/LLM-AES/downloads",
+    "issues_url": "https://api.github.com/repos/Xiaochr/LLM-AES/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Xiaochr/LLM-AES/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Xiaochr/LLM-AES/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Xiaochr/LLM-AES/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Xiaochr/LLM-AES/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Xiaochr/LLM-AES/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Xiaochr/LLM-AES/deployments",
+    "created_at": "2024-01-11T03:06:34Z",
+    "updated_at": "2026-06-25T04:45:17Z",
+    "pushed_at": "2025-02-22T05:57:42Z",
+    "git_url": "git://github.com/Xiaochr/LLM-AES.git",
+    "ssh_url": "git@github.com:Xiaochr/LLM-AES.git",
+    "clone_url": "https://github.com/Xiaochr/LLM-AES.git",
+    "svn_url": "https://github.com/Xiaochr/LLM-AES",
+    "homepage": "",
+    "size": 805,
+    "stargazers_count": 34,
+    "watchers_count": 34,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 4,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 1,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 4,
+    "open_issues": 1,
+    "watchers": 34,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 34,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 879220110,
+    "node_id": "R_kgDONGfVjg",
+    "name": "mts-llm-aes",
+    "full_name": "sanwooo/mts-llm-aes",
+    "private": false,
+    "owner": {
+     "login": "sanwooo",
+     "id": 79380206,
+     "node_id": "MDQ6VXNlcjc5MzgwMjA2",
+     "avatar_url": "https://avatars.githubusercontent.com/u/79380206?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/sanwooo",
+     "html_url": "https://github.com/sanwooo",
+     "followers_url": "https://api.github.com/users/sanwooo/followers",
+     "following_url": "https://api.github.com/users/sanwooo/following{/other_user}",
+     "gists_url": "https://api.github.com/users/sanwooo/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/sanwooo/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/sanwooo/subscriptions",
+     "organizations_url": "https://api.github.com/users/sanwooo/orgs",
+     "repos_url": "https://api.github.com/users/sanwooo/repos",
+     "events_url": "https://api.github.com/users/sanwooo/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/sanwooo/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/sanwooo/mts-llm-aes",
+    "description": "[EMNLP24 Findings] Unleashing Large Language Models’ Proficiency in Zero-shot Essay Scoring",
+    "fork": false,
+    "url": "https://api.github.com/repos/sanwooo/mts-llm-aes",
+    "forks_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/forks",
+    "keys_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/teams",
+    "hooks_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/hooks",
+    "issue_events_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/events",
+    "assignees_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/tags",
+    "blobs_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/languages",
+    "stargazers_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/stargazers",
+    "contributors_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/contributors",
+    "subscribers_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/subscribers",
+    "subscription_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/subscription",
+    "commits_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/merges",
+    "archive_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/downloads",
+    "issues_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/labels{/name}",
+    "releases_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/sanwooo/mts-llm-aes/deployments",
+    "created_at": "2024-10-27T10:36:56Z",
+    "updated_at": "2025-11-20T06:22:45Z",
+    "pushed_at": "2025-01-29T19:30:57Z",
+    "git_url": "git://github.com/sanwooo/mts-llm-aes.git",
+    "ssh_url": "git@github.com:sanwooo/mts-llm-aes.git",
+    "clone_url": "https://github.com/sanwooo/mts-llm-aes.git",
+    "svn_url": "https://github.com/sanwooo/mts-llm-aes",
+    "homepage": "",
+    "size": 60,
+    "stargazers_count": 7,
+    "watchers_count": 7,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "deep-learning",
+     "natural-language-processing"
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 7,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 7,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 1125194499,
+    "node_id": "R_kgDOQxEbAw",
+    "name": "LLM_AES-EnL2",
+    "full_name": "MinhNguyenDS/LLM_AES-EnL2",
+    "private": false,
+    "owner": {
+     "login": "MinhNguyenDS",
+     "id": 85574335,
+     "node_id": "MDQ6VXNlcjg1NTc0MzM1",
+     "avatar_url": "https://avatars.githubusercontent.com/u/85574335?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/MinhNguyenDS",
+     "html_url": "https://github.com/MinhNguyenDS",
+     "followers_url": "https://api.github.com/users/MinhNguyenDS/followers",
+     "following_url": "https://api.github.com/users/MinhNguyenDS/following{/other_user}",
+     "gists_url": "https://api.github.com/users/MinhNguyenDS/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/MinhNguyenDS/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/MinhNguyenDS/subscriptions",
+     "organizations_url": "https://api.github.com/users/MinhNguyenDS/orgs",
+     "repos_url": "https://api.github.com/users/MinhNguyenDS/repos",
+     "events_url": "https://api.github.com/users/MinhNguyenDS/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/MinhNguyenDS/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/MinhNguyenDS/LLM_AES-EnL2",
+    "description": "This repository contains data and scripts of a LLM for auto-scoring IELTS essays",
+    "fork": false,
+    "url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2",
+    "forks_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/forks",
+    "keys_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/teams",
+    "hooks_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/hooks",
+    "issue_events_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/events",
+    "assignees_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/tags",
+    "blobs_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/languages",
+    "stargazers_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/stargazers",
+    "contributors_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/contributors",
+    "subscribers_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/subscribers",
+    "subscription_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/subscription",
+    "commits_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/merges",
+    "archive_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/downloads",
+    "issues_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/labels{/name}",
+    "releases_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/MinhNguyenDS/LLM_AES-EnL2/deployments",
+    "created_at": "2025-12-30T09:53:13Z",
+    "updated_at": "2026-04-17T01:19:01Z",
+    "pushed_at": "2026-01-11T16:21:05Z",
+    "git_url": "git://github.com/MinhNguyenDS/LLM_AES-EnL2.git",
+    "ssh_url": "git@github.com:MinhNguyenDS/LLM_AES-EnL2.git",
+    "clone_url": "https://github.com/MinhNguyenDS/LLM_AES-EnL2.git",
+    "svn_url": "https://github.com/MinhNguyenDS/LLM_AES-EnL2",
+    "homepage": "https://arxiv.org/pdf/2603.06424",
+    "size": 33283,
+    "stargazers_count": 4,
+    "watchers_count": 4,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 1,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 1,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 1,
+    "open_issues": 1,
+    "watchers": 4,
+    "default_branch": "Master",
+    "score": 1.0,
+    "stars": 4,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 781780647,
+    "node_id": "R_kgDOLpkGpw",
+    "name": "Kaggle-Automated_Essay_Scoring_2.0",
+    "full_name": "Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0",
+    "private": false,
+    "owner": {
+     "login": "Lizhecheng02",
+     "id": 105578293,
+     "node_id": "U_kgDOBkr_NQ",
+     "avatar_url": "https://avatars.githubusercontent.com/u/105578293?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/Lizhecheng02",
+     "html_url": "https://github.com/Lizhecheng02",
+     "followers_url": "https://api.github.com/users/Lizhecheng02/followers",
+     "following_url": "https://api.github.com/users/Lizhecheng02/following{/other_user}",
+     "gists_url": "https://api.github.com/users/Lizhecheng02/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/Lizhecheng02/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/Lizhecheng02/subscriptions",
+     "organizations_url": "https://api.github.com/users/Lizhecheng02/orgs",
+     "repos_url": "https://api.github.com/users/Lizhecheng02/repos",
+     "events_url": "https://api.github.com/users/Lizhecheng02/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/Lizhecheng02/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0",
+    "description": "(1) Train large language models to help people with automatic essay scoring. (2) Extract essay features and train new tokenizer to build tree models for score prediction.",
+    "fork": false,
+    "url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0",
+    "forks_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/forks",
+    "keys_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/teams",
+    "hooks_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/hooks",
+    "issue_events_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/events",
+    "assignees_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/tags",
+    "blobs_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/languages",
+    "stargazers_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/stargazers",
+    "contributors_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/contributors",
+    "subscribers_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/subscribers",
+    "subscription_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/subscription",
+    "commits_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/merges",
+    "archive_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/downloads",
+    "issues_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0/deployments",
+    "created_at": "2024-04-04T02:49:29Z",
+    "updated_at": "2025-03-14T09:31:48Z",
+    "pushed_at": "2024-07-03T07:05:57Z",
+    "git_url": "git://github.com/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0.git",
+    "ssh_url": "git@github.com:Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0.git",
+    "clone_url": "https://github.com/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0.git",
+    "svn_url": "https://github.com/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0",
+    "homepage": "https://www.kaggle.com/competitions/learning-agency-lab-automated-essay-scoring-2",
+    "size": 38719,
+    "stargazers_count": 4,
+    "watchers_count": 4,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": false,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "awp",
+     "bpe-tokenizer",
+     "classification",
+     "deberta-v3-large",
+     "huggingface",
+     "kfold",
+     "llm",
+     "pooling",
+     "regression",
+     "transformer",
+     "treemodel",
+     "vectorizer"
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 4,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 4,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 989907621,
+    "node_id": "R_kgDOOwDKpQ",
+    "name": "ADBIAS",
+    "full_name": "leehee16/ADBIAS",
+    "private": false,
+    "owner": {
+     "login": "leehee16",
+     "id": 176349951,
+     "node_id": "U_kgDOCoLi_w",
+     "avatar_url": "https://avatars.githubusercontent.com/u/176349951?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/leehee16",
+     "html_url": "https://github.com/leehee16",
+     "followers_url": "https://api.github.com/users/leehee16/followers",
+     "following_url": "https://api.github.com/users/leehee16/following{/other_user}",
+     "gists_url": "https://api.github.com/users/leehee16/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/leehee16/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/leehee16/subscriptions",
+     "organizations_url": "https://api.github.com/users/leehee16/orgs",
+     "repos_url": "https://api.github.com/users/leehee16/repos",
+     "events_url": "https://api.github.com/users/leehee16/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/leehee16/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/leehee16/ADBIAS",
+    "description": "ADBIAS: Adjusting Multi-LLM Biases via Trait-based Quantitative Analysis for Automated Essay Scoring",
+    "fork": false,
+    "url": "https://api.github.com/repos/leehee16/ADBIAS",
+    "forks_url": "https://api.github.com/repos/leehee16/ADBIAS/forks",
+    "keys_url": "https://api.github.com/repos/leehee16/ADBIAS/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/leehee16/ADBIAS/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/leehee16/ADBIAS/teams",
+    "hooks_url": "https://api.github.com/repos/leehee16/ADBIAS/hooks",
+    "issue_events_url": "https://api.github.com/repos/leehee16/ADBIAS/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/leehee16/ADBIAS/events",
+    "assignees_url": "https://api.github.com/repos/leehee16/ADBIAS/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/leehee16/ADBIAS/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/leehee16/ADBIAS/tags",
+    "blobs_url": "https://api.github.com/repos/leehee16/ADBIAS/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/leehee16/ADBIAS/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/leehee16/ADBIAS/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/leehee16/ADBIAS/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/leehee16/ADBIAS/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/leehee16/ADBIAS/languages",
+    "stargazers_url": "https://api.github.com/repos/leehee16/ADBIAS/stargazers",
+    "contributors_url": "https://api.github.com/repos/leehee16/ADBIAS/contributors",
+    "subscribers_url": "https://api.github.com/repos/leehee16/ADBIAS/subscribers",
+    "subscription_url": "https://api.github.com/repos/leehee16/ADBIAS/subscription",
+    "commits_url": "https://api.github.com/repos/leehee16/ADBIAS/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/leehee16/ADBIAS/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/leehee16/ADBIAS/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/leehee16/ADBIAS/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/leehee16/ADBIAS/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/leehee16/ADBIAS/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/leehee16/ADBIAS/merges",
+    "archive_url": "https://api.github.com/repos/leehee16/ADBIAS/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/leehee16/ADBIAS/downloads",
+    "issues_url": "https://api.github.com/repos/leehee16/ADBIAS/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/leehee16/ADBIAS/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/leehee16/ADBIAS/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/leehee16/ADBIAS/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/leehee16/ADBIAS/labels{/name}",
+    "releases_url": "https://api.github.com/repos/leehee16/ADBIAS/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/leehee16/ADBIAS/deployments",
+    "created_at": "2025-05-25T04:57:14Z",
+    "updated_at": "2025-12-08T10:59:06Z",
+    "pushed_at": "2025-07-20T11:37:11Z",
+    "git_url": "git://github.com/leehee16/ADBIAS.git",
+    "ssh_url": "git@github.com:leehee16/ADBIAS.git",
+    "clone_url": "https://github.com/leehee16/ADBIAS.git",
+    "svn_url": "https://github.com/leehee16/ADBIAS",
+    "homepage": "",
+    "size": 27676,
+    "stargazers_count": 3,
+    "watchers_count": 3,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 4,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": {
+     "key": "mit",
+     "name": "MIT License",
+     "spdx_id": "MIT",
+     "url": "https://api.github.com/licenses/mit",
+     "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 4,
+    "open_issues": 0,
+    "watchers": 3,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 3,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 1018770797,
+    "node_id": "R_kgDOPLk1bQ",
+    "name": "aes-agent",
+    "full_name": "isbogdanov/aes-agent",
+    "private": false,
+    "owner": {
+     "login": "isbogdanov",
+     "id": 55164274,
+     "node_id": "MDQ6VXNlcjU1MTY0Mjc0",
+     "avatar_url": "https://avatars.githubusercontent.com/u/55164274?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/isbogdanov",
+     "html_url": "https://github.com/isbogdanov",
+     "followers_url": "https://api.github.com/users/isbogdanov/followers",
+     "following_url": "https://api.github.com/users/isbogdanov/following{/other_user}",
+     "gists_url": "https://api.github.com/users/isbogdanov/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/isbogdanov/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/isbogdanov/subscriptions",
+     "organizations_url": "https://api.github.com/users/isbogdanov/orgs",
+     "repos_url": "https://api.github.com/users/isbogdanov/repos",
+     "events_url": "https://api.github.com/users/isbogdanov/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/isbogdanov/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/isbogdanov/aes-agent",
+    "description": "Cost-aware LLM essay scoring with modular prompting strategies, experiment logging, and bandit-based routing.",
+    "fork": false,
+    "url": "https://api.github.com/repos/isbogdanov/aes-agent",
+    "forks_url": "https://api.github.com/repos/isbogdanov/aes-agent/forks",
+    "keys_url": "https://api.github.com/repos/isbogdanov/aes-agent/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/isbogdanov/aes-agent/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/isbogdanov/aes-agent/teams",
+    "hooks_url": "https://api.github.com/repos/isbogdanov/aes-agent/hooks",
+    "issue_events_url": "https://api.github.com/repos/isbogdanov/aes-agent/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/isbogdanov/aes-agent/events",
+    "assignees_url": "https://api.github.com/repos/isbogdanov/aes-agent/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/isbogdanov/aes-agent/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/isbogdanov/aes-agent/tags",
+    "blobs_url": "https://api.github.com/repos/isbogdanov/aes-agent/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/isbogdanov/aes-agent/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/isbogdanov/aes-agent/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/isbogdanov/aes-agent/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/isbogdanov/aes-agent/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/isbogdanov/aes-agent/languages",
+    "stargazers_url": "https://api.github.com/repos/isbogdanov/aes-agent/stargazers",
+    "contributors_url": "https://api.github.com/repos/isbogdanov/aes-agent/contributors",
+    "subscribers_url": "https://api.github.com/repos/isbogdanov/aes-agent/subscribers",
+    "subscription_url": "https://api.github.com/repos/isbogdanov/aes-agent/subscription",
+    "commits_url": "https://api.github.com/repos/isbogdanov/aes-agent/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/isbogdanov/aes-agent/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/isbogdanov/aes-agent/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/isbogdanov/aes-agent/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/isbogdanov/aes-agent/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/isbogdanov/aes-agent/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/isbogdanov/aes-agent/merges",
+    "archive_url": "https://api.github.com/repos/isbogdanov/aes-agent/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/isbogdanov/aes-agent/downloads",
+    "issues_url": "https://api.github.com/repos/isbogdanov/aes-agent/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/isbogdanov/aes-agent/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/isbogdanov/aes-agent/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/isbogdanov/aes-agent/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/isbogdanov/aes-agent/labels{/name}",
+    "releases_url": "https://api.github.com/repos/isbogdanov/aes-agent/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/isbogdanov/aes-agent/deployments",
+    "created_at": "2025-07-13T02:24:26Z",
+    "updated_at": "2026-03-18T23:49:13Z",
+    "pushed_at": "2025-09-08T19:34:04Z",
+    "git_url": "git://github.com/isbogdanov/aes-agent.git",
+    "ssh_url": "git@github.com:isbogdanov/aes-agent.git",
+    "clone_url": "https://github.com/isbogdanov/aes-agent.git",
+    "svn_url": "https://github.com/isbogdanov/aes-agent",
+    "homepage": "",
+    "size": 5687,
+    "stargazers_count": 2,
+    "watchers_count": 2,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 1,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": {
+     "key": "apache-2.0",
+     "name": "Apache License 2.0",
+     "spdx_id": "Apache-2.0",
+     "url": "https://api.github.com/licenses/apache-2.0",
+     "node_id": "MDc6TGljZW5zZTI="
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 1,
+    "open_issues": 0,
+    "watchers": 2,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 2,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 1091662625,
+    "node_id": "R_kgDOQRFzIQ",
+    "name": "Systematic-Bias-Detection-in-AES",
+    "full_name": "Triet00/Systematic-Bias-Detection-in-AES",
+    "private": false,
+    "owner": {
+     "login": "Triet00",
+     "id": 168963636,
+     "node_id": "U_kgDOChIuNA",
+     "avatar_url": "https://avatars.githubusercontent.com/u/168963636?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/Triet00",
+     "html_url": "https://github.com/Triet00",
+     "followers_url": "https://api.github.com/users/Triet00/followers",
+     "following_url": "https://api.github.com/users/Triet00/following{/other_user}",
+     "gists_url": "https://api.github.com/users/Triet00/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/Triet00/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/Triet00/subscriptions",
+     "organizations_url": "https://api.github.com/users/Triet00/orgs",
+     "repos_url": "https://api.github.com/users/Triet00/repos",
+     "events_url": "https://api.github.com/users/Triet00/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/Triet00/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/Triet00/Systematic-Bias-Detection-in-AES",
+    "description": "This project examines the systematic bias in LLMs automated essay scoring in the IELTS writing by analyzing linguistic features. ",
+    "fork": false,
+    "url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES",
+    "forks_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/forks",
+    "keys_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/teams",
+    "hooks_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/hooks",
+    "issue_events_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/events",
+    "assignees_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/tags",
+    "blobs_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/languages",
+    "stargazers_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/stargazers",
+    "contributors_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/contributors",
+    "subscribers_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/subscribers",
+    "subscription_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/subscription",
+    "commits_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/merges",
+    "archive_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/downloads",
+    "issues_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Triet00/Systematic-Bias-Detection-in-AES/deployments",
+    "created_at": "2025-11-07T10:35:45Z",
+    "updated_at": "2026-04-06T13:33:31Z",
+    "pushed_at": "2026-01-03T10:45:32Z",
+    "git_url": "git://github.com/Triet00/Systematic-Bias-Detection-in-AES.git",
+    "ssh_url": "git@github.com:Triet00/Systematic-Bias-Detection-in-AES.git",
+    "clone_url": "https://github.com/Triet00/Systematic-Bias-Detection-in-AES.git",
+    "svn_url": "https://github.com/Triet00/Systematic-Bias-Detection-in-AES",
+    "homepage": "",
+    "size": 22346,
+    "stargazers_count": 2,
+    "watchers_count": 2,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": {
+     "key": "mit",
+     "name": "MIT License",
+     "spdx_id": "MIT",
+     "url": "https://api.github.com/licenses/mit",
+     "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "aes",
+     "data-processing",
+     "data-science",
+     "ielts",
+     "linguistic-analysis",
+     "llms",
+     "machine-learning",
+     "nlp",
+     "python",
+     "statistical-analysis"
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 2,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 2,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 905907445,
+    "node_id": "R_kgDONf8M9Q",
+    "name": "AES-with-LLMs",
+    "full_name": "Kcsciso/AES-with-LLMs",
+    "private": false,
+    "owner": {
+     "login": "Kcsciso",
+     "id": 188834871,
+     "node_id": "U_kgDOC0FkNw",
+     "avatar_url": "https://avatars.githubusercontent.com/u/188834871?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/Kcsciso",
+     "html_url": "https://github.com/Kcsciso",
+     "followers_url": "https://api.github.com/users/Kcsciso/followers",
+     "following_url": "https://api.github.com/users/Kcsciso/following{/other_user}",
+     "gists_url": "https://api.github.com/users/Kcsciso/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/Kcsciso/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/Kcsciso/subscriptions",
+     "organizations_url": "https://api.github.com/users/Kcsciso/orgs",
+     "repos_url": "https://api.github.com/users/Kcsciso/repos",
+     "events_url": "https://api.github.com/users/Kcsciso/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/Kcsciso/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/Kcsciso/AES-with-LLMs",
+    "description": "Learning of Automated Essay Scoring with LLMs",
+    "fork": false,
+    "url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs",
+    "forks_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/forks",
+    "keys_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/teams",
+    "hooks_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/hooks",
+    "issue_events_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/events",
+    "assignees_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/tags",
+    "blobs_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/languages",
+    "stargazers_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/stargazers",
+    "contributors_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/contributors",
+    "subscribers_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/subscribers",
+    "subscription_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/subscription",
+    "commits_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/merges",
+    "archive_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/downloads",
+    "issues_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Kcsciso/AES-with-LLMs/deployments",
+    "created_at": "2024-12-19T19:04:10Z",
+    "updated_at": "2024-12-19T20:10:34Z",
+    "pushed_at": "2024-12-19T20:10:31Z",
+    "git_url": "git://github.com/Kcsciso/AES-with-LLMs.git",
+    "ssh_url": "git@github.com:Kcsciso/AES-with-LLMs.git",
+    "clone_url": "https://github.com/Kcsciso/AES-with-LLMs.git",
+    "svn_url": "https://github.com/Kcsciso/AES-with-LLMs",
+    "homepage": null,
+    "size": 12056,
+    "stargazers_count": 1,
+    "watchers_count": 1,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 1,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 1,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 494215103,
+    "node_id": "R_kgDOHXUfvw",
+    "name": "automated-scoring",
+    "full_name": "ni9elf/automated-scoring",
+    "private": false,
+    "owner": {
+     "login": "ni9elf",
+     "id": 16193605,
+     "node_id": "MDQ6VXNlcjE2MTkzNjA1",
+     "avatar_url": "https://avatars.githubusercontent.com/u/16193605?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/ni9elf",
+     "html_url": "https://github.com/ni9elf",
+     "followers_url": "https://api.github.com/users/ni9elf/followers",
+     "following_url": "https://api.github.com/users/ni9elf/following{/other_user}",
+     "gists_url": "https://api.github.com/users/ni9elf/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/ni9elf/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/ni9elf/subscriptions",
+     "organizations_url": "https://api.github.com/users/ni9elf/orgs",
+     "repos_url": "https://api.github.com/users/ni9elf/repos",
+     "events_url": "https://api.github.com/users/ni9elf/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/ni9elf/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/ni9elf/automated-scoring",
+    "description": "Official code for \"Automated Scoring for Reading Comprehension via In-context BERT Tuning\" (AIED 2022)",
+    "fork": false,
+    "url": "https://api.github.com/repos/ni9elf/automated-scoring",
+    "forks_url": "https://api.github.com/repos/ni9elf/automated-scoring/forks",
+    "keys_url": "https://api.github.com/repos/ni9elf/automated-scoring/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/ni9elf/automated-scoring/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/ni9elf/automated-scoring/teams",
+    "hooks_url": "https://api.github.com/repos/ni9elf/automated-scoring/hooks",
+    "issue_events_url": "https://api.github.com/repos/ni9elf/automated-scoring/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/ni9elf/automated-scoring/events",
+    "assignees_url": "https://api.github.com/repos/ni9elf/automated-scoring/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/ni9elf/automated-scoring/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/ni9elf/automated-scoring/tags",
+    "blobs_url": "https://api.github.com/repos/ni9elf/automated-scoring/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/ni9elf/automated-scoring/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/ni9elf/automated-scoring/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/ni9elf/automated-scoring/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/ni9elf/automated-scoring/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/ni9elf/automated-scoring/languages",
+    "stargazers_url": "https://api.github.com/repos/ni9elf/automated-scoring/stargazers",
+    "contributors_url": "https://api.github.com/repos/ni9elf/automated-scoring/contributors",
+    "subscribers_url": "https://api.github.com/repos/ni9elf/automated-scoring/subscribers",
+    "subscription_url": "https://api.github.com/repos/ni9elf/automated-scoring/subscription",
+    "commits_url": "https://api.github.com/repos/ni9elf/automated-scoring/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/ni9elf/automated-scoring/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/ni9elf/automated-scoring/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/ni9elf/automated-scoring/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/ni9elf/automated-scoring/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/ni9elf/automated-scoring/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/ni9elf/automated-scoring/merges",
+    "archive_url": "https://api.github.com/repos/ni9elf/automated-scoring/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/ni9elf/automated-scoring/downloads",
+    "issues_url": "https://api.github.com/repos/ni9elf/automated-scoring/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/ni9elf/automated-scoring/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/ni9elf/automated-scoring/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/ni9elf/automated-scoring/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/ni9elf/automated-scoring/labels{/name}",
+    "releases_url": "https://api.github.com/repos/ni9elf/automated-scoring/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/ni9elf/automated-scoring/deployments",
+    "created_at": "2022-05-19T20:10:08Z",
+    "updated_at": "2025-12-02T03:39:57Z",
+    "pushed_at": "2022-05-23T16:26:33Z",
+    "git_url": "git://github.com/ni9elf/automated-scoring.git",
+    "ssh_url": "git@github.com:ni9elf/automated-scoring.git",
+    "clone_url": "https://github.com/ni9elf/automated-scoring.git",
+    "svn_url": "https://github.com/ni9elf/automated-scoring",
+    "homepage": "https://arxiv.org/abs/2205.09864",
+    "size": 161,
+    "stargazers_count": 13,
+    "watchers_count": 13,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 3,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "automated-scoring",
+     "bert",
+     "machine-learning",
+     "nlp",
+     "pytorch",
+     "reading-comprehension"
+    ],
+    "visibility": "public",
+    "forks": 3,
+    "open_issues": 0,
+    "watchers": 13,
+    "default_branch": "master",
+    "score": 1.0,
+    "stars": 13,
+    "_discovery_source": "paper_to_repo_augmentation",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   }
+  ]
+ },
+ "candidate_pool": [
+  {
+   "stable_id": "automated scoring for reading comprehension via in-context bert tuning",
+   "candidate_id": "c-40e2704c",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Automated Scoring for Reading Comprehension via In-context BERT Tuning",
+   "sources": [
+    "arxiv",
+    "github"
+   ],
+   "year": 2022,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2205.09864v2",
+   "identifier": "2205.09864v2",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Automated scoring of open-ended student responses has the potential to significantly reduce human grader effort. Recent advances in automated scoring often leverage textual representations based on pre-trained language models such as BERT and GPT as input to scoring models. Most existing approaches train a separate model for each item/question, which is suitable for scenarios such as essay scoring where items can be quite different from one another. However, these approaches have two limitations: 1) they fail to leverage item linkage for scenarios such as reading comprehension where multiple items may share a reading passage; 2) they are not scalable since storing one model per item becomes difficult when models have a large number of parameters. In this paper, we report our (grand prize-winning) solution to the National Assessment of Education Progress (NAEP) automated scoring challenge for reading comprehension. Our approach, in-context BERT fine-tuning, produces a single shared scoring model for all items with a carefully-designed input structure to provide contextual information on each item. We demonstrate the effectiveness of our approach via local evaluations using the training dataset provided by the challenge. We also discuss the biases, common error types, and limitations of our approach.",
+   "extra": {}
+  },
+  {
+   "stable_id": "review of feedback in automated essay scoring",
+   "candidate_id": "c-67fa05e7",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Review of feedback in Automated Essay Scoring",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2023,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2307.05553v1",
+   "identifier": "2307.05553v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "The first automated essay scoring system was developed 50 years ago. Automated essay scoring systems are developing into systems with richer functions than the previous simple scoring systems. Its purpose is not only to score essays but also as a learning tool to improve the writing skill of users. Feedback is the most important aspect of making an automated essay scoring system useful in real life. The importance of feedback was already emphasized in the first AES system. This paper reviews research on feedback including different feedback types and essay traits on automated essay scoring. We also reviewed the latest case studies of the automated essay scoring system that provides feedback.",
+   "extra": {}
+  },
+  {
+   "stable_id": "improving performance of automated essay scoring by using back-translation essays and adjusted scores",
+   "candidate_id": "c-0eae7ad1",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Improving Performance of Automated Essay Scoring by using back-translation essays and adjusted scores",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2022,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2203.00354v2",
+   "identifier": "2203.00354v2",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Automated essay scoring plays an important role in judging students' language abilities in education. Traditional approaches use handcrafted features to score and are time-consuming and complicated. Recently, neural network approaches have improved performance without any feature engineering. Unlike other natural language processing tasks, only a small number of datasets are publicly available for automated essay scoring, and the size of the dataset is not sufficiently large. Considering that the performance of a neural network is closely related to the size of the dataset, the lack of data limits the performance improvement of the automated essay scoring model. In this paper, we proposed a method to increase the number of essay-score pairs using back-translation and score adjustment and applied it to the Automated Student Assessment Prize dataset for augmentation. We evaluated the effectiveness of the augmented data using models from prior work. In addition, performance was evaluated in a model using long short-term memory, which is widely used for automated essay scoring. The performance of the models was improved by using augmented data to train the models.",
+   "extra": {}
+  },
+  {
+   "stable_id": "rationale behind essay scores: enhancing s-llm's multi-trait essay scoring with rationale generated by llms",
+   "candidate_id": "c-e7662902",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Rationale Behind Essay Scores: Enhancing S-LLM's Multi-Trait Essay Scoring with Rationale Generated by LLMs",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2024,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2410.14202v3",
+   "identifier": "2410.14202v3",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Existing automated essay scoring (AES) has solely relied on essay text without using explanatory rationales for the scores, thereby forgoing an opportunity to capture the specific aspects evaluated by rubric indicators in a fine-grained manner. This paper introduces Rationale-based Multiple Trait Scoring (RMTS), a novel approach for multi-trait essay scoring that integrates prompt-engineering-based large language models (LLMs) with a fine-tuning-based essay scoring model using a smaller large language model (S-LLM). RMTS uses an LLM-based trait-wise rationale generation system where a separate LLM agent generates trait-specific rationales based on rubric guidelines, which the scoring model uses to accurately predict multi-trait scores. Extensive experiments on benchmark datasets, including ASAP, ASAP++, and Feedback Prize, show that RMTS significantly outperforms state-of-the-art models and vanilla S-LLMs in trait-specific scoring. By assisting quantitative assessment with fine-grained qualitative rationales, RMTS enhances the trait-wise reliability, providing partial explanations about essays. The code is available at https://github.com/BBeeChu/RMTS.git.",
+   "extra": {}
+  },
+  {
+   "stable_id": "exploration of summarization by generative language models for automated scoring of long essays",
+   "candidate_id": "c-4542879a",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Exploration of Summarization by Generative Language Models for Automated Scoring of Long Essays",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2510.22830v4",
+   "identifier": "2510.22830v4",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "BERT and its variants are extensively explored for automated scoring. However, a limit of 512 tokens for these encoder-based models showed the deficiency in automated scoring of long essays. Thus, this research explores generative language models for automated scoring of long essays via summarization and prompting. The results revealed great improvement of scoring accuracy with QWK increased from 0.822 to 0.8878 for the Learning Agency Lab Automated Essay Scoring 2.0 dataset.",
+   "extra": {}
+  },
+  {
+   "stable_id": "rank-then-score: enhancing large language models for automated essay scoring",
+   "candidate_id": "c-8fb482d6",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Rank-Then-Score: Enhancing Large Language Models for Automated Essay Scoring",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2504.05736v1",
+   "identifier": "2504.05736v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "In recent years, large language models (LLMs) achieve remarkable success across a variety of tasks. However, their potential in the domain of Automated Essay Scoring (AES) remains largely underexplored. Moreover, compared to English data, the methods for Chinese AES is not well developed. In this paper, we propose Rank-Then-Score (RTS), a fine-tuning framework based on large language models to enhance their essay scoring capabilities. Specifically, we fine-tune the ranking model (Ranker) with feature-enriched data, and then feed the output of the ranking model, in the form of a candidate score set, with the essay content into the scoring model (Scorer) to produce the final score. Experimental results on two benchmark datasets, HSK and ASAP, demonstrate that RTS consistently outperforms the direct prompting (Vanilla) method in terms of average QWK across all LLMs and datasets, and achieves the best performance on Chinese essay scoring using the HSK dataset.",
+   "extra": {}
+  },
+  {
+   "stable_id": "activations as features: probing llms for generalizable essay scoring representations",
+   "candidate_id": "c-2a027eb5",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Activations as Features: Probing LLMs for Generalizable Essay Scoring Representations",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2512.19456v1",
+   "identifier": "2512.19456v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Automated essay scoring (AES) is a challenging task in cross-prompt settings due to the diversity of scoring criteria. While previous studies have focused on the output of large language models (LLMs) to improve scoring accuracy, we believe activations from intermediate layers may also provide valuable information. To explore this possibility, we evaluated the discriminative power of LLMs' activations in cross-prompt essay scoring task. Specifically, we used activations to fit probes and further analyzed the effects of different models and input content of LLMs on this discriminative power. By computing the directions of essays across various trait dimensions under different prompts, we analyzed the variation in evaluation perspectives of large language models concerning essay types and traits. Results show that the activations possess strong discriminative power in evaluating essay quality and that LLMs can adapt their evaluation perspectives to different traits and essay types, effectively handling the diversity of scoring criteria in cross-prompt settings.",
+   "extra": {}
+  },
+  {
+   "stable_id": "exploring automated essay scoring for nonnative english speakers",
+   "candidate_id": "c-f885cba7",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Exploring Automated Essay Scoring for Nonnative English Speakers",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2017,
+   "venue": null,
+   "url": "http://arxiv.org/abs/1706.03335v3",
+   "identifier": "1706.03335v3",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Automated Essay Scoring (AES) has been quite popular and is being widely used. However, lack of appropriate methodology for rating nonnative English speakers' essays has meant a lopsided advancement in this field. In this paper, we report initial results of our experiments with nonnative AES that learns from manual evaluation of nonnative essays. For this purpose, we conducted an exercise in which essays written by nonnative English speakers in test environment were rated both manually and by the automated system designed for the experiment. In the process, we experimented with a few features to learn about nuances linked to nonnative evaluation. The proposed methodology of automated essay evaluation has yielded a correlation coefficient of 0.750 with the manual evaluation.",
+   "extra": {}
+  },
+  {
+   "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+   "candidate_id": "c-e1c7e746",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2506.14634v3",
+   "identifier": "2506.14634v3",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+   "extra": {}
+  },
+  {
+   "stable_id": "data augmentation for automated essay scoring using transformer models",
+   "candidate_id": "c-891b4ad8",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Data Augmentation for Automated Essay Scoring using Transformer Models",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2022,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2210.12809v5",
+   "identifier": "2210.12809v5",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Automated essay scoring is one of the most important problem in Natural Language Processing. It has been explored for a number of years, and it remains partially solved. In addition to its economic and educational usefulness, it presents research problems. Transfer learning has proved to be beneficial in NLP. Data augmentation techniques have also helped build state-of-the-art models for automated essay scoring. Many works in the past have attempted to solve this problem by using RNNs, LSTMs, etc. This work examines the transformer models like BERT, RoBERTa, etc. We empirically demonstrate the effectiveness of transformer models and data augmentation for automated essay grading across many topics using a single model.",
+   "extra": {}
+  },
+  {
+   "stable_id": "the intellimetric™ automated essay scoring engine – a review and an application to chinese essay scoring",
+   "candidate_id": "c-aeabe4d2",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "The IntelliMetric™ Automated Essay Scoring Engine – A Review and an Application to Chinese Essay Scoring",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2013,
+   "venue": "Handbook of Automated Essay Evaluation",
+   "url": "https://doi.org/10.4324/9780203122761-14",
+   "identifier": "10.4324/9780203122761-14",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "taibah at taqeem 2025: leveraging gpt-4o for arabic essay scoring",
+   "candidate_id": "c-0ca04d40",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Taibah at TAQEEM 2025: Leveraging GPT-4o for Arabic Essay Scoring",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": "Proceedings of The Third Arabic Natural Language Processing Conference: Shared Tasks",
+   "url": "https://doi.org/10.18653/v1/2025.arabicnlp-sharedtasks.137",
+   "identifier": "10.18653/v1/2025.arabicnlp-sharedtasks.137",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "is gpt-4 alone sufficient for automated essay scoring?: a comparative judgment approach based on rater cognition",
+   "candidate_id": "c-b10fea4e",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Is GPT-4 Alone Sufficient for Automated Essay Scoring?: A Comparative Judgment Approach Based on Rater Cognition",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2024,
+   "venue": "Proceedings of the Eleventh ACM Conference on Learning @ Scale",
+   "url": "https://doi.org/10.1145/3657604.3664703",
+   "identifier": "10.1145/3657604.3664703",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "the e-rater® scoring engine: automated essay scoring with natural language processing",
+   "candidate_id": "c-633de035",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "The E-rater® Scoring Engine: Automated Essay Scoring With Natural Language Processing",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2003,
+   "venue": "Automated Essay Scoring",
+   "url": "https://doi.org/10.4324/9781410606860-16",
+   "identifier": "10.4324/9781410606860-16",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "validity of automated essay scoring systems",
+   "candidate_id": "c-404537c2",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Validity of Automated Essay Scoring Systems",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2003,
+   "venue": "Automated Essay Scoring",
+   "url": "https://doi.org/10.4324/9781410606860-19",
+   "identifier": "10.4324/9781410606860-19",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "norming and scaling for automated essay scoring",
+   "candidate_id": "c-ba0eea7a",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Norming and Scaling for Automated Essay Scoring",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2003,
+   "venue": "Automated Essay Scoring",
+   "url": "https://doi.org/10.4324/9781410606860-20",
+   "identifier": "10.4324/9781410606860-20",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "an intelligent educational platform for essay scoring and feedback generation integrating gpt-3.5 and reinforcement learning (dqn).",
+   "candidate_id": "c-0c4cedd1",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "An intelligent educational platform for essay scoring and feedback generation integrating GPT-3.5 and reinforcement learning (DQN).",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": "Proceedings of the 2025 6th International Conference on Computer Science and Management Technology",
+   "url": "https://doi.org/10.1145/3795154.3795328",
+   "identifier": "10.1145/3795154.3795328",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "xiaochr/llm-aes",
+   "candidate_id": "c-5fa3deaf",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "Xiaochr/LLM-AES",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/Xiaochr/LLM-AES",
+   "identifier": null,
+   "description": "[LAK25] Human-AI Collaborative Essay Scoring: A Dual-Process Framework with LLMs",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 34,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "sanwooo/mts-llm-aes",
+   "candidate_id": "c-cbddb344",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "sanwooo/mts-llm-aes",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/sanwooo/mts-llm-aes",
+   "identifier": null,
+   "description": "[EMNLP24 Findings] Unleashing Large Language Models’ Proficiency in Zero-shot Essay Scoring",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 7,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "minhnguyends/llm_aes-enl2",
+   "candidate_id": "c-568ac0fb",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "MinhNguyenDS/LLM_AES-EnL2",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/MinhNguyenDS/LLM_AES-EnL2",
+   "identifier": null,
+   "description": "This repository contains data and scripts of a LLM for auto-scoring IELTS essays",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 4,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "lizhecheng02/kaggle-automated_essay_scoring_2.0",
+   "candidate_id": "c-9ca612b6",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0",
+   "identifier": null,
+   "description": "(1) Train large language models to help people with automatic essay scoring. (2) Extract essay features and train new tokenizer to build tree models for score prediction.",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 4,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "leehee16/adbias",
+   "candidate_id": "c-1b963d22",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "leehee16/ADBIAS",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/leehee16/ADBIAS",
+   "identifier": null,
+   "description": "ADBIAS: Adjusting Multi-LLM Biases via Trait-based Quantitative Analysis for Automated Essay Scoring",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 3,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "isbogdanov/aes-agent",
+   "candidate_id": "c-797da581",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "isbogdanov/aes-agent",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/isbogdanov/aes-agent",
+   "identifier": null,
+   "description": "Cost-aware LLM essay scoring with modular prompting strategies, experiment logging, and bandit-based routing.",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 2,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "triet00/systematic-bias-detection-in-aes",
+   "candidate_id": "c-a44dc86f",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "Triet00/Systematic-Bias-Detection-in-AES",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/Triet00/Systematic-Bias-Detection-in-AES",
+   "identifier": null,
+   "description": "This project examines the systematic bias in LLMs automated essay scoring in the IELTS writing by analyzing linguistic features. ",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 2,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "kcsciso/aes-with-llms",
+   "candidate_id": "c-cc4d4c17",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "Kcsciso/AES-with-LLMs",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/Kcsciso/AES-with-LLMs",
+   "identifier": null,
+   "description": "Learning of Automated Essay Scoring with LLMs",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 1,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "ni9elf/automated-scoring",
+   "candidate_id": "c-ac0abeec",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "title": "ni9elf/automated-scoring",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/ni9elf/automated-scoring",
+   "identifier": null,
+   "description": "Official code for \"Automated Scoring for Reading Comprehension via In-context BERT Tuning\" (AIED 2022)",
+   "quoted_paper_titles": [
+    "Automated Scoring for Reading Comprehension via In-context BERT Tuning"
+   ],
+   "abstract": null,
+   "extra": {
+    "stars": 13,
+    "language": "Python"
+   }
+  }
+ ],
+ "source_ledger": {
+  "rows": [
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "openalex",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "crossref",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 7,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "ok",
+    "result_count": 2,
+    "error": null
+   },
+   {
+    "adapter": "openalex",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "crossref",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "ok",
+    "result_count": 1,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 3,
+    "round_name": "repo_dataset_followup",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   }
+  ],
+  "stats": {
+   "arxiv": {
+    "ok": 2,
+    "empty": 0,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "openalex": {
+    "ok": 0,
+    "empty": 2,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "crossref": {
+    "ok": 1,
+    "empty": 1,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "github": {
+    "ok": 2,
+    "empty": 1,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 3
+   }
+  },
+  "n_calls": 9
+ },
+ "evidence_review": [
+  {
+   "candidate_id": "c-40e2704c",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "candidate",
+   "matched_terms": [
+    "automated scoring",
+    "BERT",
+    "fine-tuned BERT",
+    "Chinese subjective answers"
+   ],
+   "missing_terms": [
+    "LLM",
+    "GPT-4",
+    "zero-shot",
+    "few-shot",
+    "Chinese",
+    "prompt engineering",
+    "chain-of-thought"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "baseline",
+   "exists_verdict": "exists",
+   "rank_reason": "BERT-based AES baseline method; relevant but pre-LLM and language-agnostic in description.",
+   "reason": "Covers automated scoring of open-ended student responses using BERT in-context tuning. Matches scoring task and BERT method term, but lacks explicit Chinese and LLM focus described in topic."
+  },
+  {
+   "candidate_id": "c-67fa05e7",
+   "evidence_type": "survey",
+   "role_hint": "unknown",
+   "status": "candidate",
+   "matched_terms": [
+    "automated essay scoring",
+    "AES",
+    "feedback"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "LLM",
+    "GPT-4",
+    "short-answer",
+    "subjective question"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "survey",
+   "exists_verdict": "exists",
+   "rank_reason": "Survey/review of AES including feedback; useful background but not Chinese or LLM-specific.",
+   "reason": "Reviews feedback mechanisms in AES systems history. Background-level relevance; does not directly address Chinese subjective questions or LLM-based scoring."
+  },
+  {
+   "candidate_id": "c-0eae7ad1",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "automated essay scoring",
+    "neural network"
+   ],
+   "missing_terms": [
+    "LLM",
+    "Chinese",
+    "GPT-4",
+    "prompt",
+    "zero-shot",
+    "few-shot"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "AES method paper using data augmentation; parallel work but no LLM or Chinese focus.",
+   "reason": "Proposes back-translation-based AES. Methodologically related to AES but does not use LLMs nor target Chinese content."
+  },
+  {
+   "candidate_id": "c-e7662902",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "core",
+   "matched_terms": [
+    "LLM",
+    "AES",
+    "automated essay scoring",
+    "rationale",
+    "multi-trait scoring"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "zero-shot",
+    "subjective question",
+    "short-answer"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Direct LLM-for-AES paper using rationale generation; strong methodological match despite non-Chinese focus.",
+   "reason": "Uses LLMs to generate rationales to enhance small-LLM essay scoring on multi-trait rubrics. Core methodology alignment with topic's LLM-prompting direction."
+  },
+  {
+   "candidate_id": "c-4542879a",
+   "evidence_type": "paper",
+   "role_hint": "module",
+   "status": "candidate",
+   "matched_terms": [
+    "generative language models",
+    "automated scoring",
+    "BERT"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "GPT-4",
+    "subjective question",
+    "zero-shot",
+    "few-shot"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "module",
+   "exists_verdict": "exists",
+   "rank_reason": "Uses generative LLMs as module for long-essay scoring; reusable summarization technique.",
+   "reason": "Explores generative LLM summarization to overcome BERT token limits in AES. Provides a modular method component relevant to LLM-based scoring pipelines."
+  },
+  {
+   "candidate_id": "c-8fb482d6",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "core",
+   "matched_terms": [
+    "LLM",
+    "automated essay scoring",
+    "AES",
+    "Chinese",
+    "English comparison"
+   ],
+   "missing_terms": [
+    "zero-shot",
+    "few-shot",
+    "short-answer",
+    "subjective question"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "baseline",
+   "exists_verdict": "exists",
+   "rank_reason": "Directly targets LLMs for AES and explicitly compares English vs non-English data including Chinese.",
+   "reason": "Rank-Then-Score enhances LLMs for AES, noting English dominance and exploring other languages. Strong method-task match and explicitly acknowledges Chinese data scarcity."
+  },
+  {
+   "candidate_id": "c-2a027eb5",
+   "evidence_type": "paper",
+   "role_hint": "module",
+   "status": "core",
+   "matched_terms": [
+    "LLM",
+    "AES",
+    "automated essay scoring",
+    "cross-prompt",
+    "probing"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "short-answer",
+    "subjective question",
+    "zero-shot"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "module",
+   "exists_verdict": "exists",
+   "rank_reason": "Probes LLM activations for AES representations; valuable feature-extraction module for LLM scoring.",
+   "reason": "Examines LLM internal activations as features for generalizable AES. Provides a reusable probing methodology relevant to LLM-based scoring systems."
+  },
+  {
+   "candidate_id": "c-f885cba7",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "AES",
+    "automated essay scoring"
+   ],
+   "missing_terms": [
+    "LLM",
+    "Chinese",
+    "GPT-4",
+    "prompt",
+    "zero-shot"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Older AES work on nonnative English speakers; parallel but lacks LLM and Chinese relevance.",
+   "reason": "Addresses AES for nonnative English speakers. Background reference; methodology and target language do not match the topic."
+  },
+  {
+   "candidate_id": "c-e1c7e746",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "LLM",
+    "open-ended responses",
+    "classification",
+    "survey responses"
+   ],
+   "missing_terms": [
+    "essay scoring",
+    "Chinese",
+    "exam",
+    "student essays",
+    "AES"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Uses LLMs to code open-ended responses; adjacent task (survey coding vs exam scoring).",
+   "reason": "Applies LLMs to coding open-ended German survey responses. Tangentially related methodology but different object and language."
+  },
+  {
+   "candidate_id": "c-891b4ad8",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "automated essay scoring",
+    "Transformer"
+   ],
+   "missing_terms": [
+    "LLM",
+    "Chinese",
+    "GPT-4",
+    "prompt",
+    "zero-shot"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Transformer-based AES with augmentation; parallel method but pre-LLM era focus.",
+   "reason": "Data augmentation for AES using Transformer models. Related method family but does not address LLM prompting or Chinese content."
+  },
+  {
+   "candidate_id": "c-aeabe4d2",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "core",
+   "matched_terms": [
+    "AES",
+    "automated essay scoring",
+    "Chinese essay scoring",
+    "IntelliMetric"
+   ],
+   "missing_terms": [
+    "LLM",
+    "GPT-4",
+    "zero-shot",
+    "few-shot",
+    "prompt"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "baseline",
+   "exists_verdict": "exists",
+   "rank_reason": "Directly applies classic AES engine to Chinese essays; foundational Chinese-AES reference.",
+   "reason": "Reviews IntelliMetric engine and its application to Chinese essay scoring. Historical baseline showing traditional AES pipeline adapted to Chinese, useful for comparison."
+  },
+  {
+   "candidate_id": "c-0ca04d40",
+   "evidence_type": "paper",
+   "role_hint": "module",
+   "status": "candidate",
+   "matched_terms": [
+    "GPT-4o",
+    "essay scoring",
+    "AES"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "subjective question",
+    "zero-shot",
+    "few-shot"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "module",
+   "exists_verdict": "exists",
+   "rank_reason": "Uses GPT-4o for Arabic essay scoring; non-Chinese but demonstrates LLM-based scoring approach.",
+   "reason": "Shared task paper leveraging GPT-4o for Arabic essay scoring. Methodologically transferable to Chinese but language differs."
+  },
+  {
+   "candidate_id": "c-b10fea4e",
+   "evidence_type": "paper",
+   "role_hint": "unknown",
+   "status": "core",
+   "matched_terms": [
+    "GPT-4",
+    "automated essay scoring",
+    "AES",
+    "evaluation",
+    "rater cognition"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "short-answer",
+    "subjective question"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Directly evaluates GPT-4 for AES; core reference for LLM-based scoring methodology.",
+   "reason": "Investigates whether GPT-4 alone suffices for AES via comparative judgment. Strong method alignment with topic; lacks Chinese-specific evaluation."
+  },
+  {
+   "candidate_id": "c-633de035",
+   "evidence_type": "paper",
+   "role_hint": "unknown",
+   "status": "candidate",
+   "matched_terms": [
+    "automated essay scoring",
+    "NLP"
+   ],
+   "missing_terms": [
+    "LLM",
+    "GPT-4",
+    "Chinese",
+    "BERT",
+    "prompt"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Foundational E-rater AES engine paper; purely background reference.",
+   "reason": "Describes E-rater NLP-based AES engine. Historical background only; predates LLM and BERT era and not Chinese-focused."
+  },
+  {
+   "candidate_id": "c-404537c2",
+   "evidence_type": "paper",
+   "role_hint": "unknown",
+   "status": "candidate",
+   "matched_terms": [
+    "automated essay scoring",
+    "validity"
+   ],
+   "missing_terms": [
+    "LLM",
+    "Chinese",
+    "BERT",
+    "GPT-4",
+    "prompt"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Validity study of AES systems; background methodological reference.",
+   "reason": "Examines validity of AES systems. Useful for evaluation framework but does not address LLM methods or Chinese language."
+  },
+  {
+   "candidate_id": "c-ba0eea7a",
+   "evidence_type": "paper",
+   "role_hint": "unknown",
+   "status": "candidate",
+   "matched_terms": [
+    "automated essay scoring",
+    "norming",
+    "scaling"
+   ],
+   "missing_terms": [
+    "LLM",
+    "Chinese",
+    "GPT-4",
+    "BERT",
+    "prompt"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Norming/scaling for AES; background statistical reference.",
+   "reason": "Discusses statistical norming and scaling for AES. Background-level; no LLM or Chinese connection."
+  },
+  {
+   "candidate_id": "c-0c4cedd1",
+   "evidence_type": "paper",
+   "role_hint": "module",
+   "status": "core",
+   "matched_terms": [
+    "GPT-3.5",
+    "essay scoring",
+    "feedback generation",
+    "reinforcement learning"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "AES benchmark",
+    "zero-shot",
+    "few-shot"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "module",
+   "exists_verdict": "exists",
+   "rank_reason": "LLM-based essay scoring platform with RL feedback; relevant system-level approach.",
+   "reason": "Integrates GPT-3.5 with reinforcement learning for essay scoring and feedback. Strong LLM-method alignment; lacks explicit Chinese focus."
+  },
+  {
+   "candidate_id": "c-5fa3deaf",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "LLM",
+    "essay scoring",
+    "AES"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "zero-shot",
+    "few-shot",
+    "subjective question"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "LAK25 repo for LLM-based AES; useful code reference.",
+   "reason": "GitHub repo for Human-AI Collaborative Essay Scoring with LLMs. Provides implementation reference; no indication of Chinese focus."
+  },
+  {
+   "candidate_id": "c-cbddb344",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "core",
+   "matched_terms": [
+    "LLM",
+    "zero-shot",
+    "essay scoring",
+    "AES"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "few-shot",
+    "subjective question"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "Directly implements zero-shot LLM essay scoring; strong match for zero-shot prompt method.",
+   "reason": "EMNLP24 Findings repo on zero-shot essay scoring with LLMs. Core reference implementation for zero-shot LLM-AES methodology."
+  },
+  {
+   "candidate_id": "c-568ac0fb",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "LLM",
+    "essay scoring",
+    "IELTS"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "zero-shot",
+    "subjective question",
+    "GPT-4"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "LLM AES repo for IELTS essays; English-specific, parallel reference.",
+   "reason": "Repo for LLM auto-scoring of IELTS essays. Useful parallel implementation; English-only, not Chinese."
+  },
+  {
+   "candidate_id": "c-9ca612b6",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "LLM",
+    "automated essay scoring",
+    "AES"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "zero-shot",
+    "subjective question",
+    "BERT"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "Kaggle AES repo using LLMs; competition-oriented, not Chinese-focused.",
+   "reason": "Kaggle AES 2.0 repo training LLMs and tree models for score prediction. Practical implementation reference but no Chinese or subjective-question alignment."
+  },
+  {
+   "candidate_id": "c-1b963d22",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "LLM",
+    "AES",
+    "automated essay scoring",
+    "bias"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "zero-shot",
+    "subjective question"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "Repo for LLM bias analysis in AES; useful for evaluating LLM scoring fairness.",
+   "reason": "ADBIAS repo for adjusting multi-LLM biases in AES via trait-based analysis. Relevant to LLM-AES evaluation; not Chinese-specific."
+  },
+  {
+   "candidate_id": "c-797da581",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "LLM",
+    "essay scoring",
+    "prompting"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "AES benchmark",
+    "zero-shot",
+    "few-shot"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "Cost-aware LLM essay scoring with modular prompting; engineering reference.",
+   "reason": "Repo with modular prompting strategies and bandit routing for LLM essay scoring. Useful engineering pattern reference; no Chinese alignment."
+  },
+  {
+   "candidate_id": "c-a44dc86f",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "LLM",
+    "AES",
+    "essay scoring",
+    "IELTS"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "zero-shot",
+    "subjective question"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "Repo on LLM bias detection in AES for IELTS; analysis tool, not Chinese.",
+   "reason": "Examines systematic bias in LLM-based IELTS essay scoring. Analysis-oriented; no Chinese or subjective-question focus."
+  },
+  {
+   "candidate_id": "c-cc4d4c17",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "LLM",
+    "AES",
+    "automated essay scoring"
+   ],
+   "missing_terms": [
+    "Chinese",
+    "zero-shot",
+    "few-shot",
+    "subjective question",
+    "GPT-4"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "General LLM-AES learning repo; shallow description, parallel reference.",
+   "reason": "Repo for learning AES with LLMs. Generic LLM-AES implementation; insufficient detail to confirm Chinese relevance."
+  },
+  {
+   "candidate_id": "c-ac0abeec",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "automated scoring",
+    "BERT",
+    "in-context tuning",
+    "reading comprehension"
+   ],
+   "missing_terms": [
+    "LLM",
+    "Chinese",
+    "GPT-4",
+    "zero-shot",
+    "few-shot"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "baseline",
+   "exists_verdict": "exists",
+   "rank_reason": "Official code for BERT in-context scoring baseline; strong methodological match.",
+   "reason": "Official code for AIED 2022 BERT in-context tuning paper. Provides reproducible BERT-based scoring baseline referenced in the candidate pool."
+  }
+ ],
+ "synthesis": {
+  "direction_recommendation": "Pursue an LLM-prompted Chinese subjective-question scoring pipeline that combines zero-/few-shot prompting with rationale-augmented multi-trait scoring, validated against classical (IntelliMetric) and BERT baselines. Core anchor is c-8fb482d6 (Rank-Then-Score), which explicitly targets Chinese AES with fine-tuned LLMs and candidly notes Chinese data scarcity, plus c-e7662902 (rationale-enhanced multi-trait LLM scoring), c-b10fea4e (GPT-4 comparative judgment for AES), c-2a027eb5 (LLM-activation probing for cross-prompt AES), and c-cbddb344 (zero-shot LLM-AES code). Use c-aeabe4d2 and c-ac0abeec as non-LLM baselines (Chinese essay + BERT in-context tuning). Survey c-67fa05e7 and the 2003 AES trio (c-633de035, c-404537c2, c-ba0eea7a) frame the historical/evaluation context. Remaining AES repos (c-5fa3deaf, c-797da581, c-1b963d22, c-9ca612b6, c-cc4d4c17, c-568ac0fb, c-a44dc86f, c-0ca04d40) and method papers (c-4542879a, c-40e2704c, c-0eae7ad1, c-f885cba7, c-e1c7e746, c-891b4ad8, c-0c4cedd1) serve as transferable engineering/method references. Key scoping gap: no Chinese short-answer subjective benchmark identified; short-answer/主观题 question type, language coverage, and target corpus a",
+  "baseline_options": [
+   "c-8fb482d6",
+   "c-aeabe4d2",
+   "c-ac0abeec",
+   "c-b10fea4e",
+   "c-cbddb344"
+  ],
+  "candidate_pool": {
+   "core": [
+    {
+     "candidate_id": "c-e7662902",
+     "title": "Rationale Behind Essay Scores: Enhancing S-LLM's Multi-Trait Essay Scoring with Rationale Generated by LLMs",
+     "role_hint": "reference",
+     "reason": "Direct LLM-for-AES paper using rationale generation; strong methodological match despite non-Chinese focus."
+    },
+    {
+     "candidate_id": "c-8fb482d6",
+     "title": "Rank-Then-Score: Enhancing Large Language Models for Automated Essay Scoring",
+     "role_hint": "baseline",
+     "reason": "Directly targets LLMs for AES and explicitly compares English vs non-English data including Chinese."
+    },
+    {
+     "candidate_id": "c-2a027eb5",
+     "title": "Activations as Features: Probing LLMs for Generalizable Essay Scoring Representations",
+     "role_hint": "module",
+     "reason": "Probes LLM activations for AES representations; valuable feature-extraction module for LLM scoring."
+    },
+    {
+     "candidate_id": "c-aeabe4d2",
+     "title": "The IntelliMetric™ Automated Essay Scoring Engine – A Review and an Application to Chinese Essay Scoring",
+     "role_hint": "baseline",
+     "reason": "Directly applies classic AES engine to Chinese essays; foundational Chinese-AES reference."
+    },
+    {
+     "candidate_id": "c-b10fea4e",
+     "title": "Is GPT-4 Alone Sufficient for Automated Essay Scoring?: A Comparative Judgment Approach Based on Rater Cognition",
+     "role_hint": "unknown",
+     "reason": "Directly evaluates GPT-4 for AES; core reference for LLM-based scoring methodology."
+    },
+    {
+     "candidate_id": "c-0c4cedd1",
+     "title": "An intelligent educational platform for essay scoring and feedback generation integrating GPT-3.5 and reinforcement lear",
+     "role_hint": "module",
+     "reason": "LLM-based essay scoring platform with RL feedback; relevant system-level approach."
+    },
+    {
+     "candidate_id": "c-cbddb344",
+     "title": "sanwooo/mts-llm-aes",
+     "role_hint": "repo",
+     "reason": "Directly implements zero-shot LLM essay scoring; strong match for zero-shot prompt method."
+    }
+   ],
+   "candidate": [
+    {
+     "candidate_id": "c-40e2704c",
+     "title": "Automated Scoring for Reading Comprehension via In-context BERT Tuning",
+     "role_hint": "baseline",
+     "reason": "BERT-based AES baseline method; relevant but pre-LLM and language-agnostic in description."
+    },
+    {
+     "candidate_id": "c-67fa05e7",
+     "title": "Review of feedback in Automated Essay Scoring",
+     "role_hint": "unknown",
+     "reason": "Survey/review of AES including feedback; useful background but not Chinese or LLM-specific."
+    },
+    {
+     "candidate_id": "c-0eae7ad1",
+     "title": "Improving Performance of Automated Essay Scoring by using back-translation essays and adjusted scores",
+     "role_hint": "reference",
+     "reason": "AES method paper using data augmentation; parallel work but no LLM or Chinese focus."
+    },
+    {
+     "candidate_id": "c-4542879a",
+     "title": "Exploration of Summarization by Generative Language Models for Automated Scoring of Long Essays",
+     "role_hint": "module",
+     "reason": "Uses generative LLMs as module for long-essay scoring; reusable summarization technique."
+    },
+    {
+     "candidate_id": "c-f885cba7",
+     "title": "Exploring Automated Essay Scoring for Nonnative English Speakers",
+     "role_hint": "reference",
+     "reason": "Older AES work on nonnative English speakers; parallel but lacks LLM and Chinese relevance."
+    },
+    {
+     "candidate_id": "c-e1c7e746",
+     "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+     "role_hint": "reference",
+     "reason": "Uses LLMs to code open-ended responses; adjacent task (survey coding vs exam scoring)."
+    },
+    {
+     "candidate_id": "c-891b4ad8",
+     "title": "Data Augmentation for Automated Essay Scoring using Transformer Models",
+     "role_hint": "reference",
+     "reason": "Transformer-based AES with augmentation; parallel method but pre-LLM era focus."
+    },
+    {
+     "candidate_id": "c-0ca04d40",
+     "title": "Taibah at TAQEEM 2025: Leveraging GPT-4o for Arabic Essay Scoring",
+     "role_hint": "module",
+     "reason": "Uses GPT-4o for Arabic essay scoring; non-Chinese but demonstrates LLM-based scoring approach."
+    },
+    {
+     "candidate_id": "c-633de035",
+     "title": "The E-rater® Scoring Engine: Automated Essay Scoring With Natural Language Processing",
+     "role_hint": "unknown",
+     "reason": "Foundational E-rater AES engine paper; purely background reference."
+    },
+    {
+     "candidate_id": "c-404537c2",
+     "title": "Validity of Automated Essay Scoring Systems",
+     "role_hint": "unknown",
+     "reason": "Validity study of AES systems; background methodological reference."
+    },
+    {
+     "candidate_id": "c-ba0eea7a",
+     "title": "Norming and Scaling for Automated Essay Scoring",
+     "role_hint": "unknown",
+     "reason": "Norming/scaling for AES; background statistical reference."
+    },
+    {
+     "candidate_id": "c-5fa3deaf",
+     "title": "Xiaochr/LLM-AES",
+     "role_hint": "repo",
+     "reason": "LAK25 repo for LLM-based AES; useful code reference."
+    },
+    {
+     "candidate_id": "c-568ac0fb",
+     "title": "MinhNguyenDS/LLM_AES-EnL2",
+     "role_hint": "repo",
+     "reason": "LLM AES repo for IELTS essays; English-specific, parallel reference."
+    },
+    {
+     "candidate_id": "c-9ca612b6",
+     "title": "Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0",
+     "role_hint": "repo",
+     "reason": "Kaggle AES repo using LLMs; competition-oriented, not Chinese-focused."
+    },
+    {
+     "candidate_id": "c-1b963d22",
+     "title": "leehee16/ADBIAS",
+     "role_hint": "repo",
+     "reason": "Repo for LLM bias analysis in AES; useful for evaluating LLM scoring fairness."
+    },
+    {
+     "candidate_id": "c-797da581",
+     "title": "isbogdanov/aes-agent",
+     "role_hint": "repo",
+     "reason": "Cost-aware LLM essay scoring with modular prompting; engineering reference."
+    },
+    {
+     "candidate_id": "c-a44dc86f",
+     "title": "Triet00/Systematic-Bias-Detection-in-AES",
+     "role_hint": "repo",
+     "reason": "Repo on LLM bias detection in AES for IELTS; analysis tool, not Chinese."
+    },
+    {
+     "candidate_id": "c-cc4d4c17",
+     "title": "Kcsciso/AES-with-LLMs",
+     "role_hint": "repo",
+     "reason": "General LLM-AES learning repo; shallow description, parallel reference."
+    },
+    {
+     "candidate_id": "c-ac0abeec",
+     "title": "ni9elf/automated-scoring",
+     "role_hint": "repo",
+     "reason": "Official code for BERT in-context scoring baseline; strong methodological match."
+    }
+   ],
+   "needs_manual": [],
+   "rejected": []
+  },
+  "paper_groups": {
+   "baseline": [
+    {
+     "candidate_id": "c-8fb482d6",
+     "title": "Rank-Then-Score: Enhancing Large Language Models for Automated Essay Scoring",
+     "role_hint": "baseline",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-aeabe4d2",
+     "title": "The IntelliMetric™ Automated Essay Scoring Engine – A Review and an Application to Chinese Essay Scoring",
+     "role_hint": "baseline",
+     "year": 2013
+    },
+    {
+     "candidate_id": "c-ac0abeec",
+     "title": "ni9elf/automated-scoring",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-b10fea4e",
+     "title": "Is GPT-4 Alone Sufficient for Automated Essay Scoring?: A Comparative Judgment Approach Based on Rater Cognition",
+     "role_hint": "unknown",
+     "year": 2024
+    },
+    {
+     "candidate_id": "c-cbddb344",
+     "title": "sanwooo/mts-llm-aes",
+     "role_hint": "repo",
+     "year": null
+    }
+   ],
+   "parallel": [
+    {
+     "candidate_id": "c-e7662902",
+     "title": "Rationale Behind Essay Scores: Enhancing S-LLM's Multi-Trait Essay Scoring with Rationale Generated by LLMs",
+     "role_hint": "reference",
+     "year": 2024
+    },
+    {
+     "candidate_id": "c-2a027eb5",
+     "title": "Activations as Features: Probing LLMs for Generalizable Essay Scoring Representations",
+     "role_hint": "module",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-0c4cedd1",
+     "title": "An intelligent educational platform for essay scoring and feedback generation integrating GPT-3.5 and reinforcement learning (DQN).",
+     "role_hint": "module",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-4542879a",
+     "title": "Exploration of Summarization by Generative Language Models for Automated Scoring of Long Essays",
+     "role_hint": "module",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-40e2704c",
+     "title": "Automated Scoring for Reading Comprehension via In-context BERT Tuning",
+     "role_hint": "baseline",
+     "year": 2022
+    },
+    {
+     "candidate_id": "c-0ca04d40",
+     "title": "Taibah at TAQEEM 2025: Leveraging GPT-4o for Arabic Essay Scoring",
+     "role_hint": "module",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-e1c7e746",
+     "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+     "role_hint": "reference",
+     "year": 2025
+    }
+   ],
+   "reference": [
+    {
+     "candidate_id": "c-67fa05e7",
+     "title": "Review of feedback in Automated Essay Scoring",
+     "role_hint": "unknown",
+     "year": 2023
+    },
+    {
+     "candidate_id": "c-633de035",
+     "title": "The E-rater® Scoring Engine: Automated Essay Scoring With Natural Language Processing",
+     "role_hint": "unknown",
+     "year": 2003
+    },
+    {
+     "candidate_id": "c-404537c2",
+     "title": "Validity of Automated Essay Scoring Systems",
+     "role_hint": "unknown",
+     "year": 2003
+    },
+    {
+     "candidate_id": "c-ba0eea7a",
+     "title": "Norming and Scaling for Automated Essay Scoring",
+     "role_hint": "unknown",
+     "year": 2003
+    }
+   ],
+   "long_tail_candidates": [
+    {
+     "candidate_id": "c-0eae7ad1",
+     "title": "Improving Performance of Automated Essay Scoring by using back-translation essays and adjusted scores",
+     "role_hint": "reference",
+     "year": 2022
+    },
+    {
+     "candidate_id": "c-f885cba7",
+     "title": "Exploring Automated Essay Scoring for Nonnative English Speakers",
+     "role_hint": "reference",
+     "year": 2017
+    },
+    {
+     "candidate_id": "c-891b4ad8",
+     "title": "Data Augmentation for Automated Essay Scoring using Transformer Models",
+     "role_hint": "reference",
+     "year": 2022
+    },
+    {
+     "candidate_id": "c-5fa3deaf",
+     "title": "Xiaochr/LLM-AES",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-568ac0fb",
+     "title": "MinhNguyenDS/LLM_AES-EnL2",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-9ca612b6",
+     "title": "Lizhecheng02/Kaggle-Automated_Essay_Scoring_2.0",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-1b963d22",
+     "title": "leehee16/ADBIAS",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-797da581",
+     "title": "isbogdanov/aes-agent",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-a44dc86f",
+     "title": "Triet00/Systematic-Bias-Detection-in-AES",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-cc4d4c17",
+     "title": "Kcsciso/AES-with-LLMs",
+     "role_hint": "repo",
+     "year": null
+    }
+   ]
+  },
+  "dataset_and_repo_notes": [
+   "c-8fb482d6 authors note Chinese AES data is underdeveloped; secure a Chinese subjective corpus (e.g., CGED, ASAP-AES translated, or a private exam set) before fine-tuning.",
+   "c-cbddb344 provides EMNLP24 zero-shot LLM-AES code; reuse its prompt templates and adapt to Chinese.",
+   "c-ac0abeec gives a reproducible BERT in-context tuning pipeline for reading-comprehension short-answer scoring.",
+   "c-5fa3deaf (Xiaochr/LLM-AES) is a dual-process human-AI framework; useful scaffolding even without Chinese data.",
+   "c-1b963d22 (ADBIAS) repo enables trait-based multi-LLM bias auditing, applicable to fairness checks on Chinese scoring."
+  ],
+  "work_suggestions": [
+   "Replicate c-8fb482d6's Rank-Then-Score on a Chinese subjective dataset, comparing zero-shot GPT-4 prompting (c-b10fea4e) and rationale-augmented multi-trait scoring (c-e7662902) against the BERT baseline from c-ac0abeec and IntelliMetric Chinese engine (c-aeabe4d2).",
+   "Build a few-shot prompt scaffold using the zero-shot templates in c-cbddb344, then extend with chain-of-thought rationale generation inspired by c-e7662902 to handle multi-trait Chinese rubrics.",
+   "Incorporate LLM activation probing from c-2a027eb5 as a feature extractor for cross-prompt Chinese subjective scoring, evaluating robustness when prompts/rubrics change.",
+   "Use c-0c4cedd1's GPT-3.5 + RL feedback pattern as a template for adding feedback generation on top of a Chinese scoring pipeline, auditing fairness via c-1b963d22's ADBIAS traits.",
+   "For long Chinese subjective answers, integrate the generative-LLM summarization module from c-4542879a to overcome token-length limits before scoring."
+  ],
+  "risk_reminders": [
+   "No Chinese subjective-question corpus is identified in the evidence; benchmark access and licensing need confirmation.",
+   "Most LLM-AES evidence is English-centric; transfer to Chinese may degrade due to rubric/idiom differences.",
+   "No dedicated short-answer (vs. essay) LLM-scoring evidence surfaced; generalization from essay to 主观题 is unverified.",
+   "Several background AES refs (c-633de035, c-404537c2, c-ba0eea7a) are 2003-era and predated LLM/BERT — context only, not baselines.",
+   "OpenAlex adapter returned zero results both rounds; Chinese-domain coverage may be incomplete and require manual CNKI/知网 follow-up."
+  ],
+  "manual_questions": [
+   "Which Chinese subjective-question dataset will be used (公开 dataset, 自建, or exam-sourced), and what are its size and licensing constraints?",
+   "What scoring rubric granularity is required: single holistic score, multi-trait, or analytic with sub-scores?",
+   "Which LLM backbone(s) are acceptable for prompting/fine-tuning (e.g., GPT-4o, Qwen, DeepSeek, open-source)?",
+   "What evaluation metric aligns with the deployment setting (QWK, accuracy, human-agreement kappa)?",
+   "Is the target question type closer to 长作文 or 短答案/简答, since retrieved evidence is essay-skewed?"
+  ],
+  "stop_here": true,
+  "human_gate": {
+   "enabled": false,
+   "future_gates": [
+    "topic_understanding",
+    "search_plan",
+    "baseline_selection"
+   ],
+   "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+  }
+ },
+ "low_bar_verdict": {
+  "review_verdict": "needs_revision",
+  "blocking_questions": [
+   "Which Chinese subjective-question dataset will actually be used, given the acknowledged Chinese data scarcity?",
+   "Is the target question type long essay or short-answer, since evidence is essay-skewed?",
+   "Which LLM backbones are acceptable: GPT-4o, Qwen, DeepSeek, or open-source only?",
+   "What rubric granularity is required: holistic, multi-trait, or analytic sub-scores?",
+   "Which evaluation metric aligns with the deployment setting (QWK, accuracy, kappa)?"
+  ],
+  "weak_points": [
+   "evidence_gaps is empty despite acknowledged Chinese data scarcity — gap should be declared.",
+   "No explicit Chinese-language dataset candidate is listed in any paper_group.",
+   "Candidate pool includes Arabic (c-0ca04d40) and German (c-e1c7e746) off-topic papers.",
+   "paper_groups.reference mixes classic AES literature with no Chinese-specific anchor.",
+   "manual_questions overlap with D1/D3 boundary, suggesting topic is not yet fully bounded."
+  ],
+  "can_continue_to_opening_report": false,
+  "summary": "Baseline and reference candidates exist, but evidence_gaps is empty despite Chinese data scarcity, and no Chinese dataset candidate appears. Topic boundary needs clarification on question type and dataset before proceeding."
+ },
+ "llm_calls": 5,
+ "llm_failures": 0,
+ "llm_budget": 12
+}

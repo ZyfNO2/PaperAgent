@@ -1,0 +1,1977 @@
+{
+ "raw_topic": "基于Unet的钢材裂缝分割",
+ "project_id": "agent-re02-3c187193",
+ "parsed_topic": {
+  "raw_topic": "基于Unet的钢材裂缝分割",
+  "normalized_topic": "Steel crack segmentation based on U-Net",
+  "domain_route": "vision_2d",
+  "domain_confidence": 0.92,
+  "method_terms": [
+   "U-Net",
+   "encoder-decoder",
+   "semantic segmentation",
+   "fully convolutional network",
+   "deep learning"
+  ],
+  "task_terms": [
+   "pixel-wise segmentation",
+   "crack detection",
+   "defect segmentation"
+  ],
+  "object_terms": [
+   "steel surface",
+   "crack images",
+   "steel plate",
+   "surface defect"
+  ],
+  "query_atoms_en": [
+   "U-Net steel crack segmentation",
+   "steel surface defect segmentation",
+   "deep learning crack pixel segmentation",
+   "encoder-decoder crack detection",
+   "concrete steel crack U-Net",
+   "semantic segmentation metal crack"
+  ],
+  "query_atoms_zh": [
+   "基于U-Net的钢材裂缝分割",
+   "钢材表面缺陷语义分割",
+   "深度学习裂缝分割",
+   "编码器解码器裂缝检测",
+   "钢材裂缝像素级分割",
+   "金属表面缺陷分割"
+  ],
+  "needs_clarification": [],
+  "site_hints": [
+   "arxiv.org",
+   "openaccess.thecvf.com",
+   "github.com",
+   "ieeexplore.ieee.org"
+  ]
+ },
+ "plan": {
+  "rounds": [
+   {
+    "round": 1,
+    "name": "broad_recall",
+    "goal": "wide initial sweep across paper + repo backends",
+    "calls": [
+     {
+      "tool": "search_arxiv",
+      "query": "U-Net steel crack segmentation",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "seed the spine arxiv retrieval",
+      "expected_output": "paper"
+     },
+     {
+      "tool": "search_openalex",
+      "query": "U-Net steel crack segmentation",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "supplement arxiv with citation-rich results",
+      "expected_output": "paper"
+     },
+     {
+      "tool": "search_crossref",
+      "query": "U-Net steel crack segmentation",
+      "target_role": "reference",
+      "why_call": "find DOI / journal paper of the same family",
+      "expected_output": "paper"
+     }
+    ]
+   },
+   {
+    "round": 2,
+    "name": "reference_expansion",
+    "goal": "expand coverage via benchmark / survey / recent-advances",
+    "calls": [
+     {
+      "tool": "search_arxiv",
+      "query": "U-Net steel crack segmentation benchmark",
+      "target_role": "reference",
+      "why_call": "find benchmark papers using this method",
+      "expected_output": "paper"
+     },
+     {
+      "tool": "search_arxiv",
+      "query": "U-Net steel crack segmentation survey",
+      "target_role": "survey",
+      "why_call": "find a survey of this subfield",
+      "expected_output": "paper"
+     }
+    ]
+   },
+   {
+    "round": 3,
+    "name": "repo_dataset_followup",
+    "goal": "find runnable code + datasets for the topic",
+    "calls": [
+     {
+      "tool": "search_github",
+      "query": "U-Net steel crack segmentation",
+      "target_role": "repo",
+      "why_call": "find canonical implementation repo",
+      "expected_output": "repo"
+     }
+    ]
+   }
+  ],
+  "arxiv_queries": [
+   "U-Net steel crack segmentation",
+   "steel surface defect segmentation",
+   "deep learning crack pixel segmentation"
+  ],
+  "openalex_queries": [
+   "U-Net steel crack segmentation",
+   "steel surface defect segmentation",
+   "deep learning crack pixel segmentation"
+  ],
+  "crossref_queries": [
+   "U-Net steel crack segmentation",
+   "steel surface defect segmentation"
+  ],
+  "github_queries": [
+   "U-Net steel crack segmentation"
+  ],
+  "year_min": 2018,
+  "top_k_per_adapter": 8,
+  "site_keywords": []
+ },
+ "raw_tool_results": {
+  "arxiv": [
+   {
+    "title": "Crack Semantic Segmentation using the U-Net with Full Attention Strategy",
+    "abstract": "Structures suffer from the emergence of cracks, therefore, crack detection is always an issue with much concern in structural health monitoring. Along with the rapid progress of deep learning technology, image semantic segmentation, an active research field, offers another solution, which is more effective and intelligent, to crack detection Through numerous artificial neural networks have been developed to address the preceding issue, corresponding explorations are never stopped improving the quality of crack detection. This paper presents a novel artificial neural network architecture named Full Attention U-net for image semantic segmentation. The proposed architecture leverages the U-net as the backbone and adopts the Full Attention Strategy, which is a synthesis of the attention mechanism and the outputs from each encoding layer in skip connection. Subject to the hardware in training, the experiments are composed of verification and validation. In verification, 4 networks including U-net, Attention U-net, Advanced Attention U-net, and Full Attention U-net are tested through cell images for a competitive study. With respect to mean intersection-over-unions and clarity of edge identification, the Full Attention U-net performs best in verification, and is hence applied for crack semantic segmentation in validation to demonstrate its effectiveness.",
+    "authors": [
+     "Fangzheng Lin",
+     "Jiesheng Yang",
+     "Jiangpeng Shu",
+     "Raimar J. Scherer"
+    ],
+    "arxiv_id": "2104.14586v1",
+    "url": "http://arxiv.org/abs/2104.14586v1",
+    "published": "2021-04-29T18:16:40Z",
+    "year": 2021,
+    "source_query": "U-Net steel crack segmentation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Prostate Cancer Segmentation Using Synthetic Correlated Diffusion Imaging",
+    "abstract": "Prostate cancer (PCa) is the most prevalent cancer among men in the United States, accounting for nearly 300,000 cases, 29\\% of all diagnoses and 35,000 total deaths in 2024. Traditional screening methods such as prostate-specific antigen (PSA) testing and magnetic resonance imaging (MRI) have been pivotal in diagnosis, but have faced limitations in specificity and generalizability. In this paper, we explore the potential of enhancing PCa gland segmentation using a novel MRI modality called synthetic correlated diffusion imaging (CDI$^s$). We employ several state-of-the-art deep learning models, including U-Net, SegResNet, Swin UNETR, Attention U-Net, and LightM-UNet, to segment prostate glands from a 200 CDI$^s$ patient cohort. We find that SegResNet achieved superior segmentation performance with a Dice-Sorensen coefficient (DSC) of $76.68 \\pm 0.8$. Notably, the Attention U-Net, while slightly less accurate (DSC $74.82 \\pm 2.0$), offered a favorable balance between accuracy and computational efficiency. Our findings demonstrate the potential of deep learning models in improving prostate gland segmentation using CDI$^s$ to enhance PCa management and clinical support.",
+    "authors": [
+     "Jarett Dewbury",
+     "Chi-en Amy Tai",
+     "Alexander Wong"
+    ],
+    "arxiv_id": "2501.09185v2",
+    "url": "http://arxiv.org/abs/2501.09185v2",
+    "published": "2025-01-15T22:23:41Z",
+    "year": 2025,
+    "source_query": "U-Net steel crack segmentation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "BioLite U-Net: Edge-Deployable Semantic Segmentation for In Situ Bioprinting Monitoring",
+    "abstract": "Bioprinting is a rapidly advancing field that offers a transformative approach to fabricating tissue and organ models through the precise deposition of cell-laden bioinks. Ensuring the fidelity and consistency of printed structures in real-time remains a core challenge, particularly under constraints imposed by limited imaging data and resource-constrained embedded hardware. Semantic segmentation of the extrusion process, differentiating between nozzle, extruded bioink, and surrounding background, enables in situ monitoring critical to maintaining print quality and biological viability. In this work, we introduce a lightweight semantic segmentation framework tailored for real-time bioprinting applications. We present a novel, manually annotated dataset comprising 787 RGB images captured during the bioprinting process, labeled across three classes: nozzle, bioink, and background. To achieve fast and efficient inference suitable for integration with bioprinting systems, we propose a BioLite U-Net architecture that leverages depthwise separable convolutions to drastically reduce computational load without compromising accuracy. Our model is benchmarked against MobileNetV2 and MobileNetV3-based segmentation baselines using mean Intersection over Union (mIoU), Dice score, and pixel accuracy. All models were evaluated on a Raspberry Pi 4B to assess real-world feasibility. The proposed BioLite U-Net achieves an mIoU of 92.85% and a Dice score of 96.17%, while being over 1300x smaller than MobileNetV2-DeepLabV3+. On-device inference takes 335 ms per frame, demonstrating near real-time capability. Compared to MobileNet baselines, BioLite U-Net offers a superior tradeoff between segmentation accuracy, efficiency, and deployability, making it highly suitable for intelligent, closed-loop bioprinting systems.",
+    "authors": [
+     "Usman Haider",
+     "Lukasz Szemet",
+     "Daniel Kelly",
+     "Vasileios Sergis",
+     "Andrew C. Daly",
+     "Karl Mason"
+    ],
+    "arxiv_id": "2509.06690v2",
+    "url": "http://arxiv.org/abs/2509.06690v2",
+    "published": "2025-09-08T13:44:55Z",
+    "year": 2025,
+    "source_query": "U-Net steel crack segmentation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Seq-U-Net: A One-Dimensional Causal U-Net for Efficient Sequence Modelling",
+    "abstract": "Convolutional neural networks (CNNs) with dilated filters such as the Wavenet or the Temporal Convolutional Network (TCN) have shown good results in a variety of sequence modelling tasks. However, efficiently modelling long-term dependencies in these sequences is still challenging. Although the receptive field of these models grows exponentially with the number of layers, computing the convolutions over very long sequences of features in each layer is time and memory-intensive, prohibiting the use of longer receptive fields in practice. To increase efficiency, we make use of the \"slow feature\" hypothesis stating that many features of interest are slowly varying over time. For this, we use a U-Net architecture that computes features at multiple time-scales and adapt it to our auto-regressive scenario by making convolutions causal. We apply our model (\"Seq-U-Net\") to a variety of tasks including language and audio generation. In comparison to TCN and Wavenet, our network consistently saves memory and computation time, with speed-ups for training and inference of over 4x in the audio generation experiment in particular, while achieving a comparable performance in all tasks.",
+    "authors": [
+     "Daniel Stoller",
+     "Mi Tian",
+     "Sebastian Ewert",
+     "Simon Dixon"
+    ],
+    "arxiv_id": "1911.06393v1",
+    "url": "http://arxiv.org/abs/1911.06393v1",
+    "published": "2019-11-14T21:39:20Z",
+    "year": 2019,
+    "source_query": "U-Net steel crack segmentation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Data-efficient U-Net for Segmentation of Carbide Microstructures in SEM Images of Steel Alloys",
+    "abstract": "Understanding reactor-pressure-vessel steel microstructure is crucial for predicting mechanical properties, as carbide precipitates both strengthen the alloy and can initiate cracks. In scanning electron microscopy images, gray-value overlap between carbides and matrix makes simple thresholding ineffective. We present a data-efficient segmentation pipeline using a lightweight U-Net (30.7~M parameters) trained on just \\textbf{10 annotated scanning electron microscopy images}. Despite limited data, our model achieves a \\textbf{Dice-Sørensen coefficient of 0.98}, significantly outperforming the state-of-the-art in the field of metallurgy (classical image analysis: 0.85), while reducing annotation effort by one order of magnitude compared to the state-of-the-art data efficient segmentation model. This approach enables rapid, automated carbide quantification for alloy design and generalizes to other steel types, demonstrating the potential of data-efficient deep learning in reactor-pressure-vessel steel analysis.",
+    "authors": [
+     "Alinda Ezgi Gerçek",
+     "Till Korten",
+     "Paul Chekhonin",
+     "Maleeha Hassan",
+     "Peter Steinbach"
+    ],
+    "arxiv_id": "2511.11485v1",
+    "url": "http://arxiv.org/abs/2511.11485v1",
+    "published": "2025-11-14T17:01:02Z",
+    "year": 2025,
+    "source_query": "U-Net steel crack segmentation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "MBDRes-U-Net: Multi-Scale Lightweight Brain Tumor Segmentation Network",
+    "abstract": "Accurate segmentation of brain tumors plays a key role in the diagnosis and treatment of brain tumor diseases. It serves as a critical technology for quantifying tumors and extracting their features. With the increasing application of deep learning methods, the computational burden has become progressively heavier. To achieve a lightweight model with good segmentation performance, this study proposes the MBDRes-U-Net model using the three-dimensional (3D) U-Net codec framework, which integrates multibranch residual blocks and fused attention into the model. The computational burden of the model is reduced by the branch strategy, which effectively uses the rich local features in multimodal images and enhances the segmentation performance of subtumor regions. Additionally, during encoding, an adaptive weighted expansion convolution layer is introduced into the multi-branch residual block, which enriches the feature expression and improves the segmentation accuracy of the model. Experiments on the Brain Tumor Segmentation (BraTS) Challenge 2018 and 2019 datasets show that the architecture could maintain a high precision of brain tumor segmentation while considerably reducing the calculation overhead.Our code is released at https://github.com/Huaibei-normal-university-cv-laboratory/mbdresunet",
+    "authors": [
+     "Longfeng Shen",
+     "Yanqi Hou",
+     "Jiacong Chen",
+     "Liangjin Diao",
+     "Yaxi Duan"
+    ],
+    "arxiv_id": "2411.01896v1",
+    "url": "http://arxiv.org/abs/2411.01896v1",
+    "published": "2024-11-04T09:03:43Z",
+    "year": 2024,
+    "source_query": "U-Net steel crack segmentation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Numerical Modeling of Stress Corrosion Cracking in Steel Structures with Phase Field Method",
+    "abstract": "This study presents a novel coupled mechano-electro-chemical formulation for predicting stress corrosion cracking (SCC) phenomena in steel structures using the phase field method. SCC is a complex damage process that arises from the interaction between mechanical loading and corrosion in a corrosive electrolyte environment. The proposed formulation introduces a new phase-field parameter that aggregates the damage due to mechanical loading and electro-chemical corrosion. To achieve this goal, the internal energies governing the SCC phenomenon are separated into elastic-damage strain energy, the interfacial reaction energy, and energy resulting from changes in corrosion ion concentration. The Allen-Cahn equation is modified to include all energy contributions and calculate the phase field parameter. Furthermore, a specific interfacial kinetic coefficient is introduced to the mechanical energy to take into account corrosion current effects on mechanical properties. The Cahn-Hilliard equation is applied to model the corrosion ion concentration in the domain and the mechanical state of the body is obtained by solving the equilibrium equations. Several numerical examples are presented to validate the robustness and accuracy of the proposed formulation. Finally, the method is applied to predict crack propagation resulting from SCC on two practical engineering problems, yielding promising results.",
+    "authors": [
+     "M. Askari",
+     "P. Broumand",
+     "M. Javidi"
+    ],
+    "arxiv_id": "2307.16739v1",
+    "url": "http://arxiv.org/abs/2307.16739v1",
+    "published": "2023-07-31T15:02:43Z",
+    "year": 2023,
+    "source_query": "U-Net steel crack segmentation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "A Few-Shot Attention Recurrent Residual U-Net for Crack Segmentation",
+    "abstract": "Recent studies indicate that deep learning plays a crucial role in the automated visual inspection of road infrastructures. However, current learning schemes are static, implying no dynamic adaptation to users' feedback. To address this drawback, we present a few-shot learning paradigm for the automated segmentation of road cracks, which is based on a U-Net architecture with recurrent residual and attention modules (R2AU-Net). The retraining strategy dynamically fine-tunes the weights of the U-Net as a few new rectified samples are being fed into the classifier. Extensive experiments show that the proposed few-shot R2AU-Net framework outperforms other state-of-the-art networks in terms of Dice and IoU metrics, on a new dataset, named CrackMap, which is made publicly available at https://github.com/ikatsamenis/CrackMap.",
+    "authors": [
+     "Iason Katsamenis",
+     "Eftychios Protopapadakis",
+     "Nikolaos Bakalos",
+     "Anastasios Doulamis",
+     "Nikolaos Doulamis",
+     "Athanasios Voulodimos"
+    ],
+    "arxiv_id": "2303.01582v1",
+    "url": "http://arxiv.org/abs/2303.01582v1",
+    "published": "2023-03-02T21:16:17Z",
+    "year": 2023,
+    "source_query": "U-Net steel crack segmentation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "U-Bench: A Comprehensive Understanding of U-Net through 100-Variant Benchmarking",
+    "abstract": "Over the past decade, U-Net has been the dominant architecture in medical image segmentation, leading to the development of thousands of U-shaped variants. Despite its widespread adoption, there is still no comprehensive benchmark to systematically evaluate their performance and utility, largely because of insufficient statistical validation and limited consideration of efficiency and generalization across diverse datasets. To bridge this gap, we present U-Bench, the first large-scale, statistically rigorous benchmark that evaluates 100 U-Net variants across 28 datasets and 10 imaging modalities. Our contributions are threefold: (1) Comprehensive Evaluation: U-Bench evaluates models along three key dimensions: statistical robustness, zero-shot generalization, and computational efficiency. We introduce a novel metric, U-Score, which jointly captures the performance-efficiency trade-off, offering a deployment-oriented perspective on model progress. (2) Systematic Analysis and Model Selection Guidance: We summarize key findings from the large-scale evaluation and systematically analyze the impact of dataset characteristics and architectural paradigms on model performance. Based on these insights, we propose a model advisor agent to guide researchers in selecting the most suitable models for specific datasets and tasks. (3) Public Availability: We provide all code, models, protocols, and weights, enabling the community to reproduce our results and extend the benchmark with future methods. In summary, U-Bench not only exposes gaps in previous evaluations but also establishes a foundation for fair, reproducible, and practically relevant benchmarking in the next decade of U-Net-based segmentation models. The project can be accessed at: https://fenghetan9.github.io/ubench. Code is available at: https://github.com/FengheTan9/U-Bench.",
+    "authors": [
+     "Fenghe Tang",
+     "Chengqi Dong",
+     "Wenxin Ma",
+     "Zikang Xu",
+     "Heqin Zhu",
+     "Zihang Jiang",
+     "Rongsheng Wang",
+     "Yuhao Wang",
+     "Chenxu Wu",
+     "Shaohua Kevin Zhou"
+    ],
+    "arxiv_id": "2510.07041v1",
+    "url": "http://arxiv.org/abs/2510.07041v1",
+    "published": "2025-10-08T14:06:17Z",
+    "year": 2025,
+    "source_query": "U-Net steel crack segmentation benchmark",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   }
+  ],
+  "openalex": [],
+  "crossref": [
+   {
+    "title": "Lyeu-Net: A Lightweight Yet Effective U-Net for Crack Segmentation",
+    "doi": "10.2139/ssrn.5342132",
+    "DOI": "10.2139/ssrn.5342132",
+    "authors": [
+     "Bing Yang",
+     "Yachuan Zhang",
+     "Xuemei Tang"
+    ],
+    "author": [
+     {
+      "given": "Bing",
+      "family": "Yang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yachuan",
+      "family": "Zhang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Xuemei",
+      "family": "Tang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": null,
+    "url": "https://doi.org/10.2139/ssrn.5342132",
+    "URL": "https://doi.org/10.2139/ssrn.5342132",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "posted-content",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Crack segmentation of steel structure based on U-net model",
+    "doi": "10.1049/icp.2022.3186",
+    "DOI": "10.1049/icp.2022.3186",
+    "authors": [
+     "R. Huang",
+     "Y. Xu",
+     "Y. Wang",
+     "T. Zhang",
+     "X. Jing",
+     "Q. Zhang"
+    ],
+    "author": [
+     {
+      "given": "R.",
+      "family": "Huang",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Laboratory of Mechanics on Disaster and Environment in Western China, The Ministry of Education of China School of Civil Engineering and Mechanics, Lanzhou University, Lanzhou, 730000, People's Republic of China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.",
+      "family": "Xu",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "School of Civil Engineering, Harbin Institute of Technology, Harbin 150090, People's Republic of China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Laboratory of Mechanics on Disaster and Environment in Western China, The Ministry of Education of China School of Civil Engineering and Mechanics, Lanzhou University, Lanzhou, 730000, People's Republic of China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Zhang",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Laboratory of Mechanics on Disaster and Environment in Western China, The Ministry of Education of China School of Civil Engineering and Mechanics, Lanzhou University, Lanzhou, 730000, People's Republic of China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "X.",
+      "family": "Jing",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Laboratory of Mechanics on Disaster and Environment in Western China, The Ministry of Education of China School of Civil Engineering and Mechanics, Lanzhou University, Lanzhou, 730000, People's Republic of China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Q.",
+      "family": "Zhang",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Laboratory of Mechanics on Disaster and Environment in Western China, The Ministry of Education of China School of Civil Engineering and Mechanics, Lanzhou University, Lanzhou, 730000, People's Republic of China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "IET Conference Proceedings",
+    "container-title": [
+     "IET Conference Proceedings"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1049/icp.2022.3186",
+    "URL": "https://doi.org/10.1049/icp.2022.3186",
+    "year": 2023,
+    "publication_year": 2023,
+    "citation_count": 1,
+    "_crossref_type": "journal-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Frequency-Aware Crack Segmentation Network (Facs-Net) for Thin-Cracks Via Topology Preservation",
+    "doi": "10.2139/ssrn.5384487",
+    "DOI": "10.2139/ssrn.5384487",
+    "authors": [
+     "Siheon Joo",
+     "Seokhwan Kim",
+     "Hongjo Kim"
+    ],
+    "author": [
+     {
+      "given": "Siheon",
+      "family": "Joo",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Seokhwan",
+      "family": "Kim",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hongjo",
+      "family": "Kim",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": null,
+    "url": "https://doi.org/10.2139/ssrn.5384487",
+    "URL": "https://doi.org/10.2139/ssrn.5384487",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "posted-content",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "PAGG-Net: A Physically Aligned GlanceGaze Framework for Automated High-Resolution Crack Segmentation",
+    "doi": "10.2139/ssrn.5962660",
+    "DOI": "10.2139/ssrn.5962660",
+    "authors": [
+     "Xingzhuang Zhao",
+     "Peter Chang",
+     "Zaishi Miao"
+    ],
+    "author": [
+     {
+      "given": "Xingzhuang",
+      "family": "Zhao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Peter",
+      "family": "Chang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Zaishi",
+      "family": "Miao",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": null,
+    "url": "https://doi.org/10.2139/ssrn.5962660",
+    "URL": "https://doi.org/10.2139/ssrn.5962660",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "posted-content",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Dspr-Doubleu-Net: A Network for Tongue Crack Segmentation",
+    "doi": "10.2139/ssrn.4772806",
+    "DOI": "10.2139/ssrn.4772806",
+    "authors": [
+     "Bin-Hui Wang",
+     "Yi-Heng Cai",
+     "Jing Guan",
+     "Yun-Peng Huang"
+    ],
+    "author": [
+     {
+      "given": "Bin-Hui",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yi-Heng",
+      "family": "Cai",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Jing",
+      "family": "Guan",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yun-Peng",
+      "family": "Huang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": null,
+    "url": "https://doi.org/10.2139/ssrn.4772806",
+    "URL": "https://doi.org/10.2139/ssrn.4772806",
+    "year": 2024,
+    "publication_year": 2024,
+    "citation_count": 0,
+    "_crossref_type": "posted-content",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "DAU-Net: Dense Attention U-Net for Pavement Crack Segmentation",
+    "doi": "10.1109/itsc48978.2021.9564806",
+    "DOI": "10.1109/itsc48978.2021.9564806",
+    "authors": [
+     "Yung-An Hsieh",
+     "Yi-Chang James Tsai"
+    ],
+    "author": [
+     {
+      "given": "Yung-An",
+      "family": "Hsieh",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Yi-Chang James",
+      "family": "Tsai",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "venue": "2021 IEEE International Intelligent Transportation Systems Conference (ITSC)",
+    "container-title": [
+     "2021 IEEE International Intelligent Transportation Systems Conference (ITSC)"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/itsc48978.2021.9564806",
+    "URL": "https://doi.org/10.1109/itsc48978.2021.9564806",
+    "year": 2021,
+    "publication_year": 2021,
+    "citation_count": 18,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Concrete Micro Crack Detection and Segmentation Using Adaptive U-Net",
+    "doi": "10.12783/shm2019/32488",
+    "DOI": "10.12783/shm2019/32488",
+    "authors": [
+     "PENG SUN",
+     "ZIYAN WU",
+     "JIQUAN MA",
+     "PEW-THIAN YAP"
+    ],
+    "author": [
+     {
+      "given": "PENG",
+      "family": "SUN",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "ZIYAN",
+      "family": "WU",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "JIQUAN",
+      "family": "MA",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "PEW-THIAN",
+      "family": "YAP",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Structural Health Monitoring 2019",
+    "container-title": [
+     "Structural Health Monitoring 2019"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.12783/shm2019/32488",
+    "URL": "https://doi.org/10.12783/shm2019/32488",
+    "year": 2019,
+    "publication_year": 2019,
+    "citation_count": 1,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "FuseSeg-Net: A Fusion Attention-Based U-Net for Improved Crack Segmentation",
+    "doi": "10.1109/cicn67655.2025.11368202",
+    "DOI": "10.1109/cicn67655.2025.11368202",
+    "authors": [
+     "Mhervin N",
+     "Shreevallabh Shinde",
+     "Kairab Roy",
+     "Samit Ari"
+    ],
+    "author": [
+     {
+      "given": "Mhervin",
+      "family": "N",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Manipal University Jaipur,Dept. of Artificial Intelligence &#x0026; Machine Learning,Jaipur,Rajasthan,India,303007"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Shreevallabh",
+      "family": "Shinde",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "SRM Institute of Science and Technology,Dept. of Computational Intelligence,Tamil Nadu,India,603203"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kairab",
+      "family": "Roy",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "National Institute of Technology,Dept. of Electronics and Communication Engineering,Rourkela,Odisha,India,769008"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Samit",
+      "family": "Ari",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "National Institute of Technology,Dept. of Electronics and Communication Engineering,Rourkela,Odisha,India,769008"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "2025 IEEE 17th International Conference on Computational Intelligence and Communication Networks (CICN)",
+    "container-title": [
+     "2025 IEEE 17th International Conference on Computational Intelligence and Communication Networks (CICN)"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/cicn67655.2025.11368202",
+    "URL": "https://doi.org/10.1109/cicn67655.2025.11368202",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   }
+  ],
+  "github": []
+ },
+ "candidate_pool": [
+  {
+   "stable_id": "crack semantic segmentation using the u-net with full attention strategy",
+   "candidate_id": "c-82c0e93b",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Crack Semantic Segmentation using the U-Net with Full Attention Strategy",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2021,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2104.14586v1",
+   "identifier": "2104.14586v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Structures suffer from the emergence of cracks, therefore, crack detection is always an issue with much concern in structural health monitoring. Along with the rapid progress of deep learning technology, image semantic segmentation, an active research field, offers another solution, which is more effective and intelligent, to crack detection Through numerous artificial neural networks have been developed to address the preceding issue, corresponding explorations are never stopped improving the quality of crack detection. This paper presents a novel artificial neural network architecture named Full Attention U-net for image semantic segmentation. The proposed architecture leverages the U-net as the backbone and adopts the Full Attention Strategy, which is a synthesis of the attention mechanism and the outputs from each encoding layer in skip connection. Subject to the hardware in training, the experiments are composed of verification and validation. In verification, 4 networks including U-net, Attention U-net, Advanced Attention U-net, and Full Attention U-net are tested through cell images for a competitive study. With respect to mean intersection-over-unions and clarity of edge identification, the Full Attention U-net performs best in verification, and is hence applied for crack semantic segmentation in validation to demonstrate its effectiveness.",
+   "extra": {}
+  },
+  {
+   "stable_id": "cancer-net pca-seg: benchmarking deep learning models for prostate cancer segmentation using synthetic correlated diffusion imaging",
+   "candidate_id": "c-4d0665f9",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Prostate Cancer Segmentation Using Synthetic Correlated Diffusion Imaging",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2501.09185v2",
+   "identifier": "2501.09185v2",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Prostate cancer (PCa) is the most prevalent cancer among men in the United States, accounting for nearly 300,000 cases, 29\\% of all diagnoses and 35,000 total deaths in 2024. Traditional screening methods such as prostate-specific antigen (PSA) testing and magnetic resonance imaging (MRI) have been pivotal in diagnosis, but have faced limitations in specificity and generalizability. In this paper, we explore the potential of enhancing PCa gland segmentation using a novel MRI modality called synthetic correlated diffusion imaging (CDI$^s$). We employ several state-of-the-art deep learning models, including U-Net, SegResNet, Swin UNETR, Attention U-Net, and LightM-UNet, to segment prostate glands from a 200 CDI$^s$ patient cohort. We find that SegResNet achieved superior segmentation performance with a Dice-Sorensen coefficient (DSC) of $76.68 \\pm 0.8$. Notably, the Attention U-Net, while slightly less accurate (DSC $74.82 \\pm 2.0$), offered a favorable balance between accuracy and computational efficiency. Our findings demonstrate the potential of deep learning models in improving prostate gland segmentation using CDI$^s$ to enhance PCa management and clinical support.",
+   "extra": {}
+  },
+  {
+   "stable_id": "biolite u-net: edge-deployable semantic segmentation for in situ bioprinting monitoring",
+   "candidate_id": "c-365463f9",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "BioLite U-Net: Edge-Deployable Semantic Segmentation for In Situ Bioprinting Monitoring",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2509.06690v2",
+   "identifier": "2509.06690v2",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Bioprinting is a rapidly advancing field that offers a transformative approach to fabricating tissue and organ models through the precise deposition of cell-laden bioinks. Ensuring the fidelity and consistency of printed structures in real-time remains a core challenge, particularly under constraints imposed by limited imaging data and resource-constrained embedded hardware. Semantic segmentation of the extrusion process, differentiating between nozzle, extruded bioink, and surrounding background, enables in situ monitoring critical to maintaining print quality and biological viability. In this work, we introduce a lightweight semantic segmentation framework tailored for real-time bioprinting applications. We present a novel, manually annotated dataset comprising 787 RGB images captured during the bioprinting process, labeled across three classes: nozzle, bioink, and background. To achieve fast and efficient inference suitable for integration with bioprinting systems, we propose a BioLite U-Net architecture that leverages depthwise separable convolutions to drastically reduce computational load without compromising accuracy. Our model is benchmarked against MobileNetV2 and MobileNetV3-based segmentation baselines using mean Intersection over Union (mIoU), Dice score, and pixel accuracy. All models were evaluated on a Raspberry Pi 4B to assess real-world feasibility. The proposed BioLite U-Net achieves an mIoU of 92.85% and a Dice score of 96.17%, while being over 1300x smaller than MobileNetV2-DeepLabV3+. On-device inference takes 335 ms per frame, demonstrating near real-time capability. Compared to MobileNet baselines, BioLite U-Net offers a superior tradeoff between segmentation accuracy, efficiency, and deployability, making it highly suitable for intelligent, closed-loop bioprinting systems.",
+   "extra": {}
+  },
+  {
+   "stable_id": "seq-u-net: a one-dimensional causal u-net for efficient sequence modelling",
+   "candidate_id": "c-a08b4a9d",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Seq-U-Net: A One-Dimensional Causal U-Net for Efficient Sequence Modelling",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2019,
+   "venue": null,
+   "url": "http://arxiv.org/abs/1911.06393v1",
+   "identifier": "1911.06393v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Convolutional neural networks (CNNs) with dilated filters such as the Wavenet or the Temporal Convolutional Network (TCN) have shown good results in a variety of sequence modelling tasks. However, efficiently modelling long-term dependencies in these sequences is still challenging. Although the receptive field of these models grows exponentially with the number of layers, computing the convolutions over very long sequences of features in each layer is time and memory-intensive, prohibiting the use of longer receptive fields in practice. To increase efficiency, we make use of the \"slow feature\" hypothesis stating that many features of interest are slowly varying over time. For this, we use a U-Net architecture that computes features at multiple time-scales and adapt it to our auto-regressive scenario by making convolutions causal. We apply our model (\"Seq-U-Net\") to a variety of tasks including language and audio generation. In comparison to TCN and Wavenet, our network consistently saves memory and computation time, with speed-ups for training and inference of over 4x in the audio generation experiment in particular, while achieving a comparable performance in all tasks.",
+   "extra": {}
+  },
+  {
+   "stable_id": "data-efficient u-net for segmentation of carbide microstructures in sem images of steel alloys",
+   "candidate_id": "c-530bc523",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Data-efficient U-Net for Segmentation of Carbide Microstructures in SEM Images of Steel Alloys",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2511.11485v1",
+   "identifier": "2511.11485v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Understanding reactor-pressure-vessel steel microstructure is crucial for predicting mechanical properties, as carbide precipitates both strengthen the alloy and can initiate cracks. In scanning electron microscopy images, gray-value overlap between carbides and matrix makes simple thresholding ineffective. We present a data-efficient segmentation pipeline using a lightweight U-Net (30.7~M parameters) trained on just \\textbf{10 annotated scanning electron microscopy images}. Despite limited data, our model achieves a \\textbf{Dice-Sørensen coefficient of 0.98}, significantly outperforming the state-of-the-art in the field of metallurgy (classical image analysis: 0.85), while reducing annotation effort by one order of magnitude compared to the state-of-the-art data efficient segmentation model. This approach enables rapid, automated carbide quantification for alloy design and generalizes to other steel types, demonstrating the potential of data-efficient deep learning in reactor-pressure-vessel steel analysis.",
+   "extra": {}
+  },
+  {
+   "stable_id": "mbdres-u-net: multi-scale lightweight brain tumor segmentation network",
+   "candidate_id": "c-ee03aeec",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "MBDRes-U-Net: Multi-Scale Lightweight Brain Tumor Segmentation Network",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2024,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2411.01896v1",
+   "identifier": "2411.01896v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Accurate segmentation of brain tumors plays a key role in the diagnosis and treatment of brain tumor diseases. It serves as a critical technology for quantifying tumors and extracting their features. With the increasing application of deep learning methods, the computational burden has become progressively heavier. To achieve a lightweight model with good segmentation performance, this study proposes the MBDRes-U-Net model using the three-dimensional (3D) U-Net codec framework, which integrates multibranch residual blocks and fused attention into the model. The computational burden of the model is reduced by the branch strategy, which effectively uses the rich local features in multimodal images and enhances the segmentation performance of subtumor regions. Additionally, during encoding, an adaptive weighted expansion convolution layer is introduced into the multi-branch residual block, which enriches the feature expression and improves the segmentation accuracy of the model. Experiments on the Brain Tumor Segmentation (BraTS) Challenge 2018 and 2019 datasets show that the architecture could maintain a high precision of brain tumor segmentation while considerably reducing the calculation overhead.Our code is released at https://github.com/Huaibei-normal-university-cv-laboratory/mbdresunet",
+   "extra": {}
+  },
+  {
+   "stable_id": "numerical modeling of stress corrosion cracking in steel structures with phase field method",
+   "candidate_id": "c-b351c9b0",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Numerical Modeling of Stress Corrosion Cracking in Steel Structures with Phase Field Method",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2023,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2307.16739v1",
+   "identifier": "2307.16739v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "This study presents a novel coupled mechano-electro-chemical formulation for predicting stress corrosion cracking (SCC) phenomena in steel structures using the phase field method. SCC is a complex damage process that arises from the interaction between mechanical loading and corrosion in a corrosive electrolyte environment. The proposed formulation introduces a new phase-field parameter that aggregates the damage due to mechanical loading and electro-chemical corrosion. To achieve this goal, the internal energies governing the SCC phenomenon are separated into elastic-damage strain energy, the interfacial reaction energy, and energy resulting from changes in corrosion ion concentration. The Allen-Cahn equation is modified to include all energy contributions and calculate the phase field parameter. Furthermore, a specific interfacial kinetic coefficient is introduced to the mechanical energy to take into account corrosion current effects on mechanical properties. The Cahn-Hilliard equation is applied to model the corrosion ion concentration in the domain and the mechanical state of the body is obtained by solving the equilibrium equations. Several numerical examples are presented to validate the robustness and accuracy of the proposed formulation. Finally, the method is applied to predict crack propagation resulting from SCC on two practical engineering problems, yielding promising results.",
+   "extra": {}
+  },
+  {
+   "stable_id": "a few-shot attention recurrent residual u-net for crack segmentation",
+   "candidate_id": "c-f2c17ef4",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "A Few-Shot Attention Recurrent Residual U-Net for Crack Segmentation",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2023,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2303.01582v1",
+   "identifier": "2303.01582v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Recent studies indicate that deep learning plays a crucial role in the automated visual inspection of road infrastructures. However, current learning schemes are static, implying no dynamic adaptation to users' feedback. To address this drawback, we present a few-shot learning paradigm for the automated segmentation of road cracks, which is based on a U-Net architecture with recurrent residual and attention modules (R2AU-Net). The retraining strategy dynamically fine-tunes the weights of the U-Net as a few new rectified samples are being fed into the classifier. Extensive experiments show that the proposed few-shot R2AU-Net framework outperforms other state-of-the-art networks in terms of Dice and IoU metrics, on a new dataset, named CrackMap, which is made publicly available at https://github.com/ikatsamenis/CrackMap.",
+   "extra": {}
+  },
+  {
+   "stable_id": "u-bench: a comprehensive understanding of u-net through 100-variant benchmarking",
+   "candidate_id": "c-0c7260e3",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "U-Bench: A Comprehensive Understanding of U-Net through 100-Variant Benchmarking",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2510.07041v1",
+   "identifier": "2510.07041v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Over the past decade, U-Net has been the dominant architecture in medical image segmentation, leading to the development of thousands of U-shaped variants. Despite its widespread adoption, there is still no comprehensive benchmark to systematically evaluate their performance and utility, largely because of insufficient statistical validation and limited consideration of efficiency and generalization across diverse datasets. To bridge this gap, we present U-Bench, the first large-scale, statistically rigorous benchmark that evaluates 100 U-Net variants across 28 datasets and 10 imaging modalities. Our contributions are threefold: (1) Comprehensive Evaluation: U-Bench evaluates models along three key dimensions: statistical robustness, zero-shot generalization, and computational efficiency. We introduce a novel metric, U-Score, which jointly captures the performance-efficiency trade-off, offering a deployment-oriented perspective on model progress. (2) Systematic Analysis and Model Selection Guidance: We summarize key findings from the large-scale evaluation and systematically analyze the impact of dataset characteristics and architectural paradigms on model performance. Based on these insights, we propose a model advisor agent to guide researchers in selecting the most suitable models for specific datasets and tasks. (3) Public Availability: We provide all code, models, protocols, and weights, enabling the community to reproduce our results and extend the benchmark with future methods. In summary, U-Bench not only exposes gaps in previous evaluations but also establishes a foundation for fair, reproducible, and practically relevant benchmarking in the next decade of U-Net-based segmentation models. The project can be accessed at: https://fenghetan9.github.io/ubench. Code is available at: https://github.com/FengheTan9/U-Bench.",
+   "extra": {}
+  },
+  {
+   "stable_id": "lyeu-net: a lightweight yet effective u-net for crack segmentation",
+   "candidate_id": "c-35799b7d",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Lyeu-Net: A Lightweight Yet Effective U-Net for Crack Segmentation",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "https://doi.org/10.2139/ssrn.5342132",
+   "identifier": "10.2139/ssrn.5342132",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "crack segmentation of steel structure based on u-net model",
+   "candidate_id": "c-d0ad2730",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Crack segmentation of steel structure based on U-net model",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2023,
+   "venue": "IET Conference Proceedings",
+   "url": "https://doi.org/10.1049/icp.2022.3186",
+   "identifier": "10.1049/icp.2022.3186",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "frequency-aware crack segmentation network (facs-net) for thin-cracks via topology preservation",
+   "candidate_id": "c-77ad7a5d",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Frequency-Aware Crack Segmentation Network (Facs-Net) for Thin-Cracks Via Topology Preservation",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "https://doi.org/10.2139/ssrn.5384487",
+   "identifier": "10.2139/ssrn.5384487",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "pagg-net: a physically aligned glancegaze framework for automated high-resolution crack segmentation",
+   "candidate_id": "c-65bdccc7",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "PAGG-Net: A Physically Aligned GlanceGaze Framework for Automated High-Resolution Crack Segmentation",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "https://doi.org/10.2139/ssrn.5962660",
+   "identifier": "10.2139/ssrn.5962660",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "dspr-doubleu-net: a network for tongue crack segmentation",
+   "candidate_id": "c-631b70b3",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Dspr-Doubleu-Net: A Network for Tongue Crack Segmentation",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2024,
+   "venue": null,
+   "url": "https://doi.org/10.2139/ssrn.4772806",
+   "identifier": "10.2139/ssrn.4772806",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "dau-net: dense attention u-net for pavement crack segmentation",
+   "candidate_id": "c-da66e691",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "DAU-Net: Dense Attention U-Net for Pavement Crack Segmentation",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2021,
+   "venue": "2021 IEEE International Intelligent Transportation Systems Conference (ITSC)",
+   "url": "https://doi.org/10.1109/itsc48978.2021.9564806",
+   "identifier": "10.1109/itsc48978.2021.9564806",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "concrete micro crack detection and segmentation using adaptive u-net",
+   "candidate_id": "c-c4d5a8bc",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "Concrete Micro Crack Detection and Segmentation Using Adaptive U-Net",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2019,
+   "venue": "Structural Health Monitoring 2019",
+   "url": "https://doi.org/10.12783/shm2019/32488",
+   "identifier": "10.12783/shm2019/32488",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "fuseseg-net: a fusion attention-based u-net for improved crack segmentation",
+   "candidate_id": "c-9ea67cb7",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "title": "FuseSeg-Net: A Fusion Attention-Based U-Net for Improved Crack Segmentation",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": "2025 IEEE 17th International Conference on Computational Intelligence and Communication Networks (CICN)",
+   "url": "https://doi.org/10.1109/cicn67655.2025.11368202",
+   "identifier": "10.1109/cicn67655.2025.11368202",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  }
+ ],
+ "source_ledger": {
+  "rows": [
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "openalex",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "crossref",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "ok",
+    "result_count": 1,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 3,
+    "round_name": "repo_dataset_followup",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "references of 5 seed paper(s)",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "ok",
+    "result_count": 5,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "references of Crack Semantic Segmentation using the U-Net with Full Attent",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "references of Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Pr",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "references of BioLite U-Net: Edge-Deployable Semantic Segmentation for In ",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "references of Seq-U-Net: A One-Dimensional Causal U-Net for Efficient Sequ",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "references of Data-efficient U-Net for Segmentation of Carbide Microstruct",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   }
+  ],
+  "stats": {
+   "arxiv": {
+    "ok": 2,
+    "empty": 0,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "openalex": {
+    "ok": 0,
+    "empty": 1,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 1
+   },
+   "crossref": {
+    "ok": 1,
+    "empty": 0,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 1
+   },
+   "github": {
+    "ok": 0,
+    "empty": 3,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 3
+   },
+   "openalex_citation": {
+    "ok": 1,
+    "empty": 5,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 6
+   }
+  },
+  "n_calls": 13
+ },
+ "evidence_review": [
+  {
+   "candidate_id": "c-82c0e93b",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "semantic segmentation",
+    "crack detection",
+    "deep learning"
+   ],
+   "missing_terms": [
+    "steel",
+    "steel surface",
+    "metal"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "U-Net crack segmentation baseline; material not specified, plausible parallel/background method.",
+   "reason": "Applies U-Net with attention to crack semantic segmentation. Matches method+task core. Material not confirmed as steel, but method directly transferable."
+  },
+  {
+   "candidate_id": "c-4d0665f9",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "deep learning",
+    "segmentation"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "crack",
+    "steel",
+    "surface defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Cross-domain: medical prostate segmentation, no crack or steel relevance.",
+   "reason": "Domain is prostate cancer medical imaging. No overlap with steel/crack segmentation task; rejected as cross-domain."
+  },
+  {
+   "candidate_id": "c-365463f9",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "U-Net",
+    "semantic segmentation"
+   ],
+   "missing_terms": [
+    "crack",
+    "steel",
+    "surface defect",
+    "pixel-wise segmentation"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Bioprinting monitoring, not surface defect or crack segmentation.",
+   "reason": "Application domain is bioprinting tissue fabrication. No relevance to steel crack segmentation despite U-Net usage."
+  },
+  {
+   "candidate_id": "c-a08b4a9d",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "U-Net"
+   ],
+   "missing_terms": [
+    "segmentation",
+    "crack",
+    "steel",
+    "pixel-wise"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "1-D sequence model; not image segmentation, no crack/steel relevance.",
+   "reason": "Seq-U-Net targets audio/sequence tasks using 1-D causal convolutions. No relevance to 2D image semantic segmentation of cracks."
+  },
+  {
+   "candidate_id": "c-530bc523",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "semantic segmentation",
+    "steel",
+    "deep learning",
+    "cracks"
+   ],
+   "missing_terms": [
+    "surface defect",
+    "encoder-decoder (implicit)",
+    "pixel-wise crack segmentation"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "U-Net + steel alloy + crack initiation context; adjacent but task is microstructure, not surface crack.",
+   "reason": "Applies U-Net to steel SEM microstructure segmentation, mentions crack initiation in steel. Strong material match but task is microstructure, not surface crack."
+  },
+  {
+   "candidate_id": "c-ee03aeec",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "U-Net",
+    "deep learning",
+    "segmentation"
+   ],
+   "missing_terms": [
+    "crack",
+    "steel",
+    "surface defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Brain tumor medical segmentation, cross-domain.",
+   "reason": "Domain is medical brain tumor segmentation. No overlap with steel/crack/surface defect topic."
+  },
+  {
+   "candidate_id": "c-b351c9b0",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "steel structures",
+    "cracking"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "segmentation",
+    "image",
+    "deep learning"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Phase-field numerical model, not image-based deep learning segmentation.",
+   "reason": "Numerical/phase-field modeling of stress corrosion cracking in steel. Not image segmentation; method doesn't match."
+  },
+  {
+   "candidate_id": "c-f2c17ef4",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation",
+    "deep learning"
+   ],
+   "missing_terms": [
+    "steel",
+    "surface defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "U-Net crack segmentation on road infrastructure; parallel baseline, material differs.",
+   "reason": "U-Net variant for crack segmentation targeting road/pavement. Strong method+task match; only material differs from steel."
+  },
+  {
+   "candidate_id": "c-0c7260e3",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "segmentation"
+   ],
+   "missing_terms": [
+    "crack",
+    "steel",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "U-Net benchmark survey; useful methodological background, not domain-specific.",
+   "reason": "Comprehensive benchmarking of U-Net variants. Provides background methodology useful for designing steel crack U-Net."
+  },
+  {
+   "candidate_id": "c-35799b7d",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation"
+   ],
+   "missing_terms": [
+    "steel",
+    "surface defect",
+    "deep learning (implicit)"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Lightweight U-Net for crack segmentation; parallel baseline, material unconfirmed.",
+   "reason": "Lightweight U-Net designed for crack segmentation. Strong method+task match; object material needs verification."
+  },
+  {
+   "candidate_id": "c-d0ad2730",
+   "evidence_type": "paper",
+   "role_hint": "unknown",
+   "status": "core",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation",
+    "steel structure"
+   ],
+   "missing_terms": [
+    "surface defect",
+    "pixel-wise (implicit)"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "baseline",
+   "exists_verdict": "exists",
+   "rank_reason": "Direct match: U-Net + steel structure + crack segmentation. Front-rank candidate.",
+   "reason": "Exact topical alignment: U-Net applied to crack segmentation on steel structures. Direct core match for all three axes."
+  },
+  {
+   "candidate_id": "c-77ad7a5d",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "crack segmentation"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "steel",
+    "deep learning (unclear)"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Crack segmentation network; material unspecified, method may or may not use U-Net.",
+   "reason": "Topology-preserving crack segmentation network. Task aligns well; method details and material not confirmed."
+  },
+  {
+   "candidate_id": "c-65bdccc7",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "crack segmentation"
+   ],
+   "missing_terms": [
+    "U-Net (unclear)",
+    "steel",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "High-resolution crack segmentation; method not clearly U-Net, material unconfirmed.",
+   "reason": "GlanceGaze framework for high-resolution crack segmentation. Task match strong; U-Net usage and steel context unverified."
+  },
+  {
+   "candidate_id": "c-631b70b3",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation"
+   ],
+   "missing_terms": [
+    "steel",
+    "surface defect",
+    "deep learning (not image-based)"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Tongue crack segmentation (TCM medical imaging), cross-domain.",
+   "reason": "Segmentation of tongue cracks in traditional Chinese medicine imaging. Domain is medical, not steel surface defect."
+  },
+  {
+   "candidate_id": "c-da66e691",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation",
+    "deep learning",
+    "surface (pavement)"
+   ],
+   "missing_terms": [
+    "steel",
+    "metal"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Dense Attention U-Net for pavement crack segmentation; parallel baseline.",
+   "reason": "U-Net variant for pavement crack segmentation with dense attention. Strong method+task match; surface is pavement, not steel."
+  },
+  {
+   "candidate_id": "c-c4d5a8bc",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack detection",
+    "segmentation",
+    "adaptive"
+   ],
+   "missing_terms": [
+    "steel",
+    "metal"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Adaptive U-Net for concrete micro cracks; parallel method, material differs.",
+   "reason": "Adaptive U-Net for concrete micro-crack detection and segmentation. Strong method+task match; material is concrete, not steel."
+  },
+  {
+   "candidate_id": "c-9ea67cb7",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation"
+   ],
+   "missing_terms": [
+    "steel",
+    "surface defect",
+    "deep learning (implicit)"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Fusion attention U-Net for improved crack segmentation; material unconfirmed.",
+   "reason": "Fusion attention U-Net for crack segmentation. Method+task align; material and dataset domain not specified."
+  }
+ ],
+ "synthesis": {
+  "direction_recommendation": "Recommend a tightly scoped literature review on U-Net-based pixel-wise crack segmentation for steel surfaces. Anchor on c-d0ad2730 (steel structure + U-Net) as the single confirmed-on-topic baseline. Strengthen evidence with parallel U-Net crack works: c-82c0e93b (full-attention U-Net), c-f2c17ef4 (R2AU-Net, few-shot), c-da66e691 (DAU-Net, pavement), c-c4d5a8bc (adaptive U-Net, concrete), c-35799b7d (Lyeu-Net) and c-9ea67cb7 (FuseSeg-Net). Use c-530bc523 (carbide microstructure in steel SEM) as a steel-material cross-reference. c-0c7260e3 (U-Bench) supplies method benchmark background. Treat c-77ad7a5d and c-65bdccc7 as long-tail candidates pending material confirmation. Student should clarify target steel-surface dataset (e.g., SDDNet, NEU-DET crack subset) and whether task is binary crack mask or multi-class surface defect before baseline selection.",
+  "baseline_options": [
+   "c-d0ad2730"
+  ],
+  "candidate_pool": {
+   "core": [
+    {
+     "candidate_id": "c-d0ad2730",
+     "title": "Crack segmentation of steel structure based on U-net model",
+     "role_hint": "unknown",
+     "reason": "Direct match: U-Net + steel structure + crack segmentation. Front-rank candidate."
+    }
+   ],
+   "candidate": [
+    {
+     "candidate_id": "c-82c0e93b",
+     "title": "Crack Semantic Segmentation using the U-Net with Full Attention Strategy",
+     "role_hint": "baseline",
+     "reason": "U-Net crack segmentation baseline; material not specified, plausible parallel/background method."
+    },
+    {
+     "candidate_id": "c-530bc523",
+     "title": "Data-efficient U-Net for Segmentation of Carbide Microstructures in SEM Images of Steel Alloys",
+     "role_hint": "reference",
+     "reason": "U-Net + steel alloy + crack initiation context; adjacent but task is microstructure, not surface crack."
+    },
+    {
+     "candidate_id": "c-f2c17ef4",
+     "title": "A Few-Shot Attention Recurrent Residual U-Net for Crack Segmentation",
+     "role_hint": "baseline",
+     "reason": "U-Net crack segmentation on road infrastructure; parallel baseline, material differs."
+    },
+    {
+     "candidate_id": "c-0c7260e3",
+     "title": "U-Bench: A Comprehensive Understanding of U-Net through 100-Variant Benchmarking",
+     "role_hint": "reference",
+     "reason": "U-Net benchmark survey; useful methodological background, not domain-specific."
+    },
+    {
+     "candidate_id": "c-35799b7d",
+     "title": "Lyeu-Net: A Lightweight Yet Effective U-Net for Crack Segmentation",
+     "role_hint": "baseline",
+     "reason": "Lightweight U-Net for crack segmentation; parallel baseline, material unconfirmed."
+    },
+    {
+     "candidate_id": "c-77ad7a5d",
+     "title": "Frequency-Aware Crack Segmentation Network (Facs-Net) for Thin-Cracks Via Topology Preservation",
+     "role_hint": "reference",
+     "reason": "Crack segmentation network; material unspecified, method may or may not use U-Net."
+    },
+    {
+     "candidate_id": "c-65bdccc7",
+     "title": "PAGG-Net: A Physically Aligned GlanceGaze Framework for Automated High-Resolution Crack Segmentation",
+     "role_hint": "reference",
+     "reason": "High-resolution crack segmentation; method not clearly U-Net, material unconfirmed."
+    },
+    {
+     "candidate_id": "c-da66e691",
+     "title": "DAU-Net: Dense Attention U-Net for Pavement Crack Segmentation",
+     "role_hint": "baseline",
+     "reason": "Dense Attention U-Net for pavement crack segmentation; parallel baseline."
+    },
+    {
+     "candidate_id": "c-c4d5a8bc",
+     "title": "Concrete Micro Crack Detection and Segmentation Using Adaptive U-Net",
+     "role_hint": "reference",
+     "reason": "Adaptive U-Net for concrete micro cracks; parallel method, material differs."
+    },
+    {
+     "candidate_id": "c-9ea67cb7",
+     "title": "FuseSeg-Net: A Fusion Attention-Based U-Net for Improved Crack Segmentation",
+     "role_hint": "reference",
+     "reason": "Fusion attention U-Net for improved crack segmentation; material unconfirmed."
+    }
+   ],
+   "needs_manual": [],
+   "rejected": [
+    {
+     "candidate_id": "c-4d0665f9",
+     "title": "Cancer-Net PCa-Seg: Benchmarking Deep Learning Models for Prostate Cancer Segmentation Using Synthetic Correlated Diffus",
+     "role_hint": "reference",
+     "reason": "Cross-domain: medical prostate segmentation, no crack or steel relevance."
+    },
+    {
+     "candidate_id": "c-365463f9",
+     "title": "BioLite U-Net: Edge-Deployable Semantic Segmentation for In Situ Bioprinting Monitoring",
+     "role_hint": "reference",
+     "reason": "Bioprinting monitoring, not surface defect or crack segmentation."
+    },
+    {
+     "candidate_id": "c-a08b4a9d",
+     "title": "Seq-U-Net: A One-Dimensional Causal U-Net for Efficient Sequence Modelling",
+     "role_hint": "reference",
+     "reason": "1-D sequence model; not image segmentation, no crack/steel relevance."
+    },
+    {
+     "candidate_id": "c-ee03aeec",
+     "title": "MBDRes-U-Net: Multi-Scale Lightweight Brain Tumor Segmentation Network",
+     "role_hint": "reference",
+     "reason": "Brain tumor medical segmentation, cross-domain."
+    },
+    {
+     "candidate_id": "c-b351c9b0",
+     "title": "Numerical Modeling of Stress Corrosion Cracking in Steel Structures with Phase Field Method",
+     "role_hint": "reference",
+     "reason": "Phase-field numerical model, not image-based deep learning segmentation."
+    },
+    {
+     "candidate_id": "c-631b70b3",
+     "title": "Dspr-Doubleu-Net: A Network for Tongue Crack Segmentation",
+     "role_hint": "reference",
+     "reason": "Tongue crack segmentation (TCM medical imaging), cross-domain."
+    }
+   ]
+  },
+  "paper_groups": {
+   "baseline": [
+    {
+     "candidate_id": "c-d0ad2730",
+     "title": "Crack segmentation of steel structure based on U-net model",
+     "role_hint": "unknown",
+     "year": 2023
+    }
+   ],
+   "parallel": [
+    {
+     "candidate_id": "c-82c0e93b",
+     "title": "Crack Semantic Segmentation using the U-Net with Full Attention Strategy",
+     "role_hint": "baseline",
+     "year": 2021
+    },
+    {
+     "candidate_id": "c-f2c17ef4",
+     "title": "A Few-Shot Attention Recurrent Residual U-Net for Crack Segmentation",
+     "role_hint": "baseline",
+     "year": 2023
+    },
+    {
+     "candidate_id": "c-da66e691",
+     "title": "DAU-Net: Dense Attention U-Net for Pavement Crack Segmentation",
+     "role_hint": "baseline",
+     "year": 2021
+    },
+    {
+     "candidate_id": "c-c4d5a8bc",
+     "title": "Concrete Micro Crack Detection and Segmentation Using Adaptive U-Net",
+     "role_hint": "reference",
+     "year": 2019
+    },
+    {
+     "candidate_id": "c-35799b7d",
+     "title": "Lyeu-Net: A Lightweight Yet Effective U-Net for Crack Segmentation",
+     "role_hint": "baseline",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-9ea67cb7",
+     "title": "FuseSeg-Net: A Fusion Attention-Based U-Net for Improved Crack Segmentation",
+     "role_hint": "reference",
+     "year": 2025
+    }
+   ],
+   "reference": [
+    {
+     "candidate_id": "c-530bc523",
+     "title": "Data-efficient U-Net for Segmentation of Carbide Microstructures in SEM Images of Steel Alloys",
+     "role_hint": "reference",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-0c7260e3",
+     "title": "U-Bench: A Comprehensive Understanding of U-Net through 100-Variant Benchmarking",
+     "role_hint": "reference",
+     "year": 2025
+    }
+   ],
+   "long_tail_candidates": [
+    {
+     "candidate_id": "c-77ad7a5d",
+     "title": "Frequency-Aware Crack Segmentation Network (Facs-Net) for Thin-Cracks Via Topology Preservation",
+     "role_hint": "reference",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-65bdccc7",
+     "title": "PAGG-Net: A Physically Aligned GlanceGaze Framework for Automated High-Resolution Crack Segmentation",
+     "role_hint": "reference",
+     "year": 2025
+    }
+   ]
+  },
+  "dataset_and_repo_notes": [
+   "No open steel-surface crack segmentation dataset surfaced via GitHub or OpenAlex; manual search for SDDNet / NEU-Crack / GC10-DET crack subset needed.",
+   "arxiv c-530bc523 uses SEM steel micrographs, not RGB surface images; do not reuse as surface benchmark.",
+   "Crossref-only entries (c-d0ad2730, c-da66e691, c-c4d5a8bc, c-35799b7d, c-9ea67cb7, c-77ad7a5d, c-65bdccc7) lack abstracts; full-text must be retrieved before citing.",
+   "Openalex returned empty; supplemental search via Semantic Scholar / IEEE Xplore recommended to close dataset gap."
+  ],
+  "work_suggestions": [
+   "Adopt c-d0ad2730 as the single steel-specific U-Net baseline; obtain full text to confirm dataset and metric setup.",
+   "Compare c-d0ad2730 against c-82c0e93b and c-f2c17ef4 to isolate steel-specific gains vs. general crack U-Net performance.",
+   "Use c-0c7260e3 as methodological reference when justifying backbone choice and augmentation tricks.",
+   "Treat c-530bc523 as steel-material evidence (U-Net on steel images) but cite its SEM scope, not surface crack, when discussing transferability.",
+   "Manually verify c-77ad7a5d and c-65bdccc7 for U-Net backbone and steel dataset before adding to comparison table."
+  ],
+  "risk_reminders": [
+   "GitHub adapter returned empty; no public repo for steel crack U-Net baseline confirmed.",
+   "c-d0ad2730 is the only on-topic paper; baseline set is thin — risk of over-citing a single source.",
+   "Several candidates are from non-steel domains (pavement, concrete); transfer assumptions must be stated.",
+   "Crossref entries have no abstracts; metadata quality is low until full text is fetched.",
+   "Openalex_citation expansion was mostly empty; citation graph evidence is weak."
+  ],
+  "manual_questions": [
+   "What steel surface crack dataset will be used (e.g., SDDNet, NEU-DET crack subset, custom)?",
+   "Is the task binary crack-only or multi-class surface defect segmentation?",
+   "What evaluation metrics (IoU, Dice, precision/recall) are expected for comparison?",
+   "Is real-time / edge deployment required (affects backbone choice like Lyeu-Net vs. full U-Net)?",
+   "Are labeled training images already available, or is few-shot / data-efficient training needed?"
+  ],
+  "stop_here": true,
+  "human_gate": {
+   "enabled": false,
+   "future_gates": [
+    "topic_understanding",
+    "search_plan",
+    "baseline_selection"
+   ],
+   "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+  }
+ },
+ "low_bar_verdict": {
+  "review_verdict": "needs_revision",
+  "blocking_questions": [
+   "Which steel-surface crack dataset is the target (SDDNet, NEU-DET crack subset, or custom)?",
+   "Is the segmentation task binary crack-only or multi-class surface defect segmentation?",
+   "What evaluation metrics (IoU, Dice, precision/recall) should be used for comparison?",
+   "Is real-time or edge deployment required, affecting backbone choice (Lyeu-Net vs full U-Net)?",
+   "Are labeled training images available, or is few-shot / data-efficient training needed?"
+  ],
+  "weak_points": [
+   "evidence_gaps is empty, yet dataset and metric choices remain undeclared by the candidate pool.",
+   "Only one baseline (c-d0ad2730) is confirmed on steel; parallel works are mostly concrete/pavement.",
+   "work_suggestions reference all candidates but c-77ad7a5d and c-65bdccc7 are not in paper_groups.",
+   "Direction recommendation text is truncated mid-sentence, indicating incomplete synthesis.",
+   "Steel-specific surface crack evidence is thin; c-530bc523 is SEM microstructure, not surface cracks."
+  ],
+  "can_continue_to_opening_report": false,
+  "summary": "Topic is bounded and one steel-specific U-Net baseline exists, but evidence_gaps is empty, key dataset/metric/deployment choices are unresolved, and most parallel works target concrete or pavement rather than steel. Needs minor revision after the five clarifying questions are answered."
+ },
+ "llm_calls": 5,
+ "llm_failures": 1,
+ "llm_budget": 12
+}

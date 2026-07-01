@@ -1,0 +1,2963 @@
+{
+ "raw_topic": "基于三维成像的智能损伤检测",
+ "project_id": "agent-re02-5f745c16",
+ "parsed_topic": {
+  "raw_topic": "基于三维成像的智能损伤检测",
+  "normalized_topic": "Intelligent damage detection based on 3D imaging",
+  "domain_route": "vision_3d",
+  "domain_confidence": 0.72,
+  "method_terms": [
+   "deep learning",
+   "point cloud segmentation",
+   "3D CNN",
+   "PointNet",
+   "multi-view stereo",
+   "structured light 3D reconstruction"
+  ],
+  "task_terms": [
+   "damage detection",
+   "defect segmentation",
+   "3D object recognition",
+   "structural health monitoring"
+  ],
+  "object_terms": [
+   "3D point cloud",
+   "mesh model",
+   "industrial components",
+   "civil infrastructure surfaces"
+  ],
+  "query_atoms_en": [
+   "3D point cloud damage detection",
+   "deep learning structural defect 3D",
+   "PointNet surface defect segmentation",
+   "multi-view stereo crack detection",
+   "structured light 3D defect inspection",
+   "mesh-based damage recognition"
+  ],
+  "query_atoms_zh": [
+   "三维成像损伤检测",
+   "点云深度学习缺陷识别",
+   "多视图立体视觉裂纹检测",
+   "结构光三维表面缺陷",
+   "三维网格损伤分割",
+   "点云语义分割结构健康监测"
+  ],
+  "needs_clarification": [
+   "Which type of 3D imaging modality is used — LiDAR point cloud, structured light, photogrammetry, or depth camera?",
+   "What is the target object — concrete/civil structures, mechanical parts, pipelines, or cultural relics?",
+   "Is the focus on geometric damage (cracks, spalling, deformation) or material/internal damage (subsurface defects via CT/ultrasound 3D)?"
+  ],
+  "site_hints": [
+   "openaccess.thecvf.com",
+   "arxiv.org",
+   "ieeexplore.ieee.org",
+   "ascelibrary.org",
+   "mdpi.com"
+  ]
+ },
+ "plan": {
+  "rounds": [
+   {
+    "round": 1,
+    "name": "broad_recall",
+    "goal": "wide initial sweep across paper + repo backends covering 3D point cloud, mesh, and multi-view methods for damage/defect detection",
+    "calls": [
+     {
+      "tool": "search_arxiv",
+      "query": "3D point cloud damage detection",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "anchor call to capture the main deep-learning-on-point-cloud defect detection literature",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_arxiv",
+      "query": "deep learning structural defect 3D",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "broaden to deep learning approaches applied to structural/infrastructural 3D defect recognition",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_openalex",
+      "query": "PointNet surface defect segmentation",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "capture PointNet-family work specifically applied to surface defect segmentation",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_crossref",
+      "query": "multi-view stereo crack detection",
+      "target_role": "reference",
+      "why_call": "surface photogrammetry / multi-view stereo crack inspection papers indexed in Crossref",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     }
+    ]
+   },
+   {
+    "round": 2,
+    "name": "reference_expansion",
+    "goal": "expand coverage via benchmark, survey, and recent-advances variants",
+    "calls": [
+     {
+      "tool": "search_arxiv",
+      "query": "point cloud segmentation survey",
+      "target_role": "survey",
+      "why_call": "locate recent survey articles on point cloud segmentation methods applicable to damage detection",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_arxiv",
+      "query": "structural health monitoring point cloud",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "find recent SHM literature coupling point clouds with deep learning",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_openalex",
+      "query": "3D CNN defect benchmark",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "collect benchmark / dataset papers benchmarking 3D CNNs on defect data",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_crossref",
+      "query": "mesh-based damage recognition recent",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "surface mesh-based geometric damage recognition advances",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     }
+    ]
+   },
+   {
+    "round": 3,
+    "name": "repo_dataset_followup",
+    "goal": "find runnable code + datasets for 3D imaging damage detection",
+    "calls": [
+     {
+      "tool": "search_github",
+      "query": "pointnet damage",
+      "target_role": "repo",
+      "why_call": "locate runnable PointNet/PointNet++ implementations applied to damage or defect datasets",
+      "expected_output": "repo",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_github",
+      "query": "3d defect",
+      "target_role": "dataset",
+      "why_call": "find public 3D defect / crack datasets with accompanying code",
+      "expected_output": "dataset",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_github",
+      "query": "point cloud crack",
+      "target_role": "repo",
+      "why_call": "surface GitHub projects that process point clouds for crack / structural damage",
+      "expected_output": "repo",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_arxiv",
+      "query": "structured light defect dataset",
+      "target_role": "dataset",
+      "why_call": "capture arXiv papers releasing structured-light 3D defect inspection datasets",
+      "expected_output": "dataset",
+      "fallback_tool": ""
+     }
+    ]
+   }
+  ],
+  "year_min": 2018,
+  "top_k_per_adapter": 8,
+  "site_keywords": [
+   "arxiv.org",
+   "openaccess.thecvf.com",
+   "ieeexplore.ieee.org",
+   "ascelibrary.org",
+   "mdpi.com"
+  ],
+  "arxiv_queries": [
+   "3D point cloud damage detection",
+   "deep learning structural defect 3D",
+   "point cloud segmentation survey",
+   "structural health monitoring point cloud",
+   "structured light defect dataset"
+  ],
+  "openalex_queries": [
+   "PointNet surface defect segmentation",
+   "3D CNN defect benchmark"
+  ],
+  "crossref_queries": [
+   "multi-view stereo crack detection",
+   "mesh-based damage recognition recent"
+  ],
+  "github_queries": [
+   "pointnet damage",
+   "3d defect",
+   "point cloud crack"
+  ]
+ },
+ "raw_tool_results": {
+  "arxiv": [
+   {
+    "title": "Topological Control of Chirality and Spin with Structured Light",
+    "abstract": "Structured light beams with engineered topological properties offer a powerful means to control spin angular momentum (SAM) and optical chirality, key quantities shaped by spin-orbit interaction (SOI) in light. Such effects are typically regarded as emerging only through light-matter interactions. Here, we show that higher-order Poincaré modes, carrying a tunable Pancharatnam topological charge $\\ell_p$, enable precise control of SOI purely from the intrinsic topology of the light field, without requiring any material interface. In doing so, we reveal a free-space paraxial optical Hall effect, where modulation of $\\ell_p$ drives spatial separation of circular polarization states - a direct signature of SOI in a regime previously thought immune to such behaviour. Our analysis identifies two propagation-induced topological mechanisms underlying this effect: differential Gouy phase shifts between orthogonal components, and radial divergence of the beam envelope. These results overturn the common view that spin-orbit effects in free space require non-paraxial conditions, and establish a broadly tunable route to generating and controlling chirality and SAM without tight focusing. This approach provides new opportunities for optical manipulation, chiral sensing, and high-dimensional photonic information processing.",
+    "authors": [
+     "Light Mkhumbuza",
+     "Pedro Ornelas",
+     "Angela Dudley",
+     "Isaac Nape",
+     "Kayn A. Forbes"
+    ],
+    "arxiv_id": "2508.08733v3",
+    "url": "http://arxiv.org/abs/2508.08733v3",
+    "published": "2025-08-12T08:24:51Z",
+    "year": 2025,
+    "source_query": "structured light defect dataset",
+    "_round": 3,
+    "_round_name": "repo_dataset_followup"
+   },
+   {
+    "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+    "abstract": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+    "authors": [
+     "Jeffrey D. Rudie",
+     "Hui-Ming Lin",
+     "Robyn L. Ball",
+     "Sabeena Jalal",
+     "Luciano M. Prevedello",
+     "Savvas Nicolaou",
+     "Brett S. Marinelli",
+     "Adam E. Flanders",
+     "Kirti Magudia",
+     "George Shih",
+     "Melissa A. Davis",
+     "John Mongan",
+     "Peter D. Chang",
+     "Ferco H. Berger",
+     "Sebastiaan Hermans",
+     "Meng Law",
+     "Tyler Richards",
+     "Jan-Peter Grunz",
+     "Andreas Steven Kunz",
+     "Shobhit Mathur",
+     "Sandro Galea-Soler",
+     "Andrew D. Chung",
+     "Saif Afat",
+     "Chin-Chi Kuo",
+     "Layal Aweidah",
+     "Ana Villanueva Campos",
+     "Arjuna Somasundaram",
+     "Felipe Antonio Sanchez Tijmes",
+     "Attaporn Jantarangkoon",
+     "Leonardo Kayat Bittencourt",
+     "Michael Brassil",
+     "Ayoub El Hajjami",
+     "Hakan Dogan",
+     "Muris Becircic",
+     "Agrahara G. Bharatkumar",
+     "Eduardo Moreno Júdice de Mattos Farina",
+     "Dataset Curator Group",
+     "Dataset Contributor Group",
+     "Dataset Annotator Group",
+     "Errol Colak"
+    ],
+    "arxiv_id": "2405.19595v1",
+    "url": "http://arxiv.org/abs/2405.19595v1",
+    "published": "2024-05-30T01:18:50Z",
+    "year": 2024,
+    "source_query": "structured light defect dataset",
+    "_round": 3,
+    "_round_name": "repo_dataset_followup"
+   },
+   {
+    "title": "The RSNA Lumbar Degenerative Imaging Spine Classification (LumbarDISC) Dataset",
+    "abstract": "The Radiological Society of North America (RSNA) Lumbar Degenerative Imaging Spine Classification (LumbarDISC) dataset is the largest publicly available dataset of adult MRI lumbar spine examinations annotated for degenerative changes. The dataset includes 2,697 patients with a total of 8,593 image series from 8 institutions across 6 countries and 5 continents. The dataset is available for free for non-commercial use via Kaggle and RSNA Medical Imaging Resource of AI (MIRA). The dataset was created for the RSNA 2024 Lumbar Spine Degenerative Classification competition where competitors developed deep learning models to grade degenerative changes in the lumbar spine. The degree of spinal canal, subarticular recess, and neural foraminal stenosis was graded at each intervertebral disc level in the lumbar spine. The images were annotated by expert volunteer neuroradiologists and musculoskeletal radiologists from the RSNA, American Society of Neuroradiology, and the American Society of Spine Radiology. This dataset aims to facilitate research and development in machine learning and lumbar spine imaging to lead to improved patient care and clinical efficiency.",
+    "authors": [
+     "Tyler J. Richards",
+     "Adam E. Flanders",
+     "Errol Colak",
+     "Luciano M. Prevedello",
+     "Robyn L. Ball",
+     "Felipe Kitamura",
+     "John Mongan",
+     "Maryam Vazirabad",
+     "Hui-Ming Lin",
+     "Anne Kendell",
+     "Thanat Kanthawang",
+     "Salita Angkurawaranon",
+     "Emre Altinmakas",
+     "Hakan Dogan",
+     "Paulo Eduardo de Aguiar Kuriki",
+     "Arjuna Somasundaram",
+     "Christopher Ruston",
+     "Deniz Bulja",
+     "Naida Spahovic",
+     "Jennifer Sommer",
+     "Sirui Jiang",
+     "Eduardo Moreno Judice de Mattos Farina",
+     "Eduardo Caminha Nunes",
+     "Michael Brassil",
+     "Megan McNamara",
+     "Johanna Ortiz",
+     "Jacob Peoples",
+     "Vinson L. Uytana",
+     "Anthony Kam",
+     "Venkata N. S. Dola",
+     "Daniel Murphy",
+     "David Vu",
+     "Dataset Contributor Group",
+     "Dataset Annotator Group",
+     "Competition Data Notebook Group",
+     "Jason F. Talbott"
+    ],
+    "arxiv_id": "2506.09162v1",
+    "url": "http://arxiv.org/abs/2506.09162v1",
+    "published": "2025-06-10T18:23:01Z",
+    "year": 2025,
+    "source_query": "structured light defect dataset",
+    "_round": 3,
+    "_round_name": "repo_dataset_followup"
+   },
+   {
+    "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+    "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+    "authors": [
+     "Shervan Fekri-Ershad"
+    ],
+    "arxiv_id": "1906.11561v1",
+    "url": "http://arxiv.org/abs/1906.11561v1",
+    "published": "2019-06-27T11:36:29Z",
+    "year": 2019,
+    "source_query": "structured light defect dataset",
+    "_round": 3,
+    "_round_name": "repo_dataset_followup"
+   }
+  ],
+  "openalex": [],
+  "crossref": [
+   {
+    "title": "MVCrackViT: Robust Multi-View Crack Detection For Point Cloud Segmentation Using View Attention",
+    "doi": "10.1109/icip51287.2024.10647726",
+    "DOI": "10.1109/icip51287.2024.10647726",
+    "authors": [
+     "Christian Benz",
+     "Volker Rodehorst"
+    ],
+    "author": [
+     {
+      "given": "Christian",
+      "family": "Benz",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Bauhaus-Universit&#x00E4;t Weimar,Computer Vision in Engineering,Germany"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Volker",
+      "family": "Rodehorst",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Bauhaus-Universit&#x00E4;t Weimar,Computer Vision in Engineering,Germany"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "2024 IEEE International Conference on Image Processing (ICIP)",
+    "container-title": [
+     "2024 IEEE International Conference on Image Processing (ICIP)"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/icip51287.2024.10647726",
+    "URL": "https://doi.org/10.1109/icip51287.2024.10647726",
+    "year": 2024,
+    "publication_year": 2024,
+    "citation_count": 2,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Multi-View Stereo: A Tutorial",
+    "doi": "10.1561/9781601988379",
+    "DOI": "10.1561/9781601988379",
+    "authors": [
+     "Yasutaka Furukawa",
+     "Carlos Hernández"
+    ],
+    "author": [
+     {
+      "given": "Yasutaka",
+      "family": "Furukawa",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Carlos",
+      "family": "Hernández",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": null,
+    "url": "https://doi.org/10.1561/9781601988379",
+    "URL": "https://doi.org/10.1561/9781601988379",
+    "year": 2015,
+    "publication_year": 2015,
+    "citation_count": 54,
+    "_crossref_type": "monograph",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Large-scale and high-quality multi-view stereo",
+    "doi": "10.70675/148211dbzca70z42b5z8bdez1b971c78d40f",
+    "DOI": "10.70675/148211dbzca70z42b5z8bdez1b971c78d40f",
+    "authors": [
+     "Hoang Hiep Vu"
+    ],
+    "author": [
+     {
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hoang Hiep",
+      "family": "Vu",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Paris Est"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": "<jats:title>Stéréo multi-vues à grande-échelle et de haute-qualité</jats:title>\n                <jats:p xml:lang=\"fr\">L'acquisition de modèles 3D des scènes réelles trouve son utilité dans de nombreuses applications pratiques, comme l'archivage numérique, les jeux vidéo, l'ingénierie, la publicité. Il existe principalement deux méthodes pour acquérir un modèle 3D: la reconstruction avec un scanner laser (méthode active) et la reconstruction à partir de plusieurs photographies d'une même scène prise dans des points de vues différentes (méthode passive). Si la méthode active permet d'acquérir des modèles avec une grande précision, il est cependant coûteux et difficile à mettre en place pour de grandes scènes extérieures. La méthode passive, ou la stéréo multi-vues est en revanche plus flexible, facile à mettre en oeuvre et surtout moins coûteuse que la méthode active. Cette thèse s'attaque au problème de la reconstruction de stéréo multi-vues à grande échelle et précise pour les scènes extérieures. Nous améliorons des méthodes précédentes et les assemblons pour créer une chaîne de stéréo multi-vues efficace tirant parti de l'accélération de cartes graphiques. La chaîne produit des maillages de qualité à partir d'images de haute résolution, ce qui permet d'atteindre les meilleurs scores dans de nombreuses évaluations. Aux plus grandes échelles, nous développons d'une part des techniques de type diviser-pour-régner pour reconstruire des morceaux partiaux de la scène. D'autre part, pour combiner ces résultats séparés, nous créons une nouvelle méthode qui fusionne rapidement des centaines de maillages. Nous réussissons à reconstruire de beaux maillages urbains et des monuments historiques précis à partir de grandes collections d'images (environ 1600 images de 5M Pixel)</jats:p>",
+    "url": "https://doi.org/10.70675/148211dbzca70z42b5z8bdez1b971c78d40f",
+    "URL": "https://doi.org/10.70675/148211dbzca70z42b5z8bdez1b971c78d40f",
+    "year": null,
+    "publication_year": null,
+    "citation_count": 0,
+    "_crossref_type": "dissertation",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Topology-adaptive multi-view photometric stereo",
+    "doi": "10.1109/cvpr.2011.5995576",
+    "DOI": "10.1109/cvpr.2011.5995576",
+    "authors": [
+     "Yusuke Yoshiyasu",
+     "Nobutoshi Yamazaki"
+    ],
+    "author": [
+     {
+      "given": "Yusuke",
+      "family": "Yoshiyasu",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Nobutoshi",
+      "family": "Yamazaki",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "CVPR 2011",
+    "container-title": [
+     "CVPR 2011"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/cvpr.2011.5995576",
+    "URL": "https://doi.org/10.1109/cvpr.2011.5995576",
+    "year": 2011,
+    "publication_year": 2011,
+    "citation_count": 7,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "General composition method for optical-plate-based LCD multi-view stereo image",
+    "doi": "10.3724/sp.j.1087.2008.00195",
+    "DOI": "10.3724/sp.j.1087.2008.00195",
+    "authors": [
+     "Xiao-wei SONG"
+    ],
+    "author": [
+     {
+      "given": "Xiao-wei",
+      "family": "SONG",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Journal of Computer Applications",
+    "container-title": [
+     "Journal of Computer Applications"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.3724/sp.j.1087.2008.00195",
+    "URL": "https://doi.org/10.3724/sp.j.1087.2008.00195",
+    "year": 2008,
+    "publication_year": 2008,
+    "citation_count": 2,
+    "_crossref_type": "journal-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Multi-view Stereo 3D Reconstruction Based on Attention Mechanism",
+    "doi": "10.12792/icisip2023.038",
+    "DOI": "10.12792/icisip2023.038",
+    "authors": [
+     "Wenjing Bian",
+     "Dongren Liu",
+     "Lifeng Zhang"
+    ],
+    "author": [
+     {
+      "given": "Wenjing",
+      "family": "Bian",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Dongren",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Lifeng",
+      "family": "Zhang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "The Proceedings of The 10th International Conference on Intelligent Systems and Image Processing 2023",
+    "container-title": [
+     "The Proceedings of The 10th International Conference on Intelligent Systems and Image Processing 2023"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.12792/icisip2023.038",
+    "URL": "https://doi.org/10.12792/icisip2023.038",
+    "year": 2023,
+    "publication_year": 2023,
+    "citation_count": 0,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "MVS2: Deep Unsupervised Multi-View Stereo with Multi-View Symmetry",
+    "doi": "10.1109/3dv.2019.00010",
+    "DOI": "10.1109/3dv.2019.00010",
+    "authors": [
+     "Yuchao Dai",
+     "Zhidong Zhu",
+     "Zhibo Rao",
+     "Bo Li"
+    ],
+    "author": [
+     {
+      "given": "Yuchao",
+      "family": "Dai",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Zhidong",
+      "family": "Zhu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Zhibo",
+      "family": "Rao",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Bo",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "venue": "2019 International Conference on 3D Vision (3DV)",
+    "container-title": [
+     "2019 International Conference on 3D Vision (3DV)"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/3dv.2019.00010",
+    "URL": "https://doi.org/10.1109/3dv.2019.00010",
+    "year": 2019,
+    "publication_year": 2019,
+    "citation_count": 75,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Just a Few Points are All You Need for Multi-view Stereo: A Novel Semi-supervised Learning Method for Multi-view Stereo",
+    "doi": "10.1109/iccv48922.2021.00612",
+    "DOI": "10.1109/iccv48922.2021.00612",
+    "authors": [
+     "Taekyung Kim",
+     "Jaehoon Choi",
+     "Seokeon Choi",
+     "Dongki Jung",
+     "Changick Kim"
+    ],
+    "author": [
+     {
+      "given": "Taekyung",
+      "family": "Kim",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Korea Advanced Institute of Science and Technology"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Jaehoon",
+      "family": "Choi",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "University of Maryland"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Seokeon",
+      "family": "Choi",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Korea Advanced Institute of Science and Technology"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Dongki",
+      "family": "Jung",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "NAVER LABS"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Changick",
+      "family": "Kim",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Korea Advanced Institute of Science and Technology"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "venue": "2021 IEEE/CVF International Conference on Computer Vision (ICCV)",
+    "container-title": [
+     "2021 IEEE/CVF International Conference on Computer Vision (ICCV)"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/iccv48922.2021.00612",
+    "URL": "https://doi.org/10.1109/iccv48922.2021.00612",
+    "year": 2021,
+    "publication_year": 2021,
+    "citation_count": 9,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Facial Paralysis Recognition Using Face Mesh-Based Learning",
+    "doi": "10.5220/0011682900003411",
+    "DOI": "10.5220/0011682900003411",
+    "authors": [
+     "Zeerak Baig",
+     "Dustin van der Haar"
+    ],
+    "author": [
+     {
+      "given": "Zeerak",
+      "family": "Baig",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Academy of Computer Science and Software Engineering, University of Johannesburg, Kingsway Avenue and University Rd, Auckland Park, South Africa, --- Select a Country ---"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Dustin",
+      "family": "van der Haar",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Academy of Computer Science and Software Engineering, University of Johannesburg, Kingsway Avenue and University Rd, Auckland Park, South Africa, --- Select a Country ---"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Proceedings of the 12th International Conference on Pattern Recognition Applications and Methods",
+    "container-title": [
+     "Proceedings of the 12th International Conference on Pattern Recognition Applications and Methods"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.5220/0011682900003411",
+    "URL": "https://doi.org/10.5220/0011682900003411",
+    "year": 2023,
+    "publication_year": 2023,
+    "citation_count": 9,
+    "_crossref_type": "proceedings-article",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "Mesh-based camera pairs selection and occlusion-aware masking for mesh refinement",
+    "doi": "10.1016/j.patrec.2019.05.006",
+    "DOI": "10.1016/j.patrec.2019.05.006",
+    "authors": [
+     "Andrea Romanoni",
+     "Matteo Matteucci"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0001-6941-6053",
+      "authenticated-orcid": false,
+      "given": "Andrea",
+      "family": "Romanoni",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Matteo",
+      "family": "Matteucci",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Pattern Recognition Letters",
+    "container-title": [
+     "Pattern Recognition Letters"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1016/j.patrec.2019.05.006",
+    "URL": "https://doi.org/10.1016/j.patrec.2019.05.006",
+    "year": 2019,
+    "publication_year": 2019,
+    "citation_count": 12,
+    "_crossref_type": "journal-article",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "Handwritten Chinese character recognition based on double elastic mesh",
+    "doi": "10.3724/sp.j.1087.2009.00395",
+    "DOI": "10.3724/sp.j.1087.2009.00395",
+    "authors": [
+     "Zhang-hui CHEN",
+     "Xiao-hui HUANG",
+     "Peng-fei CHEN",
+     "Wen-long LI",
+     "Si-yao ZHU"
+    ],
+    "author": [
+     {
+      "given": "Zhang-hui",
+      "family": "CHEN",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Xiao-hui",
+      "family": "HUANG",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Peng-fei",
+      "family": "CHEN",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Wen-long",
+      "family": "LI",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Si-yao",
+      "family": "ZHU",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Journal of Computer Applications",
+    "container-title": [
+     "Journal of Computer Applications"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.3724/sp.j.1087.2009.00395",
+    "URL": "https://doi.org/10.3724/sp.j.1087.2009.00395",
+    "year": 2009,
+    "publication_year": 2009,
+    "citation_count": 4,
+    "_crossref_type": "journal-article",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "Recent Developments in Open Mesh-Based Inguinal Hernia Repair: A Review",
+    "doi": "10.9734/bpi/msraa/v12/6402",
+    "DOI": "10.9734/bpi/msraa/v12/6402",
+    "authors": [
+     "Kumar H.R."
+    ],
+    "author": [
+     {
+      "given": "Kumar",
+      "family": "H.R.",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Medical Science: Recent Advances and Applications Vol. 12",
+    "container-title": [
+     "Medical Science: Recent Advances and Applications Vol. 12"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.9734/bpi/msraa/v12/6402",
+    "URL": "https://doi.org/10.9734/bpi/msraa/v12/6402",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "book-chapter",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "3D ductile damage to fracture transition based on phase field and mesh adaptation : application to metal forming processes",
+    "doi": "10.70675/853f96d3z2578z465az8210zfd3547232efe",
+    "DOI": "10.70675/853f96d3z2578z465az8210zfd3547232efe",
+    "authors": [
+     "Hazem Eldahshan"
+    ],
+    "author": [
+     {
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hazem",
+      "family": "Eldahshan",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/013cjyk83",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ],
+        "name": "Université Paris sciences et lettres"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": "<jats:title>Transition endommagement-rupture en 3D basé sur le champ de phase et l'adaptation du maillage : application aux procédés de mise en forme</jats:title>\n                <jats:p xml:lang=\"fr\">Cette thèse contribue à la modélisation de la transition endommagement - rupture dans un cadre numérique parallèle 3D basé sur la méthode des éléments finis. Les nouvelles contributions comprennent: (i). une formulation champ de phase - endommagement couplée qui est adaptée pour les applications de mise en forme; (ii). un remaillage adaptatif suivi par l’identification de l'intersection de la surface de la fissure avec des topologies de maillage arbitraires basées sur l'évolution du champ de phase; (iii). l’insertion de la surface de la fissure dans le maillage à l'aide d'opérations locales de partitionnement du maillage; (iv). une stratégie de dédoublage nodale basée sur l'algorithme de coloration locale afin d'ouvrir les faces des fissures suivi par une étape de remaillage volumique. Toutes les étapes algorithmiques ont été mises en œuvre dans un cadre numérique parallèle afin de gérer les procédés industriels à grande échelle.Tout d’abord, différents cas test ont été testés où des comparaisons qualitatives et quantitatives avec la littérature ont été réalisées. Ensuite, la stratégie proposée a été utilisée pour la modélisation de la transition endommagement - rupture des procédés industriels complexes tels que: (i). la formation de fissures internes en chevrons lors du procédé d’extrusion ; (ii). des simulations de découpe telle que le procédé de cisaillement de barres, de découpage et de perçage; (iii). un procédé industriel à multi-étapes où la sortie de chaque étape est transférée à la seconde. Les comparaisons avec la méthode de suppression d'éléments (kill element) montrent une amélioration significative de la qualité des surfaces cisaillées prédites avec la capacité de détecter avec précision les caractéristiques de surfaces rompues telles que les bavures. De plus, le volume et l'énergie sont conservés pendant la simulation, ce qui résout l'un des principaux problèmes qui apparaît avec la méthode de suppression d'éléments.</jats:p>",
+    "url": "https://doi.org/10.70675/853f96d3z2578z465az8210zfd3547232efe",
+    "URL": "https://doi.org/10.70675/853f96d3z2578z465az8210zfd3547232efe",
+    "year": null,
+    "publication_year": null,
+    "citation_count": 0,
+    "_crossref_type": "dissertation",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "An active mesh based tracker for improved feature correspondences",
+    "doi": "10.1016/s0167-8655(01)00176-3",
+    "DOI": "10.1016/s0167-8655(01)00176-3",
+    "authors": [
+     "A Griffin",
+     "J Kittler"
+    ],
+    "author": [
+     {
+      "given": "A",
+      "family": "Griffin",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J",
+      "family": "Kittler",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Pattern Recognition Letters",
+    "container-title": [
+     "Pattern Recognition Letters"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1016/s0167-8655(01)00176-3",
+    "URL": "https://doi.org/10.1016/s0167-8655(01)00176-3",
+    "year": 2002,
+    "publication_year": 2002,
+    "citation_count": 4,
+    "_crossref_type": "journal-article",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "Pattern Recognition Based on Straight Line Segments",
+    "doi": "10.5772/9351",
+    "DOI": "10.5772/9351",
+    "authors": [
+     "Joao Henrique Burckas Ribeiro",
+     "Ronaldo Fumio"
+    ],
+    "author": [
+     {
+      "given": "Joao Henrique",
+      "family": "Burckas Ribeiro",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Ronaldo",
+      "family": "Fumio",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Pattern Recognition Recent Advances",
+    "container-title": [
+     "Pattern Recognition Recent Advances"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.5772/9351",
+    "URL": "https://doi.org/10.5772/9351",
+    "year": 2010,
+    "publication_year": 2010,
+    "citation_count": 1,
+    "_crossref_type": "book-chapter",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "Table 1: Few recent CAPTCHA recognition-based studies methods and their results.",
+    "doi": "10.7717/peerjcs.879/table-1",
+    "DOI": "10.7717/peerjcs.879/table-1",
+    "authors": [],
+    "author": [],
+    "venue": null,
+    "container-title": [],
+    "abstract": null,
+    "url": "https://doi.org/10.7717/peerjcs.879/table-1",
+    "URL": "https://doi.org/10.7717/peerjcs.879/table-1",
+    "year": null,
+    "publication_year": null,
+    "citation_count": 0,
+    "_crossref_type": "component",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   }
+  ],
+  "github": [
+   {
+    "id": 1088306313,
+    "node_id": "R_kgDOQN48iQ",
+    "name": "Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+    "full_name": "umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+    "private": false,
+    "owner": {
+     "login": "umairsaif133",
+     "id": 94660687,
+     "node_id": "U_kgDOBaRoTw",
+     "avatar_url": "https://avatars.githubusercontent.com/u/94660687?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/umairsaif133",
+     "html_url": "https://github.com/umairsaif133",
+     "followers_url": "https://api.github.com/users/umairsaif133/followers",
+     "following_url": "https://api.github.com/users/umairsaif133/following{/other_user}",
+     "gists_url": "https://api.github.com/users/umairsaif133/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/umairsaif133/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/umairsaif133/subscriptions",
+     "organizations_url": "https://api.github.com/users/umairsaif133/orgs",
+     "repos_url": "https://api.github.com/users/umairsaif133/repos",
+     "events_url": "https://api.github.com/users/umairsaif133/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/umairsaif133/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+    "description": null,
+    "fork": false,
+    "url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+    "forks_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/forks",
+    "keys_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/teams",
+    "hooks_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/hooks",
+    "issue_events_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/events",
+    "assignees_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/tags",
+    "blobs_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/languages",
+    "stargazers_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/stargazers",
+    "contributors_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/contributors",
+    "subscribers_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/subscribers",
+    "subscription_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/subscription",
+    "commits_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/merges",
+    "archive_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/downloads",
+    "issues_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/labels{/name}",
+    "releases_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-/deployments",
+    "created_at": "2025-11-02T18:02:06Z",
+    "updated_at": "2025-11-07T23:55:12Z",
+    "pushed_at": "2025-11-07T23:55:08Z",
+    "git_url": "git://github.com/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-.git",
+    "ssh_url": "git@github.com:umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-.git",
+    "clone_url": "https://github.com/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-.git",
+    "svn_url": "https://github.com/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+    "homepage": null,
+    "size": 15,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": {
+     "key": "mit",
+     "name": "MIT License",
+     "spdx_id": "MIT",
+     "url": "https://api.github.com/licenses/mit",
+     "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 0,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 0,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 881746158,
+    "node_id": "R_kgDONI5g7g",
+    "name": "Point-cloud-segmentation-for-road-damage-detection",
+    "full_name": "xoraizw/Point-cloud-segmentation-for-road-damage-detection",
+    "private": false,
+    "owner": {
+     "login": "xoraizw",
+     "id": 136005119,
+     "node_id": "U_kgDOCBtF_w",
+     "avatar_url": "https://avatars.githubusercontent.com/u/136005119?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/xoraizw",
+     "html_url": "https://github.com/xoraizw",
+     "followers_url": "https://api.github.com/users/xoraizw/followers",
+     "following_url": "https://api.github.com/users/xoraizw/following{/other_user}",
+     "gists_url": "https://api.github.com/users/xoraizw/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/xoraizw/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/xoraizw/subscriptions",
+     "organizations_url": "https://api.github.com/users/xoraizw/orgs",
+     "repos_url": "https://api.github.com/users/xoraizw/repos",
+     "events_url": "https://api.github.com/users/xoraizw/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/xoraizw/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/xoraizw/Point-cloud-segmentation-for-road-damage-detection",
+    "description": "Implementation of PointNet for segmenting damaged and un-damaged point clouds of Road-LIDAR data.",
+    "fork": false,
+    "url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection",
+    "forks_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/forks",
+    "keys_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/teams",
+    "hooks_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/hooks",
+    "issue_events_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/events",
+    "assignees_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/tags",
+    "blobs_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/languages",
+    "stargazers_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/stargazers",
+    "contributors_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/contributors",
+    "subscribers_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/subscribers",
+    "subscription_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/subscription",
+    "commits_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/merges",
+    "archive_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/downloads",
+    "issues_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/labels{/name}",
+    "releases_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/xoraizw/Point-cloud-segmentation-for-road-damage-detection/deployments",
+    "created_at": "2024-11-01T06:16:06Z",
+    "updated_at": "2024-11-01T06:17:27Z",
+    "pushed_at": "2024-11-01T06:17:24Z",
+    "git_url": "git://github.com/xoraizw/Point-cloud-segmentation-for-road-damage-detection.git",
+    "ssh_url": "git@github.com:xoraizw/Point-cloud-segmentation-for-road-damage-detection.git",
+    "clone_url": "https://github.com/xoraizw/Point-cloud-segmentation-for-road-damage-detection.git",
+    "svn_url": "https://github.com/xoraizw/Point-cloud-segmentation-for-road-damage-detection",
+    "homepage": null,
+    "size": 986,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 0,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 0,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   }
+  ]
+ },
+ "candidate_pool": [
+  {
+   "stable_id": "topological control of chirality and spin with structured light",
+   "candidate_id": "c-35b480e8",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Topological Control of Chirality and Spin with Structured Light",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2508.08733v3",
+   "identifier": "2508.08733v3",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Structured light beams with engineered topological properties offer a powerful means to control spin angular momentum (SAM) and optical chirality, key quantities shaped by spin-orbit interaction (SOI) in light. Such effects are typically regarded as emerging only through light-matter interactions. Here, we show that higher-order Poincaré modes, carrying a tunable Pancharatnam topological charge $\\ell_p$, enable precise control of SOI purely from the intrinsic topology of the light field, without requiring any material interface. In doing so, we reveal a free-space paraxial optical Hall effect, where modulation of $\\ell_p$ drives spatial separation of circular polarization states - a direct signature of SOI in a regime previously thought immune to such behaviour. Our analysis identifies two propagation-induced topological mechanisms underlying this effect: differential Gouy phase shifts between orthogonal components, and radial divergence of the beam envelope. These results overturn the common view that spin-orbit effects in free space require non-paraxial conditions, and establish a broadly tunable route to generating and controlling chirality and SAM without tight focusing. This approach provides new opportunities for optical manipulation, chiral sensing, and high-dimensional photonic information processing.",
+   "extra": {}
+  },
+  {
+   "stable_id": "the rsna abdominal traumatic injury ct (ratic) dataset",
+   "candidate_id": "c-3d589791",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2024,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2405.19595v1",
+   "identifier": "2405.19595v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+   "extra": {}
+  },
+  {
+   "stable_id": "the rsna lumbar degenerative imaging spine classification (lumbardisc) dataset",
+   "candidate_id": "c-55e48609",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "The RSNA Lumbar Degenerative Imaging Spine Classification (LumbarDISC) Dataset",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2506.09162v1",
+   "identifier": "2506.09162v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "The Radiological Society of North America (RSNA) Lumbar Degenerative Imaging Spine Classification (LumbarDISC) dataset is the largest publicly available dataset of adult MRI lumbar spine examinations annotated for degenerative changes. The dataset includes 2,697 patients with a total of 8,593 image series from 8 institutions across 6 countries and 5 continents. The dataset is available for free for non-commercial use via Kaggle and RSNA Medical Imaging Resource of AI (MIRA). The dataset was created for the RSNA 2024 Lumbar Spine Degenerative Classification competition where competitors developed deep learning models to grade degenerative changes in the lumbar spine. The degree of spinal canal, subarticular recess, and neural foraminal stenosis was graded at each intervertebral disc level in the lumbar spine. The images were annotated by expert volunteer neuroradiologists and musculoskeletal radiologists from the RSNA, American Society of Neuroradiology, and the American Society of Spine Radiology. This dataset aims to facilitate research and development in machine learning and lumbar spine imaging to lead to improved patient care and clinical efficiency.",
+   "extra": {}
+  },
+  {
+   "stable_id": "a new benchmark dataset for texture image analysis and surface defect detection",
+   "candidate_id": "c-502e9839",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2019,
+   "venue": null,
+   "url": "http://arxiv.org/abs/1906.11561v1",
+   "identifier": "1906.11561v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+   "extra": {}
+  },
+  {
+   "stable_id": "mvcrackvit: robust multi-view crack detection for point cloud segmentation using view attention",
+   "candidate_id": "c-8e220e87",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "MVCrackViT: Robust Multi-View Crack Detection For Point Cloud Segmentation Using View Attention",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2024,
+   "venue": "2024 IEEE International Conference on Image Processing (ICIP)",
+   "url": "https://doi.org/10.1109/icip51287.2024.10647726",
+   "identifier": "10.1109/icip51287.2024.10647726",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "multi-view stereo: a tutorial",
+   "candidate_id": "c-322b30e8",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Multi-View Stereo: A Tutorial",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2015,
+   "venue": null,
+   "url": "https://doi.org/10.1561/9781601988379",
+   "identifier": "10.1561/9781601988379",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "large-scale and high-quality multi-view stereo",
+   "candidate_id": "c-6f876b1e",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Large-scale and high-quality multi-view stereo",
+   "sources": [
+    "crossref"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://doi.org/10.70675/148211dbzca70z42b5z8bdez1b971c78d40f",
+   "identifier": "10.70675/148211dbzca70z42b5z8bdez1b971c78d40f",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "<jats:title>Stéréo multi-vues à grande-échelle et de haute-qualité</jats:title>\n                <jats:p xml:lang=\"fr\">L'acquisition de modèles 3D des scènes réelles trouve son utilité dans de nombreuses applications pratiques, comme l'archivage numérique, les jeux vidéo, l'ingénierie, la publicité. Il existe principalement deux méthodes pour acquérir un modèle 3D: la reconstruction avec un scanner laser (méthode active) et la reconstruction à partir de plusieurs photographies d'une même scène prise dans des points de vues différentes (méthode passive). Si la méthode active permet d'acquérir des modèles avec une grande précision, il est cependant coûteux et difficile à mettre en place pour de grandes scènes extérieures. La méthode passive, ou la stéréo multi-vues est en revanche plus flexible, facile à mettre en oeuvre et surtout moins coûteuse que la méthode active. Cette thèse s'attaque au problème de la reconstruction de stéréo multi-vues à grande échelle et précise pour les scènes extérieures. Nous améliorons des méthodes précédentes et les assemblons pour créer une chaîne de stéréo multi-vues efficace tirant parti de l'accélération de cartes graphiques. La chaîne produit des maillages de qualité à partir d'images de haute résolution, ce qui permet d'atteindre les meilleurs scores dans de nombreuses évaluations. Aux plus grandes échelles, nous développons d'une part des techniques de type diviser-pour-régner pour reconstruire des morceaux partiaux de la scène. D'autre part, pour combiner ces résultats séparés, nous créons une nouvelle méthode qui fusionne rapidement des centaines de maillages. Nous réussissons à reconstruire de beaux maillages urbains et des monuments historiques précis à partir de grandes collections d'images (environ 1600 images de 5M Pixel)</jats:p>",
+   "extra": {}
+  },
+  {
+   "stable_id": "topology-adaptive multi-view photometric stereo",
+   "candidate_id": "c-d1996e8e",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Topology-adaptive multi-view photometric stereo",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2011,
+   "venue": "CVPR 2011",
+   "url": "https://doi.org/10.1109/cvpr.2011.5995576",
+   "identifier": "10.1109/cvpr.2011.5995576",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "general composition method for optical-plate-based lcd multi-view stereo image",
+   "candidate_id": "c-a8b075ae",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "General composition method for optical-plate-based LCD multi-view stereo image",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2008,
+   "venue": "Journal of Computer Applications",
+   "url": "https://doi.org/10.3724/sp.j.1087.2008.00195",
+   "identifier": "10.3724/sp.j.1087.2008.00195",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "multi-view stereo 3d reconstruction based on attention mechanism",
+   "candidate_id": "c-d7f4a150",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Multi-view Stereo 3D Reconstruction Based on Attention Mechanism",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2023,
+   "venue": "The Proceedings of The 10th International Conference on Intelligent Systems and Image Processing 2023",
+   "url": "https://doi.org/10.12792/icisip2023.038",
+   "identifier": "10.12792/icisip2023.038",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "mvs2: deep unsupervised multi-view stereo with multi-view symmetry",
+   "candidate_id": "c-46a0eb5d",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "MVS2: Deep Unsupervised Multi-View Stereo with Multi-View Symmetry",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2019,
+   "venue": "2019 International Conference on 3D Vision (3DV)",
+   "url": "https://doi.org/10.1109/3dv.2019.00010",
+   "identifier": "10.1109/3dv.2019.00010",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "just a few points are all you need for multi-view stereo: a novel semi-supervised learning method for multi-view stereo",
+   "candidate_id": "c-b5bad248",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Just a Few Points are All You Need for Multi-view Stereo: A Novel Semi-supervised Learning Method for Multi-view Stereo",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2021,
+   "venue": "2021 IEEE/CVF International Conference on Computer Vision (ICCV)",
+   "url": "https://doi.org/10.1109/iccv48922.2021.00612",
+   "identifier": "10.1109/iccv48922.2021.00612",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "facial paralysis recognition using face mesh-based learning",
+   "candidate_id": "c-9940f86f",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Facial Paralysis Recognition Using Face Mesh-Based Learning",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2023,
+   "venue": "Proceedings of the 12th International Conference on Pattern Recognition Applications and Methods",
+   "url": "https://doi.org/10.5220/0011682900003411",
+   "identifier": "10.5220/0011682900003411",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "mesh-based camera pairs selection and occlusion-aware masking for mesh refinement",
+   "candidate_id": "c-81fa3ec0",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Mesh-based camera pairs selection and occlusion-aware masking for mesh refinement",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2019,
+   "venue": "Pattern Recognition Letters",
+   "url": "https://doi.org/10.1016/j.patrec.2019.05.006",
+   "identifier": "10.1016/j.patrec.2019.05.006",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "handwritten chinese character recognition based on double elastic mesh",
+   "candidate_id": "c-7937ff50",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Handwritten Chinese character recognition based on double elastic mesh",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2009,
+   "venue": "Journal of Computer Applications",
+   "url": "https://doi.org/10.3724/sp.j.1087.2009.00395",
+   "identifier": "10.3724/sp.j.1087.2009.00395",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "recent developments in open mesh-based inguinal hernia repair: a review",
+   "candidate_id": "c-25ff717a",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Recent Developments in Open Mesh-Based Inguinal Hernia Repair: A Review",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": "Medical Science: Recent Advances and Applications Vol. 12",
+   "url": "https://doi.org/10.9734/bpi/msraa/v12/6402",
+   "identifier": "10.9734/bpi/msraa/v12/6402",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "3d ductile damage to fracture transition based on phase field and mesh adaptation : application to metal forming processes",
+   "candidate_id": "c-747d2323",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "3D ductile damage to fracture transition based on phase field and mesh adaptation : application to metal forming processes",
+   "sources": [
+    "crossref"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://doi.org/10.70675/853f96d3z2578z465az8210zfd3547232efe",
+   "identifier": "10.70675/853f96d3z2578z465az8210zfd3547232efe",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "<jats:title>Transition endommagement-rupture en 3D basé sur le champ de phase et l'adaptation du maillage : application aux procédés de mise en forme</jats:title>\n                <jats:p xml:lang=\"fr\">Cette thèse contribue à la modélisation de la transition endommagement - rupture dans un cadre numérique parallèle 3D basé sur la méthode des éléments finis. Les nouvelles contributions comprennent: (i). une formulation champ de phase - endommagement couplée qui est adaptée pour les applications de mise en forme; (ii). un remaillage adaptatif suivi par l’identification de l'intersection de la surface de la fissure avec des topologies de maillage arbitraires basées sur l'évolution du champ de phase; (iii). l’insertion de la surface de la fissure dans le maillage à l'aide d'opérations locales de partitionnement du maillage; (iv). une stratégie de dédoublage nodale basée sur l'algorithme de coloration locale afin d'ouvrir les faces des fissures suivi par une étape de remaillage volumique. Toutes les étapes algorithmiques ont été mises en œuvre dans un cadre numérique parallèle afin de gérer les procédés industriels à grande échelle.Tout d’abord, différents cas test ont été testés où des comparaisons qualitatives et quantitatives avec la littérature ont été réalisées. Ensuite, la stratégie proposée a été utilisée pour la modélisation de la transition endommagement - rupture des procédés industriels complexes tels que: (i). la formation de fissures internes en chevrons lors du procédé d’extrusion ; (ii). des simulations de découpe telle que le procédé de cisaillement de barres, de découpage et de perçage; (iii). un procédé industriel à multi-étapes où la sortie de chaque étape est transférée à la seconde. Les comparaisons avec la méthode de suppression d'éléments (kill element) montrent une amélioration significative de la qualité des surfaces cisaillées prédites avec la capacité de détecter avec précision les caractéristiques de surfaces rompues telles que les bavures. De plus, le volume et l'énergie sont conservés pendant la simulation, ce qui résout l'un des principaux problèmes qui apparaît avec la méthode de suppression d'éléments.</jats:p>",
+   "extra": {}
+  },
+  {
+   "stable_id": "an active mesh based tracker for improved feature correspondences",
+   "candidate_id": "c-285ddaed",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "An active mesh based tracker for improved feature correspondences",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2002,
+   "venue": "Pattern Recognition Letters",
+   "url": "https://doi.org/10.1016/s0167-8655(01)00176-3",
+   "identifier": "10.1016/s0167-8655(01)00176-3",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "pattern recognition based on straight line segments",
+   "candidate_id": "c-f2ae2863",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Pattern Recognition Based on Straight Line Segments",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2010,
+   "venue": "Pattern Recognition Recent Advances",
+   "url": "https://doi.org/10.5772/9351",
+   "identifier": "10.5772/9351",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "table 1: few recent captcha recognition-based studies methods and their results.",
+   "candidate_id": "c-cc8619e1",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Table 1: Few recent CAPTCHA recognition-based studies methods and their results.",
+   "sources": [
+    "crossref"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://doi.org/10.7717/peerjcs.879/table-1",
+   "identifier": "10.7717/peerjcs.879/table-1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "umairsaif133/point-cloud-road-damage-pointnet-pointnet-dgcnn-",
+   "candidate_id": "c-66c13761",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+   "identifier": null,
+   "description": "",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 0,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "xoraizw/point-cloud-segmentation-for-road-damage-detection",
+   "candidate_id": "c-1c8126ca",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "xoraizw/Point-cloud-segmentation-for-road-damage-detection",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/xoraizw/Point-cloud-segmentation-for-road-damage-detection",
+   "identifier": null,
+   "description": "Implementation of PointNet for segmenting damaged and un-damaged point clouds of Road-LIDAR data.",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 0,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "aid",
+   "candidate_id": "c-a1a73fed",
+   "evidence_type": "dataset",
+   "role_hint": "dataset",
+   "role_hints": [
+    "dataset"
+   ],
+   "role_evidence": [],
+   "title": "AID",
+   "sources": [
+    "whitelist_in_mentions"
+   ],
+   "year": null,
+   "venue": null,
+   "url": null,
+   "identifier": null,
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "scale": null,
+    "license": null
+   }
+  }
+ ],
+ "source_ledger": {
+  "rows": [
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "crossref",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 2,
+    "error": null
+   },
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "crossref",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 3,
+    "round_name": "repo_dataset_followup",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 3,
+    "round_name": "repo_dataset_followup",
+    "status": "ok",
+    "result_count": 4,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_rejected: Topological Control of Chirality and Spin with Structured Li",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_rejected",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_rejected: The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_rejected",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_rejected: The RSNA Lumbar Degenerative Imaging Spine Classification (L",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_rejected",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_rejected: A New Benchmark Dataset for Texture Image Analysis and Surfa",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_rejected",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_rejected: MVCrackViT: Robust Multi-View Crack Detection For Point Clou",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_rejected",
+    "result_count": 0,
+    "error": null
+   }
+  ],
+  "stats": {
+   "arxiv": {
+    "ok": 1,
+    "empty": 2,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 3
+   },
+   "openalex": {
+    "ok": 0,
+    "empty": 2,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "crossref": {
+    "ok": 2,
+    "empty": 0,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "github": {
+    "ok": 1,
+    "empty": 2,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 3
+   },
+   "openalex_citation": {
+    "ok": 0,
+    "empty": 0,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 5,
+    "seed_rejected": 5
+   }
+  },
+  "n_calls": 15
+ },
+ "evidence_review": [
+  {
+   "candidate_id": "c-35b480e8",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "structured light"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "point cloud",
+    "deep learning",
+    "defect segmentation",
+    "3D reconstruction"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Physics of optical spin/chirality; no relation to imaging-based damage inspection.",
+   "reason": "Paper is about structured light beams for spin-orbit interaction and optical chirality control, not about 3D imaging for damage/defect detection on surfaces or structures."
+  },
+  {
+   "candidate_id": "c-3d589791",
+   "evidence_type": "dataset",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "3D"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "point cloud",
+    "deep learning",
+    "surface defect",
+    "structural health monitoring"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Medical CT trauma dataset; cross-domain (medical, not structural/industrial 3D inspection).",
+   "reason": "RATIC is a medical imaging dataset of abdominal CT scans annotated for traumatic injuries. It is unrelated to 3D imaging-based defect detection on civil/industrial surfaces."
+  },
+  {
+   "candidate_id": "c-55e48609",
+   "evidence_type": "dataset",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "3D imaging"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "point cloud",
+    "defect segmentation",
+    "structural health monitoring",
+    "surface defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Medical MRI spine dataset; cross-domain, not structural/industrial 3D damage inspection.",
+   "reason": "LumbarDISC is a medical MRI dataset for degenerative spine classification. Domain mismatch with topic on 3D imaging-based defect/damage detection in civil or industrial settings."
+  },
+  {
+   "candidate_id": "c-502e9839",
+   "evidence_type": "paper",
+   "role_hint": "dataset",
+   "status": "candidate",
+   "matched_terms": [
+    "surface defect detection",
+    "deep learning"
+   ],
+   "missing_terms": [
+    "3D",
+    "point cloud",
+    "structured light",
+    "multi-view stereo",
+    "PointNet"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "dataset",
+   "exists_verdict": "exists",
+   "rank_reason": "Surface defect benchmark dataset, but 2D texture images, not 3D imaging.",
+   "reason": "Provides a texture/surface defect benchmark dataset relevant to defect detection task, though it focuses on 2D images rather than 3D point clouds or meshes."
+  },
+  {
+   "candidate_id": "c-8e220e87",
+   "evidence_type": "paper",
+   "role_hint": "unknown",
+   "status": "core",
+   "matched_terms": [
+    "multi-view",
+    "crack detection",
+    "point cloud segmentation",
+    "deep learning"
+   ],
+   "missing_terms": [
+    "structured light",
+    "mesh model"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Direct match: multi-view + point cloud + crack detection + deep learning (ViT attention).",
+   "reason": "MVCrackViT performs robust multi-view crack detection on point clouds via view attention, combining multi-view stereo with deep-learning-based segmentation for damage/crack identification."
+  },
+  {
+   "candidate_id": "c-322b30e8",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "multi-view stereo"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "point cloud",
+    "deep learning",
+    "defect segmentation"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Foundational MVS tutorial; useful background for 3D reconstruction methods.",
+   "reason": "Classic tutorial on multi-view stereo covering fundamentals of 3D reconstruction. Relevant background methodology for 3D imaging pipelines preceding damage detection."
+  },
+  {
+   "candidate_id": "c-6f876b1e",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "multi-view stereo",
+    "3D reconstruction"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "point cloud segmentation",
+    "deep learning",
+    "defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Large-scale high-quality MVS work; relevant to 3D imaging acquisition, no defect focus.",
+   "reason": "Addresses large-scale high-quality multi-view stereo reconstruction. Useful background for 3D imaging modality but not specifically about damage or defect detection."
+  },
+  {
+   "candidate_id": "c-d1996e8e",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "multi-view",
+    "photometric stereo"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "deep learning",
+    "point cloud",
+    "defect segmentation"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Topology-adaptive photometric stereo; relevant surface reconstruction method.",
+   "reason": "Topology-adaptive multi-view photometric stereo for 3D surface reconstruction. Could serve as a 3D imaging technique component but does not address defect detection."
+  },
+  {
+   "candidate_id": "c-a8b075ae",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "multi-view stereo"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "deep learning",
+    "point cloud",
+    "3D reconstruction application"
+   ],
+   "confidence_label": "low",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "LCD-based MVS imaging; distant but shares multi-view stereo modality.",
+   "reason": "Describes LCD optical-plate composition for multi-view stereo image acquisition. Tangentially relevant to structured multi-view imaging pipelines for inspection tasks."
+  },
+  {
+   "candidate_id": "c-d7f4a150",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "multi-view stereo",
+    "3D reconstruction",
+    "attention mechanism"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "defect segmentation",
+    "point cloud"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Attention-based MVS reconstruction; background method, no damage detection.",
+   "reason": "Applies attention mechanisms to multi-view stereo 3D reconstruction. Provides background deep-learning MVS methodology potentially usable for damage detection pipelines."
+  },
+  {
+   "candidate_id": "c-46a0eb5d",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "deep learning",
+    "multi-view stereo"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "point cloud segmentation",
+    "defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Deep unsupervised MVS; background 3D reconstruction method.",
+   "reason": "Deep unsupervised multi-view stereo leveraging multi-view symmetry. Strong background reference for deep-learning-based 3D reconstruction feeding inspection systems."
+  },
+  {
+   "candidate_id": "c-b5bad248",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "multi-view stereo",
+    "deep learning",
+    "semi-supervised"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "defect segmentation",
+    "point cloud"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "background",
+   "exists_verdict": "exists",
+   "rank_reason": "Semi-supervised MVS using sparse labels; relevant 3D reconstruction background.",
+   "reason": "Semi-supervised multi-view stereo method requiring few point labels. Useful training-strategy background for data-scarce 3D damage detection."
+  },
+  {
+   "candidate_id": "c-9940f86f",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "mesh",
+    "3D object recognition"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "defect",
+    "structural health monitoring",
+    "point cloud segmentation"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Medical facial paralysis recognition; cross-domain content.",
+   "reason": "Applies face mesh-based learning for facial paralysis recognition in medical context. Not about surface/structural damage detection in 3D imaging."
+  },
+  {
+   "candidate_id": "c-81fa3ec0",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "mesh",
+    "mesh refinement"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "defect segmentation",
+    "deep learning"
+   ],
+   "confidence_label": "low",
+   "relation_to_topic": "module",
+   "exists_verdict": "exists",
+   "rank_reason": "Mesh refinement method; possible module in 3D mesh-based damage pipelines.",
+   "reason": "Camera-pair selection and occlusion-aware mesh refinement technique. Could serve as a preprocessing module for mesh-based damage recognition workflows."
+  },
+  {
+   "candidate_id": "c-7937ff50",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "mesh"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "3D",
+    "defect",
+    "point cloud"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "2D handwritten character recognition; unrelated domain.",
+   "reason": "Uses elastic mesh for Chinese character recognition in 2D. No relation to 3D imaging or damage/defect detection."
+  },
+  {
+   "candidate_id": "c-25ff717a",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "mesh"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "3D imaging",
+    "point cloud",
+    "defect segmentation"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Surgical mesh medical review; cross-domain content.",
+   "reason": "Medical review of open mesh-based inguinal hernia repair techniques. No connection to 3D imaging-based damage detection in civil/industrial contexts."
+  },
+  {
+   "candidate_id": "c-747d2323",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "needs_manual",
+   "matched_terms": [
+    "3D",
+    "mesh adaptation",
+    "damage"
+   ],
+   "missing_terms": [
+    "deep learning",
+    "point cloud",
+    "surface defect",
+    "structured light"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "weak_related",
+   "exists_verdict": "exists",
+   "rank_reason": "Phase-field 3D ductile damage with mesh adaptation; mechanical modeling, not vision-based detection.",
+   "reason": "Computational mechanics thesis on 3D ductile damage-to-fracture with phase-field and mesh adaptation for metal forming. Shares '3D damage' terminology but not a vision-based defect detection method."
+  },
+  {
+   "candidate_id": "c-285ddaed",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "feature correspondences"
+   ],
+   "missing_terms": [
+    "damage detection",
+    "3D imaging",
+    "point cloud",
+    "mesh",
+    "defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Active mesh tracker for 2D feature matching; unrelated to damage detection.",
+   "reason": "Active-mesh-based 2D feature correspondence tracker in Pattern Recognition Letters. Not relevant to 3D imaging-based defect or damage detection."
+  },
+  {
+   "candidate_id": "c-f2ae2863",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "pattern recognition"
+   ],
+   "missing_terms": [
+    "3D",
+    "damage detection",
+    "point cloud",
+    "mesh",
+    "defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Straight line segment pattern recognition; no 3D/damage connection.",
+   "reason": "Generic pattern recognition on straight line segments. No relevance to 3D imaging, point clouds, or damage/defect detection."
+  },
+  {
+   "candidate_id": "c-cc8619e1",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [],
+   "missing_terms": [
+    "3D imaging",
+    "damage detection",
+    "point cloud",
+    "deep learning",
+    "defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "CAPTCHA recognition table; unrelated domain and content.",
+   "reason": "A summary table of CAPTCHA recognition studies. Completely unrelated to 3D imaging or damage/defect detection topics."
+  },
+  {
+   "candidate_id": "c-66c13761",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "PointNet",
+    "point cloud",
+    "damage detection"
+   ],
+   "missing_terms": [
+    "3D CNN",
+    "multi-view stereo",
+    "structured light",
+    "mesh model",
+    "structural health monitoring"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "likely_exists",
+   "rank_reason": "GitHub repo using PointNet/DGCNN for point cloud damage detection; relevant but scope (road) and details incomplete.",
+   "reason": "Repo title indicates PointNet/DGCNN for road damage point cloud segmentation. Method (PointNet) and task (damage detection) overlap with topic, but no description/abstract limits confidence. Likely exists on GitHub."
+  },
+  {
+   "candidate_id": "c-1c8126ca",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "PointNet",
+    "point cloud",
+    "damage detection",
+    "segmentation"
+   ],
+   "missing_terms": [
+    "multi-view stereo",
+    "structured light",
+    "mesh model",
+    "3D CNN"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "repo",
+   "exists_verdict": "exists",
+   "rank_reason": "PointNet-based point cloud segmentation repo for road damage; direct method+task overlap but narrow domain.",
+   "reason": "Description explicitly states PointNet implementation for segmenting damaged/un-damaged road LiDAR point clouds. Matches topic's PointNet + point cloud + damage detection. Road scope limits generality but method alignment is strong."
+  },
+  {
+   "candidate_id": "c-a1a73fed",
+   "evidence_type": "dataset",
+   "role_hint": "dataset",
+   "status": "needs_manual",
+   "matched_terms": [],
+   "missing_terms": [
+    "3D point cloud",
+    "PointNet",
+    "damage detection",
+    "deep learning",
+    "multi-view stereo",
+    "structured light"
+   ],
+   "confidence_label": "low",
+   "relation_to_topic": "weak_related",
+   "exists_verdict": "metadata_mismatch",
+   "rank_reason": "Only dataset name 'AID' with no description; likely Aerial Image Dataset, not 3D damage.",
+   "reason": "Bare title 'AID' with no description or abstract. Likely refers to the Aerial Image Dataset (aerial scene classification), not 3D point cloud damage detection. Cannot confirm relevance; metadata insufficient for judgment."
+  }
+ ],
+ "synthesis": {
+  "direction_recommendation": "The topic 'Intelligent damage detection based on 3D imaging' is best scoped as deep-learning-driven point-cloud segmentation for surface defects (cracks, spalling, deformation) on civil infrastructure (roads/concrete/bridges), using PointNet-family backbones on point clouds reconstructed from multi-view stereo or LiDAR. Core evidence centers on MVCrackViT (multi-view + ViT attention for point-cloud crack detection, c-8e220e87). Parallel/dataset baselines are the two GitHub PointNet road-damage repos (c-66c13761, c-1c8126ca). Background methodology is supported by the MVS family (c-322b30e8, c-6f876b1e, c-46a0eb5d, c-b5bad248, c-d7f4a150, c-d1996e8e, c-a8b075ae) and a mesh-refinement module (c-81fa3ec0). The 2D texture defect dataset (c-502e9839) is candidate-only. Medical/CT/mesh items are rejected as off-domain. Before proceeding, the student must specify imaging modality, target object class, and whether scope is geometric-only or includes subsurface defect imaging.",
+  "baseline_options": [
+   "c-8e220e87",
+   "c-1c8126ca",
+   "c-66c13761",
+   "c-502e9839"
+  ],
+  "candidate_pool": {
+   "core": [
+    {
+     "candidate_id": "c-8e220e87",
+     "title": "MVCrackViT: Robust Multi-View Crack Detection For Point Cloud Segmentation Using View Attention",
+     "role_hint": "unknown",
+     "reason": "Direct match: multi-view + point cloud + crack detection + deep learning (ViT attention)."
+    }
+   ],
+   "candidate": [
+    {
+     "candidate_id": "c-502e9839",
+     "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+     "role_hint": "dataset",
+     "reason": "Surface defect benchmark dataset, but 2D texture images, not 3D imaging."
+    },
+    {
+     "candidate_id": "c-322b30e8",
+     "title": "Multi-View Stereo: A Tutorial",
+     "role_hint": "reference",
+     "reason": "Foundational MVS tutorial; useful background for 3D reconstruction methods."
+    },
+    {
+     "candidate_id": "c-6f876b1e",
+     "title": "Large-scale and high-quality multi-view stereo",
+     "role_hint": "reference",
+     "reason": "Large-scale high-quality MVS work; relevant to 3D imaging acquisition, no defect focus."
+    },
+    {
+     "candidate_id": "c-d1996e8e",
+     "title": "Topology-adaptive multi-view photometric stereo",
+     "role_hint": "reference",
+     "reason": "Topology-adaptive photometric stereo; relevant surface reconstruction method."
+    },
+    {
+     "candidate_id": "c-a8b075ae",
+     "title": "General composition method for optical-plate-based LCD multi-view stereo image",
+     "role_hint": "reference",
+     "reason": "LCD-based MVS imaging; distant but shares multi-view stereo modality."
+    },
+    {
+     "candidate_id": "c-d7f4a150",
+     "title": "Multi-view Stereo 3D Reconstruction Based on Attention Mechanism",
+     "role_hint": "reference",
+     "reason": "Attention-based MVS reconstruction; background method, no damage detection."
+    },
+    {
+     "candidate_id": "c-46a0eb5d",
+     "title": "MVS2: Deep Unsupervised Multi-View Stereo with Multi-View Symmetry",
+     "role_hint": "reference",
+     "reason": "Deep unsupervised MVS; background 3D reconstruction method."
+    },
+    {
+     "candidate_id": "c-b5bad248",
+     "title": "Just a Few Points are All You Need for Multi-view Stereo: A Novel Semi-supervised Learning Method for Multi-view Stereo",
+     "role_hint": "reference",
+     "reason": "Semi-supervised MVS using sparse labels; relevant 3D reconstruction background."
+    },
+    {
+     "candidate_id": "c-81fa3ec0",
+     "title": "Mesh-based camera pairs selection and occlusion-aware masking for mesh refinement",
+     "role_hint": "reference",
+     "reason": "Mesh refinement method; possible module in 3D mesh-based damage pipelines."
+    },
+    {
+     "candidate_id": "c-66c13761",
+     "title": "umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+     "role_hint": "repo",
+     "reason": "GitHub repo using PointNet/DGCNN for point cloud damage detection; relevant but scope (road) and details incomplete."
+    },
+    {
+     "candidate_id": "c-1c8126ca",
+     "title": "xoraizw/Point-cloud-segmentation-for-road-damage-detection",
+     "role_hint": "repo",
+     "reason": "PointNet-based point cloud segmentation repo for road damage; direct method+task overlap but narrow domain."
+    }
+   ],
+   "needs_manual": [
+    {
+     "candidate_id": "c-747d2323",
+     "title": "3D ductile damage to fracture transition based on phase field and mesh adaptation : application to metal forming process",
+     "role_hint": "reference",
+     "reason": "Phase-field 3D ductile damage with mesh adaptation; mechanical modeling, not vision-based detection."
+    },
+    {
+     "candidate_id": "c-a1a73fed",
+     "title": "AID",
+     "role_hint": "dataset",
+     "reason": "Only dataset name 'AID' with no description; likely Aerial Image Dataset, not 3D damage."
+    }
+   ],
+   "rejected": [
+    {
+     "candidate_id": "c-35b480e8",
+     "title": "Topological Control of Chirality and Spin with Structured Light",
+     "role_hint": "reference",
+     "reason": "Physics of optical spin/chirality; no relation to imaging-based damage inspection."
+    },
+    {
+     "candidate_id": "c-3d589791",
+     "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+     "role_hint": "reference",
+     "reason": "Medical CT trauma dataset; cross-domain (medical, not structural/industrial 3D inspection)."
+    },
+    {
+     "candidate_id": "c-55e48609",
+     "title": "The RSNA Lumbar Degenerative Imaging Spine Classification (LumbarDISC) Dataset",
+     "role_hint": "reference",
+     "reason": "Medical MRI spine dataset; cross-domain, not structural/industrial 3D damage inspection."
+    },
+    {
+     "candidate_id": "c-9940f86f",
+     "title": "Facial Paralysis Recognition Using Face Mesh-Based Learning",
+     "role_hint": "reference",
+     "reason": "Medical facial paralysis recognition; cross-domain content."
+    },
+    {
+     "candidate_id": "c-7937ff50",
+     "title": "Handwritten Chinese character recognition based on double elastic mesh",
+     "role_hint": "reference",
+     "reason": "2D handwritten character recognition; unrelated domain."
+    },
+    {
+     "candidate_id": "c-25ff717a",
+     "title": "Recent Developments in Open Mesh-Based Inguinal Hernia Repair: A Review",
+     "role_hint": "reference",
+     "reason": "Surgical mesh medical review; cross-domain content."
+    },
+    {
+     "candidate_id": "c-285ddaed",
+     "title": "An active mesh based tracker for improved feature correspondences",
+     "role_hint": "reference",
+     "reason": "Active mesh tracker for 2D feature matching; unrelated to damage detection."
+    },
+    {
+     "candidate_id": "c-f2ae2863",
+     "title": "Pattern Recognition Based on Straight Line Segments",
+     "role_hint": "reference",
+     "reason": "Straight line segment pattern recognition; no 3D/damage connection."
+    },
+    {
+     "candidate_id": "c-cc8619e1",
+     "title": "Table 1: Few recent CAPTCHA recognition-based studies methods and their results.",
+     "role_hint": "reference",
+     "reason": "CAPTCHA recognition table; unrelated domain and content."
+    }
+   ]
+  },
+  "paper_groups": {
+   "baseline": [
+    {
+     "candidate_id": "c-8e220e87",
+     "title": "MVCrackViT: Robust Multi-View Crack Detection For Point Cloud Segmentation Using View Attention",
+     "role_hint": "unknown",
+     "year": 2024
+    },
+    {
+     "candidate_id": "c-1c8126ca",
+     "title": "xoraizw/Point-cloud-segmentation-for-road-damage-detection",
+     "role_hint": "repo",
+     "year": null
+    }
+   ],
+   "parallel": [
+    {
+     "candidate_id": "c-66c13761",
+     "title": "umairsaif133/Point-Cloud-Road-Damage-PointNet-PointNet-DGCNN-",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-502e9839",
+     "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+     "role_hint": "dataset",
+     "year": 2019
+    }
+   ],
+   "reference": [
+    {
+     "candidate_id": "c-322b30e8",
+     "title": "Multi-View Stereo: A Tutorial",
+     "role_hint": "reference",
+     "year": 2015
+    },
+    {
+     "candidate_id": "c-6f876b1e",
+     "title": "Large-scale and high-quality multi-view stereo",
+     "role_hint": "reference",
+     "year": null
+    },
+    {
+     "candidate_id": "c-d1996e8e",
+     "title": "Topology-adaptive multi-view photometric stereo",
+     "role_hint": "reference",
+     "year": 2011
+    },
+    {
+     "candidate_id": "c-d7f4a150",
+     "title": "Multi-view Stereo 3D Reconstruction Based on Attention Mechanism",
+     "role_hint": "reference",
+     "year": 2023
+    },
+    {
+     "candidate_id": "c-46a0eb5d",
+     "title": "MVS2: Deep Unsupervised Multi-View Stereo with Multi-View Symmetry",
+     "role_hint": "reference",
+     "year": 2019
+    },
+    {
+     "candidate_id": "c-b5bad248",
+     "title": "Just a Few Points are All You Need for Multi-view Stereo: A Novel Semi-supervised Learning Method for Multi-view Stereo",
+     "role_hint": "reference",
+     "year": 2021
+    },
+    {
+     "candidate_id": "c-a8b075ae",
+     "title": "General composition method for optical-plate-based LCD multi-view stereo image",
+     "role_hint": "reference",
+     "year": 2008
+    }
+   ],
+   "long_tail_candidates": [
+    {
+     "candidate_id": "c-81fa3ec0",
+     "title": "Mesh-based camera pairs selection and occlusion-aware masking for mesh refinement",
+     "role_hint": "reference",
+     "year": 2019
+    },
+    {
+     "candidate_id": "c-747d2323",
+     "title": "3D ductile damage to fracture transition based on phase field and mesh adaptation : application to metal forming processes",
+     "role_hint": "reference",
+     "year": null
+    },
+    {
+     "candidate_id": "c-a1a73fed",
+     "title": "AID",
+     "role_hint": "dataset",
+     "year": null
+    }
+   ]
+  },
+  "dataset_and_repo_notes": [
+   "c-8e220e87 (MVCrackViT, ICIP 2024) is the strongest published baseline matching multi-view + point-cloud crack detection.",
+   "c-1c8126ca is a PointNet Jupyter-Notebook implementation for road-LiDAR damage segmentation (clear description).",
+   "c-66c13761 is a PointNet + DGCNN notebook for road damage; description empty — inspect README before citing.",
+   "c-502e9839 is 2D-only stone-texture defect benchmark; useful for defect taxonomy, not 3D.",
+   "c-a1a73fed 'AID' has no metadata; do not assume it is 3D damage data without manual confirmation."
+  ],
+  "work_suggestions": [
+   "Use c-8e220e87 (MVCrackViT) as primary reported baseline and re-implement or reproduce on a 3D crack benchmark.",
+   "Adopt c-1c8126ca as a clean PointNet reference implementation; compare against c-66c13761 (DGCNN variant) for backbone ablations.",
+   "Build a pipeline that fuses MVS reconstruction (c-322b30e8 / c-46a0eb5d / c-b5bad248) with point-cloud segmentation, avoiding the 2D-only trap of c-502e9839.",
+   "Optionally integrate mesh refinement (c-81fa3ec0) as a post-processing module for cleaner crack geometry output.",
+   "Manually verify c-a1a73fed and c-747d2323 before any inclusion; both are likely off-topic."
+  ],
+  "risk_reminders": [
+   "Most core evidence is road/civil scoped; generalization to other infrastructures is unverified.",
+   "Core baseline c-8e220e87 is conference-only (ICIP 2024); full-text access and reproducibility may be limited.",
+   "Two candidate repos (c-66c13761, c-1c8126ca) are unstarred; code quality and data provenance unverified.",
+   "Several MVS references are dated (2008-2019); suitability for modern deep 3D inspection pipelines needs checking.",
+   "Phase-field '3D damage' (c-747d2323) is a mechanics method, not vision — easy to mis-cite."
+  ],
+  "manual_questions": [
+   "Which 3D imaging modality is in scope: LiDAR, structured light, photogrammetry/MVS, or depth camera?",
+   "What is the target object: concrete/roads, bridges, pipelines, mechanical parts, or cultural relics?",
+   "Geometric-only damage (cracks, spalling) or also subsurface/3D volumetric defects (CT/ultrasound)?",
+   "Are large public 3D crack/defect datasets acceptable, or must data be self-collected?",
+   "Is the deliverable a survey, a benchmark reproduction, or a novel method?"
+  ],
+  "stop_here": true,
+  "human_gate": {
+   "enabled": false,
+   "future_gates": [
+    "topic_understanding",
+    "search_plan",
+    "baseline_selection"
+   ],
+   "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+  }
+ },
+ "low_bar_verdict": {
+  "review_verdict": "needs_revision",
+  "blocking_questions": [
+   "Which 3D imaging modality is in scope: LiDAR, structured light, photogrammetry/MVS, or depth camera?",
+   "What is the target object: concrete/roads, bridges, pipelines, mechanical parts, or cultural relics?",
+   "Geometric damage only (cracks/spalling) or also subsurface volumetric defects via CT/ultrasound?",
+   "Is the deliverable a survey, a benchmark reproduction, or a novel method proposal?",
+   "Are large public 3D crack datasets acceptable, or must data be self-collected?"
+  ],
+  "weak_points": [
+   "paper_groups.baseline contains only MVCrackViT plus a GitHub repo; no strong academic baseline paper.",
+   "evidence_gaps is empty despite modality/target/scope ambiguities raised by needs_clarification.",
+   "candidate_pool has only 1 dataset candidate (c-502e9839) and it is 2D texture, not true 3D.",
+   "continue_search_direction is absent; reliance on a single core paper (c-8e220e87) is thin.",
+   "Two work_suggestions reference candidates flagged as likely off-topic (c-a1a73fed, c-747d2323)."
+  ],
+  "can_continue_to_opening_report": false,
+  "summary": "Topic scoping is underspecified across modality, target object, and damage type. Candidate pool is thin: one core paper, two repos, one 2D dataset, and empty evidence_gaps. Two dimensions (data-source and direction clarity) are weak but not blocking; revision recommended before opening report."
+ },
+ "llm_calls": 6,
+ "llm_failures": 0,
+ "llm_budget": 12,
+ "round_delta": {
+  "repo_dataset_followup": {
+   "arxiv": 4
+  },
+  "broad_recall": {
+   "crossref": 8,
+   "github": 2
+  },
+  "reference_expansion": {
+   "crossref": 8
+  }
+ },
+ "citation_expand_stats": {
+  "seeds_total": 5,
+  "seeds_eligible": 0,
+  "seeds_rejected": 5,
+  "refs_added": 0,
+  "round_status": "no_eligible_seeds"
+ }
+}

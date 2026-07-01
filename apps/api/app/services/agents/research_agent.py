@@ -47,15 +47,34 @@ from ..retrieval.adapters.arxiv_search import arxiv_search
 from ..retrieval.adapters.crossref_search import crossref_search
 from ..retrieval.adapters.github_search import github_search
 from ..retrieval.adapters.openalex_search import openalex_search
+from .candidate_pool import (
+    CandidatePool,
+    collect_mentioned_datasets,
+    collect_papers_from_raw,
+    collect_repos_from_raw,
+)
+from .evidence_review import (
+    EvidenceReview,
+    audit_candidates,
+    stats as review_stats,
+)
+from .citation_expand import citation_expand
+from .low_bar_reviewer import run_low_bar_review
 from .prompts import (
     DEVILS_ADVOCATE_SYSTEM,
+    EVIDENCE_REVIEW_SYSTEM,
+    LOW_BAR_REVIEWER_SYSTEM,
     PARSE_TOPIC_SYSTEM,
     PLAN_TOOLS_SYSTEM,
     SYNTHESIZE_SYSTEM,
     USER_TEMPLATE_DEVILS_ADVOCATE,
+    USER_TEMPLATE_EVIDENCE_REVIEW,
+    USER_TEMPLATE_LOW_BAR,
     USER_TEMPLATE_PLAN_TOOLS,
     USER_TEMPLATE_SYNTHESIZE,
+    USER_TEMPLATE_SYNTHESIZE_V2,
 )
+from .source_ledger import SourceLedger
 
 logger = logging.getLogger(__name__)
 
@@ -464,7 +483,7 @@ def parse_topic(raw_topic: str, *, counter: LLMCallCounter | None = None) -> dic
         f"Emit JSON for this topic now."
     )
     try:
-        out = _chat_json_strict(prompt, PARSE_TOPIC_SYSTEM, max_tokens=900)
+        out = _chat_json_strict(prompt, PARSE_TOPIC_SYSTEM, max_tokens=int(os.environ.get("PAPERAGENT_PARSE_MAX_TOKENS", "4000")), timeout=90.0)
         # ponytail: schema conformance is up to the LLM. We only fix the
         # echo-of-raw-topic and replace empty query_atoms_en with a sane
         # noun phrase drawn from the raw topic itself.
@@ -497,7 +516,7 @@ def plan_tools(topic_json: dict, *, counter: LLMCallCounter | None = None) -> di
     )
     plan: dict = {}
     try:
-        out = _chat_json_strict(prompt, PLAN_TOOLS_SYSTEM, max_tokens=500)
+        out = _chat_json_strict(prompt, PLAN_TOOLS_SYSTEM, max_tokens=int(os.environ.get("PAPERAGENT_PLAN_MAX_TOKENS", "8000")), timeout=120.0)
         plan["arxiv_queries"] = _cap_queries(out.get("arxiv_queries"), 6, 3)
         plan["openalex_queries"] = _cap_queries(out.get("openalex_queries"), 6, 3)
         plan["crossref_queries"] = _cap_queries(out.get("crossref_queries"), 6, 3)
@@ -608,6 +627,13 @@ async def fetch_all(
 
     async def _safe(coro, name: str) -> list[dict]:
         if not GLOBAL_SUSPEND_STATE.should_allow(name):
+            # Re03 bug-5 fix: if we won't await the coroutine (CB OPEN), close
+            # it explicitly to avoid `RuntimeWarning: coroutine was never
+            # awaited` at GC time.
+            try:
+                coro.close()
+            except Exception:
+                pass
             until = GLOBAL_SUSPEND_STATE.suspended_until_str(name)
             logger.info("[%s] CB OPEN until %s", name, until)
             return []
@@ -1402,7 +1428,7 @@ def synthesize_buckets(
         raw_results_block=raw_block,
     )
     try:
-        out = _chat_json_strict(prompt, SYNTHESIZE_SYSTEM, max_tokens=6000)
+        out = _chat_json_strict(prompt, SYNTHESIZE_SYSTEM, max_tokens=int(os.environ.get("PAPERAGENT_SYNTH_V1_MAX_TOKENS", "12000")), timeout=180.0)
         return _normalize_buckets(out)
     except LLMUnavailable as exc:
         logger.warning("synthesize LLM unavailable: %s — returning minimal output", exc)
@@ -1489,7 +1515,7 @@ def devils_advocate(
         buckets_json=json.dumps(buckets, ensure_ascii=False, indent=2),
     )
     try:
-        out = _chat_json_strict(prompt, DEVILS_ADVOCATE_SYSTEM, max_tokens=2400)
+        out = _chat_json_strict(prompt, DEVILS_ADVOCATE_SYSTEM, max_tokens=int(os.environ.get("PAPERAGENT_DA_MAX_TOKENS", "8000")), timeout=150.0)
         revised = out.get("revised_7_buckets") or buckets
         normalized = _normalize_buckets(revised) if isinstance(revised, dict) else buckets
 
@@ -1841,6 +1867,846 @@ def _buckets_for_print(result: AgentResult, indent: str = "") -> str:
             else:
                 out.append(f"{indent}    - {str(r)[:120]}")
     return "\n".join(out)
+
+
+# =============================================================================
+# Re02 — search plan v2, multi-round retrieval, evidence review, low-bar gate
+# =============================================================================
+# This block is additive: Re01's `run_research_agent` is untouched. New entry
+# point is `run_research_agent_re02()` (see below). Re02 layers:
+#   SearchPlan v2 (multi-round, role-aware) →
+#   multi-round fetch (broad → reference_expansion → repo_dataset_followup) →
+#   CandidatePool collect →
+#   EvidenceReview (1 LLM call, batched) →
+#   synthesize_v2 (consumes reviewed evidence + candidate pool) →
+#   Low-bar Reviewer (1 LLM call or deterministic fallback)
+# No `*_score` field anywhere. HumanGate is a stub.
+# ponytail: ~400 lines, single block, no premature abstraction.
+
+# Re02 dataset whitelist (carried over from Re01 for the dataset collector).
+# NOTE: This is a domain-keyed whitelist of canonical public benchmark
+# names that any student of the field would know. The CandidatePool
+# collector only flags a name when it appears IN the raw tool output
+# (title/abstract). We do not inject datasets out of thin air.
+RE02_DATASET_WHITELIST: dict[str, tuple[str, ...]] = {
+    "vision_3d": (
+        "DTU", "ETH3D", "Tanks and Temples", "BlendedMVS", "TUM RGBD",
+        "ScanNet", "Matterport3D", "KITTI", "NeRF Synthetic", "LLFF",
+    ),
+    "vision_2d": (
+        "COCO", "Pascal VOC", "ImageNet", "NEU-DET", "GC10-DET",
+        "VisDrone", "DOTA", "Cityscapes",
+    ),
+    "nlp_llm": (
+        "GLUE", "SQuAD", "WMT", "ChnSentiCorp", "CLUE",
+        "CMRC", "WikiText",
+    ),
+    "signal_timeseries": (
+        "ShipsEar", "DeepShip", "SonAIr", "DCASE",
+        "AudioSet", "ESC-50", "UrbanSound8K",
+    ),
+    "remote_sensing": (
+        "DOTA", "DIOR", "LEVIR-CD", "AID", "NWPU-RESISC45",
+    ),
+    "medical_ai": ("CheXpert", "MIMIC-CXR", "LIDC-IDRI", "LUNA16"),
+    "energy_power": ("openEMS Benchmark", "Meep reference"),
+    "control_monitoring": ("OBD-II", "PEMS"),
+}
+
+
+def _plan_tools_v2_from_atoms(topic_json: dict) -> dict:
+    """Deterministic multi-round plan from query atoms. Used when LLM is dead."""
+    en_atoms = list(topic_json.get("query_atoms_en") or [])
+    raw = (topic_json.get("raw_topic") or "machine learning").strip()
+    if any(ord(c) > 127 for c in raw):
+        raw = "machine learning"
+
+    def _truncate(qs: list[str], max_words: int) -> list[str]:
+        out: list[str] = []
+        for q in qs:
+            w = q.split()
+            out.append(" ".join(w[:max_words]) if len(w) > max_words else q)
+        return out or [raw]
+
+    seeds = _truncate(en_atoms[:3] or [raw], 6)
+    short = _truncate(en_atoms[:1] or [raw], 4)
+
+    def _call(tool: str, query: str, role: str, why: str, expected: str) -> dict:
+        return {
+            "tool": tool,
+            "query": query,
+            "target_role": role,
+            "why_call": why,
+            "expected_output": expected,
+        }
+
+    return {
+        "rounds": [
+            {
+                "round": 1,
+                "name": "broad_recall",
+                "goal": "wide initial sweep across paper + repo backends",
+                "calls": [
+                    _call("search_arxiv", seeds[0], "baseline_or_parallel_paper",
+                          "seed the spine arxiv retrieval", "paper"),
+                    _call("search_openalex", seeds[0], "baseline_or_parallel_paper",
+                          "supplement arxiv with citation-rich results", "paper"),
+                    _call("search_crossref", seeds[0], "reference",
+                          "find DOI / journal paper of the same family", "paper"),
+                ],
+            },
+            {
+                "round": 2,
+                "name": "reference_expansion",
+                "goal": "expand coverage via benchmark / survey / recent-advances",
+                "calls": [
+                    _call("search_arxiv", f"{seeds[0]} benchmark", "reference",
+                          "find benchmark papers using this method", "paper"),
+                    _call("search_arxiv", f"{seeds[0]} survey", "survey",
+                          "find a survey of this subfield", "paper"),
+                ],
+            },
+            {
+                "round": 3,
+                "name": "repo_dataset_followup",
+                "goal": "find runnable code + datasets for the topic",
+                "calls": [
+                    _call("search_github", short[0], "repo",
+                          "find canonical implementation repo", "repo"),
+                ],
+            },
+        ],
+        "arxiv_queries": seeds,
+        "openalex_queries": seeds[:3],
+        "crossref_queries": seeds[:2],
+        "github_queries": short[:2],
+        "year_min": 2018,
+        "top_k_per_adapter": 8,
+        "site_keywords": [],
+    }
+
+
+def plan_tools_v2(topic_json: dict, *, counter: LLMCallCounter | None = None) -> dict:
+    """Step 2 (Re02). Multi-round role-aware plan. Falls back to atoms plan."""
+    if counter is not None:
+        global GLOBAL_COUNTER
+        GLOBAL_COUNTER += counter
+
+    prompt = USER_TEMPLATE_PLAN_TOOLS.format(
+        topic_json=json.dumps(topic_json, ensure_ascii=False, indent=2),
+    )
+    try:
+        out = _chat_json_strict(prompt, PLAN_TOOLS_SYSTEM, max_tokens=int(os.environ.get("PAPERAGENT_PLAN_V2_MAX_TOKENS", "8000")), timeout=120.0)
+        rounds = out.get("rounds") if isinstance(out.get("rounds"), list) else []
+        # Normalize: ensure 3 rounds, default names, default goal.
+        normalized_rounds: list[dict] = []
+        for i in range(3):
+            r = rounds[i] if i < len(rounds) and isinstance(rounds[i], dict) else {}
+            calls = r.get("calls") if isinstance(r.get("calls"), list) else []
+            normalized_rounds.append({
+                "round": i + 1,
+                "name": str(r.get("name") or (
+                    "broad_recall" if i == 0
+                    else "reference_expansion" if i == 1
+                    else "repo_dataset_followup"
+                )),
+                "goal": str(r.get("goal") or ""),
+                "calls": [_normalize_call(c) for c in calls][:6],
+            })
+
+        # Legacy per-adapter query keys are derived from round 1 calls so
+        # the rest of the code (cache key, fetch_all signature) keeps
+        # working without a rewrite.
+        legacy = _legacy_queries_from_rounds(normalized_rounds)
+        plan = {
+            "rounds": normalized_rounds,
+            "year_min": int(out.get("year_min") or 2018),
+            "top_k_per_adapter": int(out.get("top_k_per_adapter") or 8),
+            "site_keywords": list(out.get("site_keywords") or [])[:5],
+            **legacy,
+        }
+        if not plan["arxiv_queries"]:
+            plan["arxiv_queries"] = list(topic_json.get("query_atoms_en") or [])[:3] or [
+                topic_json.get("raw_topic") or "machine learning"
+            ]
+        return plan
+    except LLMUnavailable as exc:
+        logger.warning("plan_tools_v2 LLM unavailable: %s — atoms fallback", exc)
+        return _plan_tools_v2_from_atoms(topic_json)
+
+
+def _normalize_call(c: dict) -> dict:
+    """Coerce one ToolCall row from the LLM."""
+    if not isinstance(c, dict):
+        return {}
+    tool = str(c.get("tool") or "").strip()
+    tool = {
+        "arxiv": "search_arxiv", "openalex": "search_openalex",
+        "crossref": "search_crossref", "github": "search_github",
+    }.get(tool, tool)
+    return {
+        "tool": tool,
+        "query": _cap_query_word_limit(str(c.get("query") or "").strip(), 4 if tool == "search_github" else 6),
+        "target_role": str(c.get("target_role") or "reference"),
+        "why_call": str(c.get("why_call") or "")[:200],
+        "expected_output": str(c.get("expected_output") or "paper"),
+        "fallback_tool": c.get("fallback_tool") or "",
+    }
+
+
+def _cap_query_word_limit(q: str, max_words: int) -> str:
+    if any(ord(ch) > 127 for ch in q):
+        return ""  # drop non-ASCII per Re01 convention
+    w = q.split()
+    if not w:
+        return ""
+    return " ".join(w[:max_words]) if len(w) > max_words else q
+
+
+def _legacy_queries_from_rounds(rounds: list[dict]) -> dict[str, list[str]]:
+    """Build legacy per-adapter query keys by aggregating across ALL rounds.
+
+    Used by fetch_all / multi_round_fetch for back-compat with the Re01
+    plan schema. The runner also walks `rounds[*].calls` for fine-grained
+    round-by-round dispatch; this function just provides a flat list per
+    adapter so logs and old callers see something.
+    """
+    out = {"arxiv_queries": [], "openalex_queries": [], "crossref_queries": [], "github_queries": []}
+    seen: dict[str, set[str]] = {k: set() for k in out}
+    tool_to_key = {
+        "search_arxiv": "arxiv_queries",
+        "search_openalex": "openalex_queries",
+        "search_crossref": "crossref_queries",
+        "search_github": "github_queries",
+    }
+    for r in rounds:
+        for c in (r.get("calls") or []):
+            if not isinstance(c, dict):
+                continue
+            tool = c.get("tool") or ""
+            query = c.get("query") or ""
+            key = tool_to_key.get(tool)
+            if not key or not query:
+                continue
+            if query in seen[key]:
+                continue
+            seen[key].add(query)
+            out[key].append(query)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Multi-round retrieval
+# ---------------------------------------------------------------------------
+
+
+async def multi_round_fetch(
+    parsed: dict,
+    plan: dict,
+    *,
+    ledger: SourceLedger | None = None,
+) -> dict[str, list[dict]]:
+    """Re02 round 1+2+3. Writes to SourceLedger.
+
+    Round 1: original multi-adapter fan-out per the plan.
+    Round 2: paper↔repo augmentation (re-uses Re01 logic from fetch_all).
+    Round 3: explicit repo_dataset_followup calls from the plan.
+
+    All round results are merged into the same raw dict (dedup by source
+    adapter; we keep the FIRST occurrence).
+    """
+    from .candidate_pool import CandidatePool, collect_papers_from_raw, collect_repos_from_raw
+
+    rounds = plan.get("rounds") or []
+    ledger = ledger or SourceLedger()
+    pool = CandidatePool()
+    merged: dict[str, list[dict]] = {"arxiv": [], "openalex": [], "crossref": [], "github": []}
+    seen_keys: dict[str, set[str]] = {a: set() for a in merged}
+
+    async def _safe(coro, name: str) -> list[dict]:
+        if not GLOBAL_SUSPEND_STATE.should_allow(name):
+            # Re03 bug-5 fix: if we won't await the coroutine (CB OPEN), close
+            # it explicitly to avoid `RuntimeWarning: coroutine was never
+            # awaited` at GC time.
+            try:
+                coro.close()
+            except Exception:
+                pass
+            until = GLOBAL_SUSPEND_STATE.suspended_until_str(name)
+            logger.info("[%s] CB OPEN until %s", name, until)
+            return []
+        try:
+            result = await coro
+        except Exception as exc:  # noqa: BLE001
+            msg = str(exc) or ""
+            is_429 = "429" in msg or "Too Many Requests" in msg or "rate" in msg.lower()
+            is_5xx = any(code in msg for code in ("500", "502", "503", "504", "403"))
+            if is_429 or is_5xx:
+                GLOBAL_SUSPEND_STATE.on_failure(name, is_429=is_429)
+            logger.warning("[%s] failed: %s", name, exc)
+            return []
+        GLOBAL_SUSPEND_STATE.on_success(name)
+        return result
+
+    def _add(adapter: str, items: list[dict], *, source_round: tuple[int, str]) -> None:
+        new: list[dict] = []
+        for it in items:
+            t = (it.get("title") or it.get("full_name") or "").strip()
+            k = t.lower()
+            if not k or k in seen_keys[adapter]:
+                continue
+            seen_keys[adapter].add(k)
+            it["_round"] = source_round[0]
+            it["_round_name"] = source_round[1]
+            new.append(it)
+        merged[adapter].extend(new)
+        ledger.record(
+            adapter=adapter, query="(multi)", target_role="multi",
+            round_no=source_round[0], round_name=source_round[1],
+            status="ok" if new else "empty",
+            result_count=len(new),
+        )
+
+    # ----- Round 1: broad recall -----
+    round1 = rounds[0] if rounds else {"calls": []}
+    r1_calls = round1.get("calls") or []
+    arxiv_qs = [c["query"] for c in r1_calls if c.get("tool") == "search_arxiv" and c.get("query")]
+    oa_qs = [c["query"] for c in r1_calls if c.get("tool") == "search_openalex" and c.get("query")]
+    cr_qs = [c["query"] for c in r1_calls if c.get("tool") == "search_crossref" and c.get("query")]
+    gh_qs = [c["query"] for c in r1_calls if c.get("tool") == "search_github" and c.get("query")]
+    # Backfill from legacy keys if empty.
+    arxiv_qs = arxiv_qs or plan.get("arxiv_queries") or []
+    oa_qs = oa_qs or plan.get("openalex_queries") or []
+    cr_qs = cr_qs or plan.get("crossref_queries") or []
+    gh_qs = gh_qs or plan.get("github_queries") or []
+    top_k = plan.get("top_k_per_adapter") or 8
+
+    if arxiv_qs:
+        await asyncio.sleep(0.2)
+        _add("arxiv", await _safe(arxiv_search(arxiv_qs, top_k=top_k), "arxiv"),
+             source_round=(1, "broad_recall"))
+    if oa_qs:
+        await asyncio.sleep(0.4)
+        _add("openalex", await _safe(openalex_search(oa_qs, top_k=top_k), "openalex"),
+             source_round=(1, "broad_recall"))
+    if cr_qs:
+        await asyncio.sleep(0.4)
+        _add("crossref", await _safe(crossref_search(cr_qs, top_k=top_k), "crossref"),
+             source_round=(1, "broad_recall"))
+    if gh_qs:
+        await asyncio.sleep(0.4)
+        _add("github", await _safe(github_search(gh_qs, top_k=top_k), "github"),
+             source_round=(1, "broad_recall"))
+
+    # ----- Round 2: reference expansion (paper↔repo aug + survey/benchmark calls) -----
+    round2 = rounds[1] if len(rounds) > 1 else {"calls": []}
+    r2_calls = round2.get("calls") or []
+    extra_arxiv = [c["query"] for c in r2_calls if c.get("tool") == "search_arxiv" and c.get("query")]
+    extra_oa = [c["query"] for c in r2_calls if c.get("tool") == "search_openalex" and c.get("query")]
+    extra_cr = [c["query"] for c in r2_calls if c.get("tool") == "search_crossref" and c.get("query")]
+    extra_gh = [c["query"] for c in r2_calls if c.get("tool") == "search_github" and c.get("query")]
+    if extra_arxiv:
+        await asyncio.sleep(0.5)
+        _add("arxiv", await _safe(arxiv_search(extra_arxiv, top_k=top_k), "arxiv"),
+             source_round=(2, "reference_expansion"))
+    if extra_oa:
+        await asyncio.sleep(0.5)
+        _add("openalex", await _safe(openalex_search(extra_oa, top_k=top_k), "openalex"),
+             source_round=(2, "reference_expansion"))
+    if extra_cr:
+        await asyncio.sleep(0.5)
+        _add("crossref", await _safe(crossref_search(extra_cr, top_k=top_k), "crossref"),
+             source_round=(2, "reference_expansion"))
+    # Re01 paper→repo augmentation, reused: arxiv titles fed back into github.
+    paper_titles: list[str] = []
+    for it in merged["arxiv"] + merged["crossref"] + merged["openalex"]:
+        t = (it.get("title") or "").strip()
+        if t and 4 <= len(t.split()) <= 14:
+            paper_titles.append(t)
+    paper_titles = paper_titles[:5]
+    if paper_titles:
+        await asyncio.sleep(0.6)
+        gh_aug = await _safe(github_search(paper_titles, top_k=4), "github")
+        for r in gh_aug:
+            r["_discovery_source"] = "paper_to_repo_augmentation"
+        _add("github", gh_aug, source_round=(2, "reference_expansion"))
+    if extra_gh:
+        await asyncio.sleep(0.5)
+        _add("github", await _safe(github_search(extra_gh, top_k=4), "github"),
+             source_round=(2, "reference_expansion"))
+
+    # ----- Round 3: repo / dataset follow-up -----
+    round3 = rounds[2] if len(rounds) > 2 else {"calls": []}
+    r3_calls = round3.get("calls") or []
+    r3_gh = [c["query"] for c in r3_calls if c.get("tool") == "search_github" and c.get("query")]
+    r3_arxiv = [c["query"] for c in r3_calls if c.get("tool") == "search_arxiv" and c.get("query")]
+    if r3_gh:
+        await asyncio.sleep(0.5)
+        _add("github", await _safe(github_search(r3_gh, top_k=4), "github"),
+             source_round=(3, "repo_dataset_followup"))
+    if r3_arxiv:
+        await asyncio.sleep(0.5)
+        _add("arxiv", await _safe(arxiv_search(r3_arxiv, top_k=4), "arxiv"),
+             source_round=(3, "repo_dataset_followup"))
+
+    # Surface github descriptions → paper candidates (Re01 logic, preserved).
+    for repo in list(merged["github"]):
+        for emb_title in _extract_quoted_titles(repo.get("description") or ""):
+            t_low = emb_title.strip().lower()
+            if t_low in seen_keys["arxiv"]:
+                continue
+            seen_keys["arxiv"].add(t_low)
+            merged["arxiv"].append({
+                "title": emb_title,
+                "url": repo.get("html_url") or repo.get("url") or "",
+                "identifier": repo.get("full_name"),
+                "year": None,
+                "_discovery_source": "repo_embedded_paper_title",
+                "_round": 3,
+                "_round_name": "repo_dataset_followup",
+            })
+
+    # Populate CandidatePool from the merged raw output. NOTE: this is the
+    # Re02 CandidatePool — additive to Re01's bucketing pipeline.
+    collect_papers_from_raw(merged, pool)
+    collect_repos_from_raw(merged, pool)
+    collect_mentioned_datasets(merged, pool, whitelist=RE02_DATASET_WHITELIST)
+
+    # Attach the pool to the merged dict so downstream stages can read it.
+    merged["_candidate_pool"] = pool  # type: ignore[assignment]
+    merged["_source_ledger"] = ledger  # type: ignore[assignment]
+    return merged
+
+
+# ---------------------------------------------------------------------------
+# synthesize_v2 — consumes reviewed evidence + candidate pool
+# ---------------------------------------------------------------------------
+
+
+def _format_evidence_block(reviews: list[EvidenceReview]) -> str:
+    slim: list[dict] = []
+    for r in reviews:
+        slim.append({
+            "candidate_id": r.candidate_id,
+            "evidence_type": r.evidence_type,
+            "role_hint": r.role_hint,
+            "status": r.status,
+            "confidence_label": r.confidence_label,
+            "relation_to_topic": r.relation_to_topic,
+            "exists_verdict": r.exists_verdict,
+            "matched_terms": r.matched_terms[:6],
+            "missing_terms": r.missing_terms[:6],
+            "rank_reason": r.rank_reason[:120],
+            "reason": r.reason[:200],
+        })
+    return json.dumps(slim, ensure_ascii=False, indent=1)
+
+
+def _format_candidate_pool_block(pool: CandidatePool) -> str:
+    """Compact view of the pool for the synthesize prompt."""
+    rows = pool.as_list()
+    slim: list[dict] = []
+    for c in rows[:120]:
+        slim.append({
+            "candidate_id": c["candidate_id"],
+            "evidence_type": c["evidence_type"],
+            "role_hint": c["role_hint"],
+            "title": c["title"][:120],
+            "year": c.get("year"),
+            "sources": c.get("sources") or [],
+        })
+    return json.dumps({"total": len(rows), "shown": slim}, ensure_ascii=False, indent=1)
+
+
+def _format_source_ledger_block(ledger: SourceLedger) -> str:
+    stats = ledger.stats()
+    rows = ledger.as_list()
+    return json.dumps(
+        {"per_adapter_stats": stats, "n_calls": len(rows), "rows": rows},
+        ensure_ascii=False, indent=1,
+    )
+
+
+def synthesize_v2(
+    raw_topic: str,
+    domain_route: str,
+    topic_json: dict,
+    raw: dict[str, list[dict]],
+    reviews: list[EvidenceReview],
+    pool: CandidatePool,
+    ledger: SourceLedger,
+    *,
+    counter: LLMCallCounter | None = None,
+) -> dict:
+    """Re02 synthesize. Consumes reviewed evidence + candidate pool.
+
+    Returns the Re02 schema (direction_recommendation, baseline_options,
+    candidate_pool.{core,candidate,needs_manual,rejected}, paper_groups,
+    dataset_and_repo_notes, work_suggestions, risk_reminders,
+    manual_questions, stop_here, human_gate).
+    """
+    if counter is not None:
+        global GLOBAL_COUNTER
+        GLOBAL_COUNTER += counter
+
+    raw_block = _format_raw_block(raw)
+    prompt = USER_TEMPLATE_SYNTHESIZE_V2.format(
+        raw_topic=raw_topic,
+        domain_route=domain_route,
+        topic_json=json.dumps(topic_json, ensure_ascii=False, indent=2),
+        source_ledger=_format_source_ledger_block(ledger),
+        evidence_review_block=_format_evidence_block(reviews),
+        candidate_pool_block=_format_candidate_pool_block(pool),
+        raw_results_block=raw_block,
+    )
+    try:
+        out = _chat_json_strict(prompt, SYNTHESIZE_SYSTEM, max_tokens=int(os.environ.get("PAPERAGENT_SYNTH_V2_MAX_TOKENS", "16000")), timeout=180.0)
+        return _normalize_synthesize_v2(out, reviews, pool)
+    except LLMUnavailable as exc:
+        logger.warning("synthesize_v2 LLM unavailable: %s — heuristic fallback", exc)
+        return _heuristic_synthesize_v2(raw_topic, reviews, pool)
+
+
+def _normalize_synthesize_v2(out: dict, reviews: list[EvidenceReview], pool: CandidatePool) -> dict:
+    """Coerce LLM output. NEVER downgrade an EvidenceReview status."""
+    by_id_cand = {c["candidate_id"]: c for c in pool.as_list()}
+    by_id_review = {r.candidate_id: r for r in reviews}
+
+    def _hydrate(rows):
+        out_rows: list[dict] = []
+        if not isinstance(rows, list):
+            return out_rows
+        for r in rows[:40]:
+            if not isinstance(r, dict):
+                continue
+            cid = str(r.get("candidate_id") or "")
+            cand = by_id_cand.get(cid)
+            if not cand:
+                continue
+            out_rows.append({
+                "candidate_id": cid,
+                "title": cand["title"],
+                "role_hint": by_id_review[cid].role_hint if cid in by_id_review else "unknown",
+                "year": cand.get("year"),
+            })
+        return out_rows
+
+    candidate_pool_block = out.get("candidate_pool") if isinstance(out.get("candidate_pool"), dict) else {}
+    paper_groups = out.get("paper_groups") if isinstance(out.get("paper_groups"), dict) else {}
+
+    # ALWAYS fill the tiered candidate_pool from the EvidenceReview output,
+    # not from the LLM's candidate_pool block — that's the audit's job.
+    reviewed_status = {"core": [], "candidate": [], "needs_manual": [], "rejected": []}
+    for r in reviews:
+        cand = by_id_cand.get(r.candidate_id)
+        if not cand:
+            continue
+        row = {
+            "candidate_id": r.candidate_id,
+            "title": cand["title"][:120],
+            "role_hint": r.role_hint,
+            "reason": r.rank_reason[:160],
+        }
+        reviewed_status[r.status].append(row)
+
+    return {
+        "direction_recommendation": str(out.get("direction_recommendation") or "")[:1200],
+        "baseline_options": [
+            str(x) for x in (out.get("baseline_options") or []) if isinstance(x, str)
+        ][:8],
+        "candidate_pool": {
+            "core":         reviewed_status["core"][:20],
+            "candidate":    reviewed_status["candidate"][:20],
+            "needs_manual": reviewed_status["needs_manual"][:20],
+            "rejected":     reviewed_status["rejected"][:20],
+        },
+        "paper_groups": {
+            "baseline":             _hydrate(paper_groups.get("baseline")),
+            "parallel":             _hydrate(paper_groups.get("parallel")),
+            "reference":            _hydrate(paper_groups.get("reference")),
+            "long_tail_candidates": _hydrate(paper_groups.get("long_tail_candidates")),
+        },
+        "dataset_and_repo_notes": [
+            str(x)[:200] for x in (out.get("dataset_and_repo_notes") or [])
+            if isinstance(x, str)
+        ][:10],
+        "work_suggestions": [
+            str(x)[:300] for x in (out.get("work_suggestions") or [])
+            if isinstance(x, str)
+        ][:8],
+        "risk_reminders": [
+            str(x)[:200] for x in (out.get("risk_reminders") or [])
+            if isinstance(x, str)
+        ][:8],
+        "manual_questions": [
+            str(x)[:200] for x in (out.get("manual_questions") or [])
+            if isinstance(x, str)
+        ][:5],
+        "stop_here": True,
+        "human_gate": {
+            "enabled": False,
+            "future_gates": ["topic_understanding", "search_plan", "baseline_selection"],
+            "auto_mode_reason": (
+                "Re02 focuses on retrieval enhancement + filter/audit repair. "
+                "HumanGate reserved for Re03."
+            ),
+        },
+    }
+
+
+def _heuristic_synthesize_v2(raw_topic: str, reviews: list[EvidenceReview], pool: CandidatePool) -> dict:
+    """No-LLM fallback: bucket-by-status, no synthetic content."""
+    by_id = {c["candidate_id"]: c for c in pool.as_list()}
+    buckets = {"core": [], "candidate": [], "needs_manual": [], "rejected": []}
+    paper_groups = {"baseline": [], "parallel": [], "reference": [], "long_tail_candidates": []}
+    for r in reviews:
+        cand = by_id.get(r.candidate_id)
+        if not cand:
+            continue
+        entry = {"candidate_id": r.candidate_id, "title": cand["title"][:120], "role_hint": r.role_hint}
+        buckets[r.status].append({**entry, "reason": r.rank_reason[:160]})
+        # Cheap structural mapping: core → baseline/parallel, candidate → reference, else long_tail
+        if r.status == "core":
+            (paper_groups["baseline"] if r.relation_to_topic == "baseline" else paper_groups["parallel"]).append(entry)
+        elif r.status == "candidate":
+            paper_groups["reference"].append(entry)
+        elif r.status == "needs_manual":
+            paper_groups["long_tail_candidates"].append(entry)
+        # rejected → not in paper_groups
+
+    baseline_ids = [e["candidate_id"] for e in paper_groups["baseline"]]
+    return {
+        "direction_recommendation": (
+            f"LLM unavailable; heuristic synthesis of {raw_topic!r}. "
+            f"{len(buckets['core'])} core / {len(buckets['candidate'])} candidate / "
+            f"{len(buckets['needs_manual'])} needs-manual / {len(buckets['rejected'])} rejected."
+        ),
+        "baseline_options": baseline_ids,
+        "candidate_pool": buckets,
+        "paper_groups": paper_groups,
+        "dataset_and_repo_notes": [],
+        "work_suggestions": [
+            f"Review the {len(paper_groups['baseline'])} baseline candidate(s) and decide which fits the method route."
+        ] if paper_groups["baseline"] else [
+            "No baseline candidates surfaced; broaden the topic or run another round of retrieval."
+        ],
+        "risk_reminders": [
+            "Synthesizer ran in heuristic-only mode (LLM unavailable); work suggestions are templated.",
+        ],
+        "manual_questions": [],
+        "stop_here": True,
+        "human_gate": {
+            "enabled": False,
+            "future_gates": ["topic_understanding", "search_plan", "baseline_selection"],
+            "auto_mode_reason": "Re02 heuristic synthesize: LLM unavailable.",
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# Top-level Re02 entry point
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class AgentResultRe02:
+    raw_topic: str
+    project_id: str
+    parsed_topic: dict
+    plan: dict
+    raw_tool_results: dict[str, list[dict]]
+    candidate_pool: list            # list of Candidate dicts (pool.as_list())
+    source_ledger: dict             # {rows, stats, n_calls}
+    evidence_review: list           # list of EvidenceReview dicts
+    synthesis: dict                 # synthesize_v2 output (Re02 schema)
+    low_bar_verdict: dict           # LowBarVerdict.to_dict()
+    llm_calls: int
+    llm_failures: int
+    llm_budget: int
+    citation_expand_stats: dict = field(default_factory=dict)  # Re03: per-round delta
+    round_delta: dict = field(default_factory=dict)            # Re03: {R1: {...}, R2: {...}, ...}
+
+    def to_dict(self) -> dict:
+        return {
+            "raw_topic": self.raw_topic,
+            "project_id": self.project_id,
+            "parsed_topic": self.parsed_topic,
+            "plan": self.plan,
+            "raw_tool_results": {k: v for k, v in self.raw_tool_results.items() if not k.startswith("_")},
+            "candidate_pool": self.candidate_pool,
+            "source_ledger": self.source_ledger,
+            "evidence_review": self.evidence_review,
+            "synthesis": self.synthesis,
+            "low_bar_verdict": self.low_bar_verdict,
+            "llm_calls": self.llm_calls,
+            "llm_failures": self.llm_failures,
+            "llm_budget": self.llm_budget,
+            "citation_expand_stats": self.citation_expand_stats,  # Re03
+            "round_delta": self.round_delta,                       # Re03
+        }
+
+
+async def run_research_agent_re02(
+    raw_topic: str,
+    *,
+    auto_low_bar: bool = True,
+    auto_devils_advocate: bool = False,
+) -> AgentResultRe02:
+    """Re02 end-to-end. parse → multi-round plan → fetch →
+    candidate_pool → evidence_review → synthesize_v2 → low_bar.
+
+    Devils-advocate (Re01) is OFF by default in Re02; the Low-bar Reviewer
+    replaces the front-rank of its responsibilities. Pass
+    auto_devils_advocate=True if you want the strict 5-dim review after.
+    """
+    global GLOBAL_COUNTER
+    project_id = f"agent-re02-{uuid.uuid4().hex[:8]}"
+
+    # 1. parse (Re01 parser, unchanged)
+    parsed = parse_topic(raw_topic)
+    parsed["raw_topic"] = raw_topic
+
+    # 2. plan v2
+    plan = plan_tools_v2(parsed)
+
+    # 3. multi-round fetch (writes SourceLedger, populates CandidatePool)
+    raw_with_meta = await multi_round_fetch(parsed, plan)
+    _ledger_obj = raw_with_meta.get("_source_ledger")
+    _pool_obj = raw_with_meta.get("_candidate_pool")
+    ledger: SourceLedger = _ledger_obj if isinstance(_ledger_obj, SourceLedger) else SourceLedger()
+    pool: CandidatePool = _pool_obj if isinstance(_pool_obj, CandidatePool) else CandidatePool()
+    raw = {k: v for k, v in raw_with_meta.items() if not k.startswith("_")}
+
+    # 3.5. citation expand (Round 2.5) — pull references of strong seeds
+    # into the pool as `parallel_baseline_candidate`. Reuses the project
+    # fetch_with_timeout for OpenAlex /works/{id} queries. Re03: passes
+    # `parsed_topic` + `reviews` so the seed_relevance gate can filter
+    # off-topic seeds (e.g. the cosmic ray paper that polluted Case A v3).
+    from ..retrieval._http import fetch_with_timeout
+    citation_expand_stats: dict = {"round_status": "skipped"}
+    try:
+        citation_expand_stats = await citation_expand(
+            raw=raw,
+            pool=pool,
+            fetch=fetch_with_timeout,
+            parsed_topic=parsed,
+            reviews=None,  # ER runs AFTER citation_expand in Re02; Re03 orchestrator can re-order
+            ledger=ledger,
+        )
+        logger.info(
+            "[Re02] citation_expand stats: %s",
+            {k: v for k, v in citation_expand_stats.items() if k != "round_status" or v != "ok"},
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("[Re02] citation_expand failed: %s", exc)
+
+    # 4. evidence review (1 LLM call, batched)
+    reviews = audit_candidates(
+        parsed_topic=parsed,
+        candidates=pool.as_list(),
+        raw=raw,
+        chat_json_strict=_chat_json_strict,
+    )
+
+    # 5. synthesize v2 (1 LLM call, consumes reviewed evidence + pool)
+    synthesis = synthesize_v2(
+        raw_topic=raw_topic,
+        domain_route=parsed.get("domain_route", "unknown"),
+        topic_json=parsed,
+        raw=raw,
+        reviews=reviews,
+        pool=pool,
+        ledger=ledger,
+    )
+
+    # 6. low-bar reviewer (1 LLM call or deterministic fallback)
+    if auto_low_bar:
+        er_stats = review_stats(reviews)
+        cp_stats = pool.stats()
+        verdict = run_low_bar_review(
+            parsed_topic=parsed,
+            synthesize_output=synthesis,
+            evidence_review_stats=er_stats,
+            candidate_pool_stats=cp_stats,
+            chat_json_strict=_chat_json_strict,
+        )
+    else:
+        from .low_bar_reviewer import LowBarVerdict
+        verdict = LowBarVerdict(
+            review_verdict="needs_revision",
+            summary="low-bar reviewer disabled (auto_low_bar=False)",
+        )
+
+    # 7. optional Re01 devils-advocate (strict 5-dim review). OFF by default.
+    if auto_devils_advocate:
+        # Build a minimal buckets-shaped summary so devils_advocate keeps working.
+        summary_buckets = {
+            "baseline_papers": [b.get("title", "") for b in synthesis["paper_groups"]["baseline"]],
+            "parallel_papers": [b.get("title", "") for b in synthesis["paper_groups"]["parallel"]],
+            "reference_papers": [b.get("title", "") for b in synthesis["paper_groups"]["reference"]],
+            "evidence_gaps": synthesis["risk_reminders"],
+        }
+        try:
+            reviewed = devils_advocate(summary_buckets, parsed)
+            synthesis["_devils_advocate"] = {
+                "overall_verdict": reviewed.get("overall_verdict"),
+                "dimension_scores": reviewed.get("dimension_scores"),
+                "fabrication_alerts": reviewed.get("fabrication_alerts"),
+                "risks_identified": reviewed.get("risks_identified"),
+                "verdict_source": reviewed.get("verdict_source"),
+            }
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("devils_advocate (Re02 opt-in) failed: %s", exc)
+
+    return AgentResultRe02(
+        raw_topic=raw_topic,
+        project_id=project_id,
+        parsed_topic=parsed,
+        plan=plan,
+        raw_tool_results=raw,
+        candidate_pool=pool.as_list(),
+        source_ledger={
+            "rows": ledger.as_list(),
+            "stats": ledger.stats(),
+            "n_calls": len(ledger.as_list()),
+        },
+        evidence_review=[r.to_dict() for r in reviews],
+        synthesis=synthesis,
+        low_bar_verdict=verdict.to_dict(),
+        llm_calls=GLOBAL_COUNTER.n_calls,
+        llm_failures=GLOBAL_COUNTER.n_failures,
+        llm_budget=LLM_CALL_BUDGET,
+        citation_expand_stats=citation_expand_stats,
+        round_delta=_build_round_delta(raw, ledger, citation_expand_stats),
+    )
+
+
+def _build_round_delta(raw: dict, ledger, ce_stats: dict) -> dict:
+    """Re03 per-round data delta (SOP §1.6). Per adapter, per round.
+
+    Walks raw_tool_results' `_round_name` field, groups by adapter, and
+    emits {R1: {arxiv: n, openalex: n, ...}, R2: {...}, ...} for the
+    per-call data delta table.
+    """
+    delta: dict = {}
+    for adapter, items in raw.items():
+        if not isinstance(items, list):
+            continue
+        for it in items:
+            r = it.get("_round")
+            rn = it.get("_round_name") or f"R{r}"
+            key = str(rn) if rn is not None else "R?"
+            slot = delta.setdefault(key, {})
+            slot[adapter] = slot.get(adapter, 0) + 1
+    # Include citation_expand as a virtual round
+    if ce_stats and ce_stats.get("round_status") != "skipped":
+        delta["R2.5_citation_expand"] = {
+            "seeds_total": ce_stats.get("seeds_total", 0),
+            "seeds_eligible": ce_stats.get("seeds_eligible", 0),
+            "seeds_rejected": ce_stats.get("seeds_rejected", 0),
+            "refs_added": ce_stats.get("refs_added", 0),
+        }
+    return delta
 
 
 if __name__ == "__main__":

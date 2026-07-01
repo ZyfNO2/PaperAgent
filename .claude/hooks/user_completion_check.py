@@ -156,7 +156,103 @@ def _transcript_user_messages() -> list[str]:
     return msgs[-10:]
 
 
+def _trace_per_round_delta() -> list[str]:
+    """Read the most recent `*_llm_online.json` trace under tmp_s66v_traces/
+    and emit per-round + per-adapter data delta lines.
+
+    Returns a list of human-readable lines (empty list if no trace found
+    or trace unparseable). The Stop hook surfaces these so the user can
+    trace which round / adapter added / dropped which papers.
+    """
+    out: list[str] = []
+    base = REPO / "tmp_s66v_traces"
+    if not base.exists():
+        return out
+    # Find the most recently modified *llm_online.json
+    traces = sorted(
+        base.glob("*_llm_online.json"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    if not traces:
+        return out
+    latest = traces[0]
+    try:
+        with latest.open("r", encoding="utf-8") as f:
+            d = json.load(f)
+    except Exception:
+        out.append(f"  [trace] {latest.relative_to(REPO)}: failed to parse")
+        return out
+
+    out.append(f"  [trace] latest = {latest.relative_to(REPO)}")
+    topic = d.get("raw_topic", "") or (d.get("parsed_topic") or {}).get("raw_topic", "?")
+    out.append(f"  [trace] topic = {topic[:80]}")
+    raw = d.get("raw_tool_results") or {}
+    # Per-adapter per-round counts
+    from collections import Counter
+    per_adapter: dict[str, Counter] = {}
+    for adapter, items in raw.items():
+        c = Counter()
+        for it in items:
+            rn = (it.get("_round_name") or "?").strip()
+            c[rn] += 1
+        per_adapter[adapter] = c
+    out.append("  [trace] raw data delta (per adapter × per round):")
+    for adapter in ("arxiv", "openalex", "crossref", "github", "openalex_citation"):
+        if adapter not in per_adapter:
+            continue
+        c = per_adapter[adapter]
+        if not c:
+            out.append(f"    {adapter}: empty")
+            continue
+        total = sum(c.values())
+        breakdown = ", ".join(f"{k}={v}" for k, v in sorted(c.items()))
+        out.append(f"    {adapter} (n={total}): {breakdown}")
+    # pool summary
+    cp = d.get("candidate_pool") or []
+    if isinstance(cp, list):
+        from collections import Counter
+        type_counts = Counter(c.get("evidence_type") for c in cp)
+        out.append(f"  [trace] CandidatePool n={len(cp)} types={dict(type_counts)}")
+    er = d.get("evidence_review") or []
+    if isinstance(er, list):
+        from collections import Counter
+        tier_counts = Counter(r.get("status") for r in er)
+        out.append(f"  [trace] EvidenceReview n={len(er)} tiers={dict(tier_counts)}")
+    lb = d.get("low_bar_verdict") or {}
+    if isinstance(lb, dict) and lb:
+        out.append(
+            f"  [trace] Low-bar verdict={lb.get('review_verdict')} "
+            f"can_continue={lb.get('can_continue_to_opening_report')}"
+        )
+    # Heuristic: flag suspicious output
+    flags: list[str] = []
+    if isinstance(er, list) and er:
+        from collections import Counter
+        c = Counter(r.get("status") for r in er)
+        if c.get("core", 0) == 0 and c.get("rejected", 0) == 0 and c.get("needs_manual", 0) == 0:
+            flags.append("ER has 0 core / 0 rejected / 0 needs_manual → likely LLM 挂 / heuristic 接管")
+    if isinstance(cp, list):
+        # Detect Heuristic fallback noise titles
+        noise_titles = {"changing data sources in the age of machine learning for official statistics",
+                        "awesome machine learning"}
+        for c in cp:
+            t = (c.get("title") or "").strip().lower()
+            if any(nt in t for nt in noise_titles):
+                flags.append(f"  LLM-dead-path noise in pool: {c.get('title')[:80]!r}")
+                break
+    if flags:
+        out.append("  [trace] ⚠️  suspicious data flags:")
+        for f in flags:
+            out.append(f"    - {f}")
+    return out
+
+
 def main() -> int:
+    # Always emit one line first (stderr AND stdout, both flushed) so the
+    # harness's pipe readers see output even if stderr capture races.
+    print("[user_completion_check] running Stop-hook self-audit", file=sys.stderr)
+    sys.stderr.flush()
     print("=" * 60, file=sys.stderr)
     print("[user_completion_check] Stop-hook self-audit", file=sys.stderr)
     print("=" * 60, file=sys.stderr)
@@ -190,6 +286,13 @@ def main() -> int:
                 f"  user #{i}: {len(kws)} keywords, {len(hits)} match -> {hits[:6]}",
                 file=sys.stderr,
             )
+
+    # Per-call data delta (Re03 SOP §1.6) — surface the latest LLM-online
+    # trace's round-level breakdown so the user can trace which round /
+    # adapter added / dropped which papers.
+    print("\n[Per-call data delta (latest LLM-online trace)]", file=sys.stderr)
+    for line in _trace_per_round_delta():
+        print(line, file=sys.stderr)
 
     print(
         "\n[user_completion_check] OK (non-blocking, exit 0)",

@@ -1,0 +1,4003 @@
+{
+ "raw_topic": "基于Unet的钢材裂缝分割",
+ "project_id": "agent-re02-2a1d88ac",
+ "parsed_topic": {
+  "raw_topic": "基于Unet的钢材裂缝分割",
+  "normalized_topic": "Steel crack segmentation based on U-Net",
+  "domain_route": "vision_2d",
+  "domain_confidence": 0.92,
+  "method_terms": [
+   "U-Net",
+   "encoder-decoder",
+   "semantic segmentation",
+   "fully convolutional network",
+   "data augmentation"
+  ],
+  "task_terms": [
+   "pixel-level crack segmentation",
+   "defect region segmentation",
+   "binary crack detection",
+   "surface crack delineation"
+  ],
+  "object_terms": [
+   "steel surface",
+   "metal crack",
+   "industrial X-ray image",
+   "surface defect",
+   "crack pixel mask"
+  ],
+  "query_atoms_en": [
+   "U-Net steel crack segmentation",
+   "deep learning steel surface defect segmentation",
+   "semantic segmentation metal crack pixel",
+   "U-Net encoder-decoder industrial defect",
+   "concrete steel crack segmentation CNN"
+  ],
+  "query_atoms_zh": [
+   "Unet钢材裂缝分割",
+   "钢材表面缺陷语义分割",
+   "深度学习金属裂缝分割",
+   "卷积神经网络钢材裂缝检测",
+   "U-Net工业缺陷分割"
+  ],
+  "needs_clarification": [],
+  "site_hints": [
+   "arxiv.org",
+   "openaccess.thecvf.com",
+   "paperswithcode.com"
+  ]
+ },
+ "plan": {
+  "rounds": [
+   {
+    "round": 1,
+    "name": "broad_recall",
+    "goal": "wide initial sweep across paper + repo backends for U-Net based steel crack segmentation",
+    "calls": [
+     {
+      "tool": "search_arxiv",
+      "query": "U-Net steel crack segmentation",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "arxiv is the spine; surface the canonical U-Net steel/metal crack segmentation papers first.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_arxiv",
+      "query": "deep learning surface defect segmentation",
+      "target_role": "baseline_or_parallel_paper",
+      "why_call": "broaden to deep-learning surface defect segmentation, the parent task of steel crack segmentation.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_openalex",
+      "query": "U-Net encoder-decoder industrial defect",
+      "target_role": "parallel_paper",
+      "why_call": "openalex surfaces parallel industrial-defect segmentation work that shares the U-Net encoder-decoder backbone.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_github",
+      "query": "U-Net crack segmentation",
+      "target_role": "repo",
+      "why_call": "github returns runnable U-Net crack segmentation implementations we can mine for code/datasets.",
+      "expected_output": "repo",
+      "fallback_tool": ""
+     }
+    ]
+   },
+   {
+    "round": 2,
+    "name": "reference_expansion",
+    "goal": "expand coverage via benchmark / survey / recent-advances variants for steel crack segmentation",
+    "calls": [
+     {
+      "tool": "search_arxiv",
+      "query": "crack segmentation benchmark dataset",
+      "target_role": "reference",
+      "why_call": "locate benchmark/dataset papers that define evaluation protocols for crack segmentation.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_arxiv",
+      "query": "surface defect segmentation survey",
+      "target_role": "survey",
+      "why_call": "find survey articles that situate U-Net among broader surface defect segmentation methods.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_openalex",
+      "query": "metal crack pixel-level detection",
+      "target_role": "parallel_paper",
+      "why_call": "openalex variant on metal crack pixel-level detection to expand coverage of adjacent works.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_crossref",
+      "query": "semantic segmentation steel surface",
+      "target_role": "reference",
+      "why_call": "crossref captures journal/conference variants of steel surface semantic segmentation absent from arxiv.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     }
+    ]
+   },
+   {
+    "round": 3,
+    "name": "repo_dataset_followup",
+    "goal": "find runnable code + datasets for U-Net based steel crack segmentation",
+    "calls": [
+     {
+      "tool": "search_github",
+      "query": "crack segmentation pytorch",
+      "target_role": "repo",
+      "why_call": "narrow github query targeting concrete pytorch implementations of crack segmentation pipelines.",
+      "expected_output": "repo",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_github",
+      "query": "steel defect dataset",
+      "target_role": "dataset",
+      "why_call": "target the steel surface defect dataset repos commonly paired with U-Net crack segmentation work.",
+      "expected_output": "dataset",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_openalex",
+      "query": "concrete steel crack segmentation",
+      "target_role": "parallel_paper",
+      "why_call": "openalex can surface concrete-steel crack segmentation variants that re-use U-Net and provide dataset pointers.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     },
+     {
+      "tool": "search_crossref",
+      "query": "data augmentation crack segmentation",
+      "target_role": "reference",
+      "why_call": "crossref picks up journal articles on augmentation strategies specifically tuned to crack pixel masks.",
+      "expected_output": "paper",
+      "fallback_tool": ""
+     }
+    ]
+   }
+  ],
+  "year_min": 2018,
+  "top_k_per_adapter": 8,
+  "site_keywords": [],
+  "arxiv_queries": [
+   "U-Net steel crack segmentation",
+   "deep learning surface defect segmentation",
+   "crack segmentation benchmark dataset",
+   "surface defect segmentation survey"
+  ],
+  "openalex_queries": [
+   "U-Net encoder-decoder industrial defect",
+   "metal crack pixel-level detection",
+   "concrete steel crack segmentation"
+  ],
+  "crossref_queries": [
+   "semantic segmentation steel surface",
+   "data augmentation crack segmentation"
+  ],
+  "github_queries": [
+   "U-Net crack segmentation",
+   "crack segmentation pytorch",
+   "steel defect dataset"
+  ]
+ },
+ "raw_tool_results": {
+  "arxiv": [
+   {
+    "title": "Image Segmentation in Foundation Model Era: A Survey",
+    "abstract": "Image segmentation is a long-standing challenge in computer vision, studied continuously over several decades, as evidenced by seminal algorithms such as N-Cut, FCN, and MaskFormer. With the advent of foundation models (FMs), contemporary segmentation methodologies have embarked on a new epoch by either adapting FMs (e.g., CLIP, Stable Diffusion, DINO) for image segmentation or developing dedicated segmentation foundation models (e.g., SAM). These approaches not only deliver superior segmentation performance, but also herald newfound segmentation capabilities previously unseen in deep learning context. However, current research in image segmentation lacks a detailed analysis of distinct characteristics, challenges, and solutions associated with these advancements. This survey seeks to fill this gap by providing a thorough review of cutting-edge research centered around FM-driven image segmentation. We investigate two basic lines of research -- generic image segmentation (i.e., semantic segmentation, instance segmentation, panoptic segmentation), and promptable image segmentation (i.e., interactive segmentation, referring segmentation, few-shot segmentation) -- by delineating their respective task settings, background concepts, and key challenges. Furthermore, we provide insights into the emergence of segmentation knowledge from FMs like CLIP, Stable Diffusion, and DINO. An exhaustive overview of over 300 segmentation approaches is provided to encapsulate the breadth of current research efforts. Subsequently, we engage in a discussion of open issues and potential avenues for future research. We envisage that this fresh, comprehensive, and systematic survey catalyzes the evolution of advanced image segmentation systems. A public website is created to continuously track developments in this fast advancing field: \\url{https://github.com/stanley-313/ImageSegFM-Survey}.",
+    "authors": [
+     "Tianfei Zhou",
+     "Wang Xia",
+     "Fei Zhang",
+     "Boyu Chang",
+     "Wenguan Wang",
+     "Ye Yuan",
+     "Ender Konukoglu",
+     "Daniel Cremers"
+    ],
+    "arxiv_id": "2408.12957v3",
+    "url": "http://arxiv.org/abs/2408.12957v3",
+    "published": "2024-08-23T10:07:59Z",
+    "year": 2024,
+    "source_query": "surface defect segmentation survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "Multi-Modal Attention Networks for Enhanced Segmentation and Depth Estimation of Subsurface Defects in Pulse Thermography",
+    "abstract": "AI-driven pulse thermography (PT) has become a crucial tool in non-destructive testing (NDT), enabling automatic detection of hidden anomalies in various industrial components. Current state-of-the-art techniques feed segmentation and depth estimation networks compressed PT sequences using either Principal Component Analysis (PCA) or Thermographic Signal Reconstruction (TSR). However, treating these two modalities independently constrains the performance of PT inspection models as these representations possess complementary semantic features. To address this limitation, this work proposes PT-Fusion, a multi-modal attention-based fusion network that fuses both PCA and TSR modalities for defect segmentation and depth estimation of subsurface defects in PT setups. PT-Fusion introduces novel feature fusion modules, Encoder Attention Fusion Gate (EAFG) and Attention Enhanced Decoding Block (AEDB), to fuse PCA and TSR features for enhanced segmentation and depth estimation of subsurface defects. In addition, a novel data augmentation technique is proposed based on random data sampling from thermographic sequences to alleviate the scarcity of PT datasets. The proposed method is benchmarked against state-of-the-art PT inspection models, including U-Net, attention U-Net, and 3D-CNN on the Université Laval IRT-PVC dataset. The results demonstrate that PT-Fusion outperforms the aforementioned models in defect segmentation and depth estimation accuracies with a margin of 10%.",
+    "authors": [
+     "Mohammed Salah",
+     "Naoufel Werghi",
+     "Davor Svetinovic",
+     "Yusra Abdulrahman"
+    ],
+    "arxiv_id": "2501.09994v1",
+    "url": "http://arxiv.org/abs/2501.09994v1",
+    "published": "2025-01-17T07:24:58Z",
+    "year": 2025,
+    "source_query": "surface defect segmentation survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "A rich bounty of AGN in the 9 square degree Bootes survey: high-z obscured AGN and large-scale structure",
+    "abstract": "We use observations from the 9 square degree multiwavelength survey in Bootes to identify hundreds of obscured active galactic nuclei (AGN) with high redshifts (z > 0.7), luminosities (L_bol > 10^45 ergs/s), and moderate obscuring columns (N_H > 10^22 cm^-2), and to measure the clustering properties of X-ray AGN at z > 1. In the Bootes region, shallow (5 ks) Chandra X-ray observations have detected ~4,000 X-ray sources, and the same region has been mapped with deep optical imaging and by Spitzer IRAC, which detects ~300,000 point sources, of which ~30,000 have detections in all four IRAC bands, for which we can select AGN on the basis of their mid-IR colors. With the MMT/Hectospec we have obtained modest resolution optical spectra for about half the X-ray sources (out to z > 3) and ~20,000 galaxies (out to z = 0.7). With this multiwavelength data we select >400 AGN per square degree (compared to 12 per square degree from SDSS). Among a sample of IRAC-selected AGN we identify 641 candidate obscured objects based on their R band and IRAC luminosities. We use X-ray stacking techniques to verify that they are obscured AGN and measure their absorbing column densities. We also measure the three-dimensional two-point correlation function for X-ray selected AGN.",
+    "authors": [
+     "R. C. Hickox",
+     "C. Jones",
+     "W. R. Forman",
+     "S. S. Murray",
+     "A. Kenter",
+     "M. Brodwin",
+     "the Chandra XBootes",
+     "NOAO Deep Wide-Field Survey",
+     "Spitzer IRAC Shallow Survey",
+     "AGES Teams"
+    ],
+    "arxiv_id": "astro-ph",
+    "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+    "published": "2006-11-21T20:38:37Z",
+    "year": 2006,
+    "source_query": "surface defect segmentation survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+    "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+    "authors": [
+     "Leah von der Heyde",
+     "Anna-Carolina Haensch",
+     "Bernd Weiß",
+     "Jessica Daikeler"
+    ],
+    "arxiv_id": "2506.14634v3",
+    "url": "http://arxiv.org/abs/2506.14634v3",
+    "published": "2025-06-17T15:28:53Z",
+    "year": 2025,
+    "source_query": "surface defect segmentation survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+    "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+    "authors": [
+     "Shervan Fekri-Ershad"
+    ],
+    "arxiv_id": "1906.11561v1",
+    "url": "http://arxiv.org/abs/1906.11561v1",
+    "published": "2019-06-27T11:36:29Z",
+    "year": 2019,
+    "source_query": "surface defect segmentation survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "3D Kidneys and Kidney Tumor Semantic Segmentation using Boundary-Aware Networks",
+    "abstract": "Automated segmentation of kidneys and kidney tumors is an important step in quantifying the tumor's morphometrical details to monitor the progression of the disease and accurately compare decisions regarding the kidney tumor treatment. Manual delineation techniques are often tedious, error-prone and require expert knowledge for creating unambiguous representation of kidneys and kidney tumors segmentation. In this work, we propose an end-to-end boundary aware fully Convolutional Neural Networks (CNNs) for reliable kidney and kidney tumor semantic segmentation from arterial phase abdominal 3D CT scans. We propose a segmentation network consisting of an encoder-decoder architecture that specifically accounts for organ and tumor edge information by devising a dedicated boundary branch supervised by edge-aware loss terms. We have evaluated our model on 2019 MICCAI KiTS Kidney Tumor Segmentation Challenge dataset and our method has achieved dice scores of 0.9742 and 0.8103 for kidney and tumor repetitively and an overall composite dice score of 0.8923.",
+    "authors": [
+     "Andriy Myronenko",
+     "Ali Hatamizadeh"
+    ],
+    "arxiv_id": "1909.06684v1",
+    "url": "http://arxiv.org/abs/1909.06684v1",
+    "published": "2019-09-14T21:49:09Z",
+    "year": 2019,
+    "source_query": "surface defect segmentation survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+    "abstract": "Ensuring traffic safety is crucial, which necessitates the detection and prevention of road surface defects. As a result, there has been a growing interest in the literature on the subject, leading to the development of various road surface defect detection methods. The methods for detecting road defects can be categorised in various ways depending on the input data types or training methodologies. The predominant approach involves image-based methods, which analyse pixel intensities and surface textures to identify defects. Despite their popularity, image-based methods share the distinct limitation of vulnerability to weather and lighting changes. To address this issue, researchers have explored the use of additional sensors, such as laser scanners or LiDARs, providing explicit depth information to enable the detection of defects in terms of scale and volume. However, the exploration of data beyond images has not been sufficiently investigated. In this survey paper, we provide a comprehensive review of road surface defect detection studies, categorising them based on input data types and methodologies used. Additionally, we review recently proposed non-image-based methods and discuss several challenges and open problems associated with these techniques.",
+    "authors": [
+     "Jongmin Yu",
+     "Jiaqi Jiang",
+     "Sebastiano Fichera",
+     "Paolo Paoletti",
+     "Lisa Layzell",
+     "Devansh Mehta",
+     "Shan Luo"
+    ],
+    "arxiv_id": "2402.04297v1",
+    "url": "http://arxiv.org/abs/2402.04297v1",
+    "published": "2024-02-06T15:42:38Z",
+    "year": 2024,
+    "source_query": "surface defect segmentation survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   },
+   {
+    "title": "The Methanol Multibeam Survey",
+    "abstract": "A purpose built 7-beam methanol receiver, installed on the Parkes Radio Telescope, was used to survey the Galactic plane for newly forming high mass stars, pinpointed by strong methanol maser emission at 6.7 GHz. The Methanol Multibeam (MMB) survey observed over 60% of the Galactic plane, detecting close to 1000 sources. The MMB survey provides a huge resource for studies of high-mass star formation, an important stage in the evolution of the interstellar medium. The MMB survey is also a valuable resource for investigations into the structure and dynamics of our Galaxy: with narrow velocity ranges of emission (typically only a few km/s) and velocities closely correlated with the systemic velocity of their surrounding molecular clouds, 6.7-GHz methanol masers provide estimates of the spiral arm velocities and their structure. I will discuss the techniques and properties of the MMB survey, before outlining recent results, which include the identification of regions of enhanced star formation believed to be indicative of the origins of the spiral arms and the interaction of the Galactic bar with the 3-kpc arms. I will also discuss the various follow-up programmes including a study of magnetic fields through associated hydroxyl masers.",
+    "authors": [
+     "J. A. Green",
+     "the Methanol Multibeam Survey Collaboration"
+    ],
+    "arxiv_id": "1210.0979v1",
+    "url": "http://arxiv.org/abs/1210.0979v1",
+    "published": "2012-10-03T05:09:44Z",
+    "year": 2012,
+    "source_query": "surface defect segmentation survey",
+    "_round": 2,
+    "_round_name": "reference_expansion"
+   }
+  ],
+  "openalex": [],
+  "crossref": [
+   {
+    "title": "ECFN: efficient cross-scale fusion network for fast semantic segmentation of steel surface defects",
+    "doi": "10.1088/2631-8695/ae28b5",
+    "DOI": "10.1088/2631-8695/ae28b5",
+    "authors": [
+     "Chan Wang",
+     "Menghuan Wang",
+     "Haiqi Yang"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0009-0002-9580-3393",
+      "authenticated-orcid": false,
+      "given": "Chan",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Menghuan",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Haiqi",
+      "family": "Yang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Engineering Research Express",
+    "container-title": [
+     "Engineering Research Express"
+    ],
+    "abstract": "<jats:title>Abstract</jats:title>\n                  <jats:p>Accurate and efficient defect detection is critical for assessing the quality of steel products. Accurate defect detection is challenging in practical applications due to the small size of defects and background noise interference. Additionally, some complex methods cannot achieve rapid detection on devices with limited computing power. To address these issues, this work enhances small-sized defect awareness by lightweight fine-grained sensing feature extraction and cross-scale feature fusion strategies. This improves the capture of fine-grained defect features and ensures real-time performance. Specifically, a fine-grained feature extraction module improves defect feature perception across scales by fusing semantic features at multiple scales. Secondly, efficient cross-scale semantic information fusion is introduced, which exploits the complementary characteristic of shallow-deep features to solve the information loss problem of small defect features. Thirdly, A simple feature attention enhancement module is introduced to refine important features. Finally, the different scales’ semantic information is used to achieve defect classification fast through a lightweight segmentation head. The experimental results on two public datasets show that the proposed method achieves a mean intersection over union (mIoU) of 84.66% and 86.99%, respectively. Meanwhile, the proposed method has a small number of parameters (14.7Million) and computation cost (7.48 Giga Floating-Point Operations), which achieves a good balance between accuracy and speed.</jats:p>",
+    "url": "https://doi.org/10.1088/2631-8695/ae28b5",
+    "URL": "https://doi.org/10.1088/2631-8695/ae28b5",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "journal-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Rapid Recognition and Semantic Segmentation of Molten Steel Distribution Images on a Steel Ladle Surface based on the Improved SqueezeNAS Network",
+    "doi": "10.1109/yac59482.2023.10401539",
+    "DOI": "10.1109/yac59482.2023.10401539",
+    "authors": [
+     "Siyi Huang",
+     "Ling Xiong"
+    ],
+    "author": [
+     {
+      "given": "Siyi",
+      "family": "Huang",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Wuhan University of Technology,School of International Education,Wuhan,China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Ling",
+      "family": "Xiong",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Wuhan University of Science and Technology,School of Information Science and Engineering,Wuhan,China"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "2023 38th Youth Academic Annual Conference of Chinese Association of Automation (YAC)",
+    "container-title": [
+     "2023 38th Youth Academic Annual Conference of Chinese Association of Automation (YAC)"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/yac59482.2023.10401539",
+    "URL": "https://doi.org/10.1109/yac59482.2023.10401539",
+    "year": 2023,
+    "publication_year": 2023,
+    "citation_count": 1,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "SkipFusion: Multimodal Process-Aware Segmentation for Steel Surface Inspection",
+    "doi": "10.5220/0014629000004084",
+    "DOI": "10.5220/0014629000004084",
+    "authors": [
+     "Lars De Pauw",
+     "Toon Goedemé"
+    ],
+    "author": [
+     {
+      "given": "Lars",
+      "family": "De Pauw",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "EAVISE-PSI-ESAT, KU Leuven, Campus De Nayer, Sint-Katelijne-Waver, Belgium"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Toon",
+      "family": "Goedemé",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "EAVISE-PSI-ESAT, KU Leuven, Campus De Nayer, Sint-Katelijne-Waver, Belgium"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "Proceedings of the 21st International Conference on Computer Vision Theory and Applications",
+    "container-title": [
+     "Proceedings of the 21st International Conference on Computer Vision Theory and Applications"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.5220/0014629000004084",
+    "URL": "https://doi.org/10.5220/0014629000004084",
+    "year": 2026,
+    "publication_year": 2026,
+    "citation_count": 0,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "The Amalgamation of the Object Detection and Semantic Segmentation for Steel Surface Defect Detection",
+    "doi": "10.3390/app12126004",
+    "DOI": "10.3390/app12126004",
+    "authors": [
+     "Mansi Sharma",
+     "Jongtae Lim",
+     "Hansung Lee"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-0645-9408",
+      "authenticated-orcid": false,
+      "given": "Mansi",
+      "family": "Sharma",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Department of Computer Science and Engineering, Kongju National University, 1223-24 Cheonan-daero, 275 Budae-dong, Seobuk-gu, Cheonan-si 31080, Chungcheongnam-do, Korea"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Jongtae",
+      "family": "Lim",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Department of Computer Science and Engineering, Kongju National University, 1223-24 Cheonan-daero, 275 Budae-dong, Seobuk-gu, Cheonan-si 31080, Chungcheongnam-do, Korea"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-6519-4120",
+      "authenticated-orcid": false,
+      "given": "Hansung",
+      "family": "Lee",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "School of Creative Convergence, Andong National University, 1375 Gyeongdong-ro, Andong 36729, Gyeongsangbuk-do, Korea"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "venue": "Applied Sciences",
+    "container-title": [
+     "Applied Sciences"
+    ],
+    "abstract": "<jats:p>Steel surface defect detection is challenging because it contains various atypical defects. Many studies have attempted to detect metal surface defects using deep learning and had success in applying deep learning. Despite many previous studies to solve the steel surface defect detection, it remains a difficult problem. To resolve the atypical defects problem, we introduce a hierarchical approach for the classification and detection of defects on the steel surface. The proposed approach has a hierarchical structure of the binary classifier at the first stage and the object detection and semantic segmentation algorithms at the second stage. It shows 98.6% accuracy in scratch and other types of defect classification and 77.12% mean average precision (mAP) in defect detection using the Northeastern University (NEU) surface defect detection dataset. A comparative analysis with the previous studies shows that the proposed approach achieves excellent results on the NEU dataset.</jats:p>",
+    "url": "https://doi.org/10.3390/app12126004",
+    "URL": "https://doi.org/10.3390/app12126004",
+    "year": 2022,
+    "publication_year": 2022,
+    "citation_count": 39,
+    "_crossref_type": "journal-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "A Two-Level Semantic Segmentation Framework for Mechanism-Aware Corrosion Assessment in Steel Bridges",
+    "doi": "10.2139/ssrn.6880979",
+    "DOI": "10.2139/ssrn.6880979",
+    "authors": [
+     "SAL SAAD AL DEEN TAHER",
+     "Ji Dang"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-8933-9961",
+      "authenticated-orcid": true,
+      "given": "SAL SAAD AL DEEN",
+      "family": "TAHER",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-0769-0334",
+      "authenticated-orcid": true,
+      "given": "Ji",
+      "family": "Dang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": "<jats:p>Corrosion assessment in steel bridges requires not only estimating the spatial extent of visible deterioration but also distinguishing inspection-relevant corrosion appearances that support maintenance interpretation. Existing vision-based corrosion segmentation studies predominantly formulate the task as binary corrosion-versus-background mapping, which supports damage localization but provides limited information on corrosion-category distribution. This study proposes a two-level semantic segmentation framework for corrosion assessment and visual structural health monitoring of steel bridge components. The first level performs binary pixel-wise segmentation to quantify corrosion coverage, whereas the second level performs mechanism-aware semantic segmentation using four inspection-oriented corrosion categories: Uniform, Crevice, Underfilm, and Other Localized corrosion. Field-collected steel bridge images are annotated using an inspection-oriented visual annotation protocol, and transformer-based and CNN-based segmentation models are evaluated under a unified experimental setting. Performance is assessed using region-overlap metrics, class-wise precision–recall–F1 measures, and Boundary-F1 to quantify edge fidelity along irregular corrosion fronts. The highest-mIoU binary configuration achieves an mIoU of 0.844, while the best mechanism-aware configuration achieves a five-class mIoU of 0.608 and a mean corrosion-category F1-score of 0.683, reflecting the greater difficulty of distinguishing visually related corrosion categories compared with binary foreground-background segmentation. Binary-merged evaluation shows that the mechanism-aware model retains strong corrosion coverage capability, although dedicated binary models remain superior for pure foreground-background segmentation. The proposed framework provides an inspection-support representation that links corrosion coverage, visual category distribution, and boundary quality, thereby extending binary corrosion mapping toward maintenance-relevant, machine-readable interpretation of pixel-level corrosion outputs.</jats:p>",
+    "url": "https://doi.org/10.2139/ssrn.6880979",
+    "URL": "https://doi.org/10.2139/ssrn.6880979",
+    "year": 2026,
+    "publication_year": 2026,
+    "citation_count": 0,
+    "_crossref_type": "posted-content",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Semantic Segmentation-Based Damage Detection for Steel Wire Ropes",
+    "doi": "10.1109/ima68480.2026.11517628",
+    "DOI": "10.1109/ima68480.2026.11517628",
+    "authors": [
+     "Zhu Wu",
+     "Mei Zhang"
+    ],
+    "author": [
+     {
+      "given": "Zhu",
+      "family": "Wu",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "School of Electrical and Information Engineering, Anhui University of Science and Technology,Huainan,China,232001"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Mei",
+      "family": "Zhang",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "School of Electrical and Information Engineering, Anhui University of Science and Technology,Huainan,China,232001"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "2026 International Conference on Intelligent Manufacturing and Automation (IMA)",
+    "container-title": [
+     "2026 International Conference on Intelligent Manufacturing and Automation (IMA)"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/ima68480.2026.11517628",
+    "URL": "https://doi.org/10.1109/ima68480.2026.11517628",
+    "year": 2026,
+    "publication_year": 2026,
+    "citation_count": 0,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Ground Surface Semantic Segmentation with Uav-Based Point Clouds for Automated Earthwork Monitoring",
+    "doi": "10.2139/ssrn.5135529",
+    "DOI": "10.2139/ssrn.5135529",
+    "authors": [
+     "Gitaek Lee",
+     "Haksun Kim",
+     "Seokho Chi"
+    ],
+    "author": [
+     {
+      "given": "Gitaek",
+      "family": "Lee",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Haksun",
+      "family": "Kim",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Seokho",
+      "family": "Chi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": null,
+    "container-title": [],
+    "abstract": null,
+    "url": "https://doi.org/10.2139/ssrn.5135529",
+    "URL": "https://doi.org/10.2139/ssrn.5135529",
+    "year": 2025,
+    "publication_year": 2025,
+    "citation_count": 0,
+    "_crossref_type": "posted-content",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "title": "Defect Detection Method For Steel Based On Semantic Segmentation",
+    "doi": "10.1109/itoec49072.2020.9141596",
+    "DOI": "10.1109/itoec49072.2020.9141596",
+    "authors": [
+     "Guanhao Zhou",
+     "Haiyang Sun"
+    ],
+    "author": [
+     {
+      "given": "Guanhao",
+      "family": "Zhou",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Haiyang",
+      "family": "Sun",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "venue": "2020 IEEE 5th Information Technology and Mechatronics Engineering Conference (ITOEC)",
+    "container-title": [
+     "2020 IEEE 5th Information Technology and Mechatronics Engineering Conference (ITOEC)"
+    ],
+    "abstract": null,
+    "url": "https://doi.org/10.1109/itoec49072.2020.9141596",
+    "URL": "https://doi.org/10.1109/itoec49072.2020.9141596",
+    "year": 2020,
+    "publication_year": 2020,
+    "citation_count": 10,
+    "_crossref_type": "proceedings-article",
+    "_round": 1,
+    "_round_name": "broad_recall"
+   }
+  ],
+  "github": [
+   {
+    "id": 504941150,
+    "node_id": "R_kgDOHhjKXg",
+    "name": "CrackSegmentationDeepLearning",
+    "full_name": "mrFahrenhiet/CrackSegmentationDeepLearning",
+    "private": false,
+    "owner": {
+     "login": "mrFahrenhiet",
+     "id": 49518586,
+     "node_id": "MDQ6VXNlcjQ5NTE4NTg2",
+     "avatar_url": "https://avatars.githubusercontent.com/u/49518586?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/mrFahrenhiet",
+     "html_url": "https://github.com/mrFahrenhiet",
+     "followers_url": "https://api.github.com/users/mrFahrenhiet/followers",
+     "following_url": "https://api.github.com/users/mrFahrenhiet/following{/other_user}",
+     "gists_url": "https://api.github.com/users/mrFahrenhiet/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/mrFahrenhiet/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/mrFahrenhiet/subscriptions",
+     "organizations_url": "https://api.github.com/users/mrFahrenhiet/orgs",
+     "repos_url": "https://api.github.com/users/mrFahrenhiet/repos",
+     "events_url": "https://api.github.com/users/mrFahrenhiet/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/mrFahrenhiet/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/mrFahrenhiet/CrackSegmentationDeepLearning",
+    "description": "Multiscale Attention Based Efficient U-Net for Crack Segmentation, segments a RGB image into 2 classes crack and non-crack, this method obtained SOTA results on Crack500 dataset",
+    "fork": false,
+    "url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning",
+    "forks_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/forks",
+    "keys_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/teams",
+    "hooks_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/hooks",
+    "issue_events_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/events",
+    "assignees_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/tags",
+    "blobs_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/languages",
+    "stargazers_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/stargazers",
+    "contributors_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/contributors",
+    "subscribers_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/subscribers",
+    "subscription_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/subscription",
+    "commits_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/merges",
+    "archive_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/downloads",
+    "issues_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/labels{/name}",
+    "releases_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/mrFahrenhiet/CrackSegmentationDeepLearning/deployments",
+    "created_at": "2022-06-18T20:11:43Z",
+    "updated_at": "2026-05-12T11:08:04Z",
+    "pushed_at": "2022-10-15T15:54:32Z",
+    "git_url": "git://github.com/mrFahrenhiet/CrackSegmentationDeepLearning.git",
+    "ssh_url": "git@github.com:mrFahrenhiet/CrackSegmentationDeepLearning.git",
+    "clone_url": "https://github.com/mrFahrenhiet/CrackSegmentationDeepLearning.git",
+    "svn_url": "https://github.com/mrFahrenhiet/CrackSegmentationDeepLearning",
+    "homepage": "",
+    "size": 2478,
+    "stargazers_count": 46,
+    "watchers_count": 46,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 4,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 3,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "computer-vision",
+     "deep-learning",
+     "pytorch"
+    ],
+    "visibility": "public",
+    "forks": 4,
+    "open_issues": 3,
+    "watchers": 46,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 46,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 131311112,
+    "node_id": "MDEwOlJlcG9zaXRvcnkxMzEzMTExMTI=",
+    "name": "Crack-segmentation",
+    "full_name": "RyM-CIC/Crack-segmentation",
+    "private": false,
+    "owner": {
+     "login": "RyM-CIC",
+     "id": 38790248,
+     "node_id": "MDQ6VXNlcjM4NzkwMjQ4",
+     "avatar_url": "https://avatars.githubusercontent.com/u/38790248?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/RyM-CIC",
+     "html_url": "https://github.com/RyM-CIC",
+     "followers_url": "https://api.github.com/users/RyM-CIC/followers",
+     "following_url": "https://api.github.com/users/RyM-CIC/following{/other_user}",
+     "gists_url": "https://api.github.com/users/RyM-CIC/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/RyM-CIC/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/RyM-CIC/subscriptions",
+     "organizations_url": "https://api.github.com/users/RyM-CIC/orgs",
+     "repos_url": "https://api.github.com/users/RyM-CIC/repos",
+     "events_url": "https://api.github.com/users/RyM-CIC/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/RyM-CIC/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/RyM-CIC/Crack-segmentation",
+    "description": "U-Net variants to segment cracks in pavement",
+    "fork": false,
+    "url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation",
+    "forks_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/forks",
+    "keys_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/teams",
+    "hooks_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/hooks",
+    "issue_events_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/events",
+    "assignees_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/tags",
+    "blobs_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/languages",
+    "stargazers_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/stargazers",
+    "contributors_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/contributors",
+    "subscribers_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/subscribers",
+    "subscription_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/subscription",
+    "commits_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/merges",
+    "archive_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/downloads",
+    "issues_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/labels{/name}",
+    "releases_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/RyM-CIC/Crack-segmentation/deployments",
+    "created_at": "2018-04-27T15:01:47Z",
+    "updated_at": "2024-11-13T05:02:38Z",
+    "pushed_at": "2018-09-03T18:30:11Z",
+    "git_url": "git://github.com/RyM-CIC/Crack-segmentation.git",
+    "ssh_url": "git@github.com:RyM-CIC/Crack-segmentation.git",
+    "clone_url": "https://github.com/RyM-CIC/Crack-segmentation.git",
+    "svn_url": "https://github.com/RyM-CIC/Crack-segmentation",
+    "homepage": null,
+    "size": 22325,
+    "stargazers_count": 14,
+    "watchers_count": 14,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 6,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 6,
+    "open_issues": 0,
+    "watchers": 14,
+    "default_branch": "master",
+    "score": 1.0,
+    "stars": 14,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 234987914,
+    "node_id": "MDEwOlJlcG9zaXRvcnkyMzQ5ODc5MTQ=",
+    "name": "Concrete-Crack-Segmentation",
+    "full_name": "Sandeep2017/Concrete-Crack-Segmentation",
+    "private": false,
+    "owner": {
+     "login": "Sandeep2017",
+     "id": 27236108,
+     "node_id": "MDQ6VXNlcjI3MjM2MTA4",
+     "avatar_url": "https://avatars.githubusercontent.com/u/27236108?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/Sandeep2017",
+     "html_url": "https://github.com/Sandeep2017",
+     "followers_url": "https://api.github.com/users/Sandeep2017/followers",
+     "following_url": "https://api.github.com/users/Sandeep2017/following{/other_user}",
+     "gists_url": "https://api.github.com/users/Sandeep2017/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/Sandeep2017/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/Sandeep2017/subscriptions",
+     "organizations_url": "https://api.github.com/users/Sandeep2017/orgs",
+     "repos_url": "https://api.github.com/users/Sandeep2017/repos",
+     "events_url": "https://api.github.com/users/Sandeep2017/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/Sandeep2017/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/Sandeep2017/Concrete-Crack-Segmentation",
+    "description": "A Deep Residual U-Net like architecture for Crack segmentation in concrete structures.",
+    "fork": false,
+    "url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation",
+    "forks_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/forks",
+    "keys_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/teams",
+    "hooks_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/hooks",
+    "issue_events_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/events",
+    "assignees_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/tags",
+    "blobs_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/languages",
+    "stargazers_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/stargazers",
+    "contributors_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/contributors",
+    "subscribers_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/subscribers",
+    "subscription_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/subscription",
+    "commits_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/merges",
+    "archive_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/downloads",
+    "issues_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Sandeep2017/Concrete-Crack-Segmentation/deployments",
+    "created_at": "2020-01-20T00:17:06Z",
+    "updated_at": "2026-06-24T03:27:49Z",
+    "pushed_at": "2020-08-19T09:53:46Z",
+    "git_url": "git://github.com/Sandeep2017/Concrete-Crack-Segmentation.git",
+    "ssh_url": "git@github.com:Sandeep2017/Concrete-Crack-Segmentation.git",
+    "clone_url": "https://github.com/Sandeep2017/Concrete-Crack-Segmentation.git",
+    "svn_url": "https://github.com/Sandeep2017/Concrete-Crack-Segmentation",
+    "homepage": "",
+    "size": 10840,
+    "stargazers_count": 10,
+    "watchers_count": 10,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 2,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": {
+     "key": "mit",
+     "name": "MIT License",
+     "spdx_id": "MIT",
+     "url": "https://api.github.com/licenses/mit",
+     "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "dete",
+     "residual-networks",
+     "resnet",
+     "unet"
+    ],
+    "visibility": "public",
+    "forks": 2,
+    "open_issues": 0,
+    "watchers": 10,
+    "default_branch": "master",
+    "score": 1.0,
+    "stars": 10,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 606886846,
+    "node_id": "R_kgDOJCxbvg",
+    "name": "DenseUnet",
+    "full_name": "hg153/DenseUnet",
+    "private": false,
+    "owner": {
+     "login": "hg153",
+     "id": 58408775,
+     "node_id": "MDQ6VXNlcjU4NDA4Nzc1",
+     "avatar_url": "https://avatars.githubusercontent.com/u/58408775?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/hg153",
+     "html_url": "https://github.com/hg153",
+     "followers_url": "https://api.github.com/users/hg153/followers",
+     "following_url": "https://api.github.com/users/hg153/following{/other_user}",
+     "gists_url": "https://api.github.com/users/hg153/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/hg153/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/hg153/subscriptions",
+     "organizations_url": "https://api.github.com/users/hg153/orgs",
+     "repos_url": "https://api.github.com/users/hg153/repos",
+     "events_url": "https://api.github.com/users/hg153/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/hg153/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/hg153/DenseUnet",
+    "description": "Modified U-Net for pavement crack segmentation",
+    "fork": false,
+    "url": "https://api.github.com/repos/hg153/DenseUnet",
+    "forks_url": "https://api.github.com/repos/hg153/DenseUnet/forks",
+    "keys_url": "https://api.github.com/repos/hg153/DenseUnet/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/hg153/DenseUnet/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/hg153/DenseUnet/teams",
+    "hooks_url": "https://api.github.com/repos/hg153/DenseUnet/hooks",
+    "issue_events_url": "https://api.github.com/repos/hg153/DenseUnet/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/hg153/DenseUnet/events",
+    "assignees_url": "https://api.github.com/repos/hg153/DenseUnet/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/hg153/DenseUnet/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/hg153/DenseUnet/tags",
+    "blobs_url": "https://api.github.com/repos/hg153/DenseUnet/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/hg153/DenseUnet/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/hg153/DenseUnet/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/hg153/DenseUnet/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/hg153/DenseUnet/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/hg153/DenseUnet/languages",
+    "stargazers_url": "https://api.github.com/repos/hg153/DenseUnet/stargazers",
+    "contributors_url": "https://api.github.com/repos/hg153/DenseUnet/contributors",
+    "subscribers_url": "https://api.github.com/repos/hg153/DenseUnet/subscribers",
+    "subscription_url": "https://api.github.com/repos/hg153/DenseUnet/subscription",
+    "commits_url": "https://api.github.com/repos/hg153/DenseUnet/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/hg153/DenseUnet/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/hg153/DenseUnet/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/hg153/DenseUnet/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/hg153/DenseUnet/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/hg153/DenseUnet/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/hg153/DenseUnet/merges",
+    "archive_url": "https://api.github.com/repos/hg153/DenseUnet/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/hg153/DenseUnet/downloads",
+    "issues_url": "https://api.github.com/repos/hg153/DenseUnet/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/hg153/DenseUnet/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/hg153/DenseUnet/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/hg153/DenseUnet/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/hg153/DenseUnet/labels{/name}",
+    "releases_url": "https://api.github.com/repos/hg153/DenseUnet/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/hg153/DenseUnet/deployments",
+    "created_at": "2023-02-26T21:00:02Z",
+    "updated_at": "2025-01-12T02:59:07Z",
+    "pushed_at": "2023-02-28T18:47:53Z",
+    "git_url": "git://github.com/hg153/DenseUnet.git",
+    "ssh_url": "git@github.com:hg153/DenseUnet.git",
+    "clone_url": "https://github.com/hg153/DenseUnet.git",
+    "svn_url": "https://github.com/hg153/DenseUnet",
+    "homepage": null,
+    "size": 100844,
+    "stargazers_count": 7,
+    "watchers_count": 7,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": {
+     "key": "mit",
+     "name": "MIT License",
+     "spdx_id": "MIT",
+     "url": "https://api.github.com/licenses/mit",
+     "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 7,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 7,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 683962645,
+    "node_id": "R_kgDOKMRxFQ",
+    "name": "Crack-segmentation-using-deeplabV3-and-UNET",
+    "full_name": "ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET",
+    "private": false,
+    "owner": {
+     "login": "ayazmhmd",
+     "id": 77320646,
+     "node_id": "MDQ6VXNlcjc3MzIwNjQ2",
+     "avatar_url": "https://avatars.githubusercontent.com/u/77320646?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/ayazmhmd",
+     "html_url": "https://github.com/ayazmhmd",
+     "followers_url": "https://api.github.com/users/ayazmhmd/followers",
+     "following_url": "https://api.github.com/users/ayazmhmd/following{/other_user}",
+     "gists_url": "https://api.github.com/users/ayazmhmd/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/ayazmhmd/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/ayazmhmd/subscriptions",
+     "organizations_url": "https://api.github.com/users/ayazmhmd/orgs",
+     "repos_url": "https://api.github.com/users/ayazmhmd/repos",
+     "events_url": "https://api.github.com/users/ayazmhmd/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/ayazmhmd/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET",
+    "description": "This repository contains complete code and a dataset for crack segmentation using DeepLabV3 and U-Net. The models have been trained on google drive as you can use the same code by uploading the data in your drive.",
+    "fork": false,
+    "url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET",
+    "forks_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/forks",
+    "keys_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/teams",
+    "hooks_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/hooks",
+    "issue_events_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/events",
+    "assignees_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/tags",
+    "blobs_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/languages",
+    "stargazers_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/stargazers",
+    "contributors_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/contributors",
+    "subscribers_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/subscribers",
+    "subscription_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/subscription",
+    "commits_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/merges",
+    "archive_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/downloads",
+    "issues_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/labels{/name}",
+    "releases_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET/deployments",
+    "created_at": "2023-08-28T06:46:49Z",
+    "updated_at": "2025-11-26T09:37:31Z",
+    "pushed_at": "2025-05-15T17:57:01Z",
+    "git_url": "git://github.com/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET.git",
+    "ssh_url": "git@github.com:ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET.git",
+    "clone_url": "https://github.com/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET.git",
+    "svn_url": "https://github.com/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET",
+    "homepage": "",
+    "size": 253506,
+    "stargazers_count": 5,
+    "watchers_count": 5,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 5,
+    "default_branch": "master",
+    "score": 1.0,
+    "stars": 5,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 1054367300,
+    "node_id": "R_kgDOPtheRA",
+    "name": "Crack-Segmentation",
+    "full_name": "mohamadhoseinraad/Crack-Segmentation",
+    "private": false,
+    "owner": {
+     "login": "mohamadhoseinraad",
+     "id": 109301192,
+     "node_id": "U_kgDOBoPNyA",
+     "avatar_url": "https://avatars.githubusercontent.com/u/109301192?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/mohamadhoseinraad",
+     "html_url": "https://github.com/mohamadhoseinraad",
+     "followers_url": "https://api.github.com/users/mohamadhoseinraad/followers",
+     "following_url": "https://api.github.com/users/mohamadhoseinraad/following{/other_user}",
+     "gists_url": "https://api.github.com/users/mohamadhoseinraad/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/mohamadhoseinraad/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/mohamadhoseinraad/subscriptions",
+     "organizations_url": "https://api.github.com/users/mohamadhoseinraad/orgs",
+     "repos_url": "https://api.github.com/users/mohamadhoseinraad/repos",
+     "events_url": "https://api.github.com/users/mohamadhoseinraad/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/mohamadhoseinraad/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/mohamadhoseinraad/Crack-Segmentation",
+    "description": "End-to-end project for semantic segmentation of cracks in images. It covers Data labeling, loading ,train and evaluate  .This repository is the final project for the Computer Vision course (Bachelor's degree) at KNTU, taught by Dr. Nasihatkon.",
+    "fork": false,
+    "url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation",
+    "forks_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/forks",
+    "keys_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/teams",
+    "hooks_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/hooks",
+    "issue_events_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/events",
+    "assignees_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/tags",
+    "blobs_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/languages",
+    "stargazers_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/stargazers",
+    "contributors_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/contributors",
+    "subscribers_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/subscribers",
+    "subscription_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/subscription",
+    "commits_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/merges",
+    "archive_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/downloads",
+    "issues_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/labels{/name}",
+    "releases_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/mohamadhoseinraad/Crack-Segmentation/deployments",
+    "created_at": "2025-09-10T18:25:53Z",
+    "updated_at": "2026-06-03T09:42:20Z",
+    "pushed_at": "2025-09-10T20:00:20Z",
+    "git_url": "git://github.com/mohamadhoseinraad/Crack-Segmentation.git",
+    "ssh_url": "git@github.com:mohamadhoseinraad/Crack-Segmentation.git",
+    "clone_url": "https://github.com/mohamadhoseinraad/Crack-Segmentation.git",
+    "svn_url": "https://github.com/mohamadhoseinraad/Crack-Segmentation",
+    "homepage": "",
+    "size": 14015,
+    "stargazers_count": 4,
+    "watchers_count": 4,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "ai",
+     "computer-vision",
+     "python",
+     "resnet-34",
+     "torch",
+     "u-net"
+    ],
+    "visibility": "public",
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 4,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 4,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 303776811,
+    "node_id": "MDEwOlJlcG9zaXRvcnkzMDM3NzY4MTE=",
+    "name": "Crack-Segmentation",
+    "full_name": "smcck222/Crack-Segmentation",
+    "private": false,
+    "owner": {
+     "login": "smcck222",
+     "id": 39821938,
+     "node_id": "MDQ6VXNlcjM5ODIxOTM4",
+     "avatar_url": "https://avatars.githubusercontent.com/u/39821938?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/smcck222",
+     "html_url": "https://github.com/smcck222",
+     "followers_url": "https://api.github.com/users/smcck222/followers",
+     "following_url": "https://api.github.com/users/smcck222/following{/other_user}",
+     "gists_url": "https://api.github.com/users/smcck222/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/smcck222/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/smcck222/subscriptions",
+     "organizations_url": "https://api.github.com/users/smcck222/orgs",
+     "repos_url": "https://api.github.com/users/smcck222/repos",
+     "events_url": "https://api.github.com/users/smcck222/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/smcck222/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/smcck222/Crack-Segmentation",
+    "description": "U-Net CNN for segmenting cracks on road images. ",
+    "fork": false,
+    "url": "https://api.github.com/repos/smcck222/Crack-Segmentation",
+    "forks_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/forks",
+    "keys_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/teams",
+    "hooks_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/hooks",
+    "issue_events_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/events",
+    "assignees_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/tags",
+    "blobs_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/languages",
+    "stargazers_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/stargazers",
+    "contributors_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/contributors",
+    "subscribers_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/subscribers",
+    "subscription_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/subscription",
+    "commits_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/merges",
+    "archive_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/downloads",
+    "issues_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/labels{/name}",
+    "releases_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/smcck222/Crack-Segmentation/deployments",
+    "created_at": "2020-10-13T17:13:15Z",
+    "updated_at": "2025-05-22T03:47:57Z",
+    "pushed_at": "2020-10-13T17:17:14Z",
+    "git_url": "git://github.com/smcck222/Crack-Segmentation.git",
+    "ssh_url": "git@github.com:smcck222/Crack-Segmentation.git",
+    "clone_url": "https://github.com/smcck222/Crack-Segmentation.git",
+    "svn_url": "https://github.com/smcck222/Crack-Segmentation",
+    "homepage": "",
+    "size": 942,
+    "stargazers_count": 3,
+    "watchers_count": 3,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 3,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 1,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [],
+    "visibility": "public",
+    "forks": 3,
+    "open_issues": 1,
+    "watchers": 3,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 3,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 994049564,
+    "node_id": "R_kgDOOz_-HA",
+    "name": "Computer-Vision-Crack-Detection",
+    "full_name": "BBahtiri/Computer-Vision-Crack-Detection",
+    "private": false,
+    "owner": {
+     "login": "BBahtiri",
+     "id": 124665352,
+     "node_id": "U_kgDOB24-CA",
+     "avatar_url": "https://avatars.githubusercontent.com/u/124665352?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/BBahtiri",
+     "html_url": "https://github.com/BBahtiri",
+     "followers_url": "https://api.github.com/users/BBahtiri/followers",
+     "following_url": "https://api.github.com/users/BBahtiri/following{/other_user}",
+     "gists_url": "https://api.github.com/users/BBahtiri/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/BBahtiri/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/BBahtiri/subscriptions",
+     "organizations_url": "https://api.github.com/users/BBahtiri/orgs",
+     "repos_url": "https://api.github.com/users/BBahtiri/repos",
+     "events_url": "https://api.github.com/users/BBahtiri/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/BBahtiri/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/BBahtiri/Computer-Vision-Crack-Detection",
+    "description": "A deep learning pipeline for semantic segmentation of cracks or defects in materials using U-Net architecture with various backbones. This project includes hyperparameter tuning, custom model architectures, and comprehensive data processing utilities.",
+    "fork": false,
+    "url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection",
+    "forks_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/forks",
+    "keys_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/teams",
+    "hooks_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/hooks",
+    "issue_events_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/events",
+    "assignees_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/tags",
+    "blobs_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/languages",
+    "stargazers_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/stargazers",
+    "contributors_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/contributors",
+    "subscribers_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/subscribers",
+    "subscription_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/subscription",
+    "commits_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/merges",
+    "archive_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/downloads",
+    "issues_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/labels{/name}",
+    "releases_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/BBahtiri/Computer-Vision-Crack-Detection/deployments",
+    "created_at": "2025-06-01T04:52:41Z",
+    "updated_at": "2026-03-26T04:51:19Z",
+    "pushed_at": "2025-06-01T07:42:37Z",
+    "git_url": "git://github.com/BBahtiri/Computer-Vision-Crack-Detection.git",
+    "ssh_url": "git@github.com:BBahtiri/Computer-Vision-Crack-Detection.git",
+    "clone_url": "https://github.com/BBahtiri/Computer-Vision-Crack-Detection.git",
+    "svn_url": "https://github.com/BBahtiri/Computer-Vision-Crack-Detection",
+    "homepage": "",
+    "size": 156,
+    "stargazers_count": 3,
+    "watchers_count": 3,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 3,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "computer-vision",
+     "finite-element-methods",
+     "fracture-mechanics",
+     "phase-field-method",
+     "segmentation-models",
+     "u-net-image-segmentation"
+    ],
+    "visibility": "public",
+    "forks": 3,
+    "open_issues": 0,
+    "watchers": 3,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 3,
+    "_round": 1,
+    "_round_name": "broad_recall"
+   },
+   {
+    "id": 171361704,
+    "node_id": "MDEwOlJlcG9zaXRvcnkxNzEzNjE3MDQ=",
+    "name": "crack_segmentation",
+    "full_name": "khanhha/crack_segmentation",
+    "private": false,
+    "owner": {
+     "login": "khanhha",
+     "id": 2276264,
+     "node_id": "MDQ6VXNlcjIyNzYyNjQ=",
+     "avatar_url": "https://avatars.githubusercontent.com/u/2276264?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/khanhha",
+     "html_url": "https://github.com/khanhha",
+     "followers_url": "https://api.github.com/users/khanhha/followers",
+     "following_url": "https://api.github.com/users/khanhha/following{/other_user}",
+     "gists_url": "https://api.github.com/users/khanhha/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/khanhha/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/khanhha/subscriptions",
+     "organizations_url": "https://api.github.com/users/khanhha/orgs",
+     "repos_url": "https://api.github.com/users/khanhha/repos",
+     "events_url": "https://api.github.com/users/khanhha/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/khanhha/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/khanhha/crack_segmentation",
+    "description": "This repository contains code and dataset for the task crack segmentation using two architectures UNet_VGG16, UNet_Resnet and DenseNet-Tiramusu",
+    "fork": false,
+    "url": "https://api.github.com/repos/khanhha/crack_segmentation",
+    "forks_url": "https://api.github.com/repos/khanhha/crack_segmentation/forks",
+    "keys_url": "https://api.github.com/repos/khanhha/crack_segmentation/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/khanhha/crack_segmentation/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/khanhha/crack_segmentation/teams",
+    "hooks_url": "https://api.github.com/repos/khanhha/crack_segmentation/hooks",
+    "issue_events_url": "https://api.github.com/repos/khanhha/crack_segmentation/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/khanhha/crack_segmentation/events",
+    "assignees_url": "https://api.github.com/repos/khanhha/crack_segmentation/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/khanhha/crack_segmentation/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/khanhha/crack_segmentation/tags",
+    "blobs_url": "https://api.github.com/repos/khanhha/crack_segmentation/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/khanhha/crack_segmentation/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/khanhha/crack_segmentation/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/khanhha/crack_segmentation/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/khanhha/crack_segmentation/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/khanhha/crack_segmentation/languages",
+    "stargazers_url": "https://api.github.com/repos/khanhha/crack_segmentation/stargazers",
+    "contributors_url": "https://api.github.com/repos/khanhha/crack_segmentation/contributors",
+    "subscribers_url": "https://api.github.com/repos/khanhha/crack_segmentation/subscribers",
+    "subscription_url": "https://api.github.com/repos/khanhha/crack_segmentation/subscription",
+    "commits_url": "https://api.github.com/repos/khanhha/crack_segmentation/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/khanhha/crack_segmentation/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/khanhha/crack_segmentation/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/khanhha/crack_segmentation/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/khanhha/crack_segmentation/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/khanhha/crack_segmentation/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/khanhha/crack_segmentation/merges",
+    "archive_url": "https://api.github.com/repos/khanhha/crack_segmentation/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/khanhha/crack_segmentation/downloads",
+    "issues_url": "https://api.github.com/repos/khanhha/crack_segmentation/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/khanhha/crack_segmentation/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/khanhha/crack_segmentation/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/khanhha/crack_segmentation/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/khanhha/crack_segmentation/labels{/name}",
+    "releases_url": "https://api.github.com/repos/khanhha/crack_segmentation/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/khanhha/crack_segmentation/deployments",
+    "created_at": "2019-02-18T21:54:29Z",
+    "updated_at": "2026-06-29T08:02:05Z",
+    "pushed_at": "2024-05-06T08:21:33Z",
+    "git_url": "git://github.com/khanhha/crack_segmentation.git",
+    "ssh_url": "git@github.com:khanhha/crack_segmentation.git",
+    "clone_url": "https://github.com/khanhha/crack_segmentation.git",
+    "svn_url": "https://github.com/khanhha/crack_segmentation",
+    "homepage": "",
+    "size": 61807,
+    "stargazers_count": 445,
+    "watchers_count": 445,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 137,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 16,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "crack-detection",
+     "deep-learning",
+     "pytorch"
+    ],
+    "visibility": "public",
+    "forks": 137,
+    "open_issues": 16,
+    "watchers": 445,
+    "default_branch": "master",
+    "score": 1.0,
+    "stars": 445,
+    "_round": 3,
+    "_round_name": "repo_dataset_followup"
+   },
+   {
+    "id": 323938660,
+    "node_id": "MDEwOlJlcG9zaXRvcnkzMjM5Mzg2NjA=",
+    "name": "Concrete-Crack-Detection-Segmentation",
+    "full_name": "konskyrt/Concrete-Crack-Detection-Segmentation",
+    "private": false,
+    "owner": {
+     "login": "konskyrt",
+     "id": 46296774,
+     "node_id": "MDQ6VXNlcjQ2Mjk2Nzc0",
+     "avatar_url": "https://avatars.githubusercontent.com/u/46296774?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/konskyrt",
+     "html_url": "https://github.com/konskyrt",
+     "followers_url": "https://api.github.com/users/konskyrt/followers",
+     "following_url": "https://api.github.com/users/konskyrt/following{/other_user}",
+     "gists_url": "https://api.github.com/users/konskyrt/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/konskyrt/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/konskyrt/subscriptions",
+     "organizations_url": "https://api.github.com/users/konskyrt/orgs",
+     "repos_url": "https://api.github.com/users/konskyrt/repos",
+     "events_url": "https://api.github.com/users/konskyrt/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/konskyrt/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/konskyrt/Concrete-Crack-Detection-Segmentation",
+    "description": "📅This repository contains the code for crack detection in concrete surfaces. It is a PyTorch implementation of Deep Learning-Based Crack Damage Detection Using Convolutional Neural Networks",
+    "fork": false,
+    "url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation",
+    "forks_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/forks",
+    "keys_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/teams",
+    "hooks_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/hooks",
+    "issue_events_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/events",
+    "assignees_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/tags",
+    "blobs_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/languages",
+    "stargazers_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/stargazers",
+    "contributors_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/contributors",
+    "subscribers_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/subscribers",
+    "subscription_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/subscription",
+    "commits_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/merges",
+    "archive_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/downloads",
+    "issues_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/labels{/name}",
+    "releases_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/konskyrt/Concrete-Crack-Detection-Segmentation/deployments",
+    "created_at": "2020-12-23T15:34:33Z",
+    "updated_at": "2026-06-22T08:26:34Z",
+    "pushed_at": "2026-02-21T17:07:42Z",
+    "git_url": "git://github.com/konskyrt/Concrete-Crack-Detection-Segmentation.git",
+    "ssh_url": "git@github.com:konskyrt/Concrete-Crack-Detection-Segmentation.git",
+    "clone_url": "https://github.com/konskyrt/Concrete-Crack-Detection-Segmentation.git",
+    "svn_url": "https://github.com/konskyrt/Concrete-Crack-Detection-Segmentation",
+    "homepage": "",
+    "size": 56584,
+    "stargazers_count": 106,
+    "watchers_count": 106,
+    "language": "Jupyter Notebook",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 27,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 2,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "convolutional-neural-networks",
+     "crack-detection"
+    ],
+    "visibility": "public",
+    "forks": 27,
+    "open_issues": 2,
+    "watchers": 106,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 106,
+    "_round": 3,
+    "_round_name": "repo_dataset_followup"
+   },
+   {
+    "id": 375874021,
+    "node_id": "MDEwOlJlcG9zaXRvcnkzNzU4NzQwMjE=",
+    "name": "CSSR",
+    "full_name": "Yuki-11/CSSR",
+    "private": false,
+    "owner": {
+     "login": "Yuki-11",
+     "id": 62691917,
+     "node_id": "MDQ6VXNlcjYyNjkxOTE3",
+     "avatar_url": "https://avatars.githubusercontent.com/u/62691917?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/Yuki-11",
+     "html_url": "https://github.com/Yuki-11",
+     "followers_url": "https://api.github.com/users/Yuki-11/followers",
+     "following_url": "https://api.github.com/users/Yuki-11/following{/other_user}",
+     "gists_url": "https://api.github.com/users/Yuki-11/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/Yuki-11/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/Yuki-11/subscriptions",
+     "organizations_url": "https://api.github.com/users/Yuki-11/orgs",
+     "repos_url": "https://api.github.com/users/Yuki-11/repos",
+     "events_url": "https://api.github.com/users/Yuki-11/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/Yuki-11/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/Yuki-11/CSSR",
+    "description": "Crack Segmentation for Low-Resolution Images using Joint Learning with Super-Resolution (CSSR) was accepted to international conference on MVA2021 (oral), and selected for the Best Practical Paper Award.",
+    "fork": false,
+    "url": "https://api.github.com/repos/Yuki-11/CSSR",
+    "forks_url": "https://api.github.com/repos/Yuki-11/CSSR/forks",
+    "keys_url": "https://api.github.com/repos/Yuki-11/CSSR/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Yuki-11/CSSR/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Yuki-11/CSSR/teams",
+    "hooks_url": "https://api.github.com/repos/Yuki-11/CSSR/hooks",
+    "issue_events_url": "https://api.github.com/repos/Yuki-11/CSSR/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Yuki-11/CSSR/events",
+    "assignees_url": "https://api.github.com/repos/Yuki-11/CSSR/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Yuki-11/CSSR/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Yuki-11/CSSR/tags",
+    "blobs_url": "https://api.github.com/repos/Yuki-11/CSSR/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Yuki-11/CSSR/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Yuki-11/CSSR/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Yuki-11/CSSR/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Yuki-11/CSSR/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Yuki-11/CSSR/languages",
+    "stargazers_url": "https://api.github.com/repos/Yuki-11/CSSR/stargazers",
+    "contributors_url": "https://api.github.com/repos/Yuki-11/CSSR/contributors",
+    "subscribers_url": "https://api.github.com/repos/Yuki-11/CSSR/subscribers",
+    "subscription_url": "https://api.github.com/repos/Yuki-11/CSSR/subscription",
+    "commits_url": "https://api.github.com/repos/Yuki-11/CSSR/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Yuki-11/CSSR/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Yuki-11/CSSR/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Yuki-11/CSSR/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Yuki-11/CSSR/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Yuki-11/CSSR/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Yuki-11/CSSR/merges",
+    "archive_url": "https://api.github.com/repos/Yuki-11/CSSR/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Yuki-11/CSSR/downloads",
+    "issues_url": "https://api.github.com/repos/Yuki-11/CSSR/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Yuki-11/CSSR/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Yuki-11/CSSR/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Yuki-11/CSSR/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Yuki-11/CSSR/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Yuki-11/CSSR/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Yuki-11/CSSR/deployments",
+    "created_at": "2021-06-11T01:40:21Z",
+    "updated_at": "2026-05-30T14:20:32Z",
+    "pushed_at": "2024-06-22T06:58:35Z",
+    "git_url": "git://github.com/Yuki-11/CSSR.git",
+    "ssh_url": "git@github.com:Yuki-11/CSSR.git",
+    "clone_url": "https://github.com/Yuki-11/CSSR.git",
+    "svn_url": "https://github.com/Yuki-11/CSSR",
+    "homepage": "",
+    "size": 268027,
+    "stargazers_count": 86,
+    "watchers_count": 86,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 9,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 1,
+    "license": {
+     "key": "mit",
+     "name": "MIT License",
+     "spdx_id": "MIT",
+     "url": "https://api.github.com/licenses/mit",
+     "node_id": "MDc6TGljZW5zZTEz"
+    },
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "crack-detection",
+     "crack-segmentation",
+     "deep-learning",
+     "defect-detection",
+     "joint-learning",
+     "machine-learning",
+     "mva",
+     "python3",
+     "pytorch",
+     "semantic-segmentation",
+     "super-resolution"
+    ],
+    "visibility": "public",
+    "forks": 9,
+    "open_issues": 1,
+    "watchers": 86,
+    "default_branch": "main",
+    "score": 1.0,
+    "stars": 86,
+    "_round": 3,
+    "_round_name": "repo_dataset_followup"
+   },
+   {
+    "id": 187766652,
+    "node_id": "MDEwOlJlcG9zaXRvcnkxODc3NjY2NTI=",
+    "name": "Crack-Semantic-Segmentation",
+    "full_name": "anishreddy3/Crack-Semantic-Segmentation",
+    "private": false,
+    "owner": {
+     "login": "anishreddy3",
+     "id": 39660191,
+     "node_id": "MDQ6VXNlcjM5NjYwMTkx",
+     "avatar_url": "https://avatars.githubusercontent.com/u/39660191?v=4",
+     "gravatar_id": "",
+     "url": "https://api.github.com/users/anishreddy3",
+     "html_url": "https://github.com/anishreddy3",
+     "followers_url": "https://api.github.com/users/anishreddy3/followers",
+     "following_url": "https://api.github.com/users/anishreddy3/following{/other_user}",
+     "gists_url": "https://api.github.com/users/anishreddy3/gists{/gist_id}",
+     "starred_url": "https://api.github.com/users/anishreddy3/starred{/owner}{/repo}",
+     "subscriptions_url": "https://api.github.com/users/anishreddy3/subscriptions",
+     "organizations_url": "https://api.github.com/users/anishreddy3/orgs",
+     "repos_url": "https://api.github.com/users/anishreddy3/repos",
+     "events_url": "https://api.github.com/users/anishreddy3/events{/privacy}",
+     "received_events_url": "https://api.github.com/users/anishreddy3/received_events",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "html_url": "https://github.com/anishreddy3/Crack-Semantic-Segmentation",
+    "description": "Real time crack segmentation using PyTorch, OpenCV and ONNX runtime",
+    "fork": false,
+    "url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation",
+    "forks_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/forks",
+    "keys_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/teams",
+    "hooks_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/hooks",
+    "issue_events_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/events",
+    "assignees_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/tags",
+    "blobs_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/languages",
+    "stargazers_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/stargazers",
+    "contributors_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/contributors",
+    "subscribers_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/subscribers",
+    "subscription_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/subscription",
+    "commits_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/merges",
+    "archive_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/downloads",
+    "issues_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/labels{/name}",
+    "releases_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/anishreddy3/Crack-Semantic-Segmentation/deployments",
+    "created_at": "2019-05-21T05:18:54Z",
+    "updated_at": "2025-10-14T00:50:50Z",
+    "pushed_at": "2022-07-16T00:50:15Z",
+    "git_url": "git://github.com/anishreddy3/Crack-Semantic-Segmentation.git",
+    "ssh_url": "git@github.com:anishreddy3/Crack-Semantic-Segmentation.git",
+    "clone_url": "https://github.com/anishreddy3/Crack-Semantic-Segmentation.git",
+    "svn_url": "https://github.com/anishreddy3/Crack-Semantic-Segmentation",
+    "homepage": "https://docs.google.com/document/d/1gJtviJ3ks5ddoKysCEBuZs0xUSVYecq-EYUO7ba8fp4/edit?usp=sharing",
+    "size": 49890,
+    "stargazers_count": 64,
+    "watchers_count": 64,
+    "language": "Python",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "has_discussions": false,
+    "forks_count": 21,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "allow_forking": true,
+    "is_template": false,
+    "web_commit_signoff_required": false,
+    "has_pull_requests": true,
+    "pull_request_creation_policy": "all",
+    "topics": [
+     "cnn",
+     "computer-vision",
+     "crack-detection",
+     "deep-learning",
+     "image-processing",
+     "neural-networks",
+     "onnx",
+     "opencv",
+     "pytorch",
+     "unet-pytorch"
+    ],
+    "visibility": "public",
+    "forks": 21,
+    "open_issues": 0,
+    "watchers": 64,
+    "default_branch": "master",
+    "score": 1.0,
+    "stars": 64,
+    "_round": 3,
+    "_round_name": "repo_dataset_followup"
+   }
+  ]
+ },
+ "candidate_pool": [
+  {
+   "stable_id": "image segmentation in foundation model era: a survey",
+   "candidate_id": "c-1680caba",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Image Segmentation in Foundation Model Era: A Survey",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2024,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2408.12957v3",
+   "identifier": "2408.12957v3",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Image segmentation is a long-standing challenge in computer vision, studied continuously over several decades, as evidenced by seminal algorithms such as N-Cut, FCN, and MaskFormer. With the advent of foundation models (FMs), contemporary segmentation methodologies have embarked on a new epoch by either adapting FMs (e.g., CLIP, Stable Diffusion, DINO) for image segmentation or developing dedicated segmentation foundation models (e.g., SAM). These approaches not only deliver superior segmentation performance, but also herald newfound segmentation capabilities previously unseen in deep learning context. However, current research in image segmentation lacks a detailed analysis of distinct characteristics, challenges, and solutions associated with these advancements. This survey seeks to fill this gap by providing a thorough review of cutting-edge research centered around FM-driven image segmentation. We investigate two basic lines of research -- generic image segmentation (i.e., semantic segmentation, instance segmentation, panoptic segmentation), and promptable image segmentation (i.e., interactive segmentation, referring segmentation, few-shot segmentation) -- by delineating their respective task settings, background concepts, and key challenges. Furthermore, we provide insights into the emergence of segmentation knowledge from FMs like CLIP, Stable Diffusion, and DINO. An exhaustive overview of over 300 segmentation approaches is provided to encapsulate the breadth of current research efforts. Subsequently, we engage in a discussion of open issues and potential avenues for future research. We envisage that this fresh, comprehensive, and systematic survey catalyzes the evolution of advanced image segmentation systems. A public website is created to continuously track developments in this fast advancing field: \\url{https://github.com/stanley-313/ImageSegFM-Survey}.",
+   "extra": {}
+  },
+  {
+   "stable_id": "multi-modal attention networks for enhanced segmentation and depth estimation of subsurface defects in pulse thermography",
+   "candidate_id": "c-7d867196",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Multi-Modal Attention Networks for Enhanced Segmentation and Depth Estimation of Subsurface Defects in Pulse Thermography",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2501.09994v1",
+   "identifier": "2501.09994v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "AI-driven pulse thermography (PT) has become a crucial tool in non-destructive testing (NDT), enabling automatic detection of hidden anomalies in various industrial components. Current state-of-the-art techniques feed segmentation and depth estimation networks compressed PT sequences using either Principal Component Analysis (PCA) or Thermographic Signal Reconstruction (TSR). However, treating these two modalities independently constrains the performance of PT inspection models as these representations possess complementary semantic features. To address this limitation, this work proposes PT-Fusion, a multi-modal attention-based fusion network that fuses both PCA and TSR modalities for defect segmentation and depth estimation of subsurface defects in PT setups. PT-Fusion introduces novel feature fusion modules, Encoder Attention Fusion Gate (EAFG) and Attention Enhanced Decoding Block (AEDB), to fuse PCA and TSR features for enhanced segmentation and depth estimation of subsurface defects. In addition, a novel data augmentation technique is proposed based on random data sampling from thermographic sequences to alleviate the scarcity of PT datasets. The proposed method is benchmarked against state-of-the-art PT inspection models, including U-Net, attention U-Net, and 3D-CNN on the Université Laval IRT-PVC dataset. The results demonstrate that PT-Fusion outperforms the aforementioned models in defect segmentation and depth estimation accuracies with a margin of 10%.",
+   "extra": {}
+  },
+  {
+   "stable_id": "a rich bounty of agn in the 9 square degree bootes survey: high-z obscured agn and large-scale structure",
+   "candidate_id": "c-c9ef4648",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "A rich bounty of AGN in the 9 square degree Bootes survey: high-z obscured AGN and large-scale structure",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2006,
+   "venue": null,
+   "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+   "identifier": "astro-ph",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "We use observations from the 9 square degree multiwavelength survey in Bootes to identify hundreds of obscured active galactic nuclei (AGN) with high redshifts (z > 0.7), luminosities (L_bol > 10^45 ergs/s), and moderate obscuring columns (N_H > 10^22 cm^-2), and to measure the clustering properties of X-ray AGN at z > 1. In the Bootes region, shallow (5 ks) Chandra X-ray observations have detected ~4,000 X-ray sources, and the same region has been mapped with deep optical imaging and by Spitzer IRAC, which detects ~300,000 point sources, of which ~30,000 have detections in all four IRAC bands, for which we can select AGN on the basis of their mid-IR colors. With the MMT/Hectospec we have obtained modest resolution optical spectra for about half the X-ray sources (out to z > 3) and ~20,000 galaxies (out to z = 0.7). With this multiwavelength data we select >400 AGN per square degree (compared to 12 per square degree from SDSS). Among a sample of IRAC-selected AGN we identify 641 candidate obscured objects based on their R band and IRAC luminosities. We use X-ray stacking techniques to verify that they are obscured AGN and measure their absorbing column densities. We also measure the three-dimensional two-point correlation function for X-ray selected AGN.",
+   "extra": {}
+  },
+  {
+   "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+   "candidate_id": "c-59933ada",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2506.14634v3",
+   "identifier": "2506.14634v3",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+   "extra": {}
+  },
+  {
+   "stable_id": "a new benchmark dataset for texture image analysis and surface defect detection",
+   "candidate_id": "c-c94b06ac",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2019,
+   "venue": null,
+   "url": "http://arxiv.org/abs/1906.11561v1",
+   "identifier": "1906.11561v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+   "extra": {}
+  },
+  {
+   "stable_id": "3d kidneys and kidney tumor semantic segmentation using boundary-aware networks",
+   "candidate_id": "c-90e9cc00",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "3D Kidneys and Kidney Tumor Semantic Segmentation using Boundary-Aware Networks",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2019,
+   "venue": null,
+   "url": "http://arxiv.org/abs/1909.06684v1",
+   "identifier": "1909.06684v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Automated segmentation of kidneys and kidney tumors is an important step in quantifying the tumor's morphometrical details to monitor the progression of the disease and accurately compare decisions regarding the kidney tumor treatment. Manual delineation techniques are often tedious, error-prone and require expert knowledge for creating unambiguous representation of kidneys and kidney tumors segmentation. In this work, we propose an end-to-end boundary aware fully Convolutional Neural Networks (CNNs) for reliable kidney and kidney tumor semantic segmentation from arterial phase abdominal 3D CT scans. We propose a segmentation network consisting of an encoder-decoder architecture that specifically accounts for organ and tumor edge information by devising a dedicated boundary branch supervised by edge-aware loss terms. We have evaluated our model on 2019 MICCAI KiTS Kidney Tumor Segmentation Challenge dataset and our method has achieved dice scores of 0.9742 and 0.8103 for kidney and tumor repetitively and an overall composite dice score of 0.8923.",
+   "extra": {}
+  },
+  {
+   "stable_id": "road surface defect detection -- from image-based to non-image-based: a survey",
+   "candidate_id": "c-85906f81",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2024,
+   "venue": null,
+   "url": "http://arxiv.org/abs/2402.04297v1",
+   "identifier": "2402.04297v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "Ensuring traffic safety is crucial, which necessitates the detection and prevention of road surface defects. As a result, there has been a growing interest in the literature on the subject, leading to the development of various road surface defect detection methods. The methods for detecting road defects can be categorised in various ways depending on the input data types or training methodologies. The predominant approach involves image-based methods, which analyse pixel intensities and surface textures to identify defects. Despite their popularity, image-based methods share the distinct limitation of vulnerability to weather and lighting changes. To address this issue, researchers have explored the use of additional sensors, such as laser scanners or LiDARs, providing explicit depth information to enable the detection of defects in terms of scale and volume. However, the exploration of data beyond images has not been sufficiently investigated. In this survey paper, we provide a comprehensive review of road surface defect detection studies, categorising them based on input data types and methodologies used. Additionally, we review recently proposed non-image-based methods and discuss several challenges and open problems associated with these techniques.",
+   "extra": {}
+  },
+  {
+   "stable_id": "the methanol multibeam survey",
+   "candidate_id": "c-42c94238",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "The Methanol Multibeam Survey",
+   "sources": [
+    "arxiv"
+   ],
+   "year": 2012,
+   "venue": null,
+   "url": "http://arxiv.org/abs/1210.0979v1",
+   "identifier": "1210.0979v1",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "A purpose built 7-beam methanol receiver, installed on the Parkes Radio Telescope, was used to survey the Galactic plane for newly forming high mass stars, pinpointed by strong methanol maser emission at 6.7 GHz. The Methanol Multibeam (MMB) survey observed over 60% of the Galactic plane, detecting close to 1000 sources. The MMB survey provides a huge resource for studies of high-mass star formation, an important stage in the evolution of the interstellar medium. The MMB survey is also a valuable resource for investigations into the structure and dynamics of our Galaxy: with narrow velocity ranges of emission (typically only a few km/s) and velocities closely correlated with the systemic velocity of their surrounding molecular clouds, 6.7-GHz methanol masers provide estimates of the spiral arm velocities and their structure. I will discuss the techniques and properties of the MMB survey, before outlining recent results, which include the identification of regions of enhanced star formation believed to be indicative of the origins of the spiral arms and the interaction of the Galactic bar with the 3-kpc arms. I will also discuss the various follow-up programmes including a study of magnetic fields through associated hydroxyl masers.",
+   "extra": {}
+  },
+  {
+   "stable_id": "ecfn: efficient cross-scale fusion network for fast semantic segmentation of steel surface defects",
+   "candidate_id": "c-d426dce8",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "ECFN: efficient cross-scale fusion network for fast semantic segmentation of steel surface defects",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": "Engineering Research Express",
+   "url": "https://doi.org/10.1088/2631-8695/ae28b5",
+   "identifier": "10.1088/2631-8695/ae28b5",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "<jats:title>Abstract</jats:title>\n                  <jats:p>Accurate and efficient defect detection is critical for assessing the quality of steel products. Accurate defect detection is challenging in practical applications due to the small size of defects and background noise interference. Additionally, some complex methods cannot achieve rapid detection on devices with limited computing power. To address these issues, this work enhances small-sized defect awareness by lightweight fine-grained sensing feature extraction and cross-scale feature fusion strategies. This improves the capture of fine-grained defect features and ensures real-time performance. Specifically, a fine-grained feature extraction module improves defect feature perception across scales by fusing semantic features at multiple scales. Secondly, efficient cross-scale semantic information fusion is introduced, which exploits the complementary characteristic of shallow-deep features to solve the information loss problem of small defect features. Thirdly, A simple feature attention enhancement module is introduced to refine important features. Finally, the different scales’ semantic information is used to achieve defect classification fast through a lightweight segmentation head. The experimental results on two public datasets show that the proposed method achieves a mean intersection over union (mIoU) of 84.66% and 86.99%, respectively. Meanwhile, the proposed method has a small number of parameters (14.7Million) and computation cost (7.48 Giga Floating-Point Operations), which achieves a good balance between accuracy and speed.</jats:p>",
+   "extra": {}
+  },
+  {
+   "stable_id": "rapid recognition and semantic segmentation of molten steel distribution images on a steel ladle surface based on the improved squeezenas network",
+   "candidate_id": "c-2e13e88b",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Rapid Recognition and Semantic Segmentation of Molten Steel Distribution Images on a Steel Ladle Surface based on the Improved SqueezeNAS Network",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2023,
+   "venue": "2023 38th Youth Academic Annual Conference of Chinese Association of Automation (YAC)",
+   "url": "https://doi.org/10.1109/yac59482.2023.10401539",
+   "identifier": "10.1109/yac59482.2023.10401539",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "skipfusion: multimodal process-aware segmentation for steel surface inspection",
+   "candidate_id": "c-83c2016f",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "SkipFusion: Multimodal Process-Aware Segmentation for Steel Surface Inspection",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2026,
+   "venue": "Proceedings of the 21st International Conference on Computer Vision Theory and Applications",
+   "url": "https://doi.org/10.5220/0014629000004084",
+   "identifier": "10.5220/0014629000004084",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "the amalgamation of the object detection and semantic segmentation for steel surface defect detection",
+   "candidate_id": "c-70de81ae",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "The Amalgamation of the Object Detection and Semantic Segmentation for Steel Surface Defect Detection",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2022,
+   "venue": "Applied Sciences",
+   "url": "https://doi.org/10.3390/app12126004",
+   "identifier": "10.3390/app12126004",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "<jats:p>Steel surface defect detection is challenging because it contains various atypical defects. Many studies have attempted to detect metal surface defects using deep learning and had success in applying deep learning. Despite many previous studies to solve the steel surface defect detection, it remains a difficult problem. To resolve the atypical defects problem, we introduce a hierarchical approach for the classification and detection of defects on the steel surface. The proposed approach has a hierarchical structure of the binary classifier at the first stage and the object detection and semantic segmentation algorithms at the second stage. It shows 98.6% accuracy in scratch and other types of defect classification and 77.12% mean average precision (mAP) in defect detection using the Northeastern University (NEU) surface defect detection dataset. A comparative analysis with the previous studies shows that the proposed approach achieves excellent results on the NEU dataset.</jats:p>",
+   "extra": {}
+  },
+  {
+   "stable_id": "a two-level semantic segmentation framework for mechanism-aware corrosion assessment in steel bridges",
+   "candidate_id": "c-030a03ad",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "A Two-Level Semantic Segmentation Framework for Mechanism-Aware Corrosion Assessment in Steel Bridges",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2026,
+   "venue": null,
+   "url": "https://doi.org/10.2139/ssrn.6880979",
+   "identifier": "10.2139/ssrn.6880979",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": "<jats:p>Corrosion assessment in steel bridges requires not only estimating the spatial extent of visible deterioration but also distinguishing inspection-relevant corrosion appearances that support maintenance interpretation. Existing vision-based corrosion segmentation studies predominantly formulate the task as binary corrosion-versus-background mapping, which supports damage localization but provides limited information on corrosion-category distribution. This study proposes a two-level semantic segmentation framework for corrosion assessment and visual structural health monitoring of steel bridge components. The first level performs binary pixel-wise segmentation to quantify corrosion coverage, whereas the second level performs mechanism-aware semantic segmentation using four inspection-oriented corrosion categories: Uniform, Crevice, Underfilm, and Other Localized corrosion. Field-collected steel bridge images are annotated using an inspection-oriented visual annotation protocol, and transformer-based and CNN-based segmentation models are evaluated under a unified experimental setting. Performance is assessed using region-overlap metrics, class-wise precision–recall–F1 measures, and Boundary-F1 to quantify edge fidelity along irregular corrosion fronts. The highest-mIoU binary configuration achieves an mIoU of 0.844, while the best mechanism-aware configuration achieves a five-class mIoU of 0.608 and a mean corrosion-category F1-score of 0.683, reflecting the greater difficulty of distinguishing visually related corrosion categories compared with binary foreground-background segmentation. Binary-merged evaluation shows that the mechanism-aware model retains strong corrosion coverage capability, although dedicated binary models remain superior for pure foreground-background segmentation. The proposed framework provides an inspection-support representation that links corrosion coverage, visual category distribution, and boundary quality, thereby extending binary corrosion mapping toward maintenance-relevant, machine-readable interpretation of pixel-level corrosion outputs.</jats:p>",
+   "extra": {}
+  },
+  {
+   "stable_id": "semantic segmentation-based damage detection for steel wire ropes",
+   "candidate_id": "c-66dc06db",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Semantic Segmentation-Based Damage Detection for Steel Wire Ropes",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2026,
+   "venue": "2026 International Conference on Intelligent Manufacturing and Automation (IMA)",
+   "url": "https://doi.org/10.1109/ima68480.2026.11517628",
+   "identifier": "10.1109/ima68480.2026.11517628",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "ground surface semantic segmentation with uav-based point clouds for automated earthwork monitoring",
+   "candidate_id": "c-f65c2f4c",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Ground Surface Semantic Segmentation with Uav-Based Point Clouds for Automated Earthwork Monitoring",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2025,
+   "venue": null,
+   "url": "https://doi.org/10.2139/ssrn.5135529",
+   "identifier": "10.2139/ssrn.5135529",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "defect detection method for steel based on semantic segmentation",
+   "candidate_id": "c-51cefa16",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "role_hints": [
+    "reference"
+   ],
+   "role_evidence": [],
+   "title": "Defect Detection Method For Steel Based On Semantic Segmentation",
+   "sources": [
+    "crossref"
+   ],
+   "year": 2020,
+   "venue": "2020 IEEE 5th Information Technology and Mechatronics Engineering Conference (ITOEC)",
+   "url": "https://doi.org/10.1109/itoec49072.2020.9141596",
+   "identifier": "10.1109/itoec49072.2020.9141596",
+   "description": null,
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {}
+  },
+  {
+   "stable_id": "mrfahrenhiet/cracksegmentationdeeplearning",
+   "candidate_id": "c-b67265e9",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "mrFahrenhiet/CrackSegmentationDeepLearning",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/mrFahrenhiet/CrackSegmentationDeepLearning",
+   "identifier": null,
+   "description": "Multiscale Attention Based Efficient U-Net for Crack Segmentation, segments a RGB image into 2 classes crack and non-crack, this method obtained SOTA results on Crack500 dataset",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 46,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "rym-cic/crack-segmentation",
+   "candidate_id": "c-5a1698a6",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "RyM-CIC/Crack-segmentation",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/RyM-CIC/Crack-segmentation",
+   "identifier": null,
+   "description": "U-Net variants to segment cracks in pavement",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 14,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "sandeep2017/concrete-crack-segmentation",
+   "candidate_id": "c-bae631c7",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "Sandeep2017/Concrete-Crack-Segmentation",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/Sandeep2017/Concrete-Crack-Segmentation",
+   "identifier": null,
+   "description": "A Deep Residual U-Net like architecture for Crack segmentation in concrete structures.",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 10,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "hg153/denseunet",
+   "candidate_id": "c-0c838bed",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "hg153/DenseUnet",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/hg153/DenseUnet",
+   "identifier": null,
+   "description": "Modified U-Net for pavement crack segmentation",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 7,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "ayazmhmd/crack-segmentation-using-deeplabv3-and-unet",
+   "candidate_id": "c-5ee93474",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET",
+   "identifier": null,
+   "description": "This repository contains complete code and a dataset for crack segmentation using DeepLabV3 and U-Net. The models have been trained on google drive as you can use the same code by uploading the data in your drive.",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 5,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "mohamadhoseinraad/crack-segmentation",
+   "candidate_id": "c-dce68851",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "mohamadhoseinraad/Crack-Segmentation",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/mohamadhoseinraad/Crack-Segmentation",
+   "identifier": null,
+   "description": "End-to-end project for semantic segmentation of cracks in images. It covers Data labeling, loading ,train and evaluate  .This repository is the final project for the Computer Vision course (Bachelor's degree) at KNTU, taught by Dr. Nasihatkon.",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 4,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "smcck222/crack-segmentation",
+   "candidate_id": "c-6b667295",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "smcck222/Crack-Segmentation",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/smcck222/Crack-Segmentation",
+   "identifier": null,
+   "description": "U-Net CNN for segmenting cracks on road images. ",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 3,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "bbahtiri/computer-vision-crack-detection",
+   "candidate_id": "c-884e89f1",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "BBahtiri/Computer-Vision-Crack-Detection",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/BBahtiri/Computer-Vision-Crack-Detection",
+   "identifier": null,
+   "description": "A deep learning pipeline for semantic segmentation of cracks or defects in materials using U-Net architecture with various backbones. This project includes hyperparameter tuning, custom model architectures, and comprehensive data processing utilities.",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 3,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "khanhha/crack_segmentation",
+   "candidate_id": "c-189985d0",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "khanhha/crack_segmentation",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/khanhha/crack_segmentation",
+   "identifier": null,
+   "description": "This repository contains code and dataset for the task crack segmentation using two architectures UNet_VGG16, UNet_Resnet and DenseNet-Tiramusu",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 445,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "konskyrt/concrete-crack-detection-segmentation",
+   "candidate_id": "c-2f4755c0",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "konskyrt/Concrete-Crack-Detection-Segmentation",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/konskyrt/Concrete-Crack-Detection-Segmentation",
+   "identifier": null,
+   "description": "📅This repository contains the code for crack detection in concrete surfaces. It is a PyTorch implementation of Deep Learning-Based Crack Damage Detection Using Convolutional Neural Networks",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 106,
+    "language": "Jupyter Notebook"
+   }
+  },
+  {
+   "stable_id": "yuki-11/cssr",
+   "candidate_id": "c-3ac172aa",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "Yuki-11/CSSR",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/Yuki-11/CSSR",
+   "identifier": null,
+   "description": "Crack Segmentation for Low-Resolution Images using Joint Learning with Super-Resolution (CSSR) was accepted to international conference on MVA2021 (oral), and selected for the Best Practical Paper Award.",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 86,
+    "language": "Python"
+   }
+  },
+  {
+   "stable_id": "anishreddy3/crack-semantic-segmentation",
+   "candidate_id": "c-dc5ab70e",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "role_hints": [
+    "repo"
+   ],
+   "role_evidence": [],
+   "title": "anishreddy3/Crack-Semantic-Segmentation",
+   "sources": [
+    "github"
+   ],
+   "year": null,
+   "venue": null,
+   "url": "https://github.com/anishreddy3/Crack-Semantic-Segmentation",
+   "identifier": null,
+   "description": "Real time crack segmentation using PyTorch, OpenCV and ONNX runtime",
+   "quoted_paper_titles": [],
+   "abstract": null,
+   "extra": {
+    "stars": 64,
+    "language": "Python"
+   }
+  }
+ ],
+ "source_ledger": {
+  "rows": [
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "crossref",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 1,
+    "round_name": "broad_recall",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "arxiv",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "ok",
+    "result_count": 8,
+    "error": null
+   },
+   {
+    "adapter": "openalex",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "crossref",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "empty",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "github",
+    "query": "(multi)",
+    "target_role": "multi",
+    "round": 3,
+    "round_name": "repo_dataset_followup",
+    "status": "ok",
+    "result_count": 4,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_selected: Image Segmentation in Foundation Model Era: A Survey",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_selected",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_selected: Multi-Modal Attention Networks for Enhanced Segmentation and",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_selected",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_rejected: A rich bounty of AGN in the 9 square degree Bootes survey: h",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_rejected",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_rejected: AIn't Nothing But a Survey? Using Large Language Models for ",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_rejected",
+    "result_count": 0,
+    "error": null
+   },
+   {
+    "adapter": "openalex_citation",
+    "query": "seed_rejected: A New Benchmark Dataset for Texture Image Analysis and Surfa",
+    "target_role": "parallel_baseline_candidate",
+    "round": 2,
+    "round_name": "reference_expansion",
+    "status": "seed_rejected",
+    "result_count": 0,
+    "error": null
+   }
+  ],
+  "stats": {
+   "arxiv": {
+    "ok": 1,
+    "empty": 1,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "openalex": {
+    "ok": 0,
+    "empty": 2,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "crossref": {
+    "ok": 1,
+    "empty": 1,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 2
+   },
+   "github": {
+    "ok": 2,
+    "empty": 1,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 3
+   },
+   "openalex_citation": {
+    "ok": 0,
+    "empty": 0,
+    "error": 0,
+    "rate_limited": 0,
+    "total": 5,
+    "seed_selected": 2,
+    "seed_rejected": 3
+   }
+  },
+  "n_calls": 14
+ },
+ "evidence_review": [
+  {
+   "candidate_id": "c-1680caba",
+   "evidence_type": "survey",
+   "role_hint": "unknown",
+   "status": "candidate",
+   "matched_terms": [
+    "semantic segmentation",
+    "U-Net"
+   ],
+   "missing_terms": [
+    "steel",
+    "crack",
+    "metal",
+    "industrial defect",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "survey",
+   "exists_verdict": "exists",
+   "rank_reason": "Broad segmentation survey covering FCN/encoder-decoder methods; useful background but not focused on steel cracks.",
+   "reason": "General image-segmentation survey in foundation-model era. Provides methodological context for U-Net-style segmentation but lacks steel-crack specificity."
+  },
+  {
+   "candidate_id": "c-7d867196",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "segmentation",
+    "industrial",
+    "defect"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "steel",
+    "crack",
+    "surface",
+    "visible light"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Industrial defect segmentation paper but uses pulse thermography; related parallel method.",
+   "reason": "Non-destructive testing segmentation of subsurface defects via thermography. Industrial defect context relevant, but modality (thermal) and not steel-surface cracks."
+  },
+  {
+   "candidate_id": "c-c9ef4648",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "survey"
+   ],
+   "missing_terms": [
+    "steel",
+    "crack",
+    "U-Net",
+    "segmentation",
+    "defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Astrophysics paper on AGN; cross-domain, clearly unrelated.",
+   "reason": "Active galactic nuclei astronomy paper; no overlap with steel crack segmentation topic."
+  },
+  {
+   "candidate_id": "c-59933ada",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [],
+   "missing_terms": [
+    "steel",
+    "crack",
+    "U-Net",
+    "segmentation",
+    "defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Survey-methodology LLM paper; no computer vision content.",
+   "reason": "LLM coding of open-ended survey responses in social science; entirely unrelated to steel defect segmentation."
+  },
+  {
+   "candidate_id": "c-c94b06ac",
+   "evidence_type": "dataset",
+   "role_hint": "dataset",
+   "status": "candidate",
+   "matched_terms": [
+    "surface defect",
+    "defect detection"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "steel",
+    "crack",
+    "segmentation mask"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "dataset",
+   "exists_verdict": "exists",
+   "rank_reason": "Texture/defect benchmark dataset; general surface-defect resource, not steel-specific.",
+   "reason": "Texture image analysis and surface defect benchmark. Useful as candidate dataset, but not specifically targeted at steel cracks."
+  },
+  {
+   "candidate_id": "c-90e9cc00",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "semantic segmentation"
+   ],
+   "missing_terms": [
+    "steel",
+    "crack",
+    "surface defect",
+    "metal"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Medical CT kidney segmentation; wrong domain entirely.",
+   "reason": "Kidney and tumor segmentation in 3D medical imaging. No overlap with industrial steel crack segmentation."
+  },
+  {
+   "candidate_id": "c-85906f81",
+   "evidence_type": "survey",
+   "role_hint": "unknown",
+   "status": "candidate",
+   "matched_terms": [
+    "surface defect",
+    "detection"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "steel",
+    "crack",
+    "segmentation",
+    "metal"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "survey",
+   "exists_verdict": "exists",
+   "rank_reason": "Road-defect survey; transferable defect-detection context but not steel.",
+   "reason": "Road surface defect detection survey. Provides defect-detection taxonomy useful as background; not steel-focused."
+  },
+  {
+   "candidate_id": "c-42c94238",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [],
+   "missing_terms": [
+    "steel",
+    "crack",
+    "U-Net",
+    "segmentation",
+    "defect"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "Astronomy radio survey; completely unrelated domain.",
+   "reason": "Methanol multibeam radio astronomy survey. No relation to steel crack segmentation."
+  },
+  {
+   "candidate_id": "c-d426dce8",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "core",
+   "matched_terms": [
+    "steel surface",
+    "semantic segmentation",
+    "defect",
+    "surface defect"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "crack"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Direct steel surface defect semantic segmentation paper; strong domain match.",
+   "reason": "ECFN performs fast semantic segmentation of steel surface defects. Highly aligned with topic; possible U-Net-like baseline or parallel method despite different architecture name."
+  },
+  {
+   "candidate_id": "c-2e13e88b",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "semantic segmentation",
+    "steel",
+    "surface"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "crack",
+    "defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Steel surface semantic segmentation; SqueezeNAS not U-Net, but relevant.",
+   "reason": "Steel ladle surface semantic segmentation using improved SqueezeNAS. Domain-relevant but method (NAS) differs from U-Net."
+  },
+  {
+   "candidate_id": "c-83c2016f",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "segmentation",
+    "steel surface",
+    "inspection"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "crack",
+    "semantic segmentation"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Steel surface inspection multimodal segmentation; relevant adjacent work.",
+   "reason": "Multimodal process-aware segmentation for steel surface inspection. Likely pixel-level defect segmentation; method unspecified."
+  },
+  {
+   "candidate_id": "c-70de81ae",
+   "evidence_type": "paper",
+   "role_hint": "parallel",
+   "status": "core",
+   "matched_terms": [
+    "semantic segmentation",
+    "steel surface",
+    "defect detection"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "crack",
+    "pixel-level"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Direct steel surface defect detection combining detection and segmentation; strong fit.",
+   "reason": "Steel surface defect detection combining object detection and semantic segmentation. Directly applicable parallel method to U-Net segmentation approaches."
+  },
+  {
+   "candidate_id": "c-030a03ad",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "semantic segmentation",
+    "steel",
+    "damage"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "crack",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Steel bridge corrosion segmentation; partial steel-defect match.",
+   "reason": "Two-level semantic segmentation for corrosion assessment in steel bridges. Steel infrastructure corrosion segmentation; related but corrosion not crack."
+  },
+  {
+   "candidate_id": "c-66dc06db",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "candidate",
+   "matched_terms": [
+    "semantic segmentation",
+    "steel",
+    "damage detection"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "crack",
+    "surface"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Steel wire rope damage semantic segmentation; partial relevance.",
+   "reason": "Semantic segmentation-based damage detection for steel wire ropes. Steel damage segmentation relevance; abstract not detailed."
+  },
+  {
+   "candidate_id": "c-f65c2f4c",
+   "evidence_type": "paper",
+   "role_hint": "reference",
+   "status": "rejected",
+   "matched_terms": [
+    "semantic segmentation"
+   ],
+   "missing_terms": [
+    "steel",
+    "crack",
+    "defect",
+    "metal",
+    "U-Net"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "unrelated",
+   "exists_verdict": "exists",
+   "rank_reason": "UAV point cloud earthwork monitoring; wrong modality and object.",
+   "reason": "Ground surface semantic segmentation on UAV point clouds for earthwork. Uses 3D point cloud, not 2D steel crack images."
+  },
+  {
+   "candidate_id": "c-51cefa16",
+   "evidence_type": "paper",
+   "role_hint": "baseline",
+   "status": "core",
+   "matched_terms": [
+    "steel",
+    "defect detection",
+    "semantic segmentation"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "crack"
+   ],
+   "confidence_label": "high",
+   "relation_to_topic": "baseline",
+   "exists_verdict": "exists",
+   "rank_reason": "Steel semantic segmentation defect detection paper; directly relevant baseline.",
+   "reason": "Steel defect detection method based on semantic segmentation. Early 2020 paper likely using U-Net variants; strong baseline candidate."
+  },
+  {
+   "candidate_id": "c-b67265e9",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "needs_manual",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation",
+    "deep learning"
+   ],
+   "missing_terms": [
+    "steel",
+    "metal",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "U-Net crack segmentation repo but on Crack500 (pavement); verify steel applicability.",
+   "reason": "Multiscale Efficient U-Net for crack segmentation with SOTA on Crack500. U-Net + crack matches method; needs verification on steel rather than pavement."
+  },
+  {
+   "candidate_id": "c-5a1698a6",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation"
+   ],
+   "missing_terms": [
+    "steel",
+    "metal",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "U-Net crack segmentation for pavement; transferable U-Net reference.",
+   "reason": "U-Net variants for pavement crack segmentation. U-Net-based crack segmentation reference; pavement not steel."
+  },
+  {
+   "candidate_id": "c-bae631c7",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation"
+   ],
+   "missing_terms": [
+    "steel",
+    "metal",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Deep Residual U-Net for concrete cracks; structural-crack transferable code.",
+   "reason": "Deep Residual U-Net for concrete crack segmentation. Concrete/structural U-Net crack code; informative for steel adaptation."
+  },
+  {
+   "candidate_id": "c-0c838bed",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation",
+    "pavement"
+   ],
+   "missing_terms": [
+    "steel",
+    "metal",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Dense U-Net pavement crack segmentation repo; U-Net reference.",
+   "reason": "Modified U-Net (Dense U-Net) for pavement crack segmentation. U-Net-based crack segmentation; pavement domain."
+  },
+  {
+   "candidate_id": "c-5ee93474",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation",
+    "semantic segmentation"
+   ],
+   "missing_terms": [
+    "steel surface",
+    "metal crack",
+    "industrial X-ray image"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Implements U-Net for crack segmentation, but material type unspecified; parallel repo resource, not steel-specific.",
+   "reason": "Repo offers U-Net and DeepLabV3 pipelines for crack segmentation with code and dataset. Material domain not specified, so it is a parallel implementation rather than a steel-specific match."
+  },
+  {
+   "candidate_id": "c-dce68851",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "semantic segmentation",
+    "crack segmentation",
+    "CNN"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "steel surface",
+    "metal crack",
+    "encoder-decoder"
+   ],
+   "confidence_label": "low",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "End-to-end crack segmentation pipeline but lacks explicit U-Net/steel specification; weak specific match.",
+   "reason": "Bachelor-level end-to-end semantic crack segmentation project covering labeling, training, evaluation. No explicit mention of U-Net architecture or steel material, limiting direct relevance."
+  },
+  {
+   "candidate_id": "c-6b667295",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation",
+    "CNN"
+   ],
+   "missing_terms": [
+    "steel surface",
+    "metal crack",
+    "surface defect",
+    "industrial X-ray"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Uses U-Net for crack segmentation on road images; method matches but domain is pavement, not steel.",
+   "reason": "Repo implements U-Net CNN for crack segmentation on road/pavement images. Method matches but object domain differs from steel surfaces; useful as parallel baseline reference."
+  },
+  {
+   "candidate_id": "c-884e89f1",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "semantic segmentation",
+    "surface defect",
+    "materials"
+   ],
+   "missing_terms": [
+    "steel surface",
+    "metal crack",
+    "industrial X-ray image"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "U-Net with multiple backbones for crack/defect segmentation in materials; promising but steel-specificity unclear.",
+   "reason": "Pipeline uses U-Net with various backbones for material crack/defect semantic segmentation with hyperparameter tuning. Material scope broader than steel but methodologically aligned."
+  },
+  {
+   "candidate_id": "c-189985d0",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "U-Net",
+    "crack segmentation",
+    "encoder-decoder"
+   ],
+   "missing_terms": [
+    "steel surface",
+    "metal crack",
+    "industrial X-ray image",
+    "surface defect"
+   ],
+   "confidence_label": "medium",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Provides multiple U-Net variants (VGG16, ResNet) and Tiramisu for crack segmentation; method fit, material unclear.",
+   "reason": "Repo supplies code and dataset with UNet_VGG16, UNet_Resnet, and DenseNet-Tiramisu architectures for crack segmentation. Strong method match; material domain not specified."
+  },
+  {
+   "candidate_id": "c-2f4755c0",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "convolutional neural networks",
+    "crack detection",
+    "surface"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "semantic segmentation",
+    "steel surface",
+    "metal crack"
+   ],
+   "confidence_label": "low",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Concrete-surface crack detection CNN; method weaker match (not U-Net), object domain differs.",
+   "reason": "PyTorch implementation of CNN-based crack detection for concrete surfaces. Lacks U-Net/segmentation focus and targets concrete rather than steel."
+  },
+  {
+   "candidate_id": "c-3ac172aa",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "crack segmentation",
+    "semantic segmentation"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "steel surface",
+    "metal crack",
+    "encoder-decoder"
+   ],
+   "confidence_label": "low",
+   "relation_to_topic": "module",
+   "exists_verdict": "exists",
+   "rank_reason": "CSSR combines super-resolution with crack segmentation; modular enhancement, low specificity to U-Net/steel.",
+   "reason": "CSSR (MVA2021) couples super-resolution with crack segmentation for low-resolution images. Useful as a module idea but architecture and material domain not aligned with topic."
+  },
+  {
+   "candidate_id": "c-dc5ab70e",
+   "evidence_type": "repo",
+   "role_hint": "repo",
+   "status": "candidate",
+   "matched_terms": [
+    "semantic segmentation",
+    "crack segmentation",
+    "PyTorch"
+   ],
+   "missing_terms": [
+    "U-Net",
+    "steel surface",
+    "metal crack",
+    "encoder-decoder"
+   ],
+   "confidence_label": "low",
+   "relation_to_topic": "parallel",
+   "exists_verdict": "exists",
+   "rank_reason": "Real-time PyTorch crack segmentation; no explicit U-Net or steel specification; weak direct match.",
+   "reason": "Repo delivers real-time crack semantic segmentation via PyTorch, OpenCV, and ONNX. Lacks explicit U-Net mention and steel material focus."
+  }
+ ],
+ "synthesis": {
+  "direction_recommendation": "Recommendation: pursue U-Net-based pixel-level steel surface crack segmentation as the thesis direction. The core backbone should be a U-Net family model (vanilla, attention U-Net, or residual/dense U-Net) trained on steel surface defect datasets, with pavement/concrete U-Net crack repos used only as transferable code references. Among the 28 retrieved items, 3 are tier=core (steel semantic segmentation / defect detection papers) but none explicitly states U-Net on steel cracks; the gap between 'U-Net crack segmentation' and 'steel surface' is the research opportunity. Combine c-51cefa16 (steel defect semantic segmentation, 2020) and c-70de81ae (steel defect detection + segmentation, 2022) as domain baselines, and c-d426dce8 (ECFN, 2025) as a recent steel-defect parallel. Use U-Net crack repos (c-b67265e9, c-bae631c7, c-0c838bed, c-884e89f1, c-189985d0) as implementation templates. The 4 rejected items (c-c9ef4648, c-59933ada, c-90e9cc00, c-42c94238, c-f65c2f4c) are off-topic and excluded. A clarifying human gate is needed on steel surface dataset availability before baseline selection.",
+  "baseline_options": [
+   "c-51cefa16",
+   "c-70de81ae",
+   "c-d426dce8",
+   "c-b67265e9"
+  ],
+  "candidate_pool": {
+   "core": [
+    {
+     "candidate_id": "c-d426dce8",
+     "title": "ECFN: efficient cross-scale fusion network for fast semantic segmentation of steel surface defects",
+     "role_hint": "baseline",
+     "reason": "Direct steel surface defect semantic segmentation paper; strong domain match."
+    },
+    {
+     "candidate_id": "c-70de81ae",
+     "title": "The Amalgamation of the Object Detection and Semantic Segmentation for Steel Surface Defect Detection",
+     "role_hint": "parallel",
+     "reason": "Direct steel surface defect detection combining detection and segmentation; strong fit."
+    },
+    {
+     "candidate_id": "c-51cefa16",
+     "title": "Defect Detection Method For Steel Based On Semantic Segmentation",
+     "role_hint": "baseline",
+     "reason": "Steel semantic segmentation defect detection paper; directly relevant baseline."
+    }
+   ],
+   "candidate": [
+    {
+     "candidate_id": "c-1680caba",
+     "title": "Image Segmentation in Foundation Model Era: A Survey",
+     "role_hint": "unknown",
+     "reason": "Broad segmentation survey covering FCN/encoder-decoder methods; useful background but not focused on steel cracks."
+    },
+    {
+     "candidate_id": "c-7d867196",
+     "title": "Multi-Modal Attention Networks for Enhanced Segmentation and Depth Estimation of Subsurface Defects in Pulse Thermograph",
+     "role_hint": "reference",
+     "reason": "Industrial defect segmentation paper but uses pulse thermography; related parallel method."
+    },
+    {
+     "candidate_id": "c-c94b06ac",
+     "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+     "role_hint": "dataset",
+     "reason": "Texture/defect benchmark dataset; general surface-defect resource, not steel-specific."
+    },
+    {
+     "candidate_id": "c-85906f81",
+     "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+     "role_hint": "unknown",
+     "reason": "Road-defect survey; transferable defect-detection context but not steel."
+    },
+    {
+     "candidate_id": "c-2e13e88b",
+     "title": "Rapid Recognition and Semantic Segmentation of Molten Steel Distribution Images on a Steel Ladle Surface based on the Im",
+     "role_hint": "reference",
+     "reason": "Steel surface semantic segmentation; SqueezeNAS not U-Net, but relevant."
+    },
+    {
+     "candidate_id": "c-83c2016f",
+     "title": "SkipFusion: Multimodal Process-Aware Segmentation for Steel Surface Inspection",
+     "role_hint": "reference",
+     "reason": "Steel surface inspection multimodal segmentation; relevant adjacent work."
+    },
+    {
+     "candidate_id": "c-030a03ad",
+     "title": "A Two-Level Semantic Segmentation Framework for Mechanism-Aware Corrosion Assessment in Steel Bridges",
+     "role_hint": "reference",
+     "reason": "Steel bridge corrosion segmentation; partial steel-defect match."
+    },
+    {
+     "candidate_id": "c-66dc06db",
+     "title": "Semantic Segmentation-Based Damage Detection for Steel Wire Ropes",
+     "role_hint": "reference",
+     "reason": "Steel wire rope damage semantic segmentation; partial relevance."
+    },
+    {
+     "candidate_id": "c-5a1698a6",
+     "title": "RyM-CIC/Crack-segmentation",
+     "role_hint": "repo",
+     "reason": "U-Net crack segmentation for pavement; transferable U-Net reference."
+    },
+    {
+     "candidate_id": "c-bae631c7",
+     "title": "Sandeep2017/Concrete-Crack-Segmentation",
+     "role_hint": "repo",
+     "reason": "Deep Residual U-Net for concrete cracks; structural-crack transferable code."
+    },
+    {
+     "candidate_id": "c-0c838bed",
+     "title": "hg153/DenseUnet",
+     "role_hint": "repo",
+     "reason": "Dense U-Net pavement crack segmentation repo; U-Net reference."
+    },
+    {
+     "candidate_id": "c-5ee93474",
+     "title": "ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET",
+     "role_hint": "repo",
+     "reason": "Implements U-Net for crack segmentation, but material type unspecified; parallel repo resource, not steel-specific."
+    },
+    {
+     "candidate_id": "c-dce68851",
+     "title": "mohamadhoseinraad/Crack-Segmentation",
+     "role_hint": "repo",
+     "reason": "End-to-end crack segmentation pipeline but lacks explicit U-Net/steel specification; weak specific match."
+    },
+    {
+     "candidate_id": "c-6b667295",
+     "title": "smcck222/Crack-Segmentation",
+     "role_hint": "repo",
+     "reason": "Uses U-Net for crack segmentation on road images; method matches but domain is pavement, not steel."
+    },
+    {
+     "candidate_id": "c-884e89f1",
+     "title": "BBahtiri/Computer-Vision-Crack-Detection",
+     "role_hint": "repo",
+     "reason": "U-Net with multiple backbones for crack/defect segmentation in materials; promising but steel-specificity unclear."
+    },
+    {
+     "candidate_id": "c-189985d0",
+     "title": "khanhha/crack_segmentation",
+     "role_hint": "repo",
+     "reason": "Provides multiple U-Net variants (VGG16, ResNet) and Tiramisu for crack segmentation; method fit, material unclear."
+    },
+    {
+     "candidate_id": "c-2f4755c0",
+     "title": "konskyrt/Concrete-Crack-Detection-Segmentation",
+     "role_hint": "repo",
+     "reason": "Concrete-surface crack detection CNN; method weaker match (not U-Net), object domain differs."
+    },
+    {
+     "candidate_id": "c-3ac172aa",
+     "title": "Yuki-11/CSSR",
+     "role_hint": "repo",
+     "reason": "CSSR combines super-resolution with crack segmentation; modular enhancement, low specificity to U-Net/steel."
+    },
+    {
+     "candidate_id": "c-dc5ab70e",
+     "title": "anishreddy3/Crack-Semantic-Segmentation",
+     "role_hint": "repo",
+     "reason": "Real-time PyTorch crack segmentation; no explicit U-Net or steel specification; weak direct match."
+    }
+   ],
+   "needs_manual": [
+    {
+     "candidate_id": "c-b67265e9",
+     "title": "mrFahrenhiet/CrackSegmentationDeepLearning",
+     "role_hint": "repo",
+     "reason": "U-Net crack segmentation repo but on Crack500 (pavement); verify steel applicability."
+    }
+   ],
+   "rejected": [
+    {
+     "candidate_id": "c-c9ef4648",
+     "title": "A rich bounty of AGN in the 9 square degree Bootes survey: high-z obscured AGN and large-scale structure",
+     "role_hint": "reference",
+     "reason": "Astrophysics paper on AGN; cross-domain, clearly unrelated."
+    },
+    {
+     "candidate_id": "c-59933ada",
+     "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+     "role_hint": "reference",
+     "reason": "Survey-methodology LLM paper; no computer vision content."
+    },
+    {
+     "candidate_id": "c-90e9cc00",
+     "title": "3D Kidneys and Kidney Tumor Semantic Segmentation using Boundary-Aware Networks",
+     "role_hint": "reference",
+     "reason": "Medical CT kidney segmentation; wrong domain entirely."
+    },
+    {
+     "candidate_id": "c-42c94238",
+     "title": "The Methanol Multibeam Survey",
+     "role_hint": "reference",
+     "reason": "Astronomy radio survey; completely unrelated domain."
+    },
+    {
+     "candidate_id": "c-f65c2f4c",
+     "title": "Ground Surface Semantic Segmentation with Uav-Based Point Clouds for Automated Earthwork Monitoring",
+     "role_hint": "reference",
+     "reason": "UAV point cloud earthwork monitoring; wrong modality and object."
+    }
+   ]
+  },
+  "paper_groups": {
+   "baseline": [
+    {
+     "candidate_id": "c-51cefa16",
+     "title": "Defect Detection Method For Steel Based On Semantic Segmentation",
+     "role_hint": "baseline",
+     "year": 2020
+    },
+    {
+     "candidate_id": "c-70de81ae",
+     "title": "The Amalgamation of the Object Detection and Semantic Segmentation for Steel Surface Defect Detection",
+     "role_hint": "parallel",
+     "year": 2022
+    }
+   ],
+   "parallel": [
+    {
+     "candidate_id": "c-d426dce8",
+     "title": "ECFN: efficient cross-scale fusion network for fast semantic segmentation of steel surface defects",
+     "role_hint": "baseline",
+     "year": 2025
+    },
+    {
+     "candidate_id": "c-2e13e88b",
+     "title": "Rapid Recognition and Semantic Segmentation of Molten Steel Distribution Images on a Steel Ladle Surface based on the Improved SqueezeNAS Network",
+     "role_hint": "reference",
+     "year": 2023
+    },
+    {
+     "candidate_id": "c-83c2016f",
+     "title": "SkipFusion: Multimodal Process-Aware Segmentation for Steel Surface Inspection",
+     "role_hint": "reference",
+     "year": 2026
+    },
+    {
+     "candidate_id": "c-030a03ad",
+     "title": "A Two-Level Semantic Segmentation Framework for Mechanism-Aware Corrosion Assessment in Steel Bridges",
+     "role_hint": "reference",
+     "year": 2026
+    },
+    {
+     "candidate_id": "c-66dc06db",
+     "title": "Semantic Segmentation-Based Damage Detection for Steel Wire Ropes",
+     "role_hint": "reference",
+     "year": 2026
+    },
+    {
+     "candidate_id": "c-7d867196",
+     "title": "Multi-Modal Attention Networks for Enhanced Segmentation and Depth Estimation of Subsurface Defects in Pulse Thermography",
+     "role_hint": "reference",
+     "year": 2025
+    }
+   ],
+   "reference": [
+    {
+     "candidate_id": "c-1680caba",
+     "title": "Image Segmentation in Foundation Model Era: A Survey",
+     "role_hint": "unknown",
+     "year": 2024
+    },
+    {
+     "candidate_id": "c-85906f81",
+     "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+     "role_hint": "unknown",
+     "year": 2024
+    },
+    {
+     "candidate_id": "c-c94b06ac",
+     "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+     "role_hint": "dataset",
+     "year": 2019
+    }
+   ],
+   "long_tail_candidates": [
+    {
+     "candidate_id": "c-5a1698a6",
+     "title": "RyM-CIC/Crack-segmentation",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-bae631c7",
+     "title": "Sandeep2017/Concrete-Crack-Segmentation",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-0c838bed",
+     "title": "hg153/DenseUnet",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-5ee93474",
+     "title": "ayazmhmd/Crack-segmentation-using-deeplabV3-and-UNET",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-dce68851",
+     "title": "mohamadhoseinraad/Crack-Segmentation",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-6b667295",
+     "title": "smcck222/Crack-Segmentation",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-884e89f1",
+     "title": "BBahtiri/Computer-Vision-Crack-Detection",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-189985d0",
+     "title": "khanhha/crack_segmentation",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-2f4755c0",
+     "title": "konskyrt/Concrete-Crack-Detection-Segmentation",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-3ac172aa",
+     "title": "Yuki-11/CSSR",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-dc5ab70e",
+     "title": "anishreddy3/Crack-Semantic-Segmentation",
+     "role_hint": "repo",
+     "year": null
+    },
+    {
+     "candidate_id": "c-b67265e9",
+     "title": "mrFahrenhiet/CrackSegmentationDeepLearning",
+     "role_hint": "repo",
+     "year": null
+    }
+   ]
+  },
+  "dataset_and_repo_notes": [
+   "No steel-specific crack dataset with pixel masks surfaced; c-c94b06ac STI is texture-defect, not steel.",
+   "Public steel defect datasets (NEU-DET, Severstal, GC10) are referenced by c-d426dce8 and c-70de81ae but not directly retrieved.",
+   "c-189985d0 (khanhha/crack_segmentation) bundles its own crack dataset, useful for U-Net pipeline testing.",
+   "c-b67265e9 trains on Crack500 (pavement); transferability to steel must be manually validated.",
+   "c-c94b06ac STI benchmark offers surface-defect images but lacks steel crack masks."
+  ],
+  "work_suggestions": [
+   "Reproduce c-189985d0 UNet_VGG16 / UNet_Resnet pipelines and fine-tune on a steel crack dataset (e.g., Severstal or NEU-DET) to establish U-Net baseline.",
+   "Use c-51cefa16 (steel semantic segmentation, 2020) as in-domain reference for preprocessing and evaluation metrics on steel.",
+   "Compare c-70de81ae's detection+segmentation fusion against a vanilla U-Net on steel cracks to quantify fusion gain.",
+   "Adapt c-b67265e9 multiscale attention U-Net (Crack500 SOTA) to steel surface images; verify domain transfer.",
+   "Benchmark c-d426dce8 ECFN against U-Net variants from c-bae631c7 (Residual U-Net) and c-0c838bed (Dense U-Net) on the same steel split."
+  ],
+  "risk_reminders": [
+   "No tier=core paper explicitly couples U-Net with steel crack pixels; methodology gap must be filled by the student.",
+   "Several U-Net crack repos target pavement or concrete, not steel; transfer risk is non-trivial.",
+   "Severstal/NEU-DET typically provide classification or bounding boxes, not always dense crack masks.",
+   "ECFN (c-d426dce8) and SkipFusion (c-83c2016f) are 2025–2026 venues; full text access may be limited.",
+   "openalex and citation adapters returned empty; broader literature coverage may be missing."
+  ],
+  "manual_questions": [
+   "Which steel surface defect dataset will be used (Severstal, NEU-DET, GC10, or self-collected)?",
+   "Is the target crack class binary, or multi-defect (cracks + inclusions + scratches)?",
+   "What resolution and annotation format are required for the steel crack masks?",
+   "Should the U-Net use a pretrained encoder (VGG/ResNet) or train from scratch on steel?",
+   "Is deployment on edge hardware required (influences baseline choice vs. c-d426dce8 ECFN)?"
+  ],
+  "stop_here": true,
+  "human_gate": {
+   "enabled": false,
+   "future_gates": [
+    "topic_understanding",
+    "search_plan",
+    "baseline_selection"
+   ],
+   "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+  }
+ },
+ "low_bar_verdict": {
+  "review_verdict": "pass",
+  "blocking_questions": [],
+  "weak_points": [
+   "No explicit steel crack dataset (Severstal/NEU-DET/GC10) confirmed as in-scope candidate; c-c94b06ac is texture-only.",
+   "No candidate explicitly combines U-Net with steel crack segmentation; reliance on transfer from concrete/pavement repos is assumed.",
+   "evidence_gaps is empty; should declare a dataset gap and a steel-specific U-Net paper gap explicitly.",
+   "baseline_options contains repos (c-b67265e9) but no published steel crack U-Net paper as a true baseline anchor.",
+   "direction_recommendation text is truncated, weakening traceability of the recommendation rationale."
+  ],
+  "can_continue_to_opening_report": true,
+  "summary": "Topic is well-bounded; paper_groups.baseline has 2+ items, reference set is non-empty, datasets are named in suggestions, and all 5 work_suggestions reference valid candidate_ids. Minor gaps in explicit steel-U-Net paper and dataset evidence are non-blocking. Proceed to opening report."
+ },
+ "llm_calls": 6,
+ "llm_failures": 0,
+ "llm_budget": 12,
+ "round_delta": {
+  "reference_expansion": {
+   "arxiv": 8
+  },
+  "broad_recall": {
+   "crossref": 8,
+   "github": 8
+  },
+  "repo_dataset_followup": {
+   "github": 4
+  }
+ },
+ "citation_expand_stats": {
+  "seeds_total": 5,
+  "seeds_eligible": 2,
+  "seeds_rejected": 3,
+  "refs_added": 0,
+  "round_status": "ok"
+ }
+}
