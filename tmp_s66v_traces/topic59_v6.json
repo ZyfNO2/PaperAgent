@@ -1,0 +1,107 @@
+{
+  "topic": "59 机器学习在水声数据分类识别中的应用",
+  "elapsed_sec": 64.66,
+  "llm_calls": 4,
+  "llm_failures": 1,
+  "domain_route": "signal_timeseries",
+  "query_atoms_en": [
+    "underwater acoustic target classification CNN",
+    "ship-radiated noise recognition deep learning",
+    "underwater acoustic signal spectrogram classification",
+    "transfer learning underwater acoustic recognition",
+    "few-shot learning underwater acoustic target",
+    "hydrophone signal machine learning classification"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 8,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 5
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [
+    [
+      "openalex",
+      "1970-01-01 23:30:31"
+    ]
+  ],
+  "buckets": {
+    "baseline_papers": [
+      "doans/Underwater-Acoustic-Target-Classification-Based-on-Dense-Convolutional-Neural-Network",
+      "Half-Bl00d-Pr1nce/acoustic-ship-classification",
+      "CyberMastero/marine-acoustic-classification"
+    ],
+    "parallel_papers": [
+      "adwaith27/Hydroacoustic-transfer-learning",
+      "Machine learning methods for vessel type classification with underwater acoustic data",
+      "Machine learning approaches for classification of myriad underwater acoustic events over continental-shelf scale regions with passive ocean acoustic waveguide remote sensing"
+    ],
+    "module_papers": [
+      "Multi-Temporal Resolution Convolutional Neural Networks for Acoustic Scene Classification",
+      "Receptive-field-regularized CNN variants for acoustic scene classification",
+      "Ensemble Of Deep Neural Networks For Acoustic Scene Classification"
+    ],
+    "reference_papers": [
+      "Analysis Acoustic Features for Acoustic Scene Classification and Score fusion of multi-classification systems applied to DCASE 2016 challenge",
+      "An Entropy-Guided Curriculum Learning Strategy for Data-Efficient Acoustic Scene Classification under Domain Shift",
+      "On The Effect Of Coding Artifacts On Acoustic Scene Classification",
+      "comersy/marine-mammal-sound-classifier",
+      "Performance Analysis of Underwater Acoustic Automatic Modulation Classification System with Machine Learning",
+      "Underwater acoustic communications powered by machine learning"
+    ],
+    "dataset_candidates": [],
+    "repo_candidates": [
+      "doans/Underwater-Acoustic-Target-Classification-Based-on-Dense-Convolutional-Neural-Network",
+      "Half-Bl00d-Pr1nce/acoustic-ship-classification",
+      "adwaith27/Hydroacoustic-transfer-learning",
+      "doans/Underwater-Acoustic-Target-Classification-Based-on-Dense-Convolutional-Neural-Network",
+      "Half-Bl00d-Pr1nce/acoustic-ship-classification"
+    ]
+  },
+  "evidence_gaps": [
+    "RATE_LIMITED: openalex suspended until 1970-01-01 23:30:31",
+    "No raw tool entry directly introduces the ShipsEar or DeepShip dataset; dataset_candidates left empty to avoid fabrication.",
+    "Arxiv arXiv:2506.07877 (AUV source tracking) and arXiv:0809.0070 (underwater channel network coding) were excluded as cross-domain false positives for classification.",
+    "OpenAlex backend returned 0 results; cannot corroborate baselines via OpenAlex citations.",
+    "Several crossref entries lack abstracts and years; treated as borderline-relevant and kept only the clearly classification-related ones."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [
+        "A Spatio-temporal Deep Learning Approach for Underwater Acoustic Signals Classification",
+        "An Investigation of Preprocessing Filters and Deep Learning Methods for Vessel Type Classification With Underwater Acoustic Data"
+      ],
+      "miss": []
+    },
+    "papers_parallel": {
+      "hit": [],
+      "miss": [
+        "Cross-Domain Knowledge Transfer for Underwater Acoustic Classification Using Pre-trained Models",
+        "Underwater Acoustic Target Recognition based on Smoothness-inducing Regularization",
+        "Underwater Acoustic Target Recognition on ShipsEar Dataset"
+      ]
+    },
+    "datasets": {
+      "hit": [],
+      "miss": [
+        "DeepShip",
+        "ShipsEar",
+        "SonAIr"
+      ]
+    },
+    "repos": {
+      "hit": [],
+      "miss": [
+        "zakaria76al/USC",
+        "lucascesarfd/underwater_snd",
+        "PANN_Models_DeepShip"
+      ]
+    }
+  },
+  "total": {
+    "gt": 11,
+    "hit": 2,
+    "rate": 0.18
+  }
+}

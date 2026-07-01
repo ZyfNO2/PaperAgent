@@ -1,0 +1,109 @@
+{
+  "topic": "59 机器学习在水声数据分类识别中的应用",
+  "elapsed_sec": 78.56,
+  "llm_calls": 4,
+  "llm_failures": 0,
+  "domain_route": "signal_timeseries",
+  "query_atoms_en": [
+    "underwater acoustic target classification CNN",
+    "ship-radiated noise recognition deep learning",
+    "underwater acoustic signal classification spectrogram",
+    "hydrophone audio classification LSTM",
+    "marine mammal sound classification machine learning",
+    "underwater acoustic dataset benchmark"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 8,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 8
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [
+    [
+      "openalex",
+      "1970-01-01 23:22:58"
+    ]
+  ],
+  "buckets": {
+    "baseline_papers": [
+      "Ship Classification of Underwater Acoustic Target Using a CNN-Transformer Approach",
+      "Hybrid CNN-LSTM Architecture with Adaptive Kalman Filtering for Enhanced Underwater Acoustic Vector Sensor Signal Processing",
+      "A spatio-temporal deep learning approach for underwater acoustic signals classification",
+      "Underwater-Acoustic-Target-Classification-Based-on-Dense-Convolutional-Neural-Network",
+      "keras_multiple_target_recognition"
+    ],
+    "parallel_papers": [
+      "Machine learning methods for vessel type classification with underwater acoustic data",
+      "Classification of Ships Using Underwater Radiated Noise",
+      "Separation and classification of underwater acoustic sources"
+    ],
+    "module_papers": [
+      "Ensemble Of Deep Neural Networks For Acoustic Scene Classification",
+      "An Entropy-Guided Curriculum Learning Strategy for Data-Efficient Acoustic Scene Classification under Domain Shift",
+      "Learn to Accumulate Evidence from All Training Samples: Theory and Practice"
+    ],
+    "reference_papers": [
+      "Modelling, Detection, and Classification of Random Underwater Acoustic Transients",
+      "TOWARDS GAIN INVARIANT SEA BED CLASSIFICATION",
+      "VERY HIGH-RESOLUTION SIDE-SCAN SONAR FOR UNDERWATER ACOUSTIC IMAGERY",
+      "The Modern Mathematics of Deep Learning",
+      "Deep Learning and Computational Physics (Lecture Notes)",
+      "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation"
+    ],
+    "dataset_candidates": [],
+    "repo_candidates": [
+      "UnderwaterAcoustics.jl",
+      "uwa-channel-model",
+      "uacpy",
+      "usc-auv-passive-sonar",
+      "Underwater-Acoustic-Communication-System"
+    ]
+  },
+  "evidence_gaps": [
+    "No dedicated underwater-acoustic benchmark dataset surfaced (ShipsEar, DeepShip); student must manually source one before reimplementing baselines.",
+    "Module 1807.04970 (DCASE 2016 score fusion) is weak domain fit; remove or justify per-bucket coherence.",
+    "Reference 1903.04717 (malware DNN) is cross-domain noise; removed from reference bucket and flagged.",
+    "Manually source a benchmark dataset (ShipsEar or DeepShip) and add to dataset_candidates; current bucket empty violates D3.",
+    "Justify or replace module 1807.04970 (DCASE scene score-fusion) and 2509.11168—domain fit is peripheral to underwater acoustic target classification."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [
+        "A Spatio-temporal Deep Learning Approach for Underwater Acoustic Signals Classification",
+        "An Investigation of Preprocessing Filters and Deep Learning Methods for Vessel Type Classification With Underwater Acoustic Data"
+      ],
+      "miss": []
+    },
+    "papers_parallel": {
+      "hit": [],
+      "miss": [
+        "Cross-Domain Knowledge Transfer for Underwater Acoustic Classification Using Pre-trained Models",
+        "Underwater Acoustic Target Recognition based on Smoothness-inducing Regularization",
+        "Underwater Acoustic Target Recognition on ShipsEar Dataset"
+      ]
+    },
+    "datasets": {
+      "hit": [],
+      "miss": [
+        "DeepShip",
+        "ShipsEar",
+        "SonAIr"
+      ]
+    },
+    "repos": {
+      "hit": [],
+      "miss": [
+        "zakaria76al/USC",
+        "lucascesarfd/underwater_snd",
+        "PANN_Models_DeepShip"
+      ]
+    }
+  },
+  "total": {
+    "gt": 11,
+    "hit": 2,
+    "rate": 0.18
+  }
+}

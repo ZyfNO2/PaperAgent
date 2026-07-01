@@ -44,15 +44,49 @@ def _strip_code_fence(s: str) -> str:
     return s
 
 
+def _collect_stream(r: httpx.Response) -> str:
+    """Read an Anthropic-compatible SSE stream. Each event is a JSON line:
+    `event: message_start` / `content_block_start` / `content_block_delta` /
+    `content_block_stop` / `message_delta` / `message_stop`. We collect all
+    `content_block_delta` text deltas in order, ignoring non-text blocks.
+    """
+    chunks: list[str] = []
+    for line in r.iter_lines():
+        if not line:
+            continue
+        if line.startswith("data:"):
+            payload = line[len("data:"):].strip()
+            if not payload or payload == "[DONE]":
+                continue
+            try:
+                evt = json.loads(payload)
+            except json.JSONDecodeError:
+                continue
+            if evt.get("type") == "content_block_delta":
+                delta = evt.get("delta") or {}
+                if delta.get("type") == "text_delta":
+                    chunks.append(delta.get("text", ""))
+    return "".join(chunks)
+
+
 def chat_json(
     prompt: str,
     *,
     system: str | None = None,
     temperature: float = 0.2,
     max_tokens: int = 1500,
-    timeout: float = 30.0,
+    timeout: float = 60.0,
+    profile: str | None = None,  # S66.6: kept for caller compat, no-op in HEAD
+    provider: str | None = None,  # S66.6: kept for caller compat, no-op in HEAD
+    fallback_profiles: list[str] | None = None,  # S66.6: kept for caller compat
+    stream: bool = True,
 ) -> dict[str, Any]:
     """调 MiniMax M3 (anthropic-compatible), 期望返回严格 JSON dict.
+
+    Set `stream=True` (default) to consume the response as Server-Sent Events.
+    We accumulate text deltas in order; this avoids the message-level max_tokens
+    truncation that causes half-JSON returns. Send the same `max_tokens` as an
+    upper bound, but the response is whatever the model decides to emit.
 
     Raises:
         LLMUnavailable: 缺 key / 网络错误 / 解析失败.
@@ -69,7 +103,7 @@ def chat_json(
         "anthropic-version": "2023-06-01",
         "content-type": "application/json",
     }
-    body = {
+    body: dict[str, Any] = {
         "model": MINIMAX_MODEL,
         "max_tokens": max_tokens,
         "temperature": temperature,
@@ -77,22 +111,30 @@ def chat_json(
     }
     if system:
         body["system"] = system
+    if stream:
+        body["stream"] = True
 
     try:
-        r = httpx.post(url, headers=headers, json=body, timeout=timeout)
-        if r.status_code >= 400:
-            raise LLMUnavailable(f"HTTP {r.status_code}: {r.text[:200]}")
-        data = r.json()
+        if stream:
+            with httpx.stream("POST", url, headers=headers, json=body, timeout=timeout) as r:
+                if r.status_code >= 400:
+                    raise LLMUnavailable(f"HTTP {r.status_code}: {r.text[:200] if r.text else ''}")
+                raw = _collect_stream(r)
+        else:
+            r = httpx.post(url, headers=headers, json=body, timeout=timeout)
+            if r.status_code >= 400:
+                raise LLMUnavailable(f"HTTP {r.status_code}: {r.text[:200]}")
+            data = r.json()
+            text_parts = []
+            for block in data.get("content", []):
+                if block.get("type") == "text":
+                    text_parts.append(block.get("text", ""))
+            raw = "".join(text_parts).strip()
     except httpx.HTTPError as exc:
         raise LLMUnavailable(f"网络错误: {exc}") from exc
     except Exception as exc:  # noqa: BLE001
         raise LLMUnavailable(f"LLM 调用失败: {exc}") from exc
 
-    text_parts = []
-    for block in data.get("content", []):
-        if block.get("type") == "text":
-            text_parts.append(block.get("text", ""))
-    raw = "".join(text_parts).strip()
     if not raw:
         raise LLMUnavailable("LLM 返回空内容")
 

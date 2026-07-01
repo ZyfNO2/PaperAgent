@@ -1,0 +1,95 @@
+{
+  "topic": "55 无条件稳定FDTD在微波传输线中的应用研究",
+  "elapsed_sec": 63.18,
+  "llm_calls": 4,
+  "llm_failures": 0,
+  "domain_route": "signal_timeseries",
+  "query_atoms_en": [
+    "unconditionally stable FDTD microwave transmission line",
+    "ADIFD parallel-plate waveguide",
+    "ADI-FDTD microstrip line dispersion",
+    "Crank-Nicolson FDTD coplanar waveguide",
+    "split-step FDTD transmission line transient"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 8,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 2
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [
+    [
+      "openalex",
+      "1970-01-01 23:22:58"
+    ]
+  ],
+  "buckets": {
+    "baseline_papers": [
+      "Fundamental Schemes for Efficient Unconditionally Stable Implicit Finite-Difference Time-Domain Methods"
+    ],
+    "parallel_papers": [
+      "A Stable FDTD Subgridding Scheme with SBP-SAT for Transient Electromagnetic Analysis"
+    ],
+    "module_papers": [],
+    "reference_papers": [
+      "Simple, Efficient, and Accurate Analysis of the Flanged Parallel-Plate Waveguide",
+      "Measurement and Characterization of Terahertz Radiation Propagating Through a Parallel Plate Waveguide",
+      "RADAR CROSS SECTION ANALYSIS OF TWO CANONICAL, PARALLEL-PLATE WAVEGUIDE CAVITIES WITH MATERIAL LOADING",
+      "Comparison of Lumerical FDTD and Tidy3D for three-dimensional FDTD simulations of passive silicon photonic components"
+    ],
+    "dataset_candidates": [],
+    "repo_candidates": [
+      "airnessman/ADI-FDTD",
+      "xytao92/ADI_FDTD_steam"
+    ]
+  },
+  "evidence_gaps": [
+    "verifier dropped 1 entries not grounded in raw tool output",
+    "Need ≥1 additional baseline (e.g., classical Namiki/ADIFD or CN-FDTD on transmission-line geometry) so the bucket meets the ≥2 baseline requirement."
+  ],
+  "fabrication_alerts": [
+    {
+      "title": "Comment on \"Diffraction by a Flanged Parallel-Plate Waveguide\"",
+      "bucket": "reference_papers",
+      "why": "not_in_raw_tool_output"
+    }
+  ],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [],
+      "miss": [
+        "Unconditionally stable FDTD for transmission line analysis",
+        "FDTD Method for Microwave Transmission Lines"
+      ]
+    },
+    "papers_parallel": {
+      "hit": [
+        "Crank-Nicolson FDTD for waveguide analysis"
+      ],
+      "miss": [
+        "Alternating-direction-implicit FDTD for microwave structures"
+      ]
+    },
+    "datasets": {
+      "hit": [],
+      "miss": [
+        "openEMS benchmark",
+        "Meep reference benchmarks"
+      ]
+    },
+    "repos": {
+      "hit": [],
+      "miss": [
+        "thliebig/openEMS",
+        "NanoComp/meep",
+        "gprMax/gprMax"
+      ]
+    }
+  },
+  "total": {
+    "gt": 9,
+    "hit": 1,
+    "rate": 0.11
+  }
+}

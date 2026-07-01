@@ -1,0 +1,89 @@
+{
+  "topic": "55 无条件稳定FDTD在微波传输线中的应用研究",
+  "elapsed_sec": 63.31,
+  "llm_calls": 4,
+  "llm_failures": 0,
+  "domain_route": "signal_timeseries",
+  "query_atoms_en": [
+    "unconditionally stable FDTD microwave transmission line",
+    "ADI-FDTD microstrip line simulation",
+    "Crank-Nicolson FDTD waveguide",
+    "LOD-FDTD coplanar waveguide transient",
+    "split-step FDTD RF interconnect dispersion",
+    "numerical stability FDTD transmission line"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 8,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 2
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [],
+  "buckets": {
+    "baseline_papers": [
+      "Optimal error estimates and energy conservation identities of the ADI-FDTD scheme on staggered grids for 3D Maxwell's equations",
+      "Transient Analysis of Transmission Line with Arbitrary Loads Based on the Split-step Crank-Nicolson-FDTD Method",
+      "Numerical Stability Analysis of M1-D ADI-FDTD Method for Coupled Transmission Lines"
+    ],
+    "parallel_papers": [
+      "A Hybrid Method Based on Leapfrog ADI-FDTD and FDTD for Solving Multiscale Transmission Line Network",
+      "Time domain analysis of transmission line based on WLP-FDTD"
+    ],
+    "module_papers": [
+      "1D FDTD Modeling of the Transmission Line Equations",
+      "State-variable characterization of transmission line terminations for FDTD analysis",
+      "DSP incorporated FDTD model for analysis of transmission line"
+    ],
+    "reference_papers": [
+      "Dynamically Reconfigurable Microwave Circuits Leveraging Abrupt Phase-Change Material"
+    ],
+    "dataset_candidates": [],
+    "repo_candidates": [
+      "airnessman/ADI-FDTD",
+      "xytao92/ADI_FDTD_steam"
+    ]
+  },
+  "evidence_gaps": [
+    "No GitHub repo reproduces a microwave-transmission-line ADI/SS-CN-FDTD benchmark with measured S-parameters; student must build validation suite.",
+    "Crossref IEEE entries have null year fields; venue/page metadata must be human-verified before citation."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [
+        "FDTD Method for Microwave Transmission Lines"
+      ],
+      "miss": [
+        "Unconditionally stable FDTD for transmission line analysis"
+      ]
+    },
+    "papers_parallel": {
+      "hit": [],
+      "miss": [
+        "Alternating-direction-implicit FDTD for microwave structures",
+        "Crank-Nicolson FDTD for waveguide analysis"
+      ]
+    },
+    "datasets": {
+      "hit": [],
+      "miss": [
+        "openEMS benchmark",
+        "Meep reference benchmarks"
+      ]
+    },
+    "repos": {
+      "hit": [],
+      "miss": [
+        "thliebig/openEMS",
+        "NanoComp/meep",
+        "gprMax/gprMax"
+      ]
+    }
+  },
+  "total": {
+    "gt": 9,
+    "hit": 1,
+    "rate": 0.11
+  }
+}

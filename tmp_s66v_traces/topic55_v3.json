@@ -1,0 +1,75 @@
+{
+  "topic": "55 无条件稳定FDTD在微波传输线中的应用研究",
+  "elapsed_sec": 63.62,
+  "llm_calls": 4,
+  "llm_failures": 1,
+  "domain_route": "signal_timeseries",
+  "query_atoms_en": [
+    "unconditionally stable FDTD microwave transmission line",
+    "ADI-FDTD microstrip line simulation",
+    "Crank-Nicolson FDTD coplanar waveguide",
+    "split-step FDTD waveguide discontinuity",
+    "numerical dispersion ADI-FDTD microstrip",
+    "unconditionally stable FDTD stability analysis"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 8,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 2
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [],
+  "buckets": {
+    "baseline_papers": [],
+    "parallel_papers": [],
+    "module_papers": [],
+    "reference_papers": [],
+    "dataset_candidates": [],
+    "repo_candidates": []
+  },
+  "evidence_gaps": [
+    "Synthesis agent failed: raw arxiv=8, openalex=0, crossref=8, github=2 items were never parsed into buckets for unconditionally stable FDTD on microwave transmission lines.",
+    "Re-run synthesis: must extract ≥2 baseline ADI/CN-FDTD transmission-line papers with DOIs and ≥2 parallel split-step/WSSP-FDTD papers from the 8 arxiv+8 crossref hits.",
+    "Add at least one microstrip or coplanar-waveguide benchmark dataset / open simulation repo from the 2 github hits before claiming survey completeness.",
+    "Synthesis failed: 8 arxiv + 8 crossref + 2 github hits unparsed for unconditionally stable FDTD microwave transmission line survey.",
+    "Need ≥2 baseline ADI-FDTD microstrip papers with DOIs and ≥2 parallel split-step FDTD papers from retrieved set."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [],
+      "miss": [
+        "Unconditionally stable FDTD for transmission line analysis",
+        "FDTD Method for Microwave Transmission Lines"
+      ]
+    },
+    "papers_parallel": {
+      "hit": [],
+      "miss": [
+        "Alternating-direction-implicit FDTD for microwave structures",
+        "Crank-Nicolson FDTD for waveguide analysis"
+      ]
+    },
+    "datasets": {
+      "hit": [],
+      "miss": [
+        "openEMS benchmark",
+        "Meep reference benchmarks"
+      ]
+    },
+    "repos": {
+      "hit": [],
+      "miss": [
+        "thliebig/openEMS",
+        "NanoComp/meep",
+        "gprMax/gprMax"
+      ]
+    }
+  },
+  "total": {
+    "gt": 9,
+    "hit": 0,
+    "rate": 0.0
+  }
+}
