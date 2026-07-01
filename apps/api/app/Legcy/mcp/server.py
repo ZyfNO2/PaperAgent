@@ -21,6 +21,7 @@ from app.schemas_mcp import (
     MCPToolCallResponse,
     MCPToolListResponse,
 )
+from app.services.retrieval.tool_orchestrator import TOOL_WHITELIST
 
 
 # ---- manifest ---- #
@@ -32,6 +33,7 @@ def get_manifest() -> MCPServerManifest:
         tool_count=len(tools),
         tools=[t.name for t in tools],
         forbidden_tools=list(permissions.FORBIDDEN_TOOLS),
+        research_whitelist_tools=sorted(TOOL_WHITELIST),
     )
 
 
@@ -41,6 +43,7 @@ def list_tools_response() -> MCPToolListResponse:
         total=len(tools),
         tools=tools,
         forbidden=list(permissions.FORBIDDEN_TOOLS),
+        research_whitelist_tools=sorted(TOOL_WHITELIST),
     )
 
 

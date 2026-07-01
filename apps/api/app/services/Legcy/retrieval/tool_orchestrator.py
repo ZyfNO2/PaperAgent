@@ -30,8 +30,11 @@ from pydantic import BaseModel, ConfigDict
 from typing_extensions import Literal
 
 from ..trace_store import append_trace
+from ..research_baselines import search_baselines
+from ..research_datasets import search_datasets
 from .adapters import (
     arxiv_search,
+    crossref_search,
     github_search,
     huggingface_search,
     kaggle_search,
@@ -39,6 +42,7 @@ from .adapters import (
     semantic_scholar_search,
 )
 from .normalizer import normalize_candidate
+from .web_dataset_search import search_web_datasets
 
 
 # ---------- Whitelist ---------- #
@@ -47,6 +51,7 @@ TOOL_WHITELIST: frozenset[str] = frozenset({
     "search_openalex",
     "search_arxiv",
     "search_semantic_scholar",
+    "search_crossref",
     "search_github",
     "search_paperswithcode",
     "search_dataset_web",
@@ -115,6 +120,7 @@ _TOOL_ADAPTER_ATTR: dict[str, str] = {
     "search_arxiv": "arxiv_search",
     "search_semantic_scholar": "semantic_scholar_search",  # stub adapter
     "search_github": "github_search",
+    "search_crossref": "crossref_search",
 }
 
 _TOOL_DEFAULT_TOP_K: dict[str, int] = {
@@ -122,6 +128,7 @@ _TOOL_DEFAULT_TOP_K: dict[str, int] = {
     "search_arxiv": 8,
     "search_semantic_scholar": 8,
     "search_github": 8,
+    "search_crossref": 8,
     "search_paperswithcode": 8,  # no adapter; mark skipped
     "search_dataset_web": 8,     # no adapter; mark skipped
     "fetch_url_metadata": 8,    # no adapter; mark skipped
@@ -129,10 +136,102 @@ _TOOL_DEFAULT_TOP_K: dict[str, int] = {
 
 # Tools without a backing adapter — they get status="skipped".
 _TOOLS_WITHOUT_ADAPTER: frozenset[str] = frozenset({
-    "search_paperswithcode",
-    "search_dataset_web",
     "fetch_url_metadata",
 })
+
+
+def _infer_domain_from_query(query: str) -> str:
+    text = (query or "").lower()
+    if any(token in text for token in ("sonar", "acoustic", "underwater", "shipsear", "deepship")):
+        return "signal_timeseries"
+    if any(token in text for token in ("fdtd", "microwave", "transmission line", "electromagnetic", "meep", "openems")):
+        return "energy_power"
+    if any(token in text for token in ("diesel", "emission", "china vi", "obd", "remote monitoring")):
+        return "control_monitoring"
+    if any(token in text for token in ("defect", "surface", "steel", "yolo", "detection")):
+        return "vision_2d"
+    return "unknown"
+
+
+def _topic_atoms_from_query(query: str) -> dict[str, str | list[str]]:
+    text = (query or "").strip()
+    domain = _infer_domain_from_query(text)
+    return {
+        "object_cn": text,
+        "object_en": text,
+        "engineering_objects": [text] if text else [],
+        "domain_guess": domain,
+    }
+
+
+async def _search_dataset_web_adapter(
+    queries: list[str],
+    top_k: int,
+    *,
+    client: Any | None = None,
+) -> list[dict]:
+    """Deterministic dataset fallback using the local web-dataset helper."""
+    del client
+    out: list[dict] = []
+    for query in queries:
+        atoms = _topic_atoms_from_query(query)
+        domain = str(atoms.get("domain_guess") or "")
+        results = search_web_datasets(atoms, domain=domain, min_results=max(2, top_k))
+        if not results and domain != "unknown":
+            for entry in search_datasets(domain)[:top_k]:
+                out.append({
+                    "_candidate_type": "dataset",
+                    "id": entry["name"],
+                    "title": entry["name"],
+                    "url": entry.get("url"),
+                    "license": entry.get("license"),
+                    "abstract": f"Curated dataset fallback for {domain}: {entry.get('task', '')}",
+                    "task_type": entry.get("task"),
+                    "matched_query": query,
+                    "skill_role": "dataset_catalog",
+                })
+            continue
+        for item in results[:top_k]:
+            out.append({
+                "_candidate_type": "dataset",
+                "id": item.dataset_id,
+                "title": item.name,
+                "url": item.url,
+                "license": item.license,
+                "abstract": f"Web dataset fallback from {item.source}: {item.task_type or ''}",
+                "task_type": item.task_type,
+                "matched_query": item.matched_query or query,
+                "skill_role": "web_dataset_seed",
+            })
+    return out
+
+
+async def _search_paperswithcode_adapter(
+    queries: list[str],
+    top_k: int,
+    *,
+    client: Any | None = None,
+) -> list[dict]:
+    """Lightweight PapersWithCode-style repo fallback via local baseline catalog."""
+    del client
+    out: list[dict] = []
+    for query in queries:
+        domain = _infer_domain_from_query(query)
+        entries = search_baselines(domain)[:top_k]
+        for entry in entries:
+            out.append({
+                "_candidate_type": "repo",
+                "id": entry["name"],
+                "title": entry["name"],
+                "full_name": entry["name"],
+                "html_url": entry.get("url"),
+                "description": f"Baseline fallback for {domain}: {entry.get('description', '')}",
+                "license": entry.get("license"),
+                "topics": [entry.get("category"), domain, "baseline"],
+                "matched_query": query,
+                "skill_role": "baseline_catalog",
+            })
+    return out
 
 
 # ---------- Validation ---------- #
@@ -173,6 +272,14 @@ async def _run_tool(
     """
 
     _validate_tool_name(call.tool)
+    if call.tool == "search_dataset_web":
+        default_top_k = _TOOL_DEFAULT_TOP_K.get(call.tool, 8)
+        top_k = int(call.how_call.get("top_k") or default_top_k)
+        return await _search_dataset_web_adapter([call.query], top_k, client=client)
+    if call.tool == "search_paperswithcode":
+        default_top_k = _TOOL_DEFAULT_TOP_K.get(call.tool, 8)
+        top_k = int(call.how_call.get("top_k") or default_top_k)
+        return await _search_paperswithcode_adapter([call.query], top_k, client=client)
     adapter = _resolve_adapter(call.tool)
     if adapter is None:
         return []
@@ -199,8 +306,9 @@ def _normalize_result(
         "search_arxiv": "arxiv",
         "search_semantic_scholar": "semantic_scholar",
         "search_github": "github",
-        "search_paperswithcode": "manual_fallback",  # no real adapter
+        "search_paperswithcode": "github",
         "search_dataset_web": "huggingface",         # best-effort
+        "search_crossref": "crossref",
         "fetch_url_metadata": "manual_fallback",
     }
     source = tool_to_source.get(tool, "manual_fallback")

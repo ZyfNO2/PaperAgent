@@ -117,7 +117,13 @@ def _call_llm_director(raw_topic: str, ref_papers: list[dict]) -> list[dict] | N
     prompt = _DIRECTION_PROMPT.format(raw_topic=raw_topic, papers_block=papers_block)
 
     try:
-        result = llm.chat_json(prompt, temperature=0.4, max_tokens=2500, timeout=45.0)
+        result = llm.chat_json(
+            prompt,
+            temperature=0.4,
+            max_tokens=2500,
+            timeout=45.0,
+            profile="direction_advice",
+        )
     except llm.LLMUnavailable as exc:
         logger.info("llm_director: LLM 失败 fallback: %s", exc)
         return None

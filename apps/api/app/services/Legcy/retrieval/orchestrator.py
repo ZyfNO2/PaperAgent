@@ -119,6 +119,18 @@ _TYPE_TO_SKILL: dict[CandidateType, str] = {
 # ---------- 检索运行 ---------- #
 
 
+def _topic_atoms_from_request(raw_topic: str, request: RetrievalSearchRequest, plan: Any) -> dict[str, Any]:
+    """Build real topic atoms from plan (S66 T4: not empty arrays, not hardcoded vision_2d)."""
+    return {
+        "raw": raw_topic,
+        "method_terms": getattr(plan, "method_terms", []) or [],
+        "task_terms": getattr(plan, "task_terms", []) or [],
+        "object_terms": getattr(plan, "object_terms", []) or [],
+        "required": list(request.extra_keywords or []),
+        "domain_guess": getattr(plan, "domain_guess", "unknown_engineering"),
+    }
+
+
 async def _retry_empty_types(
     project_id: str,
     request: RetrievalSearchRequest,
@@ -324,25 +336,21 @@ async def run_retrieval(
     # 8.5) S64 T1: candidate_cleaner — 清洗 keep/quarantine/reject
     #       仍然保留 deduped 全量, 但 keep-only 进入 UI/import 路径
     clean_summary: dict[str, int] = {"keep": 0, "quarantine": 0, "reject": 0, "needs_manual": 0}
+    cleaner_ran = False
     keep_candidates: list[RetrievalCandidate] = list(deduped)
+
     if clean_candidates is not None:
+        cleaner_ran = True
         try:
-            cdict_topic = {
-                "raw": raw_topic,
-                "object_terms": [],
-                "task_terms": [],
-                "method_terms": [],
-                "required": list(request.extra_keywords or []),
-            }
+            cdict_topic = _topic_atoms_from_request(raw_topic, request, plan)
             cand_dicts = [_candidate_to_dict(c) for c in deduped]
-            clean_results = clean_candidates(cand_dicts, cdict_topic, domain="vision_2d")
+            clean_results = clean_candidates(cand_dicts, cdict_topic, domain=cdict_topic["domain_guess"])
             keep_ids: set[str] = set()
             for cr in clean_results:
                 clean_summary[cr.clean_status] = clean_summary.get(cr.clean_status, 0) + 1
                 if cr.clean_status == "keep":
                     keep_ids.add(cr.candidate_id)
-            if keep_ids:
-                keep_candidates = [c for c in deduped if c.candidate_id in keep_ids]
+            keep_candidates = [c for c in deduped if c.candidate_id in keep_ids] if keep_ids else []
             append_trace(
                 project_id,
                 action="retrieval_candidates_cleaned",
@@ -380,18 +388,8 @@ async def run_retrieval(
             )
             should_trigger = len(dataset_cands) < 2 or ds_top_score < 0.45
             if should_trigger:
-                atoms_for_web = {
-                    "object_cn": "",
-                    "object_en": "",
-                    "engineering_objects": [],
-                    "placeholder": "",
-                    "raw": raw_topic,
-                    "object_terms": [],
-                    "task_terms": [],
-                    "method_terms": [],
-                    "required": list(request.extra_keywords or []),
-                }
-                web_results = search_web_datasets(atoms_for_web, domain="vision_2d")
+                atoms_for_web = _topic_atoms_from_request(raw_topic, request, plan)
+                web_results = search_web_datasets(atoms_for_web, domain=atoms_for_web["domain_guess"])
                 web_datasets_payload = [w.model_dump() for w in web_results]
                 append_trace(
                     project_id,
@@ -422,13 +420,7 @@ async def run_retrieval(
     if classify_literature is not None:
         try:
             paper_cands = [c for c in keep_candidates if c.candidate_type == "paper"]
-            atoms_for_role = {
-                "object_terms": [],
-                "task_terms": [],
-                "method_terms": [],
-                "raw": raw_topic,
-                "required": list(request.extra_keywords or []),
-            }
+            atoms_for_role = _topic_atoms_from_request(raw_topic, request, plan)
             role_results = classify_literature(
                 [_candidate_to_dict(c) for c in paper_cands],
                 atoms_for_role,
@@ -460,22 +452,53 @@ async def run_retrieval(
     module_matrix_payload: dict | None = None
     if build_module_matrix is not None and roles_payload:
         try:
-            parallel = [
-                {"title": r.get("candidate_id", ""), "abstract": "", "raw": {"base": r.get("base_framework")}}
-                for r in roles_payload if r.get("role") == "parallel_application_paper"
-            ]
-            modules = [
-                {"title": r.get("candidate_id", ""), "abstract": "", "raw": {"modules": r.get("modules_added")}}
-                for r in roles_payload if r.get("role") == "module_improvement_paper"
-            ]
-            baselines = [
-                {"name": r.get("candidate_id", ""), "source": "candidate", "url": r.get("code_url")}
-                for r in roles_payload
-                if r.get("role") in ("baseline_framework", "baseline_method")
-            ]
+            candidate_by_id = {c.candidate_id: c for c in keep_candidates}
+
+            parallel = []
+            for r in roles_payload:
+                c = candidate_by_id.get(r.get("candidate_id"))
+                if c and r.get("role") == "parallel_application_paper":
+                    parallel.append({
+                        "candidate_id": c.candidate_id,
+                        "title": c.title,
+                        "abstract": c.abstract or "",
+                        "url": c.url,
+                        "year": c.year,
+                        "source": c.source,
+                        "raw": {"base": r.get("base_framework"), "modules": r.get("modules_added")},
+                    })
+
+            modules = []
+            for r in roles_payload:
+                c = candidate_by_id.get(r.get("candidate_id"))
+                if c and r.get("role") == "module_improvement_paper":
+                    modules.append({
+                        "candidate_id": c.candidate_id,
+                        "title": c.title,
+                        "abstract": c.abstract or "",
+                        "url": c.url,
+                        "year": c.year,
+                        "source": c.source,
+                        "raw": {"modules": r.get("modules_added")},
+                    })
+
+            baselines = []
+            for r in roles_payload:
+                c = candidate_by_id.get(r.get("candidate_id"))
+                if r.get("role") in ("baseline_framework", "baseline_method"):
+                    baselines.append({
+                        "name": (c.title if c else r.get("candidate_id", "")),
+                        "source": (c.source if c else "candidate"),
+                        "url": (c.url if c else r.get("code_url")),
+                    })
+
+            atoms_for_matrix = _topic_atoms_from_request(raw_topic, request, plan)
             topic_atoms_for_matrix = {
                 "topic": raw_topic,
-                "domain": "vision_2d",
+                "domain": atoms_for_matrix["domain_guess"],
+                "method_terms": atoms_for_matrix["method_terms"],
+                "task_terms": atoms_for_matrix["task_terms"],
+                "object_terms": atoms_for_matrix["object_terms"],
             }
             matrix = build_module_matrix(parallel, modules, baselines, topic_atoms_for_matrix)
             module_matrix_payload = matrix.model_dump()
@@ -598,10 +621,10 @@ async def run_retrieval(
         started_at=started_at,
         finished_at=finished_at,
         status=overall_status,
-        total_candidates=len(deduped),
+        total_candidates=len(keep_candidates),
         imported_count=0,
         errors=[r.error for r in source_results if r.error],
-        candidates=deduped,
+        candidates=keep_candidates,
         gap_report=gap_report_payload,
         retry_round=retry_round_used,
         clean_summary=clean_summary,

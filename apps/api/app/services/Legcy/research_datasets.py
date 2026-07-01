@@ -75,6 +75,28 @@ DATASET_CATALOG: dict[str, dict] = {
         "license": "Academic",
         "reproduce_difficulty": "低",
     },
+    # Signal / acoustic classification
+    "ShipsEar": {
+        "domain": "signal_timeseries",
+        "task": "underwater_acoustic_classification",
+        "url": "https://github.com/LCAV/pyroomacoustics-data",
+        "license": "Academic",
+        "reproduce_difficulty": "medium",
+    },
+    "DeepShip": {
+        "domain": "signal_timeseries",
+        "task": "underwater_acoustic_classification",
+        "url": "https://github.com/yvanscher/DeepShip",
+        "license": "Research",
+        "reproduce_difficulty": "medium",
+    },
+    "DCASE 2018 Task 1": {
+        "domain": "signal_timeseries",
+        "task": "acoustic_classification",
+        "url": "https://dcase.community/challenge2018/task-acoustic-scene-classification",
+        "license": "Academic",
+        "reproduce_difficulty": "low",
+    },
 }
 
 

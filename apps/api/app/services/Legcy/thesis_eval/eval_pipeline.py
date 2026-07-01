@@ -40,8 +40,19 @@ from .report_builder import build_assessment_report
 
 logger = logging.getLogger(__name__)
 
-_SEED_FILE = Path("data/thesis_eval/thesis_seed_100.jsonl")
-_SMOKE_FILE = Path("data/thesis_eval/smoke_20.txt")
+# Resolve data paths relative to project root.
+# Strategy: walk up from __file__ until we find a directory that contains
+# both 'apps/api' and 'data/thesis_eval'.  Fallback: Path.cwd().
+_MODULE_DIR = Path(__file__).resolve()
+_PROJECT_ROOT = _MODULE_DIR.parents[5]
+# Verify: if the expected data file doesn't exist, walk up further
+if not (_PROJECT_ROOT / "data" / "thesis_eval" / "thesis_seed_100.jsonl").exists():
+    for ancestor in [_MODULE_DIR.parent] + list(_MODULE_DIR.parents):
+        if (ancestor / "data" / "thesis_eval" / "thesis_seed_100.jsonl").exists():
+            _PROJECT_ROOT = ancestor
+            break
+_SEED_FILE = _PROJECT_ROOT / "data" / "thesis_eval" / "thesis_seed_100.jsonl"
+_SMOKE_FILE = _PROJECT_ROOT / "data" / "thesis_eval" / "smoke_20.txt"
 
 # 子集定义 (测试集文档 §3)
 _SUBSET_FILTERS: dict[str, Any] = {

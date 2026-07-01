@@ -9,6 +9,7 @@ from ...schemas_retrieval import CandidateType, RetrievalCandidate, SearchSource
 
 _SOURCE_TO_TYPE: dict[SearchSource, CandidateType] = {
     "openalex": "paper",
+    "crossref": "paper",
     "semantic_scholar": "paper",
     "arxiv": "paper",
     "github": "repo",

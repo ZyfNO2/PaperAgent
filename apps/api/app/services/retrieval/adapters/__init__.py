@@ -8,6 +8,7 @@ from ....schemas_retrieval import SearchSource
 from .arxiv_search import arxiv_search
 from .github_search import github_search
 from .huggingface_search import huggingface_search
+from .crossref_search import crossref_search
 from .openalex_search import openalex_search
 from .optional_adapters import kaggle_search, semantic_scholar_search
 
@@ -26,6 +27,7 @@ def _make_runner(fn: SourceFn) -> SourceFn:
 
 REGISTRY: dict[SearchSource, SourceFn] = {
     "openalex": _make_runner(openalex_search),
+    "crossref": _make_runner(crossref_search),
     "arxiv": _make_runner(arxiv_search),
     "github": _make_runner(github_search),
     "huggingface": _make_runner(huggingface_search),

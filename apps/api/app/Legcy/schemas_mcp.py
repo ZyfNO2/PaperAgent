@@ -52,6 +52,7 @@ class MCPToolListResponse(BaseModel):
     total: int
     tools: list[MCPTool]
     forbidden: list[str] = Field(default_factory=list)
+    research_whitelist_tools: list[str] = Field(default_factory=list)
     server_version: str = "0.1.0"
 
 
@@ -109,4 +110,5 @@ class MCPServerManifest(BaseModel):
     tool_count: int
     tools: list[str]
     forbidden_tools: list[str]
+    research_whitelist_tools: list[str] = Field(default_factory=list)
     read_only: bool = True

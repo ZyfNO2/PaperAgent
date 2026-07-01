@@ -114,7 +114,13 @@ def recommend_proposal_llm(
         feas_reason=feas_reason,
     )
     try:
-        result = llm.chat_json(prompt, temperature=0.4, max_tokens=2000, timeout=30.0)
+        result = llm.chat_json(
+            prompt,
+            temperature=0.4,
+            max_tokens=2000,
+            timeout=30.0,
+            profile="direction_advice",
+        )
     except llm.LLMUnavailable as exc:
         logger.info("LLM recommend 失败: %s", exc)
         return None
@@ -194,7 +200,13 @@ def light_review_llm(
         feas_reason=feas_reason,
     )
     try:
-        result = llm.chat_json(prompt, temperature=0.3, max_tokens=2000, timeout=30.0)
+        result = llm.chat_json(
+            prompt,
+            temperature=0.3,
+            max_tokens=2000,
+            timeout=30.0,
+            profile="light_review",
+        )
     except llm.LLMUnavailable as exc:
         logger.info("LLM light_review 失败: %s", exc)
         return None

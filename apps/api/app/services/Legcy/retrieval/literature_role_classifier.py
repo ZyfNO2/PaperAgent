@@ -359,8 +359,29 @@ def _classify_relevance_and_role(
         )
 
     modules = _extract_modules(abstract)
+    base_fw = _mentions_framework(blob)
+    topic_methods = {m.lower() for m in (topic_atoms.get("method_terms") or []) if m}
+    framework_matches_topic = bool(base_fw and base_fw in topic_methods)
+
+    # 有明确模块改进 + 框架名命中主题 -> parallel_application (优先生效)
+    if modules and (base_fw and framework_matches_topic):
+        return LiteratureRoleResult(
+            candidate_id=cid,
+            role="parallel_application_paper",
+            base_framework=base_fw,
+            modules_added=modules,
+            datasets=_extract_datasets(abstract, candidate.get("datasets")),
+            metrics=_extract_metrics(abstract, candidate.get("metrics")),
+            code_url=code_url if isinstance(code_url, str) else None,
+            reproducibility=_infer_reproducibility(candidate),
+            reason=f"同任务同对象, 基于 {base_fw} 加入 {len(modules)} 个模块",
+            borrowable_ideas=[f"参考 {base_fw} 上的模块接入方式"] + [
+                f"可移植模块: {m}" for m in modules[:2]
+            ],
+        )
+
+    # 有明确模块改进但框架不命中主题 -> module_improvement (纯模块论文)
     if modules:
-        # 有明确模块改进, 归 module_improvement
         return LiteratureRoleResult(
             candidate_id=cid,
             role="module_improvement_paper",
@@ -374,7 +395,6 @@ def _classify_relevance_and_role(
         )
 
     # 任务匹配 + 提到某框架: parallel_application
-    base_fw = _mentions_framework(blob)
     if base_fw:
         return LiteratureRoleResult(
             candidate_id=cid,

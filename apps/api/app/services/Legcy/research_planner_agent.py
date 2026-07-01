@@ -18,25 +18,42 @@ import uuid
 from typing import Any
 
 from .research_prompts import (
-    candidate_screen_system,
     candidate_screen_user,
-    direction_advice_system,
     direction_advice_user,
-    problem_decompose_system,
     problem_decompose_user,
-    search_strategy_system,
     search_strategy_user,
-    topic_understand_system,
     topic_understand_user,
+)
+from .research_prompts_v2 import (
+    candidate_screen_system,
+    direction_advice_system,
+    problem_decompose_system,
+    search_strategy_system,
+    tool_plan_system,
+    tool_plan_user,
+    topic_understand_system,
+)
+from .research_skill_bridge import (
+    apply_skill_backfill,
+    build_skill_overlay,
+    enrich_dataset_candidates_with_skill,
+    filter_repo_candidates_with_skill,
+    repair_topic_parse_with_skill,
 )
 from .research_topic_parser import parse_topic_rule_based, validate_and_repair_llm_output
 from .research_tool_router import (
-    search_datasets,
-    search_papers,
-    search_repos,
     trace_write_event,
 )
 from .llm import LLMUnavailable, chat_json
+from .retrieval.candidate_cleaner import clean_candidates
+from .retrieval.literature_role_classifier import classify_literature
+from .retrieval.tool_orchestrator import (
+    TOOL_WHITELIST,
+    ToolCall,
+    ToolExecutionResult,
+    ToolPlan,
+    execute_tool_plan,
+)
 
 
 # ponytail: research_query_builder (T3) is in progress — use heuristic via
@@ -55,14 +72,21 @@ logger = logging.getLogger(__name__)
 # LLM call helper — returns dict, falls back to {} on failure
 # ---------------------------------------------------------------------------
 
-def _llm_or_empty(prompt: str, system: str) -> dict:
+def _llm_or_empty(prompt: str, system: str, *, profile: str = "default") -> dict:
     """Call LLM, return parsed dict. Empty dict on LLM failure.
 
     Caller decides what to do with empty — typically falls through to
     rule-based parse / heuristic expansion.
     """
     try:
-        result = chat_json(prompt, system=system, temperature=0.2, max_tokens=1500)
+        system_with_overlay = f"{system}\n\n{build_skill_overlay(profile)}"
+        result = chat_json(
+            prompt,
+            system=system_with_overlay,
+            temperature=0.2,
+            max_tokens=1500,
+            profile=profile,
+        )
         if isinstance(result, dict):
             return result
         return {}
@@ -108,7 +132,7 @@ def topic_understand(
     local_hints = student_ctx.get("local_case_hints", "")
 
     prompt = topic_understand_user(raw_topic, student_str, local_hints)
-    llm_out = _llm_or_empty(prompt, topic_understand_system())
+    llm_out = _llm_or_empty(prompt, topic_understand_system(), profile="topic_understand")
 
     if llm_out:
         parsed = validate_and_repair_llm_output(llm_out, raw_topic)
@@ -116,6 +140,9 @@ def topic_understand(
         parsed = parse_topic_rule_based(raw_topic)
         parsed["llm_output_repaired"] = False
         parsed["domain_route_conflict"] = False
+    # Never let downstream stages drift away from the user's actual topic.
+    parsed["raw_topic"] = raw_topic
+    parsed = repair_topic_parse_with_skill(parsed)
 
     trace_write_event(
         "topic_parse_completed",
@@ -191,7 +218,7 @@ def problem_decompose(topic_parse: dict) -> dict:
     """
     raw_topic = topic_parse.get("raw_topic", "")
     prompt = problem_decompose_user(json.dumps(topic_parse, ensure_ascii=False))
-    llm_out = _llm_or_empty(prompt, problem_decompose_system())
+    llm_out = _llm_or_empty(prompt, problem_decompose_system(), profile="problem_decompose")
 
     if llm_out and isinstance(llm_out.get("sub_questions"), list) and llm_out["sub_questions"]:
         return llm_out
@@ -249,7 +276,7 @@ def search_strategy_build(
         json.dumps(topic_parse, ensure_ascii=False),
         json.dumps(problem_decomp, ensure_ascii=False),
     )
-    llm_out = _llm_or_empty(prompt, search_strategy_system())
+    llm_out = _llm_or_empty(prompt, search_strategy_system(), profile="search_strategy")
 
     if llm_out and isinstance(llm_out.get("search_strategies"), list) and llm_out["search_strategies"]:
         strategy = llm_out
@@ -304,63 +331,186 @@ def search_strategy_build(
 
 
 # ---------------------------------------------------------------------------
-# Step 5: collect_candidates
+# Step 5: tool planning + collect_candidates
 # ---------------------------------------------------------------------------
 
+
+def _pick_skill_query(target: str, topic_parse: dict, *, idx: int = 0) -> str:
+    """Return a deterministic, skill-built query for a given target.
+
+    The LLM is not allowed to author search queries any more; we always pick
+    from ``topic_parse["query_atoms_en"]`` (or ``_zh`` fallback) and add a
+    target-specific suffix so external sources like Crossref / arXiv / GitHub
+    can match.
+
+    AutoResearchClaw principle: structure > generation.  The LLM only chooses
+    *which* tools to call; *what* to ask them is deterministic.
+    """
+    atoms_en = [str(a).strip() for a in (topic_parse.get("query_atoms_en") or []) if str(a).strip()]
+    atoms_zh = [str(a).strip() for a in (topic_parse.get("query_atoms_zh") or []) if str(a).strip()]
+    # Pick the index-th atom (clamp to length) to spread load across atoms.
+    base = (atoms_en[idx] if atoms_en else (atoms_zh[idx] if atoms_zh else ""))
+    if not base:
+        base = str(topic_parse.get("raw_topic") or "").strip()
+    target = (target or "paper").lower()
+    if target in {"paper", "module_paper"}:
+        # arXiv / Crossref / OpenAlex: keep atom clean
+        return base
+    if target in {"dataset"}:
+        # Crossref / HuggingFace need dataset-y hint words
+        if "dataset" in base.lower() or "benchmark" in base.lower():
+            return base
+        return f"{base} dataset benchmark"
+    if target in {"repo", "baseline"}:
+        # GitHub search benefits from these tokens
+        if any(t in base.lower() for t in ("github", "pytorch", "implementation", "code", "baseline")):
+            return base
+        return f"{base} github pytorch implementation"
+    return base
+
+
+def _looks_like_garbage_query(q: str) -> bool:
+    """Heuristic: LLM sometimes writes placeholder / placeholder-flavoured queries."""
+    if not q or len(q) < 3:
+        return True
+    ql = q.lower()
+    bad_markers = (
+        "question mark", "placeholder", "unresolved", "encoding error",
+        "thai", "korean", "japanese",
+    )
+    if any(m in ql for m in bad_markers):
+        return True
+    # Less than 50% of the query overlaps with the topic atoms -> not a real query.
+    return False
+
+
+def _heuristic_tool_plan(topic_parse: dict, search_strategy: dict) -> ToolPlan:
+    """Fallback ToolPlan from the existing search strategy."""
+    calls: list[ToolCall] = []
+    idx = 0
+    # Use the skill-built atoms for *every* query; the LLM-written search_strategy
+    # is only used to decide *which* target_types to dispatch.
+    target_types: list[tuple[str, str]] = []
+    for strategy in search_strategy.get("search_strategies", []):
+        name = str(strategy.get("name", ""))
+        ttype = str(strategy.get("target_type", "paper"))
+        if name == "datasets" or ttype == "dataset":
+            target_types.append(("dataset", "search_dataset_web"))
+        elif name in {"github_repos", "classic_baselines"} or ttype in {"repo", "baseline"}:
+            target_types.append((ttype if ttype in {"repo", "baseline"} else "repo",
+                                 "search_github"))
+        elif name == "emerging_methods":
+            target_types.append(("module_paper", "search_arxiv"))
+        else:
+            target_types.append(("paper", "search_openalex"))
+            target_types.append(("paper", "search_arxiv"))  # variety
+
+    for target, tool in target_types:
+        # Always add a Crossref call alongside OpenAlex for paper searches
+        # so we have a free-source fallback when OpenAlex is paid-locked.
+        if tool == "search_openalex":
+            cr_q = _pick_skill_query("paper", topic_parse, idx=idx % max(1, len(topic_parse.get("query_atoms_en") or [1])))
+            calls.append(
+                ToolCall(
+                    call_id=f"tc_{idx:02d}_cr",
+                    tool="search_crossref",
+                    target="paper",
+                    query=cr_q,
+                    when_to_call="round_1",
+                    why_call="crossref fallback for paper search (free, no rate limit)",
+                    how_call={"top_k": 8},
+                    expected_output="papers via crossref",
+                    stop_condition="ok",
+                )
+            )
+        query = _pick_skill_query(target, topic_parse, idx=idx)
+        calls.append(
+            ToolCall(
+                call_id=f"tc_{idx:02d}",
+                tool=tool,
+                target=target if target != "module_paper" else "module_paper",
+                query=query,
+                when_to_call="planner_round_1",
+                why_call="skill-driven deterministic query",
+                how_call={"top_k": 8},
+                expected_output=f"{target} candidates",
+                stop_condition="first useful batch",
+            )
+        )
+        idx += 1
+    return ToolPlan(
+        topic_atoms={
+            "raw": topic_parse.get("raw_topic", ""),
+            "domain_route": topic_parse.get("domain_route", "unknown"),
+            "method_terms": topic_parse.get("method_terms", []),
+            "task_terms": topic_parse.get("task_terms", []),
+            "object_terms": topic_parse.get("object_terms", []),
+        },
+        calls=calls[:10],
+        human_gate_after="round_1",
+    )
+
+
+def build_tool_plan(topic_parse: dict, search_strategy: dict) -> ToolPlan:
+    """Planner role: strict ToolPlan generation."""
+    prompt = tool_plan_user(
+        json.dumps(topic_parse, ensure_ascii=False),
+        json.dumps(search_strategy, ensure_ascii=False),
+    )
+    llm_out = _llm_or_empty(prompt, tool_plan_system(), profile="tool_plan")
+    if llm_out:
+        try:
+            plan = ToolPlan.model_validate(llm_out)
+            valid_calls = [call for call in plan.calls if call.tool in TOOL_WHITELIST]
+            if valid_calls:
+                # Override LLM-written queries with skill-built atoms.
+                atoms = list(topic_parse.get("query_atoms_en") or [])
+                atoms_zh = list(topic_parse.get("query_atoms_zh") or [])
+                fixed: list[ToolCall] = []
+                for i, call in enumerate(valid_calls[:10]):
+                    new_q = _pick_skill_query(call.target, topic_parse, idx=i)
+                    if _looks_like_garbage_query(call.query) or not call.query:
+                        fixed.append(call.model_copy(update={"query": new_q}))
+                    else:
+                        # LLM query stays only if it overlaps with skill atoms.
+                        ql = call.query.lower()
+                        if any(a and a.lower() in ql for a in atoms + atoms_zh):
+                            fixed.append(call)
+                        else:
+                            fixed.append(call.model_copy(update={"query": new_q}))
+                return plan.model_copy(update={"calls": fixed})
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("tool plan validation failed: %s", exc)
+    return _heuristic_tool_plan(topic_parse, search_strategy)
+
+
+def _candidate_from_tool_result(result: ToolExecutionResult) -> list[dict]:
+    out: list[dict] = []
+    for cand in result.candidates:
+        item = dict(cand)
+        item["_type"] = item.get("candidate_type") or "note"
+        out.append(item)
+    return out
+
+
 async def collect_candidates(
+    topic_parse: dict,
     search_strategy: dict,
     project_id: str = "",
 ) -> dict:
-    """Run paper/dataset/repo searches in parallel. Returns grouped results.
-
-    Falls through to heuristic-empty lists if queries absent — orchestrator
-    never crashes on adapter failure (router already swallows per-source errors).
-    """
+    """Run the Retriever role via ToolPlan -> tool_orchestrator."""
     project_id = project_id or _gen_project_id()
-    strategies = search_strategy.get("search_strategies", [])
-
-    paper_qs: list[str] = []
-    dataset_qs: list[str] = []
-    repo_qs: list[str] = []
-    for s in strategies:
-        name = s.get("name", "")
-        qs = s.get("queries", []) or []
-        if name == "core_papers" or "paper" in s.get("target_type", ""):
-            paper_qs.extend(qs)
-        elif name == "datasets" or "dataset" in s.get("target_type", ""):
-            dataset_qs.extend(qs)
-        elif name == "github_repos" or "repo" in s.get("target_type", ""):
-            repo_qs.extend(qs)
-
-    # De-dup queries, cap to avoid adapter overload
-    paper_qs = list(dict.fromkeys(paper_qs))[:6]
-    dataset_qs = list(dict.fromkeys(dataset_qs))[:4]
-    repo_qs = list(dict.fromkeys(repo_qs))[:4]
-
-    papers, datasets, repos = await asyncio.gather(
-        search_papers(paper_qs, project_id=project_id) if paper_qs else asyncio.sleep(0, result=[]),
-        search_datasets(dataset_qs, project_id=project_id) if dataset_qs else asyncio.sleep(0, result=[]),
-        search_repos(repo_qs, project_id=project_id) if repo_qs else asyncio.sleep(0, result=[]),
-    )
-
-    # Normalize: search_papers etc are typed as list[dict]; gather might return coroutine futures.
-    paper_results = papers if isinstance(papers, list) else []
-    dataset_results = datasets if isinstance(datasets, list) else []
-    repo_results = repos if isinstance(repos, list) else []
-
-    # ponytail: tag each candidate with type for downstream screen_candidates
+    tool_plan = build_tool_plan(topic_parse, search_strategy)
+    bundle = await execute_tool_plan(tool_plan, project_id)
     candidates: list[dict] = []
-    for p in paper_results:
-        candidates.append({**p, "_type": "paper"})
-    for d in dataset_results:
-        candidates.append({**d, "_type": "dataset"})
-    for r in repo_results:
-        candidates.append({**r, "_type": "repo"})
-
+    for result in bundle.results:
+        candidates.extend(_candidate_from_tool_result(result))
+    candidates = apply_skill_backfill(topic_parse, candidates)
+    candidates = enrich_dataset_candidates_with_skill(candidates)
+    candidates = filter_repo_candidates_with_skill(topic_parse, candidates)
     return {
-        "papers": paper_results,
-        "datasets": dataset_results,
-        "repos": repo_results,
+        "tool_plan": tool_plan.model_dump(),
+        "tool_execution": bundle.model_dump(),
         "candidates": candidates,
     }
 
@@ -386,19 +536,72 @@ def screen_candidates(
             "need_human_confirmation": True,
         }
 
+    cleaned_results = clean_candidates(
+        candidates,
+        topic_atoms=topic_parse,
+        domain=str(topic_parse.get("domain_route", "unknown")),
+    )
+    reject_ids = {
+        item.candidate_id
+        for item in cleaned_results
+        if item.clean_status in {"reject", "quarantine"}
+    }
+    skill_seed_candidate_ids = {
+        str(candidate.get("candidate_id", ""))
+        for candidate in candidates
+        if (candidate.get("raw") or {}).get("skill_role") in {
+            "baseline_catalog",
+            "dataset_catalog",
+            "web_dataset_seed",
+        }
+    }
+    filtered_candidates = [
+        candidate
+        for candidate in candidates
+        if (
+            (candidate.get("candidate_id") or "") not in reject_ids
+            or str(candidate.get("candidate_id", "")) in skill_seed_candidate_ids
+        )
+    ]
+    manual_ids = {
+        item.candidate_id
+        for item in cleaned_results
+        if item.clean_status == "needs_manual"
+    }
+    skill_seed_ids = {
+        str(candidate.get("candidate_id", ""))
+        for candidate in filtered_candidates
+        if str(candidate.get("candidate_id", "")) in skill_seed_candidate_ids
+    }
+
+    if not filtered_candidates:
+        return {
+            "shortlist": [],
+            "rejected": [
+                {
+                    "candidate_id": item.candidate_id,
+                    "reason": item.reason,
+                    "clean_status": item.clean_status,
+                }
+                for item in cleaned_results
+            ],
+            "need_retry_queries": [],
+            "need_human_confirmation": bool(manual_ids),
+        }
+
     # Serialize candidates as JSONL for the prompt
-    candidates_jsonl = "\n".join(json.dumps(c, ensure_ascii=False) for c in candidates)
+    candidates_jsonl = "\n".join(json.dumps(c, ensure_ascii=False) for c in filtered_candidates)
 
     prompt = candidate_screen_user(
         json.dumps(topic_parse, ensure_ascii=False),
         candidates_jsonl,
     )
-    llm_out = _llm_or_empty(prompt, candidate_screen_system())
+    llm_out = _llm_or_empty(prompt, candidate_screen_system(), profile="candidate_screen")
 
     if llm_out and isinstance(llm_out.get("shortlist"), list):
         # ponytail: safety net — drop any shortlist entries whose candidate_id
         # isn't in the original input. LLM might invent IDs.
-        original_ids = {c.get("candidate_id") or c.get("id") or c.get("_id") for c in candidates}
+        original_ids = {c.get("candidate_id") or c.get("id") or c.get("_id") for c in filtered_candidates}
         original_ids = {i for i in original_ids if i}
         valid: list[dict] = []
         invalid_ids: list[str] = []
@@ -435,7 +638,7 @@ def screen_candidates(
 
         shortlist: list[dict] = []
         rejected: list[dict] = []
-        for c in candidates:
+        for c in filtered_candidates:
             cid = c.get("candidate_id") or c.get("id") or c.get("_id") or ""
             s = _score(c)
             if s >= 0.2:
@@ -461,8 +664,51 @@ def screen_candidates(
             "shortlist": shortlist,
             "rejected": rejected,
             "need_retry_queries": [],
-            "need_human_confirmation": False,
+            "need_human_confirmation": bool(manual_ids),
         }
+
+    cleaned_by_id = {item.candidate_id: item for item in cleaned_results}
+    for entry in screened.get("shortlist", []):
+        cid = entry.get("candidate_id")
+        clean_item = cleaned_by_id.get(cid)
+        if clean_item and clean_item.clean_status == "needs_manual":
+            must_verify = list(entry.get("must_verify") or [])
+            must_verify.append("candidate_cleaner_manual_review")
+            entry["must_verify"] = must_verify
+
+    current_shortlist_ids = {
+        str(entry.get("candidate_id"))
+        for entry in screened.get("shortlist", [])
+        if entry.get("candidate_id")
+    }
+    for candidate in filtered_candidates:
+        cid = str(candidate.get("candidate_id", ""))
+        if cid not in skill_seed_ids or cid in current_shortlist_ids:
+            continue
+        screened.setdefault("shortlist", []).append(
+            {
+                "candidate_id": cid,
+                "candidate_type": candidate.get("candidate_type", candidate.get("_type", "note")),
+                "relevance_score": 0.66,
+                "quality_score": 0.66,
+                "graduation_fit": "medium",
+                "matched_atoms": list(candidate.get("matched_keywords") or []),
+                "keep_reason": "skill_seed_fallback",
+                "risk_reason": "",
+                "must_verify": ["skill_seed_needs_manual_confirmation"],
+            }
+        )
+
+    screened.setdefault("rejected", []).extend(
+        {
+            "candidate_id": item.candidate_id,
+            "reason": item.reason,
+            "clean_status": item.clean_status,
+        }
+        for item in cleaned_results
+        if item.clean_status in {"reject", "quarantine"}
+    )
+    screened["cleaning_summary"] = [item.model_dump() for item in cleaned_results]
 
     pid = topic_parse.get("_project_id", _gen_project_id())
     trace_write_event(
@@ -473,6 +719,109 @@ def screen_candidates(
         project_id=pid,
     )
     return screened
+
+
+def assemble_research_output(
+    topic_parse: dict,
+    candidates: list[dict],
+    screening: dict,
+    tool_execution: dict | None = None,
+) -> dict:
+    """Auditor role: convert shortlist into the fixed scientific view."""
+    shortlist_ids = {
+        str(item.get("candidate_id"))
+        for item in screening.get("shortlist", [])
+        if item.get("candidate_id")
+    }
+    shortlisted_candidates = [
+        candidate
+        for candidate in candidates
+        if str(candidate.get("candidate_id", "")) in shortlist_ids
+    ]
+
+    papers = [
+        candidate
+        for candidate in shortlisted_candidates
+        if candidate.get("candidate_type") == "paper"
+    ]
+    datasets = [
+        candidate
+        for candidate in shortlisted_candidates
+        if candidate.get("candidate_type") == "dataset"
+    ]
+    repos = [
+        candidate
+        for candidate in shortlisted_candidates
+        if candidate.get("candidate_type") == "repo"
+    ]
+
+    role_results = classify_literature(papers, topic_parse)
+    paper_by_id = {str(candidate.get("candidate_id", "")): candidate for candidate in papers}
+
+    def _with_role(entry: Any) -> dict:
+        paper = dict(paper_by_id.get(entry.candidate_id, {}))
+        paper["literature_role"] = entry.role
+        paper["role_reason"] = entry.reason
+        paper["reproducibility"] = entry.reproducibility
+        paper["borrowable_ideas"] = list(entry.borrowable_ideas or [])
+        paper["risk_notes"] = list(entry.risk_notes or [])
+        return paper
+
+    baseline_candidates: list[dict] = []
+    parallel_reference_papers: list[dict] = []
+    module_reference_papers: list[dict] = []
+    reference_papers: list[dict] = []
+
+    for role_result in role_results:
+        if role_result.role in {"irrelevant", "survey"}:
+            continue
+        paper = _with_role(role_result)
+        if role_result.role in {"baseline_framework", "baseline_method"}:
+            baseline_candidates.append(paper)
+        elif role_result.role == "parallel_application_paper":
+            parallel_reference_papers.append(paper)
+        elif role_result.role == "module_improvement_paper":
+            module_reference_papers.append(paper)
+        else:
+            reference_papers.append(paper)
+
+    skill_baseline_repos = [
+        candidate
+        for candidate in repos
+        if (candidate.get("raw") or {}).get("skill_role") == "baseline_catalog"
+    ]
+    if not baseline_candidates and skill_baseline_repos:
+        baseline_candidates = skill_baseline_repos[:5]
+
+    if not reference_papers:
+        reference_papers = [
+            _with_role(role_result)
+            for role_result in role_results
+            if role_result.role not in {"irrelevant", "survey"}
+        ][:6]
+
+    evidence_gaps: list[str] = []
+    if len(reference_papers) + len(parallel_reference_papers) < 2:
+        evidence_gaps.append("参考论文不足，当前少于 2 条已验证论文候选")
+    if not baseline_candidates:
+        evidence_gaps.append("未找到 baseline，需人工确认可复现基线")
+    if not parallel_reference_papers:
+        evidence_gaps.append("未找到平行参考，需补充同任务同对象论文")
+    if not datasets:
+        evidence_gaps.append("未找到公开数据集或需自采")
+    if not repos:
+        evidence_gaps.append("未找到可复现仓库")
+
+    return {
+        "reference_papers": reference_papers[:8],
+        "baseline_candidates": baseline_candidates[:5],
+        "parallel_reference_papers": parallel_reference_papers[:5],
+        "module_reference_papers": module_reference_papers[:5],
+        "dataset_candidates": datasets[:5],
+        "repo_candidates": repos[:5],
+        "evidence_gaps": evidence_gaps,
+        "tool_execution": tool_execution or {},
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -495,7 +844,7 @@ def direction_advice(
         json.dumps(shortlist, ensure_ascii=False),
         json.dumps(gap, ensure_ascii=False),
     )
-    llm_out = _llm_or_empty(prompt, direction_advice_system())
+    llm_out = _llm_or_empty(prompt, direction_advice_system(), profile="direction_advice")
 
     if llm_out and isinstance(llm_out.get("directions"), list) and llm_out["directions"]:
         advice = llm_out
@@ -607,16 +956,22 @@ async def run_research_plan(
                 "search_strategy": strategy, "_project_id": project_id}
 
     # 6. collect
-    collected = await collect_candidates(strategy, project_id=project_id)
+    collected = await collect_candidates(topic, strategy, project_id=project_id)
     candidates = collected.get("candidates", [])
 
     # 7. screen
     screening = screen_candidates(topic, candidates)
     shortlist = screening.get("shortlist", [])
+    research_summary = assemble_research_output(
+        topic,
+        candidates,
+        screening,
+        collected.get("tool_execution"),
+    )
 
     # 8. direction advice
     gap_report = {
-        "missing_types": [],
+        "missing_types": research_summary.get("evidence_gaps", []),
         "retry_queries": screening.get("need_retry_queries", []),
     }
     advice = direction_advice(topic, shortlist, gap_report)
@@ -629,6 +984,7 @@ async def run_research_plan(
         "search_strategy": strategy,
         "candidates_collected": collected,
         "screening": screening,
+        "research_summary": research_summary,
         "direction_advice": advice,
         "_project_id": project_id,
     }
@@ -641,6 +997,7 @@ __all__ = [
     "search_strategy_build",
     "collect_candidates",
     "screen_candidates",
+    "assemble_research_output",
     "direction_advice",
     "run_research_plan",
 ]

@@ -123,7 +123,7 @@ async def fetch_with_timeout(
 
     if httpx is not None:
         try:
-            async with httpx.AsyncClient(timeout=timeout) as client_:
+            async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client_:
                 resp = await client_.request(method, url, headers=headers or {})
             if resp.status_code >= 400:
                 raise HttpError(f"HTTP {resp.status_code} for {url}")

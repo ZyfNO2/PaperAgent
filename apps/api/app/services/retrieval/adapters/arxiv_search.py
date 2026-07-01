@@ -12,7 +12,7 @@ from .._http import HttpError, fetch_with_timeout
 
 logger = logging.getLogger(__name__)
 
-ARXIV_API = "http://export.arxiv.org/api/query"
+ARXIV_API = "https://export.arxiv.org/api/query"
 _ATOM_NS = "{http://www.w3.org/2005/Atom}"
 _ARXIV_NS = "{http://arxiv.org/schemas/atom}"
 
