@@ -1,0 +1,89 @@
+{
+  "topic": "基于双目多视角影像的场景三维重建",
+  "elapsed_sec": 99.8,
+  "llm_calls": 4,
+  "llm_failures": 0,
+  "domain_route": "vision_3d",
+  "query_atoms_en": [
+    "binocular multi-view 3D reconstruction",
+    "multi-view stereo dense reconstruction",
+    "binocular stereo matching depth map",
+    "structure from motion multi-view",
+    "epipolar geometry stereo reconstruction",
+    "MVS point cloud generation"
+  ],
+  "raw_tool_sizes": {
+    "arxiv": 8,
+    "openalex": 0,
+    "crossref": 8,
+    "github": 8
+  },
+  "overall_verdict": "ACCEPT",
+  "suspended_adapters": [
+    [
+      "openalex",
+      "1970-01-01 09:03:20"
+    ]
+  ],
+  "buckets": {
+    "baseline_papers": [
+      "Multi-View Guided Multi-View Stereo",
+      "Unsupervised Binocular Stereo Matching via Monocular Depth Estimation Consistency",
+      "Depth extraction method based on binocular stereo matching",
+      "A Binocular Vision Stereo Matching Algorithm for Depth Map Estimation",
+      "Stereo Reconstruction Based on Local Edge Detection and Binocular Stereo Matching"
+    ],
+    "parallel_papers": [
+      "High Fidelity 3D Reconstructions with Limited Physical Views",
+      "Data-Driven 3D Reconstruction of Dressed Humans From Sparse Views",
+      "Binocular Depth Estimation Method for Stereo Matching Based on Pyramid Transformer"
+    ],
+    "module_papers": [
+      "Multi-view Hand Reconstruction with a Point-Embedded Transformer",
+      "BKinD-3D: Self-Supervised 3D Keypoint Discovery from Multi-View Videos"
+    ],
+    "reference_papers": [
+      "Stream3D: Sequential Multi-View 3D Generation via Evidential Memory",
+      "Stereo constancy and depth cue interactions"
+    ],
+    "dataset_candidates": [
+      "DTU"
+    ],
+    "repo_candidates": [
+      "cdcseacave/openMVS",
+      "nianticlabs/simplerecon",
+      "simonfuhrmann/mve",
+      "pmoulon/CMVS-PMVS",
+      "XYZ-qiyh/multi-view-3d-reconstruction"
+    ]
+  },
+  "evidence_gaps": [
+    "RATE_LIMITED: openalex suspended until 1970-01-01 09:03:20",
+    "No raw openalex results returned, so coverage of seminal binocular-MVS papers (e.g. DeepMVS, MVSNet, CasMVSNet) is missing — student should fetch them via arXiv explicitly.",
+    "No dataset_candidates populated; reconstruction domain requires at least DTU, ETH3D, or ScanNet entry."
+  ],
+  "fabrication_alerts": [],
+  "hit_rates": {
+    "papers_baseline": {
+      "hit": [],
+      "miss": []
+    },
+    "papers_parallel": {
+      "hit": [],
+      "miss": []
+    },
+    "datasets": {
+      "hit": [],
+      "miss": []
+    },
+    "repos": {
+      "hit": [],
+      "miss": []
+    }
+  },
+  "total": {
+    "gt": 0,
+    "hit": 0,
+    "rate": 0.0
+  }
+}

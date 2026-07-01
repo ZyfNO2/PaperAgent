@@ -23,7 +23,8 @@ and return a STRICT JSON object.
    Each phrase is a method×object noun-phrase a real arXiv/OpenAlex query
    can match: e.g. "underwater acoustic classification", "ship-radiated noise
    CNN", "FDTD microwave transmission line", "YOLOv8 steel surface defect",
-   "BERT Chinese sentiment", "PMSAID diffusion dataset".
+   "BERT Chinese sentiment", "PMSAID diffusion dataset",
+   "multi-view stereo 3D reconstruction", "binocular depth estimation".
    NEVER emit generic atoms like "machine learning", "deep learning", "survey",
    "classification" alone — these pollute downstream retrieval.
 4. `query_atoms_zh` MUST contain 3-6 Chinese noun-phrases a CNKI/百度学术 query
@@ -31,6 +32,15 @@ and return a STRICT JSON object.
 5. You may additionally set `site_hints` to a short list of authoritative
    websites the agent should browse for this domain (e.g. ["aclanthology.org",
    "openaccess.thecvf.com", "clinicaltrials.gov"]). Keep it ≤ 5 items.
+6. **CRITICAL FOR NON-ENGLISH TOPICS**: the `query_atoms_en` are the ONLY
+   atoms used to search GitHub, arXiv, Crossref, and OpenAlex. GitHub's
+   search engine is English-only and Chinese-character queries return
+   either empty results or GitHub-user profiles that wrote about the topic
+   in their bio (often unrelated). Even when the user writes in Chinese,
+   `query_atoms_en` MUST be 100% English noun-phrases. NEVER transliterate
+   Chinese into Pinyin for GitHub / arXiv search — use the academic English
+   equivalent ("binocular stereo" not "shuangmu lunti"). Chinese strings
+   belong in `query_atoms_zh` only.
 
 ===================== JSON SCHEMA =====================
 {
@@ -43,8 +53,8 @@ and return a STRICT JSON object.
   "method_terms": [<3-6 specific algorithm / framework names or categories>],
   "task_terms": [<2-4 specific task names, not generic words>],
   "object_terms": [<2-5 concrete data / scene / object nouns>],
-  "query_atoms_en": [3-6 phrases],
-  "query_atoms_zh": [3-6 phrases],
+  "query_atoms_en": [3-6 phrases, all English],
+  "query_atoms_zh": [3-6 phrases, all Chinese],
   "needs_clarification": [],
   "site_hints": []
 }
@@ -54,4 +64,7 @@ and return a STRICT JSON object.
 - A phrase longer than 8 words (search engines don't reward it).
 - Generic nouns ("survey", "research", "paper").
 - A `domain_route` you cannot name explicitly (use "unknown").
+- ANY Chinese / non-ASCII character inside `query_atoms_en` strings.
+- Pinyin transliteration of Chinese ("shuangmu", "shuisheng") instead of the
+  real English term ("binocular", "underwater").
 """
