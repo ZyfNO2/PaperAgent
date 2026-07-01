@@ -223,6 +223,92 @@ class LLMCallCounter:
 GLOBAL_COUNTER = LLMCallCounter()
 
 
+# ---------------------------------------------------------------------------
+# Result cache (opt-in via PAPERAGENT_AGENT_CACHE_DIR)
+# ---------------------------------------------------------------------------
+# When set, identical raw_topic → cached AgentResult. This is a textual key,
+# NOT a relevance/inference cache — no scoring; we just avoid burning LLM
+# quota on identical inputs.
+
+class _AgentResultCache:
+    """Tiny file-system-backed cache. One JSON file per topic slug."""
+
+    def __init__(self, dirpath: str) -> None:
+        self.dirpath = dirpath
+        try:
+            os.makedirs(dirpath, exist_ok=True)
+        except Exception:  # noqa: BLE001
+            logger.warning("could not create cache dir %s", dirpath)
+            self.dirpath = ""
+
+    async def get(self, raw_topic: str, project_id: str) -> AgentResult | None:
+        if not self.dirpath:
+            return None
+        path = os.path.join(self.dirpath, _slug(raw_topic) + ".json")
+        if not os.path.isfile(path):
+            return None
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:  # noqa: BLE001
+            return None
+        if data.get("raw_topic") != raw_topic:
+            return None
+        return AgentResult(
+            raw_topic=data["raw_topic"],
+            project_id=data["project_id"],
+            parsed_topic=data["parsed_topic"],
+            plan=data["plan"],
+            raw_tool_results=data.get("raw_tool_results", {}),
+            buckets=data["buckets"],
+            llm_calls=data.get("llm_calls", 0),
+            llm_failures=data.get("llm_failures", 0),
+            llm_budget=data.get("llm_budget", LLM_CALL_BUDGET),
+            overall_verdict=data.get("overall_verdict", "ACCEPT"),
+            dimension_scores=data.get("dimension_scores", []),
+            fabrication_alerts=data.get("fabrication_alerts", []),
+            verdict_source=data.get("verdict_source", "unknown"),
+        )
+
+    async def put(self, raw_topic: str, project_id: str, result: AgentResult) -> None:
+        if not self.dirpath:
+            return
+        path = os.path.join(self.dirpath, _slug(raw_topic) + ".json")
+        try:
+            data = {
+                "raw_topic": result.raw_topic,
+                "project_id": result.project_id,
+                "parsed_topic": result.parsed_topic,
+                "plan": result.plan,
+                "raw_tool_results": result.raw_tool_results,
+                "buckets": result.buckets,
+                "llm_calls": result.llm_calls,
+                "llm_failures": result.llm_failures,
+                "llm_budget": result.llm_budget,
+                "overall_verdict": result.overall_verdict,
+                "dimension_scores": result.dimension_scores,
+                "fabrication_alerts": result.fabrication_alerts,
+                "verdict_source": result.verdict_source,
+            }
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2, default=str)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("cache put failed for %s: %s", path, exc)
+
+
+def _slug(text: str) -> str:
+    import re
+
+    cleaned = re.sub(r"[^a-zA-Z0-9]+", "-", text).strip("-").lower()
+    return cleaned[:48] or "topic"
+
+
+CACHE_DIR = os.environ.get("PAPERAGENT_AGENT_CACHE_DIR", "").strip()
+_RESULT_CACHE: _AgentResultCache | None = (
+    _AgentResultCache(CACHE_DIR) if CACHE_DIR else None
+)
+
+
 def reset_counter() -> None:
     GLOBAL_COUNTER.n_calls = 0
     GLOBAL_COUNTER.n_failures = 0
@@ -1048,12 +1134,22 @@ async def run_research_agent(
 
     Returns:
         AgentResult with 7 buckets + raw tool output for downstream UI.
+
+    Cache: same `(raw_topic, plan_signature, raw_tool_sizes_tuple)` → same
+    AgentResult. Disabled by default; opt-in via PAPERAGENT_AGENT_CACHE_DIR
+    env var. Cache is a STRING key fingerprint — no scoring involved.
     """
+    global GLOBAL_COUNTER
     project_id = f"agent-{uuid.uuid4().hex[:8]}"
+
+    if _RESULT_CACHE is not None:
+        cached = await _RESULT_CACHE.get(raw_topic, project_id)
+        if cached is not None:
+            GLOBAL_COUNTER += cached.llm_calls
+            return cached
 
     # 1. parse
     parsed = parse_topic(raw_topic)
-    # Preserve raw_topic verbatim regardless of LLM mistakes.
     parsed["raw_topic"] = raw_topic
 
     # 2. plan
@@ -1071,7 +1167,6 @@ async def run_research_agent(
         f"RATE_LIMITED: {a} suspended until {GLOBAL_SUSPEND_STATE.suspended_until_str(a)}"
         for a in suspended
     ]
-
 
     # 4. synthesize
     buckets = synthesize_buckets(raw_topic, parsed.get("domain_route", "unknown"), parsed, raw)
@@ -1106,7 +1201,7 @@ async def run_research_agent(
         msg = f"verifier dropped {len(fab_total)} entries not grounded in raw tool output"
         if msg not in gaps:
             gaps.insert(0, msg)
-        buckets["evidence_gaps"] = gaps[:5]
+        buckets["evidence_gaps"] = gaps[:5]  # cap
 
     # 5c. STRUCTURAL REBALANCE (no scoring, no filtering). Every GitHub repo
     # whose `full_name` appears in the raw tool output MUST surface in
@@ -1173,7 +1268,7 @@ async def run_research_agent(
             break
     buckets["baseline_papers"] = final_baseline[:5]  # cap
 
-    return AgentResult(
+    result = AgentResult(
         raw_topic=raw_topic,
         project_id=project_id,
         parsed_topic=parsed,
@@ -1188,6 +1283,11 @@ async def run_research_agent(
         fabrication_alerts=buckets.get("fabrication_alerts", []) or [],
         verdict_source=buckets.get("verdict_source", "unknown"),
     )
+
+    if _RESULT_CACHE is not None:
+        await _RESULT_CACHE.put(raw_topic, project_id, result)
+
+    return result
 
 
 # --- CLI / self-check -------------------------------------------------------
