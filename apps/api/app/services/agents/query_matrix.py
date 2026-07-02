@@ -133,10 +133,55 @@ def build_query_matrix(raw_topic: str, topic_atoms: dict[str, Any]) -> dict[str,
     if domain and domain != "unknown":
         survey_family.append(_join(domain.replace("_", " "), "survey"))
 
+    # Re04-fix SOP §2 — four-layer fallback for baseline_family.
+    # Layer 1: method × task (most precise — what we want).
+    # Layer 2: method-only (no task terms to combine with).
+    # Layer 3: task-only (Chinese topic where LLM parse dropped method).
+    # Layer 4: fb_atom (verbatim raw_topic — last resort, MUST be flagged).
+    #
+    # The old code required `if method:` and appended a "classic" suffix.
+    # That broke Case 027 (pure Chinese topic → method_terms=[]) and left
+    # Case 016 with "visual SLAM classic" — a non-term suffix that the
+    # English APIs treat as noise. Reference: AutoResearchClaw search.py
+    # search_papers() uses plain terminology, no semantic-label suffix.
     baseline_family: list[str] = []
-    if method:
+    baseline_fallback_reason: str | None = None
+    # Re05 task B (SOP §3): canonical baseline registry feeds queries ONLY.
+    # S66v: entries must never enter the candidate pool; they only seed
+    # baseline queries that get fetched from real adapters.
+    try:
+        from .data.canonical_baselines import load_canonical_baselines
+        _canonical_baselines = load_canonical_baselines(domain)
+    except Exception:  # noqa: BLE001
+        _canonical_baselines = []
+    if _canonical_baselines:
+        first_task = _pick_first(task, "")
+        for _cb in _canonical_baselines[:4]:
+            q = _join(_cb, first_task) if first_task else _cb
+            if q and q not in baseline_family:
+                baseline_family.append(q)
+        if baseline_family:
+            baseline_fallback_reason = None  # exact canonical, no degradation
+    if not baseline_family and method and task:
         for m in method[:2]:
-            baseline_family.append(_join(m, "classic"))
+            for t in task[:2]:
+                q = _join(m, t)
+                if q and q not in baseline_family:
+                    baseline_family.append(q)
+    if not baseline_family and method:
+        baseline_fallback_reason = baseline_fallback_reason or "no_task_terms_use_method_only"
+        for m in method[:2]:
+            if m and m not in baseline_family:
+                baseline_family.append(m)
+    if not baseline_family and task:
+        baseline_fallback_reason = baseline_fallback_reason or "no_method_terms_use_task_only"
+        for t in task[:2]:
+            if t and t not in baseline_family:
+                baseline_family.append(t)
+    if not baseline_family:
+        baseline_fallback_reason = baseline_fallback_reason or "no_lexical_terms_use_raw_topic_fallback"
+        if fb_atom and fb_atom not in baseline_family:
+            baseline_family.append(fb_atom)
 
     return {
         "raw_topic": raw_topic,
@@ -159,6 +204,7 @@ def build_query_matrix(raw_topic: str, topic_atoms: dict[str, Any]) -> dict[str,
             "domain_route": domain,
         },
         "fb_atom": fb_atom,
+        "baseline_fallback_reason": baseline_fallback_reason,
     }
 
 

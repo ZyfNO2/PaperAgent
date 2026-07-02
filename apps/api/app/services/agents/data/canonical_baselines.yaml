@@ -1,0 +1,39 @@
+# canonical method-name registry — ONLY feeds retrieval queries, never pool.
+# S66v compliant: entries do not bypass any round; they only seed queries.
+# See Plan/PaperAgent_Re05_检索收尾与Balanced40_SOP.md §3 (task B / H2).
+domains:
+  point_cloud_completion:
+    canonical_baselines:
+      - PCN
+      - SnowflakeNet
+      - PoinTr
+      - GRNet
+      - TopNet
+      - FoldingNet
+    keywords:
+      - point cloud completion
+      - shape completion
+      - 3d completion
+  point_cloud_registration:
+    canonical_baselines:
+      - PointNetLK
+      - DCP
+      - OMNet
+      - PREDATOR
+      - RIP-Net
+      - PointerNet
+    keywords:
+      - point cloud registration
+      - point cloud alignment
+      - 3d registration
+  remote_sensing_detection:
+    canonical_baselines:
+      - YOLOv5
+      - YOLOv7
+      - YOLOv8
+      - Faster R-CNN
+      - RetinaNet
+    keywords:
+      - remote sensing
+      - aerial detection
+      - object detection
