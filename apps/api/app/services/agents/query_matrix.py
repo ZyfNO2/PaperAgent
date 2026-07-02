@@ -61,6 +61,10 @@ def _pick_first(terms: list[str], fallback: str = "") -> str:
 def build_query_matrix(raw_topic: str, topic_atoms: dict[str, Any]) -> dict[str, Any]:
     """Build the 8-family query matrix for one parsed topic.
 
+    Re04 SOP §1.2 修复 3: 删除 `machine learning` fallback。无法解析时
+    在结果里标 ``needs_clarification=True``，由 orchestrator 走「先
+    提示用户澄清」路径，不允许 LLM-dead-path 用泛化词骗过。
+
     Falls back to raw_topic (verbatim) when method/task/object are empty,
     so a partial parse still produces non-empty query families.
     """
@@ -71,7 +75,19 @@ def build_query_matrix(raw_topic: str, topic_atoms: dict[str, Any]) -> dict[str,
     atoms_en = list(topic_atoms.get("query_atoms_en") or [])
     domain = (topic_atoms.get("domain_route") or "unknown").strip()
 
-    fb_atom = _pick_first(atoms_en, raw_topic) or raw_topic or "machine learning"
+    # No more 'machine learning' fallback. Use raw_topic verbatim if
+    # atoms_en is empty; if THAT is also empty, signal needs_clarification.
+    needs_clarification = False
+    if atoms_en:
+        fb_atom = _pick_first(atoms_en, raw_topic) or raw_topic
+    elif raw_topic:
+        # Verbatim raw topic as the single fallback atom; this is the
+        # user's own words, not a generic ML term.
+        fb_atom = raw_topic
+    else:
+        # Nothing to fall back on — orchestrator should ask user.
+        fb_atom = ""
+        needs_clarification = True
 
     core: list[str] = []
     if method and task:
@@ -125,6 +141,7 @@ def build_query_matrix(raw_topic: str, topic_atoms: dict[str, Any]) -> dict[str,
     return {
         "raw_topic": raw_topic,
         "domain_route": domain,
+        "needs_clarification": needs_clarification,
         "query_families": {
             "core": _dedup(core)[:6],
             "method_task": _dedup(method_task)[:6],

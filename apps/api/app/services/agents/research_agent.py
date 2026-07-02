@@ -442,16 +442,14 @@ def _heuristic_parse_topic(raw_topic: str) -> dict:
 
     domain_confidence = 0.4 if domain_route != "unknown" else 0.0
 
-    # NO atom translation map. The fallback emits ONE atom: the raw topic
-    # verbatim, in the language the user gave it. The Agent is responsible for
-    # shaping queries; the fallback is not.
-    fallback_atom = raw_topic or "machine learning"
-    # ponytail: github/arXiv search requires English. If the heuristic
-    # fallback would push Chinese / non-ASCII into query_atoms_en, replace it
-    # with a generic English placeholder. Better a thin fallback than
-    # a Chinese-character query that GitHub returns junk for.
+    # Re04 SOP §1.2 修复 3: no 'machine learning' fallback. If the raw
+    # topic is non-ASCII and the LLM parse failed, signal
+    # needs_clarification so the orchestrator can prompt the user.
+    fallback_atom = raw_topic or ""
+    clarification_notes: list[str] = []
     if any(ord(ch) > 127 for ch in fallback_atom):
-        fallback_atom = "machine learning"
+        clarification_notes.append("raw_topic_non_english_no_llm_parse")
+        fallback_atom = ""  # do NOT inject 'machine learning'
 
     return {
         "raw_topic": raw_topic,
@@ -461,9 +459,9 @@ def _heuristic_parse_topic(raw_topic: str) -> dict:
         "method_terms": [],
         "task_terms": [],
         "object_terms": [],
-        "query_atoms_en": [fallback_atom],
+        "query_atoms_en": [fallback_atom] if fallback_atom else [],
         "query_atoms_zh": [fallback_atom] if raw_topic_zh else [],
-        "needs_clarification": [],
+        "needs_clarification": clarification_notes,
         "site_hints": [],
         "_heuristic": True,
     }
@@ -528,11 +526,20 @@ def plan_tools(topic_json: dict, *, counter: LLMCallCounter | None = None) -> di
         logger.warning("plan_tools LLM unavailable: %s — atoms fallback", exc)
         plan = _plan_tools_from_atoms(topic_json)
 
-    # ponytail: never leave arxiv empty; fall back to the parsed topic raw.
+    # Re04 SOP §1.2: no 'machine learning' fallback. If the topic is
+    # empty / unparsed, leave plan without arxiv_queries; orchestrator
+    # will record needs_clarification and skip the call.
     if not plan.get("arxiv_queries"):
-        plan["arxiv_queries"] = list(topic_json.get("query_atoms_en") or [])[:3] or [
-            topic_json.get("raw_topic") or "machine learning"
-        ]
+        atoms = list(topic_json.get("query_atoms_en") or [])[:3]
+        if atoms:
+            plan["arxiv_queries"] = atoms
+        else:
+            rt = (topic_json.get("raw_topic") or "").strip()
+            if rt:
+                plan["arxiv_queries"] = [rt]
+            else:
+                plan["arxiv_queries"] = []
+                plan.setdefault("needs_clarification", []).append("no_query_atoms")
     return plan
 
 
@@ -575,7 +582,9 @@ def _plan_tools_from_atoms(topic_json: dict) -> dict:
     down-ranks long phrases. Other adapters tolerate ≤ 6 words.
     """
     en_atoms = list(topic_json.get("query_atoms_en") or [])
-    raw = topic_json.get("raw_topic") or "machine learning"
+    # Re04 SOP §1.2: no 'machine learning' fallback; use raw_topic as
+    # the last resort, and only if non-empty.
+    raw = (topic_json.get("raw_topic") or "").strip()
 
     def _truncate(qs: list[str], max_words: int) -> list[str]:
         out: list[str] = []
@@ -1917,9 +1926,12 @@ RE02_DATASET_WHITELIST: dict[str, tuple[str, ...]] = {
 def _plan_tools_v2_from_atoms(topic_json: dict) -> dict:
     """Deterministic multi-round plan from query atoms. Used when LLM is dead."""
     en_atoms = list(topic_json.get("query_atoms_en") or [])
-    raw = (topic_json.get("raw_topic") or "machine learning").strip()
+    # Re04 SOP §1.2: no 'machine learning' fallback; use raw_topic as
+    # the last resort, and only if non-empty. Non-ASCII raw_topic gets
+    # dropped here (orchestrator records needs_clarification).
+    raw = (topic_json.get("raw_topic") or "").strip()
     if any(ord(c) > 127 for c in raw):
-        raw = "machine learning"
+        raw = ""
 
     def _truncate(qs: list[str], max_words: int) -> list[str]:
         out: list[str] = []
@@ -2026,9 +2038,16 @@ def plan_tools_v2(topic_json: dict, *, counter: LLMCallCounter | None = None) ->
             **legacy,
         }
         if not plan["arxiv_queries"]:
-            plan["arxiv_queries"] = list(topic_json.get("query_atoms_en") or [])[:3] or [
-                topic_json.get("raw_topic") or "machine learning"
-            ]
+            atoms = list(topic_json.get("query_atoms_en") or [])[:3]
+            if atoms:
+                plan["arxiv_queries"] = atoms
+            else:
+                rt = (topic_json.get("raw_topic") or "").strip()
+                if rt:
+                    plan["arxiv_queries"] = [rt]
+                else:
+                    plan["arxiv_queries"] = []
+                    plan.setdefault("needs_clarification", []).append("no_query_atoms")
         return plan
     except LLMUnavailable as exc:
         logger.warning("plan_tools_v2 LLM unavailable: %s — atoms fallback", exc)

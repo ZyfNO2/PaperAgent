@@ -66,6 +66,25 @@ class SourceLedger:
             }
         )
 
+    # Re04 alias: ergonomic add(...) with round_num kwarg.
+    def add(
+        self,
+        *,
+        adapter: str,
+        query: str,
+        target_role: str,
+        round_num: int,
+        round_name: str,
+        status: str,
+        result_count: int,
+        error: str | None = None,
+    ) -> None:
+        self.record(
+            adapter=adapter, query=query, target_role=target_role,
+            round_no=round_num, round_name=round_name,
+            status=status, result_count=result_count, error=error,
+        )
+
     def by_adapter(self) -> dict[str, list[dict[str, Any]]]:
         out: dict[str, list[dict[str, Any]]] = {}
         for r in self.records:

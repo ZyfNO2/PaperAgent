@@ -153,6 +153,7 @@ async def citation_expand(
     parsed_topic: dict | None = None,
     reviews: list[dict[str, Any]] | None = None,
     ledger=None,
+    fetch_semantic_scholar=None,
 ) -> dict[str, int]:
     """Round 2.5: take strong seeds, pull their references, add as parallel baseline candidates.
 
@@ -233,7 +234,42 @@ async def citation_expand(
                 )
             continue
         ref_ids = await _fetch_work_refs(fetch, work_id)
-        if not ref_ids:
+        meta_list: list[dict[str, Any]] = []
+        if ref_ids:
+            meta_list = await _fetch_refs_metadata(fetch, ref_ids)
+        # Re04: Semantic Scholar fallback when openalex returned no refs.
+        # S2 uses DOI / arXiv / paperId so it works even without openalex_id.
+        if not meta_list and fetch_semantic_scholar is not None:
+            try:
+                meta_list = await fetch_semantic_scholar(
+                    seed,
+                    doi=seed.get("doi"),
+                    arxiv_id=seed.get("arxiv_id") or _extract_arxiv_id_from_url(seed.get("url")),
+                )
+                if meta_list and ledger is not None:
+                    ledger.record(
+                        adapter="semantic_scholar_citation",
+                        query=f"s2_fallback: {(seed.get('title') or '')[:50]} -> {len(meta_list)} refs",
+                        target_role="parallel_baseline_candidate",
+                        round_no=2,
+                        round_name="reference_expansion",
+                        status="refs_ok",
+                        result_count=len(meta_list),
+                    )
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("s2 fallback citation_expand failed: %s", exc)
+                if ledger is not None:
+                    ledger.record(
+                        adapter="semantic_scholar_citation",
+                        query=f"s2_fallback_error: {(seed.get('title') or '')[:50]}",
+                        target_role="parallel_baseline_candidate",
+                        round_no=2,
+                        round_name="reference_expansion",
+                        status="refs_error",
+                        result_count=0,
+                        error=str(exc)[:200],
+                    )
+        if not ref_ids and not meta_list:
             if ledger is not None:
                 ledger.record(
                     adapter="openalex_citation",
@@ -245,7 +281,6 @@ async def citation_expand(
                     result_count=0,
                 )
             continue
-        meta_list = await _fetch_refs_metadata(fetch, ref_ids)
         for m in meta_list:
             try:
                 cand = pool.add_paper(

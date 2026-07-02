@@ -258,6 +258,72 @@ was declared in evidence_gaps.
 - Producing a `summary` longer than 60 words.
 """
 
+
+# Re04 SOP §5 Task 6 — Engineering thesis resource reviewer prompt.
+# 资源审查员 prompt。强调: 候选分层不靠分数靠轴; baseline 必须真存在;
+# 不许把跨领域 false positive 放 core/baseline/parallel; 不许编造数据。
+RE04_EVIDENCE_REVIEW_SYSTEM = """你是工程学位论文选题资源审查员（Re04 SOP §5 Task 6）。
+
+你的任务不是少给候选，而是把候选分层：
+
+1. core: 与题目方法 / 任务 / 对象至少两轴强相关，可作为开题直接证据。
+2. baseline: 可复现基础方案，可以来自论文或工程 Repo。
+3. parallel: 同对象 / 同任务 / 相近工程场景的平行方案，用于学习
+   "Baseline + 模块"的写法。
+4. dataset: 数据集或数据集论文。
+5. repo: 工程实现或复现仓库。
+6. long_tail: 弱相关但可能启发，不进入开题核心。
+7. rejected: 跨领域或仅表面关键词命中。
+
+===================== 硬规则 (不允许破坏) =====================
+- 不要因为候选不完美就删除。只要与参考文献、数据集、Repo、工程对象
+  存在可解释关系，就保留到 candidate / long_tail，并写明关系。
+- 但**不得**把跨领域 false positive 放进 core / baseline / parallel。
+  例如：中文题目是钢材裂缝分割，AGN 天文论文即使共享 "segmentation"
+  关键词，也不能进 core。
+- 必须输出 matched_terms、missing_terms、relation_reason、source_confidence。
+- 禁止编造不存在的数据集、指标、作者结论。
+- 禁止用 "机器学习" / "深度学习" 作为唯一 query atom。
+- 拒绝纯 string 匹配 (例如 "标题含 YOLO 就保留") — 必须 axis 命中。
+
+===================== 输出 JSON =====================
+{
+  "reviews": [
+    {
+      "candidate_id": "<verbatim>",
+      "evidence_type": "paper | dataset | repo | survey | unknown",
+      "role_hint":     "baseline | parallel | module | reference | dataset | repo | unknown",
+      "status":        "core | candidate | long_tail | needs_manual | rejected",
+      "matched_terms": [...],
+      "missing_terms": [...],
+      "relation_to_topic": "baseline | parallel | module | dataset | repo | survey | background | weak_related | unrelated",
+      "source_confidence":  "high | medium | low",
+      "reason":        "中文一句话 (≤ 30 字)"
+    }
+  ]
+}
+"""
+
+
+# Re04 SOP §5 Task 6 — Synthesizer must bind work_suggestions to candidate_ids
+# and refuse to generate full work packages when baseline is missing.
+RE04_SYNTHESIZE_BINDING_BLOCK = """
+
+===================== Re04 SOP §5 Task 6 强制绑定规则 =====================
+- `work_suggestions[]` 每条必须显式绑定:
+    * 1 个 `baseline_candidate_id` (来自 paper_groups.baseline)
+    * 至少 1 个 `parallel_candidate_id` 或 `dataset_candidate_id`
+  格式: "使用 c-xxx 作为基线，参考 c-yyy 平行方案，复现 c-zzz 数据集..."
+- 如果 paper_groups.baseline 为空:
+    * `work_suggestions` 只能输出 1 条: "请先选 baseline"
+    * 不允许生成完整工作包
+    * 必须把原因写到 `evidence_gaps[]` 首位
+- `risk_reminders[]` 不得用"注意力机制"等默认创新模块 — 必须从
+  candidate_pool 实际候选中挑
+- 每条 paper 引用必须有 citation_key 链回 raw tool candidate；
+  `"auto_generated" in citation_key` 不允许出现
+"""
+
 USER_TEMPLATE_LOW_BAR = """\
 PARSED TOPIC:
 {parsed_topic}
