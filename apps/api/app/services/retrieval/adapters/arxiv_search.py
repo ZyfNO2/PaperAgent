@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 from xml.etree import ElementTree as ET
 
 from .._http import HttpError, fetch_with_timeout
+from . import _cache
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +104,17 @@ async def arxiv_search(
     for q in qs:
         if len(papers) >= max_total:
             break
+        # Re05 §5.3: cache hit short-circuits the network call.
+        cached = _cache.get("arxiv", q)
+        if cached is not None:
+            for p in cached:
+                pid = p.get("arxiv_id")
+                if pid and pid not in seen_ids:
+                    seen_ids.add(pid)
+                    papers.append(p)
+                    if len(papers) >= max_total:
+                        break
+            continue
         params = {
             "search_query": f"all:{q}",
             "start": 0,
@@ -122,6 +134,8 @@ async def arxiv_search(
         if not isinstance(data, str):
             continue
         parsed = _parse_arxiv_xml(data, source_query=q)
+        # Cache successful (non-empty) per-query results.
+        _cache.put("arxiv", q, parsed)
         for p in parsed:
             pid = p.get("arxiv_id")
             if pid and pid not in seen_ids:

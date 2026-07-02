@@ -18,6 +18,7 @@ from __future__ import annotations
 from typing import Any
 
 from .._http import HttpError, fetch_with_timeout
+from . import _cache
 
 
 CROSSREF_API = "https://api.crossref.org/works"
@@ -53,6 +54,11 @@ async def crossref_search(
 
     qs = [q for q in (queries or []) if q and q.strip()][:1]
     for q in qs:
+        # Re05 §5.3: cache hit short-circuits the network call.
+        cached = _cache.get("crossref", q)
+        if cached is not None:
+            results.extend(cached[:top_k])
+            continue
         params = [
             f"query={q}",
             f"rows={top_k}",
@@ -68,6 +74,7 @@ async def crossref_search(
         if not isinstance(data, dict):
             continue
         msg = data.get("message") or {}
+        q_results: list[dict] = []
         for item in msg.get("items") or []:
             if not isinstance(item, dict):
                 continue
@@ -100,7 +107,7 @@ async def crossref_search(
             container = item.get("container-title") or []
             if isinstance(container, list) and container:
                 venue = str(container[0])
-            results.append({
+            q_results.append({
                 "title": title_str,
                 "doi": item.get("DOI"),
                 "DOI": item.get("DOI"),
@@ -116,4 +123,7 @@ async def crossref_search(
                 "citation_count": item.get("is-referenced-by-count"),
                 "_crossref_type": item.get("type"),
             })
+        # Cache successful (non-empty) per-query results.
+        _cache.put("crossref", q, q_results)
+        results.extend(q_results)
     return results[:top_k]
