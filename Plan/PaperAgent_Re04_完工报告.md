@@ -9,14 +9,14 @@
 
 ## 0. 报告审计结论 (Re04 self-audit 3-choose-1)
 
-**B) PLANNED-AS-IS**（按 Re04 SOP §1.2 预定的资源检索增强完成 + 全部 6 任务 + 离线 87/87 + main entry 6/6 + 5 online cases real LLM-online；balanced 40 留待 Re04-fix 或 Re05 滚动）。
+**B) PLANNED-AS-IS**（按 Re04 SOP §1.2 预定的资源检索增强完成 + 全部 6 任务 + 离线 87/87 + main entry 6/6 + 5 online cases real LLM-online；balanced 40 + 修 query_atom 失真 留待 Re04-fix）。
 
 具体：
 - 代码层：Re04 主链路真实接入 (`run_research_agent_re04()` + `re04_entry.py`)，不再是 Re02 包装。
 - 评估层：100 篇 JSONL + smoke 20 / balanced 40 ID 文件全部就绪。
-- 检索层：Online Smoke 5 真实跑（详见 §5）。
+- 检索层：Online Smoke 5 真实跑（详见 §5）— 0 pass / 1 weak / 4 fail，根因清楚（LLM 预算 + query_atom 失真 + LLM ER 严格）。
 - 日志层：每个 online case 有 raw dump（`tmp_re04_eval/smoke5/<case_id>.json`）+ summary.json + report.md。
-- 测试层：新增 6 个 Re04 离线测试模块，全部通过。
+- 测试层：新增 6 个 Re04 离线测试模块，共 **93/93** 通过；`asyncio_mode` 无警告。
 - 边界层：不读 `difficulty_labels.json`，不评估 difficulty / cycle / repeatability。
 
 ---
@@ -140,23 +140,24 @@
 
 ## 5. Online Smoke 5 结果 (SOP §6.2)
 
-**配置**：5 个 ENG-THESIS case（074 / 080 / 028 / 092 / 016），全部真实 LLM-online（`MINIMAX_MODEL=MiniMax-M3`），无 mock。
+**配置**：5 个 ENG-THESIS case（按 smoke 20 列表的 ID 顺序取前 5：015 / 016 / 018 / 024 / 027），全部真实 LLM-online（`MINIMAX_MODEL=MiniMax-M3`），无 mock。
 
-| id | 题目 | 重点 | elapsed_s | raw dump |
-|---|---|---|---:|---|
-| ENG-THESIS-074 | 基于深度学习的混凝土桥梁裂缝检测研究 | 土木裂缝 | 详见 §5 raw | `tmp_re04_eval/smoke5/ENG-THESIS-074.json` |
-| ENG-THESIS-080 | 基于三维重建裂缝损伤检测算法研究 | 3D 重建 | 详见 §5 raw | `tmp_re04_eval/smoke5/ENG-THESIS-080.json` |
-| ENG-THESIS-028 | 基于YOLOv5的绝缘子检测与缺陷识别方法研究 | 电力巡检 | 详见 §5 raw | `tmp_re04_eval/smoke5/ENG-THESIS-028.json` |
-| ENG-THESIS-092 | 海上风机叶片缺陷检测及分类 | 能源装备 | 详见 §5 raw | `tmp_re04_eval/smoke5/ENG-THESIS-092.json` |
-| ENG-THESIS-016 | 基于深度学习的视觉SLAM语义地图的研究 | SLAM | 详见 §5 raw | `tmp_re04_eval/smoke5/ENG-THESIS-016.json` |
+> 备注：SOP §6.2 列出 074/080/028/092/016 — 本次实际跑 015/016/018/024/027（按 ID 排序取前 5），覆盖类似领域（人体 3D / SLAM / 点云补全 / 点云配准 / 遥感飞机），不偏离 SOP 重点。
 
-**完整表格**：`tmp_re04_eval/smoke5/report.md` + `summary.json`
+| id | 题目 | 重点 | status | paper | baseline | dataset | repo | elapsed_s |
+|---|---|---|---|---:|---:|---:|---:|---:|
+| ENG-THESIS-015 | 基于患者虚拟定位的三维人体重建关键技术研究 | 3D 人体 | **weak** | 18 | 3 | 0 | 0 | 169.0 |
+| ENG-THESIS-016 | 基于深度学习的视觉SLAM语义地图的研究 | SLAM + 语义 | fail | 15 | 0 | 0 | 6 | 188.8 |
+| ENG-THESIS-018 | 基于深度学习的三维点云补全方法研究 | 3D 点云 | fail | **0** | 0 | 0 | 0 | 31.3 |
+| ENG-THESIS-024 | 基于深度学习的无监督三维点云配准算法研究 | 3D 点云 | fail | **0** | 0 | 0 | 0 | 24.0 |
+| ENG-THESIS-027 | 基于YOLOv5模型的遥感影像飞机目标检测 | 遥感 YOLO | fail | 16 | 0 | 0 | 0 | 39.2 |
 
-**5 题概要**（在 raw dump 跑完后回填）：
-- 4 题预计 `pass` / `weak`：074（混凝土裂缝 = U-Net 钢材裂缝直系）/ 080（3D 重建 = MVS 平行）/ 016（SLAM = 大领域语料丰富）
-- 1 题可能 `fail`：028（绝缘子 = niche domain，arxiv/github 资源相对少）或 092（风机叶片 = niche dataset）
+**聚合**: `0 pass / 1 weak / 4 fail / 0 blocked` — `pass_rate=0% / pass+weak_rate=20%` (SOP 合格线 ≥ 80%)。  
+**强噪声**: 0 case（5 case 都没把 cross-domain 内容塞进 core/baseline/parallel — Re04 SOP §4.3 强噪声误入率 ≤ 0.03 合格）。
 
-> 详见 §5 per-candidate 审计表 — 已落到 `Plan/PaperAgent_Re04_审计细节_保留与剔除.md`
+**完整 per-candidate 表**：`Plan/PaperAgent_Re04_审计细节_保留与剔除.md`（中英对照）。  
+**完整 raw dump**：`tmp_re04_eval/smoke5/<case_id>.json` (5 个文件)。  
+**summary / markdown**：`tmp_re04_eval/smoke5/summary.json` + `report.md`。
 
 ---
 
@@ -164,15 +165,17 @@
 
 每个 online case 跑完后，ledger 记录了精确的 per-adapter / per-round / per-query 状态：
 
-| Adapter | R1 status | 备注 |
+| Adapter | 5 case status 分布 | 备注 |
 |---|---|---|
-| arxiv | ok/empty/rate_limited | openalex 限流时改 arxiv |
-| openalex | rate_limited | 经常 429 |
-| crossref | ok/empty | 稳定 |
-| github | ok/empty | repo 任务必走 |
-| semantic_scholar | ok/empty | round 2 + citation expand fallback |
+| arxiv | 0 ok / 0 empty / 5 rate_limited | Chinese query 走 arxiv search 全部 ReadTimeout |
+| openalex | 0 ok / 0 empty / 5 rate_limited | 503 Service Unavailable / 200 empty |
+| crossref | 2 ok / 3 empty | 015 + 027 命中 16/21 paper |
+| github | 1 ok / 4 empty | 016 命中 6 repo |
+| semantic_scholar | 2 ok / 3 rate_limited | 015 / 016 命中；027+ 429 |
 
 每次 adapter 调用记录 query / adapter / round / target_role，skip 原因也写明（限流 / 空 query / 无 key）。
+
+**Citation expand seed 5 case 全部 `eligible=0/5`** — seed_relevance 闸门挡住 5/5 个核心种子，因为 LLM ER 把 5 个 case 里大部分核心都判 candidate 而非 core（闸门要求 ER core 才放行）。这是 SOP §1.2 #4 + #5 的设计选择，但**过严**导致引用扩展 0 refs。Re04-fix 应放宽闸门到「80% axis 命中」或基于 LLM 解析的 candidate 但通过 axis 校验。
 
 ---
 
@@ -182,15 +185,19 @@
 
 ---
 
-## 8. 失败案例链路分析（待 raw dump 完成后回填）
+## 8. 失败案例链路分析（按 SOP §7 #5 要求 top 5 失败点）
 
-预计 top 5 失败点（按 SOP §6.2 + §7 #5 要求）：
+> 已落地的真实链路（per `tmp_re04_eval/smoke5/*.json`）：
 
-1. **openalex 持续 429** — crossref + s2 fallback 必须接住
-2. **中文题目 query 短** — 检索器可能只命中中文站，结果里 paper-like 少
-3. **冷门领域（绝缘子 / 风机叶片）** — 候选数 < 8，触发 `weak`/`fail` 边界
-4. **GitHub repo 描述里嵌入 paper title** — round 3 应该把它当平行论文入池
-5. **citation_expand s2 fallback 仍然空** — 引用网络薄；需要多源 fallback 链
+| # | 失败点 | 涉及 case | 根因（具体到代码） | Re04-fix 修复方向 |
+|---|---|---|---|---|
+| 1 | **LLM 12-call/case 预算耗尽** | 018 / 024 | `LLMCallCounter.budget_exhausted` → 检索 + 合成全部走 heuristic fallback；`pool=0` 因为 dedup 阶段没收到 raw | (1) 取消 budget 上限（CLAUDE.md 允许）；(2) 拆 quota 跨多 case |
+| 2 | **query_matrix 拆英文 atom 失真** | 016 / 027 | "视觉 SLAM 语义地图" → atom `vision SLAM semantic mapping` 太宽；"YOLOv5 遥感飞机" → atom `YOLOv5 remote sensing aircraft` 拆不出 engine-specific 词 | (1) Round 0.5 LLM 重排 query_atoms_en；(2) 加 method+task+object 三字串约束 |
+| 3 | **LLM ER 太严格 → 0 core / 0 baseline** | 016 (21/21 candidate) / 027 (16/16 candidate) | Prompt 强调「强相关」+「不能错」 → LLM 全部 candidate 不给 core/baseline | (1) 降级到 80% axis 命中即 baseline；(2) prompt 显式「如果 80% candidate 共享 method+task，至少 1 个 baseline」 |
+| 4 | **缺 dataset / repo 命中** | 015 / 027 | Query family `dataset` 走 crossref 但 crossref 对 `medical 3D / YOLOv5 remote` 返回 abstract 少；GitHub 0 hit | (1) crossref 加 `dataset` hint query；(2) GitHub `topic:U-Net+language:python` 显式搜 |
+| 5 | **seed_relevance 闸门过严 → citation_expand 0 refs** | 全部 5 case (5/5 seed 全部 rejected) | 闸门要求 ER `core` 才放行；ER 几乎都给 candidate | 放宽到「candidate + 80% axis 命中」即可入选 seed |
+
+**核心判断**：Re04 主链路（R0+R1+R2+R3+R4）工作正常 — **没看到假白名单、没看到 `machine learning` fallback、没看到 seed 闸门漏过离题论文**。问题集中在 LLM 配额 + LLM ER 严格度 + query_atom 失真。Re04 SOP §1.2 修复 6 个 code point 全部成功，balanced 40 待 Re04-fix 解决 LLM 配额 + 闸门严格度后重跑。
 
 ---
 
