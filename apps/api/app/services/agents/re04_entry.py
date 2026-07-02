@@ -70,6 +70,7 @@ async def _dispatch_to_adapters(
     """
     from ..retrieval.adapters import (
         arxiv_search, crossref_search, openalex_search, github_search,
+        huggingface_search,
     )
     from ..retrieval.adapters.semantic_scholar_search import semantic_scholar_search
 
@@ -103,6 +104,8 @@ async def _dispatch_to_adapters(
                 results = await crossref_search(queries, top_k=8, client=client)
             elif adapter == "github":
                 results = await github_search(queries, top_k=6, client=client)
+            elif adapter == "huggingface":
+                results = await huggingface_search(queries, top_k=8, client=client)
             elif adapter == "semantic_scholar":
                 results = await semantic_scholar_search(queries, top_k=8, client=client)
             else:
@@ -221,7 +224,20 @@ async def run_research_agent_re04(
     collect_papers_from_raw(raw, pool)
     from .candidate_pool import collect_repos_from_raw, collect_mentioned_datasets
     collect_repos_from_raw(raw, pool)
-    collect_mentioned_datasets(raw, pool)
+    # Re05 SOP §2.1: pass domain-scoped whitelist to collect_mentioned_datasets
+    # so the dataset scanner can pick up canonical public dataset names
+    # mentioned in retrieved paper titles/abstracts. Without this, the
+    # default empty whitelist scans 0 and dataset bucket stays empty.
+    # S66v compliant: not "register directly into pool" — the function
+    # scans REAL retrieved text for whitelist mentions; the source signal
+    # is the papers, not the whitelist itself.
+    from .research_agent import _DATASET_WHITELIST_BY_DOMAIN
+    domain_route = qm.get("domain_route") or "unknown"
+    if domain_route == "unknown":
+        _wl = _DATASET_WHITELIST_BY_DOMAIN
+    else:
+        _wl = {domain_route: _DATASET_WHITELIST_BY_DOMAIN.get(domain_route, ())}
+    collect_mentioned_datasets(raw, pool, whitelist=_wl)
 
     # Step 6: Round 2 dynamic expansion (real s2 call)
     from .result_expander import expand_from_round1
@@ -322,12 +338,19 @@ async def run_research_agent_re04(
 
     # Round delta table (SOP §1.6 — per-call data delta)
     per_adapter = {a: len(items) for a, items in raw.items()}
+    r2_degraded_reason = ""
+    if r2_queries_raw and isinstance(r2_queries_raw, list):
+        # result_expander signals all-Chinese-garbled via degraded_reason
+        first = r2_queries_raw[0]
+        if isinstance(first, dict) and first.get("degraded_reason"):
+            r2_degraded_reason = first["degraded_reason"]
     round_delta = {
         "R0_query_matrix": {
             "raw_topic": raw_topic,
             "domain_route": qm.get("domain_route"),
             "family_counts": {k: len(v) for k, v in (families or {}).items()},
             "needs_clarification": False,
+            "baseline_fallback_reason": qm.get("baseline_fallback_reason"),
         },
         "R1_family_dispatch": {
             "per_adapter": per_adapter,
@@ -337,9 +360,25 @@ async def run_research_agent_re04(
             "n_queries": len(r2_queries),
             "queries": r2_queries[:8],
             "added_count": len(r2_added),
+            **({"degraded_reason": r2_degraded_reason} if r2_degraded_reason else {}),
         },
         "R4_citation_expand": ce_stats,
     }
+
+    # Re04-fix SOP §8 — degradation_chain: a single ordered list of all
+    # the degradation points the run actually hit. Surfaced in the
+    # return dict (not just logs) so the eval/report layer can show it
+    # verbatim in the markdown reason column.
+    chain = _build_degradation_chain(
+        parsed=parsed,
+        qm=qm,
+        families=families,
+        raw=raw,
+        round_delta=round_delta,
+        reviews=reviews,
+        ce_stats=ce_stats if isinstance(ce_stats, dict) else {},
+        synthesis=synthesis if isinstance(synthesis, dict) else {},
+    )
 
     return {
         "project_id": project_id,
@@ -353,8 +392,80 @@ async def run_research_agent_re04(
         "synthesis": synthesis,
         "low_bar_verdict": verdict,
         "round_delta": round_delta,
+        "degradation_chain": chain,
         "elapsed_s": round(time.time() - t0, 2),
     }
+
+
+def _build_degradation_chain(
+    *,
+    parsed: dict,
+    qm: dict,
+    families: dict,
+    raw: dict,
+    round_delta: dict,
+    reviews: list,
+    ce_stats: dict,
+    synthesis: dict,
+) -> list[str]:
+    """Re04-fix SOP §8.2 — collect every degradation marker the run hit.
+
+    Order matches the natural pipeline progression so the chain is
+    readable top-to-bottom:
+        parse → query_matrix → R1 dispatch → R2 expand →
+        citation_expand → ER → pool/baseline
+    """
+    chain: list[str] = []
+
+    # 1) parse-topic fallback (LLM unavailable → _heuristic_parse_topic)
+    if parsed.get("_heuristic"):
+        chain.append("parse:heuristic_fallback")
+
+    # 2) query_matrix baseline/dataset fallback reasons
+    fallback_reason = qm.get("baseline_fallback_reason")
+    if fallback_reason:
+        chain.append(f"query_matrix:baseline_{fallback_reason}")
+    baseline_qs = (families or {}).get("baseline") or []
+    dataset_qs = (families or {}).get("dataset") or []
+    if not baseline_qs:
+        chain.append("query_matrix:zero_baseline_queries")
+    if not dataset_qs:
+        chain.append("query_matrix:zero_dataset_queries")
+
+    # 3) R1 all adapters empty
+    per_adapter = (round_delta.get("R1_family_dispatch") or {}).get("per_adapter") or {}
+    if not any(int(v) > 0 for v in per_adapter.values()):
+        chain.append("r1:all_adapters_empty")
+
+    # 4) R2 degraded
+    r2 = round_delta.get("R2_dynamic_expansion") or {}
+    if r2.get("degraded_reason"):
+        chain.append(f"r2:{r2['degraded_reason']}")
+
+    # 5) citation_expand: all seeds rejected
+    seeds_eligible = ce_stats.get("seeds_eligible")
+    seeds_total = ce_stats.get("seeds_total", 0)
+    if seeds_total and seeds_eligible == 0:
+        chain.append("citation_expand:all_seeds_rejected")
+
+    # 6) ER — all-blocked or all-heuristic
+    blocked = 0
+    total = len(reviews or [])
+    for r in reviews or []:
+        # tolerate both EvidenceReview dataclass and dict
+        reason = getattr(r, "reason", None) if not isinstance(r, dict) else r.get("reason")
+        if isinstance(reason, str) and "llm_blocker" in reason:
+            blocked += 1
+    if total and blocked == total:
+        chain.append("evidence_review:all_heuristic_blocked")
+
+    # 7) pool baseline degraded promotion
+    paper_groups = synthesis.get("paper_groups") or {}
+    if paper_groups.get("_baseline_degraded_marker"):
+        src = paper_groups.get("_baseline_degraded_source") or "unknown"
+        chain.append(f"pool:zero_baseline_self_cannot_find_degraded_to_{src}")
+
+    return chain
 
 
 # Convenience: dump to a single file for inspection (used by the

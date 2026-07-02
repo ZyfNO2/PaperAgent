@@ -16,6 +16,14 @@ once per candidate — that would burn the budget on bushy pools.
 Per S66v rules: NO `*_score` fields. The only numerics are tier
 enums; ranking is a side-effect of the order the LLM returns rows.
 
+Re04-fix SOP §4: when the candidate pool is dominated by Chinese titles
+(Case 027 raw_topic is pure Chinese), the English prompt + chunked call
+returns malformed JSON. We (a) detect Chinese-dominant chunks, (b) drop
+to a smaller chunk + the Chinese prompt RE04_EVIDENCE_REVIEW_SYSTEM, and
+(c) if 2 retries still fail, fall back to a per-candidate evaluation
+(chunk_size=1) which gives us a much higher chance of a successful LLM
+JSON response because each call carries one row.
+
 Ponytail: dataclass + 1 LLM call wrapper + 1 heuristic fallback. ~150 lines.
 """
 
@@ -24,13 +32,23 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
 from ..llm import LLMUnavailable
-from .prompts import USER_TEMPLATE_EVIDENCE_REVIEW, EVIDENCE_REVIEW_SYSTEM
+from .prompts import (
+    EVIDENCE_REVIEW_SYSTEM,
+    RE04_EVIDENCE_REVIEW_SYSTEM,
+    USER_TEMPLATE_EVIDENCE_REVIEW,
+)
 
 logger = logging.getLogger(__name__)
+
+
+# Re04-fix SOP §4: Chinese-character detection for chunk routing.
+_CHINESE_CHAR_RE = re.compile(r"[一-鿿]")
+_CANDIDATE_TITLE_RE = re.compile(r'"title"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"')
 
 
 VALID_STATUS = {"core", "candidate", "needs_manual", "rejected"}
@@ -77,6 +95,30 @@ class EvidenceReview:
         }
 
 
+def _has_majority_chinese(chunk: list[dict[str, Any]], threshold: float = 0.5) -> bool:
+    """Return True if >threshold of candidates in `chunk` have a Chinese title.
+
+    Re04-fix SOP §4.A: detect Chinese-dominant chunks so we can route them
+    to the Chinese-language RE04_EVIDENCE_REVIEW_SYSTEM prompt with a
+    smaller chunk size. The detection is purely structural — we never
+    leak the LLM any verdict info.
+    """
+    if not chunk:
+        return False
+    n_zh = 0
+    n_total = 0
+    for c in chunk:
+        title = (c.get("title") or "").strip()
+        if not title:
+            continue
+        n_total += 1
+        if _CHINESE_CHAR_RE.search(title):
+            n_zh += 1
+    if n_total == 0:
+        return False
+    return (n_zh / n_total) > threshold
+
+
 def _normalize_review(raw: dict[str, Any], fallback_id: str) -> EvidenceReview:
     cid = str(raw.get("candidate_id") or fallback_id)
     def _in(enum: set[str], key: str, default: str) -> str:
@@ -114,14 +156,21 @@ def audit_candidates(
     a heuristic `candidate` tier + an `llm_blocker: evidence_review_parse_failed`
     marker on their EvidenceReview.reason (or via a separate block).
     Downstream Low-bar reads `llm_blocker` to refuse `pass` when present.
+
+    Re04-fix SOP §4: when the chunk's titles are >50% Chinese, we route
+    to RE04_EVIDENCE_REVIEW_SYSTEM with chunk_size halved. If 2 retries
+    on the full chunk still fail, we drop to chunk_size=1 per-candidate
+    evaluation (3rd-tier fallback) — much higher success rate because
+    each call carries a tiny payload.
     """
     if not candidates:
         return []
 
-    chunk_size = int(os.environ.get("PAPERAGENT_ER_CHUNK_SIZE", "20"))
-    chunks = [candidates[i:i + chunk_size] for i in range(0, len(candidates), chunk_size)]
+    base_chunk_size = int(os.environ.get("PAPERAGENT_ER_CHUNK_SIZE", "20"))
+    chunks = [candidates[i:i + base_chunk_size] for i in range(0, len(candidates), base_chunk_size)]
     all_reviews: list[EvidenceReview] = []
     blocked_ids: set[str] = set()
+    failed_chunks: list[list[dict[str, Any]]] = []  # chunks that failed both retries
     chunk_stats: list[dict[str, Any]] = []
 
     raw = raw or {}
@@ -135,16 +184,76 @@ def audit_candidates(
     )
 
     for chunk_idx, chunk in enumerate(chunks):
-        block, stats = _audit_one_chunk(
-            chunk=chunk,
-            parsed_topic=parsed_topic,
-            raw_block=raw_block,
-            chat_json_strict=chat_json_strict,
-        )
-        chunk_stats.append(stats)
-        for r in block["reviews"]:
-            all_reviews.append(r)
-        blocked_ids.update(block["blocked_ids"])
+        # Re04-fix SOP §4.B: route Chinese-dominant chunks to the
+        # Chinese prompt with a smaller chunk size.
+        if _has_majority_chinese(chunk):
+            zh_sub_size = max(2, base_chunk_size // 2)
+            sub_chunks = [chunk[i:i + zh_sub_size] for i in range(0, len(chunk), zh_sub_size)]
+            for sub in sub_chunks:
+                block, stats = _audit_one_chunk(
+                    chunk=sub,
+                    parsed_topic=parsed_topic,
+                    raw_block=raw_block,
+                    chat_json_strict=chat_json_strict,
+                    system_prompt=RE04_EVIDENCE_REVIEW_SYSTEM,
+                )
+                chunk_stats.append({**stats, "chinese_routed": True})
+                for r in block["reviews"]:
+                    all_reviews.append(r)
+                blocked_ids.update(block["blocked_ids"])
+                if not stats.get("success"):
+                    failed_chunks.append(sub)
+        else:
+            block, stats = _audit_one_chunk(
+                chunk=chunk,
+                parsed_topic=parsed_topic,
+                raw_block=raw_block,
+                chat_json_strict=chat_json_strict,
+            )
+            chunk_stats.append({**stats, "chinese_routed": False})
+            for r in block["reviews"]:
+                all_reviews.append(r)
+            blocked_ids.update(block["blocked_ids"])
+            if not stats.get("success"):
+                failed_chunks.append(chunk)
+
+    # Re04-fix SOP §4.C: 3rd-tier fallback — per-candidate evaluation
+    # for any chunk that survived 2 retries with broken JSON. Each
+    # candidate gets its own call so the LLM only needs to return one
+    # row of JSON, drastically increasing success rate.
+    per_candidate_success: set[str] = set()
+    if failed_chunks:
+        for fc in failed_chunks:
+            for c in fc:
+                block, stats = _audit_one_chunk(
+                    chunk=[c],
+                    parsed_topic=parsed_topic,
+                    raw_block=raw_block,
+                    chat_json_strict=chat_json_strict,
+                    system_prompt=(
+                        RE04_EVIDENCE_REVIEW_SYSTEM
+                        if _has_majority_chinese([c]) else None
+                    ),
+                )
+                chunk_stats.append({**stats, "per_candidate_fallback": True})
+                # Replace the heuristic review for this candidate with the
+                # successful LLM row, if any. Track success for marker.
+                returned_rows = [
+                    r for r in block["reviews"]
+                    if r.candidate_id == c["candidate_id"] and r.status != "candidate"
+                ]
+                # Even if status==candidate, if LLM responded it's better
+                # than the bare heuristic, so we accept any non-empty return.
+                if stats.get("success") and block["reviews"]:
+                    per_candidate_success.add(c["candidate_id"])
+                    # Remove old heuristic review for this candidate.
+                    all_reviews = [
+                        r for r in all_reviews if r.candidate_id != c["candidate_id"]
+                    ]
+                    for r in block["reviews"]:
+                        all_reviews.append(r)
+                    # This candidate is no longer "blocked".
+                    blocked_ids.discard(c["candidate_id"])
 
     # Any candidate not returned by LLM in any chunk → heuristic-default
     returned = {r.candidate_id for r in all_reviews}
@@ -157,7 +266,17 @@ def audit_candidates(
     # Apply blocker suffix to all blocked reviews
     for r in all_reviews:
         if r.candidate_id in blocked_ids:
-            tag = "[llm_blocker: evidence_review_parse_failed]"
+            # Re04-fix SOP §4.D: distinguish the per-candidate fallback
+            # outcomes with specific markers.
+            if r.candidate_id in per_candidate_success:
+                # Successful per-candidate fallback — shouldn't normally
+                # land here since success removes the id from blocked_ids,
+                # but be defensive.
+                tag = "[degraded: chunk_fallback_per_candidate]"
+            elif any(c["candidate_id"] == r.candidate_id for fc in failed_chunks for c in fc):
+                tag = "[degraded: chunk_fallback_per_candidate_failed]"
+            else:
+                tag = "[llm_blocker: evidence_review_parse_failed]"
             if tag not in r.reason:
                 r.reason = (r.reason or "")[:200] + " " + tag
                 r.reason = r.reason[:400]
@@ -171,23 +290,41 @@ def _audit_one_chunk(
     parsed_topic: dict,
     raw_block: str,
     chat_json_strict,
+    system_prompt: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """One chunk's LLM call. Returns {reviews, blocked_ids} + stats.
 
     blocked_ids: candidates whose LLM call failed; the orchestrator will
     tag them with `llm_blocker: evidence_review_parse_failed`.
+
+    Re04-fix SOP §4: caller may override `system_prompt` (e.g. when
+    `_has_majority_chinese(chunk)` is True, swap in RE04_EVIDENCE_REVIEW_SYSTEM).
+    Default: English EVIDENCE_REVIEW_SYSTEM.
     """
     pool_block = json.dumps(
-        [{"candidate_id": c["candidate_id"],
-          "evidence_type": c.get("evidence_type"),
-          "role_hint": c.get("role_hint"),
-          "title": c.get("title"),
-          "year": c.get("year"),
-          "venue": c.get("venue"),
-          "description": (c.get("description") or "")[:240],
-          "abstract": (c.get("abstract") or "")[:240],
-          "sources": c.get("sources") or []}
-         for c in chunk],
+        # Re05 §4.2: expose a passive `is_dataset_candidate` flag on
+        # dataset-evidence rows so the LLM can naturally elevate them
+        # into the `dataset` relation_to_topic bucket. SOP forbids any
+        # hard rule in the prompt that ties this flag to relation, so
+        # the field is purely informational — the LLM sees it, decides.
+        [
+            {
+                "candidate_id": c["candidate_id"],
+                "evidence_type": c.get("evidence_type"),
+                "role_hint": c.get("role_hint"),
+                "title": c.get("title"),
+                "year": c.get("year"),
+                "venue": c.get("venue"),
+                "description": (c.get("description") or "")[:240],
+                "abstract": (c.get("abstract") or "")[:240],
+                "sources": c.get("sources") or [],
+                "is_dataset_candidate": (
+                    (c.get("evidence_type") == "dataset")
+                    or (c.get("role_hint") == "dataset")
+                ),
+            }
+            for c in chunk
+        ],
         ensure_ascii=False,
     )
 
@@ -196,6 +333,8 @@ def _audit_one_chunk(
         candidates_block=pool_block,
         raw_block=raw_block,
     )
+
+    sys_prompt = system_prompt or EVIDENCE_REVIEW_SYSTEM
 
     base_max = int(os.environ.get("PAPERAGENT_ER_MAX_TOKENS", "12000"))
     base_timeout = 180.0
@@ -208,7 +347,7 @@ def _audit_one_chunk(
         [(base_max, base_timeout), (base_max * 2, base_timeout + 60.0)]
     ):
         try:
-            out = chat_json_strict(prompt, EVIDENCE_REVIEW_SYSTEM, max_tokens=max_t, timeout=timeout)
+            out = chat_json_strict(prompt, sys_prompt, max_tokens=max_t, timeout=timeout)
             reviews_raw = out.get("reviews") or []
             if not isinstance(reviews_raw, list):
                 raise LLMUnavailable("non-list reviews in response")

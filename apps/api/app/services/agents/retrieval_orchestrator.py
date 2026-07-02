@@ -41,11 +41,15 @@ logger = logging.getLogger(__name__)
 
 
 # Per-family adapter mapping (Re04 SOP §1.2 fix #2).
+# Re05 §2.2: add "huggingface" to the dataset family — it provides
+# dataset-shaped rows that collect_papers_from_raw can ingest when
+# evidence_type == "dataset".
+# Re05 §5.1: add "core" to core + dataset families for CORE.ac.uk v3 fallback.
 FAMILY_TO_ADAPTER = {
-    "core": ["arxiv", "openalex", "crossref"],
+    "core": ["arxiv", "openalex", "crossref", "core"],
     "method_task": ["arxiv", "openalex"],
     "object_task": ["crossref", "openalex"],
-    "dataset": ["crossref", "openalex"],
+    "dataset": ["crossref", "openalex", "huggingface", "core"],
     "repo": ["github"],
     "survey": ["arxiv", "openalex"],
     "benchmark": ["crossref", "openalex"],
@@ -66,6 +70,8 @@ async def _dispatch_family_to_adapters(
     fetch_openalex,
     fetch_crossref,
     fetch_github,
+    fetch_huggingface,
+    fetch_core,
     fetch_semantic_scholar,
     ledger: SourceLedger,
     round_num: int,
@@ -90,6 +96,8 @@ async def _dispatch_family_to_adapters(
         "openalex": fetch_openalex,
         "crossref": fetch_crossref,
         "github": fetch_github,
+        "huggingface": fetch_huggingface,
+        "core": fetch_core,
         "semantic_scholar": fetch_semantic_scholar,
     }
 
@@ -107,11 +115,21 @@ async def _dispatch_family_to_adapters(
         try:
             results = await fn(capped)
             out.setdefault(adapter, []).extend(results)
+            # Re05 §5.2: openalex backup-empty → distinct ledger status.
+            status = "ok" if results else "empty"
+            if adapter == "openalex" and not results:
+                try:
+                    from app.services.retrieval.adapters.openalex_search import (
+                        openalex_last_backup_empty,
+                    )
+                    if openalex_last_backup_empty():
+                        status = "openalex_backup_empty"
+                except Exception:  # noqa: BLE001
+                    pass
             ledger.add(
                 adapter=adapter, query="|".join(capped), target_role=family,
                 round_num=round_num, round_name="family_dispatch",
-                status="ok" if results else "empty",
-                result_count=len(results), error=None,
+                status=status, result_count=len(results), error=None,
             )
         except Exception as exc:  # noqa: BLE001
             logger.warning("family_dispatch %s failed: %s", adapter, exc)
@@ -174,6 +192,8 @@ async def run_5_round_retrieval(
             fetch_openalex=fetch.get("openalex") if isinstance(fetch, dict) else None,
             fetch_crossref=fetch.get("crossref") if isinstance(fetch, dict) else None,
             fetch_github=fetch.get("github") if isinstance(fetch, dict) else None,
+            fetch_huggingface=fetch.get("huggingface") if isinstance(fetch, dict) else None,
+            fetch_core=fetch.get("core") if isinstance(fetch, dict) else None,
             fetch_semantic_scholar=fetch_semantic_scholar,
             ledger=ledger, round_num=1,
         )

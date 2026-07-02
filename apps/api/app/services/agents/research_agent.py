@@ -87,7 +87,16 @@ logger = logging.getLogger(__name__)
 #   HALF_OPEN — allow exactly one probe; success → CLOSED, fail → OPEN with
 #               doubled cooldown (capped).
 
-LLM_CALL_BUDGET = int(os.environ.get("SESSION66_LLM_BUDGET", "12"))
+# Re04-fix SOP §6: cancel per-case LLM call budget. The 12-call/case
+# cap was starving Cases 018/024 (paper_n=0 because the budget
+# exhausted mid-pipeline). Per CLAUDE.md "MiniMax 配额随便烧", and the
+# only failures we've seen are budget-driven, not LLM quality.
+# timeout / max_tokens / circuit breaker are KEPT — those are stability
+# constraints, not budget. Set SESSION66_LLM_BUDGET=0 (or a positive
+# value) to restore the legacy cap; default = no cap.
+LLM_CALL_BUDGET_ENV = os.environ.get("SESSION66_LLM_BUDGET", "0")
+LLM_CALL_BUDGET = int(LLM_CALL_BUDGET_ENV) if int(LLM_CALL_BUDGET_ENV) > 0 else 10**9
+LLM_BUDGET_DISABLED = int(LLM_CALL_BUDGET_ENV) == 0
 
 _CB_CLOSED = "closed"
 _CB_OPEN = "open"
@@ -944,6 +953,7 @@ def _attach_repos_to_papers(buckets: dict, raw: dict) -> dict:
 # any student of these fields would know.
 _DATASET_WHITELIST_BY_DOMAIN: dict[str, tuple[str, ...]] = {
     "vision_3d": (
+        # Existing multi-view / NeRF / MVS benchmarks — preserved.
         "DTU", "DTU Robot Image Dataset", "DTU MVS Dataset",
         "ETH3D", "ETH3D Benchmark", "ETH3D MVS",
         "Tanks and Temples", "Tanks-and-Temples",
@@ -951,6 +961,11 @@ _DATASET_WHITELIST_BY_DOMAIN: dict[str, tuple[str, ...]] = {
         "ScanNet", "Matterport3D",
         "KITTI", "ApolloScape", "Waymo Open Dataset",
         "NeRF Synthetic", "LLFF",
+        # Re05 §2.3 — point-cloud completion / registration benchmark
+        # additions. These are well-known public benchmarks any student
+        # of PC completion would recognize; not invented.
+        "ModelNet40", "ModelNet10", "ShapeNet", "ShapeNetCore",
+        "PCN", "Completion3D", "MVPG", "KITTI-360",
     ),
     "vision_2d": (
         "COCO", "Pascal VOC", "ImageNet", "NEU-DET", "GC10-DET",
@@ -965,7 +980,12 @@ _DATASET_WHITELIST_BY_DOMAIN: dict[str, tuple[str, ...]] = {
         "AudioSet", "ESC-50", "UrbanSound8K",
     ),
     "remote_sensing": (
+        # Existing DOTA / DIOR / LEVIR-CD / AID / NWPU-RESISC45 preserved.
         "DOTA", "DIOR", "LEVIR-CD", "AID", "NWPU-RESISC45",
+        # Re05 §2.3 — RS detection / SAR / aerial-object-detection
+        # benchmark additions (catches Re04 case 027 weak→pass by
+        # enabling the TJU-DHD pickup).
+        "TJU-DHD", "AIR-SAR", "RSOD", "UCAS-AOD", "DOTA-v2",
     ),
     "medical_ai": (
         "CheXpert", "MIMIC-CXR", "LIDC-IDRI", "LUNA16",
@@ -2386,6 +2406,55 @@ def synthesize_v2(
         return _heuristic_synthesize_v2(raw_topic, reviews, pool)
 
 
+def _apply_baseline_degraded_promotion(paper_groups: dict) -> dict:
+    """Re04-fix SOP §7.3: degraded promotion when baseline bucket is empty.
+
+    Strategy (matches `_heuristic_synthesize_v2`):
+      1. parallel is preferred (closer to baseline than reference).
+      2. reference is the last-resort source.
+      3. Each promoted entry gets `degraded_role` + `degraded_reason`.
+      4. paper_groups itself gets `_baseline_degraded_marker` so the eval
+         layer (`compute_resource_status`) and downstream readers can
+         distinguish a real baseline from a self-cannot-find fallback.
+
+    The markers are deliberate: we never silently rename a `reference`
+    to `baseline` — that would let degraded promotions masquerade as
+    reproducible baselines.
+    """
+    if not isinstance(paper_groups, dict):
+        paper_groups = {
+            "baseline": [], "parallel": [], "reference": [], "long_tail_candidates": [],
+        }
+    paper_groups.setdefault("baseline", [])
+    paper_groups.setdefault("parallel", [])
+    paper_groups.setdefault("reference", [])
+    paper_groups.setdefault("long_tail_candidates", [])
+    if paper_groups["baseline"]:
+        return paper_groups  # nothing to promote
+
+    promoted: list[dict] = []
+    src_bucket = ""
+    if paper_groups["parallel"]:
+        promoted = [dict(p) for p in paper_groups["parallel"][:2]]
+        src_bucket = "parallel"
+    elif paper_groups["reference"]:
+        promoted = [dict(p) for p in paper_groups["reference"][:1]]
+        src_bucket = "reference"
+    if not promoted:
+        return paper_groups  # nothing to promote from anywhere
+
+    for p in promoted:
+        p["degraded_role"] = f"self_cannot_find_baseline_promoted_from_{src_bucket}"
+        p["degraded_reason"] = (
+            "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+        )
+        paper_groups["baseline"].append(p)
+    paper_groups["_baseline_degraded"] = True
+    paper_groups["_baseline_degraded_marker"] = "self_cannot_find_baseline_degradation"
+    paper_groups["_baseline_degraded_source"] = src_bucket
+    return paper_groups
+
+
 def _normalize_synthesize_v2(out: dict, reviews: list[EvidenceReview], pool: CandidatePool) -> dict:
     """Coerce LLM output. NEVER downgrade an EvidenceReview status."""
     by_id_cand = {c["candidate_id"]: c for c in pool.as_list()}
@@ -2439,12 +2508,12 @@ def _normalize_synthesize_v2(out: dict, reviews: list[EvidenceReview], pool: Can
             "needs_manual": reviewed_status["needs_manual"][:20],
             "rejected":     reviewed_status["rejected"][:20],
         },
-        "paper_groups": {
+        "paper_groups": _apply_baseline_degraded_promotion({
             "baseline":             _hydrate(paper_groups.get("baseline")),
             "parallel":             _hydrate(paper_groups.get("parallel")),
             "reference":            _hydrate(paper_groups.get("reference")),
             "long_tail_candidates": _hydrate(paper_groups.get("long_tail_candidates")),
-        },
+        }),
         "dataset_and_repo_notes": [
             str(x)[:200] for x in (out.get("dataset_and_repo_notes") or [])
             if isinstance(x, str)
@@ -2474,7 +2543,24 @@ def _normalize_synthesize_v2(out: dict, reviews: list[EvidenceReview], pool: Can
 
 
 def _heuristic_synthesize_v2(raw_topic: str, reviews: list[EvidenceReview], pool: CandidatePool) -> dict:
-    """No-LLM fallback: bucket-by-status, no synthetic content."""
+    """No-LLM fallback: bucket-by-status, no synthetic content.
+
+    Re04-fix SOP §7 — baseline double-gate degradation.
+
+    Old behavior: a candidate only lands in `paper_groups['baseline']` if
+    it is BOTH `status == 'core'` AND `relation_to_topic == 'baseline'`.
+    When the LLM refuses to give any `core` verdict (the common case for
+    mixed-language / cross-domain pools), the bucket stays empty and the
+    eval layer hard-fails with `baseline_n=0 < 1`. That fails Cases 016
+    and 027 even when there ARE genuinely relevant papers — just because
+    the LLM is conservative.
+
+    New behavior: when baseline bucket is empty after the structural
+    mapping, promote up to 2 candidates from `parallel` (preferred) or
+    1 from `reference`, with explicit degraded_role / degraded_reason /
+    `_baseline_degraded_marker` so the eval layer and downstream readers
+    can never mistake them for true baselines.
+    """
     by_id = {c["candidate_id"]: c for c in pool.as_list()}
     buckets = {"core": [], "candidate": [], "needs_manual": [], "rejected": []}
     paper_groups = {"baseline": [], "parallel": [], "reference": [], "long_tail_candidates": []}
@@ -2493,13 +2579,48 @@ def _heuristic_synthesize_v2(raw_topic: str, reviews: list[EvidenceReview], pool
             paper_groups["long_tail_candidates"].append(entry)
         # rejected → not in paper_groups
 
+    # Re04-fix SOP §7.3: degraded promotion when baseline is empty.
+    # parallel preferred (closer to baseline than reference), then
+    # reference as last resort. Promote up to 2 from parallel, 1 from
+    # reference. Tag every promoted entry with degraded_role +
+    # degraded_reason, and stamp the paper_groups with the marker.
+    if not paper_groups["baseline"]:
+        promoted: list[dict] = []
+        src_bucket = ""
+        if paper_groups["parallel"]:
+            promoted = [dict(p) for p in paper_groups["parallel"][:2]]
+            src_bucket = "parallel"
+        elif paper_groups["reference"]:
+            promoted = [dict(p) for p in paper_groups["reference"][:1]]
+            src_bucket = "reference"
+        for p in promoted:
+            p["degraded_role"] = f"self_cannot_find_baseline_promoted_from_{src_bucket}"
+            p["degraded_reason"] = (
+                "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+            )
+            paper_groups["baseline"].append(p)
+        if promoted:
+            paper_groups["_baseline_degraded"] = True
+            paper_groups["_baseline_degraded_marker"] = (
+                "self_cannot_find_baseline_degradation"
+            )
+            paper_groups["_baseline_degraded_source"] = src_bucket
+
     baseline_ids = [e["candidate_id"] for e in paper_groups["baseline"]]
+    direction_msg = (
+        f"LLM unavailable; heuristic synthesis of {raw_topic!r}. "
+        f"{len(buckets['core'])} core / {len(buckets['candidate'])} candidate / "
+        f"{len(buckets['needs_manual'])} needs-manual / {len(buckets['rejected'])} rejected."
+    )
+    if paper_groups.get("_baseline_degraded"):
+        direction_msg += (
+            f" WARNING: baseline bucket promoted from "
+            f"{paper_groups['_baseline_degraded_source']} via "
+            f"self_cannot_find_baseline_degradation — do NOT treat as "
+            f"reproducible baseline."
+        )
     return {
-        "direction_recommendation": (
-            f"LLM unavailable; heuristic synthesis of {raw_topic!r}. "
-            f"{len(buckets['core'])} core / {len(buckets['candidate'])} candidate / "
-            f"{len(buckets['needs_manual'])} needs-manual / {len(buckets['rejected'])} rejected."
-        ),
+        "direction_recommendation": direction_msg,
         "baseline_options": baseline_ids,
         "candidate_pool": buckets,
         "paper_groups": paper_groups,
