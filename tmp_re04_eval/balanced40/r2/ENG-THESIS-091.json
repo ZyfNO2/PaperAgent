@@ -1,0 +1,1733 @@
+{
+  "project_id": "agent-re04-2e6245e7",
+  "raw_topic": "基于云计算的输电线路缺陷检测平台",
+  "parsed_topic": {
+    "raw_topic": "基于云计算的输电线路缺陷检测平台",
+    "normalized_topic": "Cloud computing based transmission line defect detection platform",
+    "domain_route": "civil_infra",
+    "domain_confidence": 0.72,
+    "method_terms": [
+      "cloud computing",
+      "deep learning object detection",
+      "edge-cloud collaboration",
+      "YOLOv8",
+      "Faster R-CNN",
+      "U-Net segmentation"
+    ],
+    "task_terms": [
+      "transmission line defect detection",
+      "insulator fault identification",
+      "cable breakage detection",
+      "tower component inspection"
+    ],
+    "object_terms": [
+      "transmission lines",
+      "insulators",
+      "drones / UAV aerial imagery",
+      "tower hardware",
+      "high-voltage cables"
+    ],
+    "query_atoms_en": [
+      "cloud-based transmission line defect detection",
+      "UAV power line inspection deep learning",
+      "insulator defect detection CNN",
+      "edge-cloud collaborative inspection platform",
+      "YOLOv8 transmission line component detection",
+      "smart grid fault image recognition"
+    ],
+    "query_atoms_zh": [
+      "输电线路缺陷检测平台",
+      "基于云计算的电力巡检",
+      "无人机输电线路故障识别",
+      "绝缘子缺陷检测算法",
+      "输电线路智能巡检系统",
+      "高压线路图像识别"
+    ],
+    "needs_clarification": [
+      "Is the focus on the cloud platform architecture (deployment, microservices, scalability) or on the underlying defect-detection algorithms?",
+      "Which defect types are in scope: insulator breakage, conductor sag, vegetation encroachment, or all of the above?",
+      "Does the platform ingest UAV/drone imagery, satellite imagery, or fixed surveillance camera feeds?"
+    ],
+    "site_hints": [
+      "ieeexplore.ieee.org",
+      "aclanthology.org",
+      "arxiv.org",
+      "mdpi.com",
+      "cnki.net"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于云计算的输电线路缺陷检测平台",
+    "domain_route": "civil_infra",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "cloud computing transmission line defect detection",
+        "cloud computing transmission lines"
+      ],
+      "method_task": [
+        "cloud computing transmission line defect detection",
+        "cloud computing insulator fault identification",
+        "deep learning object detection transmission line defect detection",
+        "deep learning object detection insulator fault identification"
+      ],
+      "object_task": [
+        "transmission lines transmission line defect detection",
+        "transmission lines insulator fault identification",
+        "insulators transmission line defect detection",
+        "insulators insulator fault identification"
+      ],
+      "dataset": [
+        "transmission line defect detection dataset",
+        "transmission lines dataset"
+      ],
+      "repo": [
+        "transmission line defect detection github",
+        "transmission line defect detection implementation",
+        "cloud computing transmission line defect detection"
+      ],
+      "survey": [
+        "transmission line defect detection survey",
+        "civil infra survey"
+      ],
+      "benchmark": [
+        "transmission line defect detection benchmark"
+      ],
+      "baseline": [
+        "cloud computing transmission line defect detection",
+        "cloud computing insulator fault identification",
+        "deep learning object detection transmission line defect detection",
+        "deep learning object detection insulator fault identification"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "cloud computing",
+        "deep learning object detection",
+        "edge-cloud collaboration",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net segmentation"
+      ],
+      "task_terms": [
+        "transmission line defect detection",
+        "insulator fault identification",
+        "cable breakage detection",
+        "tower component inspection"
+      ],
+      "object_terms": [
+        "transmission lines",
+        "insulators",
+        "drones / UAV aerial imagery",
+        "tower hardware",
+        "high-voltage cables"
+      ],
+      "domain_route": "civil_infra"
+    },
+    "fb_atom": "cloud-based transmission line defect detection",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper + repo backends for cloud-based transmission line defect detection",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "cloud transmission line defect detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv spine call to surface core deep-learning + cloud pipeline papers for transmission line inspection",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "UAV power line inspection deep learning",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex cross-disciplinary sweep for UAV-based inspection + CNN detection studies",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "insulator defect detection convolutional neural network",
+            "target_role": "reference",
+            "why_call": "crossref retrieval for journal/conference references on insulator fault identification",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "transmission line detection",
+            "target_role": "repo",
+            "why_call": "github broad call to surface end-to-end detection repos for power line components",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark / survey / recent-advances variants",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "YOLOv8 power line component detection",
+            "target_role": "reference",
+            "why_call": "recent-advances variant on YOLOv8 applied to tower components and hardware",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "edge cloud collaborative inspection",
+            "target_role": "reference",
+            "why_call": "openalex sweep for edge-cloud collaboration architectures in grid inspection",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "smart grid fault image recognition survey",
+            "target_role": "survey",
+            "why_call": "survey-style retrieval on smart grid image-based fault recognition",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "U-Net segmentation insulator aerial imagery",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "expansion on U-Net segmentation methods for insulator / cable imagery",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code + datasets for UAV / cloud inspection pipelines",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "YOLOv8 insulator",
+            "target_role": "repo",
+            "why_call": "github repo follow-up for YOLOv8-based insulator defect detection implementations",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "UAV line inspection",
+            "target_role": "repo",
+            "why_call": "github repo follow-up for UAV power line inspection frameworks",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "transmission line dataset",
+            "target_role": "dataset",
+            "why_call": "github dataset follow-up for publicly available transmission line defect / component image datasets",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "high voltage cable inspection benchmark",
+            "target_role": "reference",
+            "why_call": "crossref expansion to surface benchmark datasets and evaluation studies for cable inspection",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "ieeexplore.ieee.org",
+      "arxiv.org",
+      "mdpi.com",
+      "aclanthology.org"
+    ],
+    "arxiv_queries": [
+      "cloud transmission line defect detection",
+      "YOLOv8 power line component detection",
+      "U-Net segmentation insulator aerial imagery"
+    ],
+    "openalex_queries": [
+      "UAV power line inspection deep learning",
+      "edge cloud collaborative inspection"
+    ],
+    "crossref_queries": [
+      "insulator defect detection convolutional neural network",
+      "smart grid fault image recognition survey",
+      "high voltage cable inspection benchmark"
+    ],
+    "github_queries": [
+      "transmission line detection",
+      "YOLOv8 insulator",
+      "UAV line inspection",
+      "transmission line dataset"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "a framework for risk assessment and optimal line upgrade selection to mitigate wildfire risk",
+      "candidate_id": "c-4ba24478",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Framework for Risk Assessment and Optimal Line Upgrade Selection to Mitigate Wildfire Risk",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2110.07348v3",
+      "identifier": "2110.07348v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "As wildfires in the United States are becoming more frequent and severe, mitigating wildfire ignition risk from power line faults is an increasingly crucial effort. Long-term ignition prevention strategies, especially converting overhead lines to underground cables, are expensive. Thus, it is important to prioritize upgrades on lines that will reduce wildfire ignition risk the most. However, since so many factors contribute to ignition risk, it is difficult to quantify the wildfire risk associated with power lines. This paper examines how various risk definitions based on historical wildfire risk maps can be used to inform transmission upgrade planning. These risk metrics are evaluated using an optimization model that determines which overhead lines should be undergrounded such that the total wildfire risk in the network is minimized. The risk assignment and upgrade selection are tested on both a synthetic network and the actual transmission lines in California.",
+      "extra": {}
+    },
+    {
+      "stable_id": "co-optimization of power line shutoff and restoration under high wildfire ignition risk",
+      "candidate_id": "c-8627719f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Co-optimization of power line shutoff and restoration under high wildfire ignition risk",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2204.02507v3",
+      "identifier": "2204.02507v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Electric power infrastructure has ignited several of the most destructive wildfires in recent history. Preemptive power shutoffs are an effective tool to mitigate the risk of ignitions from power lines, but at the same time can cause widespread power outages. This work proposes a mathematical optimization problem to help utilities decide where and when to implement these shutoffs, as well as how to most efficiently restore power once the wildfire risk is lower. Specifically, our model co-optimizes the power shutoff (considering both wildfire risk reduction and power outages) as well as the post-event restoration efforts given constraints related to inspection and energization of lines, and is implemented as a rolling horizon optimization problem that is resolved whenever new forecasts of load and wildfire risk become available. We demonstrate our method on the IEEE RTS-GMLC test case using real wildfire risk data and forecasts from US Geological Survey, and investigate the sensitivity of the results to the forecast quality, decision horizon and system restoration budget. The software implementation is available in the open source software package PowerModelsWildfire.jl.",
+      "extra": {}
+    },
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-1ff2677b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "deepinspect: an ai-powered defect detection for manufacturing industries",
+      "candidate_id": "c-b90998f8",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2311.03725v2",
+      "identifier": "2311.03725v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. It harnesses extensive datasets of annotated images to discern complex defect patterns. This integrated system seamlessly fits into production workflows, thereby boosting efficiency and elevating product quality. As a result, it reduces waste and operational costs, ultimately enhancing market competitiveness.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-556a1a3b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "enabling undergrounding of long-distance transmission lines with low frequency ac technology",
+      "candidate_id": "c-e533c06f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Enabling Undergrounding of Long-Distance Transmission Lines with Low Frequency AC Technology",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2206.09045v2",
+      "identifier": "2206.09045v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "With increasing prevalence of severe natural hazards and the ignition of wildfires by power lines, many power system planners are considering converting overhead lines to underground cables to mitigate risks related to these events. Systems with a large proportion of underground cables can bring challenges due to the capacitance and losses of the cables, factors which may limit the potential for hardening in critical areas. Low frequency AC (LFAC) transmission solves these problems, as lowering the frequency decreases both the effects of capacitance and the losses. This paper presents a tractable frequency-dependent model for underground cables and incorporates it into the open source optimal power flow tool VariableFrequencyOPF.jl. The model and implementation are used to demonstrate the benefits of LFAC in a case study involving two multi-terminal cable upgrades with LFAC, including a comparison with HVDC. The results demonstrate the value of LFAC systems for both power flow control and reduction of losses.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the methanol multibeam survey",
+      "candidate_id": "c-276ae0f7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Methanol Multibeam Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2012,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1210.0979v1",
+      "identifier": "1210.0979v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A purpose built 7-beam methanol receiver, installed on the Parkes Radio Telescope, was used to survey the Galactic plane for newly forming high mass stars, pinpointed by strong methanol maser emission at 6.7 GHz. The Methanol Multibeam (MMB) survey observed over 60% of the Galactic plane, detecting close to 1000 sources. The MMB survey provides a huge resource for studies of high-mass star formation, an important stage in the evolution of the interstellar medium. The MMB survey is also a valuable resource for investigations into the structure and dynamics of our Galaxy: with narrow velocity ranges of emission (typically only a few km/s) and velocities closely correlated with the systemic velocity of their surrounding molecular clouds, 6.7-GHz methanol masers provide estimates of the spiral arm velocities and their structure. I will discuss the techniques and properties of the MMB survey, before outlining recent results, which include the identification of regions of enhanced star formation believed to be indicative of the origins of the spiral arms and the interaction of the Galactic bar with the 3-kpc arms. I will also discuss the various follow-up programmes including a study of magnetic fields through associated hydroxyl masers.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a comparative study of load balancing algorithms in cloud computing environment",
+      "candidate_id": "c-8e4a29e9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2014,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1403.6918v1",
+      "identifier": "1403.6918v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Cloud Computing is a new trend emerging in IT environment with huge requirements of infrastructure and resources. Load Balancing is an important aspect of cloud computing environment. Efficient load balancing scheme ensures efficient resource utilization by provisioning of resources to cloud users on demand basis in pay as you say manner. Load Balancing may even support prioritizing users by applying appropriate scheduling criteria. This paper presents various load balancing schemes in different cloud environment based on requirements specified in Service Level Agreement (SLA).",
+      "extra": {}
+    },
+    {
+      "stable_id": "supporting multi-cloud in serverless computing",
+      "candidate_id": "c-7ceb29fe",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Supporting Multi-Cloud in Serverless Computing",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2209.09367v4",
+      "identifier": "2209.09367v4",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Serverless computing is a widely adopted cloud execution model composed of Function-as-a-Service (FaaS) and Backend-as-a-Service (BaaS) offerings. The increased level of abstraction makes vendor lock-in inherent to serverless computing, raising more concerns than previous cloud paradigms. Multi-cloud serverless is a promising emerging approach against vendor lock-in, yet multiple challenges must be overcome to tap its potential. First, we need to be aware of both the performance and cost of each FaaS provider. Second, a multi-cloud architecture must be proposed before deploying a multi-cloud workflow. Domain-specific serverless offerings must then be integrated into the multi-cloud architecture to improve performance or save costs. Moreover, dealing with serverless offerings from multiple providers is challenging. Finally, we require workload portability support for serverless multi-cloud.\n  In this paper, we present a multi-cloud library for cross-serverless offerings. We develop the End Analysis System (EAS) to support comparison among public FaaS providers in terms of performance and cost. Moreover, we design proof-of-concept multi-cloud architectures with domain-specific serverless offerings to alleviate problems such as data gravity. Finally, we deploy workloads on these architectures to evaluate several public FaaS offerings.",
+      "extra": {}
+    },
+    {
+      "stable_id": "framework for cloud computing adoption: a road map for smes to cloud migration",
+      "candidate_id": "c-5cfaf40f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2016,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1601.01608v1",
+      "identifier": "1601.01608v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Small and Medium size Enterprises (SME) are considered as a backbone of many developing and developed economies of the world; they are the driving force to any major economy across the globe. Through Cloud Computing firms outsource their entire information technology (IT) process while concentrating more on their core business. It allows businesses to cut down heavy cost incurred over IT infrastructure without losing focus on customer needs. However, Cloud industry to an extent has struggled to grow among SMEs due to the reluctance and concerns expressed by them. Throughout the course of this study several interviews were conducted and the literature was reviewed to understand how cloud providers offer services and what challenges SMEs are facing. The study identified issues like cloud knowledge, interoperability, security and contractual concerns to be hindering SMEs adoption of cloud services. From the interviews common practices followed by cloud vendors and what concerns SMEs have were identified as a basis for a cloud framework which will bridge gaps between cloud vendors and SMEs. A stepwise framework for cloud adoption is formulated which identifies and provides recommendation to four most predominant challenges which are hurting cloud industry and taking SMEs away from cloud computing, as well as guide SMEs aiding in successful cloud adoption. Moreover, this framework streamlines the cloud adoption process for SMEs by removing ambiguity in regards to fundamentals associated with their organisation and cloud adoption process.",
+      "extra": {}
+    },
+    {
+      "stable_id": "application of selective algorithm for effective resource provisioning in cloud computing environment",
+      "candidate_id": "c-30d819d9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2014,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1403.2914v1",
+      "identifier": "1403.2914v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Modern day continued demand for resource hungry services and applications in IT sector has led to development of Cloud computing. Cloud computing environment involves high cost infrastructure on one hand and need high scale computational resources on the other hand. These resources need to be provisioned (allocation and scheduling) to the end users in most efficient manner so that the tremendous capabilities of cloud are utilized effectively and efficiently. In this paper we discuss a selective algorithm for allocation of cloud resources to end-users on-demand basis. This algorithm is based on min-min and max-min algorithms. These are two conventional task scheduling algorithm. The selective algorithm uses certain heuristics to select between the two algorithms so that overall makespan of tasks on the machines is minimized. The tasks are scheduled on machines in either space shared or time shared manner. We evaluate our provisioning heuristics using a cloud simulator, called CloudSim. We also compared our approach to the statistics obtained when provisioning of resources was done in First-Cum-First- Serve(FCFS) manner. The experimental results show that overall makespan of tasks on given set of VMs minimizes significantly in different scenarios.",
+      "extra": {}
+    },
+    {
+      "stable_id": "phoenix cloud: consolidating different computing loads on shared cluster system for large organization",
+      "candidate_id": "c-b3f4a0e4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2009,
+      "venue": null,
+      "url": "http://arxiv.org/abs/0906.1346v6",
+      "identifier": "0906.1346v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Different departments of a large organization often run dedicated cluster systems for different computing loads, like HPC (high performance computing) jobs or Web service applications. In this paper, we have designed and implemented a cloud management system software Phoenix Cloud to consolidate heterogeneous workloads from different departments affiliated to the same organization on the shared cluster system. We have also proposed cooperative resource provisioning and management policies for a large organization and its affiliated departments, running HPC jobs and Web service applications, to share the consolidated cluster system. The experiments show that in comparison with the case that each department operates its dedicated cluster system, Phoenix Cloud significantly decreases the scale of the required cluster system for a large organization, improves the benefit of the scientific computing department, and at the same time provisions enough resources to the other department running Web services with varying loads.",
+      "extra": {}
+    },
+    {
+      "stable_id": "scheduling and checkpointing optimization algorithm for byzantine fault tolerance in cloud clusters",
+      "candidate_id": "c-1f2b29a7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Scheduling and Checkpointing optimization algorithm for Byzantine fault tolerance in Cloud Clusters",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2018,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1802.00951v1",
+      "identifier": "1802.00951v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Among those faults Byzantine faults offers serious challenge to fault tolerance mechanism, because it often go undetected at the initial stage and it can easily propagate to other VMs before a detection is made. Consequently some of the mission critical application such as air traffic control, online baking etc still staying away from the cloud for such reasons. However if a Byzantine faults is not detected and tolerated at initial stage then applications such as big data analytics can go completely wrong in spite of hours of computations performed by the entire cloud. Therefore in the previous work a fool-proof Byzantine fault detection has been proposed, as a continuation this work designs a scheduling algorithm (WSSS) and checkpoint optimization algorithm (TCC) to tolerate and eliminate the Byzantine faults before it makes any impact. The WSSS algorithm keeps track of server performance which is part of Virtual Clusters to help allocate best performing server to mission critical application. WSSS therefore ranks the servers based on a counter which monitors every Virtual Nodes (VN) for time and performance failures. The TCC algorithm works to generalize the possible Byzantine error prone region through monitoring delay variation to start new VNs with previous checkpointing. Moreover it can stretch the state interval for performing and error free VNs in an effect to minimize the space, time and cost overheads caused by checkpointing. The analysis is performed with plotting state transition and CloudSim based simulation. The result shows TCC reduces fault tolerance overhead exponentially and the WSSS allots virtual resources effectively",
+      "extra": {}
+    },
+    {
+      "stable_id": "tldrt-detr: adaptive upsampling and dual-activation attention for real-time transmission line defect detection",
+      "candidate_id": "c-0541a7a2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "TLDRT-DETR: Adaptive Upsampling and Dual-Activation Attention for Real-Time Transmission Line Defect Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "10.5220/0012280600003807",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Recent satellite data have revealed a surprising correlation between galactic cosmic ray (GCR) intensity and the fraction of the Earth covered by clouds. If this correlation were to be established by a causal mechanism, it could provide a crucial step in understanding the long-sought mechanism connecting solar and climate variability. The Earth's climate seems to be remarkably sensitive to solar activity, but variations of the Sun's electromagnetic radiation appear to be too small to account for the observed climate variability. However, since the GCR intensity is strongly modulated by the solar wind, a GCR-cloud link may provide a sufficient amplifying mechanism. Moreover if this connection were to be confirmed, it could have profound consequences for our understanding of the solar contributions to the current global warming. The CLOUD (Cosmics Leaving OUtdoor Droplets) project proposes to test experimentally the existence a link between cosmic rays and cloud formation, and to understand the microphysical mechanism. CLOUD plans to perform detailed laboratory measurements in a particle beam at CERN, where all the parameters can be precisely controlled and measured. The beam will pass through an expansion cloud chamber and a reactor chamber where the atmosphere is to be duplicated by moist air charged with selected aerosols and trace condensable vapours. An array of external detectors and mass spectrometers is used to analyse the physical and chemical characteristics of the aerosols and trace gases during beam exposure. Where beam effects are found, the experiment will seek to evaluate their significance in the atmosphere by incorporating them into aerosol and cloud models.",
+      "extra": {}
+    },
+    {
+      "stable_id": "towards defect detection of transmission line insulator: a dataset, benchmarks and challenges",
+      "candidate_id": "c-b01129ec",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Towards Defect Detection of Transmission Line Insulator: A Dataset, Benchmarks and Challenges",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 10th International Conference on Power and Renewable Energy (ICPRE)",
+      "url": "https://doi.org/10.1109/icpre67300.2025.11274094",
+      "identifier": "10.1109/icpre67300.2025.11274094",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "multi-fitting detection on transmission line based on cascade reasoning graph network",
+      "candidate_id": "c-da5fd351",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Multi-Fitting Detection on Transmission Line Based on Cascade Reasoning Graph Network",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "IEEE Transactions on Power Delivery",
+      "url": "https://doi.org/10.1109/tpwrd.2022.3161124",
+      "identifier": "10.1109/tpwrd.2022.3161124",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "research on transmission line defect detection system based on cloud-edge-end collaboration",
+      "candidate_id": "c-45c2423c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Research on Transmission Line Defect Detection System Based on Cloud-Edge-End Collaboration",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "2023 China Automation Congress (CAC)",
+      "url": "https://doi.org/10.1109/cac59555.2023.10450887",
+      "identifier": "10.1109/cac59555.2023.10450887",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "detection of transmission line insulator defect based on improved yolov10",
+      "candidate_id": "c-620a6cd8",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Detection of Transmission Line Insulator Defect Based on Improved YOLOv10",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 5th International Conference on Advances in Electrical, Electronics and Computing Technology (EECT)",
+      "url": "https://doi.org/10.1109/eect64505.2025.10966943",
+      "identifier": "10.1109/eect64505.2025.10966943",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "research on pin defect detection algorithm of power transmission line",
+      "candidate_id": "c-3ed055cf",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Research on Pin Defect Detection Algorithm of Power Transmission Line",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 2nd International Conference on Signal Processing and Intelligent Computing (SPIC)",
+      "url": "https://doi.org/10.1109/spic62469.2024.10691515",
+      "identifier": "10.1109/spic62469.2024.10691515",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a cnn-bigru-based defect detection method for transmission line insulators in edge computing environment",
+      "candidate_id": "c-848a634e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A CNN-Bigru-Based Defect Detection Method for Transmission Line Insulators in Edge Computing Environment",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 10th Asia Conference on Power and Electrical Engineering (ACPEE)",
+      "url": "https://doi.org/10.1109/acpee64358.2025.11041199",
+      "identifier": "10.1109/acpee64358.2025.11041199",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "cloud computing transmission line defect detection|cloud computing transmission lines",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "transmission line defect detection dataset|transmission lines dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "transmission line defect detection github|transmission line defect detection implementation|cloud computing transmission",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "transmission line defect detection survey|civil infra survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "cloud computing transmission line defect detection|cloud computing transmission lines",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "transmission lines transmission line defect detection|transmission lines insulator fault identification|insulators trans",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "cloud computing transmission line defect detection|cloud computing insulator fault identification|deep learning object d",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "transmission line defect detection dataset|transmission lines dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "transmission line defect detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "cloud computing transmission line defect detection|cloud computing insulator fault identification|deep learning object d",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "transmission line defect detection survey|civil infra survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "transmission line defect detection dataset|transmission lines dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "transmission lines transmission line defect detection|transmission lines insulator fault identification|insulators trans",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "transmission line defect detection dataset|transmission lines dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "transmission line defect detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "cloud computing transmission line defect detection|cloud computing transmission lines",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 6,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "cloud computing transmission line defect detection|cloud computing transmission lines",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "cloud computing transmission line defect detection|cloud computing insulator fault identification|deep learning object d",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "cloud computing transmission line defect detection|cloud computing insulator fault identification|deep learning object d",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "cloud cloud|cloud he|cloud risk",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: A Framework for Risk Assessment and Optimal Line Upgrade Sel",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Co-optimization of power line shutoff and restoration under ",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Oriented object detection in optical remote sensing images u",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: DeepInspect: An AI-Powered Defect Detection for Manufacturin",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: AIn't Nothing But a Survey? Using Large Language Models for ",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-4ba24478",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "power line"
+      ],
+      "missing_terms": [
+        "defect detection",
+        "cloud computing",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Focuses on wildfire risk mitigation and line upgrade planning, not visual defect detection.",
+      "reason": "Topic is about ignition-risk assessment and grid hardening, not image-based defect detection or cloud platforms. Cross-domain relative to the query."
+    },
+    {
+      "candidate_id": "c-8627719f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "power line"
+      ],
+      "missing_terms": [
+        "defect detection",
+        "cloud computing",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "image recognition"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Operational optimization for shutoff/restoration, not visual inspection.",
+      "reason": "Covers power shutoff decisions under wildfire risk. No connection to defect detection, deep learning, or cloud platforms."
+    },
+    {
+      "candidate_id": "c-1ff2677b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning",
+        "survey"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "cloud computing",
+        "UAV",
+        "insulator",
+        "defect detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "General oriented object detection survey; method background only.",
+      "reason": "Survey of oriented object detection in remote sensing imagery. Useful as methodological background for aerial object detection, but not specific to transmission line defects or cloud platforms."
+    },
+    {
+      "candidate_id": "c-b90998f8",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "defect detection",
+        "CNN"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "cloud computing",
+        "UAV",
+        "insulator",
+        "power line"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Manufacturing defect detection, not power line infrastructure.",
+      "reason": "Targets manufacturing/industrial defect detection using CNN/RNN/GAN. Cross-domain relative to transmission line inspection topic."
+    },
+    {
+      "candidate_id": "c-556a1a3b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "survey"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "defect detection",
+        "cloud computing",
+        "deep learning",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "LLM-based survey coding, completely off-topic.",
+      "reason": "Paper concerns using LLMs to code open-ended survey responses in social science. No technical overlap with the topic."
+    },
+    {
+      "candidate_id": "c-e533c06f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "transmission lines"
+      ],
+      "missing_terms": [
+        "defect detection",
+        "cloud computing",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "image recognition"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Undergrounding engineering study, not visual inspection.",
+      "reason": "Discusses low-frequency AC undergrounding technology for transmission lines. No defect detection, imaging, or cloud computing content."
+    },
+    {
+      "candidate_id": "c-276ae0f7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "survey"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "defect detection",
+        "cloud computing",
+        "deep learning",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Astronomy radio survey, entirely off-topic.",
+      "reason": "Radio astronomy methanol maser survey of the Galactic plane. No relation to power line inspection or cloud platforms."
+    },
+    {
+      "candidate_id": "c-8e4a29e9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "cloud computing"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "defect detection",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "edge-cloud collaboration"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Generic cloud load balancing study, only loosely relevant to cloud platform architecture.",
+      "reason": "Compares load balancing algorithms in cloud computing. Tangentially relevant for cloud platform design but not specific to defect detection pipelines or transmission line applications."
+    },
+    {
+      "candidate_id": "c-7ceb29fe",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "cloud computing",
+        "serverless"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "defect detection",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "edge-cloud collaboration"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Multi-cloud serverless architecture paper; useful for cloud platform design background.",
+      "reason": "Covers multi-cloud serverless computing architecture. Relevant as background for cloud platform design, but not specific to transmission line defect detection workflows."
+    },
+    {
+      "candidate_id": "c-5cfaf40f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "cloud computing"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "defect detection",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "SME cloud migration roadmap, off-topic domain.",
+      "reason": "Cloud adoption framework for SMEs. No overlap with power line inspection or computer vision pipelines."
+    },
+    {
+      "candidate_id": "c-30d819d9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "cloud computing",
+        "resource provisioning"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "defect detection",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "General cloud resource provisioning, unrelated to defect detection.",
+      "reason": "Focuses on generic resource provisioning algorithms in cloud environments. No transmission line, defect detection, or deep learning content."
+    },
+    {
+      "candidate_id": "c-b3f4a0e4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "cloud computing"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "defect detection",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Cluster consolidation system, not inspection related.",
+      "reason": "Phoenix Cloud consolidates HPC and web workloads on shared clusters. No domain overlap with transmission line inspection."
+    },
+    {
+      "candidate_id": "c-1f2b29a7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "cloud computing",
+        "fault tolerance"
+      ],
+      "missing_terms": [
+        "transmission line",
+        "defect detection",
+        "deep learning",
+        "UAV",
+        "insulator",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Byzantine fault tolerance in cloud clusters, not visual inspection.",
+      "reason": "Covers Byzantine fault tolerance scheduling in cloud clusters. No relevance to defect detection or transmission line infrastructure."
+    },
+    {
+      "candidate_id": "c-0541a7a2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "needs_manual",
+      "matched_terms": [
+        "transmission line",
+        "defect detection",
+        "real-time"
+      ],
+      "missing_terms": [
+        "cloud computing",
+        "insulator",
+        "UAV",
+        "YOLOv8"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "metadata_mismatch",
+      "rank_reason": "Title suggests fit, but abstract is about cosmic rays — metadata mismatch, needs manual check.",
+      "reason": "Title indicates a transmission line defect detection method (TLDRT-DETR), but the supplied abstract discusses galactic cosmic rays, indicating a metadata mismatch. Verify the actual content manually."
+    },
+    {
+      "candidate_id": "c-b01129ec",
+      "evidence_type": "paper",
+      "role_hint": "dataset",
+      "status": "core",
+      "matched_terms": [
+        "transmission line",
+        "defect detection",
+        "insulator",
+        "dataset"
+      ],
+      "missing_terms": [
+        "cloud computing",
+        "UAV",
+        "YOLOv8",
+        "edge-cloud collaboration"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "Insulator defect dataset with benchmarks, directly relevant to defect detection task.",
+      "reason": "Provides a dedicated dataset and benchmarks for transmission line insulator defect detection. Strong match on task and object, even though abstract is empty."
+    },
+    {
+      "candidate_id": "c-da5fd351",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "transmission line",
+        "detection"
+      ],
+      "missing_terms": [
+        "cloud computing",
+        "deep learning object detection",
+        "insulator",
+        "UAV",
+        "edge-cloud collaboration"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Cascade reasoning graph network for transmission line multi-fitting detection; parallel method.",
+      "reason": "IEEE Trans. Power Delivery paper on multi-fitting detection on transmission lines using cascade reasoning. Related method/task but different algorithmic approach; no cloud/edge focus."
+    },
+    {
+      "candidate_id": "c-45c2423c",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "core",
+      "matched_terms": [
+        "transmission line",
+        "defect detection",
+        "cloud-edge",
+        "collaboration"
+      ],
+      "missing_terms": [
+        "deep learning object detection",
+        "insulator",
+        "UAV",
+        "YOLOv8"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Cloud-edge-end collaboration defect detection system — strong match to topic.",
+      "reason": "Paper explicitly addresses a transmission line defect detection system based on cloud-edge-end collaboration. Directly matches the cloud/edge architecture and defect detection core of the topic."
+    },
+    {
+      "candidate_id": "c-620a6cd8",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "transmission line",
+        "insulator",
+        "defect detection",
+        "YOLOv10"
+      ],
+      "missing_terms": [
+        "cloud computing",
+        "edge-cloud collaboration",
+        "UAV"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Improved YOLOv10 for insulator defect detection; method match but no cloud focus.",
+      "reason": "Direct insulator defect detection using improved YOLOv10 on transmission lines. Strong method/task match, though it focuses on the algorithm rather than the cloud platform."
+    },
+    {
+      "candidate_id": "c-3ed055cf",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "transmission line",
+        "defect detection"
+      ],
+      "missing_terms": [
+        "cloud computing",
+        "insulator",
+        "UAV",
+        "YOLOv8",
+        "edge-cloud collaboration"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Pin defect detection algorithm for power transmission lines; partial method match.",
+      "reason": "Targets pin defect detection on power transmission lines. Relevant to tower hardware inspection component of the topic, but abstract missing and not cloud-platform focused."
+    },
+    {
+      "candidate_id": "c-848a634e",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "transmission line",
+        "insulator",
+        "defect detection",
+        "edge computing"
+      ],
+      "missing_terms": [
+        "cloud computing",
+        "YOLOv8",
+        "UAV"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "CNN-BiGRU insulator defect detection in edge computing; matches edge-cloud paradigm.",
+      "reason": "CNN-BiGRU defect detection for transmission line insulators deployed in an edge computing environment. Relevant to the edge side of an edge-cloud collaborative inspection platform."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "The candidate pool is sparse and dominated by off-topic or cross-domain rejections (wildfire risk, undergrounding, manufacturing defects, LLM survey coding, astronomy). The two on-topic core papers are tightly aligned: c-45c2423c (Cloud-Edge-End collaboration system) and c-b01129ec (insulator defect dataset/benchmarks). Parallel candidates cover YOLOv10 insulator detection (c-620a6cd8), CNN-BiGRU edge deployment (c-848a634e), cascade reasoning multi-fitting (c-da5fd351), and pin defect detection (c-3ed055cf). One suspicious record c-0541a7a2 has a likely title/abstract mismatch (cosmic rays) and should be manually verified. Recommend scoping the survey around an edge-cloud collaborative inspection platform for UAV/surveillance imagery, using YOLO-family detectors with insulators as the primary defect class. Cloud papers (c-8e4a29e9, c-7ceb29fe) are generic — usable only as architectural background. The reviewer should request human clarification on (a) cloud-platform vs. algorithm emphasis, (b) defect scope, (c) imagery source. Major limitation: zero strong 'cloud-only' references and several false-positive seeds.",
+    "baseline_options": [
+      "c-45c2423c",
+      "c-b01129ec",
+      "c-620a6cd8",
+      "c-848a634e",
+      "c-da5fd351",
+      "c-3ed055cf"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-b01129ec",
+          "title": "Towards Defect Detection of Transmission Line Insulator: A Dataset, Benchmarks and Challenges",
+          "role_hint": "dataset",
+          "reason": "Insulator defect dataset with benchmarks, directly relevant to defect detection task."
+        },
+        {
+          "candidate_id": "c-45c2423c",
+          "title": "Research on Transmission Line Defect Detection System Based on Cloud-Edge-End Collaboration",
+          "role_hint": "unknown",
+          "reason": "Cloud-edge-end collaboration defect detection system — strong match to topic."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-1ff2677b",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "reference",
+          "reason": "General oriented object detection survey; method background only."
+        },
+        {
+          "candidate_id": "c-8e4a29e9",
+          "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+          "role_hint": "reference",
+          "reason": "Generic cloud load balancing study, only loosely relevant to cloud platform architecture."
+        },
+        {
+          "candidate_id": "c-7ceb29fe",
+          "title": "Supporting Multi-Cloud in Serverless Computing",
+          "role_hint": "reference",
+          "reason": "Multi-cloud serverless architecture paper; useful for cloud platform design background."
+        },
+        {
+          "candidate_id": "c-da5fd351",
+          "title": "Multi-Fitting Detection on Transmission Line Based on Cascade Reasoning Graph Network",
+          "role_hint": "parallel",
+          "reason": "Cascade reasoning graph network for transmission line multi-fitting detection; parallel method."
+        },
+        {
+          "candidate_id": "c-620a6cd8",
+          "title": "Detection of Transmission Line Insulator Defect Based on Improved YOLOv10",
+          "role_hint": "parallel",
+          "reason": "Improved YOLOv10 for insulator defect detection; method match but no cloud focus."
+        },
+        {
+          "candidate_id": "c-3ed055cf",
+          "title": "Research on Pin Defect Detection Algorithm of Power Transmission Line",
+          "role_hint": "parallel",
+          "reason": "Pin defect detection algorithm for power transmission lines; partial method match."
+        },
+        {
+          "candidate_id": "c-848a634e",
+          "title": "A CNN-Bigru-Based Defect Detection Method for Transmission Line Insulators in Edge Computing Environment",
+          "role_hint": "parallel",
+          "reason": "CNN-BiGRU insulator defect detection in edge computing; matches edge-cloud paradigm."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-0541a7a2",
+          "title": "TLDRT-DETR: Adaptive Upsampling and Dual-Activation Attention for Real-Time Transmission Line Defect Detection",
+          "role_hint": "reference",
+          "reason": "Title suggests fit, but abstract is about cosmic rays — metadata mismatch, needs manual check."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-4ba24478",
+          "title": "A Framework for Risk Assessment and Optimal Line Upgrade Selection to Mitigate Wildfire Risk",
+          "role_hint": "reference",
+          "reason": "Focuses on wildfire risk mitigation and line upgrade planning, not visual defect detection."
+        },
+        {
+          "candidate_id": "c-8627719f",
+          "title": "Co-optimization of power line shutoff and restoration under high wildfire ignition risk",
+          "role_hint": "reference",
+          "reason": "Operational optimization for shutoff/restoration, not visual inspection."
+        },
+        {
+          "candidate_id": "c-b90998f8",
+          "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+          "role_hint": "reference",
+          "reason": "Manufacturing defect detection, not power line infrastructure."
+        },
+        {
+          "candidate_id": "c-556a1a3b",
+          "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+          "role_hint": "reference",
+          "reason": "LLM-based survey coding, completely off-topic."
+        },
+        {
+          "candidate_id": "c-e533c06f",
+          "title": "Enabling Undergrounding of Long-Distance Transmission Lines with Low Frequency AC Technology",
+          "role_hint": "reference",
+          "reason": "Undergrounding engineering study, not visual inspection."
+        },
+        {
+          "candidate_id": "c-276ae0f7",
+          "title": "The Methanol Multibeam Survey",
+          "role_hint": "reference",
+          "reason": "Astronomy radio survey, entirely off-topic."
+        },
+        {
+          "candidate_id": "c-5cfaf40f",
+          "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+          "role_hint": "reference",
+          "reason": "SME cloud migration roadmap, off-topic domain."
+        },
+        {
+          "candidate_id": "c-30d819d9",
+          "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+          "role_hint": "reference",
+          "reason": "General cloud resource provisioning, unrelated to defect detection."
+        },
+        {
+          "candidate_id": "c-b3f4a0e4",
+          "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+          "role_hint": "reference",
+          "reason": "Cluster consolidation system, not inspection related."
+        },
+        {
+          "candidate_id": "c-1f2b29a7",
+          "title": "Scheduling and Checkpointing optimization algorithm for Byzantine fault tolerance in Cloud Clusters",
+          "role_hint": "reference",
+          "reason": "Byzantine fault tolerance in cloud clusters, not visual inspection."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-45c2423c",
+          "title": "Research on Transmission Line Defect Detection System Based on Cloud-Edge-End Collaboration",
+          "role_hint": "unknown",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-b01129ec",
+          "title": "Towards Defect Detection of Transmission Line Insulator: A Dataset, Benchmarks and Challenges",
+          "role_hint": "dataset",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-620a6cd8",
+          "title": "Detection of Transmission Line Insulator Defect Based on Improved YOLOv10",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-848a634e",
+          "title": "A CNN-Bigru-Based Defect Detection Method for Transmission Line Insulators in Edge Computing Environment",
+          "role_hint": "parallel",
+          "year": 2025
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-da5fd351",
+          "title": "Multi-Fitting Detection on Transmission Line Based on Cascade Reasoning Graph Network",
+          "role_hint": "parallel",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-3ed055cf",
+          "title": "Research on Pin Defect Detection Algorithm of Power Transmission Line",
+          "role_hint": "parallel",
+          "year": 2024
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-1ff2677b",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-8e4a29e9",
+          "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+          "role_hint": "reference",
+          "year": 2014
+        },
+        {
+          "candidate_id": "c-7ceb29fe",
+          "title": "Supporting Multi-Cloud in Serverless Computing",
+          "role_hint": "reference",
+          "year": 2022
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-0541a7a2",
+          "title": "TLDRT-DETR: Adaptive Upsampling and Dual-Activation Attention for Real-Time Transmission Line Defect Detection",
+          "role_hint": "reference",
+          "year": 2026
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "c-b01129ec provides a transmission line insulator defect dataset and benchmarks — primary dataset reference.",
+      "No GitHub repository with implementation was returned by any adapter; code availability must be re-checked by the student.",
+      "c-620a6cd8 (YOLOv10) and c-848a634e (CNN-BiGRU) likely include baseline numbers on related insulator datasets — usable as benchmark anchors."
+    ],
+    "work_suggestions": [
+      "Anchor the cloud architecture section on c-45c2423c (cloud-edge-end collaboration system) as the canonical system reference.",
+      "Use c-b01129ec as the primary dataset/benchmark for evaluating any proposed insulator defect detector (e.g., vs. c-620a6cd8 YOLOv10).",
+      "Compare the proposed detector against c-848a634e (CNN-BiGRU in edge computing) when discussing the edge-side inference latency trade-off.",
+      "Discuss c-da5fd351 (cascade reasoning graph network) as an alternative non-YOLO detection paradigm for transmission line components.",
+      "Before citing c-0541a7a2, manually verify the TLDRT-DETR paper — the supplied abstract is clearly mismatched to the title."
+    ],
+    "risk_reminders": [
+      "Most candidates were off-topic; evidence base for the cloud-platform angle is thin.",
+      "c-0541a7a2 likely has a metadata/abstract mismatch and must not be cited without manual verification.",
+      "Generic cloud papers (c-8e4a29e9, c-7ceb29fe) should be cited only as background, not domain evidence.",
+      "Several relevant papers (c-b01129ec, c-620a6cd8, c-3ed055cf, c-848a634e) had empty abstracts in retrieval, weakening confidence in detail-level claims.",
+      "No UAV-imagery-specific deep learning paper surfaced; UAV-vs-fixed-camera scope remains unresolved."
+    ],
+    "manual_questions": [
+      "Is the focus cloud platform architecture, the detection algorithm, or both equally?",
+      "Which defect types are in scope: insulator breakage, pin defects, conductor sag, vegetation?",
+      "Does the platform ingest UAV/drone imagery, fixed surveillance cameras, or satellite feeds?",
+      "Is real-time inference required, and at what edge hardware budget?",
+      "Is the deliverable a system design proposal or an empirical detector benchmark?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "Is the focus cloud platform architecture, detection algorithms, or both equally weighted?",
+      "Which defect types are in scope: insulator breakage, pin defects, conductor sag, vegetation?",
+      "What imagery source does the platform ingest: UAV/drone, fixed camera, or satellite?",
+      "Is real-time edge inference required, and what is the hardware budget?",
+      "Is the deliverable a system design proposal or an empirical detector benchmark?"
+    ],
+    "weak_points": [
+      "evidence_gaps is empty despite only 2 core papers — sparsity gap not explicitly declared.",
+      "Direction recommendation text is truncated mid-sentence, losing detail.",
+      "c-0541a7a2 abstract/title mismatch flagged but no replacement candidate provided.",
+      "paper_groups.baseline mixes true baselines with parallel/methodology papers without role distinction.",
+      "Candidate pool of 7 with 10 rejections shows weak yield; no fallback search direction articulated."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Two core on-topic papers exist, but evidence_gaps is empty, candidate pool is sparse (7/20), and the direction note is truncated. Topic needs human clarification on scope (architecture vs algorithm), defect types, imagery source, and deliverable before opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于云计算的输电线路缺陷检测平台",
+      "domain_route": "civil_infra",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 14,
+        "crossref": 6
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 25,
+      "queries": [
+        "cloud cloud",
+        "cloud he",
+        "cloud risk",
+        "cloud we",
+        "he cloud",
+        "he he",
+        "he risk",
+        "he we"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 205.87
+}

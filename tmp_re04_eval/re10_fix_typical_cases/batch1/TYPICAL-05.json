@@ -1,0 +1,339 @@
+{
+  "topic": "X dynamic scene dataset",
+  "final_candidate_pool": [],
+  "rounds": [
+    {
+      "round": 1,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "dynamic scene understanding task benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "HttpError('HTTP 429 for https://api.openalex.org/works?search=dynamic+scene+understanding+task+benchmark&per_page=3')"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "dynamic scene images object benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "HttpError('HTTP 429 for https://api.openalex.org/works?search=dynamic+scene+images+object+benchmark&per_page=3')"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "U-Net semantic segmentation github implementation",
+          "status": "no_results",
+          "result_count": 0,
+          "duration_sec": 3.218,
+          "candidate_ids": [],
+          "error": ""
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "tool_stats": {
+        "tool_error_n": 2,
+        "missing_client_n": 0,
+        "successful_action_n": 1
+      },
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': 'dynamic scene understanding task benchmark', 'tool': 'openalex', 'error': \"HttpError('HTTP 429 for https://api.openalex.org/works?search=dynamic+scene+understanding+task+benchmark&per_page=3')\"}",
+              "{'query': 'dynamic scene images object benchmark', 'tool': 'openalex', 'error': \"HttpError('HTTP 429 for https://api.openalex.org/works?search=dynamic+scene+images+object+benchmark&per_page=3')\"}",
+              "{'query': 'U-Net semantic segmentation github implementation', 'tool': 'github', 'error': 'no_results'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 1,
+        "executed_queries": [
+          {
+            "query": "dynamic scene understanding task benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (dynamic scene understanding task benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "dynamic scene images object benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (dynamic scene images object benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "U-Net semantic segmentation github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "fallback repo probe from domain_keywords.en[0]",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "dynamic scene understanding task benchmark",
+            "tool": "openalex",
+            "error": "HttpError('HTTP 429 for https://api.openalex.org/works?search=dynamic+scene+understanding+task+benchmark&per_page=3')"
+          },
+          {
+            "query": "dynamic scene images object benchmark",
+            "tool": "openalex",
+            "error": "HttpError('HTTP 429 for https://api.openalex.org/works?search=dynamic+scene+images+object+benchmark&per_page=3')"
+          },
+          {
+            "query": "U-Net semantic segmentation github implementation",
+            "tool": "github",
+            "error": "no_results"
+          }
+        ],
+        "tool_stats": {
+          "tool_error_n": 2,
+          "missing_client_n": 0,
+          "successful_action_n": 1
+        }
+      }
+    },
+    {
+      "round": 2,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "repair_query",
+          "tool": "openalex",
+          "query": "X dynamic scene dataset dataset benchmark",
+          "status": "needs_clarification",
+          "result_count": 0,
+          "error": "query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True)"
+        },
+        {
+          "type": "repair_query",
+          "tool": "openalex",
+          "query": "X dynamic scene dataset baseline method",
+          "status": "needs_clarification",
+          "result_count": 0,
+          "error": "query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True)"
+        },
+        {
+          "type": "repair_query",
+          "tool": "github",
+          "query": "X dynamic scene dataset github implementation",
+          "status": "needs_clarification",
+          "result_count": 0,
+          "error": "query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True)"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 3,
+      "tool_stats": {
+        "tool_error_n": 0,
+        "missing_client_n": 0,
+        "successful_action_n": 0
+      },
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "query_placeholder",
+            "evidence": [
+              "query='X dynamic scene dataset dataset benchmark'"
+            ],
+            "root_cause": "planner emitted unsubstituted placeholder; atom missing",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "query_placeholder",
+            "evidence": [
+              "query='X dynamic scene dataset baseline method'"
+            ],
+            "root_cause": "planner emitted unsubstituted placeholder; atom missing",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "query_placeholder",
+            "evidence": [
+              "query='X dynamic scene dataset github implementation'"
+            ],
+            "root_cause": "planner emitted unsubstituted placeholder; atom missing",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': 'X dynamic scene dataset dataset benchmark', 'tool': 'openalex', 'error': 'query_repair: needs_clarification (query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True))'}",
+              "{'query': 'X dynamic scene dataset baseline method', 'tool': 'openalex', 'error': 'query_repair: needs_clarification (query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True))'}",
+              "{'query': 'X dynamic scene dataset github implementation', 'tool': 'github', 'error': 'query_repair: needs_clarification (query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True))'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'",
+          "drop or repair placeholder queries before adapter call"
+        ]
+      },
+      "observations": {
+        "round": 2,
+        "executed_queries": [
+          {
+            "query": "X dynamic scene dataset dataset benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (X dynamic scene dataset dataset benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "X dynamic scene dataset baseline method",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (X dynamic scene dataset baseline method)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "X dynamic scene dataset github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "must_search from DomainScout (X dynamic scene dataset github implementation)",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [
+          "X dynamic scene dataset dataset benchmark",
+          "X dynamic scene dataset baseline method",
+          "X dynamic scene dataset github implementation"
+        ],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "X dynamic scene dataset dataset benchmark",
+            "tool": "openalex",
+            "error": "query_repair: needs_clarification (query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True))"
+          },
+          {
+            "query": "X dynamic scene dataset baseline method",
+            "tool": "openalex",
+            "error": "query_repair: needs_clarification (query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True))"
+          },
+          {
+            "query": "X dynamic scene dataset github implementation",
+            "tool": "github",
+            "error": "query_repair: needs_clarification (query contains X/{axis} placeholder; per SOP §4.4 hard rule never returned as repaired (has_brace=False, has_bare_x=True))"
+          }
+        ],
+        "tool_stats": {
+          "tool_error_n": 0,
+          "missing_client_n": 0,
+          "successful_action_n": 0
+        }
+      }
+    }
+  ],
+  "trace_path": "tmp_re04_eval\\re10_fix_typical_cases\\traces\\TYPICAL-05.json",
+  "stop_reason": "no_new_signal",
+  "summary": {
+    "paper_n": 0,
+    "baseline_n": 0,
+    "parallel_n": 0,
+    "dataset_n": 0,
+    "repo_n": 0,
+    "remaining_gaps": [
+      "dataset_gap",
+      "repo_gap",
+      "baseline_gap",
+      "paper_shortage"
+    ]
+  },
+  "case_id": "TYPICAL-05",
+  "title": "X dynamic scene dataset",
+  "source_batch": "batch1",
+  "elapsed_s": 56.14,
+  "seed_n": 0
+}

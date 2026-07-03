@@ -1,0 +1,604 @@
+{
+  "status": "pass",
+  "reason": "no_dataset_or_data_gap_note; scenario_axis_missing",
+  "notes": [
+    "data_source_gap_needs_confirmation"
+  ],
+  "score": 90,
+  "paper_n": 30,
+  "dataset_n": 0,
+  "repo_n": 6,
+  "baseline_n": 3,
+  "parallel_n": 6,
+  "quarantined_baseline_n": 0,
+  "quarantined_parallel_n": 0,
+  "quarantined_core_n": 0,
+  "effective_baseline_n": 3,
+  "effective_parallel_n": 6,
+  "effective_core_n": 3,
+  "core_n": 3,
+  "verification_verified_n": 8,
+  "verification_repaired_n": 0,
+  "verification_quarantined_n": 0,
+  "verification_not_found_n": 1,
+  "verification_records": [
+    {
+      "candidate_id": "c-f3a8b590",
+      "bucket": "core",
+      "verification_status": "not_found",
+      "recommended_action": "quarantine",
+      "reason": "off_topic per evidence_consistency audit"
+    },
+    {
+      "candidate_id": "c-cefd0c7e",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-41076e3a",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-f3a8b590",
+      "bucket": "baseline",
+      "verification_status": "not_found",
+      "recommended_action": "quarantine",
+      "reason": "off_topic per evidence_consistency audit"
+    },
+    {
+      "candidate_id": "c-cefd0c7e",
+      "bucket": "baseline",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-41076e3a",
+      "bucket": "baseline",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-9ed476b1",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-0254574c",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-515b0476",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-a4d05482",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-a48dfa72",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-ce55ec19",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 2 proxy axis — strong topical fit"
+    }
+  ],
+  "axis_status": "evaluable",
+  "topic_dataset_n": 0,
+  "proxy_dataset_n": 0,
+  "pretrain_dataset_n": 0,
+  "generic_dataset_n": 0,
+  "core_direct_n": 2,
+  "baseline_direct_n": 0,
+  "baseline_proxy_n": 3,
+  "parallel_direct_n": 6,
+  "parallel_proxy_n": 0,
+  "critical_consistency_error_n": 2,
+  "metadata_mismatch_n": 0,
+  "off_topic_core_n": 1,
+  "axis_missing_reasons": [
+    "scenario_axis_missing"
+  ],
+  "evidence_gap_reasons": [
+    "no_dataset_or_data_gap_note",
+    "scenario_axis_missing"
+  ],
+  "baseline_degraded": false,
+  "bucket_audit": {
+    "core": {
+      "n_total": 3,
+      "n_aligned": 2,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 1,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 1,
+      "members": [
+        {
+          "candidate_id": "c-f3a8b590",
+          "title": "Alpaca-zip/ultralytics_ros",
+          "url": "https://github.com/Alpaca-zip/ultralytics_ros",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "off_topic",
+          "axis_coverage": {
+            "task": "missing",
+            "object": "missing",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "no axis token matches the topic atoms"
+        },
+        {
+          "candidate_id": "c-cefd0c7e",
+          "title": "YOLOv10: Real-Time End-to-End Object Detection",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-41076e3a",
+          "title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        }
+      ]
+    },
+    "baseline": {
+      "n_total": 3,
+      "n_aligned": 2,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 1,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 1,
+      "members": [
+        {
+          "candidate_id": "c-f3a8b590",
+          "title": "Alpaca-zip/ultralytics_ros",
+          "url": "https://github.com/Alpaca-zip/ultralytics_ros",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "off_topic",
+          "axis_coverage": {
+            "task": "missing",
+            "object": "missing",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "no axis token matches the topic atoms"
+        },
+        {
+          "candidate_id": "c-cefd0c7e",
+          "title": "YOLOv10: Real-Time End-to-End Object Detection",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-41076e3a",
+          "title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        }
+      ]
+    },
+    "parallel": {
+      "n_total": 6,
+      "n_aligned": 6,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-9ed476b1",
+          "title": "Deformable DETR: Deformable Transformers for End-to-End Object Detection",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-0254574c",
+          "title": "End-to-End Object Detection with Transformers",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-515b0476",
+          "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-a4d05482",
+          "title": "FCOS: Fully Convolutional One-Stage Object Detection",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-a48dfa72",
+          "title": "EfficientDet: Scalable and Efficient Object Detection",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-ce55ec19",
+          "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+          "url": "http://arxiv.org/abs/2509.21696v1",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significa",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 2 proxy axis — strong topical fit"
+        }
+      ]
+    },
+    "dataset": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    },
+    "repo": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    }
+  },
+  "repair_plan": {
+    "repair_plan": [
+      {
+        "gap": "no_dataset_or_data_gap_note",
+        "target_role": "dataset",
+        "queries": [
+          {
+            "query": "robotic arm / manipulator dataset benchmark",
+            "tool": "huggingface",
+            "why": "targets dataset; closes 'no_dataset_or_data_gap_note'"
+          },
+          {
+            "query": "robotic arm / manipulator X dataset collection",
+            "tool": "huggingface",
+            "why": "targets dataset; closes 'no_dataset_or_data_gap_note'"
+          },
+          {
+            "query": "robotic arm / manipulator object detection implementation github",
+            "tool": "github",
+            "why": "targets repo; closes 'no_dataset_or_data_gap_note'"
+          }
+        ]
+      },
+      {
+        "gap": "scenario_axis_missing",
+        "target_role": "parallel_paper",
+        "queries": [
+          {
+            "query": "robotic arm / manipulator X detection",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'scenario_axis_missing'"
+          },
+          {
+            "query": "X YOLO object detection robotic arm / manipulator",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'scenario_axis_missing'"
+          },
+          {
+            "query": "X robotic arm / manipulator dataset",
+            "tool": "huggingface",
+            "why": "targets dataset; closes 'scenario_axis_missing'"
+          }
+        ]
+      },
+      {
+        "gap": "scenario_axis_missing",
+        "target_role": "parallel_paper",
+        "queries": [
+          {
+            "query": "robotic arm / manipulator X detection",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'scenario_axis_missing'"
+          },
+          {
+            "query": "X YOLO object detection robotic arm / manipulator",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'scenario_axis_missing'"
+          },
+          {
+            "query": "X robotic arm / manipulator dataset",
+            "tool": "huggingface",
+            "why": "targets dataset; closes 'scenario_axis_missing'"
+          }
+        ]
+      }
+    ],
+    "unrepairable_reason": ""
+  },
+  "re08_topic_atoms_present": true,
+  "verification_stats_by_bucket": {
+    "core": {
+      "weak_metadata": 3
+    },
+    "baseline": {
+      "weak_metadata": 3
+    },
+    "parallel": {
+      "weak_metadata": 6
+    },
+    "dataset": {},
+    "repo": {}
+  },
+  "verification_stats_total": {
+    "weak_metadata": 12
+  },
+  "case_id": "ENG-THESIS-046",
+  "title": "基于视觉的机械臂的目标检测和避障路径规划研究与应用",
+  "source_batch": "r1",
+  "re08_audit_version": "Re08"
+}

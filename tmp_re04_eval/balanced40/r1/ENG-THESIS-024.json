@@ -1,0 +1,1921 @@
+{
+  "project_id": "agent-re04-6138f6c9",
+  "raw_topic": "基于深度学习的无监督三维点云配准算法研究",
+  "parsed_topic": {
+    "raw_topic": "基于深度学习的无监督三维点云配准算法研究",
+    "normalized_topic": "Deep learning based unsupervised 3D point cloud registration algorithms",
+    "domain_route": "vision_3d",
+    "domain_confidence": 0.95,
+    "method_terms": [
+      "unsupervised deep learning",
+      "deep neural network",
+      "Transformer",
+      "contrastive learning",
+      "graph neural network",
+      "Iterative Closest Point"
+    ],
+    "task_terms": [
+      "point cloud registration",
+      "unsupervised registration",
+      "correspondence learning",
+      "pose estimation",
+      "point cloud matching"
+    ],
+    "object_terms": [
+      "3D point cloud",
+      "RGB-D point cloud",
+      "LiDAR point cloud",
+      "indoor outdoor scene"
+    ],
+    "query_atoms_en": [
+      "unsupervised point cloud registration",
+      "deep learning point cloud registration",
+      "3D point cloud correspondence learning",
+      "unsupervised rigid point cloud registration",
+      "deep Iterative Closest Point",
+      "Transformer point cloud registration"
+    ],
+    "query_atoms_zh": [
+      "基于深度学习的无监督三维点云配准",
+      "点云配准深度学习",
+      "无监督点云配准算法",
+      "三维点云对应关系学习",
+      "刚性点云配准",
+      "Transformer点云配准"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "github.com",
+      "paperswithcode.com",
+      "proceedings.mlr.press"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于深度学习的无监督三维点云配准算法研究",
+    "domain_route": "vision_3d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "unsupervised deep learning point cloud registration",
+        "unsupervised deep learning 3D point cloud"
+      ],
+      "method_task": [
+        "unsupervised deep learning point cloud registration",
+        "unsupervised deep learning unsupervised registration",
+        "deep neural network point cloud registration",
+        "deep neural network unsupervised registration"
+      ],
+      "object_task": [
+        "3D point cloud point cloud registration",
+        "3D point cloud unsupervised registration",
+        "RGB-D point cloud point cloud registration",
+        "RGB-D point cloud unsupervised registration"
+      ],
+      "dataset": [
+        "point cloud registration dataset",
+        "3D point cloud dataset"
+      ],
+      "repo": [
+        "point cloud registration github",
+        "point cloud registration implementation",
+        "unsupervised deep learning point cloud registration"
+      ],
+      "survey": [
+        "point cloud registration survey",
+        "vision 3d survey"
+      ],
+      "benchmark": [
+        "point cloud registration benchmark"
+      ],
+      "baseline": [
+        "unsupervised deep learning point cloud registration",
+        "unsupervised deep learning unsupervised registration",
+        "deep neural network point cloud registration",
+        "deep neural network unsupervised registration"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "unsupervised deep learning",
+        "deep neural network",
+        "Transformer",
+        "contrastive learning",
+        "graph neural network",
+        "Iterative Closest Point"
+      ],
+      "task_terms": [
+        "point cloud registration",
+        "unsupervised registration",
+        "correspondence learning",
+        "pose estimation",
+        "point cloud matching"
+      ],
+      "object_terms": [
+        "3D point cloud",
+        "RGB-D point cloud",
+        "LiDAR point cloud",
+        "indoor outdoor scene"
+      ],
+      "domain_route": "vision_3d"
+    },
+    "fb_atom": "unsupervised point cloud registration",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper + repo backends",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "unsupervised point cloud registration",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv is the spine; captures core unsupervised 3D registration works",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "deep learning point cloud registration",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "broader deep-learning registration sweep to cover supervised baselines and adjacent methods",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "unsupervised rigid point cloud registration",
+            "target_role": "reference",
+            "why_call": "openalex surfaces semantically related registration and pose-estimation works with citations",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "Transformer point cloud registration",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "crossref covers venue metadata for transformer-based registration variants",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark / survey / recent-advances variants",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud registration survey",
+            "target_role": "survey",
+            "why_call": "survey-style query to surface recent review articles on registration",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud registration benchmark",
+            "target_role": "survey",
+            "why_call": "benchmark query to surface standard datasets like 3DMatch / KITTI / ModelNet evaluation works",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "contrastive point cloud correspondence",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex follow-up on contrastive / self-supervised correspondence learning variants",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "graph neural network registration",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "crossref follow-up to capture GNN-based registration methods adjacent to the topic",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code + datasets for the topic",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "point cloud registration",
+            "target_role": "repo",
+            "why_call": "concrete repo search for registration frameworks (e.g., PREDATOR, REGTR, DeepICP variants)",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "unsupervised registration",
+            "target_role": "repo",
+            "why_call": "narrower repo search to surface unsupervised registration implementations",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "3DMatch dataset",
+            "target_role": "dataset",
+            "why_call": "dataset query to surface 3DMatch / 3DLoMatch benchmark assets",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "KITTI odometry",
+            "target_role": "dataset",
+            "why_call": "dataset query to surface outdoor LiDAR odometry/registration benchmark assets",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "github.com",
+      "paperswithcode.com",
+      "proceedings.mlr.press"
+    ],
+    "arxiv_queries": [
+      "unsupervised point cloud registration",
+      "deep learning point cloud registration",
+      "point cloud registration survey",
+      "point cloud registration benchmark"
+    ],
+    "openalex_queries": [
+      "unsupervised rigid point cloud registration",
+      "contrastive point cloud correspondence"
+    ],
+    "crossref_queries": [
+      "Transformer point cloud registration",
+      "graph neural network registration"
+    ],
+    "github_queries": [
+      "point cloud registration",
+      "unsupervised registration",
+      "3DMatch dataset",
+      "KITTI odometry"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "a systematic approach for cross-source point cloud registration by preserving macro and micro structures",
+      "candidate_id": "c-e28bab79",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2016,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1608.05143v2",
+      "identifier": "1608.05143v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We propose a systematic approach for registering cross-source point clouds. The compelling need for cross-source point cloud registration is motivated by the rapid development of a variety of 3D sensing techniques, but many existing registration methods face critical challenges as a result of the large variations in cross-source point clouds. This paper therefore illustrates a novel registration method which successfully aligns two cross-source point clouds in the presence of significant missing data, large variations in point density, scale difference and so on. The robustness of the method is attributed to the extraction of macro and micro structures. Our work has three main contributions: (1) a systematic pipeline to deal with cross-source point cloud registration; (2) a graph construction method to maintain macro and micro structures; (3) a new graph matching method is proposed which considers the global geometric constraint to robustly register these variable graphs. Compared to most of the related methods, the experiments show that the proposed method successfully registers in cross-source datasets, while other methods have difficulty achieving satisfactory results. The proposed method also shows great ability in same-source datasets.",
+      "extra": {}
+    },
+    {
+      "stable_id": "deep models with fusion strategies for mvp point cloud registration",
+      "candidate_id": "c-c61d07ac",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Deep Models with Fusion Strategies for MVP Point Cloud Registration",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2110.09129v1",
+      "identifier": "2110.09129v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The main goal of point cloud registration in Multi-View Partial (MVP) Challenge 2021 is to estimate a rigid transformation to align a point cloud pair. The pairs in this competition have the characteristics of low overlap, non-uniform density, unrestricted rotations and ambiguity, which pose a huge challenge to the registration task. In this report, we introduce our solution to the registration task, which fuses two deep learning models: ROPNet and PREDATOR, with customized ensemble strategies. Finally, we achieved the second place in the registration track with 2.96546, 0.02632 and 0.07808 under the the metrics of Rot\\_Error, Trans\\_Error and MSE, respectively.",
+      "extra": {}
+    },
+    {
+      "stable_id": "automatic marker-free registration based on similar tetrahedras for single-tree point clouds",
+      "candidate_id": "c-54876add",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Automatic marker-free registration based on similar tetrahedras for single-tree point clouds",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2411.13069v1",
+      "identifier": "2411.13069v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In recent years, terrestrial laser scanning technology has been widely used to collect tree point cloud data, aiding in measurements of diameter at breast height, biomass, and other forestry survey data. Since a single scan from terrestrial laser systems captures data from only one angle, multiple scans must be registered and fused to obtain complete tree point cloud data. This paper proposes a marker-free automatic registration method for single-tree point clouds based on similar tetrahedras. First, two point clouds from two scans of the same tree are used to generate tree skeletons, and key point sets are constructed from these skeletons. Tetrahedra are then filtered and matched according to similarity principles, with the vertices of these two matched tetrahedras selected as matching point pairs, thus completing the coarse registration of the point clouds from the two scans. Subsequently, the ICP method is applied to the coarse-registered leaf point clouds to obtain fine registration parameters, completing the precise registration of the two tree point clouds. Experiments were conducted using terrestrial laser scanning data from eight trees, each from different species and with varying shapes. The proposed method was evaluated using RMSE and Hausdorff distance, compared against the traditional ICP and NDT methods. The experimental results demonstrate that the proposed method significantly outperforms both ICP and NDT in registration accuracy, achieving speeds up to 593 times and 113 times faster than ICP and NDT, respectively. In summary, the proposed method shows good robustness in single-tree point cloud registration, with significant advantages in accuracy and speed compared to traditional ICP and NDT methods, indicating excellent application prospects in practical registration scenarios.",
+      "extra": {}
+    },
+    {
+      "stable_id": "geometry-to-image synthesis-driven generative point cloud registration",
+      "candidate_id": "c-ba5c109c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Geometry-to-Image Synthesis-Driven Generative Point Cloud Registration",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2512.09407v2",
+      "identifier": "2512.09407v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In this paper, we propose a novel 3D registration paradigm, Generative Point Cloud Registration, which bridges advanced 2D generative models with 3D matching tasks to enhance registration performance. Our key idea is to generate cross-view consistent image pairs that are well-aligned with the source and target point clouds, enabling geometry-color feature fusion to facilitate robust matching. To ensure high-quality matching, the generated image pair should feature both 2D-3D geometric consistency and cross-view texture consistency. To this end, we introduce DepthMatch-ControlNet and LiDARMatch-ControlNet, two matching-specific, controllable 2D generative models. Specifically, for depth camera-based 3D registration with point clouds derived from the depth maps, DepthMatch-ControlNet leverages the depth-conditioned generation capabilities of ControlNet to synthesize perspective-view RGB images that are geometrically consistent with depth maps, ensuring accurate 2D-3D alignment. Additionally, by incorporating a coupled conditional denoising scheme and coupled prompt guidance, it further promotes cross-view feature interaction, guiding texture consistency generation. To address LiDAR-based 3D registration with point clouds captured by LiDAR sensors, LiDARMatch-ControlNet extends this framework by conditioning on paired equirectangular range maps projected from 360-degree LiDAR point clouds, generating corresponding panoramic RGB images. Our generative 3D registration paradigm is general and can be seamlessly integrated into a wide range of existing registration methods to improve their performance. Extensive experiments on the 3DMatch and ScanNet datasets (for depth-camera settings), as well as the Dur360BEV dataset (for LiDAR settings), demonstrate the effectiveness of our approach.",
+      "extra": {}
+    },
+    {
+      "stable_id": "r3evision: a survey on robust rendering, restoration, and enhancement for 3d low-level vision",
+      "candidate_id": "c-93d19613",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.16262v2",
+      "identifier": "2506.16262v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Neural rendering methods such as Neural Radiance Fields (NeRF) and 3D Gaussian Splatting (3DGS) have achieved significant progress in photorealistic 3D scene reconstruction and novel view synthesis. However, most existing models assume clean and high-resolution (HR) multi-view inputs, which limits their robustness under real-world degradations such as noise, blur, low-resolution (LR), and weather-induced artifacts. To address these limitations, the emerging field of 3D Low-Level Vision (3D LLV) extends classical 2D Low-Level Vision tasks including super-resolution (SR), deblurring, weather degradation removal, restoration, and enhancement into the 3D spatial domain. This survey, referred to as R\\textsuperscript{3}eVision, provides a comprehensive overview of robust rendering, restoration, and enhancement for 3D LLV by formalizing the degradation-aware rendering problem and identifying key challenges related to spatio-temporal consistency and ill-posed optimization. Recent methods that integrate LLV into neural rendering frameworks are categorized to illustrate how they enable high-fidelity 3D reconstruction under adverse conditions. Application domains such as autonomous driving, AR/VR, and robotics are also discussed, where reliable 3D perception from degraded inputs is critical. By reviewing representative methods, datasets, and evaluation protocols, this work positions 3D LLV as a fundamental direction for robust 3D content generation and scene-level reconstruction in real-world environments.",
+      "extra": {}
+    },
+    {
+      "stable_id": "advances in global solvers for 3d vision",
+      "candidate_id": "c-5fad4f45",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advances in Global Solvers for 3D Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2602.14662v1",
+      "identifier": "2602.14662v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Global solvers have emerged as a powerful paradigm for 3D vision, offering certifiable solutions to nonconvex geometric optimization problems traditionally addressed by local or heuristic methods. This survey presents the first systematic review of global solvers in geometric vision, unifying the field through a comprehensive taxonomy of three core paradigms: Branch-and-Bound (BnB), Convex Relaxation (CR), and Graduated Non-Convexity (GNC). We present their theoretical foundations, algorithmic designs, and practical enhancements for robustness and scalability, examining how each addresses the fundamental nonconvexity of geometric estimation problems. Our analysis spans ten core vision tasks, from Wahba problem to bundle adjustment, revealing the optimality-robustness-scalability trade-offs that govern solver selection. We identify critical future directions: scaling algorithms while maintaining guarantees, integrating data-driven priors with certifiable optimization, establishing standardized benchmarks, and addressing societal implications for safety-critical deployment. By consolidating theoretical foundations, practical advances, and broader impacts, this survey provides a unified perspective and roadmap toward certifiable, trustworthy perception for real-world applications. A continuously-updated literature summary and companion code tutorials are available at https://github.com/ericzzj1989/Awesome-Global-Solvers-for-3D-Vision.",
+      "extra": {}
+    },
+    {
+      "stable_id": "cortical surface registration using unsupervised learning",
+      "candidate_id": "c-e40394dc",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Cortical surface registration using unsupervised learning",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2004.04617v2",
+      "identifier": "2004.04617v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Non-rigid cortical registration is an important and challenging task due to the geometric complexity of the human cortex and the high degree of inter-subject variability. A conventional solution is to use a spherical representation of surface properties and perform registration by aligning cortical folding patterns in that space. This strategy produces accurate spatial alignment but often requires a high computational cost. Recently, convolutional neural networks (CNNs) have demonstrated the potential to dramatically speed up volumetric registration. However, due to distortions introduced by projecting a sphere to a 2D plane, a direct application of recent learning-based methods to surfaces yields poor results. In this study, we present SphereMorph, a diffeomorphic registration framework for cortical surfaces using deep networks that addresses these issues. SphereMorph uses a UNet-style network associated with a spherical kernel to learn the displacement field and warps the sphere using a modified spatial transformer layer. We propose a resampling weight in computing the data fitting loss to account for distortions introduced by polar projection, and demonstrate the performance of our proposed method on two tasks, including cortical parcellation and group-wise functional area alignment. The experiments show that the proposed SphereMorph is capable of modeling the geometric registration problem in a CNN framework and demonstrate superior registration accuracy and computational efficiency. The source code of SphereMorph will be released to the public upon acceptance of this manuscript at https://github.com/voxelmorph/spheremorph.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a tutorial about random neural networks in supervised learning",
+      "candidate_id": "c-d42f0a1d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Tutorial about Random Neural Networks in Supervised Learning",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2016,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1609.04846v1",
+      "identifier": "1609.04846v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Random Neural Networks (RNNs) are a class of Neural Networks (NNs) that can also be seen as a specific type of queuing network. They have been successfully used in several domains during the last 25 years, as queuing networks to analyze the performance of resource sharing in many engineering areas, as learning tools and in combinatorial optimization, where they are seen as neural systems, and also as models of neurological aspects of living beings. In this article we focus on their learning capabilities, and more specifically, we present a practical guide for using the RNN to solve supervised learning problems. We give a general description of these models using almost indistinctly the terminology of Queuing Theory and the neural one. We present the standard learning procedures used by RNNs, adapted from similar well-established improvements in the standard NN field. We describe in particular a set of learning algorithms covering techniques based on the use of first order and, then, of second order derivatives. We also discuss some issues related to these objects and present new perspectives about their use in supervised learning problems. The tutorial describes their most relevant applications, and also provides a large bibliography.",
+      "extra": {}
+    },
+    {
+      "stable_id": "urlb: unsupervised reinforcement learning benchmark",
+      "candidate_id": "c-d56f89e1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "URLB: Unsupervised Reinforcement Learning Benchmark",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2110.15191v1",
+      "identifier": "2110.15191v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Deep Reinforcement Learning (RL) has emerged as a powerful paradigm to solve a range of complex yet specific control tasks. Yet training generalist agents that can quickly adapt to new tasks remains an outstanding challenge. Recent advances in unsupervised RL have shown that pre-training RL agents with self-supervised intrinsic rewards can result in efficient adaptation. However, these algorithms have been hard to compare and develop due to the lack of a unified benchmark. To this end, we introduce the Unsupervised Reinforcement Learning Benchmark (URLB). URLB consists of two phases: reward-free pre-training and downstream task adaptation with extrinsic rewards. Building on the DeepMind Control Suite, we provide twelve continuous control tasks from three domains for evaluation and open-source code for eight leading unsupervised RL methods. We find that the implemented baselines make progress but are not able to solve URLB and propose directions for future research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "unsupervised deep representation learning for real-time tracking",
+      "candidate_id": "c-a42632e3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Unsupervised Deep Representation Learning for Real-Time Tracking",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2007.11984v1",
+      "identifier": "2007.11984v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The advancement of visual tracking has continuously been brought by deep learning models. Typically, supervised learning is employed to train these models with expensive labeled data. In order to reduce the workload of manual annotations and learn to track arbitrary objects, we propose an unsupervised learning method for visual tracking. The motivation of our unsupervised learning is that a robust tracker should be effective in bidirectional tracking. Specifically, the tracker is able to forward localize a target object in successive frames and backtrace to its initial position in the first frame. Based on such a motivation, in the training process, we measure the consistency between forward and backward trajectories to learn a robust tracker from scratch merely using unlabeled videos. We build our framework on a Siamese correlation filter network, and propose a multi-frame validation scheme and a cost-sensitive loss to facilitate unsupervised learning. Without bells and whistles, the proposed unsupervised tracker achieves the baseline accuracy as classic fully supervised trackers while achieving a real-time speed. Furthermore, our unsupervised framework exhibits a potential in leveraging more unlabeled or weakly labeled data to further improve the tracking accuracy.",
+      "extra": {}
+    },
+    {
+      "stable_id": "deep learning for 3d point clouds: a survey",
+      "candidate_id": "c-48631d21",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Deep Learning for 3D Point Clouds: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1912.12033v2",
+      "identifier": "1912.12033v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point cloud learning has lately attracted increasing attention due to its wide applications in many areas, such as computer vision, autonomous driving, and robotics. As a dominating technique in AI, deep learning has been successfully used to solve various 2D vision problems. However, deep learning on point clouds is still in its infancy due to the unique challenges faced by the processing of point clouds with deep neural networks. Recently, deep learning on point clouds has become even thriving, with numerous methods being proposed to address different problems in this area. To stimulate future research, this paper presents a comprehensive review of recent progress in deep learning methods for point clouds. It covers three major tasks, including 3D shape classification, 3D object detection and tracking, and 3D point cloud segmentation. It also presents comparative results on several publicly available datasets, together with insightful observations and inspiring future research directions.",
+      "extra": {}
+    },
+    {
+      "stable_id": "shapeadv: generating shape-aware adversarial 3d point clouds",
+      "candidate_id": "c-e1d5318c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ShapeAdv: Generating Shape-Aware Adversarial 3D Point Clouds",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2005.11626v1",
+      "identifier": "2005.11626v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We introduce ShapeAdv, a novel framework to study shape-aware adversarial perturbations that reflect the underlying shape variations (e.g., geometric deformations and structural differences) in the 3D point cloud space. We develop shape-aware adversarial 3D point cloud attacks by leveraging the learned latent space of a point cloud auto-encoder where the adversarial noise is applied in the latent space. Specifically, we propose three different variants including an exemplar-based one by guiding the shape deformation with auxiliary data, such that the generated point cloud resembles the shape morphing between objects in the same category. Different from prior works, the resulting adversarial 3D point clouds reflect the shape variations in the 3D point cloud space while still being close to the original one. In addition, experimental evaluations on the ModelNet40 benchmark demonstrate that our adversaries are more difficult to defend with existing point cloud defense methods and exhibit a higher attack transferability across classifiers. Our shape-aware adversarial attacks are orthogonal to existing point cloud based attacks and shed light on the vulnerability of 3D deep neural networks.",
+      "extra": {}
+    },
+    {
+      "stable_id": "novel approaches for point cloud analysis with evidential methods: a multifaceted approach to object pose estimation, point cloud odometry, and sensor registration",
+      "candidate_id": "c-c9f1b2de",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Novel Approaches for Point Cloud Analysis with Evidential Methods: A Multifaceted Approach to Object Pose Estimation, Point Cloud Odometry, and Sensor Registration",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "https://doi.org/10.2139/ssrn.6550918",
+      "identifier": "10.2139/ssrn.6550918",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>While point cloud registration (PCR) methods exhibit robust performance in structured scenarios, they face significant challenges in unstructured forest environments, primarily due to inherent tree structural variability (e.g., irregular crowns, overlapping canopies, and partial occlusions) that impedes feature matching and alignment processes. To investigate the impact of tree structure on PCR performance and evaluate state-of-the-art methods, this study presents distinct contributions in artificial intelligence (AI) and engineering applications: (1) The construction of a real-world tree point cloud dataset utilizing a dual-criteria grouping strategy that categorizes samples by structural types (Dwarf-Compact, Dwarf-Spreading, Tall-Compact, and Tall-Spreading) and point cloud completeness. Baseline testing indicates that random sample consensus-iterative closest point (RANSAC-ICP) achieves acceptable performance only for tall-spreading trees (2.318° rotation, 0.464 m translation) but remains suboptimal overall (average: 8.802° rotation, 0.490 m translation). (2) A comprehensive benchmarking analysis which reveals critical trade-offs: Dual branches decoupling network (DBDNet) attains the highest accuracy (0.751° rotation, 0.073 m translation) but incurs high computational costs, while representative overlapping points network (ROPNet) offers efficient training with a lightweight architecture and acceptable errors (3.534° rotation, 0.070 m translation). (3) The proposal of ROPNet-OM, developed by integrating a structure-aware Overlap Mask (OM) into ROPNet, which reduces rotation/translation errors by 22.6%/15.7% (to 2.734°/0.059 m) with negligible training overhead. This work provides empirical insights into PCR adaptability in forests, along with a scenario-specific dataset and an optimized model to advance PCR applications in forestry.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "deep closest point: learning representations for point cloud registration",
+      "candidate_id": "c-e9e4b8d7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Deep Closest Point: Learning Representations for Point Cloud Registration",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2019,
+      "venue": "2019 IEEE/CVF International Conference on Computer Vision (ICCV)",
+      "url": "https://doi.org/10.1109/iccv.2019.00362",
+      "identifier": "10.1109/iccv.2019.00362",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "improving deep learning point cloud registration with semantic labels",
+      "candidate_id": "c-89fd7b7e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Improving Deep Learning Point Cloud Registration with Semantic Labels",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "2023 3rd International Symposium on Computer Technology and Information Science (ISCTIS)",
+      "url": "https://doi.org/10.1109/isctis58954.2023.10213117",
+      "identifier": "10.1109/isctis58954.2023.10213117",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "3d point cloud registration with multi-scale architecture and unsupervised transfer learning",
+      "candidate_id": "c-23fc8dab",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "3D Point Cloud Registration with Multi-Scale Architecture and Unsupervised Transfer Learning",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "2021 International Conference on 3D Vision (3DV)",
+      "url": "https://doi.org/10.1109/3dv53792.2021.00142",
+      "identifier": "10.1109/3dv53792.2021.00142",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "deep learning registration algorithm for point cloud data and bim information modeling technology",
+      "candidate_id": "c-33b54bdb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Deep Learning Registration Algorithm for Point Cloud Data and BIM Information Modeling Technology",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 IEEE Madhya Pradesh Section Conference (MPCON)",
+      "url": "https://doi.org/10.1109/mpcon66082.2025.11256685",
+      "identifier": "10.1109/mpcon66082.2025.11256685",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "an efficient point cloud registration method based on deep learning framework",
+      "candidate_id": "c-810a25a3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "An efficient point cloud registration method based on deep learning framework",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "Geomatica",
+      "url": "https://doi.org/10.1016/j.geomat.2025.100072",
+      "identifier": "10.1016/j.geomat.2025.100072",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "benchmark of multi-view terrestrial laser scanning point cloud data registration algorithms",
+      "candidate_id": "c-0e870ab7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Benchmark of multi-view Terrestrial Laser Scanning Point Cloud data registration algorithms",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Measurement",
+      "url": "https://doi.org/10.1016/j.measurement.2023.113199",
+      "identifier": "10.1016/j.measurement.2023.113199",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "crane-yu/rethink_rotation",
+      "candidate_id": "c-471f8b2e",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Crane-YU/rethink_rotation",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Crane-YU/rethink_rotation",
+      "identifier": null,
+      "description": "[AAAI 2023] Rethinking Rotation Invariance with Point Cloud Registration (official pytorch implementation) https://rotation3d.github.io/",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 27,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "jundaozhilian/deepvcp-pytorch",
+      "candidate_id": "c-7ad54da6",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "jundaozhilian/DeepVCP-PyTorch",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/jundaozhilian/DeepVCP-PyTorch",
+      "identifier": null,
+      "description": "DeepVCP is an end-to-end deep neural network for point cloud registration task that deals with aligning two or more point clouds collected by LiDAR scanners. https://songshiyu01.github.io/pdf/DeepVCP_W.Lu_S.Song_ICCV2019.pdf",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 5,
+        "language": null
+      }
+    },
+    {
+      "stable_id": "marecek199/thesis_3ddatagenerationsegmentationregistration",
+      "candidate_id": "c-4ef2371b",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "marecek199/Thesis_3DDataGenerationSegmentationRegistration",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/marecek199/Thesis_3DDataGenerationSegmentationRegistration",
+      "identifier": null,
+      "description": "Github storage for a diploma thesis on topic : 3D Point cloud segmentation for industrial bin-picking",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 0,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "scannet",
+      "candidate_id": "c-3e035541",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "ScanNet",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    },
+    {
+      "stable_id": "modelnet40",
+      "candidate_id": "c-fb27e1e5",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "ModelNet40",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "unsupervised deep learning point cloud registration|unsupervised deep learning 3D point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "point cloud registration dataset|3D point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "point cloud registration github|point cloud registration implementation|unsupervised deep learning point cloud registrat",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 3,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "unsupervised deep learning point cloud registration|unsupervised deep learning 3D point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "3D point cloud point cloud registration|3D point cloud unsupervised registration|RGB-D point cloud point cloud registrat",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "point cloud registration dataset|3D point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "unsupervised deep learning point cloud registration|unsupervised deep learning unsupervised registration|deep neural net",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "unsupervised deep learning point cloud registration|unsupervised deep learning unsupervised registration|deep neural net",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud registration benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "unsupervised deep learning point cloud registration|unsupervised deep learning 3D point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud registration dataset|3D point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "3D point cloud point cloud registration|3D point cloud unsupervised registration|RGB-D point cloud point cloud registrat",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "point cloud registration survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "point cloud registration dataset|3D point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud registration survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "unsupervised deep learning point cloud registration|unsupervised deep learning unsupervised registration|deep neural net",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 7,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "unsupervised deep learning point cloud registration|unsupervised deep learning unsupervised registration|deep neural net",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "unsupervised deep learning point cloud registration|unsupervised deep learning 3D point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "point cloud registration benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "point point|point registration|point that",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: A Systematic Approach for Cross-source Point Cloud Registrat",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Deep Models with Fusion Strategies for MVP Point Cloud Regis",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Automatic marker-free registration based on similar tetrahed",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Geometry-to-Image Synthesis-Driven Generative Point Cloud Re",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: R3eVision: A Survey on Robust Rendering, Restoration, and En",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-e28bab79",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud registration",
+        "3D point cloud"
+      ],
+      "missing_terms": [
+        "unsupervised",
+        "deep learning",
+        "Transformer"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Cross-source registration is relevant background but not deep-learning-based or unsupervised.",
+      "reason": "Classical cross-source point cloud registration method (2016). Relevant as background context for registration challenges, but lacks deep learning and unsupervised components central to the topic."
+    },
+    {
+      "candidate_id": "c-c61d07ac",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud registration",
+        "deep learning",
+        "rigid transformation"
+      ],
+      "missing_terms": [
+        "unsupervised"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Deep learning point cloud registration method but no clear unsupervised angle.",
+      "reason": "MVP challenge submission using deep models with fusion for low-overlap partial point cloud registration. Matches deep learning + registration task, but supervision setup is not specified; potentially useful parallel reference."
+    },
+    {
+      "candidate_id": "c-54876add",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "point cloud",
+        "registration"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "unsupervised",
+        "Transformer"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Forestry domain marker-free registration; no deep learning; cross-domain for this topic.",
+      "reason": "Domain-specific terrestrial laser scanning registration for single-tree forestry measurements. Classical geometric approach, not deep learning based. Cross-domain relative to the unsupervised 3D point cloud registration research topic."
+    },
+    {
+      "candidate_id": "c-ba5c109c",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "3D registration",
+        "point cloud",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "unsupervised",
+        "Transformer",
+        "ICP"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Generative deep-learning registration method; supervision details unclear.",
+      "reason": "Proposes a generative 3D point cloud registration paradigm leveraging 2D generative models. Addresses point cloud registration with deep learning, relevant parallel work though unsupervised status not explicit in the digest."
+    },
+    {
+      "candidate_id": "c-93d19613",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "point cloud registration",
+        "unsupervised",
+        "ICP"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "3D low-level vision survey; only tangentially related to registration.",
+      "reason": "Survey on NeRF/3DGS rendering, restoration, enhancement. Touches on 3D vision broadly but does not focus on point cloud registration; only weakly related background."
+    },
+    {
+      "candidate_id": "c-5fad4f45",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D vision",
+        "registration"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "unsupervised",
+        "deep learning"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Global solvers survey covers registration but not point-cloud-specific deep unsupervised.",
+      "reason": "First systematic survey on global solvers for 3D vision geometric optimization. Mentions registration problems, but focuses on certifiable optimization rather than deep/unsupervised point cloud methods."
+    },
+    {
+      "candidate_id": "c-e40394dc",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "unsupervised learning",
+        "registration"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "deep learning",
+        "3D point cloud"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Medical cortical surface registration, not 3D point cloud domain.",
+      "reason": "Unsupervised non-rigid cortical surface registration for neuroscience. Cross-domain (medical imaging surface meshes), not relevant to 3D point cloud registration research."
+    },
+    {
+      "candidate_id": "c-d42f0a1d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "neural networks",
+        "supervised learning"
+      ],
+      "missing_terms": [
+        "unsupervised",
+        "point cloud",
+        "registration",
+        "3D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Random neural networks tutorial; no 3D/point cloud relevance.",
+      "reason": "Tutorial on random neural networks in supervised learning. Completely unrelated to 3D point cloud registration."
+    },
+    {
+      "candidate_id": "c-d56f89e1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "unsupervised",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "registration",
+        "3D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Reinforcement learning benchmark; no connection to point cloud registration.",
+      "reason": "Unsupervised reinforcement learning benchmark. Only shares 'unsupervised' and 'deep learning' terms with topic, but domain (RL) is unrelated to 3D point cloud registration."
+    },
+    {
+      "candidate_id": "c-a42632e3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "unsupervised deep learning",
+        "real-time"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "registration",
+        "3D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Visual tracking paper; no point cloud registration relevance.",
+      "reason": "Unsupervised deep representation learning for visual object tracking. Despite sharing 'unsupervised deep learning', the task (2D tracking) is unrelated to 3D point cloud registration."
+    },
+    {
+      "candidate_id": "c-48631d21",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "core",
+      "matched_terms": [
+        "deep learning",
+        "3D point clouds",
+        "point cloud"
+      ],
+      "missing_terms": [
+        "unsupervised",
+        "registration",
+        "ICP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "Foundational survey on deep learning for 3D point clouds; broad reference.",
+      "reason": "Comprehensive 2019 survey covering deep learning methods for 3D point clouds, including registration subtopics. Essential survey reference for the topic, though not specific to unsupervised registration."
+    },
+    {
+      "candidate_id": "c-e1d5318c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "3D point cloud"
+      ],
+      "missing_terms": [
+        "registration",
+        "unsupervised",
+        "deep learning registration"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Adversarial perturbation paper on point clouds; no registration task.",
+      "reason": "Shape-aware adversarial attack framework for 3D point clouds. Uses point clouds but addresses robustness/adversarial aspects, not registration."
+    },
+    {
+      "candidate_id": "c-c9f1b2de",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "point cloud registration",
+        "pose estimation"
+      ],
+      "missing_terms": [
+        "unsupervised",
+        "deep learning",
+        "Transformer"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Forestry PCR with evidential methods; cross-domain and not unsupervised deep.",
+      "reason": "Evidential learning methods for point cloud registration/odometry in unstructured forest environments. Cross-domain (forestry) and method (evidential, not unsupervised deep) makes it weakly related."
+    },
+    {
+      "candidate_id": "c-e9e4b8d7",
+      "evidence_type": "paper",
+      "role_hint": "baseline",
+      "status": "core",
+      "matched_terms": [
+        "deep learning",
+        "point cloud registration",
+        "ICP"
+      ],
+      "missing_terms": [
+        "unsupervised"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "DCP is the canonical deep learning baseline for point cloud registration.",
+      "reason": "Deep Closest Point (ICCV 2019) is a foundational deep learning method for point cloud registration. Highly cited baseline; supervised but indispensable reference for any registration survey including unsupervised variants."
+    },
+    {
+      "candidate_id": "c-89fd7b7e",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "deep learning",
+        "point cloud registration",
+        "semantic"
+      ],
+      "missing_terms": [
+        "unsupervised"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "Deep learning PCR augmented by semantic labels; supervised variant module.",
+      "reason": "Deep learning point cloud registration method enhanced with semantic labels. Directly addresses deep PCR; could serve as a comparison module for unsupervised registration approaches."
+    },
+    {
+      "candidate_id": "c-23fc8dab",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "core",
+      "matched_terms": [
+        "unsupervised",
+        "point cloud registration",
+        "deep learning",
+        "multi-scale"
+      ],
+      "missing_terms": [
+        "Transformer",
+        "contrastive learning",
+        "ICP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Unsupervised transfer learning for point cloud registration; direct topic match.",
+      "reason": "Multi-scale architecture with unsupervised transfer learning for 3D point cloud registration (3DV 2021). Directly addresses unsupervised deep learning registration, strong core match."
+    },
+    {
+      "candidate_id": "c-33b54bdb",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "deep learning",
+        "point cloud",
+        "registration"
+      ],
+      "missing_terms": [
+        "unsupervised"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Deep learning PCR with BIM integration; supervised application paper.",
+      "reason": "Deep learning registration algorithm combined with BIM modeling for point cloud data. Applied paper, unsupervised component not indicated; relevant parallel application reference."
+    },
+    {
+      "candidate_id": "c-810a25a3",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud registration",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "unsupervised",
+        "Transformer"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Deep learning PCR method; likely supervised, parallel work.",
+      "reason": "Efficient deep learning-based point cloud registration method (Geomatica 2025). Addresses the same task with deep learning but unsupervised dimension not indicated from metadata."
+    },
+    {
+      "candidate_id": "c-0e870ab7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud registration",
+        "TLS",
+        "benchmark"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "unsupervised"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Benchmark of classical TLS PCR algorithms; not deep learning.",
+      "reason": "Benchmark of multi-view terrestrial laser scanning point cloud registration algorithms. Useful background for evaluation methodology and TLS data but lacks deep learning focus."
+    },
+    {
+      "candidate_id": "c-471f8b2e",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud registration",
+        "rotation invariance",
+        "PyTorch"
+      ],
+      "missing_terms": [
+        "unsupervised"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Official repo for AAAI 2023 rotation-invariant PCR; useful parallel baseline code.",
+      "reason": "Official PyTorch implementation of 'Rethinking Rotation Invariance with Point Cloud Registration' (AAAI 2023). Provides reference implementation for rotation-invariant deep PCR methods, parallel to the topic."
+    },
+    {
+      "candidate_id": "c-7ad54da6",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud registration",
+        "deep neural network",
+        "LiDAR point cloud"
+      ],
+      "missing_terms": [
+        "unsupervised",
+        "Transformer",
+        "contrastive learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Real repo for a LiDAR point cloud registration deep model, related but supervised/VoxelNet-style, lacks unsupervised aspect.",
+      "reason": "DeepVCP is a deep-learning LiDAR point cloud registration method (DNN-based), matching domain and task, but it is supervised end-to-end, not unsupervised, so partial match only."
+    },
+    {
+      "candidate_id": "c-4ef2371b",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "rejected",
+      "matched_terms": [
+        "3D point cloud"
+      ],
+      "missing_terms": [
+        "registration",
+        "deep learning",
+        "unsupervised"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Diploma thesis repo focuses on 3D point cloud segmentation for bin-picking, not registration.",
+      "reason": "Topic is segmentation for industrial bin-picking; cross-domain relative to unsupervised 3D point cloud registration research. Not suitable."
+    },
+    {
+      "candidate_id": "c-3e035541",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "3D point cloud",
+        "RGB-D point cloud",
+        "indoor outdoor scene"
+      ],
+      "missing_terms": [
+        "registration",
+        "unsupervised",
+        "Transformer"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "Well-known RGB-D 3D point cloud dataset widely used as benchmark for indoor registration tasks.",
+      "reason": "ScanNet is a standard indoor RGB-D scene dataset commonly used for evaluating point cloud registration and correspondence learning, so a relevant dataset reference even though it is not directly about unsupervised registration."
+    },
+    {
+      "candidate_id": "c-fb27e1e5",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "3D point cloud",
+        "point cloud registration"
+      ],
+      "missing_terms": [
+        "unsupervised",
+        "LiDAR",
+        "indoor outdoor scene"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "Canonical benchmark dataset extensively used in deep learning point cloud registration experiments.",
+      "reason": "ModelNet40 is a standard 3D point cloud benchmark widely adopted for evaluating registration methods (e.g., DCP, PointNetLK), making it a relevant dataset for the topic."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Topic: deep learning based unsupervised 3D point cloud registration. Evidence coverage is thin and partly off-target. Only one paper (c-23fc8dab, multi-scale + unsupervised transfer learning, 3DV 2021) is a direct unsupervised-deep match. DCP (c-e9e4b8d7, 2019) is the canonical supervised baseline. A broad deep-learning-for-point-cloud survey (c-48631d21, 2019) anchors background. ModelNet40 and ScanNet are the standard evaluation datasets. Other candidates are either supervised-only parallel work (c-c61d07ac, c-ba5c109c, c-89fd7b7e, c-810a25a3, c-33b54bdb, c-7ad54da6, c-471f8b2e) or domain-mismatched and rejected (forestry, medical surface, RL, tracking, adversarial). Recommended direction: anchor a taxonomy on (i) unsupervised/self-supervised correspondence learning (contrastive, cycle-consistency, Chamfer/EMD-based losses), (ii) learned end-to-end registration without pose labels (transfer/curriculum), and (iii) Transformer/GNN backbones with unsupervised losses; benchmark on ModelNet40 and indoor RGB-D scenes (ScanNet/ScanObjectNN) against DCP family. Gaps: very few unsupervised-deep papers were retrieved; needs_manual queries should target ICP-Net, PointNetLK, PREDATOR, RPM-Ne",
+    "baseline_options": [
+      "c-e9e4b8d7",
+      "c-23fc8dab",
+      "c-48631d21",
+      "c-c61d07ac",
+      "c-ba5c109c"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-48631d21",
+          "title": "Deep Learning for 3D Point Clouds: A Survey",
+          "role_hint": "unknown",
+          "reason": "Foundational survey on deep learning for 3D point clouds; broad reference."
+        },
+        {
+          "candidate_id": "c-e9e4b8d7",
+          "title": "Deep Closest Point: Learning Representations for Point Cloud Registration",
+          "role_hint": "baseline",
+          "reason": "DCP is the canonical deep learning baseline for point cloud registration."
+        },
+        {
+          "candidate_id": "c-23fc8dab",
+          "title": "3D Point Cloud Registration with Multi-Scale Architecture and Unsupervised Transfer Learning",
+          "role_hint": "unknown",
+          "reason": "Unsupervised transfer learning for point cloud registration; direct topic match."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-e28bab79",
+          "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+          "role_hint": "reference",
+          "reason": "Cross-source registration is relevant background but not deep-learning-based or unsupervised."
+        },
+        {
+          "candidate_id": "c-c61d07ac",
+          "title": "Deep Models with Fusion Strategies for MVP Point Cloud Registration",
+          "role_hint": "parallel",
+          "reason": "Deep learning point cloud registration method but no clear unsupervised angle."
+        },
+        {
+          "candidate_id": "c-ba5c109c",
+          "title": "Geometry-to-Image Synthesis-Driven Generative Point Cloud Registration",
+          "role_hint": "parallel",
+          "reason": "Generative deep-learning registration method; supervision details unclear."
+        },
+        {
+          "candidate_id": "c-93d19613",
+          "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+          "role_hint": "unknown",
+          "reason": "3D low-level vision survey; only tangentially related to registration."
+        },
+        {
+          "candidate_id": "c-5fad4f45",
+          "title": "Advances in Global Solvers for 3D Vision",
+          "role_hint": "unknown",
+          "reason": "Global solvers survey covers registration but not point-cloud-specific deep unsupervised."
+        },
+        {
+          "candidate_id": "c-89fd7b7e",
+          "title": "Improving Deep Learning Point Cloud Registration with Semantic Labels",
+          "role_hint": "module",
+          "reason": "Deep learning PCR augmented by semantic labels; supervised variant module."
+        },
+        {
+          "candidate_id": "c-33b54bdb",
+          "title": "Deep Learning Registration Algorithm for Point Cloud Data and BIM Information Modeling Technology",
+          "role_hint": "parallel",
+          "reason": "Deep learning PCR with BIM integration; supervised application paper."
+        },
+        {
+          "candidate_id": "c-810a25a3",
+          "title": "An efficient point cloud registration method based on deep learning framework",
+          "role_hint": "parallel",
+          "reason": "Deep learning PCR method; likely supervised, parallel work."
+        },
+        {
+          "candidate_id": "c-0e870ab7",
+          "title": "Benchmark of multi-view Terrestrial Laser Scanning Point Cloud data registration algorithms",
+          "role_hint": "reference",
+          "reason": "Benchmark of classical TLS PCR algorithms; not deep learning."
+        },
+        {
+          "candidate_id": "c-471f8b2e",
+          "title": "Crane-YU/rethink_rotation",
+          "role_hint": "repo",
+          "reason": "Official repo for AAAI 2023 rotation-invariant PCR; useful parallel baseline code."
+        },
+        {
+          "candidate_id": "c-7ad54da6",
+          "title": "jundaozhilian/DeepVCP-PyTorch",
+          "role_hint": "repo",
+          "reason": "Real repo for a LiDAR point cloud registration deep model, related but supervised/VoxelNet-style, lacks unsupervised aspect."
+        },
+        {
+          "candidate_id": "c-3e035541",
+          "title": "ScanNet",
+          "role_hint": "dataset",
+          "reason": "Well-known RGB-D 3D point cloud dataset widely used as benchmark for indoor registration tasks."
+        },
+        {
+          "candidate_id": "c-fb27e1e5",
+          "title": "ModelNet40",
+          "role_hint": "dataset",
+          "reason": "Canonical benchmark dataset extensively used in deep learning point cloud registration experiments."
+        }
+      ],
+      "needs_manual": [],
+      "rejected": [
+        {
+          "candidate_id": "c-54876add",
+          "title": "Automatic marker-free registration based on similar tetrahedras for single-tree point clouds",
+          "role_hint": "reference",
+          "reason": "Forestry domain marker-free registration; no deep learning; cross-domain for this topic."
+        },
+        {
+          "candidate_id": "c-e40394dc",
+          "title": "Cortical surface registration using unsupervised learning",
+          "role_hint": "reference",
+          "reason": "Medical cortical surface registration, not 3D point cloud domain."
+        },
+        {
+          "candidate_id": "c-d42f0a1d",
+          "title": "A Tutorial about Random Neural Networks in Supervised Learning",
+          "role_hint": "reference",
+          "reason": "Random neural networks tutorial; no 3D/point cloud relevance."
+        },
+        {
+          "candidate_id": "c-d56f89e1",
+          "title": "URLB: Unsupervised Reinforcement Learning Benchmark",
+          "role_hint": "reference",
+          "reason": "Reinforcement learning benchmark; no connection to point cloud registration."
+        },
+        {
+          "candidate_id": "c-a42632e3",
+          "title": "Unsupervised Deep Representation Learning for Real-Time Tracking",
+          "role_hint": "reference",
+          "reason": "Visual tracking paper; no point cloud registration relevance."
+        },
+        {
+          "candidate_id": "c-e1d5318c",
+          "title": "ShapeAdv: Generating Shape-Aware Adversarial 3D Point Clouds",
+          "role_hint": "reference",
+          "reason": "Adversarial perturbation paper on point clouds; no registration task."
+        },
+        {
+          "candidate_id": "c-c9f1b2de",
+          "title": "Novel Approaches for Point Cloud Analysis with Evidential Methods: A Multifaceted Approach to Object Pose Estimation, Po",
+          "role_hint": "reference",
+          "reason": "Forestry PCR with evidential methods; cross-domain and not unsupervised deep."
+        },
+        {
+          "candidate_id": "c-4ef2371b",
+          "title": "marecek199/Thesis_3DDataGenerationSegmentationRegistration",
+          "role_hint": "repo",
+          "reason": "Diploma thesis repo focuses on 3D point cloud segmentation for bin-picking, not registration."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-e9e4b8d7",
+          "title": "Deep Closest Point: Learning Representations for Point Cloud Registration",
+          "role_hint": "baseline",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-23fc8dab",
+          "title": "3D Point Cloud Registration with Multi-Scale Architecture and Unsupervised Transfer Learning",
+          "role_hint": "unknown",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-48631d21",
+          "title": "Deep Learning for 3D Point Clouds: A Survey",
+          "role_hint": "unknown",
+          "year": 2019
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-c61d07ac",
+          "title": "Deep Models with Fusion Strategies for MVP Point Cloud Registration",
+          "role_hint": "parallel",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-ba5c109c",
+          "title": "Geometry-to-Image Synthesis-Driven Generative Point Cloud Registration",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-89fd7b7e",
+          "title": "Improving Deep Learning Point Cloud Registration with Semantic Labels",
+          "role_hint": "module",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-810a25a3",
+          "title": "An efficient point cloud registration method based on deep learning framework",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-33b54bdb",
+          "title": "Deep Learning Registration Algorithm for Point Cloud Data and BIM Information Modeling Technology",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-471f8b2e",
+          "title": "Crane-YU/rethink_rotation",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-7ad54da6",
+          "title": "jundaozhilian/DeepVCP-PyTorch",
+          "role_hint": "repo",
+          "year": null
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-e28bab79",
+          "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+          "role_hint": "reference",
+          "year": 2016
+        },
+        {
+          "candidate_id": "c-0e870ab7",
+          "title": "Benchmark of multi-view Terrestrial Laser Scanning Point Cloud data registration algorithms",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-3e035541",
+          "title": "ScanNet",
+          "role_hint": "dataset",
+          "year": null
+        },
+        {
+          "candidate_id": "c-fb27e1e5",
+          "title": "ModelNet40",
+          "role_hint": "dataset",
+          "year": null
+        },
+        {
+          "candidate_id": "c-5fad4f45",
+          "title": "Advances in Global Solvers for 3D Vision",
+          "role_hint": "unknown",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-93d19613",
+          "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+          "role_hint": "unknown",
+          "year": 2025
+        }
+      ],
+      "long_tail_candidates": []
+    },
+    "dataset_and_repo_notes": [
+      "ModelNet40 (c-fb27e1e5) is the canonical shape benchmark for PCR; use clean-pairs variant for unsupervised evaluation.",
+      "ScanNet (c-3e035541) supports indoor RGB-D partial overlap PCR evaluation, complementary to ModelNet40.",
+      "rethink_rotation (c-471f8b2e) provides rotation-invariant PCR code useful as parallel baseline implementation.",
+      "DeepVCP-PyTorch (c-7ad54da6) is a LiDAR PCR reference impl; helpful for outdoor registration comparisons."
+    ],
+    "work_suggestions": [
+      "Anchor unsupervised deep PCR taxonomy around c-23fc8dab and contrast against DCP (c-e9e4b8d7) on ModelNet40 (c-fb27e1e5) and ScanNet (c-3e035541).",
+      "Use c-89fd7b7e as a supervised semantic module comparison to isolate the contribution of unsupervised losses.",
+      "Treat c-ba5c109c as a generative alternative paradigm; discuss unsupervised vs generative supervision trade-offs.",
+      "Use c-c61d07ac low-overlap MVP results to motivate unsupervised methods under partial overlap regimes.",
+      "Reference c-48631d21 survey to structure the deep learning PCR taxonomy (correspondence-, pose-, and end-to-end-based families)."
+    ],
+    "risk_reminders": [
+      "Core unsupervised-deep evidence is sparse; only c-23fc8dab is a direct match.",
+      "Most parallel candidates (c-c61d07ac, c-ba5c109c, c-89fd7b7e, c-810a25a3, c-33b54bdb, c-7ad54da6) are supervised, not unsupervised.",
+      "Re02 retrieved no canonical Transformer/contrastive PCR papers; manual expansion needed.",
+      "OpenAlex and Semantic Scholar returned empty; coverage gaps for citation context.",
+      "Reject list contains superficially matching but off-topic items; ensure they are not cited as PCR evidence."
+    ],
+    "manual_questions": [
+      "Are you targeting rigid registration only, or also non-rigid / category-level pose estimation?",
+      "Which datasets are in scope: ModelNet40, ScanNet, KITTI, 3DMatch, or others?",
+      "Is the focus Transformer/GNN backbones, contrastive self-supervision, or both?",
+      "Is outdoor LiDAR registration in scope, or indoor-only?",
+      "What evaluation protocol: clean ModelNet40, partial overlap, or real scans?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [],
+    "weak_points": [
+      "evidence_gaps is empty; gap declaration is missing despite thin direct-match coverage.",
+      "Only one true unsupervised-deep candidate (c-23fc8dab); pool is dominated by supervised or tangential work.",
+      "reference group mixes datasets with generic 3D-vision items (c-5fad4f45, c-93d19613) lacking clear relevance anchors.",
+      "candidate_pool_stats reports 19 papers but synthesis only lists 13 candidate_ids; pool-vs-candidate mismatch unexplained.",
+      "manual_questions are good but no direction_recommendation narrows scope before opening report."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Baseline DCP plus one unsupervised anchor (c-23fc8dab) and standard datasets exist, but evidence_gaps is empty and the candidate pool is thin on true unsupervised-deep work. One revision round to declare gaps and tighten scope is needed."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于深度学习的无监督三维点云配准算法研究",
+      "domain_route": "vision_3d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "crossref": 8,
+        "arxiv": 12,
+        "github": 3
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 30,
+      "queries": [
+        "point point",
+        "point registration",
+        "point that",
+        "point cloud",
+        "registration point",
+        "registration registration",
+        "registration that",
+        "registration cloud"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 4,
+      "seeds_rejected": 1,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 222.88
+}

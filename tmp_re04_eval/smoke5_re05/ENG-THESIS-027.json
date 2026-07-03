@@ -1,0 +1,1685 @@
+{
+  "project_id": "agent-re04-788c40bf",
+  "raw_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+  "parsed_topic": {
+    "raw_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+    "normalized_topic": "YOLOv5-based aircraft detection in remote sensing imagery",
+    "domain_route": "remote_sensing",
+    "domain_confidence": 0.92,
+    "method_terms": [
+      "YOLOv5",
+      "YOLO",
+      "deep learning object detection",
+      "single-stage detector",
+      "anchor-based detector"
+    ],
+    "task_terms": [
+      "aircraft detection",
+      "object detection in remote sensing images",
+      "small object detection",
+      "oriented object detection"
+    ],
+    "object_terms": [
+      "remote sensing imagery",
+      "aerial imagery",
+      "satellite images",
+      "aircraft targets",
+      "airplanes"
+    ],
+    "query_atoms_en": [
+      "YOLOv5 remote sensing aircraft detection",
+      "airplane detection aerial imagery",
+      "small object detection satellite image",
+      "oriented bounding box aircraft detection",
+      "YOLOv5 aerial image object detection",
+      "aircraft detection deep learning remote sensing"
+    ],
+    "query_atoms_zh": [
+      "YOLOv5 遥感影像 飞机检测",
+      "遥感图像 飞机目标检测",
+      "YOLOv5 航空影像 目标检测",
+      "小目标检测 遥感 飞机",
+      "旋转目标检测 遥感 飞机",
+      "深度学习 卫星图像 飞机检测"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "ieeexplore.ieee.org",
+      "mdpi.com"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+    "domain_route": "remote_sensing",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "YOLOv5 aircraft detection",
+        "YOLOv5 remote sensing imagery"
+      ],
+      "method_task": [
+        "YOLOv5 aircraft detection",
+        "YOLOv5 object detection in remote sensing images",
+        "YOLO aircraft detection",
+        "YOLO object detection in remote sensing images"
+      ],
+      "object_task": [
+        "remote sensing imagery aircraft detection",
+        "remote sensing imagery object detection in remote sensing images",
+        "aerial imagery aircraft detection",
+        "aerial imagery object detection in remote sensing images"
+      ],
+      "dataset": [
+        "aircraft detection dataset",
+        "remote sensing imagery dataset"
+      ],
+      "repo": [
+        "aircraft detection github",
+        "aircraft detection implementation",
+        "YOLOv5 aircraft detection"
+      ],
+      "survey": [
+        "aircraft detection survey",
+        "remote sensing survey"
+      ],
+      "benchmark": [
+        "aircraft detection benchmark"
+      ],
+      "baseline": [
+        "YOLOv5 aircraft detection",
+        "YOLOv5 object detection in remote sensing images",
+        "YOLO aircraft detection",
+        "YOLO object detection in remote sensing images"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "YOLOv5",
+        "YOLO",
+        "deep learning object detection",
+        "single-stage detector",
+        "anchor-based detector"
+      ],
+      "task_terms": [
+        "aircraft detection",
+        "object detection in remote sensing images",
+        "small object detection",
+        "oriented object detection"
+      ],
+      "object_terms": [
+        "remote sensing imagery",
+        "aerial imagery",
+        "satellite images",
+        "aircraft targets",
+        "airplanes"
+      ],
+      "domain_route": "remote_sensing"
+    },
+    "fb_atom": "YOLOv5 remote sensing aircraft detection",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper backends to surface core YOLOv5 + remote-sensing aircraft detection literature",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "YOLOv5 aircraft detection remote sensing",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv is the spine; this returns the core YOLOv5 + remote-sensing aircraft papers",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "small object detection aerial imagery",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "aircraft in remote sensing are small objects; this captures small-object detection literature applicable to the task",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "YOLO aerial image object detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex gives broad academic coverage beyond arxiv for YOLO-family detectors on aerial scenes",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "oriented bounding box satellite airplane",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "oriented detection is a key task term; this surfaces rotation-aware detectors for airplanes in satellite imagery",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark / survey / recent-advances variants for YOLOv5 aircraft detection",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "aircraft detection benchmark remote sensing",
+            "target_role": "survey",
+            "why_call": "benchmark queries surface standardized datasets (e.g., DOTA, DIOR) commonly used for aircraft evaluation",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "YOLOv5 improvements small objects",
+            "target_role": "reference",
+            "why_call": "recent-advances style query to find variants/enhancements of YOLOv5 tailored to small objects relevant to aircraft",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "deep learning airplane detection satellite",
+            "target_role": "reference",
+            "why_call": "crossref surfaces journal papers (IEEE TGRS, MDPI Remote Sensing) on deep-learning airplane detection",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "oriented object detection survey",
+            "target_role": "survey",
+            "why_call": "oriented object detection is a recurring task term; survey query collects comparative method papers adjacent to the topic",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code repositories and public datasets for YOLOv5 aircraft detection in remote sensing imagery",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "yolov5 aircraft",
+            "target_role": "repo",
+            "why_call": "github query for YOLOv5 aircraft repos - likely implementation of YOLOv5 trained on airplane/remote-sensing data",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "airplane detection aerial",
+            "target_role": "repo",
+            "why_call": "concrete-object github query to surface repos focused on airplane detection in aerial/satellite imagery",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "yolov5 remote sensing",
+            "target_role": "repo",
+            "why_call": "broader github query for YOLOv5 applied to remote sensing tasks, including aircraft detection",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "remote sensing airplane dataset",
+            "target_role": "dataset",
+            "why_call": "openalex query to surface papers that introduce or use airplane remote-sensing datasets (e.g., DIOR, DOTA-plane subset)",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "ieeexplore.ieee.org",
+      "mdpi.com"
+    ],
+    "arxiv_queries": [
+      "YOLOv5 aircraft detection remote sensing",
+      "small object detection aerial imagery",
+      "aircraft detection benchmark remote sensing",
+      "YOLOv5 improvements small objects"
+    ],
+    "openalex_queries": [
+      "YOLO aerial image object detection",
+      "oriented bounding box satellite airplane",
+      "oriented object detection survey",
+      "remote sensing airplane dataset"
+    ],
+    "crossref_queries": [
+      "deep learning airplane detection satellite"
+    ],
+    "github_queries": [
+      "yolov5 aircraft",
+      "airplane detection aerial",
+      "yolov5 remote sensing"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "unified controller for take-off and landing for a fixed-wing aircraft",
+      "candidate_id": "c-c5c8d891",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Unified controller for take-off and landing for a fixed-wing aircraft",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2006.12635v1",
+      "identifier": "2006.12635v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Take-off and landing are the most important maneuvers for an aircraft's flight. Deployment for small fixed-wing aircraft is usually made by hand but when payload increases, take-off, and landing maneuvers are then performed on a runway making the procedures more complex. For that reason, we address the performance of the two maneuvers in order to develop a unique controller using the feedback control technique. We present the longitudinal aircraft dynamics to model the take-off and landing considering the rolling resistance forces during ground roll through a friction model. We also present the controller design for such a model. A stability proof is conducted to validate the stability of the system with the developed control law. Additionally, simulations are carried out to corroborate that the control law is effective applied to the dynamic model presented.",
+      "extra": {}
+    },
+    {
+      "stable_id": "studies of transonic aircraft flows and prediction of initial buffet onset using large-eddy simulations",
+      "candidate_id": "c-f714fba2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Studies of Transonic Aircraft Flows and Prediction of Initial Buffet Onset Using Large-Eddy Simulations",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2407.07180v1",
+      "identifier": "2407.07180v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This article utilizes the Large-Eddy Simulation (LES) paradigm with a physics-based turbulence modeling approach, including a dynamic subgrid-scale model and an equilibrium wall model, to examine the flow over the NASA transonic Common Research Model (CRM), a flow configuration that has been the focus of several AIAA Drag PredictionWorkshops (DPWs). The current work explores sensitivities to laminar-to-turbulent transition, wind tunnel mounting system, grid resolution, and grid topology and suggests current best practices in the context of large-eddy simulations of transonic aircraft flows. It is found that promoting the flow transition to turbulence via an array of cylindrical trip dots, including the sting mounting system in the simulations, and leveraging stranded boundary layer grids all tend to improve the quality of the LES solutions. Non-monotonic grid convergence in the LES calculations is observed to be strongly sensitive to grid topology, and stranded meshes rectify this issue relative to their hexagonal close-packed (HCP) counterparts. The details of the boundary layer profiles both at the leading edge of the wing and within the shock-induced separation bubble are studied, with thicknesses and integral measures reported, providing details about the boundary layer characteristics to turbulence modelers not typically available from complex aircraft flows. Finally, an assessment of the initial buffet prediction capabilities of LES is made in the context of a simpler NACA 0012 flow, with computational predictions showing reasonable agreement with available experimental data for the angle of attack at initial buffet onset and shock oscillation frequency associated with sustained buffet.",
+      "extra": {}
+    },
+    {
+      "stable_id": "adversarial attack on yolov5 for traffic and road sign detection",
+      "candidate_id": "c-3e24dd9c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Adversarial Attack On Yolov5 For Traffic And Road Sign Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2306.06071v2",
+      "identifier": "2306.06071v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This paper implements and investigates popular adversarial attacks on the YOLOv5 Object Detection algorithm. The paper explores the vulnerability of the YOLOv5 to adversarial attacks in the context of traffic and road sign detection. The paper investigates the impact of different types of attacks, including the Limited memory Broyden Fletcher Goldfarb Shanno (L-BFGS), the Fast Gradient Sign Method (FGSM) attack, the Carlini and Wagner (C&W) attack, the Basic Iterative Method (BIM) attack, the Projected Gradient Descent (PGD) attack, One Pixel Attack, and the Universal Adversarial Perturbations attack on the accuracy of YOLOv5 in detecting traffic and road signs. The results show that YOLOv5 is susceptible to these attacks, with misclassification rates increasing as the magnitude of the perturbations increases. We also explain the results using saliency maps. The findings of this paper have important implications for the safety and reliability of object detection algorithms used in traffic and transportation systems, highlighting the need for more robust and secure models to ensure their effectiveness in real-world applications.",
+      "extra": {}
+    },
+    {
+      "stable_id": "yolov5 vs. yolov8 in marine fisheries: balancing class detection and instance count",
+      "candidate_id": "c-3280be7e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2405.02312v1",
+      "identifier": "2405.02312v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This paper presents a comparative study of object detection using YOLOv5 and YOLOv8 for three distinct classes: artemia, cyst, and excrement. In this comparative study, we analyze the performance of these models in terms of accuracy, precision, recall, etc. where YOLOv5 often performed better in detecting Artemia and cysts with excellent precision and accuracy. However, when it came to detecting excrement, YOLOv5 faced notable challenges and limitations. This suggests that YOLOv8 offers greater versatility and adaptability in detection tasks while YOLOv5 may struggle in difficult situations and may need further fine-tuning or specialized training to enhance its performance. The results show insights into the suitability of YOLOv5 and YOLOv8 for detecting objects in challenging marine environments, with implications for applications such as ecological research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "hic-yolov5: improved yolov5 for small object detection",
+      "candidate_id": "c-4b1b9eed",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2309.16393v2",
+      "identifier": "2309.16393v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Small object detection has been a challenging problem in the field of object detection. There has been some works that proposes improvements for this task, such as adding several attention blocks or changing the whole structure of feature fusion networks. However, the computation cost of these models is large, which makes deploying a real-time object detection system unfeasible, while leaving room for improvement. To this end, an improved YOLOv5 model: HIC-YOLOv5 is proposed to address the aforementioned problems. Firstly, an additional prediction head specific to small objects is added to provide a higher-resolution feature map for better prediction. Secondly, an involution block is adopted between the backbone and neck to increase channel information of the feature map. Moreover, an attention mechanism named CBAM is applied at the end of the backbone, thus not only decreasing the computation cost compared with previous works but also emphasizing the important information in both channel and spatial domain. Our result shows that HIC-YOLOv5 has improved mAP@[.5:.95] by 6.42% and mAP@0.5 by 9.38% on VisDrone-2019-DET dataset.",
+      "extra": {}
+    },
+    {
+      "stable_id": "yolov5s-gtb: light-weighted and improved yolov5s for bridge crack detection",
+      "candidate_id": "c-4da553a2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2206.01498v1",
+      "identifier": "2206.01498v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In response to the situation that the conventional bridge crack manual detection method has a large amount of human and material resources wasted, this study is aimed to propose a light-weighted, high-precision, deep learning-based bridge apparent crack recognition model that can be deployed in mobile devices' scenarios. In order to enhance the performance of YOLOv5, firstly, the data augmentation methods are supplemented, and then the YOLOv5 series algorithm is trained to select a suitable basic framework. The YOLOv5s is identified as the basic framework for the light-weighted crack detection model through experiments for comparison and validation.By replacing the traditional DarkNet backbone network of YOLOv5s with GhostNet backbone network, introducing Transformer multi-headed self-attention mechanism and bi-directional feature pyramid network (BiFPN) to replace the commonly used feature pyramid network, the improved model not only has 42% fewer parameters and faster inference response, but also significantly outperforms the original model in terms of accuracy and mAP (8.5% and 1.1% improvement, respectively). Luckily each improved part has a positive impact on the result. This paper provides a feasible idea to establish a digital operation management system in the field of highway and bridge in the future and to implement the whole life cycle structure health monitoring of civil infrastructure in China.",
+      "extra": {}
+    },
+    {
+      "stable_id": "utd-yolov5: a real-time underwater targets detection method based on attention improved yolov5",
+      "candidate_id": "c-afd7573c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "UTD-Yolov5: A Real-time Underwater Targets Detection Method based on Attention Improved YOLOv5",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2207.00837v1",
+      "identifier": "2207.00837v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "As the treasure house of nature, the ocean contains abundant resources. But the coral reefs, which are crucial to the sustainable development of marine life, are facing a huge crisis because of the existence of COTS and other organisms. The protection of society through manual labor is limited and inefficient. The unpredictable nature of the marine environment also makes manual operations risky. The use of robots for underwater operations has become a trend. However, the underwater image acquisition has defects such as weak light, low resolution, and many interferences, while the existing target detection algorithms are not effective. Based on this, we propose an underwater target detection algorithm based on Attention Improved YOLOv5, called UTD-Yolov5. It can quickly and efficiently detect COTS, which in turn provides a prerequisite for complex underwater operations. We adjusted the original network architecture of YOLOv5 in multiple stages, including: replacing the original Backbone with a two-stage cascaded CSP (CSP2); introducing the visual channel attention mechanism module SE; designing random anchor box similarity calculation method etc. These operations enable UTD-Yolov5 to detect more flexibly and capture features more accurately. In order to make the network more efficient, we also propose optimization methods such as WBF and iterative refinement mechanism. This paper conducts a lot of experiments based on the CSIRO dataset [1]. The results show that the average accuracy of our UTD-Yolov5 reaches 78.54%, which is a great improvement compared to the baseline.",
+      "extra": {}
+    },
+    {
+      "stable_id": "fire detection from image and video using yolov5",
+      "candidate_id": "c-c6d76be4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Fire Detection From Image and Video Using YOLOv5",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2310.06351v1",
+      "identifier": "2310.06351v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "For the detection of fire-like targets in indoor, outdoor and forest fire images, as well as fire detection under different natural lights, an improved YOLOv5 fire detection deep learning algorithm is proposed. The YOLOv5 detection model expands the feature extraction network from three dimensions, which enhances feature propagation of fire small targets identification, improves network performance, and reduces model parameters. Furthermore, through the promotion of the feature pyramid, the top-performing prediction box is obtained. Fire-YOLOv5 attains excellent results compared to state-of-the-art object detection networks, notably in the detection of small targets of fire and smoke with mAP 90.5% and f1 score 88%. Overall, the Fire-YOLOv5 detection model can effectively deal with the inspection of small fire targets, as well as fire-like and smoke-like objects with F1 score 0.88. When the input image size is 416 x 416 resolution, the average detection time is 0.12 s per frame, which can provide real-time forest fire detection. Moreover, the algorithm proposed in this paper can also be applied to small target detection under other complicated situations. The proposed system shows an improved approach in all fire detection metrics such as precision, recall, and mean average precision.",
+      "extra": {}
+    },
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-8f43511b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-61a78b71",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the methanol multibeam survey",
+      "candidate_id": "c-290b6a1c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Methanol Multibeam Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2012,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1210.0979v1",
+      "identifier": "1210.0979v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A purpose built 7-beam methanol receiver, installed on the Parkes Radio Telescope, was used to survey the Galactic plane for newly forming high mass stars, pinpointed by strong methanol maser emission at 6.7 GHz. The Methanol Multibeam (MMB) survey observed over 60% of the Galactic plane, detecting close to 1000 sources. The MMB survey provides a huge resource for studies of high-mass star formation, an important stage in the evolution of the interstellar medium. The MMB survey is also a valuable resource for investigations into the structure and dynamics of our Galaxy: with narrow velocity ranges of emission (typically only a few km/s) and velocities closely correlated with the systemic velocity of their surrounding molecular clouds, 6.7-GHz methanol masers provide estimates of the spiral arm velocities and their structure. I will discuss the techniques and properties of the MMB survey, before outlining recent results, which include the identification of regions of enhanced star formation believed to be indicative of the origins of the spiral arms and the interaction of the Galactic bar with the 3-kpc arms. I will also discuss the various follow-up programmes including a study of magnetic fields through associated hydroxyl masers.",
+      "extra": {}
+    },
+    {
+      "stable_id": "irsf/sirius jhks near-infrared variable star survey in the magellanic clouds",
+      "candidate_id": "c-5c69f6dd",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "IRSF/SIRIUS JHKs near-infrared variable star survey in the Magellanic Clouds",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2009,
+      "venue": null,
+      "url": "http://arxiv.org/abs/0907.5244v1",
+      "identifier": "0907.5244v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We carried out a NIR variable star survey toward the Large and Small Magellanic Clouds using the InfraRed Survey Facility (IRSF) at Sutherland, South African Astronomical Observatory. This survey project was initiated in Dember 2000, and since then, we kept monitoring a total area of 3 square degrees along the LMC bar and also an area of 1 square degree around the center of the SMC, sufficiently large to do statistical analysis and to make complete catalog of variable red giants in the Magellanic Clouds. The detection limits (S/N=10) of the survey are 17.0, 16.5 and 15.5 at J, H and Ks, respectively. In this article, we present some results on infrared variables that are not detected by the previous optical surveys. We show that they do not fall on the standard period-Ks magnitude relation for Mira-type variables pulsating in the fundamental mode.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the sami galaxy survey: first 1000 galaxies",
+      "candidate_id": "c-b2c0183a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The SAMI Galaxy Survey: first 1000 galaxies",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2014,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1409.4147v1",
+      "identifier": "1409.4147v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The Sydney-AAO Multi-object Integral field spectrograph (SAMI) Galaxy Survey is an ongoing project to obtain integral field spectroscopic observations of ~3400 galaxies by mid-2016. Including the pilot survey, a total of ~1000 galaxies have been observed to date, making the SAMI Galaxy Survey the largest of its kind in existence. This unique dataset allows a wide range of investigations into different aspects of galaxy evolution.\n  The first public data from the SAMI Galaxy Survey, consisting of 107 galaxies drawn from the full sample, has now been released. By giving early access to SAMI data for the entire research community, we aim to stimulate research across a broad range of topics in galaxy evolution. As the sample continues to grow, the survey will open up a new and unique parameter space for galaxy evolution studies.",
+      "extra": {}
+    },
+    {
+      "stable_id": "roman galactic plane survey definition committee report",
+      "candidate_id": "c-b28a73b4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Roman Galactic Plane Survey Definition Committee Report",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2511.07494v1",
+      "identifier": "2511.07494v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The Roman Galactic Plane Survey (RGPS) is a 700-hour program approved for early definition as a community-designed General Astrophysics Survey. It was selected following a proposal call for science programs that would benefit from an early community-based definition (Sanderson et al 2024). The community was invited to submit white papers and science pitches with a deadline of May 20, 2024; the Roman Galactic Plane Survey Definition Committee (RGPS-DC) first met on Sep 11, 2024. Based on the input provided, the RGPS-DC recommends a survey consisting of three elements: (1) a wide-field science element (691 sq deg, 541 hrs) covering the Galactic plane, Galactic latitude |b|<2 deg and Galactic longitude l=+50.1 deg to -79 deg (281 deg), in four filters (F129, F159, F184, and F213) with higher latitude extensions for the bulge, the Serpens South/W40 star formation region, and Carina, (2) a time-domain science element (19 sq deg , 130 hrs) of six fields, including the full Nuclear Stellar Disk (NSD) and Central Molecular Zone (CMZ), with coverage in seven filters and repeat observations in one or more filters with cadences from 11 minutes to weeks, and (3) a deep-field/spectroscopic science element (4 sq deg , 30 hrs) consisting of fifteen Roman pointings (with a wide range of extinction, diffuse emission, stellar density and population) using longer exposure times in seven filters in addition to grism and prism observations. This document summarizes the science that can be done with this survey, the process of survey definition, and details on all of the program elements.",
+      "extra": {}
+    },
+    {
+      "stable_id": "remote sensing spatiotemporal vision-language models: a comprehensive survey",
+      "candidate_id": "c-ebc89fc4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Remote Sensing SpatioTemporal Vision-Language Models: A Comprehensive Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2412.02573v3",
+      "identifier": "2412.02573v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The interpretation of multi-temporal remote sensing imagery is critical for monitoring Earth's dynamic processes-yet previous change detection methods, which produce binary or semantic masks, fall short of providing human-readable insights into changes. Recent advances in Vision-Language Models (VLMs) have opened a new frontier by fusing visual and linguistic modalities, enabling spatio-temporal vision-language understanding: models that not only capture spatial and temporal dependencies to recognize changes but also provide a richer interactive semantic analysis of temporal images (e.g., generate descriptive captions and answer natural-language queries). In this survey, we present the first comprehensive review of RS-STVLMs. The survey covers the evolution of models from early task-specific models to recent general foundation models that leverage powerful large language models. We discuss progress in representative tasks, such as change captioning, change question answering, and change grounding. Moreover, we systematically dissect the fundamental components and key technologies underlying these models, and review the datasets and evaluation metrics that have driven the field. By synthesizing task-level insights with a deep dive into shared architectural patterns, we aim to illuminate current achievements and chart promising directions for future research in spatio-temporal vision-language understanding for remote sensing. We will keep tracing related works at https://github.com/Chen-Yang-Liu/Awesome-RS-SpatioTemporal-VLMs",
+      "extra": {}
+    },
+    {
+      "stable_id": "tree detection and species classification in a mixed species forest using unoccupied aircraft system (uas) rgb and multispectral imagery",
+      "candidate_id": "c-a3174bb0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Tree Detection and Species Classification in a Mixed Species Forest Using Unoccupied Aircraft System (UAS) RGB and Multispectral Imagery",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "10.3390/rs16244699",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>Object detection in remotely sensed satellite pictures is fundamental in many fields such as biophysical and environmental monitoring. While deep learning algorithms are constantly evolving, they have been mostly implemented and tested on popular ground-taken photos. This paper critically evaluates and compares a suite of advanced object detection algorithms customized for the task of identifying aircraft within satellite imagery. The goal is to enable researchers to choose efficiently from algorithms that are trainable and usable in real time on a deep learning infrastructure with moderate requirements. Using the large HRPlanesV2 dataset, together with rigorous validation with the GDIT dataset, this research encompasses an array of methodologies including YOLO versions 5, 8, and 10, Faster RCNN, CenterNet, RetinaNet, RTMDet, DETR, and grounding DINO, all trained from scratch. This exhaustive training and validation study reveals YOLOv5 as the pre-eminent model for the specific case of identifying airplanes from remote sensing data, showcasing high precision and adaptability across diverse imaging conditions. This research highlights the nuanced performance landscapes of these algorithms, with YOLOv5 emerging as a robust solution for aerial object detection, underlining its importance through superior mean average precision, recall, and intersection over union scores. The findings described here underscore the fundamental role of algorithm selection aligned with the specific demands of satellite imagery analysis and extend a comprehensive framework to evaluate model efficacy. This aims to foster exploration and innovation in the realm of remote sensing object detection, paving the way for improved satellite imagery applications.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "advancing real-time military aircraft detection: a comprehensive comparative benchmark of object detection frameworks",
+      "candidate_id": "c-2df0a27e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advancing Real-Time Military Aircraft Detection: a Comprehensive Comparative Benchmark of Object Detection Frameworks",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 International Telecommunications Conference (ITC-Egypt)",
+      "url": "https://doi.org/10.1109/itc-egypt66095.2025.11186680",
+      "identifier": "10.1109/itc-egypt66095.2025.11186680",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "assessment on the addsafe benchmark simulator of an h-infinity fault detection design for aircraft",
+      "candidate_id": "c-d8439248",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Assessment on the ADDSAFE Benchmark Simulator of an H-infinity Fault Detection Design for Aircraft",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2012,
+      "venue": "IFAC Proceedings Volumes",
+      "url": "https://doi.org/10.3182/20120829-3-mx-2028.00202",
+      "identifier": "10.3182/20120829-3-mx-2028.00202",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "ewag grinders set the benchmark",
+      "candidate_id": "c-d2da1c1c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Ewag grinders set the benchmark",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2009,
+      "venue": "Aircraft Engineering and Aerospace Technology",
+      "url": "https://doi.org/10.1108/aeat.2009.12781eab.001",
+      "identifier": "10.1108/aeat.2009.12781eab.001",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "anujithm/autonomous-taxiing-of-aircraft.github.io",
+      "candidate_id": "c-848a20dc",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "AnujithM/Autonomous-Taxiing-of-Aircraft.github.io",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/AnujithM/Autonomous-Taxiing-of-Aircraft.github.io",
+      "identifier": null,
+      "description": "Our approach integrates lane and object detection algorithms to automate the aircraft taxiing process, ensuring collision avoidance and precise stopping. The navigation algorithm controls steering and halts the aircraft if the taxiway ends or the lane is undetected.",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 0,
+        "language": "Python"
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "YOLOv5 aircraft detection|YOLOv5 remote sensing imagery",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "aircraft detection dataset|remote sensing imagery dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 aircraft detection|YOLOv5 object detection in remote sensing images|YOLO aircraft detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 aircraft detection|YOLOv5 remote sensing imagery",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 aircraft detection|YOLOv5 object detection in remote sensing images|YOLO aircraft detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "aircraft detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "aircraft detection github|aircraft detection implementation|YOLOv5 aircraft detection",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 1,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "YOLOv5 aircraft detection|YOLOv5 remote sensing imagery",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "aircraft detection dataset|remote sensing imagery dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "YOLOv5 aircraft detection|YOLOv5 object detection in remote sensing images|YOLO aircraft detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "aircraft detection survey|remote sensing survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "aircraft detection dataset|remote sensing imagery dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "remote sensing imagery aircraft detection|remote sensing imagery object detection in remote sensing images|aerial imager",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "YOLOv5 aircraft detection|YOLOv5 object detection in remote sensing images|YOLO aircraft detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "YOLOv5 aircraft detection|YOLOv5 remote sensing imagery",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "remote sensing imagery aircraft detection|remote sensing imagery object detection in remote sensing images|aerial imager",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "aircraft detection dataset|remote sensing imagery dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 6,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "aircraft detection survey|remote sensing survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "aircraft detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "detection detection|detection he|detection v5",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Unified controller for take-off and landing for a fixed-wing",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Studies of Transonic Aircraft Flows and Prediction of Initia",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Adversarial Attack On Yolov5 For Traffic And Road Sign Detec",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detec",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-c5c8d891",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [
+        "aircraft"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "remote sensing imagery",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Flight control paper, not computer vision detection.",
+      "reason": "About fixed-wing take-off/landing control. No relevance to YOLOv5 or image-based aircraft detection in remote sensing."
+    },
+    {
+      "candidate_id": "c-f714fba2",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [
+        "aircraft"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "remote sensing imagery",
+        "deep learning",
+        "target detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Aerodynamics simulation, not image detection.",
+      "reason": "CFD/LES study of transonic flows. No connection to object detection or remote sensing imagery."
+    },
+    {
+      "candidate_id": "c-3e24dd9c",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "remote sensing imagery",
+        "aircraft",
+        "aerial imagery"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "Uses YOLOv5 but on road signs, not aircraft.",
+      "reason": "Adversarial robustness study on YOLOv5 for traffic/road sign detection. Method-relevant but wrong domain (street scenes, not remote sensing aircraft)."
+    },
+    {
+      "candidate_id": "c-3280be7e",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "remote sensing imagery",
+        "aircraft",
+        "aerial imagery"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "YOLOv5 comparative study in unrelated marine domain.",
+      "reason": "Compares YOLOv5 vs YOLOv8 in marine fisheries. Method is comparable but objects (artemia/cyst/excrement) are not aircraft."
+    },
+    {
+      "candidate_id": "c-4b1b9eed",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "small object detection",
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "remote sensing imagery",
+        "aircraft"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "YOLOv5 improvement for small objects, generic benchmark.",
+      "reason": "HIC-YOLOv5 improves small object detection on YOLOv5. Method-relevant (small object task); domain not specified as remote sensing aircraft."
+    },
+    {
+      "candidate_id": "c-4da553a2",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "deep learning",
+        "object detection"
+      ],
+      "missing_terms": [
+        "remote sensing imagery",
+        "aircraft",
+        "aerial imagery",
+        "small object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "YOLOv5 variant for bridge cracks, different object class.",
+      "reason": "Lightweight YOLOv5s for bridge crack detection. Shares method (improved YOLOv5) but not remote sensing or aircraft targets."
+    },
+    {
+      "candidate_id": "c-afd7573c",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "deep learning",
+        "object detection"
+      ],
+      "missing_terms": [
+        "remote sensing imagery",
+        "aircraft",
+        "aerial imagery"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "Attention-improved YOLOv5 but underwater domain.",
+      "reason": "Attention-augmented YOLOv5 for underwater target detection. Method parallels but domain (marine, not aerial) and objects differ."
+    },
+    {
+      "candidate_id": "c-c6d76be4",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "deep learning",
+        "object detection"
+      ],
+      "missing_terms": [
+        "remote sensing imagery",
+        "aircraft",
+        "aerial imagery"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "Improved YOLOv5 for fire, wrong target class.",
+      "reason": "YOLOv5-based fire detection. Method-relevant but objects are fire pixels, not aircraft in remote sensing imagery."
+    },
+    {
+      "candidate_id": "c-8f43511b",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "core",
+      "matched_terms": [
+        "oriented object detection",
+        "remote sensing",
+        "deep learning",
+        "object detection"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "aircraft"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct survey on oriented detection in RS, closely relevant.",
+      "reason": "Survey of deep-learning oriented object detection in optical remote sensing images. Directly covers task/domain; useful background for aircraft-oriented detection."
+    },
+    {
+      "candidate_id": "c-61a78b71",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "remote sensing",
+        "aircraft",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "LLM survey coding, not vision detection.",
+      "reason": "Uses LLMs for coding open-ended survey responses. Different discipline entirely."
+    },
+    {
+      "candidate_id": "c-290b6a1c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "aircraft",
+        "remote sensing imagery",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Radio astronomy survey, no relevance.",
+      "reason": "Methanol multibeam radio survey of the Galactic plane. Astronomy, not remote sensing image detection."
+    },
+    {
+      "candidate_id": "c-5c69f6dd",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "aircraft",
+        "remote sensing imagery"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Variable star survey, astronomy domain.",
+      "reason": "NIR variable star survey in Magellanic Clouds. No connection to aircraft detection or YOLOv5."
+    },
+    {
+      "candidate_id": "c-b2c0183a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "aircraft",
+        "remote sensing imagery"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Galaxy survey, unrelated field.",
+      "reason": "SAMI Galaxy Survey uses integral field spectroscopy. Astronomy, not detection in remote sensing imagery."
+    },
+    {
+      "candidate_id": "c-b28a73b4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "aircraft",
+        "remote sensing imagery"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Roman telescope survey definition report.",
+      "reason": "Galactic plane survey planning report. Astronomy domain, not remote sensing aircraft detection."
+    },
+    {
+      "candidate_id": "c-ebc89fc4",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "remote sensing",
+        "remote sensing imagery"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "aircraft",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "RS vision-language survey; adjacent but not detection-focused.",
+      "reason": "Survey of spatio-temporal vision-language models for remote sensing. Tangentially related; useful for multimodal RS context but not aircraft/YOLO detection."
+    },
+    {
+      "candidate_id": "c-a3174bb0",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "remote sensing",
+        "deep learning",
+        "aerial imagery"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "aircraft"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "UAS-based object detection, different object class.",
+      "reason": "Tree detection/species classification from UAS RGB+multispectral imagery. Shares RS aerial detection setting; objects are trees, not aircraft."
+    },
+    {
+      "candidate_id": "c-2df0a27e",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "aircraft detection",
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "remote sensing imagery",
+        "oriented object detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Aircraft detection benchmark; specifics of model/imagery unverified.",
+      "reason": "Comparative benchmark of detection frameworks for military aircraft. No abstract; relevance to YOLOv5 and remote sensing modality is unclear, hence candidate."
+    },
+    {
+      "candidate_id": "c-d8439248",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "aircraft"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "remote sensing imagery",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Fault detection in flight control, not vision.",
+      "reason": "H-infinity fault detection design on ADDSAFE benchmark for aircraft. Control/estimation, not image-based object detection."
+    },
+    {
+      "candidate_id": "c-d2da1c1c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "remote sensing imagery",
+        "aircraft",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Aerospace trade article on grinders, irrelevant.",
+      "reason": "Short article on grinding equipment manufacturer, unrelated to detection research."
+    },
+    {
+      "candidate_id": "c-848a20dc",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "rejected",
+      "matched_terms": [
+        "aircraft"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "remote sensing imagery",
+        "deep learning",
+        "object detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Aircraft taxiing autonomy repo, not detection.",
+      "reason": "Repo about autonomous taxiing with lane/object detection on airport ground. Not satellite/aerial aircraft target detection with YOLOv5."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "No retrieved paper directly evidences YOLOv5 applied to aircraft detection in remote sensing imagery. The strongest match is a generic oriented-object-detection survey (c-8f43511b) covering RS deep-learning methods at task/domain level, plus a comparative military-aircraft detection benchmark (c-2df0a27e) whose modality/model is unverified. Several YOLOv5 method-improvement papers (c-4b1b9eed small-object, c-3e24dd9c robustness, c-4da553a2/c-afd7573c/c-c6d76be4/c-3280be7e variant studies) supply transferable module ideas but none on aircraft/RS. Recommendation: anchor the survey on oriented small-object detection in RS via c-8f43511b as the only tier=core item; treat c-2df0a27e as a parallel benchmark candidate pending manual verification of YOLOv5 usage and imagery modality; use c-4b1b9eed and c-3e24dd9c as module references for small-object heads and robustness evaluation. The student should explicitly confirm whether the aircraft/RS-YOLOv5 primary studies (e.g., DOTA, UCAS-AOD, HRPlanes, RSOD) were missed by retrieval or simply absent — this drives whether to expand search or reframe the survey around the oriented-RS-detection lineage with YOLOv5 as one instance.",
+    "baseline_options": [
+      "c-8f43511b",
+      "c-2df0a27e",
+      "c-4b1b9eed",
+      "c-3e24dd9c"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-8f43511b",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "unknown",
+          "reason": "Direct survey on oriented detection in RS, closely relevant."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-3e24dd9c",
+          "title": "Adversarial Attack On Yolov5 For Traffic And Road Sign Detection",
+          "role_hint": "module",
+          "reason": "Uses YOLOv5 but on road signs, not aircraft."
+        },
+        {
+          "candidate_id": "c-3280be7e",
+          "title": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+          "role_hint": "module",
+          "reason": "YOLOv5 comparative study in unrelated marine domain."
+        },
+        {
+          "candidate_id": "c-4b1b9eed",
+          "title": "HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
+          "role_hint": "module",
+          "reason": "YOLOv5 improvement for small objects, generic benchmark."
+        },
+        {
+          "candidate_id": "c-4da553a2",
+          "title": "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
+          "role_hint": "module",
+          "reason": "YOLOv5 variant for bridge cracks, different object class."
+        },
+        {
+          "candidate_id": "c-afd7573c",
+          "title": "UTD-Yolov5: A Real-time Underwater Targets Detection Method based on Attention Improved YOLOv5",
+          "role_hint": "module",
+          "reason": "Attention-improved YOLOv5 but underwater domain."
+        },
+        {
+          "candidate_id": "c-c6d76be4",
+          "title": "Fire Detection From Image and Video Using YOLOv5",
+          "role_hint": "module",
+          "reason": "Improved YOLOv5 for fire, wrong target class."
+        },
+        {
+          "candidate_id": "c-ebc89fc4",
+          "title": "Remote Sensing SpatioTemporal Vision-Language Models: A Comprehensive Survey",
+          "role_hint": "unknown",
+          "reason": "RS vision-language survey; adjacent but not detection-focused."
+        },
+        {
+          "candidate_id": "c-a3174bb0",
+          "title": "Tree Detection and Species Classification in a Mixed Species Forest Using Unoccupied Aircraft System (UAS) RGB and Multi",
+          "role_hint": "module",
+          "reason": "UAS-based object detection, different object class."
+        },
+        {
+          "candidate_id": "c-2df0a27e",
+          "title": "Advancing Real-Time Military Aircraft Detection: a Comprehensive Comparative Benchmark of Object Detection Frameworks",
+          "role_hint": "parallel",
+          "reason": "Aircraft detection benchmark; specifics of model/imagery unverified."
+        }
+      ],
+      "needs_manual": [],
+      "rejected": [
+        {
+          "candidate_id": "c-c5c8d891",
+          "title": "Unified controller for take-off and landing for a fixed-wing aircraft",
+          "role_hint": "unknown",
+          "reason": "Flight control paper, not computer vision detection."
+        },
+        {
+          "candidate_id": "c-f714fba2",
+          "title": "Studies of Transonic Aircraft Flows and Prediction of Initial Buffet Onset Using Large-Eddy Simulations",
+          "role_hint": "unknown",
+          "reason": "Aerodynamics simulation, not image detection."
+        },
+        {
+          "candidate_id": "c-61a78b71",
+          "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+          "role_hint": "reference",
+          "reason": "LLM survey coding, not vision detection."
+        },
+        {
+          "candidate_id": "c-290b6a1c",
+          "title": "The Methanol Multibeam Survey",
+          "role_hint": "reference",
+          "reason": "Radio astronomy survey, no relevance."
+        },
+        {
+          "candidate_id": "c-5c69f6dd",
+          "title": "IRSF/SIRIUS JHKs near-infrared variable star survey in the Magellanic Clouds",
+          "role_hint": "reference",
+          "reason": "Variable star survey, astronomy domain."
+        },
+        {
+          "candidate_id": "c-b2c0183a",
+          "title": "The SAMI Galaxy Survey: first 1000 galaxies",
+          "role_hint": "reference",
+          "reason": "Galaxy survey, unrelated field."
+        },
+        {
+          "candidate_id": "c-b28a73b4",
+          "title": "Roman Galactic Plane Survey Definition Committee Report",
+          "role_hint": "reference",
+          "reason": "Roman telescope survey definition report."
+        },
+        {
+          "candidate_id": "c-d8439248",
+          "title": "Assessment on the ADDSAFE Benchmark Simulator of an H-infinity Fault Detection Design for Aircraft",
+          "role_hint": "reference",
+          "reason": "Fault detection in flight control, not vision."
+        },
+        {
+          "candidate_id": "c-d2da1c1c",
+          "title": "Ewag grinders set the benchmark",
+          "role_hint": "reference",
+          "reason": "Aerospace trade article on grinders, irrelevant."
+        },
+        {
+          "candidate_id": "c-848a20dc",
+          "title": "AnujithM/Autonomous-Taxiing-of-Aircraft.github.io",
+          "role_hint": "repo",
+          "reason": "Aircraft taxiing autonomy repo, not detection."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-8f43511b",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "unknown",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-4b1b9eed",
+          "title": "HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
+          "role_hint": "module",
+          "year": 2023
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-2df0a27e",
+          "title": "Advancing Real-Time Military Aircraft Detection: a Comprehensive Comparative Benchmark of Object Detection Frameworks",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-a3174bb0",
+          "title": "Tree Detection and Species Classification in a Mixed Species Forest Using Unoccupied Aircraft System (UAS) RGB and Multispectral Imagery",
+          "role_hint": "module",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-3280be7e",
+          "title": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+          "role_hint": "module",
+          "year": 2024
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-3e24dd9c",
+          "title": "Adversarial Attack On Yolov5 For Traffic And Road Sign Detection",
+          "role_hint": "module",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-4da553a2",
+          "title": "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
+          "role_hint": "module",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-afd7573c",
+          "title": "UTD-Yolov5: A Real-time Underwater Targets Detection Method based on Attention Improved YOLOv5",
+          "role_hint": "module",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-c6d76be4",
+          "title": "Fire Detection From Image and Video Using YOLOv5",
+          "role_hint": "module",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-ebc89fc4",
+          "title": "Remote Sensing SpatioTemporal Vision-Language Models: A Comprehensive Survey",
+          "role_hint": "unknown",
+          "year": 2024
+        }
+      ],
+      "long_tail_candidates": []
+    },
+    "dataset_and_repo_notes": [
+      "No aircraft-in-RS dataset card surfaced in retrieval; candidate pool has zero dataset-role items — student must manually pull DOTA / UCAS-AOD / HRPlanes / RSOD / DIOR.",
+      "Only one GitHub repo returned (c-848a20dc) and it is rejected as airport-ground taxiing, not aerial/RS aircraft detection.",
+      "HuggingFace adapter returned 6 rows but none were audited as dataset — likely generic HF search noise; needs manual dataset-hub query for 'aircraft' / 'remote sensing detection'.",
+      "OpenAlex adapter was empty across all queries; citation expansion (round 2) produced seeds only and no resolved papers — forward citation graph on c-8f43511b is recommended for Re03."
+    ],
+    "work_suggestions": [
+      "Anchor the literature review on the RS-oriented-detection lineage using survey c-8f43511b as the only tier=core item; explicitly note the absence of a retrieved YOLOv5-aircraft-RS primary study.",
+      "Treat c-2df0a27e as a candidate parallel benchmark and manually verify (DOI 10.1109/itc-egypt66095.2025.11186680) whether YOLOv5 is included and whether imagery is satellite/aerial before promoting.",
+      "Use c-4b1b9eed (HIC-YOLOv5 small-object head) and c-3e24dd9c (YOLOv5 adversarial eval) as module references for small-aircraft and robustness discussion.",
+      "Search manually for canonical RS-aircraft-YOLOv5 papers (e.g., YOLOv5-DOTA, YOLOv5s on UCAS-AOD/HRPlanes) since the adapter sweep returned none.",
+      "If no primary YOLOv5+aircraft+RS paper can be located, reframe the survey around oriented RS detection (c-8f43511b backbone) and treat YOLOv5 as a case-study detector with c-4b1b9eed / c-3e24dd9c as supporting evidence."
+    ],
+    "risk_reminders": [
+      "EvidenceReview tier=core ≠ verified citation: c-8f43511b matches the task/domain but does not itself study YOLOv5 on aircraft.",
+      "OpenAlex and most Crossref queries returned empty; citation expansion was seed-only, so backward-citation coverage is thin.",
+      "c-2df0a27e has no abstract — its YOLOv5/RS relevance is unverified and must not be cited as confirmed.",
+      "HuggingFace and GitHub returned only one item each; dataset/repo coverage is insufficient for a survey that needs standard RS-aircraft benchmarks.",
+      "Several 'aircraft'-token false positives (c-c5c8d891, c-f714fba2, c-d8439248) reached arxiv/crossref and were filtered; query terms may need tightening (e.g., add 'detection', 'satellite')."
+    ],
+    "manual_questions": [
+      "Is the intended survey scope strictly YOLOv5-on-aircraft-in-RS, or broader RS-oriented detection with YOLOv5 as one instance?",
+      "Which RS-aircraft datasets must be covered (DOTA, UCAS-AOD, HRPlanes, RSOD, DIOR, FAIR1M)?",
+      "Are horizontal bounding boxes sufficient, or must oriented/rotated detection be included?",
+      "Should the survey cover only YOLOv5 (v5/v5s/v5l/v5x) or also YOLOv5-vs-v7/v8/v11 comparisons?",
+      "What publication years are in scope (e.g., 2020–2025), and is Chinese-language work (e.g., CNKI) required in addition to arxiv/IEEE?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "No retrieved paper directly evidences YOLOv5 applied to RS aircraft detection; how should the survey proceed without a primary study?",
+      "Are horizontal bounding boxes sufficient, or is oriented/rotated aircraft detection required in scope?",
+      "Which RS-aircraft datasets (DOTA, UCAS-AOD, HRPlanes, FAIR1M) must the survey cover?",
+      "Should the scope be strictly YOLOv5, or YOLOv5 as one case study within broader RS-oriented detection?",
+      "Is Chinese-language coverage (e.g., CNKI) required in addition to English sources?"
+    ],
+    "weak_points": [
+      "Baseline group only contains a survey and a small-object YOLOv5 variant, no verified YOLOv5+aircraft+RS baseline.",
+      "c-2df0a27e military benchmark has unverified YOLOv5 usage and modality, weakening parallel-group reliability.",
+      "Reference papers (crack, underwater, fire detection) are off-topic domain reuses, not RS-aircraft refs.",
+      "Evidence_gaps list is empty despite acknowledged absence of a primary YOLOv5+aircraft+RS paper.",
+      "Work suggestions hedge heavily (manual verification, reframing) rather than committing to a clear direction."
+    ],
+    "can_continue_to_opening_report": true,
+    "summary": "Candidate pool covers YOLOv5 variants and an RS-detection survey but lacks a primary YOLOv5+aircraft+RS study. Scope ambiguity and dataset/box-orientation decisions require human clarification before opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+      "domain_route": "remote_sensing",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 16,
+        "crossref": 3,
+        "github": 1
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 28,
+      "queries": [
+        "detection detection",
+        "detection he",
+        "detection v5",
+        "detection that",
+        "he detection",
+        "he he",
+        "he v5",
+        "he that"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 194.22
+}

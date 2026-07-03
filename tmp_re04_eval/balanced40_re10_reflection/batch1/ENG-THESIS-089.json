@@ -1,0 +1,829 @@
+{
+  "topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+  "final_candidate_pool": [
+    {
+      "stable_id": "pavesam segment anything for pavement distress",
+      "candidate_id": "c-aa9e6c7c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "PaveSAM Segment Anything for Pavement Distress",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2409.07295v1",
+      "identifier": "2409.07295v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Automated pavement monitoring using computer vision can analyze pavement conditions more efficiently and accurately than manual methods. Accurate segmentation is essential for quantifying the severity and extent of pavement defects and consequently, the overall condition index used for prioritizing rehabilitation and maintenance activities. Deep learning-based segmentation models are however, often supervised and require pixel-level annotations, which can be costly and time-consuming. While the recent evolution of zero-shot segmentation models can generate pixel-wise labels for unseen classes without any training data, they struggle with irregularities of cracks and textured pavement backgrounds. This research proposes a zero-shot segmentation model, PaveSAM, that can segment pavement distresses using bounding box prompts. By retraining SAM's mask decoder with just 180 images, pavement distress segmentation is revolutionized, enabling efficient distress segmentation using bounding box prompts, a capability not found in current segmentation models. This not only drastically reduces labeling efforts and costs but also showcases our model's high performance with minimal input, establishing the pioneering use of SAM in pavement distress segmentation. Furthermore, researchers can use existing open-source pavement distress images annotated with bounding boxes to create segmentation masks, which increases the availability and diversity of segmentation pavement distress datasets.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "deep learning approaches in pavement distress identification: a review",
+      "candidate_id": "c-b01d4067",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Deep Learning Approaches in Pavement Distress Identification: A Review",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2308.00828v1",
+      "identifier": "2308.00828v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This paper presents a comprehensive review of recent advancements in image processing and deep learning techniques for pavement distress detection and classification, a critical aspect in modern pavement management systems. The conventional manual inspection process conducted by human experts is gradually being superseded by automated solutions, leveraging machine learning and deep learning algorithms to enhance efficiency and accuracy. The ability of these algorithms to discern patterns and make predictions based on extensive datasets has revolutionized the domain of pavement distress identification. The paper investigates the integration of unmanned aerial vehicles (UAVs) for data collection, offering unique advantages such as aerial perspectives and efficient coverage of large areas. By capturing high-resolution images, UAVs provide valuable data that can be processed using deep learning algorithms to detect and classify various pavement distresses effectively. While the primary focus is on 2D image processing, the paper also acknowledges the challenges associated with 3D images, such as sensor limitations and computational requirements. Understanding these challenges is crucial for further advancements in the field. The findings of this review significantly contribute to the evolution of pavement distress detection, fostering the development of efficient pavement management systems. As automated approaches continue to mature, the implementation of deep learning techniques holds great promise in ensuring safer and more durable road infrastructure for the benefit of society.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pavement distress detection and segmentation using yolov4 and deeplabv3 on pavements in the philippines",
+      "candidate_id": "c-6cec5f02",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Pavement Distress Detection and Segmentation using YOLOv4 and DeepLabv3 on Pavements in the Philippines",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2103.06467v1",
+      "identifier": "2103.06467v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Road transport infrastructure is critical for safe, fast, economical, and reliable mobility within the whole country that is conducive to a productive society. However, roads tend to deteriorate over time due to natural causes in the environment and repeated traffic loads. Pavement Distress (PD) detection is essential in monitoring the current conditions of the public roads to enable targeted rehabilitation and preventive maintenance. Nonetheless, distress detection surveys are still done via manual inspection for developing countries such as the Philippines. This study proposed the use of deep learning for two ways of recording pavement distresses from 2D RGB images - detection and segmentation. YOLOv4 is used for pavement distress detection while DeepLabv3 is employed for pavement distress segmentation on a small dataset of pavement images in the Philippines. This study aims to provide a basis to potentially spark solutions in building a cheap, scalable, and automated end-to-end solution for PD detection in the country.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "advancing pavement distress detection in developing countries: a novel deep learning approach with locally-collected datasets",
+      "candidate_id": "c-3778a05d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advancing Pavement Distress Detection in Developing Countries: A Novel Deep Learning Approach with Locally-Collected Datasets",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2408.05649v1",
+      "identifier": "2408.05649v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Road infrastructure maintenance in developing countries faces unique challenges due to resource constraints and diverse environmental factors. This study addresses the critical need for efficient, accurate, and locally-relevant pavement distress detection methods in these regions. We present a novel deep learning approach combining YOLO (You Only Look Once) object detection models with a Convolutional Block Attention Module (CBAM) to simultaneously detect and classify multiple pavement distress types. The model demonstrates robust performance in detecting and classifying potholes, longitudinal cracks, alligator cracks, and raveling, with confidence scores ranging from 0.46 to 0.93. While some misclassifications occur in complex scenarios, these provide insights into unique challenges of pavement assessment in developing countries. Additionally, we developed a web-based application for real-time distress detection from images and videos. This research advances automated pavement distress detection and provides a tailored solution for developing countries, potentially improving road safety, optimizing maintenance strategies, and contributing to sustainable transportation infrastructure development.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "learn to accumulate evidence from all training samples: theory and practice",
+      "candidate_id": "c-7c53acee",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Learn to Accumulate Evidence from All Training Samples: Theory and Practice",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2306.11113v2",
+      "identifier": "2306.11113v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Evidential deep learning, built upon belief theory and subjective logic, offers a principled and computationally efficient way to turn a deterministic neural network uncertainty-aware. The resultant evidential models can quantify fine-grained uncertainty using the learned evidence. To ensure theoretically sound evidential models, the evidence needs to be non-negative, which requires special activation functions for model training and inference. This constraint often leads to inferior predictive performance compared to standard softmax models, making it challenging to extend them to many large-scale datasets. To unveil the real cause of this undesired behavior, we theoretically investigate evidential models and identify a fundamental limitation that explains the inferior performance: existing evidential activation functions create zero evidence regions, which prevent the model to learn from training samples falling into such regions. A deeper analysis of evidential activation functions based on our theoretical underpinning inspires the design of a novel regularizer that effectively alleviates this fundamental limitation. Extensive experiments over many challenging real-world datasets and settings confirm our theoretical findings and demonstrate the effectiveness of our proposed approach.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "the modern mathematics of deep learning",
+      "candidate_id": "c-389c3e4f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Modern Mathematics of Deep Learning",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2105.04026v2",
+      "identifier": "2105.04026v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, and which fine aspects of an architecture affect the behavior of a learning task in which way. We present an overview of modern approaches that yield partial answers to these questions. For selected approaches, we describe the main ideas in more detail.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "deep learning frameworks for pavement distress classification: a comparative analysis",
+      "candidate_id": "c-4164ccea",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Deep Learning Frameworks for Pavement Distress Classification: A Comparative Analysis",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2010.10681v2",
+      "identifier": "2010.10681v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Automatic detection and classification of pavement distresses is critical in timely maintaining and rehabilitating pavement surfaces. With the evolution of deep learning and high performance computing, the feasibility of vision-based pavement defect assessments has significantly improved. In this study, the authors deploy state-of-the-art deep learning algorithms based on different network backbones to detect and characterize pavement distresses. The influence of different backbone models such as CSPDarknet53, Hourglass-104 and EfficientNet were studied to evaluate their classification performance. The models were trained using 21,041 images captured across urban and rural streets of Japan, Czech Republic and India. Finally, the models were assessed based on their ability to predict and classify distresses, and tested using F1 score obtained from the statistical precision and recall values. The best performing model achieved an F1 score of 0.58 and 0.57 on two test datasets released by the IEEE Global Road Damage Detection Challenge. The source code including the trained models are made available at [1].",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-788ad17d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "weakly supervised patch label inference networks for efficient pavement distress detection and recognition in the wild",
+      "candidate_id": "c-27ba34cc",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Weakly Supervised Patch Label Inference Networks for Efficient Pavement Distress Detection and Recognition in the Wild",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2203.16782v2",
+      "identifier": "2203.16782v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Automatic image-based pavement distress detection and recognition are vital for pavement maintenance and management. However, existing deep learning-based methods largely omit the specific characteristics of pavement images, such as high image resolution and low distress area ratio, and are not end-to-end trainable. In this paper, we present a series of simple yet effective end-to-end deep learning approaches named Weakly Supervised Patch Label Inference Networks (WSPLIN) for efficiently addressing these tasks under various application settings. WSPLIN transforms the fully supervised pavement image classification problem into a weakly supervised pavement patch classification problem for solutions. Specifically, WSPLIN first divides the pavement image under different scales into patches with different collection strategies and then employs a Patch Label Inference Network (PLIN) to infer the labels of these patches to fully exploit the resolution and scale information. Notably, we design a patch label sparsity constraint based on the prior knowledge of distress distribution and leverage the Comprehensive Decision Network (CDN) to guide the training of PLIN in a weakly supervised way. Therefore, the patch labels produced by PLIN provide interpretable intermediate information, such as the rough location and the type of distress. We evaluate our method on a large-scale bituminous pavement distress dataset named CQU-BPDD and the augmented Crack500 (Crack500-PDD) dataset, which is a newly constructed pavement distress detection dataset augmented from the Crack500. Extensive results demonstrate the superiority of our method over baselines in both performance and efficiency. The source codes of WSPLIN are released on https://github.com/DearCaat/wsplin.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "an iteratively optimized patch label inference network for automatic pavement distress detection",
+      "candidate_id": "c-a344f8b3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "An Iteratively Optimized Patch Label Inference Network for Automatic Pavement Distress Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2005.13298v3",
+      "identifier": "2005.13298v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We present a novel deep learning framework named the Iteratively Optimized Patch Label Inference Network (IOPLIN) for automatically detecting various pavement distresses that are not solely limited to specific ones, such as cracks and potholes. IOPLIN can be iteratively trained with only the image label via the Expectation-Maximization Inspired Patch Label Distillation (EMIPLD) strategy, and accomplish this task well by inferring the labels of patches from the pavement images. IOPLIN enjoys many desirable properties over the state-of-the-art single branch CNN models such as GoogLeNet and EfficientNet. It is able to handle images in different resolutions, and sufficiently utilize image information particularly for the high-resolution ones, since IOPLIN extracts the visual features from unrevised image patches instead of the resized entire image. Moreover, it can roughly localize the pavement distress without using any prior localization information in the training phase. In order to better evaluate the effectiveness of our method in practice, we construct a large-scale Bituminous Pavement Disease Detection dataset named CQU-BPDD consisting of 60,059 high-resolution pavement images, which are acquired from different areas at different times. Extensive results on this dataset demonstrate the superiority of IOPLIN over the state-of-the-art image classification approaches in automatic pavement distress detection. The source codes of IOPLIN are released on \\url{https://github.com/DearCaat/ioplin}, and the CQU-BPDD dataset is able to be accessed on \\url{https://dearcaat.github.io/CQU-BPDD/}.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pavement image datasets: a new benchmark dataset to classify and densify pavement distresses",
+      "candidate_id": "c-9e308f23",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Pavement Image Datasets: A New Benchmark Dataset to Classify and Densify Pavement Distresses",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1910.11123v2",
+      "identifier": "1910.11123v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Automated pavement distresses detection using road images remains a challenging topic in the computer vision research community. Recent developments in deep learning has led to considerable research activity directed towards improving the efficacy of automated pavement distress identification and rating. Deep learning models require a large ground truth data set, which is often not readily available in the case of pavements. In this study, a labeled dataset approach is introduced as a first step towards a more robust, easy-to-deploy pavement condition assessment system. The technique is termed herein as the Pavement Image Dataset (PID) method. The dataset consists of images captured from two camera views of an identical pavement segment, i.e., a wide-view and a top-down view. The wide-view images were used to classify the distresses and to train the deep learning frameworks, while the top-down view images allowed calculation of distress density, which will be used in future studies aimed at automated pavement rating. For the wide view group dataset, 7,237 images were manually annotated and distresses classified into nine categories. Images were extracted using the Google Application Programming Interface (API), selecting street-view images using a python-based code developed for this project. The new dataset was evaluated using two mainstream deep learning frameworks: You Only Look Once (YOLO v2) and Faster Region Convolution Neural Network (Faster R-CNN). Accuracy scores using the F1 index were found to be 0.84 for YOLOv2 and 0.65 for the Faster R-CNN model runs; both quite acceptable considering the convenience of utilizing Google maps images.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pict: a slim weakly supervised vision transformer for pavement distress classification",
+      "candidate_id": "c-89ba69a4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "PicT: A Slim Weakly Supervised Vision Transformer for Pavement Distress Classification",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2209.10074v1",
+      "identifier": "2209.10074v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Automatic pavement distress classification facilitates improving the efficiency of pavement maintenance and reducing the cost of labor and resources. A recently influential branch of this task divides the pavement image into patches and addresses these issues from the perspective of multi-instance learning. However, these methods neglect the correlation between patches and suffer from a low efficiency in the model optimization and inference. Meanwhile, Swin Transformer is able to address both of these issues with its unique strengths. Built upon Swin Transformer, we present a vision Transformer named \\textbf{P}avement \\textbf{I}mage \\textbf{C}lassification \\textbf{T}ransformer (\\textbf{PicT}) for pavement distress classification. In order to better exploit the discriminative information of pavement images at the patch level, the \\textit{Patch Labeling Teacher} is proposed to leverage a teacher model to dynamically generate pseudo labels of patches from image labels during each iteration, and guides the model to learn the discriminative features of patches. The broad classification head of Swin Transformer may dilute the discriminative features of distressed patches in the feature aggregation step due to the small distressed area ratio of the pavement image. To overcome this drawback, we present a \\textit{Patch Refiner} to cluster patches into different groups and only select the highest distress-risk group to yield a slim head for the final image classification. We evaluate our method on CQU-BPDD. Extensive results show that \\textbf{PicT} outperforms the second-best performed model by a large margin of $+2.4\\%$ in P@R on detection task, $+3.9\\%$ in $F1$ on recognition task, and 1.8x throughput, while enjoying 7x faster training speed using the same computing resources. Our codes and models have been released on \\href{https://github.com/DearCaat/PicT}{https://github.com/DearCaat/PicT}.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "use of recycled aggregates in concrete pavement: pavement design and life cycle assessment",
+      "candidate_id": "c-2d49312f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Use of recycled aggregates in concrete pavement: Pavement design and life cycle assessment",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pavement analysis and design",
+      "candidate_id": "c-0620b903",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Pavement Analysis and Design",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "feature pyramid and hierarchical boosting network for pavement crack detection",
+      "candidate_id": "c-2f61bb5f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "overview and discussion of pavement performance prediction techniques for maintenance and rehabilitation decision-making",
+      "candidate_id": "c-b098ee0a",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Overview and Discussion of Pavement Performance Prediction Techniques for Maintenance and Rehabilitation Decision-Making",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a lightweight encoder–decoder network for automatic pavement crack detection",
+      "candidate_id": "c-7c20cc64",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "A lightweight encoder–decoder network for automatic pavement crack detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pavement distress detection and classification based on yolo network",
+      "candidate_id": "c-a0a613b8",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Pavement distress detection and classification based on YOLO network",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "sustainable use of reclaimed asphalt pavement (rap) in pavement applications—a review",
+      "candidate_id": "c-68211878",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Sustainable use of reclaimed asphalt pavement (RAP) in pavement applications—a review",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "multiscale attention networks for pavement defect detection",
+      "candidate_id": "c-a8d4a73e",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Multiscale Attention Networks for Pavement Defect Detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "candidate_id": "https://openalex.org/W2998997213",
+      "title": "Review of Pavement Defect Detection Methods",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+      "_query_origin": "road pavement surface X detection",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W1963782251",
+      "title": "Automatic Road Pavement Assessment with Image Processing: Review and Comparison",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+      "_query_origin": "road pavement surface X detection",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W173492641",
+      "title": "RoADS: A Road Pavement Monitoring System for Anomaly Detection Using Smart Phones",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+      "_query_origin": "road pavement surface X detection",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W4283392904",
+      "title": "Artificial intelligence and smart vision for building and construction 4.0: Machine and deep learning methods and applications",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+      "_query_origin": "X deep learning road pavement surface",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W2902195199",
+      "title": "A Deep Convolutional Neural Network for Semantic Pixel-Wise Segmentation of Road and Pavement Surface Cracks",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+      "_query_origin": "X deep learning road pavement surface",
+      "source_run": "re09"
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "damage detection task benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "road pavement object benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "deep learning github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': 'damage detection task benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'road pavement object benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'deep learning github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 1,
+        "executed_queries": [
+          {
+            "query": "damage detection task benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (damage detection task benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "road pavement object benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (road pavement object benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "fallback repo probe from domain_keywords.en[0]",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "damage detection task benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "road pavement object benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 dataset benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 baseline method",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': '基于深度学习和双目立体视觉的道路路面损伤检测研究 dataset benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '基于深度学习和双目立体视觉的道路路面损伤检测研究 baseline method', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '基于深度学习和双目立体视觉的道路路面损伤检测研究 github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 2,
+        "executed_queries": [
+          {
+            "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 dataset benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (基于深度学习和双目立体视觉的道路路面损伤检测研究 dataset benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 baseline method",
+            "tool": "openalex",
+            "target_role": "baseline",
+            "why": "must_search from DomainScout (基于深度学习和双目立体视觉的道路路面损伤检测研究 baseline method)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "must_search from DomainScout (基于深度学习和双目立体视觉的道路路面损伤检测研究 github implementation)",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 dataset benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 baseline method",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "基于深度学习和双目立体视觉的道路路面损伤检测研究 github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    }
+  ],
+  "trace_path": "tmp_re04_eval\\balanced40_re10_worker4\\traces\\ENG-THESIS-089.json",
+  "stop_reason": "no_new_signal",
+  "summary": {
+    "paper_n": 25,
+    "baseline_n": 0,
+    "parallel_n": 0,
+    "dataset_n": 0,
+    "repo_n": 0,
+    "remaining_gaps": [
+      "dataset_gap",
+      "repo_gap",
+      "baseline_gap"
+    ]
+  },
+  "case_id": "ENG-THESIS-089",
+  "title": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+  "source_batch": "batch1",
+  "elapsed_s": 86.45,
+  "seed_n": 25
+}

@@ -241,7 +241,7 @@ def _parse_llm_output(raw: Any) -> dict:
         next_action = str(d.get("next_action") or "")
         if next_action not in {
             "repair_query", "repair_url", "expand_from_good_paper",
-            "switch_source", "stop",
+            "switch_source", "stop", "stop_with_gap",
         }:
             next_action = _PROBLEM_TO_ACTION.get(problem, "switch_source")
         diagnosis.append({

@@ -1,0 +1,2171 @@
+{
+  "project_id": "agent-re04-b94ef8c0",
+  "raw_topic": "基于深度学习的带钢表面缺陷检测方法",
+  "parsed_topic": {
+    "raw_topic": "基于深度学习的带钢表面缺陷检测方法",
+    "normalized_topic": "Deep learning-based surface defect detection methods for strip steel",
+    "domain_route": "vision_2d",
+    "domain_confidence": 0.92,
+    "method_terms": [
+      "YOLOv8",
+      "Faster R-CNN",
+      "U-Net",
+      "DeepLab",
+      "attention mechanism",
+      "feature pyramid network"
+    ],
+    "task_terms": [
+      "surface defect detection",
+      "defect classification",
+      "defect segmentation",
+      "object detection"
+    ],
+    "object_terms": [
+      "strip steel",
+      "steel surface",
+      "hot-rolled steel",
+      "cold-rolled steel",
+      "steel plate"
+    ],
+    "query_atoms_en": [
+      "YOLOv8 steel surface defect detection",
+      "strip steel defect detection deep learning",
+      "Faster R-CNN steel surface defect",
+      "U-Net steel defect segmentation",
+      "hot-rolled steel surface defect classification",
+      "deep learning steel strip defect"
+    ],
+    "query_atoms_zh": [
+      "带钢表面缺陷检测",
+      "深度学习 钢板缺陷",
+      "热轧带钢 表面缺陷",
+      "冷轧带钢 缺陷识别",
+      "YOLO 带钢缺陷检测",
+      "带钢表面缺陷分割"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "openaccess.thecvf.com",
+      "arxiv.org",
+      "ieeexplore.ieee.org"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于深度学习的带钢表面缺陷检测方法",
+    "domain_route": "vision_2d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "YOLOv8 surface defect detection",
+        "YOLOv8 strip steel"
+      ],
+      "method_task": [
+        "YOLOv8 surface defect detection",
+        "YOLOv8 defect classification",
+        "Faster R-CNN surface defect detection",
+        "Faster R-CNN defect classification"
+      ],
+      "object_task": [
+        "strip steel surface defect detection",
+        "strip steel defect classification",
+        "steel surface surface defect detection",
+        "steel surface defect classification"
+      ],
+      "dataset": [
+        "surface defect detection dataset",
+        "strip steel dataset"
+      ],
+      "repo": [
+        "surface defect detection github",
+        "surface defect detection implementation",
+        "YOLOv8 surface defect detection"
+      ],
+      "survey": [
+        "surface defect detection survey",
+        "vision 2d survey"
+      ],
+      "benchmark": [
+        "surface defect detection benchmark"
+      ],
+      "baseline": [
+        "YOLOv8 surface defect detection",
+        "YOLOv8 defect classification",
+        "Faster R-CNN surface defect detection",
+        "Faster R-CNN defect classification"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "DeepLab",
+        "attention mechanism",
+        "feature pyramid network"
+      ],
+      "task_terms": [
+        "surface defect detection",
+        "defect classification",
+        "defect segmentation",
+        "object detection"
+      ],
+      "object_terms": [
+        "strip steel",
+        "steel surface",
+        "hot-rolled steel",
+        "cold-rolled steel",
+        "steel plate"
+      ],
+      "domain_route": "vision_2d"
+    },
+    "fb_atom": "YOLOv8 steel surface defect detection",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper backends covering strip steel surface defect detection methods",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "steel surface defect detection deep learning",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "cast the widest arxiv net for the joint object + task phrase",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "strip steel defect segmentation YOLO",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "surface arxiv papers using YOLO-family detectors on strip steel",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "YOLOv8 steel surface defect detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex mirrors will catch YOLOv8 steel defect variants",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "U-Net steel defect segmentation",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "capture segmentation-oriented deep learning methods on steel surfaces",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "hot-rolled steel surface defect classification",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "crossref indexes many IEEE/Springer steel defect classification papers",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark, survey, and recent-advances noun-phrase queries on adjacent methods",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "steel surface defect detection survey",
+            "target_role": "survey",
+            "why_call": "noun-phrase survey query to surface review articles on the topic",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "defect detection benchmark recent advances",
+            "target_role": "survey",
+            "why_call": "recent-advances query to capture benchmark and overview papers",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "Faster R-CNN steel surface defect",
+            "target_role": "reference",
+            "why_call": "expand method coverage to Faster R-CNN based steel defect detection",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "attention feature pyramid steel defect",
+            "target_role": "reference",
+            "why_call": "capture papers combining attention mechanism and FPN for steel defects",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code repositories and datasets for strip steel surface defect detection",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "YOLOv8 steel defect",
+            "target_role": "repo",
+            "why_call": "find concrete implementation repos using YOLOv8 for steel surface defects",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "steel defect segmentation",
+            "target_role": "dataset",
+            "why_call": "surface public datasets and repo resources for steel defect segmentation",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "steel defect dataset benchmark",
+            "target_role": "dataset",
+            "why_call": "openalex pass to surface dataset papers such as NEU-DET and successors",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "surface defect detection",
+            "target_role": "repo",
+            "why_call": "generic object-term query to catch broader runnable defect detection repos",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "openaccess.thecvf.com",
+      "arxiv.org",
+      "ieeexplore.ieee.org"
+    ],
+    "arxiv_queries": [
+      "steel surface defect detection deep learning",
+      "strip steel defect segmentation YOLO",
+      "steel surface defect detection survey",
+      "defect detection benchmark recent advances"
+    ],
+    "openalex_queries": [
+      "YOLOv8 steel surface defect detection",
+      "U-Net steel defect segmentation",
+      "Faster R-CNN steel surface defect",
+      "steel defect dataset benchmark"
+    ],
+    "crossref_queries": [
+      "hot-rolled steel surface defect classification",
+      "attention feature pyramid steel defect"
+    ],
+    "github_queries": [
+      "YOLOv8 steel defect",
+      "steel defect segmentation",
+      "surface defect detection"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "a new benchmark dataset for texture image analysis and surface defect detection",
+      "candidate_id": "c-3b412183",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1906.11561v1",
+      "identifier": "1906.11561v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+      "extra": {}
+    },
+    {
+      "stable_id": "road surface defect detection -- from image-based to non-image-based: a survey",
+      "candidate_id": "c-8c3f0d77",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2402.04297v1",
+      "identifier": "2402.04297v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Ensuring traffic safety is crucial, which necessitates the detection and prevention of road surface defects. As a result, there has been a growing interest in the literature on the subject, leading to the development of various road surface defect detection methods. The methods for detecting road defects can be categorised in various ways depending on the input data types or training methodologies. The predominant approach involves image-based methods, which analyse pixel intensities and surface textures to identify defects. Despite their popularity, image-based methods share the distinct limitation of vulnerability to weather and lighting changes. To address this issue, researchers have explored the use of additional sensors, such as laser scanners or LiDARs, providing explicit depth information to enable the detection of defects in terms of scale and volume. However, the exploration of data beyond images has not been sufficiently investigated. In this survey paper, we provide a comprehensive review of road surface defect detection studies, categorising them based on input data types and methodologies used. Additionally, we review recently proposed non-image-based methods and discuss several challenges and open problems associated with these techniques.",
+      "extra": {}
+    },
+    {
+      "stable_id": "developing a resource-constraint edgeai model for surface defect detection",
+      "candidate_id": "c-6b08ca92",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Developing a Resource-Constraint EdgeAI model for Surface Defect Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2401.05355v1",
+      "identifier": "2401.05355v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Resource constraints have restricted several EdgeAI applications to machine learning inference approaches, where models are trained on the cloud and deployed to the edge device. This poses challenges such as bandwidth, latency, and privacy associated with storing data off-site for model building. Training on the edge device can overcome these challenges by eliminating the need to transfer data to another device for storage and model development. On-device training also provides robustness to data variations as models can be retrained on newly acquired data to improve performance. We, therefore, propose a lightweight EdgeAI architecture modified from Xception, for on-device training in a resource-constraint edge environment. We evaluate our model on a PCB defect detection task and compare its performance against existing lightweight models - MobileNetV2, EfficientNetV2B0, and MobileViT-XXS. The results of our experiment show that our model has a remarkable performance with a test accuracy of 73.45% without pre-training. This is comparable to the test accuracy of non-pre-trained MobileViT-XXS (75.40%) and much better than other non-pre-trained models (MobileNetV2 - 50.05%, EfficientNetV2B0 - 54.30%). The test accuracy of our model without pre-training is comparable to pre-trained MobileNetV2 model - 75.45% and better than pre-trained EfficientNetV2B0 model - 58.10%. In terms of memory efficiency, our model performs better than EfficientNetV2B0 and MobileViT-XXS. We find that the resource efficiency of machine learning models does not solely depend on the number of parameters but also depends on architectural considerations. Our method can be applied to other resource-constraint applications while maintaining significant performance.",
+      "extra": {}
+    },
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-a3e07da1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "deepinspect: an ai-powered defect detection for manufacturing industries",
+      "candidate_id": "c-51c5c143",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2311.03725v2",
+      "identifier": "2311.03725v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. It harnesses extensive datasets of annotated images to discern complex defect patterns. This integrated system seamlessly fits into production workflows, thereby boosting efficiency and elevating product quality. As a result, it reduces waste and operational costs, ultimately enhancing market competitiveness.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-72ef5f0b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the methanol multibeam survey",
+      "candidate_id": "c-f62f00da",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Methanol Multibeam Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2012,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1210.0979v1",
+      "identifier": "1210.0979v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A purpose built 7-beam methanol receiver, installed on the Parkes Radio Telescope, was used to survey the Galactic plane for newly forming high mass stars, pinpointed by strong methanol maser emission at 6.7 GHz. The Methanol Multibeam (MMB) survey observed over 60% of the Galactic plane, detecting close to 1000 sources. The MMB survey provides a huge resource for studies of high-mass star formation, an important stage in the evolution of the interstellar medium. The MMB survey is also a valuable resource for investigations into the structure and dynamics of our Galaxy: with narrow velocity ranges of emission (typically only a few km/s) and velocities closely correlated with the systemic velocity of their surrounding molecular clouds, 6.7-GHz methanol masers provide estimates of the spiral arm velocities and their structure. I will discuss the techniques and properties of the MMB survey, before outlining recent results, which include the identification of regions of enhanced star formation believed to be indicative of the origins of the spiral arms and the interaction of the Galactic bar with the 3-kpc arms. I will also discuss the various follow-up programmes including a study of magnetic fields through associated hydroxyl masers.",
+      "extra": {}
+    },
+    {
+      "stable_id": "transferd2: automated defect detection approach in smart manufacturing using transfer learning techniques",
+      "candidate_id": "c-ad031e66",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.13317v1",
+      "identifier": "2302.13317v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Quality assurance is crucial in the smart manufacturing industry as it identifies the presence of defects in finished products before they are shipped out. Modern machine learning techniques can be leveraged to provide rapid and accurate detection of these imperfections. We, therefore, propose a transfer learning approach, namely TransferD2, to correctly identify defects on a dataset of source objects and extend its application to new unseen target objects. We present a data enhancement technique to generate a large dataset from the small source dataset for building a classifier. We then integrate three different pre-trained models (Xception, ResNet101V2, and InceptionResNetV2) into the classifier network and compare their performance on source and target data. We use the classifier to detect the presence of imperfections on the unseen target data using pseudo-bounding boxes. Our results show that ResNet101V2 performs best on the source data with an accuracy of 95.72%. Xception performs best on the target data with an accuracy of 91.00% and also provides a more accurate prediction of the defects on the target images. Throughout the experiment, the results also indicate that the choice of a pre-trained model is not dependent on the depth of the network. Our proposed approach can be applied in defect detection applications where insufficient data is available for training a model and can be extended to identify imperfections in new unseen data.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a refinement of the spanning surface defect in $3$ and $4$ dimensions",
+      "candidate_id": "c-a6d55a98",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Refinement of the Spanning Surface Defect in $3$ and $4$ Dimensions",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2602.13186v2",
+      "identifier": "2602.13186v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The spanning surface defect uses spanning surfaces of a knot in the $3$-sphere to measure how far a knot is from being alternating. We refine the spanning surface defect and extend the definition to take into account surfaces in the $4$-ball. We use these extensions to make comparisons between the $3$- and $4$-dimensional settings, to reframe non-orientable slice-torus bounds on the non-orientable $4$-genus, and to prove a connected sum formula.",
+      "extra": {}
+    },
+    {
+      "stable_id": "real-time industrial defect detection on edge hardware using fine-tuned yolov8: a systematic benchmark on the neu surface defect database and mvtec ad with automotive & battery manufacturing extensions",
+      "candidate_id": "c-c196ea7e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Real-Time Industrial Defect Detection on Edge Hardware Using Fine-Tuned YOLOv8: A Systematic Benchmark on the NEU Surface Defect Database and MVTec AD with Automotive & Battery Manufacturing Extensions",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2606.07659v1",
+      "identifier": "2606.07659v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Automated surface defect detection is critical for ensuring rigorous quality control in high-speed manufacturing environments. While deep learning models offer remarkable accuracy, deploying them on resource-constrained edge hardware without introducing significant latency remains a persistent challenge. This paper presents Industrial-YOLO, an edge-optimized framework built upon a fine-tuned YOLOv8 architecture specifically engineered for real-time industrial defect detection. We conduct a systematic benchmark utilizing the NEU surface defect database for steel sheets and the MVTec AD dataset, supplemented with custom automotive manufacturing extensions representing real-world structural anomalies (scratches, pits, and inclusions). To bridge the gap between algorithmic complexity and edge hardware constraints, target-specific optimizations are introduced via TensorRT and OpenVINO acceleration engines. Experimental results demonstrate that Industrial-YOLO achieves a high-velocity inference speed exceeding 120 FPS on the NVIDIA Jetson Orin platform while maintaining an exceptional mean Average Precision (mAP) of 98.5%. The proposed framework showcases highly robust, zero-latency performance when deployed directly onto an active automotive assembly line, offering a scalable blueprint for next-generation automated optical inspection (AOI) systems.",
+      "extra": {}
+    },
+    {
+      "stable_id": "comparative analysis of object detection algorithms for surface defect detection",
+      "candidate_id": "c-5845b5df",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Comparative Analysis of Object Detection Algorithms for Surface Defect Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2510.21811v1",
+      "identifier": "2510.21811v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This article compares the performance of six prominent object detection algorithms, YOLOv11, RetinaNet, Fast R-CNN, YOLOv8, RT-DETR, and DETR, on the NEU-DET surface defect detection dataset, comprising images representing various metal surface defects, a crucial application in industrial quality control. Each model's performance was assessed regarding detection accuracy, speed, and robustness across different defect types such as scratches, inclusions, and rolled-in scales. YOLOv11, a state-of-the-art real-time object detection algorithm, demonstrated superior performance compared to the other methods, achieving a remarkable 70% higher accuracy on average. This improvement can be attributed to YOLOv11s enhanced feature extraction capabilities and ability to process the entire image in a single forward pass, making it faster and more efficient in detecting minor surface defects. Additionally, YOLOv11's architecture optimizations, such as improved anchor box generation and deeper convolutional layers, contributed to more precise localization of defects. In conclusion, YOLOv11's outstanding performance in accuracy and speed solidifies its position as the most effective model for surface defect detection on the NEU dataset, surpassing competing algorithms by a substantial margin.",
+      "extra": {}
+    },
+    {
+      "stable_id": "incomplete melting of the si(100) surface from molecular-dynamics simulations using the effective-medium tight-binding model",
+      "candidate_id": "c-f739437c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Incomplete melting of the Si(100) surface from molecular-dynamics simulations using the Effective-Medium Tight-Binding model",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "10.21203/rs.3.rs-1815194/v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>Surface defect detection in chips is crucial for ensuring product quality and reliability. This paper addresses the challenge of low identification accuracy in chip surface defect detection, which arises from the similarity of defect characteristics, small sizes, and significant scale differences. We propose an enhanced chip surface defect detection algorithm based on an improved version of YOLOv8, termed RST-YOLOv8. This study introduces the C2f_RVB module, which incorporates RepViTBlock technology. This integration effectively optimizes feature representation capabilities while significantly reducing the model’s parameter count. By enhancing the expressive power of deep features, we achieve a marked improvement in the identification accuracy of small defect targets. Additionally, we employ the SimAM attention mechanism, enabling the model to learn three-dimensional channel information, thereby strengthening its perception of defect characteristics. To address the issues of missed detections and false detections of small targets in chip surface defect detection, we designed a task-aligned dynamic detection head (TADDH) to facilitate interaction between the localization and classification detection heads. This design improves the accuracy of small target detection. Experimental evaluations on the PCB_DATASET indicate that our model improved the mAP@0.5 by 10.3%. Furthermore, significant progress was achieved in experiments on the chip surface defect dataset, where mAP@0.5 increased by 5.4%. Simultaneously, the model demonstrated significant advantages in terms of computational complexity, as both the number of parameters and GFLOPs were effectively controlled. This showcases the model’s balance between high precision and a lightweight design. The experimental results show that the RST-YOLOv8 model has a significant advantage in detection accuracy for chip surface defects compared to other models. It not only enhances detection accuracy but also achieves an optimal balance between computational resource consumption and real-time performance, providing an ideal technical pathway for chip surface defect detection tasks.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "steel surface defect detection based on improved yolov8 neural network",
+      "candidate_id": "c-8523d6a2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Steel surface defect detection based on improved YOLOv8 neural network",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "Academic Journal of Materials &amp; Chemistry",
+      "url": "https://doi.org/10.25236/ajmc.2024.050317",
+      "identifier": "10.25236/ajmc.2024.050317",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "gce-yolov5s based surface defect detection algorithm for strip steel",
+      "candidate_id": "c-94ba25ac",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "GCE-YOLOv5s Based Surface Defect Detection Algorithm for Strip Steel",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "2023 China Automation Congress (CAC)",
+      "url": "https://doi.org/10.1109/cac59555.2023.10451921",
+      "identifier": "10.1109/cac59555.2023.10451921",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "densenet network-based surface defect detection algorithm for strip steel",
+      "candidate_id": "c-ea4efe2c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DenseNet network-based surface defect detection algorithm for strip steel",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "International Journal of Frontiers in Engineering Technology",
+      "url": "https://doi.org/10.25236/ijfet.2022.041006",
+      "identifier": "10.25236/ijfet.2022.041006",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "yolov8-lsd:a steel surface defect detection algorithm based on yolov8",
+      "candidate_id": "c-1db0e3da",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv8-LSD:A Steel Surface Defect Detection Algorithm Based On YOLOv8",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 International Conference on Image Processing, Computer Vision and Machine Learning (ICICML)",
+      "url": "https://doi.org/10.1109/icicml63543.2024.10957993",
+      "identifier": "10.1109/icicml63543.2024.10957993",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "improved steel surface defect detection algorithm based on yolov8",
+      "candidate_id": "c-b25feaa1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Improved Steel Surface Defect Detection Algorithm Based on YOLOv8",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "IEEE Access",
+      "url": "https://doi.org/10.1109/access.2024.3429555",
+      "identifier": "10.1109/access.2024.3429555",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "yonatan-estifanos-github/surfacedefectnet-deep-learning-for-surface-defect-detection",
+      "candidate_id": "c-2dda1575",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Yonatan-Estifanos-github/SurfaceDefectNet-Deep-Learning-for-Surface-Defect-Detection",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Yonatan-Estifanos-github/SurfaceDefectNet-Deep-Learning-for-Surface-Defect-Detection",
+      "identifier": null,
+      "description": "This GitHub repository contains the implementation of a segmentation-based deep-learning approach for surface-defect detection. ",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 0,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "neu-det",
+      "candidate_id": "c-a573f771",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "NEU-DET",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    },
+    {
+      "stable_id": "end-to-end object detection with transformers",
+      "candidate_id": "c-111936e4",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "End-to-End Object Detection with Transformers",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "wildfire satellite detection detection of lands damaged by forest",
+      "candidate_id": "c-6a7ede32",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Wildfire Satellite Detection Detection of Lands Damaged by Forest",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "yolov10: real-time end-to-end object detection",
+      "candidate_id": "c-33032f58",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv10: Real-Time End-to-End Object Detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "deformable detr: deformable transformers for end-to-end object detection",
+      "candidate_id": "c-3a8f6ae2",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Deformable DETR: Deformable Transformers for End-to-End Object Detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "grounding dino: marrying dino with grounded pre-training for open-set object detection",
+      "candidate_id": "c-76fba169",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "fcos: fully convolutional one-stage object detection",
+      "candidate_id": "c-20ce9a1f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "FCOS: Fully Convolutional One-Stage Object Detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "yolov4: optimal speed and accuracy of object detection",
+      "candidate_id": "c-35189529",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "efficientdet: scalable and efficient object detection",
+      "candidate_id": "c-61148d41",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "EfficientDet: Scalable and Efficient Object Detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "YOLOv8 surface defect detection|YOLOv8 strip steel",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "surface defect detection dataset|strip steel dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "surface defect detection survey|vision 2d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "surface defect detection github|surface defect detection implementation|YOLOv8 surface defect detection",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 1,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv8 surface defect detection|YOLOv8 defect classification|Faster R-CNN surface defect detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv8 surface defect detection|YOLOv8 defect classification|Faster R-CNN surface defect detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv8 surface defect detection|YOLOv8 strip steel",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "YOLOv8 surface defect detection|YOLOv8 strip steel",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "YOLOv8 surface defect detection|YOLOv8 defect classification|Faster R-CNN surface defect detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "YOLOv8 surface defect detection|YOLOv8 strip steel",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "surface defect detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "surface defect detection survey|vision 2d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "surface defect detection dataset|strip steel dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "surface defect detection dataset|strip steel dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "surface defect detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "surface defect detection dataset|strip steel dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "strip steel surface defect detection|strip steel defect classification|steel surface surface defect detection",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "strip steel surface defect detection|strip steel defect classification|steel surface surface defect detection",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "YOLOv8 surface defect detection|YOLOv8 defect classification|Faster R-CNN surface defect detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "detection detection|detection defect|detection surface",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Developing a Resource-Constraint EdgeAI model for Surface De",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Oriented object detection in optical remote sensing images u",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: DeepInspect: An AI-Powered Defect Detection for Manufacturin",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: A New Benchmark Dataset for Texture Image Analysis and Surfa",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: Road Surface Defect Detection -- From Image-based to Non-ima",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-3b412183",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "surface defect detection"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "hot-rolled steel",
+        "cold-rolled steel",
+        "deep learning strip steel"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "General surface defect / texture benchmark, not steel-specific; useful only as background.",
+      "reason": "Presents a generic texture and surface defect dataset; not focused on strip steel or the named methods."
+    },
+    {
+      "candidate_id": "c-8c3f0d77",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "surface defect detection"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "steel plate"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on road surface defects, not steel; only shares the defect-detection framing.",
+      "reason": "Covers road pavement defects; cross-domain (transportation) relative to strip-steel manufacturing."
+    },
+    {
+      "candidate_id": "c-6b08ca92",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "surface defect detection"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "steel plate"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Edge-AI defect detection paper; domain not explicitly steel, useful for deployment context only.",
+      "reason": "Focuses on resource-constrained EdgeAI; abstract does not confirm strip-steel object."
+    },
+    {
+      "candidate_id": "c-a3e07da1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "surface defect",
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Remote-sensing oriented object detection survey; cross-domain to steel surface defects.",
+      "reason": "Topic is aerial/satellite oriented object detection, not industrial surface defect detection."
+    },
+    {
+      "candidate_id": "c-51c5c143",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "defect detection",
+        "deep learning",
+        "CNN"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "steel plate"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "General manufacturing defect detection using CNN/RNN/GAN; steel substrate not specified.",
+      "reason": "Manufacturing-defect survey/system; no explicit mention of strip steel or named detectors."
+    },
+    {
+      "candidate_id": "c-72ef5f0b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "surface defect",
+        "strip steel",
+        "deep learning",
+        "steel surface",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "LLM-based survey-response coding; completely unrelated to defect detection.",
+      "reason": "Social-science methodology paper using LLMs for open-ended survey coding; no overlap."
+    },
+    {
+      "candidate_id": "c-f62f00da",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "defect",
+        "strip steel",
+        "deep learning",
+        "surface",
+        "object detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Astronomical methanol maser survey; no relation to steel defect detection.",
+      "reason": "Radio-astronomy multibeam survey paper; entirely outside the vision/defect domain."
+    },
+    {
+      "candidate_id": "c-ad031e66",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "defect detection",
+        "deep learning",
+        "transfer learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "steel plate"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Transfer-learning defect detection; domain general, not explicitly strip steel.",
+      "reason": "Smart-manufacturing defect detection via transfer learning; steel substrate not confirmed."
+    },
+    {
+      "candidate_id": "c-a6d55a98",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "surface defect"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "deep learning",
+        "object detection",
+        "YOLOv8",
+        "steel surface",
+        "segmentation"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Pure mathematics paper on spanning surfaces of knots; homonym 'surface defect' only.",
+      "reason": "Knot-theoretic combinatorial surface-defect refinement; no connection to industrial inspection."
+    },
+    {
+      "candidate_id": "c-c196ea7e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "surface defect detection",
+        "YOLOv8",
+        "deep learning",
+        "NEU Surface Defect Database"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "Faster R-CNN",
+        "U-Net",
+        "hot-rolled steel"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "YOLOv8 on NEU steel defect benchmark with edge deployment; method match but object is generic steel.",
+      "reason": "Benchmarks fine-tuned YOLOv8 on NEU-DET and MVTec AD; steel-relevant benchmark but broader scope."
+    },
+    {
+      "candidate_id": "c-5845b5df",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "core",
+      "matched_terms": [
+        "surface defect detection",
+        "YOLOv8",
+        "object detection",
+        "steel surface",
+        "NEU-DET"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "U-Net",
+        "DeepLab",
+        "attention mechanism",
+        "feature pyramid network"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct comparison of detectors including YOLOv8 on NEU-DET steel surface defects; strong match.",
+      "reason": "Comparative study of YOLOv8, YOLOv11, RetinaNet, etc. on NEU-DET steel-surface defect dataset."
+    },
+    {
+      "candidate_id": "c-f739437c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "surface defect detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "steel plate"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "metadata_mismatch",
+      "rank_reason": "Title is about Si(100) surface melting; abstract surfaces a chip defect topic — inconsistent metadata.",
+      "reason": "Mixed metadata: title denotes molecular-dynamics Si surface, abstract discusses chip surface defects."
+    },
+    {
+      "candidate_id": "c-8523d6a2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "core",
+      "matched_terms": [
+        "steel surface defect detection",
+        "YOLOv8",
+        "deep learning",
+        "improved YOLOv8"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "Faster R-CNN",
+        "U-Net",
+        "segmentation",
+        "hot-rolled steel",
+        "cold-rolled steel"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "Directly applies improved YOLOv8 to steel surface defects; strong method+object match.",
+      "reason": "Improved YOLOv8 neural network specifically for steel surface defect detection."
+    },
+    {
+      "candidate_id": "c-94ba25ac",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "core",
+      "matched_terms": [
+        "strip steel",
+        "surface defect detection",
+        "deep learning",
+        "object detection"
+      ],
+      "missing_terms": [
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "attention mechanism",
+        "feature pyramid network"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "Strip-steel-specific surface defect detection paper; exact object-domain match.",
+      "reason": "GCE-YOLOv5s applied directly to strip steel surface defect detection."
+    },
+    {
+      "candidate_id": "c-ea4efe2c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "core",
+      "matched_terms": [
+        "strip steel",
+        "surface defect detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net",
+        "segmentation",
+        "steel surface"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "DenseNet-based defect detection explicitly for strip steel; strong object+task match.",
+      "reason": "DenseNet network designed for strip-steel surface defect detection; venue is minor journal."
+    },
+    {
+      "candidate_id": "c-1db0e3da",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "core",
+      "matched_terms": [
+        "steel surface defect detection",
+        "YOLOv8",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "Faster R-CNN",
+        "U-Net",
+        "attention mechanism",
+        "steel plate"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "YOLOv8-based steel surface defect detector (LSD variant); direct method+object match.",
+      "reason": "YOLOv8-LSD algorithm custom-built for steel surface defect detection."
+    },
+    {
+      "candidate_id": "c-b25feaa1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "core",
+      "matched_terms": [
+        "steel surface defect detection",
+        "YOLOv8",
+        "deep learning",
+        "improved YOLOv8"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "Faster R-CNN",
+        "U-Net",
+        "segmentation",
+        "hot-rolled steel"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "IEEE Access paper on improved YOLOv8 for steel surface defects; venue strong, match exact.",
+      "reason": "Improved YOLOv8 algorithm targeting steel surface defect detection in IEEE Access."
+    },
+    {
+      "candidate_id": "c-2dda1575",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "needs_manual",
+      "matched_terms": [
+        "surface defect detection",
+        "segmentation-based deep learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "YOLOv8",
+        "Faster R-CNN",
+        "steel surface",
+        "hot-rolled steel"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "repo",
+      "exists_verdict": "exists",
+      "rank_reason": "Segmentation-based defect repo; domain not specified in description — needs manual verification.",
+      "reason": "GitHub repo for segmentation-based surface defect detection; no explicit steel/strip subject."
+    },
+    {
+      "candidate_id": "c-a573f771",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "core",
+      "matched_terms": [
+        "surface defect detection",
+        "steel surface",
+        "object detection dataset"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "YOLOv8",
+        "hot-rolled steel",
+        "cold-rolled steel",
+        "segmentation"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "NEU-DET is the canonical steel-surface-defect object-detection benchmark, directly cited in topic queries.",
+      "reason": "NEU-DET dataset widely used for steel surface defect detection and classification."
+    },
+    {
+      "candidate_id": "c-111936e4",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "surface defect",
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "YOLOv8 steel",
+        "steel defect"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Foundational DETR paper; method-only overlap, not tied to steel defects.",
+      "reason": "DETR general object detection framework; included as parallel method reference, not domain-specific."
+    },
+    {
+      "candidate_id": "c-6a7ede32",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "rejected",
+      "matched_terms": [
+        "defect detection"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "YOLOv8",
+        "Faster R-CNN",
+        "U-Net"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "metadata_mismatch",
+      "rank_reason": "Title indicates wildfire/forest damage satellite imagery, not steel surface defect detection.",
+      "reason": "Metadata/abstract is empty but title refers to wildfire satellite detection, a cross-domain (remote sensing) topic unrelated to strip steel defect detection. Cannot verify match."
+    },
+    {
+      "candidate_id": "c-33032f58",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "defect detection",
+        "defect classification"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "General YOLOv10 object detector; method backbone relevant but not steel-specific.",
+      "reason": "YOLOv10 is a real object detection method. Related as a parallel/alternative detector family usable for steel surface defect detection, but the paper does not address steel defects directly."
+    },
+    {
+      "candidate_id": "c-3a8f6ae2",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "defect detection",
+        "attention mechanism"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Deformable DETR is a general detector; transformer attention is a relevant architectural paradigm.",
+      "reason": "Real well-known object detection method (Deformable DETR). Not steel-specific but its attention-based mechanism is referenced in topic's method terms; serves as a parallel baseline."
+    },
+    {
+      "candidate_id": "c-76fba169",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "defect detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Grounding DINO is an open-set detector; relevant as advanced parallel approach.",
+      "reason": "Grounding DINO is a real open-set object detection method. Not applied to steel surface defects but could be referenced as advanced parallel method under deep-learning detection paradigm."
+    },
+    {
+      "candidate_id": "c-20ce9a1f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "defect detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "FCOS is an anchor-free detector; useful as alternative baseline detector.",
+      "reason": "FCOS is a real well-known one-stage object detection method. Not tied to steel defects but qualifies as a parallel detector architecture for comparison in a steel defect survey."
+    },
+    {
+      "candidate_id": "c-35189529",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "defect detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "YOLOv4 is a foundational YOLO detector; cited baseline in YOLOv8-based steel papers.",
+      "reason": "YOLOv4 is a real foundational object detection method. Although not steel-specific, it is widely cited as a baseline/precursor in YOLOv8 steel defect detection papers found in raw output."
+    },
+    {
+      "candidate_id": "c-61148d41",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning",
+        "feature pyramid"
+      ],
+      "missing_terms": [
+        "strip steel",
+        "steel surface",
+        "defect detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "EfficientDet uses BiFPN (feature pyramid network), aligning with topic method terms.",
+      "reason": "EfficientDet is a real efficient object detector featuring BiFPN. Strongly aligns with topic's FPN method term but does not target steel surface defects directly; serve as parallel reference."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Focus the survey on deep-learning object-detection and segmentation methods applied to strip-steel surface defect detection, anchored on the canonical NEU-DET benchmark. Recommend structuring the review around three method families: (1) YOLO-family detectors (YOLOv5s, YOLOv8 variants) which dominate the recent literature; (2) two-stage detectors (Faster R-CNN) used as accuracy baselines; (3) segmentation approaches (U-Net, DeepLab) for pixel-level defect delineation. Position attention mechanisms and FPN as cross-cutting architectural enhancements. Use steel-specific YOLOv8 papers as core baselines, NEU-DET as the shared evaluation ground, and general-purpose detectors (DETR, FCOS, EfficientDet) as parallel architectural references. Current evidence is thin on segmentation-specific strip-steel work and on non-NEU benchmarks (e.g., GC10-DET, Severstal), so the survey should flag those gaps rather than fabricate coverage.",
+    "baseline_options": [
+      "c-8523d6a2",
+      "c-1db0e3da",
+      "c-b25feaa1",
+      "c-94ba25ac",
+      "c-ea4efe2c",
+      "c-a573f771"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-5845b5df",
+          "title": "Comparative Analysis of Object Detection Algorithms for Surface Defect Detection",
+          "role_hint": "reference",
+          "reason": "Direct comparison of detectors including YOLOv8 on NEU-DET steel surface defects; strong match."
+        },
+        {
+          "candidate_id": "c-8523d6a2",
+          "title": "Steel surface defect detection based on improved YOLOv8 neural network",
+          "role_hint": "reference",
+          "reason": "Directly applies improved YOLOv8 to steel surface defects; strong method+object match."
+        },
+        {
+          "candidate_id": "c-94ba25ac",
+          "title": "GCE-YOLOv5s Based Surface Defect Detection Algorithm for Strip Steel",
+          "role_hint": "reference",
+          "reason": "Strip-steel-specific surface defect detection paper; exact object-domain match."
+        },
+        {
+          "candidate_id": "c-ea4efe2c",
+          "title": "DenseNet network-based surface defect detection algorithm for strip steel",
+          "role_hint": "reference",
+          "reason": "DenseNet-based defect detection explicitly for strip steel; strong object+task match."
+        },
+        {
+          "candidate_id": "c-1db0e3da",
+          "title": "YOLOv8-LSD:A Steel Surface Defect Detection Algorithm Based On YOLOv8",
+          "role_hint": "reference",
+          "reason": "YOLOv8-based steel surface defect detector (LSD variant); direct method+object match."
+        },
+        {
+          "candidate_id": "c-b25feaa1",
+          "title": "Improved Steel Surface Defect Detection Algorithm Based on YOLOv8",
+          "role_hint": "reference",
+          "reason": "IEEE Access paper on improved YOLOv8 for steel surface defects; venue strong, match exact."
+        },
+        {
+          "candidate_id": "c-a573f771",
+          "title": "NEU-DET",
+          "role_hint": "dataset",
+          "reason": "NEU-DET is the canonical steel-surface-defect object-detection benchmark, directly cited in topic queries."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-3b412183",
+          "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+          "role_hint": "reference",
+          "reason": "General surface defect / texture benchmark, not steel-specific; useful only as background."
+        },
+        {
+          "candidate_id": "c-8c3f0d77",
+          "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+          "role_hint": "reference",
+          "reason": "Survey on road surface defects, not steel; only shares the defect-detection framing."
+        },
+        {
+          "candidate_id": "c-6b08ca92",
+          "title": "Developing a Resource-Constraint EdgeAI model for Surface Defect Detection",
+          "role_hint": "reference",
+          "reason": "Edge-AI defect detection paper; domain not explicitly steel, useful for deployment context only."
+        },
+        {
+          "candidate_id": "c-51c5c143",
+          "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+          "role_hint": "reference",
+          "reason": "General manufacturing defect detection using CNN/RNN/GAN; steel substrate not specified."
+        },
+        {
+          "candidate_id": "c-ad031e66",
+          "title": "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+          "role_hint": "reference",
+          "reason": "Transfer-learning defect detection; domain general, not explicitly strip steel."
+        },
+        {
+          "candidate_id": "c-c196ea7e",
+          "title": "Real-Time Industrial Defect Detection on Edge Hardware Using Fine-Tuned YOLOv8: A Systematic Benchmark on the NEU Surfac",
+          "role_hint": "reference",
+          "reason": "YOLOv8 on NEU steel defect benchmark with edge deployment; method match but object is generic steel."
+        },
+        {
+          "candidate_id": "c-f739437c",
+          "title": "Incomplete melting of the Si(100) surface from molecular-dynamics simulations using the Effective-Medium Tight-Binding m",
+          "role_hint": "reference",
+          "reason": "Title is about Si(100) surface melting; abstract surfaces a chip defect topic — inconsistent metadata."
+        },
+        {
+          "candidate_id": "c-111936e4",
+          "title": "End-to-End Object Detection with Transformers",
+          "role_hint": "parallel",
+          "reason": "Foundational DETR paper; method-only overlap, not tied to steel defects."
+        },
+        {
+          "candidate_id": "c-33032f58",
+          "title": "YOLOv10: Real-Time End-to-End Object Detection",
+          "role_hint": "parallel",
+          "reason": "General YOLOv10 object detector; method backbone relevant but not steel-specific."
+        },
+        {
+          "candidate_id": "c-3a8f6ae2",
+          "title": "Deformable DETR: Deformable Transformers for End-to-End Object Detection",
+          "role_hint": "parallel",
+          "reason": "Deformable DETR is a general detector; transformer attention is a relevant architectural paradigm."
+        },
+        {
+          "candidate_id": "c-76fba169",
+          "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+          "role_hint": "parallel",
+          "reason": "Grounding DINO is an open-set detector; relevant as advanced parallel approach."
+        },
+        {
+          "candidate_id": "c-20ce9a1f",
+          "title": "FCOS: Fully Convolutional One-Stage Object Detection",
+          "role_hint": "parallel",
+          "reason": "FCOS is an anchor-free detector; useful as alternative baseline detector."
+        },
+        {
+          "candidate_id": "c-35189529",
+          "title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+          "role_hint": "parallel",
+          "reason": "YOLOv4 is a foundational YOLO detector; cited baseline in YOLOv8-based steel papers."
+        },
+        {
+          "candidate_id": "c-61148d41",
+          "title": "EfficientDet: Scalable and Efficient Object Detection",
+          "role_hint": "parallel",
+          "reason": "EfficientDet uses BiFPN (feature pyramid network), aligning with topic method terms."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-2dda1575",
+          "title": "Yonatan-Estifanos-github/SurfaceDefectNet-Deep-Learning-for-Surface-Defect-Detection",
+          "role_hint": "repo",
+          "reason": "Segmentation-based defect repo; domain not specified in description — needs manual verification."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-a3e07da1",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "reference",
+          "reason": "Remote-sensing oriented object detection survey; cross-domain to steel surface defects."
+        },
+        {
+          "candidate_id": "c-72ef5f0b",
+          "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+          "role_hint": "reference",
+          "reason": "LLM-based survey-response coding; completely unrelated to defect detection."
+        },
+        {
+          "candidate_id": "c-f62f00da",
+          "title": "The Methanol Multibeam Survey",
+          "role_hint": "reference",
+          "reason": "Astronomical methanol maser survey; no relation to steel defect detection."
+        },
+        {
+          "candidate_id": "c-a6d55a98",
+          "title": "A Refinement of the Spanning Surface Defect in $3$ and $4$ Dimensions",
+          "role_hint": "reference",
+          "reason": "Pure mathematics paper on spanning surfaces of knots; homonym 'surface defect' only."
+        },
+        {
+          "candidate_id": "c-6a7ede32",
+          "title": "Wildfire Satellite Detection Detection of Lands Damaged by Forest",
+          "role_hint": "parallel",
+          "reason": "Title indicates wildfire/forest damage satellite imagery, not steel surface defect detection."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-8523d6a2",
+          "title": "Steel surface defect detection based on improved YOLOv8 neural network",
+          "role_hint": "reference",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-1db0e3da",
+          "title": "YOLOv8-LSD:A Steel Surface Defect Detection Algorithm Based On YOLOv8",
+          "role_hint": "reference",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-b25feaa1",
+          "title": "Improved Steel Surface Defect Detection Algorithm Based on YOLOv8",
+          "role_hint": "reference",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-94ba25ac",
+          "title": "GCE-YOLOv5s Based Surface Defect Detection Algorithm for Strip Steel",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-ea4efe2c",
+          "title": "DenseNet network-based surface defect detection algorithm for strip steel",
+          "role_hint": "reference",
+          "year": 2022
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-5845b5df",
+          "title": "Comparative Analysis of Object Detection Algorithms for Surface Defect Detection",
+          "role_hint": "reference",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-c196ea7e",
+          "title": "Real-Time Industrial Defect Detection on Edge Hardware Using Fine-Tuned YOLOv8: A Systematic Benchmark on the NEU Surface Defect Database and MVTec AD with Automotive & Battery Manufacturing Extensions",
+          "role_hint": "reference",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-3a8f6ae2",
+          "title": "Deformable DETR: Deformable Transformers for End-to-End Object Detection",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-33032f58",
+          "title": "YOLOv10: Real-Time End-to-End Object Detection",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-76fba169",
+          "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-20ce9a1f",
+          "title": "FCOS: Fully Convolutional One-Stage Object Detection",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-35189529",
+          "title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-61148d41",
+          "title": "EfficientDet: Scalable and Efficient Object Detection",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-111936e4",
+          "title": "End-to-End Object Detection with Transformers",
+          "role_hint": "parallel",
+          "year": null
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-3b412183",
+          "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+          "role_hint": "reference",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-8c3f0d77",
+          "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+          "role_hint": "reference",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-6b08ca92",
+          "title": "Developing a Resource-Constraint EdgeAI model for Surface Defect Detection",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-51c5c143",
+          "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-ad031e66",
+          "title": "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+          "role_hint": "reference",
+          "year": 2023
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-2dda1575",
+          "title": "Yonatan-Estifanos-github/SurfaceDefectNet-Deep-Learning-for-Surface-Defect-Detection",
+          "role_hint": "repo",
+          "year": null
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "c-a573f771 NEU-DET: canonical 6-class hot-rolled steel strip surface defect benchmark used by nearly all core papers; recommend as primary shared evaluation dataset.",
+      "c-2dda1575 repo: segmentation-based defect detection, no explicit steel/strip label — needs manual README inspection before citing as a strip-steel implementation."
+    ],
+    "work_suggestions": [
+      "Build a comparison table of YOLOv8 steel-defect papers c-8523d6a2, c-1db0e3da, c-b25feaa1 (architectural changes: neck/backbone, attention modules, FPN variants) and benchmark on NEU-DET c-a573f771.",
+      "For strip-steel-specific object detection, contrast GCE-YOLOv5s c-94ba25ac and DenseNet-based c-ea4efe2c approaches as non-YOLOv8 baselines alongside YOLOv8 family.",
+      "Use c-5845b5df as a cross-detector benchmark (YOLOv8/v11, RetinaNet, Fast R-CNN, DETR) on NEU-DET to anchor the survey's quantitative comparison section.",
+      "Reference parallel detectors c-3a8f6ae2 (Deformable DETR) and c-61148d41 (EfficientDet) when discussing attention mechanisms and FPN designs applied to steel defects.",
+      "Manually verify c-2dda1575 GitHub repo to determine if it supports strip-steel datasets before including in the segmentation section of the survey."
+    ],
+    "risk_reminders": [
+      "No paper in the evidence set directly validates Faster R-CNN, U-Net, or DeepLab on strip-steel datasets; claims on these methods will be inferential.",
+      "Crossref entries c-8523d6a2, c-94ba25ac, c-ea4efe2c, c-1db0e3da, c-b25feaa1 lack abstracts in the raw output — verify abstracts before citing.",
+      "NEU-DET c-a573f771 is hot-rolled steel only; cold-rolled strip-steel evidence (c-94ba25ac, c-ea4efe2c) is from minor-venue journals — treat performance claims cautiously.",
+      "OpenAlex, OpenAlex-citation, HuggingFace, and core adapters returned empty; coverage of recent 2024–2026 work beyond the captured papers is likely incomplete.",
+      "c-2dda1575 repo's domain is unverified; do not cite it as a steel-specific implementation without manual confirmation."
+    ],
+    "manual_questions": [
+      "Is the survey's scope limited to object detection, or should it also cover pixel-level segmentation (U-Net/DeepLab) for strip-steel defects?",
+      "Should hot-rolled (NEU-DET) and cold-rolled strip steel be treated as a single domain or analyzed separately?",
+      "Is real-time / edge deployment (YOLOv8 family) a primary evaluation axis, or is accuracy on NEU-DET the main focus?",
+      "Are attention mechanisms and FPN to be reviewed as architectural enhancements or as standalone method categories?",
+      "Should the survey include non-NEU benchmarks (GC10-DET, Severstal) if additional retrieval is required?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "Are pixel-level segmentation methods (U-Net/DeepLab) in scope or excluded from this survey?",
+      "Should hot-rolled and cold-rolled strip steel be treated as one domain or split?",
+      "Is real-time/edge deployment a primary evaluation axis or is accuracy dominant?",
+      "Are attention/FPN enhancements a method category or only architectural tweaks?",
+      "Should non-NEU benchmarks (GC10-DET, Severstal) be included or out of scope?"
+    ],
+    "weak_points": [
+      "paper_groups.baseline lacks true accuracy baselines (YOLOv8 variants dominate; no Faster R-CNN/RetinaNet steel paper present).",
+      "Direction recommendation is truncated mid-sentence and never completed.",
+      "evidence_gaps is empty despite candidate-pool stats showing only 1 dataset and limited domain coverage.",
+      "Five work_suggestions exist but several 'baseline' candidates (c-a573f771, c-94ba25ac, c-ea4efe2c) lack role confirmation as benchmarks.",
+      "Manual questions indicate scope ambiguity that should be resolved before opening report."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Topic is bounded and reference papers are present, but baseline group mislabels YOLOv8 variants as references without a true accuracy baseline (e.g., Faster R-CNN) and the direction text is truncated. Five blocking scope questions remain unresolved, warranting revision before opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于深度学习的带钢表面缺陷检测方法",
+      "domain_route": "vision_2d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 12,
+        "crossref": 5,
+        "github": 1
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 26,
+      "queries": [
+        "detection detection",
+        "detection defect",
+        "detection surface",
+        "detection model",
+        "defect detection",
+        "defect defect",
+        "defect surface",
+        "defect model"
+      ],
+      "added_count": 8
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 3,
+      "seeds_rejected": 2,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 189.8
+}

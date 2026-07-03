@@ -1,0 +1,1867 @@
+{
+  "project_id": "agent-re04-8fad23ff",
+  "raw_topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+  "parsed_topic": {
+    "raw_topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+    "normalized_topic": "Anti-icing and de-icing system for wind turbine blades based on electrothermal effect of graphene films",
+    "domain_route": "energy_power",
+    "domain_confidence": 0.78,
+    "method_terms": [
+      "graphene film joule heating",
+      "electrothermal de-icing",
+      "resistive heating film",
+      "electrothermal simulation COMSOL",
+      "heat transfer finite element"
+    ],
+    "task_terms": [
+      "wind turbine blade anti-icing",
+      "wind turbine blade de-icing",
+      "icing detection",
+      "electrothermal heating efficiency",
+      "icing accretion prediction"
+    ],
+    "object_terms": [
+      "wind turbine blade",
+      "graphene thin film",
+      "icing layer",
+      "composite blade surface",
+      "leading edge icing"
+    ],
+    "query_atoms_en": [
+      "graphene film electrothermal de-icing wind turbine blade",
+      "Joule heating anti-icing wind turbine blade",
+      "wind turbine blade ice protection system",
+      "graphene resistive heating composite de-icing",
+      "electrothermal ice protection aircraft blade",
+      "wind turbine icing heating simulation"
+    ],
+    "query_atoms_zh": [
+      "石墨烯薄膜电热除冰",
+      "风机叶片防冰系统",
+      "石墨烯焦耳热防冰",
+      "风力机叶片除冰技术",
+      "电热防冰复合材料",
+      "叶片结冰数值模拟"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "nrel.gov",
+      "sciencedirect.com",
+      "asme.org",
+      "ieee.org",
+      "mdpi.com"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+    "domain_route": "energy_power",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "graphene film joule heating wind turbine blade anti-icing",
+        "graphene film joule heating wind turbine blade"
+      ],
+      "method_task": [
+        "graphene film joule heating wind turbine blade anti-icing",
+        "graphene film joule heating wind turbine blade de-icing",
+        "electrothermal de-icing wind turbine blade anti-icing",
+        "electrothermal de-icing wind turbine blade de-icing"
+      ],
+      "object_task": [
+        "wind turbine blade wind turbine blade anti-icing",
+        "wind turbine blade wind turbine blade de-icing",
+        "graphene thin film wind turbine blade anti-icing",
+        "graphene thin film wind turbine blade de-icing"
+      ],
+      "dataset": [
+        "wind turbine blade anti-icing dataset",
+        "wind turbine blade dataset"
+      ],
+      "repo": [
+        "wind turbine blade anti-icing github",
+        "wind turbine blade anti-icing implementation",
+        "graphene film joule heating wind turbine blade anti-icing"
+      ],
+      "survey": [
+        "wind turbine blade anti-icing survey",
+        "energy power survey"
+      ],
+      "benchmark": [
+        "wind turbine blade anti-icing benchmark"
+      ],
+      "baseline": [
+        "graphene film joule heating wind turbine blade anti-icing",
+        "graphene film joule heating wind turbine blade de-icing",
+        "electrothermal de-icing wind turbine blade anti-icing",
+        "electrothermal de-icing wind turbine blade de-icing"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "graphene film joule heating",
+        "electrothermal de-icing",
+        "resistive heating film",
+        "electrothermal simulation COMSOL",
+        "heat transfer finite element"
+      ],
+      "task_terms": [
+        "wind turbine blade anti-icing",
+        "wind turbine blade de-icing",
+        "icing detection",
+        "electrothermal heating efficiency",
+        "icing accretion prediction"
+      ],
+      "object_terms": [
+        "wind turbine blade",
+        "graphene thin film",
+        "icing layer",
+        "composite blade surface",
+        "leading edge icing"
+      ],
+      "domain_route": "energy_power"
+    },
+    "fb_atom": "graphene film electrothermal de-icing wind turbine blade",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper backends for graphene electrothermal anti-icing on wind turbine blades",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "graphene film electrothermal de-icing blade",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "primary spine query covering graphene joule heating de-icing on wind blade surface",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "Joule heating anti-icing wind turbine",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex broad sweep on joule-heating ice protection systems for turbine blades",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "electrothermal ice protection composite blade",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "crossref harvest of journal articles on electrothermal heating composites for icing",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "graphene deicing",
+            "target_role": "repo",
+            "why_call": "concrete method+object term to surface any open source implementation of graphene de-icing",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark, survey, recent-advances variants on ice protection systems",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "wind turbine ice protection survey",
+            "target_role": "survey",
+            "why_call": "retrieve survey papers on turbine blade ice protection methods to broaden prior art",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "electrothermal de-icing recent advances",
+            "target_role": "survey",
+            "why_call": "capture recent review-type work on electrothermal de-icing techniques",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "leading edge icing simulation benchmark",
+            "target_role": "reference",
+            "why_call": "find benchmark and simulation reference papers for leading-edge icing accretion",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "resistive heating film composite aircraft",
+            "target_role": "reference",
+            "why_call": "adjacent method reference: resistive heating films on aircraft wing composites",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code and datasets for wind turbine icing simulation and graphene heater characterization",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "turbine icing sim",
+            "target_role": "repo",
+            "why_call": "concrete object+task term to surface wind turbine icing simulation code",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "graphene heater FEM",
+            "target_role": "repo",
+            "why_call": "find finite element simulation code for graphene film resistive heating",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "icing accretion dataset turbine",
+            "target_role": "dataset",
+            "why_call": "search openalex for papers publishing icing accretion datasets for turbines",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "blade icing wind tunnel data",
+            "target_role": "dataset",
+            "why_call": "locate wind tunnel icing measurement datasets used for blade de-icing validation",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [],
+    "arxiv_queries": [
+      "graphene film electrothermal de-icing blade",
+      "wind turbine ice protection survey",
+      "resistive heating film composite aircraft"
+    ],
+    "openalex_queries": [
+      "Joule heating anti-icing wind turbine",
+      "electrothermal de-icing recent advances",
+      "icing accretion dataset turbine"
+    ],
+    "crossref_queries": [
+      "electrothermal ice protection composite blade",
+      "leading edge icing simulation benchmark",
+      "blade icing wind tunnel data"
+    ],
+    "github_queries": [
+      "graphene deicing",
+      "turbine icing sim",
+      "graphene heater FEM"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "an examination of rotational effects on large wind turbine blades",
+      "candidate_id": "c-0ff7388f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "An Examination of Rotational Effects on Large Wind Turbine Blades",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2017,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1705.04209v1",
+      "identifier": "1705.04209v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "CFD studies have been performed to demonstrate the effects of rotation on large wind turbine blades. The 10 MW blade of the Advanced Aerodynamic Tools for Large Rotors (AVATAR) project was selected in the present investigation. In order to demonstrate the rotational augmentation, lift coefficients of the blade sections were compared with the two-dimensional simulations at consistent inflow conditions. The increase of the lift coefficient was observed at the inboard section of the blade, showing the effect of rotation. A significant delay of separation point as well as a massive reduction of the wake size occur at the inboard blade section. The results of the present manuscript provide more information of the rotational augmentation occurring in the near hub region of wind turbine blades.",
+      "extra": {}
+    },
+    {
+      "stable_id": "modeling the effect of wind speed and direction shear on utility-scale wind turbine power production",
+      "candidate_id": "c-99de39d9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Modeling the effect of wind speed and direction shear on utility-scale wind turbine power production",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2309.15254v1",
+      "identifier": "2309.15254v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Wind speed and direction variations across the rotor affect power production. As utility-scale turbines extend higher into the atmospheric boundary layer (ABL) with larger rotor diameters and hub heights, they increasingly encounter more complex wind speed and direction variations. We assess three models for power production that account for wind speed and direction shear. Two are based on actuator disc representations and the third is a blade element representation. We also evaluate the predictions from a standard power curve model that has no knowledge of wind shear. The predictions from each model, driven by wind profile measurements from a profiling LiDAR, are compared to concurrent power measurements from an adjacent utility-scale wind turbine. In the field measurements of the utility-scale turbine, discrete combinations of speed and direction shear induce changes in power production of -19% to +34% relative to the turbine power curve for a given hub height wind speed. Positive speed shear generally corresponds to over-performance and positive direction shear to under-performance, relative to the power curve. Overall, the blade element model produces both higher correlation and lower error relative to the other models, but its quantitative accuracy depends on induction and controller sub-models. To further assess the influence of complex, non-monotonic wind profiles, we also drive the models with best-fit power law wind speed profiles and linear wind direction profiles. These idealized inputs produce qualitative and quantitative differences in power predictions from each model, demonstrating that time-varying, non-monotonic wind shear affects wind power production.",
+      "extra": {}
+    },
+    {
+      "stable_id": "an aerodynamic measurement system to improve the efficiency of wind turbine rotor blades",
+      "candidate_id": "c-48d636b0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "An aerodynamic measurement system to improve the efficiency of wind turbine rotor blades",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2503.08860v1",
+      "identifier": "2503.08860v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The wind energy sector is growing rapidly with the installation of wind turbines with long, slender blades in a diverse range of locations. To enhance the operational performance under specific wind conditions and to validate the aerodynamic design of flexible blades, it is crucial to obtain comprehensive data on the aerodynamic behaviour of the blades in the field, such as time-resolved pressure distributions, local inflow conditions and dynamic responses of the blade. However, published field measurements are scarce for large-scale rotor blades due to the complex and costly installation of the requisite measurement systems. In recent work, we developed a wireless and self-sufficient aerodynamic measurement system, named Aerosense, which is less complex and costly than conventional aerodynamic measurement systems. The Aerosense system uses Micro-Electro-Mechanical Systems (MEMS) sensors to obtain local aerodynamic pressures, blade motions, and inflow conditions. In this paper, we demonstrate the value of Aerosense in understanding the aerodynamic behaviour of rotor blades, using a 7kW wind turbine operating in the field. After a thorough calibration and correction process, we demonstrate, for example, that the pressure distribution can vary significantly during one rotation of the blade, even under stable wind conditions. These variations are found to be due to the misalignment of the wind direction with the wind turbine's rotational axis. We therefore conclude that the Aerosense measurement system is valuable for understanding the aerodynamic loading on rotor blades as well as the influence of the inflow conditions on wind turbine performance.",
+      "extra": {}
+    },
+    {
+      "stable_id": "frequency support scheme based on parametrized power curve for de-loaded wind turbine under various wind speed",
+      "candidate_id": "c-034957ff",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Frequency support Scheme based on parametrized power curve for de-loaded Wind Turbine under various wind speed",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2108.00589v1",
+      "identifier": "2108.00589v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "With increased wind power penetration in modern power systems, wind plants are required to provide frequency support similar to conventional plants. However, for the existing frequency regulation scheme of wind turbines, the control gains in the auxiliary frequency controller are difficult to set because of the compromise of the frequency regulation performance and the stable operation of wind turbines, especially when the wind speed remains variable. This paper proposes a novel frequency regulation scheme (FRS) for de-loaded wind turbines. Instead of an auxiliary frequency controller, frequency support is provided by modifying the parametrized power versus rotor speed curve, including the inertia power versus rotor speed curve and the droop power versus rotor speed curve. The advantage of the proposed scheme is that it does not contain any control gains and generally adapts to different wind speeds. Further, the proposed scheme can work for the whole section of wind speed without wind speed measurement information. The compared simulation results demonstrate the scheme improves the system frequency response while ensuring the stable operation of doubly-fed induction generators (DFIGs)-based variable-speed wind turbines (VSWTs) under various wind conditions. Furthermore, the scheme prevents rotor speed overdeceleration even when the wind speed decreases during frequency regulation control.",
+      "extra": {}
+    },
+    {
+      "stable_id": "finite element convergence for the joule heating problem with mixed boundary conditions",
+      "candidate_id": "c-d58d697f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Finite Element Convergence for the Joule Heating Problem with Mixed Boundary Conditions",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2012,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1203.6306v1",
+      "identifier": "1203.6306v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We prove strong convergence of conforming finite element approximations to the stationary Joule heating problem with mixed boundary conditions on Lipschitz domains in three spatial dimensions. We show optimal global regularity estimates on creased domains and prove a priori and a posteriori bounds for shape regular meshes.",
+      "extra": {}
+    },
+    {
+      "stable_id": "material optimization of flexible blades for wind turbines",
+      "candidate_id": "c-08a48562",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Material optimization of flexible blades for wind turbines",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2001.09072v1",
+      "identifier": "2001.09072v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Bioinspired flexible blades have been recently shown to significantly improve the versatility of horizontal-axis wind turbines, by widening their working range and increasing their efficiency. The aerodynamic and centrifugal forces bend the blade along its chord, varying the pitch angle by means of non-consuming mechanisms. Here we introduce a general method based on a universal scaling, which finds the optimal soft materials for the blades to maximize the overall turbine efficiency or rotational power, for any required geometry of classical horizontal-axis turbines. The optimization problem, which depends on various parameters, such as the wind velocity, the rotation rate, the density, the rigidity and the geometry of the blade, is reduced to only two dimensionless parameters: the Cauchy number and the centrifugal number. The blade-element momentum theory is coupled to a torsion spring-based model for the blade deformation. Taking into account realistic incoming wind-velocity distributions in the North Sea and a large wind-turbine geometry, we found a significant increase of the total harvested power, up to +35%. In addition, the optimal soft material corresponding to the maximal efficiency over the entire working range for a given wind turbine geometry is, within the limits of small blade deformations, scale-independent. Thus experiments on small wind turbines are a possible way to determine the optimal soft materials for larger ones. These flexible blades are found to be between 5% and 20% lighter than the current rigid blades.",
+      "extra": {}
+    },
+    {
+      "stable_id": "sdwpf: a dataset for spatial dynamic wind power forecasting challenge at kdd cup 2022",
+      "candidate_id": "c-ed4abd0b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SDWPF: A Dataset for Spatial Dynamic Wind Power Forecasting Challenge at KDD Cup 2022",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2208.04360v2",
+      "identifier": "2208.04360v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The variability of wind power supply can present substantial challenges to incorporating wind power into a grid system. Thus, Wind Power Forecasting (WPF) has been widely recognized as one of the most critical issues in wind power integration and operation. There has been an explosion of studies on wind power forecasting problems in the past decades. Nevertheless, how to well handle the WPF problem is still challenging, since high prediction accuracy is always demanded to ensure grid stability and security of supply. We present a unique Spatial Dynamic Wind Power Forecasting dataset: SDWPF, which includes the spatial distribution of wind turbines, as well as the dynamic context factors. Whereas, most of the existing datasets have only a small number of wind turbines without knowing the locations and context information of wind turbines at a fine-grained time scale. By contrast, SDWPF provides the wind power data of 134 wind turbines from a wind farm over half a year with their relative positions and internal statuses. We use this dataset to launch the Baidu KDD Cup 2022 to examine the limit of current WPF solutions. The dataset is released at https://aistudio.baidu.com/aistudio/competition/detail/152/0/datasets.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the perils of automated fitting of datasets: the case of a wind turbine cost model",
+      "candidate_id": "c-75d8ef40",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The perils of automated fitting of datasets: the case of a wind turbine cost model",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1905.08870v2",
+      "identifier": "1905.08870v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Rinne et al. conduct an interesting analysis of the impact of wind turbine technology and land-use on wind power potentials, which allows profound insights into each factors contribution to overall potentials. The paper presents a detailed model of site-specific wind turbine investment cost (i.e. road- and grid access costs) complemented by a model used to estimate site-independent costs. We believe that propose a cutting edge model of site-specific investment costs. However, the site-independent cost model is flawed in our opinion. This flaw most likely does not impact the results presented in the paper, although we expect a considerable generalization error. Thus the application of the wind turbine cost model in other contexts may lead to unreasonable results. More generally, the derivation of the wind turbine cost model serves as an example of how applications of automated regression analysis can go wrong.",
+      "extra": {}
+    },
+    {
+      "stable_id": "effects of inflow turbulence on structural deformation of wind turbine blades",
+      "candidate_id": "c-74cbe89a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Effects of Inflow Turbulence on Structural Deformation of Wind Turbine Blades",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2001.02257v1",
+      "identifier": "2001.02257v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The present investigation provides the first field characterization of the influence of turbulent inflow on the blade structural response of a utility-scale wind turbine (2.5MW), using the unique facility available at the Eolos Wind Energy Research Station of the University of Minnesota. A representative one-hour dataset under a stable atmosphere is selected for the characterization, including the inflow turbulent data measured from the meteorological tower, high-resolution blade strain measurement at different circumferential and radiation positions along the blade, and the wind turbine operational conditions. The results indicate that the turbulent inflow modulates the turbine blade structural response in three representative frequency ranges: a lower frequency range (corresponding to modulations due to large eddies in the atmosphere), a higher frequency range (corresponding to flow structures in scales smaller than the rotor diameter), and an intermediate-range in between. The blade structure responds strongly to the turbulent inflow in the lower and intermediate ranges, while it is primarily dominated by the rotation effect and other high-frequency characteristics of wind turbines in the higher frequency range. Moreover, the blade structural behaviors at different azimuth angles, circumferential and radial locations along the blade are also compared, suggesting the comparatively high possibility of structural failure at certain positions. Further, the present study also uncovers the linkage between the turbulent inflow and blade structural response using temporal correlation. The derived findings provide insights into the development of advanced control strategies or blade design to mitigate the structural impact and increase blade longevity for the safer and more efficient operation of large-scale wind turbines.",
+      "extra": {}
+    },
+    {
+      "stable_id": "numerical simulation of icing characteristics on a blade airfoil for vertical-axis wind turbine under various icing conditions",
+      "candidate_id": "c-eb26ec2a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Numerical Simulation of Icing Characteristics on a Blade Airfoil for Vertical-Axis Wind Turbine under Various Icing Conditions",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Wind Turbine Icing - Recent Advances in Icing Characteristics and Protection Technology",
+      "url": "https://doi.org/10.5772/intechopen.112398",
+      "identifier": "10.5772/intechopen.112398",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>The phenomenon of icing on wind turbines gives rise to significant liability concerns in regions characterized by cold and humid climates, especially those with extreme climatic conditions. Accordingly, investigating the icing characteristics is essential for the safety operation of wind turbines. In this chapter, an icing model coupling water film flow with water film evaporation considering airfoil surface roughness is developed to investigate the effect of icing conditions on the icing characteristics of a blade airfoil for vertical-axis wind turbines by numerical simulation. The mechanism of heat and mass transfer under various icing conditions is explored. The results show that the simulated and experimental ice shapes on the airfoil agree well. The ice shape contour fluctuates along the airfoil surface at higher ambient temperature due to water film flow and heat flux variation. A large area of airfoil surface is covered by ice accretion at high wind speed due to an increase in driving force acting on water film and convective cooling between water film and air. The maximum ice thickness changes more significantly at wind speeds of 2–7 m/s than that at wind speeds of 7–12 m/s. This contributes to theoretical basis for exploring anti/de-icing method in wind turbines.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "wind turbine blade design requirements",
+      "candidate_id": "c-e8860f4b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Wind Turbine Blade Design Requirements",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2010,
+      "venue": "Wind Turbine Technology",
+      "url": "https://doi.org/10.1201/9781439815076-7",
+      "identifier": "10.1201/9781439815076-7",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "micromechanical modelling of wind turbine blade materials",
+      "candidate_id": "c-c89b8199",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Micromechanical modelling of wind turbine blade materials",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2013,
+      "venue": "Advances in Wind Turbine Blade Design and Materials",
+      "url": "https://doi.org/10.1533/9780857097286.2.298",
+      "identifier": "10.1533/9780857097286.2.298",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a brief review of blade surface icing adhesive theories for wind turbines",
+      "candidate_id": "c-56e257d9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Brief Review of Blade Surface Icing Adhesive Theories for Wind Turbines",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Wind Turbine Icing - Recent Advances in Icing Characteristics and Protection Technology",
+      "url": "https://doi.org/10.5772/intechopen.113039",
+      "identifier": "10.5772/intechopen.113039",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>In cold and humid areas, ice easily accumulates on the blade surface of the wind turbine. The icing on the blade surface causes the power efficiency of wind turbines to decline, even leading to safety accidents. In order to research and develop efficient anti-icing and de-icing technologies, exploring the adhesive properties between ice and the blade surface is necessary. Therefore, in this paper, the main theories of the icing adhesive mechanism have been briefly summarized, including mechanical, electronic, and wetting theories, from the aspechts of theory and experimental research, which can provide a reference for researching icing mechanisms and the development of anti-icing and de-icing technologies for wind turbines.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "wind turbine blade design",
+      "candidate_id": "c-da002701",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Wind Turbine Blade Design",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2014,
+      "venue": "Wind Turbine Technology",
+      "url": "https://doi.org/10.1201/b16587-7",
+      "identifier": "10.1201/b16587-7",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "introduction to wind turbine blade design",
+      "candidate_id": "c-655db3c0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Introduction to wind turbine blade design",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Advances in Wind Turbine Blade Design and Materials",
+      "url": "https://doi.org/10.1016/b978-0-08-103007-3.00009-4",
+      "identifier": "10.1016/b978-0-08-103007-3.00009-4",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "wind turbine aerodynamics part b: turbine blade flow fields",
+      "candidate_id": "c-86e14f16",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Wind Turbine Aerodynamics Part B: Turbine Blade Flow Fields",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2009,
+      "venue": "Wind Turbine Technology: Fundamental Concepts in Wind Turbine Engineering, Second Edition",
+      "url": "https://doi.org/10.1115/1.802601.ch5b",
+      "identifier": "10.1115/1.802601.ch5b",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "utilising implanted carbon fibre as a resistive heating element in wind turbine blade anti-icing systems",
+      "candidate_id": "c-ba4d7e62",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Utilising implanted carbon fibre as a resistive heating element in wind turbine blade anti-icing systems",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2013,
+      "venue": "WIT Transactions on Engineering Sciences",
+      "url": "https://doi.org/10.2495/mc130261",
+      "identifier": "10.2495/mc130261",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "conventional wind turbine icing mitigation technologies",
+      "candidate_id": "c-6e4b9c13",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Conventional wind turbine icing mitigation technologies",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "Wind Turbine Icing Physics and Anti-/De-icing Technology",
+      "url": "https://doi.org/10.1016/b978-0-12-824532-3.00006-1",
+      "identifier": "10.1016/b978-0-12-824532-3.00006-1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "wind turbine icing physics and anti-/de-icing technology",
+      "candidate_id": "c-e15f4856",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Wind Turbine Icing Physics and Anti-/De-icing Technology",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "https://doi.org/10.1016/c2020-0-01512-4",
+      "identifier": "10.1016/c2020-0-01512-4",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "field measurements of wind turbine icing",
+      "candidate_id": "c-f84ba1a4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Field measurements of wind turbine icing",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "Wind Turbine Icing Physics and Anti-/De-icing Technology",
+      "url": "https://doi.org/10.1016/b978-0-12-824532-3.00004-8",
+      "identifier": "10.1016/b978-0-12-824532-3.00004-8",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "plasma-based technologies for wind turbine icing mitigation",
+      "candidate_id": "c-5e2682c9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Plasma-based technologies for wind turbine icing mitigation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "Wind Turbine Icing Physics and Anti-/De-icing Technology",
+      "url": "https://doi.org/10.1016/b978-0-12-824532-3.00011-5",
+      "identifier": "10.1016/b978-0-12-824532-3.00011-5",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "wind tunnel tests on anti-icing performance of wind turbine blade with naca0018 airfoil with bio-wax pcms-pur coating",
+      "candidate_id": "c-bc865519",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Wind Tunnel Tests on Anti-Icing Performance of Wind Turbine Blade with NACA0018 Airfoil with Bio-Wax PCMS-PUR Coating",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "Coatings",
+      "url": "https://doi.org/10.3390/coatings15111305",
+      "identifier": "10.3390/coatings15111305",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>The increasing prominence of blade icing in wind power generation within cold regions has positioned anti-icing coating technology as a key research focus. This study synthesised phase-change microcapsules using bio-wax as the core material and isophorone diisocyanate as the shell material via interfacial polymerisation. These microcapsules were then compounded with polyurethane to form an anti-icing coating, whose properties and anti-icing performance were systematically investigated. Key findings indicate that a 1% emulsifier concentration yielded microcapsules with a concentrated particle size distribution (≈20 μm). Microcapsules with a core-to-shell ratio of 7:3 exhibited optimal thermal storage performance, characterised by a melting enthalpy of 49.73 J/g and an encapsulation efficiency of 78%, establishing this as the optimal formulation. Icing wind tunnel tests demonstrated enhanced anti-icing efficacy with increasing microcapsule concentration. At 36% concentration, the coating achieved an anti-icing efficiency of 65.80% under conditions of −15 °C and 3 m/s wind speed, and 64.05% at −10 °C and 6 m/s. The coating maintained its effectiveness under high wind speeds, though its performance diminished with increased water spray flux. The coating functioned by delaying ice formation through phase-change heat release. It consistently demonstrated an anti-icing efficiency exceeding 60% across operational conditions −15 °C to −5 °C and wind speeds of 3–9 m/s. This work provides an efficient and environmentally friendly anti-icing solution for wind turbine blades in cold regions.</jats:p>",
+      "extra": {}
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "graphene film joule heating wind turbine blade anti-icing|graphene film joule heating wind turbine blade",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "wind turbine blade anti-icing dataset|wind turbine blade dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "graphene film joule heating wind turbine blade anti-icing|graphene film joule heating wind turbine blade de-icing|electr",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "wind turbine blade anti-icing github|wind turbine blade anti-icing implementation|graphene film joule heating wind turbi",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "graphene film joule heating wind turbine blade anti-icing|graphene film joule heating wind turbine blade de-icing|electr",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "graphene film joule heating wind turbine blade anti-icing|graphene film joule heating wind turbine blade",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "wind turbine blade anti-icing survey|energy power survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "wind turbine blade wind turbine blade anti-icing|wind turbine blade wind turbine blade de-icing|graphene thin film wind ",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "wind turbine blade anti-icing benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "wind turbine blade anti-icing dataset|wind turbine blade dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "graphene film joule heating wind turbine blade anti-icing|graphene film joule heating wind turbine blade de-icing|electr",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "graphene film joule heating wind turbine blade anti-icing|graphene film joule heating wind turbine blade",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "wind turbine blade anti-icing dataset|wind turbine blade dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "wind turbine blade anti-icing benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "wind turbine blade anti-icing dataset|wind turbine blade dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "wind turbine blade anti-icing survey|energy power survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "wind turbine blade wind turbine blade anti-icing|wind turbine blade wind turbine blade de-icing|graphene thin film wind ",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "graphene film joule heating wind turbine blade anti-icing|graphene film joule heating wind turbine blade",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "graphene film joule heating wind turbine blade anti-icing|graphene film joule heating wind turbine blade de-icing|electr",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "wind wind|wind blade|wind he",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: An Examination of Rotational Effects on Large Wind Turbine B",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Modeling the effect of wind speed and direction shear on uti",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: An aerodynamic measurement system to improve the efficiency ",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Frequency support Scheme based on parametrized power curve f",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Finite Element Convergence for the Joule Heating Problem wit",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-0ff7388f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine blade"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal de-icing",
+        "Joule heating",
+        "icing",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "CFD study on large wind turbine blades; no icing or electrothermal content, only weak domain overlap.",
+      "reason": "Addresses aerodynamic rotational effects on wind turbine blades. No mention of icing, electrothermal heating, or graphene films, so only tangentially relevant as background."
+    },
+    {
+      "candidate_id": "c-99de39d9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine"
+      ],
+      "missing_terms": [
+        "blade icing",
+        "graphene film",
+        "electrothermal heating",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Wind shear and power production study; no blade-surface or icing relevance.",
+      "reason": "Focuses on atmospheric boundary layer effects on utility-scale turbine output. No overlap with icing physics or electrothermal de-icing methods."
+    },
+    {
+      "candidate_id": "c-48d636b0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine rotor blades"
+      ],
+      "missing_terms": [
+        "icing",
+        "graphene film",
+        "electrothermal de-icing",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Aerodynamic measurement for blade efficiency; unrelated to icing protection.",
+      "reason": "Covers aerodynamic measurement systems for rotor blades. No mention of ice accretion, resistive heating, or graphene-based systems."
+    },
+    {
+      "candidate_id": "c-034957ff",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "wind turbine"
+      ],
+      "missing_terms": [
+        "blade",
+        "icing",
+        "electrothermal",
+        "graphene",
+        "Joule heating"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Grid frequency control paper; cross-domain (power systems vs. blade icing).",
+      "reason": "Addresses frequency support schemes for wind plants. No connection to blade icing, heating systems, or graphene films."
+    },
+    {
+      "candidate_id": "c-d58d697f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "Joule heating",
+        "finite element"
+      ],
+      "missing_terms": [
+        "wind turbine blade",
+        "graphene film",
+        "icing",
+        "anti-icing",
+        "electrothermal"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "Theoretical FEM convergence proof for Joule heating; applicable as simulation background.",
+      "reason": "Mathematical FEM analysis of Joule heating with mixed boundary conditions. Could support the simulation methodology component of the topic, but not wind-turbine-specific."
+    },
+    {
+      "candidate_id": "c-08a48562",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine blades"
+      ],
+      "missing_terms": [
+        "icing",
+        "electrothermal",
+        "graphene film",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Bioinspired flexible blade material design; weak overlap with composite/icing topic.",
+      "reason": "Material optimization of flexible blades via bioinspired approaches. No icing or electrothermal content, only structural/material background."
+    },
+    {
+      "candidate_id": "c-ed4abd0b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "wind power"
+      ],
+      "missing_terms": [
+        "blade",
+        "icing",
+        "graphene",
+        "electrothermal",
+        "Joule heating"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Wind power forecasting dataset; cross-domain (data science vs. blade icing).",
+      "reason": "KDD Cup 2022 dataset for spatial dynamic wind power forecasting. No relevance to blade icing or electrothermal systems."
+    },
+    {
+      "candidate_id": "c-75d8ef40",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "wind turbine"
+      ],
+      "missing_terms": [
+        "blade icing",
+        "electrothermal",
+        "graphene",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Wind turbine cost modeling critique; no icing or blade-surface content.",
+      "reason": "Methodological critique of wind turbine cost modeling. Completely outside the scope of icing protection or electrothermal systems."
+    },
+    {
+      "candidate_id": "c-74cbe89a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine blades",
+        "structural deformation"
+      ],
+      "missing_terms": [
+        "icing",
+        "electrothermal",
+        "graphene film",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Structural response to turbulent inflow; weak structural-mechanics overlap.",
+      "reason": "Field study of inflow turbulence effects on blade structural deformation. Could provide background on blade mechanics but lacks icing/heating content."
+    },
+    {
+      "candidate_id": "c-eb26ec2a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine",
+        "blade airfoil",
+        "icing characteristics",
+        "numerical simulation"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal de-icing",
+        "Joule heating",
+        "horizontal-axis turbine"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct icing simulation on wind turbine blade airfoil; strong topic relevance.",
+      "reason": "Numerical simulation of icing on a vertical-axis wind turbine blade airfoil. Highly relevant to icing accretion prediction, though not electrothermal or graphene-based."
+    },
+    {
+      "candidate_id": "c-e8860f4b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine blade design"
+      ],
+      "missing_terms": [
+        "icing",
+        "electrothermal",
+        "graphene film",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "General blade design book chapter; weak structural-design overlap.",
+      "reason": "Book chapter on wind turbine blade design requirements. Background reference only; no icing or electrothermal content."
+    },
+    {
+      "candidate_id": "c-c89b8199",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine blade",
+        "composite materials"
+      ],
+      "missing_terms": [
+        "icing",
+        "electrothermal",
+        "graphene film",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Micromechanical modeling of blade composites; partial material overlap.",
+      "reason": "Micromechanical modeling of composite blade materials. Useful background for composite blade surface discussion, but lacks icing/heating focus."
+    },
+    {
+      "candidate_id": "c-56e257d9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine",
+        "blade surface icing",
+        "anti-icing",
+        "icing adhesive"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal",
+        "Joule heating",
+        "de-icing"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Review of blade surface icing adhesion theories; directly relevant to icing problem.",
+      "reason": "Reviews adhesive theories of ice on wind turbine blade surfaces. Strongly relevant to the icing problem component of the topic, though not electrothermal."
+    },
+    {
+      "candidate_id": "c-da002701",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine blade design"
+      ],
+      "missing_terms": [
+        "icing",
+        "electrothermal",
+        "graphene film",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Blade design book chapter; only background relevance.",
+      "reason": "Book chapter on wind turbine blade design. Provides background only; no overlap with icing protection or electrothermal heating."
+    },
+    {
+      "candidate_id": "c-655db3c0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine blade design"
+      ],
+      "missing_terms": [
+        "icing",
+        "electrothermal",
+        "graphene film",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Introduction to blade design; only background relevance.",
+      "reason": "Introductory chapter on wind turbine blade design. Background reference; no connection to icing or electrothermal systems."
+    },
+    {
+      "candidate_id": "c-86e14f16",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine",
+        "blade flow fields"
+      ],
+      "missing_terms": [
+        "icing",
+        "electrothermal",
+        "graphene film",
+        "Joule heating",
+        "anti-icing"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Aerodynamics chapter; only aerodynamic background relevance.",
+      "reason": "Book chapter on turbine blade flow field aerodynamics. Background only; no relevance to icing or heating systems."
+    },
+    {
+      "candidate_id": "c-ba4d7e62",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "core",
+      "matched_terms": [
+        "wind turbine blade",
+        "anti-icing",
+        "resistive heating",
+        "composite blade",
+        "carbon fibre heating element"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal de-icing"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct match: resistive heating anti-icing on wind turbine blade composite surface.",
+      "reason": "Implanted carbon fibre as resistive heating element for wind turbine blade anti-icing. Strongly aligned with the electrothermal anti-icing concept, differing only in heating element material."
+    },
+    {
+      "candidate_id": "c-6e4b9c13",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine icing",
+        "anti-icing",
+        "de-icing",
+        "icing mitigation"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal",
+        "Joule heating"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey of conventional icing mitigation technologies; strong survey relevance.",
+      "reason": "Review of conventional wind turbine icing mitigation technologies. Provides important context for the proposed graphene-based electrothermal system versus existing approaches."
+    },
+    {
+      "candidate_id": "c-e15f4856",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine icing",
+        "anti-/de-icing technology"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal",
+        "Joule heating"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "Book-level coverage of icing physics and anti-/de-icing technologies.",
+      "reason": "Comprehensive book on wind turbine icing physics and anti-/de-icing technology. Highly relevant survey-level reference for the topic's broader context."
+    },
+    {
+      "candidate_id": "c-f84ba1a4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine icing",
+        "field measurements"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal",
+        "Joule heating",
+        "anti-icing system"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Field icing measurements; supports icing detection/empirical validation.",
+      "reason": "Field measurements of wind turbine icing. Useful for empirical icing characterization relevant to the topic's detection and accretion prediction components."
+    },
+    {
+      "candidate_id": "c-5e2682c9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine",
+        "icing",
+        "anti-icing",
+        "de-icing"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal",
+        "Joule heating",
+        "resistive heating film",
+        "COMSOL",
+        "composite blade"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Background chapter on icing mitigation technologies; relevant context but not graphene/electrothermal-specific.",
+      "reason": "Covers wind turbine icing mitigation including plasma methods; useful background reference, but lacks graphene film electrothermal content central to the topic."
+    },
+    {
+      "candidate_id": "c-bc865519",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "wind turbine blade",
+        "anti-icing",
+        "airfoil",
+        "coating",
+        "icing"
+      ],
+      "missing_terms": [
+        "graphene film",
+        "electrothermal",
+        "Joule heating",
+        "resistive heating",
+        "de-icing system"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Parallel anti-icing approach (bio-wax PCM coating) on NACA0018 blade; same application domain, different method.",
+      "reason": "Empirical anti-icing coating study on wind turbine blade airfoil in cold-region wind power; relevant parallel work but uses phase-change microcapsules, not graphene electrothermal heating."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "The evidence base has NO direct paper on graphene-film electrothermal de-icing of wind turbine blades. Closest anchor is c-ba4d7e62 (implanted carbon fibre resistive heating for blade anti-icing), with c-d58d697f providing FEM-Joule-heating methodology and c-eb26ec2a plus c-56e257d9 covering icing simulation and ice-adhesion theory. Recommend the student anchor the work on c-ba4d7e62 as the primary baseline (resistive heating on composite blade), generalize the heating element from carbon fibre to graphene film, and supplement with c-eb26ec2a (icing accretion simulation), c-56e257d9 (ice adhesion review), c-6e4b9c13 / c-e15f4856 (mitigation technology survey), and c-d58d697f (Joule-heating FEM) for the electrothermal simulation backbone. The graphene-specific novelty must be argued from materials-science literature outside the retrieved set; the student must manually pull graphene Joule-heating papers (e.g. Bae 2012-type, Janas/Bonaccorso graphene heater reviews) and icing-detection papers since none were retrieved.",
+    "baseline_options": [
+      "c-ba4d7e62",
+      "c-eb26ec2a",
+      "c-56e257d9",
+      "c-d58d697f",
+      "c-6e4b9c13"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-ba4d7e62",
+          "title": "Utilising implanted carbon fibre as a resistive heating element in wind turbine blade anti-icing systems",
+          "role_hint": "reference",
+          "reason": "Direct match: resistive heating anti-icing on wind turbine blade composite surface."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-0ff7388f",
+          "title": "An Examination of Rotational Effects on Large Wind Turbine Blades",
+          "role_hint": "reference",
+          "reason": "CFD study on large wind turbine blades; no icing or electrothermal content, only weak domain overlap."
+        },
+        {
+          "candidate_id": "c-99de39d9",
+          "title": "Modeling the effect of wind speed and direction shear on utility-scale wind turbine power production",
+          "role_hint": "reference",
+          "reason": "Wind shear and power production study; no blade-surface or icing relevance."
+        },
+        {
+          "candidate_id": "c-48d636b0",
+          "title": "An aerodynamic measurement system to improve the efficiency of wind turbine rotor blades",
+          "role_hint": "reference",
+          "reason": "Aerodynamic measurement for blade efficiency; unrelated to icing protection."
+        },
+        {
+          "candidate_id": "c-d58d697f",
+          "title": "Finite Element Convergence for the Joule Heating Problem with Mixed Boundary Conditions",
+          "role_hint": "reference",
+          "reason": "Theoretical FEM convergence proof for Joule heating; applicable as simulation background."
+        },
+        {
+          "candidate_id": "c-08a48562",
+          "title": "Material optimization of flexible blades for wind turbines",
+          "role_hint": "reference",
+          "reason": "Bioinspired flexible blade material design; weak overlap with composite/icing topic."
+        },
+        {
+          "candidate_id": "c-74cbe89a",
+          "title": "Effects of Inflow Turbulence on Structural Deformation of Wind Turbine Blades",
+          "role_hint": "reference",
+          "reason": "Structural response to turbulent inflow; weak structural-mechanics overlap."
+        },
+        {
+          "candidate_id": "c-eb26ec2a",
+          "title": "Numerical Simulation of Icing Characteristics on a Blade Airfoil for Vertical-Axis Wind Turbine under Various Icing Cond",
+          "role_hint": "reference",
+          "reason": "Direct icing simulation on wind turbine blade airfoil; strong topic relevance."
+        },
+        {
+          "candidate_id": "c-e8860f4b",
+          "title": "Wind Turbine Blade Design Requirements",
+          "role_hint": "reference",
+          "reason": "General blade design book chapter; weak structural-design overlap."
+        },
+        {
+          "candidate_id": "c-c89b8199",
+          "title": "Micromechanical modelling of wind turbine blade materials",
+          "role_hint": "reference",
+          "reason": "Micromechanical modeling of blade composites; partial material overlap."
+        },
+        {
+          "candidate_id": "c-56e257d9",
+          "title": "A Brief Review of Blade Surface Icing Adhesive Theories for Wind Turbines",
+          "role_hint": "reference",
+          "reason": "Review of blade surface icing adhesion theories; directly relevant to icing problem."
+        },
+        {
+          "candidate_id": "c-da002701",
+          "title": "Wind Turbine Blade Design",
+          "role_hint": "reference",
+          "reason": "Blade design book chapter; only background relevance."
+        },
+        {
+          "candidate_id": "c-655db3c0",
+          "title": "Introduction to wind turbine blade design",
+          "role_hint": "reference",
+          "reason": "Introduction to blade design; only background relevance."
+        },
+        {
+          "candidate_id": "c-86e14f16",
+          "title": "Wind Turbine Aerodynamics Part B: Turbine Blade Flow Fields",
+          "role_hint": "reference",
+          "reason": "Aerodynamics chapter; only aerodynamic background relevance."
+        },
+        {
+          "candidate_id": "c-6e4b9c13",
+          "title": "Conventional wind turbine icing mitigation technologies",
+          "role_hint": "reference",
+          "reason": "Survey of conventional icing mitigation technologies; strong survey relevance."
+        },
+        {
+          "candidate_id": "c-e15f4856",
+          "title": "Wind Turbine Icing Physics and Anti-/De-icing Technology",
+          "role_hint": "reference",
+          "reason": "Book-level coverage of icing physics and anti-/de-icing technologies."
+        },
+        {
+          "candidate_id": "c-f84ba1a4",
+          "title": "Field measurements of wind turbine icing",
+          "role_hint": "reference",
+          "reason": "Field icing measurements; supports icing detection/empirical validation."
+        },
+        {
+          "candidate_id": "c-5e2682c9",
+          "title": "Plasma-based technologies for wind turbine icing mitigation",
+          "role_hint": "reference",
+          "reason": "Background chapter on icing mitigation technologies; relevant context but not graphene/electrothermal-specific."
+        },
+        {
+          "candidate_id": "c-bc865519",
+          "title": "Wind Tunnel Tests on Anti-Icing Performance of Wind Turbine Blade with NACA0018 Airfoil with Bio-Wax PCMS-PUR Coating",
+          "role_hint": "parallel",
+          "reason": "Parallel anti-icing approach (bio-wax PCM coating) on NACA0018 blade; same application domain, different method."
+        }
+      ],
+      "needs_manual": [],
+      "rejected": [
+        {
+          "candidate_id": "c-034957ff",
+          "title": "Frequency support Scheme based on parametrized power curve for de-loaded Wind Turbine under various wind speed",
+          "role_hint": "reference",
+          "reason": "Grid frequency control paper; cross-domain (power systems vs. blade icing)."
+        },
+        {
+          "candidate_id": "c-ed4abd0b",
+          "title": "SDWPF: A Dataset for Spatial Dynamic Wind Power Forecasting Challenge at KDD Cup 2022",
+          "role_hint": "reference",
+          "reason": "Wind power forecasting dataset; cross-domain (data science vs. blade icing)."
+        },
+        {
+          "candidate_id": "c-75d8ef40",
+          "title": "The perils of automated fitting of datasets: the case of a wind turbine cost model",
+          "role_hint": "reference",
+          "reason": "Wind turbine cost modeling critique; no icing or blade-surface content."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-ba4d7e62",
+          "title": "Utilising implanted carbon fibre as a resistive heating element in wind turbine blade anti-icing systems",
+          "role_hint": "reference",
+          "year": 2013
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-eb26ec2a",
+          "title": "Numerical Simulation of Icing Characteristics on a Blade Airfoil for Vertical-Axis Wind Turbine under Various Icing Conditions",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-56e257d9",
+          "title": "A Brief Review of Blade Surface Icing Adhesive Theories for Wind Turbines",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-bc865519",
+          "title": "Wind Tunnel Tests on Anti-Icing Performance of Wind Turbine Blade with NACA0018 Airfoil with Bio-Wax PCMS-PUR Coating",
+          "role_hint": "parallel",
+          "year": 2025
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-d58d697f",
+          "title": "Finite Element Convergence for the Joule Heating Problem with Mixed Boundary Conditions",
+          "role_hint": "reference",
+          "year": 2012
+        },
+        {
+          "candidate_id": "c-6e4b9c13",
+          "title": "Conventional wind turbine icing mitigation technologies",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-e15f4856",
+          "title": "Wind Turbine Icing Physics and Anti-/De-icing Technology",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-f84ba1a4",
+          "title": "Field measurements of wind turbine icing",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-5e2682c9",
+          "title": "Plasma-based technologies for wind turbine icing mitigation",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-c89b8199",
+          "title": "Micromechanical modelling of wind turbine blade materials",
+          "role_hint": "reference",
+          "year": 2013
+        },
+        {
+          "candidate_id": "c-e8860f4b",
+          "title": "Wind Turbine Blade Design Requirements",
+          "role_hint": "reference",
+          "year": 2010
+        },
+        {
+          "candidate_id": "c-da002701",
+          "title": "Wind Turbine Blade Design",
+          "role_hint": "reference",
+          "year": 2014
+        },
+        {
+          "candidate_id": "c-655db3c0",
+          "title": "Introduction to wind turbine blade design",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-86e14f16",
+          "title": "Wind Turbine Aerodynamics Part B: Turbine Blade Flow Fields",
+          "role_hint": "reference",
+          "year": 2009
+        },
+        {
+          "candidate_id": "c-0ff7388f",
+          "title": "An Examination of Rotational Effects on Large Wind Turbine Blades",
+          "role_hint": "reference",
+          "year": 2017
+        },
+        {
+          "candidate_id": "c-99de39d9",
+          "title": "Modeling the effect of wind speed and direction shear on utility-scale wind turbine power production",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-48d636b0",
+          "title": "An aerodynamic measurement system to improve the efficiency of wind turbine rotor blades",
+          "role_hint": "reference",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-08a48562",
+          "title": "Material optimization of flexible blades for wind turbines",
+          "role_hint": "reference",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-74cbe89a",
+          "title": "Effects of Inflow Turbulence on Structural Deformation of Wind Turbine Blades",
+          "role_hint": "reference",
+          "year": 2020
+        }
+      ],
+      "long_tail_candidates": []
+    },
+    "dataset_and_repo_notes": [
+      "No public wind-turbine blade icing dataset was retrieved by Core/HuggingFace/OpenAlex — student must source NREL/IEA Wind Task reports or lab-measured accretion data for validation.",
+      "No GitHub repository implements graphene-film electrothermal blade anti-icing — student must build the COMSOL/MATLAB model from scratch, reusing only FEM theory from c-d58d697f.",
+      "No graphene-specific heater paper was retrieved — student must manually pull graphene Joule-heater literature (e.g. Bae et al. ACS Nano 2012; Janas/Bonaccorso reviews) from Google Scholar.",
+      "c-f84ba1a4 field-icing measurements can serve as empirical anchor for icing-detection component."
+    ],
+    "work_suggestions": [
+      "Use c-ba4d7e62 as the primary baseline: replicate its resistive-heating anti-icing concept on a composite blade section, then swap implanted carbon fibre for a graphene film heating layer (referenced via external graphene-heater papers).",
+      "Couple c-eb26ec2a's icing-accretion numerical model with c-d58d697f's Joule-heating FEM to build a coupled electrothermal-ice simulation in COMSOL/MATLAB.",
+      "Use c-56e257d9 ice-adhesion theory to define the de-bonding criterion (shear stress threshold) that the graphene film must overcome.",
+      "Anchor the literature-review chapter on c-6e4b9c13 and c-e15f4856 surveys, positioning the graphene-film system as an electrothermal alternative to existing methods covered in c-5e2682c9.",
+      "Use c-bc865519 NACA0018 wind-tunnel protocol as a template for experimental validation of the graphene-film prototype on a blade airfoil."
+    ],
+    "risk_reminders": [
+      "No retrieved paper actually validates graphene-film heating on a wind turbine blade — novelty claim must rest on external graphene-heater literature the student sources manually.",
+      "c-eb26ec2a is on a vertical-axis turbine; horizontal-axis blade geometry transfer must be argued, not assumed.",
+      "c-ba4d7e62 dates from 2013; state-of-the-art resistive-heating anti-icing advances (e.g. CNT networks, MXene films) are absent from the pool — search gap.",
+      "c-d58d697f is a pure math paper; applying its convergence theory to a real blade geometry with conjugate heat transfer and ice phase change is non-trivial.",
+      "Domain confidence was only 0.78; topic sits at boundary of materials science, heat transfer, and wind energy — scope drift is likely."
+    ],
+    "manual_questions": [
+      "Is the work simulation-only (COMSOL FEM) or does it require fabricating and testing a graphene-film blade coupon?",
+      "Should the system target anti-icing (continuous heating) or de-icing (intermittent pulse) operation mode?",
+      "What blade size / airfoil profile (NACA0018, DU91, S809) should be modeled?",
+      "Are graphene films to be laminated onto the blade surface or embedded inside the composite layup?",
+      "What icing conditions (temperature, LWC, MVD) define the design envelope?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "No direct graphene-film electrothermal blade de-icing paper exists; is c-ba4d7e62 (carbon fibre) acceptable as baseline?",
+      "Is a simulation-only study acceptable, or is graphene-film coupon fabrication and testing mandatory?",
+      "Should the scope include only electrothermal, or also hybridize with other anti-icing methods?",
+      "What airfoil and blade-scale scope (lab coupon vs full blade) is expected for this thesis?",
+      "Are the candidate-pool gaps (no graphene-heater reference, no graphene-FEM paper) acceptable?"
+    ],
+    "weak_points": [
+      "Evidence_gaps is empty even though candidate pool lacks graphene-specific references — should declare a data-source gap.",
+      "All work_suggestions rely on non-graphene baseline candidates; graphene-specific evidence is absent from the pool.",
+      "continue_search_direction field is missing from the synthesis output.",
+      "c-ba4d7e62 is role_hint 'reference' but used as baseline — role_hint labelling is inconsistent with synthesis use.",
+      "Manual questions remain unresolved and may substantially shift direction before opening report."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "No direct graphene-film blade de-icing paper exists; baseline is a carbon-fibre analogue. Candidate pool lacks graphene-specific evidence. evidence_gaps is empty despite clear gaps. Several manual questions unresolved. Needs revision before opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+      "domain_route": "energy_power",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 9,
+        "crossref": 14
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 27,
+      "queries": [
+        "wind wind",
+        "wind blade",
+        "wind he",
+        "wind power",
+        "blade wind",
+        "blade blade",
+        "blade he",
+        "blade power"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 179.61
+}

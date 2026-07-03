@@ -1,0 +1,786 @@
+{
+  "topic": "基于无人机平台的动态目标检测系统开发",
+  "final_candidate_pool": [
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-95090170",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "object contour and edge detection with refinecontournet",
+      "candidate_id": "c-fabb36f0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Object Contour and Edge Detection with RefineContourNet",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1904.13353v2",
+      "identifier": "1904.13353v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modified PASCAL VOC 2012 dataset for object contour detection and evaluate on a refined PASCAL-val dataset reaching an excellent performance and an Optimal Dataset Scale (ODS) of 0.752. Furthermore, by fine-training on the BSDS500 dataset we reach state-of-the-art results for edge-detection with an ODS of 0.824.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "exploring depth contribution for camouflaged object detection",
+      "candidate_id": "c-aee05c04",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2106.13217v3",
+      "identifier": "2106.13217v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Camouflaged object detection (COD) aims to segment camouflaged objects hiding in the environment, which is challenging due to the similar appearance of camouflaged objects and their surroundings. Research in biology suggests depth can provide useful object localization cues for camouflaged object discovery. In this paper, we study the depth contribution for camouflaged object detection, where the depth maps are generated with existing monocular depth estimation (MDE) methods. Due to the domain gap between the MDE dataset and our COD dataset, the generated depth maps are not accurate enough to be directly used. We then introduce two solutions to avoid the noisy depth maps from dominating the training process. Firstly, we present an auxiliary depth estimation branch (\"ADE\"), aiming to regress the depth maps. We find that \"ADE\" is especially necessary for our \"generated depth\" scenario. Secondly, we introduce a multi-modal confidence-aware loss function via a generative adversarial network to weigh the contribution of depth for camouflaged object detection. Our extensive experiments on various camouflaged object detection datasets explain that the existing \"sensor depth\" based RGB-D segmentation techniques work poorly with \"generated depth\", and our proposed two solutions work cooperatively, achieving effective depth contribution exploration for camouflaged object detection.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pvafn: point-voxel attention fusion network with multi-pooling enhancing for 3d object detection",
+      "candidate_id": "c-994c2c10",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2408.14600v1",
+      "identifier": "2408.14600v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The integration of point and voxel representations is becoming more common in LiDAR-based 3D object detection. However, this combination often struggles with capturing semantic information effectively. Moreover, relying solely on point features within regions of interest can lead to information loss and limitations in local feature representation. To tackle these challenges, we propose a novel two-stage 3D object detector, called Point-Voxel Attention Fusion Network (PVAFN). PVAFN leverages an attention mechanism to improve multi-modal feature fusion during the feature extraction phase. In the refinement stage, it utilizes a multi-pooling strategy to integrate both multi-scale and region-specific information effectively. The point-voxel attention mechanism adaptively combines point cloud and voxel-based Bird's-Eye-View (BEV) features, resulting in richer object representations that help to reduce false detections. Additionally, a multi-pooling enhancement module is introduced to boost the model's perception capabilities. This module employs cluster pooling and pyramid pooling techniques to efficiently capture key geometric details and fine-grained shape structures, thereby enhancing the integration of local and global features. Extensive experiments on the KITTI and Waymo datasets demonstrate that the proposed PVAFN achieves competitive performance. The code and models will be available.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "tju-dhd: a diverse high-resolution dataset for object detection",
+      "candidate_id": "c-9eb50a78",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2011.09170v1",
+      "identifier": "2011.09170v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Vehicles, pedestrians, and riders are the most important and interesting objects for the perception modules of self-driving vehicles and video surveillance. However, the state-of-the-art performance of detecting such important objects (esp. small objects) is far from satisfying the demand of practical systems. Large-scale, rich-diversity, and high-resolution datasets play an important role in developing better object detection methods to satisfy the demand. Existing public large-scale datasets such as MS COCO collected from websites do not focus on the specific scenarios. Moreover, the popular datasets (e.g., KITTI and Citypersons) collected from the specific scenarios are limited in the number of images and instances, the resolution, and the diversity. To attempt to solve the problem, we build a diverse high-resolution dataset (called TJU-DHD). The dataset contains 115,354 high-resolution images (52% images have a resolution of 1624$\\times$1200 pixels and 48% images have a resolution of at least 2,560$\\times$1,440 pixels) and 709,330 labeled objects in total with a large variance in scale and appearance. Meanwhile, the dataset has a rich diversity in season variance, illumination variance, and weather variance. In addition, a new diverse pedestrian dataset is further built. With the four different detectors (i.e., the one-stage RetinaNet, anchor-free FCOS, two-stage FPN, and Cascade R-CNN), experiments about object detection and pedestrian detection are conducted. We hope that the newly built dataset can help promote the research on object detection and pedestrian detection in these two scenes. The dataset is available at https://github.com/tjubiit/TJU-DHD.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "sod-yolov8 -- enhancing yolov8 for small object detection in traffic scenes",
+      "candidate_id": "c-81e21e40",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SOD-YOLOv8 -- Enhancing YOLOv8 for Small Object Detection in Traffic Scenes",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2408.04786v1",
+      "identifier": "2408.04786v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Object detection as part of computer vision can be crucial for traffic management, emergency response, autonomous vehicles, and smart cities. Despite significant advances in object detection, detecting small objects in images captured by distant cameras remains challenging due to their size, distance from the camera, varied shapes, and cluttered backgrounds. To address these challenges, we propose Small Object Detection YOLOv8 (SOD-YOLOv8), a novel model specifically designed for scenarios involving numerous small objects. Inspired by Efficient Generalized Feature Pyramid Networks (GFPN), we enhance multi-path fusion within YOLOv8 to integrate features across different levels, preserving details from shallower layers and improving small object detection accuracy. Also, A fourth detection layer is added to leverage high-resolution spatial information effectively. The Efficient Multi-Scale Attention Module (EMA) in the C2f-EMA module enhances feature extraction by redistributing weights and prioritizing relevant features. We introduce Powerful-IoU (PIoU) as a replacement for CIoU, focusing on moderate-quality anchor boxes and adding a penalty based on differences between predicted and ground truth bounding box corners. This approach simplifies calculations, speeds up convergence, and enhances detection accuracy. SOD-YOLOv8 significantly improves small object detection, surpassing widely used models in various metrics, without substantially increasing computational cost or latency compared to YOLOv8s. Specifically, it increases recall from 40.1\\% to 43.9\\%, precision from 51.2\\% to 53.9\\%, $\\text{mAP}_{0.5}$ from 40.6\\% to 45.1\\%, and $\\text{mAP}_{0.5:0.95}$ from 24\\% to 26.6\\%. In dynamic real-world traffic scenes, SOD-YOLOv8 demonstrated notable improvements in diverse conditions, proving its reliability and effectiveness in detecting small objects even in challenging environments.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a survey of self-supervised and few-shot object detection",
+      "candidate_id": "c-eabea38b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Survey of Self-Supervised and Few-Shot Object Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2110.14711v3",
+      "identifier": "2110.14711v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Labeling data is often expensive and time-consuming, especially for tasks such as object detection and instance segmentation, which require dense labeling of the image. While few-shot object detection is about training a model on novel (unseen) object classes with little data, it still requires prior training on many labeled examples of base (seen) classes. On the other hand, self-supervised methods aim at learning representations from unlabeled data which transfer well to downstream tasks such as object detection. Combining few-shot and self-supervised object detection is a promising research direction. In this survey, we review and characterize the most recent approaches on few-shot and self-supervised object detection. Then, we give our main takeaways and discuss future research directions. Project page at https://gabrielhuang.github.io/fsod-survey/",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "barcode and qr code object detection: an experimental study on yolov8 models",
+      "candidate_id": "c-21d442e4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Barcode and QR Code Object Detection: An Experimental Study on YOLOv8 Models",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2511.22937v1",
+      "identifier": "2511.22937v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This research work dives into an in-depth evaluation of the YOLOv8 (You Only Look Once) algorithm's efficiency in object detection, specially focusing on Barcode and QR code recognition. Utilizing the real-time detection abilities of YOLOv8, we performed a study aimed at enhancing its talent in swiftly and correctly figuring out objects. Through large training and high-quality-tuning on Kaggle datasets tailored for Barcode and QR code detection, our goal became to optimize YOLOv8's overall performance throughout numerous situations and environments. The look encompasses the assessment of YOLOv8 throughout special version iterations: Nano, Small, and Medium, with a meticulous attention on precision, recall, and F1 assessment metrics. The consequences exhibit large improvements in object detection accuracy with every subsequent model refinement. Specifically, we achieved an accuracy of 88.95% for the nano model, 97.10% for the small model, and 94.10% for the medium version, showcasing the incremental improvements finished via model scaling. Our findings highlight the big strides made through YOLOv8 in pushing the limits of computer vision, ensuring its function as a milestone within the subject of object detection. This study sheds light on how model scaling affects object recognition, increasing the concept of deep learning-based computer creative and prescient techniques.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "3d object detection for autonomous driving: a comprehensive survey",
+      "candidate_id": "c-068f0ff3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "3D Object Detection for Autonomous Driving: A Comprehensive Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2206.09474v2",
+      "identifier": "2206.09474v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Autonomous driving, in recent years, has been receiving increasing attention for its potential to relieve drivers' burdens and improve the safety of driving. In modern autonomous driving pipelines, the perception system is an indispensable component, aiming to accurately estimate the status of surrounding environments and provide reliable observations for prediction and planning. 3D object detection, which intelligently predicts the locations, sizes, and categories of the critical 3D objects near an autonomous vehicle, is an important part of a perception system. This paper reviews the advances in 3D object detection for autonomous driving. First, we introduce the background of 3D object detection and discuss the challenges in this task. Second, we conduct a comprehensive survey of the progress in 3D object detection from the aspects of models and sensory inputs, including LiDAR-based, camera-based, and multi-modal detection approaches. We also provide an in-depth analysis of the potentials and challenges in each category of methods. Additionally, we systematically investigate the applications of 3D object detection in driving systems. Finally, we conduct a performance analysis of the 3D object detection approaches, and we further summarize the research trends over the years and prospect the future directions of this area.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-c4e1703f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "yolodcc: improved yolov8 combined with dynamic confidence compensation for lightweight moving object detection",
+      "candidate_id": "c-9ba53283",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Yolodcc: Improved Yolov8 Combined with Dynamic Confidence Compensation For Lightweight Moving Object Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "10.7717/peerj-cs.3307/table-7",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:title>Détection d’objets dans un fond dynamique</jats:title>\n                <jats:p xml:lang=\"fr\">La détection et la reconnaissance d’objets dans des vidéos numériques est l’un des principaux challenges dans de nombreuses applications de vidéo surveillance. Dans le cadre de cette thèse, nous nous sommes attaqué au problème difficile de la segmentation d’objets dans des vidéos dont le fond est en mouvement permanent. Il s’agit de situations qui se produisent par exemple lorsque l’on filme des cours d’eau, ou le ciel,ou encore une scène contenant de la fumée, de la pluie, etc. Il s’agit d’un sujet assez peu étudié dans la littérature car très souvent les scènes traitées sont plutôt statiques et seules quelques parties bougent, telles que les feuillages par exemple, ou les seuls mouvements sont des changements de luminosité. La principale difficulté dans le cadre des scènes dont le fond est en mouvement est de différencier le mouvement de l’objet du mouvement du fond qui peuvent parfois être très similaires. En effet, par exemple, un objet dans une rivière peut se déplacer à la même allure que l’eau. Les algorithmes de la littérature extrayant des champs de déplacement échouent alors et ceux basés sur des modélisations de fond génèrent de très nombreuses erreurs. C’est donc dans ce cadre compliqué que nous avons tenté d’apporter des solutions.La segmentation d’objets pouvant se baser sur différents critères : couleur, texture,forme, mouvement, nous avons proposé différentes méthodes prenant en compte un ou plusieurs de ces critères.Dans un premier temps, nous avons travaillé dans un contexte bien précis qui était celui de la détection des bois morts dans des rivières. Ce problème nous a été apporté par des géographes avec qui nous avons collaboré dans le cadre du projet DADEC (Détection Automatique de Débris pour l’Aide à l’Etude des Crues). Dans ce cadre, nous avons proposé deux méthodes l’une dite \" naïve \" basée sur la couleur des objets à détecter et sur leur mouvement et l’autre, basée sur une approche probabiliste mettant en oeuvre une modélisation de la couleur de l’objet et également basée sur leur déplacement. Nous avons proposé une méthode pour le comptage des bois morts en utilisant les résultats des segmentations.Dans un deuxième temps, supposant la connaissance a priori du mouvement des objets,dans un contexte quelconque, nous avons proposé un modèle de mouvement de l’objet et avons montré que la prise en compte de cet a priori de mouvement permettait d’améliorer nettement les résultats des segmentations obtenus par les principaux algorithmes de modélisation de fond que l’on trouve dans la littérature.Enfin, dans un troisième temps, en s’inspirant de méthodes utilisées pour caractériser des textures 2D, nous avons proposé un modèle de fond basé sur une approche fréquentielle.Plus précisément, le modèle prend en compte non seulement le voisinage spatial d’un pixel mais également le voisinage temporel de ce dernier. Nous avons appliqué la transformée de Fourier locale au voisinage spatiotemporel d’un pixel pour construire un modèle de fond.Nous avons appliqué nos méthodes sur plusieurs vidéos, notamment les vidéos du projet DADEC, les vidéos de la base DynTex, des vidéos synthétiques et des vidéos que nous avons faites.</jats:p>",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "uav-det: a deep learning-based object detection algorithm for uav aerial imagery",
+      "candidate_id": "c-0e7b4549",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "UAV-Det: A Deep Learning-Based Object Detection Algorithm for UAV Aerial Imagery",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 6th International Conference on Computer Engineering and Intelligent Control (ICCEIC)",
+      "url": "https://doi.org/10.1109/icceic67916.2025.11309172",
+      "identifier": "10.1109/icceic67916.2025.11309172",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "enhanced yolov8 for underwater object detection in dynamic environment",
+      "candidate_id": "c-fc1aaf04",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Enhanced YOLOv8 for Underwater Object Detection in Dynamic Environment",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 International Conference on Artificial intelligence and Emerging Technologies (ICAIET)",
+      "url": "https://doi.org/10.1109/icaiet65052.2025.11210937",
+      "identifier": "10.1109/icaiet65052.2025.11210937",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "yolov9 algorithm improvement for small object detection in uav aerial imagery",
+      "candidate_id": "c-ad6b8271",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv9 Algorithm Improvement for Small Object Detection in UAV Aerial Imagery",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "International Journal of Computer Applications Technology and Research",
+      "url": "https://doi.org/10.7753/ijcatr1404.1011",
+      "identifier": "10.7753/ijcatr1404.1011",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "review for \"owrt-detr: a novel real-time transformer network for small-object detection in open-water search and rescue from uav aerial imagery\"",
+      "candidate_id": "c-2274095e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Review for \"OWRT-DETR: A Novel Real-Time Transformer Network for Small-Object Detection in Open-Water Search and Rescue From UAV Aerial Imagery\"",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "https://doi.org/10.1109/tgrs.2025.3560928/v2/review1",
+      "identifier": "10.1109/tgrs.2025.3560928/v2/review1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "enhancing malaysian medicinal plant classification through yolov8 object detection",
+      "candidate_id": "c-7b28dab2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Enhancing Malaysian Medicinal Plant Classification through YOLOv8 Object Detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "https://doi.org/10.36227/techrxiv.176704029.95392556/v1",
+      "identifier": "10.36227/techrxiv.176704029.95392556/v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>Medicinal plants play an important role in the investigation of traditional and contemporary medicine especially in countries with high biodiversity like Malaysia. The high variety of plant species, especially medicinal plants, in Malaysia presents the challenge of proper identification. However, accurate identification and categorization of the plants is challenging to accomplish using leaf morphology and environmental factors. Although critical, relatively less research has focused on their correct identification, particularly using advanced machine learning or deep learning techniques for plant identification. In this paper, we propose a deep learning-based approach based on the YOLOv8 model for medicinal plant detection and identification from leaf images. Our model achieved excellent performance, with precision of 0.974, recall of 1.0, and mAP50 of 0.995, exhibiting high accuracy for the detection and classification of medicinal plant species from leaf images.</jats:p>",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "coco",
+      "candidate_id": "c-d5c96381",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "COCO",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pascal voc",
+      "candidate_id": "c-0e3905d9",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "Pascal VOC",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "candidate_id": "https://openalex.org/W4385839827",
+      "title": "UAV-YOLOv8: A Small-Object-Detection Model Based on Improved YOLOv8 for UAV Aerial Photography Scenarios",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于无人机平台的动态目标检测系统开发",
+      "_query_origin": "UAV aerial imagery dynamic object detection YOLOv8 survey",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W4372279253",
+      "title": "A Modified YOLOv8 Detection Network for UAV Aerial Image Recognition",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于无人机平台的动态目标检测系统开发",
+      "_query_origin": "UAV aerial imagery dynamic object detection YOLOv8 survey",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W4386303392",
+      "title": "YOLO-Drone: An Optimized YOLOv8 Network for Tiny UAV Object Detection",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于无人机平台的动态目标检测系统开发",
+      "_query_origin": "UAV aerial imagery dynamic object detection YOLOv8 survey",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W4213147678",
+      "title": "Unmanned Aerial Vehicles (UAVs): A Survey on Civil Applications and Key Research Challenges",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于无人机平台的动态目标检测系统开发",
+      "_query_origin": "UAV aerial imagery X detection",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W2983056308",
+      "title": "A Review on UAV-Based Applications for Precision Agriculture",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于无人机平台的动态目标检测系统开发",
+      "_query_origin": "UAV aerial imagery X detection",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W4402865423",
+      "title": "SOD-YOLOv8—Enhancing YOLOv8 for Small Object Detection in Aerial Imagery and Traffic Scenes",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "基于无人机平台的动态目标检测系统开发",
+      "_query_origin": "X YOLOv8 UAV aerial imagery",
+      "source_run": "re09"
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "dynamic object detection task benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "UAV aerial image object benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "deep learning github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': 'dynamic object detection task benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'UAV aerial image object benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'deep learning github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 1,
+        "executed_queries": [
+          {
+            "query": "dynamic object detection task benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (dynamic object detection task benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "UAV aerial image object benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (UAV aerial image object benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "fallback repo probe from domain_keywords.en[0]",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "dynamic object detection task benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "UAV aerial image object benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "基于无人机平台的动态目标检测系统开发 dataset benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "基于无人机平台的动态目标检测系统开发 baseline method",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "基于无人机平台的动态目标检测系统开发 github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': '基于无人机平台的动态目标检测系统开发 dataset benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '基于无人机平台的动态目标检测系统开发 baseline method', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '基于无人机平台的动态目标检测系统开发 github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 2,
+        "executed_queries": [
+          {
+            "query": "基于无人机平台的动态目标检测系统开发 dataset benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (基于无人机平台的动态目标检测系统开发 dataset benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "基于无人机平台的动态目标检测系统开发 baseline method",
+            "tool": "openalex",
+            "target_role": "baseline",
+            "why": "must_search from DomainScout (基于无人机平台的动态目标检测系统开发 baseline method)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "基于无人机平台的动态目标检测系统开发 github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "must_search from DomainScout (基于无人机平台的动态目标检测系统开发 github implementation)",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "基于无人机平台的动态目标检测系统开发 dataset benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "基于无人机平台的动态目标检测系统开发 baseline method",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "基于无人机平台的动态目标检测系统开发 github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    }
+  ],
+  "trace_path": "tmp_re04_eval\\balanced40_re10_worker1\\traces\\ENG-THESIS-043.json",
+  "stop_reason": "no_new_signal",
+  "summary": {
+    "paper_n": 24,
+    "baseline_n": 0,
+    "parallel_n": 0,
+    "dataset_n": 0,
+    "repo_n": 0,
+    "remaining_gaps": [
+      "dataset_gap",
+      "repo_gap",
+      "baseline_gap"
+    ]
+  },
+  "case_id": "ENG-THESIS-043",
+  "title": "基于无人机平台的动态目标检测系统开发",
+  "source_batch": "batch1",
+  "elapsed_s": 79.76,
+  "seed_n": 24
+}

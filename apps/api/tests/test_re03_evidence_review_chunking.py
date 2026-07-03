@@ -68,8 +68,11 @@ def test_audit_candidates_returns_one_review_per_candidate_with_fake_chat():
 
 
 def test_chunk_failure_marks_blocker_on_affected_candidates():
-    """When LLM returns broken JSON, candidates are marked with the
-    [llm_blocker: ...] suffix in their reason field."""
+    """When LLM returns broken JSON on a chunk of >3 candidates, the
+    per-candidate fallback also runs. If both fail, candidates are
+    marked with [degraded: chunk_fallback_per_candidate_failed] per
+    Re04-fix SOP §4.3.
+    """
     n = 5
     candidates = [_cand(f"c-{i}", f"t{i}") for i in range(n)]
     parsed = {"method_terms": [], "task_terms": [], "object_terms": [],
@@ -89,4 +92,6 @@ def test_chunk_failure_marks_blocker_on_affected_candidates():
     )
     assert len(reviews) == n
     for r in reviews:
-        assert "[llm_blocker: evidence_review_parse_failed]" in r.reason
+        # Re04-fix SOP §4.3: chunk > 3 triggers per-candidate fallback.
+        # If that also fails, marker is [degraded: chunk_fallback_per_candidate_failed].
+        assert "[degraded: chunk_fallback_per_candidate_failed]" in r.reason

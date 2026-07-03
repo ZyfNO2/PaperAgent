@@ -1,0 +1,277 @@
+{
+  "status": "weak",
+  "reason": "datasets_present_but_no_topic_dataset; scenario_axis_missing",
+  "notes": [],
+  "score": 67,
+  "paper_n": 14,
+  "dataset_n": 2,
+  "repo_n": 0,
+  "baseline_n": 2,
+  "parallel_n": 3,
+  "quarantined_baseline_n": 0,
+  "quarantined_parallel_n": 0,
+  "quarantined_core_n": 0,
+  "effective_baseline_n": 2,
+  "effective_parallel_n": 3,
+  "effective_core_n": 0,
+  "core_n": 0,
+  "verification_verified_n": 5,
+  "verification_repaired_n": 0,
+  "verification_quarantined_n": 0,
+  "verification_not_found_n": 0,
+  "verification_records": [
+    {
+      "candidate_id": "c-41dac2bb",
+      "bucket": "baseline",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-7ac8d9ee",
+      "bucket": "baseline",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-f6dbaeba",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-3e4adacf",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-aedda4e0",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    }
+  ],
+  "axis_status": "evaluable",
+  "topic_dataset_n": 0,
+  "proxy_dataset_n": 0,
+  "pretrain_dataset_n": 2,
+  "generic_dataset_n": 0,
+  "core_direct_n": 0,
+  "baseline_direct_n": 0,
+  "baseline_proxy_n": 2,
+  "parallel_direct_n": 2,
+  "parallel_proxy_n": 1,
+  "critical_consistency_error_n": 0,
+  "metadata_mismatch_n": 0,
+  "off_topic_core_n": 0,
+  "axis_missing_reasons": [
+    "scenario_axis_missing"
+  ],
+  "evidence_gap_reasons": [
+    "datasets_present_but_no_topic_dataset",
+    "scenario_axis_missing"
+  ],
+  "baseline_degraded": false,
+  "bucket_audit": {
+    "core": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    },
+    "baseline": {
+      "n_total": 2,
+      "n_aligned": 2,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-41dac2bb",
+          "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+          "url": "http://arxiv.org/abs/2211.15444v4",
+          "doi": "",
+          "source_type": "",
+          "year": 2022,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generali",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-7ac8d9ee",
+          "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+          "url": "http://arxiv.org/abs/2509.21696v1",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significa",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        }
+      ]
+    },
+    "parallel": {
+      "n_total": 3,
+      "n_aligned": 3,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-f6dbaeba",
+          "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+          "url": "http://arxiv.org/abs/2401.17270v3",
+          "doi": "",
+          "source_type": "",
+          "year": 2024,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "The You Only Look Once (YOLO) series of detectors have established themselves as efficient and practical tools. However, their reliance on predefined and trained object categories limits their applicability in open scenarios. Addressing this limitation, we introduce YOLO-World, an innovative approac",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-3e4adacf",
+          "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+          "url": "http://arxiv.org/abs/2512.22973v2",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastr",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "missing",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-aedda4e0",
+          "title": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+          "url": "http://arxiv.org/abs/2005.13243v2",
+          "doi": "",
+          "source_type": "",
+          "year": 2020,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "We present a new version of YOLO with better performance and extended with instance segmentation called Poly-YOLO. Poly-YOLO builds on the original ideas of YOLOv3 and removes two of its weaknesses: a large amount of rewritten labels and inefficient distribution of anchors. Poly-YOLO reduces the iss",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "missing",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        }
+      ]
+    },
+    "dataset": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    },
+    "repo": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    }
+  },
+  "case_id": "ENG-THESIS-040",
+  "title": "基于改进YOLO网络与极限学习机的绝缘子故障检测",
+  "source_batch": "r4"
+}

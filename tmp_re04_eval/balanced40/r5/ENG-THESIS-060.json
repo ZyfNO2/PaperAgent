@@ -1,0 +1,2301 @@
+{
+  "project_id": "agent-re04-703749d1",
+  "raw_topic": "基于深度学习的车道线检测方法研究",
+  "parsed_topic": {
+    "raw_topic": "基于深度学习的车道线检测方法研究",
+    "normalized_topic": "Deep learning-based lane detection methods",
+    "domain_route": "vision_2d",
+    "domain_confidence": 0.92,
+    "method_terms": [
+      "CNN",
+      "SCNN",
+      "UFLD",
+      "RESA",
+      "LaneNet",
+      "YOLOP",
+      "transformer attention",
+      "LaneATT",
+      "PolyLaneNet",
+      "BEV perception"
+    ],
+    "task_terms": [
+      "lane detection",
+      "lane segmentation",
+      "lane marking recognition",
+      "drivable area segmentation",
+      "multi-task driving perception"
+    ],
+    "object_terms": [
+      "urban road lane markings",
+      "highway lane lines",
+      "autonomous driving scene",
+      "TuSimple dataset",
+      "CULane dataset",
+      "OpenLane dataset",
+      "BDD100K"
+    ],
+    "query_atoms_en": [
+      "deep learning lane detection",
+      "CNN lane segmentation",
+      "UFLD ultra fast structure aware",
+      "LaneATT anchor-based lane detection",
+      "LaneNet instance segmentation lane",
+      "multi-task driving perception lane",
+      "transformer lane detection autonomous driving"
+    ],
+    "query_atoms_zh": [
+      "基于深度学习的车道线检测",
+      "卷积神经网络车道线分割",
+      "车道线实例分割方法",
+      "自动驾驶多任务感知",
+      "车道线检测 TuSimple 数据集",
+      "端到端车道线识别"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "paperswithcode.com",
+      "github.com",
+      "scholar.google.com"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于深度学习的车道线检测方法研究",
+    "domain_route": "vision_2d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "CNN lane detection",
+        "CNN urban road lane markings"
+      ],
+      "method_task": [
+        "CNN lane detection",
+        "CNN lane segmentation",
+        "SCNN lane detection",
+        "SCNN lane segmentation"
+      ],
+      "object_task": [
+        "urban road lane markings lane detection",
+        "urban road lane markings lane segmentation",
+        "highway lane lines lane detection",
+        "highway lane lines lane segmentation"
+      ],
+      "dataset": [
+        "lane detection dataset",
+        "urban road lane markings dataset"
+      ],
+      "repo": [
+        "lane detection github",
+        "lane detection implementation",
+        "CNN lane detection"
+      ],
+      "survey": [
+        "lane detection survey",
+        "vision 2d survey"
+      ],
+      "benchmark": [
+        "lane detection benchmark"
+      ],
+      "baseline": [
+        "CNN lane detection",
+        "CNN lane segmentation",
+        "SCNN lane detection",
+        "SCNN lane segmentation"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "CNN",
+        "SCNN",
+        "UFLD",
+        "RESA",
+        "LaneNet",
+        "YOLOP",
+        "transformer attention",
+        "LaneATT",
+        "PolyLaneNet",
+        "BEV perception"
+      ],
+      "task_terms": [
+        "lane detection",
+        "lane segmentation",
+        "lane marking recognition",
+        "drivable area segmentation",
+        "multi-task driving perception"
+      ],
+      "object_terms": [
+        "urban road lane markings",
+        "highway lane lines",
+        "autonomous driving scene",
+        "TuSimple dataset",
+        "CULane dataset",
+        "OpenLane dataset",
+        "BDD100K"
+      ],
+      "domain_route": "vision_2d"
+    },
+    "fb_atom": "deep learning lane detection",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep of lane detection literature and code across paper + repo backends",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "deep learning lane detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "anchor the spine of retrieval with the broad topic on arxiv",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "transformer lane detection autonomous driving",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "capture the modern transformer-based lane detection branch",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "CNN lane segmentation benchmark",
+            "target_role": "survey",
+            "why_call": "retrieve survey and benchmark context with overlap on TuSimple/CULane",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "lane marking recognition deep learning",
+            "target_role": "reference",
+            "why_call": "find journal/conference references on lane marking recognition",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark / survey / recent-advances variant queries on specific method families",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "UFLD ultra fast lane detection",
+            "target_role": "reference",
+            "why_call": "surface follow-up papers building on the row-classification paradigm",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "anchor-based lane detection attention",
+            "target_role": "reference",
+            "why_call": "recover anchor/attention lane detection family extensions and comparisons",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "BEV lane perception recent advances",
+            "target_role": "survey",
+            "why_call": "expand into BEV-space lane perception surveys from 2022 onward",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "multi-task driving perception lane",
+            "target_role": "survey",
+            "why_call": "surface multi-task driving perception works covering lane + drivable area",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code implementations and standard lane detection datasets",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "lane detection pytorch",
+            "target_role": "repo",
+            "why_call": "broad code-side discovery of lane detection PyTorch implementations",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "UFLD lane",
+            "target_role": "repo",
+            "why_call": "locate official and unofficial UFLD repositories for reproducible evaluation",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "CULane dataset",
+            "target_role": "dataset",
+            "why_call": "locate the CULane benchmark tooling and dataset preparation scripts",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "OpenLane benchmark",
+            "target_role": "dataset",
+            "why_call": "find code/dataset tooling for the OpenLane BEV lane detection benchmark",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [],
+    "arxiv_queries": [
+      "deep learning lane detection",
+      "transformer lane detection autonomous driving",
+      "UFLD ultra fast lane detection",
+      "anchor-based lane detection attention"
+    ],
+    "openalex_queries": [
+      "CNN lane segmentation benchmark",
+      "BEV lane perception recent advances"
+    ],
+    "crossref_queries": [
+      "lane marking recognition deep learning",
+      "multi-task driving perception lane"
+    ],
+    "github_queries": [
+      "lane detection pytorch",
+      "UFLD lane",
+      "CULane dataset",
+      "OpenLane benchmark"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "agnostic lane detection",
+      "candidate_id": "c-f41ba29b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Agnostic Lane Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1905.03704v1",
+      "identifier": "1905.03704v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Lane detection is an important yet challenging task in autonomous driving, which is affected by many factors, e.g., light conditions, occlusions caused by other vehicles, irrelevant markings on the road and the inherent long and thin property of lanes. Conventional methods typically treat lane detection as a semantic segmentation task, which assigns a class label to each pixel of the image. This formulation heavily depends on the assumption that the number of lanes is pre-defined and fixed and no lane changing occurs, which does not always hold. To make the lane detection model applicable to an arbitrary number of lanes and lane changing scenarios, we adopt an instance segmentation approach, which first differentiates lanes and background and then classify each lane pixel into each lane instance. Besides, a multi-task learning paradigm is utilized to better exploit the structural information and the feature pyramid architecture is used to detect extremely thin lanes. Three popular lane detection benchmarks, i.e., TuSimple, CULane and BDD100K, are used to validate the effectiveness of our proposed algorithm.",
+      "extra": {}
+    },
+    {
+      "stable_id": "learning lightweight lane detection cnns by self attention distillation",
+      "candidate_id": "c-0adcec08",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Learning Lightweight Lane Detection CNNs by Self Attention Distillation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1908.00821v1",
+      "identifier": "1908.00821v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Training deep models for lane detection is challenging due to the very subtle and sparse supervisory signals inherent in lane annotations. Without learning from much richer context, these models often fail in challenging scenarios, e.g., severe occlusion, ambiguous lanes, and poor lighting conditions. In this paper, we present a novel knowledge distillation approach, i.e., Self Attention Distillation (SAD), which allows a model to learn from itself and gains substantial improvement without any additional supervision or labels. Specifically, we observe that attention maps extracted from a model trained to a reasonable level would encode rich contextual information. The valuable contextual information can be used as a form of 'free' supervision for further representation learning through performing topdown and layer-wise attention distillation within the network itself. SAD can be easily incorporated in any feedforward convolutional neural networks (CNN) and does not increase the inference time. We validate SAD on three popular lane detection benchmarks (TuSimple, CULane and BDD100K) using lightweight models such as ENet, ResNet-18 and ResNet-34. The lightest model, ENet-SAD, performs comparatively or even surpasses existing algorithms. Notably, ENet-SAD has 20 x fewer parameters and runs 10 x faster compared to the state-of-the-art SCNN, while still achieving compelling performance in all benchmarks. Our code is available at https://github.com/cardwing/Codes-for-Lane-Detection.",
+      "extra": {}
+    },
+    {
+      "stable_id": "roneld: robust neural network output enhancement for active lane detection",
+      "candidate_id": "c-ac55d4cd",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "RONELD: Robust Neural Network Output Enhancement for Active Lane Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2010.09548v2",
+      "identifier": "2010.09548v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Accurate lane detection is critical for navigation in autonomous vehicles, particularly the active lane which demarcates the single road space that the vehicle is currently traveling on. Recent state-of-the-art lane detection algorithms utilize convolutional neural networks (CNNs) to train deep learning models on popular benchmarks such as TuSimple and CULane. While each of these models works particularly well on train and test inputs obtained from the same dataset, the performance drops significantly on unseen datasets of different environments. In this paper, we present a real-time robust neural network output enhancement for active lane detection (RONELD) method to identify, track, and optimize active lanes from deep learning probability map outputs. We first adaptively extract lane points from the probability map outputs, followed by detecting curved and straight lanes before using weighted least squares linear regression on straight lanes to fix broken lane edges resulting from fragmentation of edge maps in real images. Lastly, we hypothesize true active lanes through tracking preceding frames. Experimental results demonstrate an up to two-fold increase in accuracy using RONELD on cross-dataset validation tests.",
+      "extra": {}
+    },
+    {
+      "stable_id": "hsdf-lane: height-aligned signed distance field with semantic lane prior for 3d lane detection",
+      "candidate_id": "c-1a877d73",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "HSDF-Lane: Height-Aligned Signed Distance Field with Semantic Lane Prior for 3D Lane Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2606.31172v1",
+      "identifier": "2606.31172v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Monocular 3D lane detection plays a critical role in autonomous driving, yet recovering reliable 3D geometry from a single image remains challenging due to inherent depth ambiguity. Prior methods project image features into Bird's-Eye-View (BEV) space under a flat-ground assumption, causing geometric distortion on real-world roads. Recent methods instead predict explicit height maps to capture non-planar surfaces, but still rely on sparse anchor-based regression and exploit the recovered geometry merely for spatial transformation rather than semantic understanding. To overcome these limitations, we propose HSDF-Lane, which implicitly models the road surface as a Height-aligned Signed Distance Field (HSDF) over a densely sampled 3D feature volume. Through differentiable rendering, the HSDF jointly produces an accurate height map and surface-aligned features. We further introduce Lane-aware Semantic Positional Encoding (LSPE), which injects a lane-existence prior derived from the surface-aligned features into the transformer queries, coupling geometric structure with semantic guidance. Extensive experiments on the OpenLane benchmark show that HSDF-Lane achieves state-of-the-art performance in both 3D lane detection and height map estimation.",
+      "extra": {}
+    },
+    {
+      "stable_id": "cascade r-cnn: high quality object detection and instance segmentation",
+      "candidate_id": "c-c3848df5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Cascade R-CNN: High Quality Object Detection and Instance Segmentation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1906.09756v1",
+      "identifier": "1906.09756v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In object detection, the intersection over union (IoU) threshold is frequently used to define positives/negatives. The threshold used to train a detector defines its \\textit{quality}. While the commonly used threshold of 0.5 leads to noisy (low-quality) detections, detection performance frequently degrades for larger thresholds. This paradox of high-quality detection has two causes: 1) overfitting, due to vanishing positive samples for large thresholds, and 2) inference-time quality mismatch between detector and test hypotheses. A multi-stage object detection architecture, the Cascade R-CNN, composed of a sequence of detectors trained with increasing IoU thresholds, is proposed to address these problems. The detectors are trained sequentially, using the output of a detector as training set for the next. This resampling progressively improves hypotheses quality, guaranteeing a positive training set of equivalent size for all detectors and minimizing overfitting. The same cascade is applied at inference, to eliminate quality mismatches between hypotheses and detectors. An implementation of the Cascade R-CNN without bells or whistles achieves state-of-the-art performance on the COCO dataset, and significantly improves high-quality detection on generic and specific object detection datasets, including VOC, KITTI, CityPerson, and WiderFace. Finally, the Cascade R-CNN is generalized to instance segmentation, with nontrivial improvements over the Mask R-CNN. To facilitate future research, two implementations are made available at \\url{https://github.com/zhaoweicai/cascade-rcnn} (Caffe) and \\url{https://github.com/zhaoweicai/Detectron-Cascade-RCNN} (Detectron).",
+      "extra": {}
+    },
+    {
+      "stable_id": "ldnet: end-to-end lane marking detection approach using a dynamic vision sensor",
+      "candidate_id": "c-34bdfe3f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "LDNet: End-to-End Lane Marking Detection Approach Using a Dynamic Vision Sensor",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2009.08020v2",
+      "identifier": "2009.08020v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Modern vehicles are equipped with various driver-assistance systems, including automatic lane keeping, which prevents unintended lane departures. Traditional lane detection methods incorporate handcrafted or deep learning-based features followed by postprocessing techniques for lane extraction using frame-based RGB cameras. The utilization of frame-based RGB cameras for lane detection tasks is prone to illumination variations, sun glare, and motion blur, which limits the performance of lane detection methods. Incorporating an event camera for lane detection tasks in the perception stack of autonomous driving is one of the most promising solutions for mitigating challenges encountered by frame-based RGB cameras. The main contribution of this work is the design of the lane marking detection model, which employs the dynamic vision sensor. This paper explores the novel application of lane marking detection using an event camera by designing a convolutional encoder followed by the attention-guided decoder. The spatial resolution of the encoded features is retained by a dense atrous spatial pyramid pooling (ASPP) block. The additive attention mechanism in the decoder improves performance for high dimensional input encoded features that promote lane localization and relieve postprocessing computation. The efficacy of the proposed work is evaluated using the DVS dataset for lane extraction (DET). The experimental results show a significant improvement of $5.54\\%$ and $5.03\\%$ in $F1$ scores in multiclass and binary-class lane marking detection tasks. Additionally, the intersection over union ($IoU$) scores of the proposed method surpass those of the best-performing state-of-the-art method by $6.50\\%$ and $9.37\\%$ in multiclass and binary-class tasks, respectively.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ego-lane analysis system (elas): dataset and algorithms",
+      "candidate_id": "c-f7d16cb8",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Ego-Lane Analysis System (ELAS): Dataset and Algorithms",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2018,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1806.05984v1",
+      "identifier": "1806.05984v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Decreasing costs of vision sensors and advances in embedded hardware boosted lane related research detection, estimation, and tracking in the past two decades. The interest in this topic has increased even more with the demand for advanced driver assistance systems (ADAS) and self-driving cars. Although extensively studied independently, there is still need for studies that propose a combined solution for the multiple problems related to the ego-lane, such as lane departure warning (LDW), lane change detection, lane marking type (LMT) classification, road markings detection and classification, and detection of adjacent lanes (i.e., immediate left and right lanes) presence. In this paper, we propose a real-time Ego-Lane Analysis System (ELAS) capable of estimating ego-lane position, classifying LMTs and road markings, performing LDW and detecting lane change events. The proposed vision-based system works on a temporal sequence of images. Lane marking features are extracted in perspective and Inverse Perspective Mapping (IPM) images that are combined to increase robustness. The final estimated lane is modeled as a spline using a combination of methods (Hough lines with Kalman filter and spline with particle filter). Based on the estimated lane, all other events are detected. To validate ELAS and cover the lack of lane datasets in the literature, a new dataset with more than 20 different scenes (in more than 15,000 frames) and considering a variety of scenarios (urban road, highways, traffic, shadows, etc.) was created. The dataset was manually annotated and made publicly available to enable evaluation of several events that are of interest for the research community (i.e., lane estimation, change, and centering; road markings; intersections; LMTs; crosswalks and adjacent lanes). ELAS achieved high detection rates in all real-world events and proved to be ready for real-time applications.",
+      "extra": {}
+    },
+    {
+      "stable_id": "enet-21: an optimized light cnn structure for lane detection",
+      "candidate_id": "c-bc8a26fb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ENet-21: An Optimized light CNN Structure for Lane Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2403.19782v2",
+      "identifier": "2403.19782v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Lane detection for autonomous vehicles is an important concept, yet it is a challenging issue of driver assistance systems in modern vehicles. The emergence of deep learning leads to significant progress in self-driving cars. Conventional deep learning-based methods handle lane detection problems as a binary segmentation task and determine whether a pixel belongs to a line. These methods rely on the assumption of a fixed number of lanes, which does not always work. This study aims to develop an optimal structure for the lane detection problem, offering a promising solution for driver assistance features in modern vehicles by utilizing a machine learning method consisting of binary segmentation and Affinity Fields that can manage varying numbers of lanes and lane change scenarios. In this approach, the Convolutional Neural Network (CNN), is selected as a feature extractor, and the final output is obtained through clustering of the semantic segmentation and Affinity Field outputs. Our method uses less complex CNN architecture than existing ones. Experiments on the TuSimple dataset support the effectiveness of the proposed method.",
+      "extra": {}
+    },
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-e5cef267",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-f69acaee",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the methanol multibeam survey",
+      "candidate_id": "c-fb26e51c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Methanol Multibeam Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2012,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1210.0979v1",
+      "identifier": "1210.0979v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A purpose built 7-beam methanol receiver, installed on the Parkes Radio Telescope, was used to survey the Galactic plane for newly forming high mass stars, pinpointed by strong methanol maser emission at 6.7 GHz. The Methanol Multibeam (MMB) survey observed over 60% of the Galactic plane, detecting close to 1000 sources. The MMB survey provides a huge resource for studies of high-mass star formation, an important stage in the evolution of the interstellar medium. The MMB survey is also a valuable resource for investigations into the structure and dynamics of our Galaxy: with narrow velocity ranges of emission (typically only a few km/s) and velocities closely correlated with the systemic velocity of their surrounding molecular clouds, 6.7-GHz methanol masers provide estimates of the spiral arm velocities and their structure. I will discuss the techniques and properties of the MMB survey, before outlining recent results, which include the identification of regions of enhanced star formation believed to be indicative of the origins of the spiral arms and the interaction of the Galactic bar with the 3-kpc arms. I will also discuss the various follow-up programmes including a study of magnetic fields through associated hydroxyl masers.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a novel solution to the real-time lane detection and tracking problem for autonomous vehicles by using faster r-cnn and mask r-cnn",
+      "candidate_id": "c-c533e3ed",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Novel Solution to the Real-Time Lane Detection and Tracking Problem for Autonomous Vehicles by Using Faster R-CNN and Mask R-CNN",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "10.61453/joit.v2024no09",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p xml:lang=\"en\">Autonomous vehicle technology has advanced in the automobile sector. Autonomous vehicle technology aims to make driving safer and reduce driver-caused traffic accidents. Autonomous driving technology work toward this. Lane detection and tracking are crucial to autonomous driving systems. Mostly the image processing techniques are mainly utilized for the lane detection in the literature. But, while performing image processing techniques for lane detection and tracking, two basic problems are mainly encountered. First one is image also needs to work with a specific area on the image to reduce the processing load and to work for the correct area. The region of interest (ROI) process is often used to filter the area to be worked from the image. However, since fixed coordinates are provided for this operation, the vehicle restricts the oper-ation of the vehicle in areas where it must be rotated. Second one is the weather conditions are very effective in the detection of lanes by utilizing image processing techniques. There are serious problems with image processing and detection from cloudy, sunny or momentary changes in the air. This study uses deep learning methods against these two basic problems. Using the Mask R-CNN and faster R-CNN algorithms together, these two basic problems for lane detection and tracking are eliminated and successfully implemented. The problem solved by two algorithms has been tested experimentally on a developed tool. Both the originally developed da-taset and the KITTI dataset were used separately in the model training carried out for the experimental tests. Both systems work well for lane detection and tracking, according to tests.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "polar r-cnn: end-to-end lane detection with fewer anchors_supp1-3564979.pdf",
+      "candidate_id": "c-5190ff71",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Polar R-CNN: End-to-End Lane Detection With Fewer Anchors_supp1-3564979.pdf",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://doi.org/10.1109/tits.2025.3564979/mm1",
+      "identifier": "10.1109/tits.2025.3564979/mm1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "real time lane detection using cnn",
+      "candidate_id": "c-35f633bb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Real time lane detection using CNN",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 10th International Conference on Communication and Signal Processing (ICCSP)",
+      "url": "https://doi.org/10.1109/iccsp60870.2024.10543796",
+      "identifier": "10.1109/iccsp60870.2024.10543796",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "gradient map based lane detection using cnn and rnn",
+      "candidate_id": "c-652854ee",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Gradient Map Based Lane Detection Using CNN and RNN",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2020,
+      "venue": "2020 22th International Conference on Digital Signal Processing and its Applications (DSPA)",
+      "url": "https://doi.org/10.1109/dspa48919.2020.9213294",
+      "identifier": "10.1109/dspa48919.2020.9213294",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "simlane: a risk-orientated benchmark for lane detection",
+      "candidate_id": "c-40572a8c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SimLane: A Risk-Orientated Benchmark for Lane Detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "2022 52nd Annual IEEE/IFIP International Conference on Dependable Systems and Networks - Supplemental Volume (DSN-S)",
+      "url": "https://doi.org/10.1109/dsn-s54099.2022.00013",
+      "identifier": "10.1109/dsn-s54099.2022.00013",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "cnn-based lane detection",
+      "candidate_id": "c-3d97da30",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "CNN-based lane detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "Theory and practice of science and technology",
+      "url": "https://doi.org/10.47297/taposatwsp2633-456909.20250602",
+      "identifier": "10.47297/taposatwsp2633-456909.20250602",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "design and optimization of cnn for lane detection",
+      "candidate_id": "c-1f3b9045",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Design and Optimization of CNN for Lane Detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2020,
+      "venue": "2020 11th International Conference on Computing, Communication and Networking Technologies (ICCCNT)",
+      "url": "https://doi.org/10.1109/icccnt49239.2020.9225566",
+      "identifier": "10.1109/icccnt49239.2020.9225566",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a five-era taxonomy and benchmark framework for lane detection: from classical heuristics to vision foundation models in autonomous driving",
+      "candidate_id": "c-55690dab",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A FIVE-ERA TAXONOMY AND BENCHMARK FRAMEWORK FOR LANE DETECTION: FROM CLASSICAL HEURISTICS TO VISION FOUNDATION MODELS IN AUTONOMOUS DRIVING",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": "International Journal of Artificial Intelligence &amp; Applications",
+      "url": "https://doi.org/10.5121/ijaia.2026.17206",
+      "identifier": "10.5121/ijaia.2026.17206",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>This survey paper traces the technological history of lane detection systems over the last quarter century, discussing paradigm shifts from classical computer vision methods to modern foundation models. The evolution is divided into five eras: Classical Vision-based (2000–2010), Feature + Geometry (2006–2014), CNN Segmentation (2015–2019), Anchor/Curve-based and Transformer Methods (2020–2022), and the Foundation Model generation (2023–present). Each phase is discussed based on methodological developments, pivotal contributions, performance attributes, and shortcomings. The survey synthesizes the original literature, showing how machine learning, deep learning, and scale-based pre-training have tackled robustness, generalization and real-time issues. We identify research gaps in edge cases, system integration, and suggest future directions towards cohesive perception models achieving optimal accuracy, efficiency, and interpretability.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "a benchmark for sotif of lane marking detection algorithms of autonomous vehicles",
+      "candidate_id": "c-baebd183",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Benchmark for SOTIF of Lane Marking Detection Algorithms of Autonomous Vehicles",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "2023 7th CAA International Conference on Vehicular Control and Intelligence (CVCI)",
+      "url": "https://doi.org/10.1109/cvci59596.2023.10397363",
+      "identifier": "10.1109/cvci59596.2023.10397363",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "vehicle lane merge visual benchmark",
+      "candidate_id": "c-3f8b1b36",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Vehicle Lane Merge Visual Benchmark",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "2020 25th International Conference on Pattern Recognition (ICPR)",
+      "url": "https://doi.org/10.1109/icpr48806.2021.9412960",
+      "identifier": "10.1109/icpr48806.2021.9412960",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "an efficient lane detection algorithm for lane departure detection",
+      "candidate_id": "c-5a3d9ff5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "An efficient lane detection algorithm for lane departure detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2013,
+      "venue": "2013 IEEE Intelligent Vehicles Symposium (IV)",
+      "url": "https://doi.org/10.1109/ivs.2013.6629593",
+      "identifier": "10.1109/ivs.2013.6629593",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "baidut/its",
+      "candidate_id": "c-d6932d1d",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "baidut/ITS",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/baidut/ITS",
+      "identifier": null,
+      "description": "experiments about automobile vision, now focusing on lane marking/boundary detection & tracking. see more https://github.com/baidut/OpenVehicleVision",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 95,
+        "language": "C++"
+      }
+    },
+    {
+      "stable_id": "xuanandsix/clrnet-onnxruntime-and-tensorrt-demo",
+      "candidate_id": "c-6f4196a1",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "xuanandsix/CLRNet-onnxruntime-and-tensorrt-demo",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/xuanandsix/CLRNet-onnxruntime-and-tensorrt-demo",
+      "identifier": null,
+      "description": "This is the onnxruntime and tensorrt inference code for CLRNet: Cross Layer Refinement Network for Lane Detection (CVPR 2022). Official code: https://github.com/hongyliu/CLRNet",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 61,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "pandamax/lane-detection-based-pinet",
+      "candidate_id": "c-e058aa41",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "pandamax/Lane-Detection-Based-PINet",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/pandamax/Lane-Detection-Based-PINet",
+      "identifier": null,
+      "description": "the project use PINet as lane detector, supporting training on [VIL-100](https://github.com/yujun0-0/MMA-Net/tree/main/dataset).    At the same time, the project supports model conversion, including onnx and caffe formats, as well as model forward acceleration    processing before model deployment.Model forward acceleration mainly includes model cutting, simplification and merge batchnorm layer.    Meanwhile, it includes the verification and comparison of the conformance after the model conversion. ",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 8,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "mrlee12138/lane_det",
+      "candidate_id": "c-401ed340",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "MrLee12138/lane_det",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/MrLee12138/lane_det",
+      "identifier": null,
+      "description": "This is the TensorRT implementation, The Pytorch implementation is [Ultra-Fast-Lane-Detection](https://github.com/cfzd/Ultra-Fast-Lane-Detection).",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 7,
+        "language": null
+      }
+    },
+    {
+      "stable_id": "minghanz/lanedetection_end2end_test",
+      "candidate_id": "c-74d77b10",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "minghanz/LaneDetection_End2End_test",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/minghanz/LaneDetection_End2End_test",
+      "identifier": null,
+      "description": "from https://github.com/wvangansbeke/LaneDetection_End2End",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 6,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "anshupandey/advance-lane-finding",
+      "candidate_id": "c-f4ccd9ae",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "anshupandey/Advance-Lane-Finding",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/anshupandey/Advance-Lane-Finding",
+      "identifier": null,
+      "description": "Using Advance Image Processing Techniques for Lane Detection for Self Driving Cars - uses perspective transform, camera calibration,  Distortion Correction, Polynomial Regression.",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 2,
+        "language": "Jupyter Notebook"
+      }
+    },
+    {
+      "stable_id": "coco",
+      "candidate_id": "c-49233e9c",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "COCO",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "CNN lane detection|CNN urban road lane markings",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "lane detection dataset|urban road lane markings dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "CNN lane detection|CNN urban road lane markings",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "CNN lane detection|CNN lane segmentation|SCNN lane detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "lane detection github|lane detection implementation|CNN lane detection",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 6,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "CNN lane detection|CNN lane segmentation|SCNN lane detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "lane detection survey|vision 2d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "lane detection dataset|urban road lane markings dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "lane detection dataset|urban road lane markings dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "urban road lane markings lane detection|urban road lane markings lane segmentation|highway lane lines lane detection",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "CNN lane detection|CNN urban road lane markings",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "lane detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "CNN lane detection|CNN lane segmentation|SCNN lane detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "lane detection survey|vision 2d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "urban road lane markings lane detection|urban road lane markings lane segmentation|highway lane lines lane detection",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "lane detection dataset|urban road lane markings dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 1,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "CNN lane detection|CNN lane segmentation|SCNN lane detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "lane detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "CNN lane detection|CNN urban road lane markings",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "lane lane|lane detection|lane he",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Agnostic Lane Detection",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Learning Lightweight Lane Detection CNNs by Self Attention D",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: RONELD: Robust Neural Network Output Enhancement for Active ",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: HSDF-Lane: Height-Aligned Signed Distance Field with Semanti",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Cascade R-CNN: High Quality Object Detection and Instance Se",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-f41ba29b",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "lane detection",
+        "autonomous driving scene"
+      ],
+      "missing_terms": [
+        "CNN",
+        "SCNN",
+        "UFLD",
+        "RESA",
+        "LaneNet",
+        "YOLOP",
+        "transformer attention"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Real lane detection paper on autonomous driving; method-agnostic approach is parallel rather than core.",
+      "reason": "Targets lane detection in autonomous driving with a general/agnostic learning approach. Topic-relevant but not on the specific DL methods listed."
+    },
+    {
+      "candidate_id": "c-0adcec08",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "CNN",
+        "lane detection",
+        "self attention distillation"
+      ],
+      "missing_terms": [
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "Lightweight CNN lane detection with self-attention distillation; directly cited method family.",
+      "reason": "Proposes a self-attention-distilled lightweight CNN for lane detection, directly matching deep learning lane detection methodology."
+    },
+    {
+      "candidate_id": "c-ac55d4cd",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "lane detection",
+        "autonomous driving scene"
+      ],
+      "missing_terms": [
+        "CNN",
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "BEV perception"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Active lane detection with neural output enhancement; relevant DL lane detection work.",
+      "reason": "Focuses on active lane detection with neural network output enhancement for autonomous vehicles. Topic-relevant."
+    },
+    {
+      "candidate_id": "c-1a877d73",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "3D lane detection",
+        "BEV perception",
+        "autonomous driving scene"
+      ],
+      "missing_terms": [
+        "CNN",
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "TuSimple",
+        "CULane"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "3D lane detection using BEV projection; adjacent sub-area of lane detection research.",
+      "reason": "Monocular 3D lane detection via BEV projection with signed distance fields. Related advanced lane detection direction."
+    },
+    {
+      "candidate_id": "c-c3848df5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "CNN",
+        "instance segmentation"
+      ],
+      "missing_terms": [
+        "lane detection",
+        "lane segmentation",
+        "LaneNet",
+        "TuSimple"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "General instance segmentation backbone; method module useful for lane segmentation pipelines.",
+      "reason": "Cascade R-CNN is a generic object detection/instance segmentation method, potentially a backbone component for lane segmentation."
+    },
+    {
+      "candidate_id": "c-34bdfe3f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "lane marking recognition",
+        "lane detection",
+        "autonomous driving scene"
+      ],
+      "missing_terms": [
+        "CNN",
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "End-to-end lane marking detection with dynamic vision sensor; specialized lane detection.",
+      "reason": "End-to-end lane marking detection using event-based vision sensor. Directly relevant to lane detection."
+    },
+    {
+      "candidate_id": "c-f7d16cb8",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "lane detection",
+        "autonomous driving scene",
+        "dataset"
+      ],
+      "missing_terms": [
+        "CNN",
+        "deep learning",
+        "TuSimple",
+        "CULane"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "ELAS lane dataset and algorithms; provides benchmark dataset referenced in lane detection studies.",
+      "reason": "Provides both dataset and algorithms for ego-lane analysis. Useful dataset reference for lane detection research."
+    },
+    {
+      "candidate_id": "c-bc8a26fb",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "CNN",
+        "lane detection",
+        "autonomous driving scene"
+      ],
+      "missing_terms": [
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP",
+        "transformer attention"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Optimized lightweight CNN architecture for lane detection; direct DL method match.",
+      "reason": "Proposes an optimized lightweight CNN (ENet-21) specifically for lane detection in autonomous vehicles."
+    },
+    {
+      "candidate_id": "c-e5cef267",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning",
+        "survey"
+      ],
+      "missing_terms": [
+        "lane detection",
+        "autonomous driving",
+        "LaneNet",
+        "TuSimple",
+        "CNN lane"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on oriented object detection in remote sensing imagery; cross-domain to lane detection.",
+      "reason": "Covers oriented object detection in optical remote sensing images. Domain mismatch with autonomous driving lane detection."
+    },
+    {
+      "candidate_id": "c-f69acaee",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "lane detection",
+        "CNN",
+        "autonomous driving",
+        "deep learning lane"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "LLM application for survey coding in social science; completely off-topic.",
+      "reason": "Uses LLMs for coding German survey responses on survey motivation. No connection to lane detection."
+    },
+    {
+      "candidate_id": "c-fb26e51c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "lane detection",
+        "deep learning",
+        "autonomous driving",
+        "CNN"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Radio astronomy methanol multibeam survey; completely off-topic domain.",
+      "reason": "Astronomical survey using methanol maser emission. No relation to lane detection or autonomous driving."
+    },
+    {
+      "candidate_id": "c-c533e3ed",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "lane detection",
+        "autonomous driving scene",
+        "real-time lane detection"
+      ],
+      "missing_terms": [
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP",
+        "BEV perception"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Real-time lane detection using Faster R-CNN/Mask R-CNN; DL method for lane detection.",
+      "reason": "Applies Faster R-CNN and Mask R-CNN for real-time lane detection and tracking in autonomous vehicles."
+    },
+    {
+      "candidate_id": "c-5190ff71",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "lane detection",
+        "end-to-end",
+        "anchor-based"
+      ],
+      "missing_terms": [
+        "CNN",
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "Polar R-CNN end-to-end lane detection with anchor-based design; key DL method.",
+      "reason": "End-to-end anchor-based lane detection method using Polar R-CNN. Relevant advanced lane detection approach."
+    },
+    {
+      "candidate_id": "c-35f633bb",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "CNN",
+        "lane detection",
+        "real-time"
+      ],
+      "missing_terms": [
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP",
+        "BEV perception"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Real-time CNN lane detection; directly matches CNN lane detection methodology.",
+      "reason": "CNN-based real-time lane detection conference paper. Matches the deep learning lane detection topic."
+    },
+    {
+      "candidate_id": "c-652854ee",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "CNN",
+        "RNN",
+        "lane detection"
+      ],
+      "missing_terms": [
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP",
+        "transformer attention"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "Gradient map CNN+RNN lane detection; matches DL hybrid architecture approach.",
+      "reason": "Uses CNN and RNN with gradient map for lane detection. Relevant DL architecture study."
+    },
+    {
+      "candidate_id": "c-40572a8c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "lane detection",
+        "benchmark"
+      ],
+      "missing_terms": [
+        "CNN",
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "TuSimple",
+        "CULane"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "Risk-oriented lane detection benchmark dataset; useful evaluation reference.",
+      "reason": "Provides a risk-oriented benchmark for lane detection evaluation. Relevant dataset reference."
+    },
+    {
+      "candidate_id": "c-3d97da30",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "CNN",
+        "lane detection"
+      ],
+      "missing_terms": [
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP",
+        "BEV perception",
+        "TuSimple"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "CNN-based lane detection paper; metadata thin but matches topic.",
+      "reason": "Title directly matches CNN-based lane detection. Venue is obscure; manual verification recommended."
+    },
+    {
+      "candidate_id": "c-1f3b9045",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "CNN",
+        "lane detection"
+      ],
+      "missing_terms": [
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP",
+        "BEV perception",
+        "TuSimple"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "CNN design and optimization for lane detection; directly relevant DL lane work.",
+      "reason": "Design and optimization of CNN architecture for lane detection. Matches DL lane detection methodology."
+    },
+    {
+      "candidate_id": "c-55690dab",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "core",
+      "matched_terms": [
+        "lane detection",
+        "autonomous driving",
+        "benchmark",
+        "taxonomy",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP",
+        "TuSimple",
+        "CULane"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Comprehensive lane detection survey/taxonomy covering classical to foundation models; ideal survey source.",
+      "reason": "Survey covering lane detection history from heuristics to foundation models in autonomous driving. Direct topic match."
+    },
+    {
+      "candidate_id": "c-baebd183",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "lane marking recognition",
+        "autonomous driving scene"
+      ],
+      "missing_terms": [
+        "CNN",
+        "SCNN",
+        "UFLD",
+        "LaneNet",
+        "YOLOP",
+        "BEV perception"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "SOTIF benchmark for lane marking detection; safety-focused background reference.",
+      "reason": "Benchmark for SOTIF analysis of lane marking detection algorithms. Relevant safety/evaluation context."
+    },
+    {
+      "candidate_id": "c-3f8b1b36",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "lane",
+        "driving",
+        "lane detection"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "CNN",
+        "segmentation",
+        "TuSimple",
+        "CULane"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Lane-merge benchmark paper; weakly related, no deep-learning emphasis confirmed.",
+      "reason": "Vehicle lane merge benchmark from ICPR 2021, tangentially related to lane detection but no abstract confirms deep-learning methodology or relevant datasets."
+    },
+    {
+      "candidate_id": "c-5a3d9ff5",
+      "evidence_type": "paper",
+      "role_hint": "baseline",
+      "status": "candidate",
+      "matched_terms": [
+        "lane detection",
+        "lane departure",
+        "autonomous driving"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "CNN",
+        "UFLD",
+        "LaneATT",
+        "TuSimple"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "Pre-deep-learning lane detection algorithm; useful as historical baseline only.",
+      "reason": "2013 IV Symposium paper on lane detection for departure warning. Pre-DL era; serves as baseline contrast but not a deep-learning method."
+    },
+    {
+      "candidate_id": "c-d6932d1d",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "lane marking",
+        "lane detection",
+        "boundary detection",
+        "automobile vision"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "CNN",
+        "UFLD",
+        "LaneATT"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "repo",
+      "exists_verdict": "exists",
+      "rank_reason": "Repo specifically about lane marking/boundary detection; related but DL emphasis unclear from description.",
+      "reason": "GitHub repo baidut/ITS focused on lane marking and boundary detection tracking. Description lacks explicit deep-learning framing but is directly in lane-detection domain."
+    },
+    {
+      "candidate_id": "c-6f4196a1",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "core",
+      "matched_terms": [
+        "lane detection",
+        "CNN",
+        "autonomous driving",
+        "deep learning"
+      ],
+      "missing_terms": [],
+      "confidence_label": "high",
+      "relation_to_topic": "repo",
+      "exists_verdict": "exists",
+      "rank_reason": "CLRNet inference repo: directly a deep-learning lane-detection CVPR 2022 method.",
+      "reason": "CLRNet (CVPR 2022) is a top deep-learning lane-detection model. This repo provides ONNX/TensorRT inference, highly relevant for deployment and benchmarking."
+    },
+    {
+      "candidate_id": "c-e058aa41",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "core",
+      "matched_terms": [
+        "lane detection",
+        "PINet",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "TuSimple",
+        "CULane"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "repo",
+      "exists_verdict": "exists",
+      "rank_reason": "PINet-based lane detector repo; PINet is a well-known DL lane-detection architecture.",
+      "reason": "Implements PINet (keypoint-based lane detection) with ONNX/Caffe conversion support. Directly a deep-learning lane-detection repo, supports training."
+    },
+    {
+      "candidate_id": "c-401ed340",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "core",
+      "matched_terms": [
+        "UFLD",
+        "lane detection",
+        "deep learning",
+        "Ultra-Fast-Lane-Detection"
+      ],
+      "missing_terms": [],
+      "confidence_label": "high",
+      "relation_to_topic": "repo",
+      "exists_verdict": "exists",
+      "rank_reason": "TensorRT port of UFLD, one of the canonical DL lane-detection baselines.",
+      "reason": "Repo is a TensorRT deployment of Ultra-Fast-Lane-Detection (UFLD), a core method listed in the topic. Strong direct match."
+    },
+    {
+      "candidate_id": "c-74d77b10",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "lane detection",
+        "end-to-end"
+      ],
+      "missing_terms": [
+        "CNN",
+        "UFLD",
+        "LaneATT"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "repo",
+      "exists_verdict": "exists",
+      "rank_reason": "End-to-end lane detection test repo; fork of wvangansbeke implementation.",
+      "reason": "LaneDetection_End2End fork from wvangansbeke. Related to deep-learning lane detection but limited description; needs manual review of method details."
+    },
+    {
+      "candidate_id": "c-f4ccd9ae",
+      "evidence_type": "repo",
+      "role_hint": "reference",
+      "status": "needs_manual",
+      "matched_terms": [
+        "lane detection",
+        "self driving"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "CNN",
+        "neural network"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Classical image-processing lane detection; not deep learning, manual review needed for relevance.",
+      "reason": "Uses perspective transform and polynomial regression without deep learning. Useful as traditional baseline contrast; method mismatch with topic core."
+    },
+    {
+      "candidate_id": "c-49233e9c",
+      "evidence_type": "dataset",
+      "role_hint": "reference",
+      "status": "needs_manual",
+      "matched_terms": [],
+      "missing_terms": [
+        "lane detection",
+        "TuSimple",
+        "CULane",
+        "OpenLane",
+        "BDD100K"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "COCO is a general-purpose dataset, not lane-specific; weak relevance to lane topic.",
+      "reason": "COCO is a generic object detection/segmentation dataset. Not a lane dataset; inclusion in lane survey would need justification (e.g., pre-training)."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Build the survey around a method-centric taxonomy of deep-learning lane detection: segmentation-based (ENet-21 c-bc8a26fb, RONELD c-ac55d4cd, ELAS c-f7d16cb8), keypoint/graph-based (PINet c-e058aa41), anchor-based (CLRNet c-6f4196a1, Polar R-CNN c-5190ff71, UFLD c-401ed340), attention/distillation-based (SAD c-0adcec08, CNN+RNN gradient c-652854ee), and event/3D extensions (LDNet c-34bdfe3f, HSDF-Lane c-1a877d73). Use the five-era taxonomy survey c-55690dab as the spine, plus SimLane c-40572a8c and SOTIF benchmark c-baebd183 as evaluation scaffolding. Treat Agnostic Lane Detection c-f41ba29b and Faster/Mask R-CNN lane work c-c533e3ed as parallel references. Flag gaps: no direct SCNN/UFLD/LaneATT/LaneNet/PolyLaneNet/transformer-lane primary papers returned, so the student should manually verify whether to backfill via official repo citations before finalizing the survey.",
+    "baseline_options": [
+      "c-0adcec08",
+      "c-bc8a26fb",
+      "c-55690dab",
+      "c-6f4196a1",
+      "c-401ed340",
+      "c-e058aa41"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-0adcec08",
+          "title": "Learning Lightweight Lane Detection CNNs by Self Attention Distillation",
+          "role_hint": "parallel",
+          "reason": "Lightweight CNN lane detection with self-attention distillation; directly cited method family."
+        },
+        {
+          "candidate_id": "c-bc8a26fb",
+          "title": "ENet-21: An Optimized light CNN Structure for Lane Detection",
+          "role_hint": "parallel",
+          "reason": "Optimized lightweight CNN architecture for lane detection; direct DL method match."
+        },
+        {
+          "candidate_id": "c-5190ff71",
+          "title": "Polar R-CNN: End-to-End Lane Detection With Fewer Anchors_supp1-3564979.pdf",
+          "role_hint": "parallel",
+          "reason": "Polar R-CNN end-to-end lane detection with anchor-based design; key DL method."
+        },
+        {
+          "candidate_id": "c-652854ee",
+          "title": "Gradient Map Based Lane Detection Using CNN and RNN",
+          "role_hint": "parallel",
+          "reason": "Gradient map CNN+RNN lane detection; matches DL hybrid architecture approach."
+        },
+        {
+          "candidate_id": "c-55690dab",
+          "title": "A FIVE-ERA TAXONOMY AND BENCHMARK FRAMEWORK FOR LANE DETECTION: FROM CLASSICAL HEURISTICS TO VISION FOUNDATION MODELS IN",
+          "role_hint": "unknown",
+          "reason": "Comprehensive lane detection survey/taxonomy covering classical to foundation models; ideal survey source."
+        },
+        {
+          "candidate_id": "c-6f4196a1",
+          "title": "xuanandsix/CLRNet-onnxruntime-and-tensorrt-demo",
+          "role_hint": "repo",
+          "reason": "CLRNet inference repo: directly a deep-learning lane-detection CVPR 2022 method."
+        },
+        {
+          "candidate_id": "c-e058aa41",
+          "title": "pandamax/Lane-Detection-Based-PINet",
+          "role_hint": "repo",
+          "reason": "PINet-based lane detector repo; PINet is a well-known DL lane-detection architecture."
+        },
+        {
+          "candidate_id": "c-401ed340",
+          "title": "MrLee12138/lane_det",
+          "role_hint": "repo",
+          "reason": "TensorRT port of UFLD, one of the canonical DL lane-detection baselines."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-f41ba29b",
+          "title": "Agnostic Lane Detection",
+          "role_hint": "parallel",
+          "reason": "Real lane detection paper on autonomous driving; method-agnostic approach is parallel rather than core."
+        },
+        {
+          "candidate_id": "c-ac55d4cd",
+          "title": "RONELD: Robust Neural Network Output Enhancement for Active Lane Detection",
+          "role_hint": "parallel",
+          "reason": "Active lane detection with neural output enhancement; relevant DL lane detection work."
+        },
+        {
+          "candidate_id": "c-1a877d73",
+          "title": "HSDF-Lane: Height-Aligned Signed Distance Field with Semantic Lane Prior for 3D Lane Detection",
+          "role_hint": "parallel",
+          "reason": "3D lane detection using BEV projection; adjacent sub-area of lane detection research."
+        },
+        {
+          "candidate_id": "c-c3848df5",
+          "title": "Cascade R-CNN: High Quality Object Detection and Instance Segmentation",
+          "role_hint": "reference",
+          "reason": "General instance segmentation backbone; method module useful for lane segmentation pipelines."
+        },
+        {
+          "candidate_id": "c-34bdfe3f",
+          "title": "LDNet: End-to-End Lane Marking Detection Approach Using a Dynamic Vision Sensor",
+          "role_hint": "parallel",
+          "reason": "End-to-end lane marking detection with dynamic vision sensor; specialized lane detection."
+        },
+        {
+          "candidate_id": "c-f7d16cb8",
+          "title": "Ego-Lane Analysis System (ELAS): Dataset and Algorithms",
+          "role_hint": "reference",
+          "reason": "ELAS lane dataset and algorithms; provides benchmark dataset referenced in lane detection studies."
+        },
+        {
+          "candidate_id": "c-c533e3ed",
+          "title": "A Novel Solution to the Real-Time Lane Detection and Tracking Problem for Autonomous Vehicles by Using Faster R-CNN and ",
+          "role_hint": "parallel",
+          "reason": "Real-time lane detection using Faster R-CNN/Mask R-CNN; DL method for lane detection."
+        },
+        {
+          "candidate_id": "c-35f633bb",
+          "title": "Real time lane detection using CNN",
+          "role_hint": "parallel",
+          "reason": "Real-time CNN lane detection; directly matches CNN lane detection methodology."
+        },
+        {
+          "candidate_id": "c-40572a8c",
+          "title": "SimLane: A Risk-Orientated Benchmark for Lane Detection",
+          "role_hint": "reference",
+          "reason": "Risk-oriented lane detection benchmark dataset; useful evaluation reference."
+        },
+        {
+          "candidate_id": "c-3d97da30",
+          "title": "CNN-based lane detection",
+          "role_hint": "parallel",
+          "reason": "CNN-based lane detection paper; metadata thin but matches topic."
+        },
+        {
+          "candidate_id": "c-1f3b9045",
+          "title": "Design and Optimization of CNN for Lane Detection",
+          "role_hint": "parallel",
+          "reason": "CNN design and optimization for lane detection; directly relevant DL lane work."
+        },
+        {
+          "candidate_id": "c-baebd183",
+          "title": "A Benchmark for SOTIF of Lane Marking Detection Algorithms of Autonomous Vehicles",
+          "role_hint": "reference",
+          "reason": "SOTIF benchmark for lane marking detection; safety-focused background reference."
+        },
+        {
+          "candidate_id": "c-3f8b1b36",
+          "title": "Vehicle Lane Merge Visual Benchmark",
+          "role_hint": "reference",
+          "reason": "Lane-merge benchmark paper; weakly related, no deep-learning emphasis confirmed."
+        },
+        {
+          "candidate_id": "c-5a3d9ff5",
+          "title": "An efficient lane detection algorithm for lane departure detection",
+          "role_hint": "baseline",
+          "reason": "Pre-deep-learning lane detection algorithm; useful as historical baseline only."
+        },
+        {
+          "candidate_id": "c-d6932d1d",
+          "title": "baidut/ITS",
+          "role_hint": "repo",
+          "reason": "Repo specifically about lane marking/boundary detection; related but DL emphasis unclear from description."
+        },
+        {
+          "candidate_id": "c-74d77b10",
+          "title": "minghanz/LaneDetection_End2End_test",
+          "role_hint": "repo",
+          "reason": "End-to-end lane detection test repo; fork of wvangansbeke implementation."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-f4ccd9ae",
+          "title": "anshupandey/Advance-Lane-Finding",
+          "role_hint": "reference",
+          "reason": "Classical image-processing lane detection; not deep learning, manual review needed for relevance."
+        },
+        {
+          "candidate_id": "c-49233e9c",
+          "title": "COCO",
+          "role_hint": "reference",
+          "reason": "COCO is a general-purpose dataset, not lane-specific; weak relevance to lane topic."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-e5cef267",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "reference",
+          "reason": "Survey on oriented object detection in remote sensing imagery; cross-domain to lane detection."
+        },
+        {
+          "candidate_id": "c-f69acaee",
+          "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+          "role_hint": "reference",
+          "reason": "LLM application for survey coding in social science; completely off-topic."
+        },
+        {
+          "candidate_id": "c-fb26e51c",
+          "title": "The Methanol Multibeam Survey",
+          "role_hint": "reference",
+          "reason": "Radio astronomy methanol multibeam survey; completely off-topic domain."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-0adcec08",
+          "title": "Learning Lightweight Lane Detection CNNs by Self Attention Distillation",
+          "role_hint": "parallel",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-bc8a26fb",
+          "title": "ENet-21: An Optimized light CNN Structure for Lane Detection",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-401ed340",
+          "title": "MrLee12138/lane_det",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-6f4196a1",
+          "title": "xuanandsix/CLRNet-onnxruntime-and-tensorrt-demo",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-e058aa41",
+          "title": "pandamax/Lane-Detection-Based-PINet",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-5190ff71",
+          "title": "Polar R-CNN: End-to-End Lane Detection With Fewer Anchors_supp1-3564979.pdf",
+          "role_hint": "parallel",
+          "year": null
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-f41ba29b",
+          "title": "Agnostic Lane Detection",
+          "role_hint": "parallel",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-ac55d4cd",
+          "title": "RONELD: Robust Neural Network Output Enhancement for Active Lane Detection",
+          "role_hint": "parallel",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-1a877d73",
+          "title": "HSDF-Lane: Height-Aligned Signed Distance Field with Semantic Lane Prior for 3D Lane Detection",
+          "role_hint": "parallel",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-c3848df5",
+          "title": "Cascade R-CNN: High Quality Object Detection and Instance Segmentation",
+          "role_hint": "reference",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-34bdfe3f",
+          "title": "LDNet: End-to-End Lane Marking Detection Approach Using a Dynamic Vision Sensor",
+          "role_hint": "parallel",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-c533e3ed",
+          "title": "A Novel Solution to the Real-Time Lane Detection and Tracking Problem for Autonomous Vehicles by Using Faster R-CNN and Mask R-CNN",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-35f633bb",
+          "title": "Real time lane detection using CNN",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-3d97da30",
+          "title": "CNN-based lane detection",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-1f3b9045",
+          "title": "Design and Optimization of CNN for Lane Detection",
+          "role_hint": "parallel",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-652854ee",
+          "title": "Gradient Map Based Lane Detection Using CNN and RNN",
+          "role_hint": "parallel",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-74d77b10",
+          "title": "minghanz/LaneDetection_End2End_test",
+          "role_hint": "repo",
+          "year": null
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-55690dab",
+          "title": "A FIVE-ERA TAXONOMY AND BENCHMARK FRAMEWORK FOR LANE DETECTION: FROM CLASSICAL HEURISTICS TO VISION FOUNDATION MODELS IN AUTONOMOUS DRIVING",
+          "role_hint": "unknown",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-f7d16cb8",
+          "title": "Ego-Lane Analysis System (ELAS): Dataset and Algorithms",
+          "role_hint": "reference",
+          "year": 2018
+        },
+        {
+          "candidate_id": "c-40572a8c",
+          "title": "SimLane: A Risk-Orientated Benchmark for Lane Detection",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-baebd183",
+          "title": "A Benchmark for SOTIF of Lane Marking Detection Algorithms of Autonomous Vehicles",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-3f8b1b36",
+          "title": "Vehicle Lane Merge Visual Benchmark",
+          "role_hint": "reference",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-5a3d9ff5",
+          "title": "An efficient lane detection algorithm for lane departure detection",
+          "role_hint": "baseline",
+          "year": 2013
+        },
+        {
+          "candidate_id": "c-d6932d1d",
+          "title": "baidut/ITS",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-f4ccd9ae",
+          "title": "anshupandey/Advance-Lane-Finding",
+          "role_hint": "reference",
+          "year": null
+        },
+        {
+          "candidate_id": "c-49233e9c",
+          "title": "COCO",
+          "role_hint": "reference",
+          "year": null
+        }
+      ],
+      "long_tail_candidates": []
+    },
+    "dataset_and_repo_notes": [
+      "TuSimple and CULane benchmarks are central; cite c-55690dab and c-40572a8c for evaluation framing (refs c-55690dab, c-40572a8c).",
+      "ELAS c-f7d16cb8 supplies ego-lane dataset + classical algorithms as historical contrast.",
+      "SimLane c-40572a8c offers a risk-oriented benchmark orthogonal to TuSimple/CULane.",
+      "SOTIF benchmark c-baebd183 frames safety evaluation for lane marking detectors.",
+      "CLRNet inference repo c-6f4196a1 and UFLD TensorRT c-401ed340 enable deployment experiments on real DL baselines.",
+      "PINet repo c-e058aa41 supports training + ONNX/Caffe conversion for keypoint-based DL lane detection."
+    ],
+    "work_suggestions": [
+      "Use c-55690dab as the survey backbone; reconstruct its five-era taxonomy and add DL-era sub-branches (segmentation, anchor, keypoint, attention, transformer). (refs c-55690dab)",
+      "Compare c-0adcec08 (SAD) vs c-bc8a26fb (ENet-21) as lightweight-CNN DL baselines on TuSimple/CULane accuracy/efficiency. (refs c-0adcec08, c-bc8a26fb)",
+      "Position c-6f4196a1 (CLRNet) and c-401ed340 (UFLD) as anchor-based vs row-classification DL contrasts; cite c-5190ff71 for anchor design evolution. (refs c-6f4196a1, c-401ed340, c-5190ff71)",
+      "Treat c-652854ee (CNN+RNN gradient) and c-34bdfe3f (LDNet event-camera) as branch points in the DL taxonomy. (refs c-652854ee, c-34bdfe3f)",
+      "Extend the survey to 3D/BEV with c-1a877d73; use c-f7d16cb8, c-40572a8c, c-baebd183 as evaluation and safety reference stack. (refs c-1a877d73, c-f7d16cb8, c-40572a8c, c-baebd183)"
+    ],
+    "risk_reminders": [
+      "No primary SCNN, LaneATT, LaneNet, PolyLaneNet, RESA, or YOLOP paper returned; verify before claiming a complete method taxonomy.",
+      "Several crossref entries (c-5190ff71, c-35f633bb, c-652854ee, c-1f3b9045, c-40572a8c, c-3d97da30, c-baebd183) lack abstracts; confirm method details manually.",
+      "c-3d97da30 is from an obscure venue; treat as low-confidence until manually verified.",
+      "c-1a877d73 has an arxiv id '2606.31172' suggesting 2026 future date; confirm publication status.",
+      "COCO c-49233e9c is not lane-specific; only cite if used as pre-training data, not a lane benchmark.",
+      "c-3f8b1b36 (Vehicle Lane Merge) and c-5a3d9ff5 (2013 IV) are weak/tangential; keep only as historical contrast."
+    ],
+    "manual_questions": [
+      "Which DL method family should be the survey spine: segmentation, anchor, keypoint, or transformer?",
+      "Are TuSimple and CULane the required benchmarks, or include OpenLane / BDD100K?",
+      "Should 3D/BEV lane detection (e.g., HSDF-Lane c-1a877d73) be in scope?",
+      "Is deployment/realtime efficiency (CLRNet c-6f4196a1, UFLD c-401ed340) part of the contribution?",
+      "Should classical CV pipelines (ELAS c-f7d16cb8, Advance-Lane-Finding c-f4ccd9ae) appear as historical baselines only?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "Why is c-401ed340 (a repo) and c-6f4196a1 (a demo repo) listed as baseline methods instead of the actual UFLD/CLRNet papers?",
+      "What is the true baseline candidate for the DL era — SAD, ENet-21, or UFLD? The baseline_options list mixes papers and repos.",
+      "Are TuSimple and CULane the required evaluation datasets, and should OpenLane/BDD100K be added? No dataset candidate is anchored.",
+      "Does the survey scope include 3D/BEV lane detection (c-1a877d73) or stay in 2D image lane detection only?",
+      "Should the c-55690dab taxonomy (year 2026) be the actual survey backbone, given it post-dates most baseline papers?"
+    ],
+    "weak_points": [
+      "baseline_options and paper_groups.baseline contain repos (c-401ed340, c-6f4196a1, c-e058aa41) not papers.",
+      "No dataset candidate is anchored despite TuSimple/CULane/OpenLane/BDD100K being named in the topic.",
+      "evidence_gaps is empty even though several dimensions (datasets, clear baseline) are weak.",
+      "paper_groups.reference includes COCO (c-49233e9c) which is unrelated to lane detection.",
+      "Reference backbone c-55690dab dated 2026 is unverified; risk of relying on a non-existent survey."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Direction is reasonable but baseline group mixes repos with papers and no dataset candidate is anchored. Five clarification questions are blocking before the opening report can proceed."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于深度学习的车道线检测方法研究",
+      "domain_route": "vision_2d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 12,
+        "crossref": 10,
+        "github": 6
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 30,
+      "queries": [
+        "lane lane",
+        "lane detection",
+        "lane he",
+        "lane lanes",
+        "detection lane",
+        "detection detection",
+        "detection he",
+        "detection lanes"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 200.25
+}

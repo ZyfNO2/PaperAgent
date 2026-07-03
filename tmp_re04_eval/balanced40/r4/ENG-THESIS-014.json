@@ -1,0 +1,1872 @@
+{
+  "project_id": "agent-re04-ca13575e",
+  "raw_topic": "基于生成对抗网络的织物缺陷检测算法研究",
+  "parsed_topic": {
+    "raw_topic": "基于生成对抗网络的织物缺陷检测算法研究",
+    "normalized_topic": "Research on fabric defect detection algorithms based on generative adversarial networks (GANs)",
+    "domain_route": "vision_2d",
+    "domain_confidence": 0.92,
+    "method_terms": [
+      "GAN",
+      "generative adversarial network",
+      "DCGAN",
+      "CycleGAN",
+      "AnoGAN",
+      "defect generation",
+      "semi-supervised GAN",
+      "faster R-CNN + GAN",
+      "attention GAN"
+    ],
+    "task_terms": [
+      "fabric defect detection",
+      "anomaly detection",
+      "defect segmentation",
+      "defect localization",
+      "defect classification",
+      "defect generation with GAN"
+    ],
+    "object_terms": [
+      "fabric texture images",
+      "textile defect dataset",
+      "Yarn-dyed fabric",
+      "printed fabric",
+      "MVTec AD"
+    ],
+    "query_atoms_en": [
+      "GAN fabric defect detection",
+      "AnoGAN anomaly detection fabric",
+      "CycleGAN textile defect generation",
+      "GAN-based surface defect detection",
+      "DCGAN defect synthesis",
+      "MVTec AD fabric defect",
+      "semi-supervised GAN textile inspection",
+      "deep learning fabric defect segmentation"
+    ],
+    "query_atoms_zh": [
+      "生成对抗网络 织物缺陷检测",
+      "GAN 纺织品瑕疵检测",
+      "深度学习 布匹瑕疵识别",
+      "异常检测 织物",
+      "CycleGAN 织物缺陷生成",
+      "无监督 织物缺陷分割"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "github.com",
+      "mydesignlist.com"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于生成对抗网络的织物缺陷检测算法研究",
+    "domain_route": "vision_2d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "GAN fabric defect detection",
+        "GAN fabric texture images"
+      ],
+      "method_task": [
+        "GAN fabric defect detection",
+        "GAN anomaly detection",
+        "generative adversarial network fabric defect detection",
+        "generative adversarial network anomaly detection"
+      ],
+      "object_task": [
+        "fabric texture images fabric defect detection",
+        "fabric texture images anomaly detection",
+        "textile defect dataset fabric defect detection",
+        "textile defect dataset anomaly detection"
+      ],
+      "dataset": [
+        "fabric defect detection dataset",
+        "fabric texture images dataset"
+      ],
+      "repo": [
+        "fabric defect detection github",
+        "fabric defect detection implementation",
+        "GAN fabric defect detection"
+      ],
+      "survey": [
+        "fabric defect detection survey",
+        "vision 2d survey"
+      ],
+      "benchmark": [
+        "fabric defect detection benchmark"
+      ],
+      "baseline": [
+        "GAN fabric defect detection",
+        "GAN anomaly detection",
+        "generative adversarial network fabric defect detection",
+        "generative adversarial network anomaly detection"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "GAN",
+        "generative adversarial network",
+        "DCGAN",
+        "CycleGAN",
+        "AnoGAN",
+        "defect generation",
+        "semi-supervised GAN",
+        "faster R-CNN + GAN",
+        "attention GAN"
+      ],
+      "task_terms": [
+        "fabric defect detection",
+        "anomaly detection",
+        "defect segmentation",
+        "defect localization",
+        "defect classification",
+        "defect generation with GAN"
+      ],
+      "object_terms": [
+        "fabric texture images",
+        "textile defect dataset",
+        "Yarn-dyed fabric",
+        "printed fabric",
+        "MVTec AD"
+      ],
+      "domain_route": "vision_2d"
+    },
+    "fb_atom": "GAN fabric defect detection",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper + repo backends for GAN-based fabric defect detection",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "GAN fabric defect detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "Arxiv is the spine; this query directly matches the core method+object combo.",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "AnoGAN anomaly detection textile",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "AnoGAN is a canonical anomaly-detection GAN method often cited in fabric defect work.",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_openalex",
+            "query": "CycleGAN textile defect generation",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "CycleGAN is widely used for synthetic defect augmentation; OpenAlex broadens recall beyond arxiv.",
+            "expected_output": "paper",
+            "fallback_tool": "search_crossref"
+          },
+          {
+            "tool": "search_crossref",
+            "query": "deep learning fabric defect segmentation",
+            "target_role": "survey",
+            "why_call": "Crossref surfaces journal/conference surveys and benchmark studies on fabric defect segmentation.",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark, survey and recent-advances variants",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "surface defect detection survey",
+            "target_role": "survey",
+            "why_call": "Surveys contextualize fabric defect detection within broader surface/industrial inspection.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "MVTec AD benchmark anomaly",
+            "target_role": "reference",
+            "why_call": "MVTec AD is the de facto benchmark for industrial anomaly detection, including fabric category.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "semi-supervised GAN defect inspection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "Captures semi-supervised variants that are common when labeled fabric defects are scarce.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "textile defect dataset benchmark",
+            "target_role": "reference",
+            "why_call": "Targets dataset/benchmark papers specific to textile and yarn-dyed fabric inspection.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable GAN defect detection code plus textile/MVTec datasets",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "fabric defect GAN",
+            "target_role": "repo",
+            "why_call": "Locates concrete implementations of GAN-based fabric defect detection models.",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "AnoGAN pytorch",
+            "target_role": "repo",
+            "why_call": "AnoGAN reference implementations are common on GitHub and usable on fabric images.",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "MVTec anomaly detection",
+            "target_role": "dataset",
+            "why_call": "Surfaces loaders and tooling for the MVTec AD dataset used to evaluate fabric defect models.",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "attention GAN defect segmentation",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "Attention-enhanced GANs for defect segmentation are a recent trend worth capturing alongside code searches.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "github.com",
+      "mydesignlist.com"
+    ],
+    "arxiv_queries": [
+      "GAN fabric defect detection",
+      "AnoGAN anomaly detection textile",
+      "surface defect detection survey",
+      "MVTec AD benchmark anomaly"
+    ],
+    "openalex_queries": [
+      "CycleGAN textile defect generation",
+      "semi-supervised GAN defect inspection",
+      "attention GAN defect segmentation"
+    ],
+    "crossref_queries": [
+      "deep learning fabric defect segmentation",
+      "textile defect dataset benchmark"
+    ],
+    "github_queries": [
+      "fabric defect GAN",
+      "AnoGAN pytorch",
+      "MVTec anomaly detection"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "doglayout: denoising diffusion gan for discrete and continuous layout generation",
+      "candidate_id": "c-355ec514",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DogLayout: Denoising Diffusion GAN for Discrete and Continuous Layout Generation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2412.00381v1",
+      "identifier": "2412.00381v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Layout Generation aims to synthesize plausible arrangements from given elements. Currently, the predominant methods in layout generation are Generative Adversarial Networks (GANs) and diffusion models, each presenting its own set of challenges. GANs typically struggle with handling discrete data due to their requirement for differentiable generated samples and have historically circumvented the direct generation of discrete labels by treating them as fixed conditions. Conversely, diffusion-based models, despite achieving state-of-the-art performance across several metrics, require extensive sampling steps which lead to significant time costs. To address these limitations, we propose \\textbf{DogLayout} (\\textbf{D}en\\textbf{o}ising Diffusion \\textbf{G}AN \\textbf{Layout} model), which integrates a diffusion process into GANs to enable the generation of discrete label data and significantly reduce diffusion's sampling time. Experiments demonstrate that DogLayout considerably reduces sampling costs by up to 175 times and cuts overlap from 16.43 to 9.59 compared to existing diffusion models, while also surpassing GAN based and other layout methods. Code is available at https://github.com/deadsmither5/DogLayout.",
+      "extra": {}
+    },
+    {
+      "stable_id": "scpat-gan: structural constrained and pathology aware convolutional transformer-gan for virtual histology staining of human coronary oct images",
+      "candidate_id": "c-bf282ea0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SCPAT-GAN: Structural Constrained and Pathology Aware Convolutional Transformer-GAN for Virtual Histology Staining of Human Coronary OCT images",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2307.12138v1",
+      "identifier": "2307.12138v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "There is a significant need for the generation of virtual histological information from coronary optical coherence tomography (OCT) images to better guide the treatment of coronary artery disease. However, existing methods either require a large pixel-wisely paired training dataset or have limited capability to map pathological regions. To address these issues, we proposed a structural constrained, pathology aware, transformer generative adversarial network, namely SCPAT-GAN, to generate virtual stained H&E histology from OCT images. The proposed SCPAT-GAN advances existing methods via a novel design to impose pathological guidance on structural layers using transformer-based network.",
+      "extra": {}
+    },
+    {
+      "stable_id": "deepinspect: an ai-powered defect detection for manufacturing industries",
+      "candidate_id": "c-1d945be4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2311.03725v2",
+      "identifier": "2311.03725v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. It harnesses extensive datasets of annotated images to discern complex defect patterns. This integrated system seamlessly fits into production workflows, thereby boosting efficiency and elevating product quality. As a result, it reduces waste and operational costs, ultimately enhancing market competitiveness.",
+      "extra": {}
+    },
+    {
+      "stable_id": "sequential attention gan for interactive image editing",
+      "candidate_id": "c-1b2a67c6",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Sequential Attention GAN for Interactive Image Editing",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2018,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1812.08352v4",
+      "identifier": "1812.08352v4",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Most existing text-to-image synthesis tasks are static single-turn generation, based on pre-defined textual descriptions of images. To explore more practical and interactive real-life applications, we introduce a new task - Interactive Image Editing, where users can guide an agent to edit images via multi-turn textual commands on-the-fly. In each session, the agent takes a natural language description from the user as the input and modifies the image generated in the previous turn to a new design, following the user description. The main challenges in this sequential and interactive image generation task are two-fold: 1) contextual consistency between a generated image and the provided textual description; 2) step-by-step region-level modification to maintain visual consistency across the generated image sequence in each session. To address these challenges, we propose a novel Sequential Attention Generative Adversarial Net-work (SeqAttnGAN), which applies a neural state tracker to encode the previous image and the textual description in each turn of the sequence, and uses a GAN framework to generate a modified version of the image that is consistent with the preceding images and coherent with the description. To achieve better region-specific refinement, we also introduce a sequential attention mechanism into the model. To benchmark on the new task, we introduce two new datasets, Zap-Seq and DeepFashion-Seq, which contain multi-turn sessions with image-description sequences in the fashion domain. Experiments on both datasets show that the proposed SeqAttnGANmodel outperforms state-of-the-art approaches on the interactive image editing task across all evaluation metrics including visual quality, image sequence coherence, and text-image consistency.",
+      "extra": {}
+    },
+    {
+      "stable_id": "data-efficient gan training beyond (just) augmentations: a lottery ticket perspective",
+      "candidate_id": "c-7ab7d499",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Data-Efficient GAN Training Beyond (Just) Augmentations: A Lottery Ticket Perspective",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2103.00397v3",
+      "identifier": "2103.00397v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Training generative adversarial networks (GANs) with limited real image data generally results in deteriorated performance and collapsed models. To conquer this challenge, we are inspired by the latest observation, that one can discover independently trainable and highly sparse subnetworks (a.k.a., lottery tickets) from GANs. Treating this as an inductive prior, we suggest a brand-new angle towards data-efficient GAN training: by first identifying the lottery ticket from the original GAN using the small training set of real images; and then focusing on training that sparse subnetwork by re-using the same set. We find our coordinated framework to offer orthogonal gains to existing real image data augmentation methods, and we additionally present a new feature-level augmentation that can be applied together with them. Comprehensive experiments endorse the effectiveness of our proposed framework, across various GAN architectures (SNGAN, BigGAN, and StyleGAN-V2) and diverse datasets (CIFAR-10, CIFAR-100, Tiny-ImageNet, ImageNet, and multiple few-shot generation datasets). Codes are available at: https://github.com/VITA-Group/Ultra-Data-Efficient-GAN-Training.",
+      "extra": {}
+    },
+    {
+      "stable_id": "recurrent topic-transition gan for visual paragraph generation",
+      "candidate_id": "c-1c827030",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Recurrent Topic-Transition GAN for Visual Paragraph Generation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2017,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1703.07022v2",
+      "identifier": "1703.07022v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A natural image usually conveys rich semantic content and can be viewed from different angles. Existing image description methods are largely restricted by small sets of biased visual paragraph annotations, and fail to cover rich underlying semantics. In this paper, we investigate a semi-supervised paragraph generative framework that is able to synthesize diverse and semantically coherent paragraph descriptions by reasoning over local semantic regions and exploiting linguistic knowledge. The proposed Recurrent Topic-Transition Generative Adversarial Network (RTT-GAN) builds an adversarial framework between a structured paragraph generator and multi-level paragraph discriminators. The paragraph generator generates sentences recurrently by incorporating region-based visual and language attention mechanisms at each step. The quality of generated paragraph sentences is assessed by multi-level adversarial discriminators from two aspects, namely, plausibility at sentence level and topic-transition coherence at paragraph level. The joint adversarial training of RTT-GAN drives the model to generate realistic paragraphs with smooth logical transition between sentence topics. Extensive quantitative experiments on image and video paragraph datasets demonstrate the effectiveness of our RTT-GAN in both supervised and semi-supervised settings. Qualitative results on telling diverse stories for an image also verify the interpretability of RTT-GAN.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a new benchmark dataset for texture image analysis and surface defect detection",
+      "candidate_id": "c-9f4c84bb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1906.11561v1",
+      "identifier": "1906.11561v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+      "extra": {}
+    },
+    {
+      "stable_id": "transferd2: automated defect detection approach in smart manufacturing using transfer learning techniques",
+      "candidate_id": "c-f614d7ef",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.13317v1",
+      "identifier": "2302.13317v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Quality assurance is crucial in the smart manufacturing industry as it identifies the presence of defects in finished products before they are shipped out. Modern machine learning techniques can be leveraged to provide rapid and accurate detection of these imperfections. We, therefore, propose a transfer learning approach, namely TransferD2, to correctly identify defects on a dataset of source objects and extend its application to new unseen target objects. We present a data enhancement technique to generate a large dataset from the small source dataset for building a classifier. We then integrate three different pre-trained models (Xception, ResNet101V2, and InceptionResNetV2) into the classifier network and compare their performance on source and target data. We use the classifier to detect the presence of imperfections on the unseen target data using pseudo-bounding boxes. Our results show that ResNet101V2 performs best on the source data with an accuracy of 95.72%. Xception performs best on the target data with an accuracy of 91.00% and also provides a more accurate prediction of the defects on the target images. Throughout the experiment, the results also indicate that the choice of a pre-trained model is not dependent on the depth of the network. Our proposed approach can be applied in defect detection applications where insufficient data is available for training a model and can be extended to identify imperfections in new unseen data.",
+      "extra": {}
+    },
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-f7921a15",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "automated fabric defect inspection: a survey of classifiers",
+      "candidate_id": "c-d5cc706d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Automated Fabric Defect Inspection: A Survey of Classifiers",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2014,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1405.6177v1",
+      "identifier": "1405.6177v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Quality control at each stage of production in textile industry has become a key factor to retaining the existence in the highly competitive global market. Problems of manual fabric defect inspection are lack of accuracy and high time consumption, where early and accurate fabric defect detection is a significant phase of quality control. Computer vision based, i.e. automated fabric defect inspection systems are thought by many researchers of different countries to be very useful to resolve these problems. There are two major challenges to be resolved to attain a successful automated fabric defect inspection system. They are defect detection and defect classification. In this work, we discuss different techniques used for automated fabric defect classification, then show a survey of classifiers used in automated fabric defect inspection systems, and finally, compare these classifiers by using performance metrics. This work is expected to be very useful for the researchers in the area of automated fabric defect inspection to understand and evaluate the many potential options in this field.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-5b75d402",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the methanol multibeam survey",
+      "candidate_id": "c-fb418d32",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Methanol Multibeam Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2012,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1210.0979v1",
+      "identifier": "1210.0979v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A purpose built 7-beam methanol receiver, installed on the Parkes Radio Telescope, was used to survey the Galactic plane for newly forming high mass stars, pinpointed by strong methanol maser emission at 6.7 GHz. The Methanol Multibeam (MMB) survey observed over 60% of the Galactic plane, detecting close to 1000 sources. The MMB survey provides a huge resource for studies of high-mass star formation, an important stage in the evolution of the interstellar medium. The MMB survey is also a valuable resource for investigations into the structure and dynamics of our Galaxy: with narrow velocity ranges of emission (typically only a few km/s) and velocities closely correlated with the systemic velocity of their surrounding molecular clouds, 6.7-GHz methanol masers provide estimates of the spiral arm velocities and their structure. I will discuss the techniques and properties of the MMB survey, before outlining recent results, which include the identification of regions of enhanced star formation believed to be indicative of the origins of the spiral arms and the interaction of the Galactic bar with the 3-kpc arms. I will also discuss the various follow-up programmes including a study of magnetic fields through associated hydroxyl masers.",
+      "extra": {}
+    },
+    {
+      "stable_id": "road surface defect detection -- from image-based to non-image-based: a survey",
+      "candidate_id": "c-f0600e2f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2402.04297v1",
+      "identifier": "2402.04297v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Ensuring traffic safety is crucial, which necessitates the detection and prevention of road surface defects. As a result, there has been a growing interest in the literature on the subject, leading to the development of various road surface defect detection methods. The methods for detecting road defects can be categorised in various ways depending on the input data types or training methodologies. The predominant approach involves image-based methods, which analyse pixel intensities and surface textures to identify defects. Despite their popularity, image-based methods share the distinct limitation of vulnerability to weather and lighting changes. To address this issue, researchers have explored the use of additional sensors, such as laser scanners or LiDARs, providing explicit depth information to enable the detection of defects in terms of scale and volume. However, the exploration of data beyond images has not been sufficiently investigated. In this survey paper, we provide a comprehensive review of road surface defect detection studies, categorising them based on input data types and methodologies used. Additionally, we review recently proposed non-image-based methods and discuss several challenges and open problems associated with these techniques.",
+      "extra": {}
+    },
+    {
+      "stable_id": "dcsfpss assisted morphological approach for grey twill fabric defect detection and defect area measurement for fabric grading",
+      "candidate_id": "c-d7122b60",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DCSFPSS assisted morphological approach for grey twill fabric defect detection and defect area measurement for fabric grading",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "10.5353/th_b3007088",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We use observations from the 9 square degree multiwavelength survey in Bootes to identify hundreds of obscured active galactic nuclei (AGN) with high redshifts (z > 0.7), luminosities (L_bol > 10^45 ergs/s), and moderate obscuring columns (N_H > 10^22 cm^-2), and to measure the clustering properties of X-ray AGN at z > 1. In the Bootes region, shallow (5 ks) Chandra X-ray observations have detected ~4,000 X-ray sources, and the same region has been mapped with deep optical imaging and by Spitzer IRAC, which detects ~300,000 point sources, of which ~30,000 have detections in all four IRAC bands, for which we can select AGN on the basis of their mid-IR colors. With the MMT/Hectospec we have obtained modest resolution optical spectra for about half the X-ray sources (out to z > 3) and ~20,000 galaxies (out to z = 0.7). With this multiwavelength data we select >400 AGN per square degree (compared to 12 per square degree from SDSS). Among a sample of IRAC-selected AGN we identify 641 candidate obscured objects based on their R band and IRAC luminosities. We use X-ray stacking techniques to verify that they are obscured AGN and measure their absorbing column densities. We also measure the three-dimensional two-point correlation function for X-ray selected AGN.",
+      "extra": {}
+    },
+    {
+      "stable_id": "fabric defect detection method based on texture structure analysis",
+      "candidate_id": "c-32bf4c75",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Fabric defect detection method based on texture structure analysis",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2008,
+      "venue": "Journal of Computer Applications",
+      "url": "https://doi.org/10.3724/sp.j.1087.2008.00647",
+      "identifier": "10.3724/sp.j.1087.2008.00647",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a dataset of raw fabric grayscale images for defect detection",
+      "candidate_id": "c-a0b4f7ea",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Dataset of Raw Fabric Grayscale Images for Defect Detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "https://doi.org/10.20944/preprints202604.1335.v1",
+      "identifier": "10.20944/preprints202604.1335.v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>This article presents RAW-FABRID (RAWFABricImageDataset), a publicly available annotated dataset for raw fabric defect detection using computer vision techniques. It addresses a major limitation in textile inspection, where reliance on private datasets hinders objective methodological comparisons. RAW-FABRID wasacquired using a custom-built inspection machine equipped with controlled LED illumination and aline-scan camera. Thedatasetincludesgrayscale fabric images collected from several manufacturers to ensure variability in textures and patterns. It comprises 709 high-resolution images (1792 × 1024 pixels), including both defect-free and defective samples. To maximize reusability, data are provided in two complementary formats: high-resolution images (cropped to remove peripheral acquisition artifacts) for global analysis, and a patch-based organization following the widely adopted MVTecAnomalyDetectionbenchmarkstructure. Thelatter divides images into 256 × 256pixelpatches for direct machine learning integration. Crucially, the dataset is accompanied by comprehensive metadata (CSV) and precise COCO-formatted annotations (JSON) for both subsets, ensuring full traceability and supporting object detection and semantic segmentation. The dataset is publicly available through Mendeley Data, enabling reproducible research and objective benchmarking of defect detection algorithms.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "fabric defect detection based on texture enhancement",
+      "candidate_id": "c-7078aec6",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Fabric defect detection based on texture enhancement",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2012,
+      "venue": "2012 5th International Congress on Image and Signal Processing",
+      "url": "https://doi.org/10.1109/cisp.2012.6469799",
+      "identifier": "10.1109/cisp.2012.6469799",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "lstm based texture classification and defect detection in a fabric",
+      "candidate_id": "c-648a03ed",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "LSTM based texture classification and defect detection in a fabric",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Measurement: Sensors",
+      "url": "https://doi.org/10.1016/j.measen.2022.100603",
+      "identifier": "10.1016/j.measen.2022.100603",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "fabric defect detection based on adaptive lbp and svm",
+      "candidate_id": "c-cda1574e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Fabric defect detection based on adaptive LBP and SVM",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2010,
+      "venue": "Journal of Computer Applications",
+      "url": "https://doi.org/10.3724/sp.j.1087.2010.01597",
+      "identifier": "10.3724/sp.j.1087.2010.01597",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "texture-based fabric defect detection method",
+      "candidate_id": "c-d1f9645f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Texture-based Fabric Defect Detection Method",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "2023 7th International Conference on Electrical, Mechanical and Computer Engineering (ICEMCE)",
+      "url": "https://doi.org/10.1109/icemce60359.2023.10490814",
+      "identifier": "10.1109/icemce60359.2023.10490814",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "coco",
+      "candidate_id": "c-85d1e682",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "COCO",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    },
+    {
+      "stable_id": "imagenet",
+      "candidate_id": "c-4313df1f",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "ImageNet",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "GAN fabric defect detection|GAN fabric texture images",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "fabric defect detection dataset|fabric texture images dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "fabric defect detection github|fabric defect detection implementation|GAN fabric defect detection",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "GAN fabric defect detection|GAN anomaly detection|generative adversarial network fabric defect detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "GAN fabric defect detection|GAN fabric texture images",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "GAN fabric defect detection|GAN anomaly detection|generative adversarial network fabric defect detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "fabric defect detection survey|vision 2d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "fabric defect detection survey|vision 2d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "GAN fabric defect detection|GAN anomaly detection|generative adversarial network fabric defect detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "GAN fabric defect detection|GAN fabric texture images",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "fabric defect detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "fabric defect detection dataset|fabric texture images dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "fabric texture images fabric defect detection|fabric texture images anomaly detection|textile defect dataset fabric defe",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "GAN fabric defect detection|GAN anomaly detection|generative adversarial network fabric defect detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "fabric texture images fabric defect detection|fabric texture images anomaly detection|textile defect dataset fabric defe",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "fabric defect detection dataset|fabric texture images dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "fabric defect detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "GAN fabric defect detection|GAN fabric texture images",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "fabric defect detection dataset|fabric texture images dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "defect we|defect image|defect defect",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: DogLayout: Denoising Diffusion GAN for Discrete and Continuo",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: SCPAT-GAN: Structural Constrained and Pathology Aware Convol",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: DeepInspect: An AI-Powered Defect Detection for Manufacturin",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Sequential Attention GAN for Interactive Image Editing",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Data-Efficient GAN Training Beyond (Just) Augmentations: A L",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-355ec514",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "GAN"
+      ],
+      "missing_terms": [
+        "fabric defect detection",
+        "anomaly detection",
+        "defect segmentation",
+        "fabric texture images",
+        "MVTec AD",
+        "defect generation",
+        "AnoGAN",
+        "CycleGAN"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Layout generation paper, not defect detection; domain mismatch.",
+      "reason": "Paper targets discrete/continuous layout generation, not fabric or surface defect detection. Only shares the GAN framework family; task and object are entirely unrelated."
+    },
+    {
+      "candidate_id": "c-bf282ea0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "GAN"
+      ],
+      "missing_terms": [
+        "fabric defect detection",
+        "defect segmentation",
+        "fabric texture images",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN",
+        "anomaly detection",
+        "surface defect"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Medical imaging (OCT histology), cross-domain; rejected.",
+      "reason": "SCPAT-GAN addresses virtual histology staining of coronary OCT images. Medical imaging domain, unrelated to textile/fabric defect detection task and object."
+    },
+    {
+      "candidate_id": "c-1d945be4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "GAN",
+        "defect detection",
+        "manufacturing defect"
+      ],
+      "missing_terms": [
+        "fabric",
+        "textile",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN",
+        "fabric texture images",
+        "yarn-dyed fabric",
+        "defect generation"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "General manufacturing defect detection with GANs; relevant as parallel work, not fabric-specific.",
+      "reason": "DeepInspect applies CNN/RNN/GAN to manufacturing defect detection. Shares GAN+defect detection methodology but targets general manufacturing, not specifically fabric/textile. Useful as parallel/background reference."
+    },
+    {
+      "candidate_id": "c-1b2a67c6",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "GAN",
+        "attention GAN"
+      ],
+      "missing_terms": [
+        "defect detection",
+        "fabric",
+        "anomaly detection",
+        "fabric texture images",
+        "MVTec AD",
+        "defect segmentation"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Interactive image editing paper, not defect detection.",
+      "reason": "Sequential Attention GAN targets interactive image editing tasks. Not related to defect detection, segmentation, or fabric analysis despite sharing attention-GAN concept."
+    },
+    {
+      "candidate_id": "c-7ab7d499",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "GAN"
+      ],
+      "missing_terms": [
+        "fabric defect detection",
+        "defect segmentation",
+        "anomaly detection",
+        "fabric texture images",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "GAN training methodology paper, no defect detection.",
+      "reason": "Data-Efficient GAN training addresses limited-data GAN stability via lottery ticket pruning. Not aimed at defect detection or fabric inspection tasks."
+    },
+    {
+      "candidate_id": "c-1c827030",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "GAN"
+      ],
+      "missing_terms": [
+        "fabric defect detection",
+        "defect segmentation",
+        "fabric texture images",
+        "MVTec AD",
+        "anomaly detection",
+        "AnoGAN"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Visual paragraph generation, unrelated domain.",
+      "reason": "Recurrent Topic-Transition GAN generates visual paragraphs from images. Topic mismatch with defect detection or fabric analysis."
+    },
+    {
+      "candidate_id": "c-9f4c84bb",
+      "evidence_type": "paper",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "texture",
+        "surface defect detection",
+        "defect detection"
+      ],
+      "missing_terms": [
+        "GAN",
+        "fabric",
+        "textile",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN",
+        "yarn-dyed fabric"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Texture+surface defect benchmark dataset; relevant background but no GAN.",
+      "reason": "New benchmark dataset for texture image analysis and surface defect detection. Aligns with object/task terms (texture, surface defect) but lacks GAN-specific focus or fabric domain; useful as parallel/background reference."
+    },
+    {
+      "candidate_id": "c-f614d7ef",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "defect detection",
+        "manufacturing"
+      ],
+      "missing_terms": [
+        "GAN",
+        "fabric",
+        "textile",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN",
+        "fabric texture images"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Smart manufacturing defect detection via transfer learning; parallel work without GAN.",
+      "reason": "TransferD2 uses transfer learning for defect detection in smart manufacturing. Shares defect detection task but no GAN method and not fabric-specific; serves as background comparison."
+    },
+    {
+      "candidate_id": "c-f7921a15",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning"
+      ],
+      "missing_terms": [
+        "GAN",
+        "fabric",
+        "defect detection",
+        "textile",
+        "MVTec AD",
+        "anomaly detection",
+        "fabric texture images"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Remote sensing oriented object detection survey; cross-domain.",
+      "reason": "Survey of oriented object detection in optical remote sensing images. Different domain (remote sensing) and task (oriented object detection), unrelated to fabric defect detection."
+    },
+    {
+      "candidate_id": "c-d5cc706d",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "fabric defect inspection",
+        "classifier",
+        "fabric defect detection"
+      ],
+      "missing_terms": [
+        "GAN",
+        "AnoGAN",
+        "CycleGAN",
+        "DCGAN",
+        "semi-supervised GAN",
+        "deep learning",
+        "MVTec AD"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey of fabric defect inspection classifiers; directly relevant domain but pre-deep-learning era.",
+      "reason": "2014 survey of classifiers for automated fabric defect inspection. Directly relevant to fabric defect detection domain but predates GAN era; useful as historical/background survey."
+    },
+    {
+      "candidate_id": "c-5b75d402",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "GAN",
+        "fabric defect detection",
+        "defect segmentation",
+        "textile",
+        "MVTec AD"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "NLP survey coding paper; no overlap with vision/defect detection.",
+      "reason": "Uses LLMs to code German open-ended survey responses. NLP/social science topic, completely unrelated to fabric defect detection or computer vision."
+    },
+    {
+      "candidate_id": "c-fb418d32",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "GAN",
+        "fabric defect detection",
+        "defect segmentation",
+        "textile",
+        "MVTec AD",
+        "anomaly detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Astronomy methanol maser survey; no relation to fabric/GAN topic.",
+      "reason": "Methanol Multibeam Survey is an astronomy survey of Galactic plane methanol masers. Entirely unrelated domain to textile defect detection."
+    },
+    {
+      "candidate_id": "c-f0600e2f",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "surface defect detection",
+        "defect detection",
+        "survey"
+      ],
+      "missing_terms": [
+        "GAN",
+        "fabric",
+        "textile",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Road surface defect survey; adjacent domain, not fabric-specific.",
+      "reason": "Survey of road surface defect detection methods (image and non-image based). Shares surface defect detection theme but focuses on roads rather than fabric; serves as adjacent parallel reference."
+    },
+    {
+      "candidate_id": "c-d7122b60",
+      "evidence_type": "paper",
+      "role_hint": "needs_manual",
+      "status": "needs_manual",
+      "matched_terms": [
+        "fabric",
+        "defect detection",
+        "defect area measurement"
+      ],
+      "missing_terms": [
+        "GAN",
+        "AnoGAN",
+        "CycleGAN",
+        "DCGAN",
+        "MVTec AD",
+        "semi-supervised GAN"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "metadata_mismatch",
+      "rank_reason": "Fabric defect paper but abstract describes AGN/astronomy; metadata mismatch, needs manual check.",
+      "reason": "Title indicates fabric defect detection via morphological methods but abstract content describes obscured AGN in Bootes field. Clear metadata mismatch between title and abstract; needs manual verification."
+    },
+    {
+      "candidate_id": "c-32bf4c75",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "fabric defect detection",
+        "texture structure analysis"
+      ],
+      "missing_terms": [
+        "GAN",
+        "deep learning",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Classical texture-based fabric defect detection; background only.",
+      "reason": "2008 paper using texture structure analysis for fabric defect detection. Directly relevant domain but uses classical methods, not GAN-based; useful as historical background."
+    },
+    {
+      "candidate_id": "c-a0b4f7ea",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "fabric defect detection",
+        "fabric texture images",
+        "textile inspection",
+        "dataset"
+      ],
+      "missing_terms": [
+        "GAN",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN",
+        "DCGAN",
+        "defect generation"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Raw fabric grayscale dataset for defect detection; directly usable object.",
+      "reason": "RAW-FABRID provides annotated raw grayscale fabric images for defect detection. Directly aligns with object terms (fabric texture images) and task; no GAN focus but valuable dataset reference."
+    },
+    {
+      "candidate_id": "c-7078aec6",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "fabric defect detection",
+        "texture enhancement"
+      ],
+      "missing_terms": [
+        "GAN",
+        "deep learning",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Classical fabric defect detection with texture enhancement; background reference.",
+      "reason": "2012 paper on fabric defect detection via texture enhancement. Domain-aligned but uses classical image processing, not GAN; useful as historical background."
+    },
+    {
+      "candidate_id": "c-648a03ed",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "fabric defect detection",
+        "texture classification",
+        "LSTM"
+      ],
+      "missing_terms": [
+        "GAN",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN",
+        "DCGAN",
+        "defect generation"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Deep learning fabric defect detection (LSTM); parallel method, not GAN.",
+      "reason": "LSTM-based texture classification and defect detection in fabric. Modern deep learning approach to same task but uses LSTM not GAN; useful parallel comparison."
+    },
+    {
+      "candidate_id": "c-cda1574e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "fabric defect detection"
+      ],
+      "missing_terms": [
+        "GAN",
+        "deep learning",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN",
+        "DCGAN"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Classical fabric defect detection (LBP+SVM); background only.",
+      "reason": "2010 paper using adaptive LBP and SVM for fabric defect detection. Domain-aligned but classical ML methods; useful as background reference only."
+    },
+    {
+      "candidate_id": "c-d1f9645f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "texture",
+        "fabric defect detection"
+      ],
+      "missing_terms": [
+        "GAN",
+        "deep learning",
+        "MVTec AD",
+        "AnoGAN",
+        "CycleGAN",
+        "DCGAN"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Texture-based fabric defect detection; background reference.",
+      "reason": "2023 paper on texture-based fabric defect detection. Same domain and task but method unspecified/traditional; background comparison only."
+    },
+    {
+      "candidate_id": "c-85d1e682",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "fabric texture images",
+        "textile defect dataset",
+        "MVTec AD",
+        "Yarn-dyed fabric",
+        "printed fabric"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "COCO is a general object detection dataset, not a fabric/textile defect dataset; cross-domain mismatch.",
+      "reason": "COCO is a generic large-scale object detection/segmentation benchmark. It contains no fabric or textile defect categories and is unrelated to GAN-based fabric defect detection research."
+    },
+    {
+      "candidate_id": "c-4313df1f",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "fabric texture images",
+        "textile defect dataset",
+        "MVTec AD",
+        "Yarn-dyed fabric",
+        "printed fabric"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "ImageNet is a general image classification dataset, not a fabric/textile defect dataset; cross-domain mismatch.",
+      "reason": "ImageNet is a general-purpose image classification benchmark. It lacks fabric or textile defect-specific annotations and has no direct relevance to GAN-based fabric defect detection algorithms."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Proceed with a GAN-based fabric defect detection study organized around three pillars: (1) unsupervised anomaly detection via AnoGAN/f-AnoGAN-style reconstruction on fabric texture images; (2) defect synthesis/augmentation via DCGAN or CycleGAN to address class imbalance in small textile datasets; (3) supervised detection/segmentation using a GAN-augmented backbone (e.g., Faster R-CNN or attention U-Net) for defect localization. The evidence pool is weak on direct GAN+fabric papers, so baseline candidates must be drawn from classical fabric defect work and adjacent manufacturing/texture defect GAN papers (c-1d945be4, c-9f4c84bb) while classical fabric methods (c-32bf4c75, c-7078aec6, c-cda1574e, c-648a03ed, c-d5cc706d) anchor the domain background. The RAW-FABRID dataset (c-a0b4f7ea) is the only confirmed fabric-specific object resource and should serve as the primary evaluation corpus, supplemented by MVTec AD carpet/grid categories (external, not in pool) for generalization checks. The roadmap is risky: no tier=core item exists, so the student must manually verify candidate GAN+fabric papers before baseline selection.",
+    "baseline_options": [
+      "c-32bf4c75",
+      "c-7078aec6",
+      "c-cda1574e",
+      "c-648a03ed",
+      "c-1d945be4",
+      "c-9f4c84bb",
+      "c-d5cc706d"
+    ],
+    "candidate_pool": {
+      "core": [],
+      "candidate": [
+        {
+          "candidate_id": "c-1d945be4",
+          "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+          "role_hint": "reference",
+          "reason": "General manufacturing defect detection with GANs; relevant as parallel work, not fabric-specific."
+        },
+        {
+          "candidate_id": "c-9f4c84bb",
+          "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+          "role_hint": "dataset",
+          "reason": "Texture+surface defect benchmark dataset; relevant background but no GAN."
+        },
+        {
+          "candidate_id": "c-f614d7ef",
+          "title": "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+          "role_hint": "reference",
+          "reason": "Smart manufacturing defect detection via transfer learning; parallel work without GAN."
+        },
+        {
+          "candidate_id": "c-d5cc706d",
+          "title": "Automated Fabric Defect Inspection: A Survey of Classifiers",
+          "role_hint": "unknown",
+          "reason": "Survey of fabric defect inspection classifiers; directly relevant domain but pre-deep-learning era."
+        },
+        {
+          "candidate_id": "c-f0600e2f",
+          "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+          "role_hint": "unknown",
+          "reason": "Road surface defect survey; adjacent domain, not fabric-specific."
+        },
+        {
+          "candidate_id": "c-32bf4c75",
+          "title": "Fabric defect detection method based on texture structure analysis",
+          "role_hint": "reference",
+          "reason": "Classical texture-based fabric defect detection; background only."
+        },
+        {
+          "candidate_id": "c-a0b4f7ea",
+          "title": "A Dataset of Raw Fabric Grayscale Images for Defect Detection",
+          "role_hint": "dataset",
+          "reason": "Raw fabric grayscale dataset for defect detection; directly usable object."
+        },
+        {
+          "candidate_id": "c-7078aec6",
+          "title": "Fabric defect detection based on texture enhancement",
+          "role_hint": "reference",
+          "reason": "Classical fabric defect detection with texture enhancement; background reference."
+        },
+        {
+          "candidate_id": "c-648a03ed",
+          "title": "LSTM based texture classification and defect detection in a fabric",
+          "role_hint": "reference",
+          "reason": "Deep learning fabric defect detection (LSTM); parallel method, not GAN."
+        },
+        {
+          "candidate_id": "c-cda1574e",
+          "title": "Fabric defect detection based on adaptive LBP and SVM",
+          "role_hint": "reference",
+          "reason": "Classical fabric defect detection (LBP+SVM); background only."
+        },
+        {
+          "candidate_id": "c-d1f9645f",
+          "title": "Texture-based Fabric Defect Detection Method",
+          "role_hint": "reference",
+          "reason": "Texture-based fabric defect detection; background reference."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-d7122b60",
+          "title": "DCSFPSS assisted morphological approach for grey twill fabric defect detection and defect area measurement for fabric gr",
+          "role_hint": "needs_manual",
+          "reason": "Fabric defect paper but abstract describes AGN/astronomy; metadata mismatch, needs manual check."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-355ec514",
+          "title": "DogLayout: Denoising Diffusion GAN for Discrete and Continuous Layout Generation",
+          "role_hint": "reference",
+          "reason": "Layout generation paper, not defect detection; domain mismatch."
+        },
+        {
+          "candidate_id": "c-bf282ea0",
+          "title": "SCPAT-GAN: Structural Constrained and Pathology Aware Convolutional Transformer-GAN for Virtual Histology Staining of Hu",
+          "role_hint": "reference",
+          "reason": "Medical imaging (OCT histology), cross-domain; rejected."
+        },
+        {
+          "candidate_id": "c-1b2a67c6",
+          "title": "Sequential Attention GAN for Interactive Image Editing",
+          "role_hint": "reference",
+          "reason": "Interactive image editing paper, not defect detection."
+        },
+        {
+          "candidate_id": "c-7ab7d499",
+          "title": "Data-Efficient GAN Training Beyond (Just) Augmentations: A Lottery Ticket Perspective",
+          "role_hint": "reference",
+          "reason": "GAN training methodology paper, no defect detection."
+        },
+        {
+          "candidate_id": "c-1c827030",
+          "title": "Recurrent Topic-Transition GAN for Visual Paragraph Generation",
+          "role_hint": "reference",
+          "reason": "Visual paragraph generation, unrelated domain."
+        },
+        {
+          "candidate_id": "c-f7921a15",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "reference",
+          "reason": "Remote sensing oriented object detection survey; cross-domain."
+        },
+        {
+          "candidate_id": "c-5b75d402",
+          "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+          "role_hint": "reference",
+          "reason": "NLP survey coding paper; no overlap with vision/defect detection."
+        },
+        {
+          "candidate_id": "c-fb418d32",
+          "title": "The Methanol Multibeam Survey",
+          "role_hint": "reference",
+          "reason": "Astronomy methanol maser survey; no relation to fabric/GAN topic."
+        },
+        {
+          "candidate_id": "c-85d1e682",
+          "title": "COCO",
+          "role_hint": "dataset",
+          "reason": "COCO is a general object detection dataset, not a fabric/textile defect dataset; cross-domain mismatch."
+        },
+        {
+          "candidate_id": "c-4313df1f",
+          "title": "ImageNet",
+          "role_hint": "dataset",
+          "reason": "ImageNet is a general image classification dataset, not a fabric/textile defect dataset; cross-domain mismatch."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-32bf4c75",
+          "title": "Fabric defect detection method based on texture structure analysis",
+          "role_hint": "reference",
+          "year": 2008
+        },
+        {
+          "candidate_id": "c-7078aec6",
+          "title": "Fabric defect detection based on texture enhancement",
+          "role_hint": "reference",
+          "year": 2012
+        },
+        {
+          "candidate_id": "c-cda1574e",
+          "title": "Fabric defect detection based on adaptive LBP and SVM",
+          "role_hint": "reference",
+          "year": 2010
+        },
+        {
+          "candidate_id": "c-648a03ed",
+          "title": "LSTM based texture classification and defect detection in a fabric",
+          "role_hint": "reference",
+          "year": 2023
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-1d945be4",
+          "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-9f4c84bb",
+          "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+          "role_hint": "dataset",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-f614d7ef",
+          "title": "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-f0600e2f",
+          "title": "Road Surface Defect Detection -- From Image-based to Non-image-based: A Survey",
+          "role_hint": "unknown",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-d1f9645f",
+          "title": "Texture-based Fabric Defect Detection Method",
+          "role_hint": "reference",
+          "year": 2023
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-d5cc706d",
+          "title": "Automated Fabric Defect Inspection: A Survey of Classifiers",
+          "role_hint": "unknown",
+          "year": 2014
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-a0b4f7ea",
+          "title": "A Dataset of Raw Fabric Grayscale Images for Defect Detection",
+          "role_hint": "dataset",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-d7122b60",
+          "title": "DCSFPSS assisted morphological approach for grey twill fabric defect detection and defect area measurement for fabric grading",
+          "role_hint": "needs_manual",
+          "year": 2026
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "c-a0b4f7ea (RAW-FABRID): 709 grayscale fabric images, line-scan camera; primary dataset; verify public access and license.",
+      "No fabric-specific GAN repo found; rely on standard AnoGAN/DCGAN/CycleGAN implementations (external).",
+      "MVTec AD carpet/grid categories are external (not in pool); use as generalization check."
+    ],
+    "work_suggestions": [
+      "Survey the GAN+fabric defect literature manually (Chinese keywords: 生成对抗网络 织物瑕疵) — core tier is empty, so external search is mandatory before baseline freeze.",
+      "Build an AnoGAN/f-AnoGAN reconstruction baseline on c-a0b4f7ea (RAW-FABRID) to establish unsupervised defect detection performance.",
+      "Use c-9f4c84bb texture/defect benchmark alongside c-a0b4f7ea to broaden evaluation beyond single fabric source.",
+      "Compare GAN-augmented defect detection against c-648a03ed LSTM and c-cda1574e LBP+SVM classical baselines on identical splits.",
+      "Investigate DCGAN/CycleGAN defect synthesis to augment c-a0b4f7ea, then re-train a Faster R-CNN detector mirroring c-1d945be4's manufacturing GAN pipeline."
+    ],
+    "risk_reminders": [
+      "No tier=core evidence; all GAN+fabric claims must be manually verified.",
+      "c-d7122b60 has clear metadata mismatch (title vs astronomy abstract).",
+      "c-a0b4f7ea is a 2026 preprint; availability not guaranteed.",
+      "Classical fabric baselines pre-date deep learning; fair comparison requires re-implementation.",
+      "Pool lacks any direct AnoGAN/CycleGAN+fabric paper; methodology transfer must be justified."
+    ],
+    "manual_questions": [
+      "Which GAN paradigm is the thesis focus: unsupervised anomaly detection, defect synthesis, or supervised detection augmentation?",
+      "Which fabric types (yarn-dyed, printed, grey, patterned) should be prioritized for experiments?",
+      "Is supervised, semi-supervised, or unsupervised setting the primary evaluation protocol?",
+      "What evaluation metrics (pixel AUROC, IoU, classification accuracy) are required for the contribution?",
+      "Are MVTec AD carpet/grid categories acceptable as an auxiliary benchmark?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "GAN+fabric core tier is empty; confirm before freeze that manual search on Chinese/English GAN+textile keywords was attempted.",
+      "Specify which of the three GAN pillars (unsupervised AnoGAN, synthesis, supervised detection) is the thesis centerpiece.",
+      "Resolve intended evaluation protocol: supervised, semi-supervised, or unsupervised.",
+      "List fabric types prioritized for experiments (yarn-dyed, printed, grey, patterned).",
+      "Clarify acceptability of MVTec AD carpet/grid as auxiliary benchmark."
+    ],
+    "weak_points": [
+      "No direct GAN+fabric defect paper in paper_groups; evidence_gaps is empty though core=0.",
+      "Baseline group uses classical methods (LBP, LSTM, texture) lacking a recent deep-GAN baseline.",
+      "Long-tail candidates c-a0b4f7ea and c-d7122b60 have year=2026, source unverified.",
+      "Work suggestions rely on hypothetical GAN augmentation without retrieved supporting reference.",
+      "direction_recommendation text is truncated in the output summary."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Topic is bounded and dataset candidates exist, but core GAN+fabric evidence is zero and direction text is truncated. Baseline group lacks a recent GAN comparator. One revision cycle with manual GAN search and direction cleanup is needed before opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于生成对抗网络的织物缺陷检测算法研究",
+      "domain_route": "vision_2d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 14,
+        "crossref": 6
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 27,
+      "queries": [
+        "defect we",
+        "defect image",
+        "defect defect",
+        "defect detection",
+        "detection we",
+        "detection image",
+        "detection defect",
+        "detection detection"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 222.84
+}

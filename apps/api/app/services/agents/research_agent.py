@@ -1,15 +1,25 @@
-"""Research Agent — new run_research_agent pipeline (S66v rewrite).
+"""Research Agent orchestrator.
 
-Replaces the legcy 7-step `research_planner_agent.run_research_plan`.
-Designed against `apps/api/app/services/agents/prompts/*.py` contracts.
+The main entry point of the LLM-driven resource-retrieval agent.  Runs
+the 5-stage pipeline (parse_topic → plan_tools → 5-round retrieval →
+evidence_review → synthesize_v2) and exposes ``run_research_agent_v2``
+plus the legacy Re01-compat ``run_research_agent`` for callers that
+still need the 7-step version.
+
+History (commit log only — do NOT pull these into the module name):
+  S66v: full LLM-first rewrite; removed all ``*_score`` fields;
+        introduced the 5-stage orchestrator this module owns today.
+  Re04: added 5-round retrieval + crossref + repo search.
+  Re07: wired evidence_consistency auditor + relaxed scoring.
+  Re08: candidate-level quarantine + 4-way report schema.
 
 Ladder (ponytail-style):
-1. Why does this need to exist? — the legcy pipeline produced 0/2 baseline
-   papers and 0/3 parallel papers against Topic 59 ground truth. We need a
-   clean LLM-first agent that doesn't compute any `*_score` field.
+1. Why does this need to exist? — legcy 7-step pipeline produced 0/2 baseline
+   papers against Topic 59 ground truth. We need a clean LLM-first
+   agent without any ``*_score`` field.
 2. Already in this codebase? — legcy modules exist but are quarantined.
-   New agent imports only `app.services.llm` (chat_json) and
-   `app.services.retrieval.adapters.{arxiv,openalex,crossref,github}_search`.
+   This module imports only ``app.services.llm`` (chat_json) and
+   ``app.services.retrieval.adapters.{arxiv,openalex,crossref,github}_search``.
 3. Stdlib does it? — asyncio + dataclasses + json already covers everything.
 4. Native feature covers it? — no
 5. Already-installed dep? — no new deps. pydantic stays for Response model.
@@ -465,6 +475,16 @@ def _heuristic_parse_topic(raw_topic: str) -> dict:
         "normalized_topic": raw_topic,
         "domain_route": domain_route,
         "domain_confidence": domain_confidence,
+        # Re07 SOP §3.2: empty topic_atoms — heuristic fallback cannot
+        # invent atoms. Caller must NOT downgrade cases to fail because
+        # of this; ``_build_topic_atoms`` returns ``{}`` and the
+        # consistency auditor marks axis=missing without case-failing.
+        "topic_atoms": {
+            "task": [],
+            "object": [],
+            "method": [],
+            "scenario": [],
+        },
         "method_terms": [],
         "task_terms": [],
         "object_terms": [],
@@ -503,6 +523,59 @@ def parse_topic(raw_topic: str, *, counter: LLMCallCounter | None = None) -> dic
             out["query_atoms_en"] = [str(out["query_atoms_en"])]
         if not isinstance(out.get("query_atoms_zh"), list):
             out["query_atoms_zh"] = []
+
+        # Re07 SOP §3.1 + §3.2 — ensure canonical topic_atoms schema is
+        # present even if the LLM omitted it.  Derive from flat fields
+        # when the LLM only emitted ``method_terms / task_terms /
+        # object_terms`` (back-compat with older prompts).
+        if not isinstance(out.get("topic_atoms"), dict):
+            out["topic_atoms"] = {}
+        ta = out["topic_atoms"]
+        for axis in ("task", "object", "method", "scenario"):
+            atoms = ta.get(axis)
+            if not isinstance(atoms, list) or not atoms:
+                # Derive from flat fallback fields.
+                src_field = {
+                    "task": "task_terms",
+                    "object": "object_terms",
+                    "method": "method_terms",
+                    "scenario": None,
+                }[axis]
+                if src_field:
+                    flat = out.get(src_field) or []
+                    atoms = [
+                        {"zh": "", "en": t, "aliases": []}
+                        for t in flat if isinstance(t, str) and t
+                    ]
+                else:
+                    atoms = []
+                ta[axis] = atoms
+            # Normalize: every atom must be a dict with at least ``en``.
+            normalized = []
+            for a in atoms:
+                if isinstance(a, str) and a:
+                    normalized.append({"zh": "", "en": a, "aliases": []})
+                elif isinstance(a, dict):
+                    en = a.get("en") or a.get("zh") or ""
+                    if en:
+                        normalized.append({
+                            "zh": a.get("zh") or "",
+                            "en": en,
+                            "aliases": list(a.get("aliases") or []),
+                        })
+            ta[axis] = normalized
+
+        # Backfill flat display fields from topic_atoms so any caller
+        # still using method_terms/task_terms/object_terms sees them.
+        out["method_terms"] = [
+            a.get("en") for a in ta.get("method", []) if a.get("en")
+        ]
+        out["task_terms"] = [
+            a.get("en") for a in ta.get("task", []) if a.get("en")
+        ]
+        out["object_terms"] = [
+            a.get("en") for a in ta.get("object", []) if a.get("en")
+        ]
         return out
     except LLMUnavailable as exc:
         logger.warning("parse_topic LLM unavailable: %s — heuristic fallback", exc)
@@ -2400,7 +2473,7 @@ def synthesize_v2(
     )
     try:
         out = _chat_json_strict(prompt, SYNTHESIZE_SYSTEM, max_tokens=int(os.environ.get("PAPERAGENT_SYNTH_V2_MAX_TOKENS", "16000")), timeout=180.0)
-        return _normalize_synthesize_v2(out, reviews, pool)
+        return _normalize_synthesize_v2(out, reviews, pool, parsed_topic=topic_json)
     except LLMUnavailable as exc:
         logger.warning("synthesize_v2 LLM unavailable: %s — heuristic fallback", exc)
         return _heuristic_synthesize_v2(raw_topic, reviews, pool)
@@ -2455,7 +2528,12 @@ def _apply_baseline_degraded_promotion(paper_groups: dict) -> dict:
     return paper_groups
 
 
-def _normalize_synthesize_v2(out: dict, reviews: list[EvidenceReview], pool: CandidatePool) -> dict:
+def _normalize_synthesize_v2(
+    out: dict,
+    reviews: list[EvidenceReview],
+    pool: CandidatePool,
+    parsed_topic: dict | None = None,
+) -> dict:
     """Coerce LLM output. NEVER downgrade an EvidenceReview status."""
     by_id_cand = {c["candidate_id"]: c for c in pool.as_list()}
     by_id_review = {r.candidate_id: r for r in reviews}
@@ -2539,6 +2617,16 @@ def _normalize_synthesize_v2(out: dict, reviews: list[EvidenceReview], pool: Can
                 "HumanGate reserved for Re03."
             ),
         },
+
+        # Re07 SOP §3.3 — propagate parsed_topic + topic_atoms into the
+        # synthesis dict so the re-audit evaluator and downstream reports
+        # can find them without a second hop back to ``result["parsed_topic"]``.
+        "parsed_topic": parsed_topic or {},
+        "topic_atoms": (
+            (parsed_topic or {}).get("topic_atoms", {})
+            if isinstance((parsed_topic or {}).get("topic_atoms"), dict)
+            else {}
+        ),
     }
 
 

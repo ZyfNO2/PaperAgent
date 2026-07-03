@@ -1,0 +1,1003 @@
+{
+  "topic": "基于YOLOV5的肺结节检测算法研究",
+  "final_candidate_pool": [
+    {
+      "stable_id": "identification of lung nodules ct scan using yolov5 based on convolution neural network",
+      "candidate_id": "c-2fd1ed5a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Identification of lung nodules CT scan using YOLOv5 based on convolution neural network",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2301.02166v1",
+      "identifier": "2301.02166v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Purpose: The lung nodules localization in CT scan images is the most difficult task due to the complexity of the arbitrariness of shape, size, and texture of lung nodules. This is a challenge to be faced when coming to developing different solutions to improve detection systems. the deep learning approach showed promising results by using convolutional neural network (CNN), especially for image recognition and it's one of the most used algorithm in computer vision. Approach: we use (CNN) building blocks based on YOLOv5 (you only look once) to learn the features representations for nodule detection labels, in this paper, we introduce a method for detecting lung cancer localization. Chest X-rays and low-dose computed tomography are also possible screening methods, When it comes to recognizing nodules in radiography, computer-aided diagnostic (CAD) system based on (CNN) have demonstrated their worth. One-stage detector YOLOv5 trained on 280 annotated CT SCAN from a public dataset LIDC-IDRI based on segmented pulmonary nodules. Results: we analyze the predictions performance of the lung nodule locations, and demarcates the relevant CT scan regions. In lung nodule localization the accuracy is measured as mean average precision (mAP). the mAP takes into account how well the bounding boxes are fitting the labels as well as how accurate the predicted classes for those bounding boxes, the accuracy we got 92.27%. Conclusion: this study was to identify the nodule that were developing in the lungs of the participants. It was difficult to find information on lung nodules in medical literature.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "integrating feature and image pyramid: a lung nodule detector learned in curriculum fashion",
+      "candidate_id": "c-5528fca9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Integrating Feature and Image Pyramid: A Lung Nodule Detector Learned in Curriculum Fashion",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2018,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1807.08135v2",
+      "identifier": "1807.08135v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Lung nodules suffer large variation in size and appearance in CT images. Nodules less than 10mm can easily lose information after down-sampling in convolutional neural networks, which results in low sensitivity. In this paper, a combination of 3D image and feature pyramid is exploited to integrate lower-level texture features with high-level semantic features, thus leading to a higher recall. However, 3D operations are time and memory consuming, which aggravates the situation with the explosive growth of medical images. To tackle this problem, we propose a general curriculum training strategy to speed up training. An dynamic sampling method is designed to pick up partial samples which give the best contribution to network training, thus leading to much less time consuming. In experiments, we demonstrate that the proposed network outperforms previous state-of-the-art methods. Meanwhile, our sampling strategy halves the training time of the proposal network on LUNA16.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "crowdsourcing lung nodules detection and annotation",
+      "candidate_id": "c-51107558",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Crowdsourcing Lung Nodules Detection and Annotation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2018,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1809.06402v1",
+      "identifier": "1809.06402v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We present crowdsourcing as an additional modality to aid radiologists in the diagnosis of lung cancer from clinical chest computed tomography (CT) scans. More specifically, a complete workflow is introduced which can help maximize the sensitivity of lung nodule detection by utilizing the collective intelligence of the crowd. We combine the concept of overlapping thin-slab maximum intensity projections (TS-MIPs) and cine viewing to render short videos that can be outsourced as an annotation task to the crowd. These videos are generated by linearly interpolating overlapping TS-MIPs of CT slices through the depth of each quadrant of a patient's lung. The resultant videos are outsourced to an online community of non-expert users who, after a brief tutorial, annotate suspected nodules in these video segments. Using our crowdsourcing workflow, we achieved a lung nodule detection sensitivity of over 90% for 20 patient CT datasets (containing 178 lung nodules with sizes between 1-30mm), and only 47 false positives from a total of 1021 annotations on nodules of all sizes (96% sensitivity for nodules$>$4mm). These results show that crowdsourcing can be a robust and scalable modality to aid radiologists in screening for lung cancer, directly or in combination with computer-aided detection (CAD) algorithms. For CAD algorithms, the presented workflow can provide highly accurate training data to overcome the high false-positive rate (per scan) problem. We also provide, for the first time, analysis on nodule size and position which can help improve CAD algorithms.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "lung-detr: deformable detection transformer for sparse lung nodule anomaly detection",
+      "candidate_id": "c-efa313e2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Lung-DETR: Deformable Detection Transformer for Sparse Lung Nodule Anomaly Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2409.05200v1",
+      "identifier": "2409.05200v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Accurate lung nodule detection for computed tomography (CT) scan imagery is challenging in real-world settings due to the sparse occurrence of nodules and similarity to other anatomical structures. In a typical positive case, nodules may appear in as few as 3% of CT slices, complicating detection. To address this, we reframe the problem as an anomaly detection task, targeting rare nodule occurrences in a predominantly normal dataset. We introduce a novel solution leveraging custom data preprocessing and Deformable Detection Transformer (Deformable- DETR). A 7.5mm Maximum Intensity Projection (MIP) is utilized to combine adjacent lung slices into single images, reducing the slice count and decreasing nodule sparsity. This enhances spatial context, allowing for better differentiation between nodules and other structures such as complex vascular structures and bronchioles. Deformable-DETR is employed to detect nodules, with a custom focal loss function to better handle the imbalanced dataset. Our model achieves state-of-the-art performance on the LUNA16 dataset with an F1 score of 94.2% (95.2% recall, 93.3% precision) on a dataset sparsely populated with lung nodules that is reflective of real-world clinical data.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "lung nodules detection and segmentation using 3d mask-rcnn",
+      "candidate_id": "c-9ebd7cc5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Lung Nodules Detection and Segmentation Using 3D Mask-RCNN",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1907.07676v1",
+      "identifier": "1907.07676v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Accurate assessment of Lung nodules is a time consuming and error prone ingredient of the radiologist interpretation work. Automating 3D volume detection and segmentation can improve workflow as well as patient care. Previous works have focused either on detecting lung nodules from a full CT scan or on segmenting them from a small ROI. We adapt the state of the art architecture for 2D object detection and segmentation, MaskRCNN, to handle 3D images and employ it to detect and segment lung nodules from CT scans. We report on competitive results for the lung nodule detection on LUNA16 data set. The added value of our method is that in addition to lung nodule detection, our framework produces 3D segmentations of the detected nodules.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "lung nodule-ssm: self-supervised lung nodule detection and classification in thoracic ct images",
+      "candidate_id": "c-874f81a2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Lung Nodule-SSM: Self-Supervised Lung Nodule Detection and Classification in Thoracic CT Images",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2505.15120v1",
+      "identifier": "2505.15120v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Lung cancer remains among the deadliest types of cancer in recent decades, and early lung nodule detection is crucial for improving patient outcomes. The limited availability of annotated medical imaging data remains a bottleneck in developing accurate computer-aided diagnosis (CAD) systems. Self-supervised learning can help leverage large amounts of unlabeled data to develop more robust CAD systems. With the recent advent of transformer-based architecture and their ability to generalize to unseen tasks, there has been an effort within the healthcare community to adapt them to various medical downstream tasks. Thus, we propose a novel \"LungNodule-SSM\" method, which utilizes selfsupervised learning with DINOv2 as a backbone to enhance lung nodule detection and classification without annotated data. Our methodology has two stages: firstly, the DINOv2 model is pre-trained on unlabeled CT scans to learn robust feature representations, then secondly, these features are fine-tuned using transformer-based architectures for lesionlevel detection and accurate lung nodule diagnosis. The proposed method has been evaluated on the challenging LUNA 16 dataset, consisting of 888 CT scans, and compared with SOTA methods. Our experimental results show the superiority of our proposed method with an accuracy of 98.37%, explaining its effectiveness in lung nodule detection. The source code, datasets, and pre-processed data can be accessed using the link:https://github.com/EMeRALDsNRPU/Lung-Nodule-SSM-Self-Supervised-Lung-Nodule-Detection-and-Classification/tree/main",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "improved focus on hard samples for lung nodule detection",
+      "candidate_id": "c-e97ef687",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Improved Focus on Hard Samples for Lung Nodule Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2403.04478v1",
+      "identifier": "2403.04478v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Recently, lung nodule detection methods based on deep learning have shown excellent performance in the medical image processing field. Considering that only a few public lung datasets are available and lung nodules are more difficult to detect in CT images than in natural images, the existing methods face many bottlenecks when detecting lung nodules, especially hard ones in CT images. In order to solve these problems, we plan to enhance the focus of our network. In this work, we present an improved detection network that pays more attention to hard samples and datasets to deal with lung nodules by introducing deformable convolution and self-paced learning. Experiments on the LUNA16 dataset demonstrate the effectiveness of our proposed components and show that our method has reached competitive performance.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "x-ray dissectography improves lung nodule detection",
+      "candidate_id": "c-b37739f6",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "X-ray Dissectography Improves Lung Nodule Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2203.13118v1",
+      "identifier": "2203.13118v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Although radiographs are the most frequently used worldwide due to their cost-effectiveness and widespread accessibility, the structural superposition along the x-ray paths often renders suspicious or concerning lung nodules difficult to detect. In this study, we apply \"X-ray dissectography\" to dissect lungs digitally from a few radiographic projections, suppress the interference of irrelevant structures, and improve lung nodule detectability. For this purpose, a collaborative detection network is designed to localize lung nodules in 2D dissected projections and 3D physical space. Our experimental results show that our approach can significantly improve the average precision by 20+% in comparison with the common baseline that detects lung nodules from original projections using a popular detection network. Potentially, this approach could help re-design the current X-ray imaging protocols and workflows and improve the diagnostic performance of chest radiographs in lung diseases.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "domain adaptive lung nodule detection in x-ray image",
+      "candidate_id": "c-b981042a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Domain Adaptive Lung Nodule Detection in X-ray Image",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2407.19397v2",
+      "identifier": "2407.19397v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Medical images from different healthcare centers exhibit varied data distributions, posing significant challenges for adapting lung nodule detection due to the domain shift between training and application phases. Traditional unsupervised domain adaptive detection methods often struggle with this shift, leading to suboptimal outcomes. To overcome these challenges, we introduce a novel domain adaptive approach for lung nodule detection that leverages mean teacher self-training and contrastive learning. First, we propose a hierarchical contrastive learning strategy to refine nodule representations and enhance the distinction between nodules and background. Second, we introduce a nodule-level domain-invariant feature learning (NDL) module to capture domain-invariant features through adversarial learning across different domains. Additionally, we propose a new annotated dataset of X-ray images to aid in advancing lung nodule detection research. Extensive experiments conducted on multiple X-ray datasets demonstrate the efficacy of our approach in mitigating domain shift impacts.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a model for lung nodule detection using a hybrid approach by combining yolov5 and resnet101 pretrained artificial intelligence models",
+      "candidate_id": "c-bbdbbb1b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": "International Journal of Engineering",
+      "url": "https://doi.org/10.5829/ije.2026.39.09c.15",
+      "identifier": "10.5829/ije.2026.39.09c.15",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "table 1: summary of representative lung nodule detection methods in recent studies.",
+      "candidate_id": "c-749730db",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Table 1: Summary of representative lung nodule detection methods in recent studies.",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://doi.org/10.7717/peerj-cs.3473/table-1",
+      "identifier": "10.7717/peerj-cs.3473/table-1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "- lung nodule and tumor detection and segmentation",
+      "candidate_id": "c-1898e32c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "- Lung Nodule and Tumor Detection and Segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2016,
+      "venue": "Lung Imaging and Computer Aided Diagnosis",
+      "url": "https://doi.org/10.1201/b11106-17",
+      "identifier": "10.1201/b11106-17",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "yolov8-based framework for accurate lung ct nodule images detection",
+      "candidate_id": "c-57796f15",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv8-Based Framework for Accurate Lung CT Nodule Images Detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 1st International Conference on Engineering Management, Information Technology and Intelligence",
+      "url": "https://doi.org/10.5220/0012972700004508",
+      "identifier": "10.5220/0012972700004508",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "eye-tracking of nodule detection in lung ct volumetric data",
+      "candidate_id": "c-b41919db",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Eye-tracking of nodule detection in lung CT volumetric data",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2015,
+      "venue": "Medical Physics",
+      "url": "https://doi.org/10.1118/1.4919849",
+      "identifier": "10.1118/1.4919849",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a novel computer-aided lung nodule detection system for ct images",
+      "candidate_id": "c-1d8c346f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A novel computer-aided lung nodule detection system for CT images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2011,
+      "venue": "Medical Physics",
+      "url": "https://doi.org/10.1118/1.3633941",
+      "identifier": "10.1118/1.3633941",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a context based automated system for lung nodule detection in ct images",
+      "candidate_id": "c-d643faaf",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Context Based Automated System for Lung Nodule Detection in CT Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "https://doi.org/10.32920/ryerson.14653362",
+      "identifier": "10.32920/ryerson.14653362",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>This thesis is focused on automatic lung nodule detection in CT images. CAD systems are suited for this tak because the sheer volume of information present in CT data sets is overwhelming for radiologists to process. The system developed in this thesis presents a fully automatic solution that applies a sequential algoriths which strongly focuses on nodule context. The system operates at a rate of 80% sensitivity with 3.05 FPs per slice. Our testing data, consisting of 19 CTdata sets containing239 lung nodules, is extremely robust when compared with other documented systems. In addition it introduces many new approaches such as a tight bounding, vessel connectivity, perimeter analysis, adaptive MLT and region growing based lung segmentation. The experimental results produced by this systemare an affirmation of the competitiveness of its performance when compared to other documented approaches.</jats:p>",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "based on the improved yolov5 lung nodule detection method",
+      "candidate_id": "c-04041be4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Software Engineering and Applications",
+      "url": "https://doi.org/10.12677/sea.2023.122026",
+      "identifier": "10.12677/sea.2023.122026",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "an improved yolov5 network for lung nodule detection",
+      "candidate_id": "c-ae8e7a91",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "An improved YOLOv5 network for lung nodule detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "2021 International Conference on Electronic Information Engineering and Computer Science (EIECS)",
+      "url": "https://doi.org/10.1109/eiecs53707.2021.9588065",
+      "identifier": "10.1109/eiecs53707.2021.9588065",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "lung nodule detection algorithm based on improved yolov5 network modeling",
+      "candidate_id": "c-16c5b4a5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 IEEE 7th International Conference on Electronic Information and Communication Technology (ICEICT)",
+      "url": "https://doi.org/10.1109/iceict61637.2024.10671019",
+      "identifier": "10.1109/iceict61637.2024.10671019",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "jiayingliu423/lung-nodule-detection-miccai-mlmi2025",
+      "candidate_id": "c-d91a32cb",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "jiayingliu423/Lung-Nodule-Detection-MICCAI-MLMI2025",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/jiayingliu423/Lung-Nodule-Detection-MICCAI-MLMI2025",
+      "identifier": null,
+      "description": "This repository serves as the official landing page for the MICCAI MLMI 2025 research. The full source code used for the blind review process is hosted here: https://github.com/vit-swin-lung-nodule-detection/miccai2025",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 0,
+        "language": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "luna16",
+      "candidate_id": "c-5dba436f",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "LUNA16",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "lidc-idri",
+      "candidate_id": "c-e38c6c41",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "LIDC-IDRI",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "effective lung nodule detection using deep cnn with dual attention mechanisms",
+      "candidate_id": "c-003c3d83",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Effective lung nodule detection using deep CNN with dual attention mechanisms",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "nodule-clip: lung nodule classification based on multi-modal contrastive learning",
+      "candidate_id": "c-1a736a6a",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Nodule-CLIP: Lung nodule classification based on multi-modal contrastive learning",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "deep learning reconstruction shows better lung nodule detection for ultra-low-dose chest ct.",
+      "candidate_id": "c-acbf18e3",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Deep Learning Reconstruction Shows Better Lung Nodule Detection for Ultra-Low-Dose Chest CT.",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "artificial intelligence: a critical review of applications for lung nodule and lung cancer.",
+      "candidate_id": "c-84c85690",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Artificial intelligence: A critical review of applications for lung nodule and lung cancer.",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "clip-lung: textual knowledge-guided lung nodule malignancy prediction",
+      "candidate_id": "c-e250a61c",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "CLIP-Lung: Textual Knowledge-Guided Lung Nodule Malignancy Prediction",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "deha-net: a dual-encoder-based hard attention network with an adaptive roi mechanism for lung nodule segmentation",
+      "candidate_id": "c-79d90054",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "DEHA-Net: A Dual-Encoder-Based Hard Attention Network with an Adaptive ROI Mechanism for Lung Nodule Segmentation",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a bi-fpn-based encoder–decoder model for lung nodule image segmentation",
+      "candidate_id": "c-f5fdda80",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "A Bi-FPN-Based Encoder–Decoder Model for Lung Nodule Image Segmentation",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "manet: multi-branch attention auxiliary learning for lung nodule detection and segmentation",
+      "candidate_id": "c-949b9f3d",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "MANet: Multi-branch attention auxiliary learning for lung nodule detection and segmentation",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "lung nodule detection task benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "lung nodule object benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "deep learning github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': 'lung nodule detection task benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'lung nodule object benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'deep learning github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 1,
+        "executed_queries": [
+          {
+            "query": "lung nodule detection task benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (lung nodule detection task benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "lung nodule object benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (lung nodule object benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "fallback repo probe from domain_keywords.en[0]",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "lung nodule detection task benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "lung nodule object benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "基于YOLOV5的肺结节检测算法研究 dataset benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "基于YOLOV5的肺结节检测算法研究 baseline method",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "基于YOLOV5的肺结节检测算法研究 github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': '基于YOLOV5的肺结节检测算法研究 dataset benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '基于YOLOV5的肺结节检测算法研究 baseline method', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '基于YOLOV5的肺结节检测算法研究 github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 2,
+        "executed_queries": [
+          {
+            "query": "基于YOLOV5的肺结节检测算法研究 dataset benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (基于YOLOV5的肺结节检测算法研究 dataset benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "基于YOLOV5的肺结节检测算法研究 baseline method",
+            "tool": "openalex",
+            "target_role": "baseline",
+            "why": "must_search from DomainScout (基于YOLOV5的肺结节检测算法研究 baseline method)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "基于YOLOV5的肺结节检测算法研究 github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "must_search from DomainScout (基于YOLOV5的肺结节检测算法研究 github implementation)",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "基于YOLOV5的肺结节检测算法研究 dataset benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "基于YOLOV5的肺结节检测算法研究 baseline method",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "基于YOLOV5的肺结节检测算法研究 github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    }
+  ],
+  "trace_path": "tmp_re04_eval\\balanced40_re10_worker1\\traces\\ENG-THESIS-033.json",
+  "stop_reason": "no_new_signal",
+  "summary": {
+    "paper_n": 30,
+    "baseline_n": 0,
+    "parallel_n": 0,
+    "dataset_n": 0,
+    "repo_n": 0,
+    "remaining_gaps": [
+      "dataset_gap",
+      "repo_gap",
+      "baseline_gap"
+    ]
+  },
+  "case_id": "ENG-THESIS-033",
+  "title": "基于YOLOV5的肺结节检测算法研究",
+  "source_batch": "batch1",
+  "elapsed_s": 76.87,
+  "seed_n": 30
+}

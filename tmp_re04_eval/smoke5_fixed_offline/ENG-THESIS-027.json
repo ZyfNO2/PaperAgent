@@ -1,0 +1,913 @@
+{
+  "project_id": "agent-re04-4a6266db",
+  "raw_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+  "parsed_topic": {
+    "raw_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+    "normalized_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+    "domain_route": "remote_sensing",
+    "domain_confidence": 0.9,
+    "method_terms": [
+      "YOLOv5",
+      "YOLOv3",
+      "Faster R-CNN",
+      "Attention"
+    ],
+    "task_terms": [
+      "object detection",
+      "small object detection"
+    ],
+    "object_terms": [
+      "remote sensing image",
+      "aircraft",
+      "aerial image"
+    ],
+    "query_atoms_en": [
+      "YOLOv5 remote sensing aircraft detection",
+      "Faster R-CNN remote sensing",
+      "small object detection aerial image"
+    ],
+    "query_atoms_zh": [
+      "基于YOLOv5模型的遥感影像飞机目标检测"
+    ],
+    "needs_clarification": [],
+    "site_hints": []
+  },
+  "query_matrix": {
+    "raw_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+    "domain_route": "remote_sensing",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "YOLOv5 object detection",
+        "YOLOv5 remote sensing image"
+      ],
+      "method_task": [
+        "YOLOv5 object detection",
+        "YOLOv5 small object detection",
+        "YOLOv3 object detection",
+        "YOLOv3 small object detection"
+      ],
+      "object_task": [
+        "remote sensing image object detection",
+        "remote sensing image small object detection",
+        "aircraft object detection",
+        "aircraft small object detection"
+      ],
+      "dataset": [
+        "object detection dataset",
+        "remote sensing image dataset"
+      ],
+      "repo": [
+        "object detection github",
+        "object detection implementation",
+        "YOLOv5 object detection"
+      ],
+      "survey": [
+        "object detection survey",
+        "remote sensing survey"
+      ],
+      "benchmark": [
+        "object detection benchmark"
+      ],
+      "baseline": [
+        "YOLOv5 object detection",
+        "YOLOv5 small object detection",
+        "YOLOv3 object detection",
+        "YOLOv3 small object detection"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "YOLOv5",
+        "YOLOv3",
+        "Faster R-CNN",
+        "Attention"
+      ],
+      "task_terms": [
+        "object detection",
+        "small object detection"
+      ],
+      "object_terms": [
+        "remote sensing image",
+        "aircraft",
+        "aerial image"
+      ],
+      "domain_route": "remote_sensing"
+    },
+    "fb_atom": "YOLOv5 remote sensing aircraft detection",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide sweep over the topic's method + object atoms",
+        "calls": [
+          {
+            "tool": "search_crossref",
+            "query": "YOLOv5 remote sensing aircraft detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "establish crossref baseline pool",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "YOLOv5 remote sensing aircraft detection",
+            "target_role": "reference",
+            "why_call": "openalex baseline reference",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "YOLOv5 remote sensing aircraft detection",
+            "target_role": "broad_recall",
+            "why_call": "arxiv spine",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage with benchmark / survey expansions",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "YOLOv5 remote sensing aircraft detection survey",
+            "target_role": "survey",
+            "why_call": "survey expansion",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "YOLOv5 remote sensing aircraft detection benchmark",
+            "target_role": "benchmark",
+            "why_call": "benchmark expansion",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find implementation repos",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "YOLOv5",
+            "target_role": "repo",
+            "why_call": "github for implementation",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [],
+    "arxiv_queries": [
+      "YOLOv5 remote sensing aircraft detection",
+      "YOLOv5 remote sensing aircraft detection survey"
+    ],
+    "openalex_queries": [
+      "YOLOv5 remote sensing aircraft detection",
+      "YOLOv5 remote sensing aircraft detection benchmark"
+    ],
+    "crossref_queries": [
+      "YOLOv5 remote sensing aircraft detection"
+    ],
+    "github_queries": [
+      "YOLOv5"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "基于深度卷积神经网络的遥感影像飞机目标检测",
+      "candidate_id": "c-152e5839",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference",
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "基于深度卷积神经网络的遥感影像飞机目标检测",
+      "sources": [
+        "crossref",
+        "semantic_scholar"
+      ],
+      "year": 2018,
+      "venue": "测绘通报",
+      "url": "https://doi.org/10.13800/j.cnki.1007-1430.2018.05.011",
+      "identifier": "10.13800/j.cnki.1007-1430.2018.05.011",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "基于深度卷积神经网络对遥感影像中的飞机目标进行检测。",
+      "extra": {}
+    },
+    {
+      "stable_id": "基于yolov5的无人机影像小目标检测",
+      "candidate_id": "c-dc4cd766",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "基于YOLOv5的无人机影像小目标检测",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "内蒙古师范大学学报",
+      "url": "https://doi.org/10.12119/j.nnci.2021.02.008",
+      "identifier": "10.12119/j.nnci.2021.02.008",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "YOLOv5用于无人机影像的小目标检测。",
+      "extra": {}
+    },
+    {
+      "stable_id": "基于深度学习的遥感影像飞机目标自动识别方法",
+      "candidate_id": "c-5e9454bb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "基于深度学习的遥感影像飞机目标自动识别方法",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2018,
+      "venue": "武汉大学学报(信息科学版)",
+      "url": "https://doi.org/10.13203/j.whugis20180181",
+      "identifier": "10.13203/j.whugis20180181",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "深度学习的遥感影像飞机目标自动识别。",
+      "extra": {}
+    },
+    {
+      "stable_id": "基于注意力的遥感影像目标检测算法",
+      "candidate_id": "c-413c2953",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "基于注意力的遥感影像目标检测算法",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "遥感学报",
+      "url": "https://doi.org/10.11834/jrs.2022.0307",
+      "identifier": "10.11834/jrs.2022.0307",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "注意力机制的遥感影像目标检测。",
+      "extra": {}
+    },
+    {
+      "stable_id": "基于多尺度特征融合的遥感影像目标检测",
+      "candidate_id": "c-36992864",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "基于多尺度特征融合的遥感影像目标检测",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "中国惯性技术学报",
+      "url": "https://doi.org/10.19743/j.cnki.1671-3042.2022.01.015",
+      "identifier": "10.19743/j.cnki.1671-3042.2022.01.015",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "多尺度融合的遥感目标检测方法。",
+      "extra": {}
+    },
+    {
+      "stable_id": "基于改进yolov3的遥感影像目标检测算法",
+      "candidate_id": "c-29acc972",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "基于改进YOLOv3的遥感影像目标检测算法",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2019,
+      "venue": "中国惯性技术学报",
+      "url": "https://doi.org/10.19743/j.cnki.1671-3042.2019.06.011",
+      "identifier": "10.19743/j.cnki.1671-3042.2019.06.011",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "改进YOLOv3用于遥感影像目标检测。",
+      "extra": {}
+    },
+    {
+      "stable_id": "基于旋转框的遥感影像飞机目标检测",
+      "candidate_id": "c-c2200908",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "基于旋转框的遥感影像飞机目标检测",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "遥感学报",
+      "url": "https://doi.org/10.11834/jrs.2021.0408",
+      "identifier": "10.11834/jrs.2021.0408",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "旋转框的遥感影像飞机目标检测方法。",
+      "extra": {}
+    },
+    {
+      "stable_id": "基于深度学习的高分辨率遥感影像飞机目标检测",
+      "candidate_id": "c-d349bdaf",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "基于深度学习的高分辨率遥感影像飞机目标检测",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2020,
+      "venue": "遥感学报",
+      "url": "https://doi.org/10.11834/jrs.2020.0402",
+      "identifier": "10.11834/jrs.2020.0402",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "深度学习高分辨率遥感影像飞机检测。",
+      "extra": {}
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 object detection|YOLOv5 remote sensing image",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "YOLOv5 object detection|YOLOv5 remote sensing image",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "YOLOv5 object detection|YOLOv5 remote sensing image",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 object detection|YOLOv5 small object detection|YOLOv3 object detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "YOLOv5 object detection|YOLOv5 small object detection|YOLOv3 object detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "remote sensing image object detection|remote sensing image small object detection|aircraft object detection",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "remote sensing image object detection|remote sensing image small object detection|aircraft object detection",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "object detection dataset|remote sensing image dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "object detection dataset|remote sensing image dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "object detection github|object detection implementation|YOLOv5 object detection",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "object detection survey|remote sensing survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "object detection survey|remote sensing survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "object detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "object detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 object detection|YOLOv5 small object detection|YOLOv3 object detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "YOLOv5 object detection|YOLOv5 small object detection|YOLOv3 object detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "v5 v5|v5 v3|v3 v5",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "ok",
+      "result_count": 1,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: 基于深度卷积神经网络的遥感影像飞机目标检测",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: 基于YOLOv5的无人机影像小目标检测",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: 基于深度学习的遥感影像飞机目标自动识别方法",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: 基于注意力的遥感影像目标检测算法",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: 基于多尺度特征融合的遥感影像目标检测",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-152e5839",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-dc4cd766",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-5e9454bb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-413c2953",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-36992864",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-29acc972",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-c2200908",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-d349bdaf",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "offline mock: chain ran past R1; degrade-promote path exercised (pool_rows=8)",
+    "baseline_options": [],
+    "candidate_pool": {
+      "core": [],
+      "candidate": [
+        {
+          "candidate_id": "c-152e5839",
+          "title": "基于深度卷积神经网络的遥感影像飞机目标检测",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-dc4cd766",
+          "title": "基于YOLOv5的无人机影像小目标检测",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-5e9454bb",
+          "title": "基于深度学习的遥感影像飞机目标自动识别方法",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-413c2953",
+          "title": "基于注意力的遥感影像目标检测算法",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-36992864",
+          "title": "基于多尺度特征融合的遥感影像目标检测",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-29acc972",
+          "title": "基于改进YOLOv3的遥感影像目标检测算法",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-c2200908",
+          "title": "基于旋转框的遥感影像飞机目标检测",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-d349bdaf",
+          "title": "基于深度学习的高分辨率遥感影像飞机目标检测",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        }
+      ],
+      "needs_manual": [],
+      "rejected": []
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-152e5839",
+          "title": "基于深度卷积神经网络的遥感影像飞机目标检测",
+          "role_hint": "reference",
+          "year": 2018,
+          "degraded_role": "self_cannot_find_baseline_promoted_from_parallel",
+          "degraded_reason": "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+        },
+        {
+          "candidate_id": "c-dc4cd766",
+          "title": "基于YOLOv5的无人机影像小目标检测",
+          "role_hint": "reference",
+          "year": 2021,
+          "degraded_role": "self_cannot_find_baseline_promoted_from_parallel",
+          "degraded_reason": "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-152e5839",
+          "title": "基于深度卷积神经网络的遥感影像飞机目标检测",
+          "role_hint": "reference",
+          "year": 2018
+        },
+        {
+          "candidate_id": "c-dc4cd766",
+          "title": "基于YOLOv5的无人机影像小目标检测",
+          "role_hint": "reference",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-5e9454bb",
+          "title": "基于深度学习的遥感影像飞机目标自动识别方法",
+          "role_hint": "reference",
+          "year": 2018
+        },
+        {
+          "candidate_id": "c-413c2953",
+          "title": "基于注意力的遥感影像目标检测算法",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-36992864",
+          "title": "基于多尺度特征融合的遥感影像目标检测",
+          "role_hint": "reference",
+          "year": 2022
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-29acc972",
+          "title": "基于改进YOLOv3的遥感影像目标检测算法",
+          "role_hint": "reference",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-c2200908",
+          "title": "基于旋转框的遥感影像飞机目标检测",
+          "role_hint": "reference",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-d349bdaf",
+          "title": "基于深度学习的高分辨率遥感影像飞机目标检测",
+          "role_hint": "reference",
+          "year": 2020
+        }
+      ],
+      "long_tail_candidates": [],
+      "_baseline_degraded": true,
+      "_baseline_degraded_marker": "self_cannot_find_baseline_degradation",
+      "_baseline_degraded_source": "parallel"
+    },
+    "dataset_and_repo_notes": [
+      "candidate pool size 8"
+    ],
+    "work_suggestions": [
+      "offline mock work suggestion A"
+    ],
+    "risk_reminders": [
+      "offline mock risk reminder"
+    ],
+    "manual_questions": [
+      "offline mock manual question"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "pass",
+    "blocking_questions": [],
+    "weak_points": [],
+    "can_continue_to_opening_report": true,
+    "summary": "offline mock: paper pool non-empty"
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+      "domain_route": "remote_sensing",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "crossref": 8
+      },
+      "ledger_n_calls": 22
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 8,
+      "queries": [
+        "v5 v5",
+        "v5 v3",
+        "v3 v5",
+        "v3 v3",
+        "v5 benchmark",
+        "v5 survey",
+        "v3 benchmark",
+        "v3 survey"
+      ],
+      "added_count": 1
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 0,
+      "seeds_rejected": 5,
+      "refs_added": 0,
+      "round_status": "no_eligible_seeds"
+    }
+  },
+  "degradation_chain": [
+    "citation_expand:all_seeds_rejected",
+    "evidence_review:all_heuristic_blocked",
+    "pool:zero_baseline_self_cannot_find_degraded_to_parallel"
+  ],
+  "elapsed_s": 0.0
+}

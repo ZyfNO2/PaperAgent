@@ -17,6 +17,13 @@ Rules (Re03 SOP §1.6 / §3.2):
       * github repo full_names (for Round 3 dataset/repo search)
   - Each query MUST be ≤ 6 words for arxiv/openalex/crossref, ≤ 4 for github.
 
+Re04-fix SOP §5: the old _TOKEN_RE captured Chinese characters, so when
+Round 1 crossref returned 8 中文 papers (Case 027), the expander built
+queries like "基于YOLOv5 的 飞机 目标 检测" and sent them to English APIs,
+getting back JATS noise. Now: detect Chinese-dominated tokens, skip them
+when building queries, and if all queries would be Chinese-garbled, return
+an explicit `degraded_reason` so the orchestrator can mark the round.
+
 Ponytail: ~120 lines, no LLM, no network. Pure term extraction +
 cartesian product with small caps.
 """
@@ -37,11 +44,39 @@ _STOPWORDS = {
     "challenge", "challenges", "gaps", "gap", "critical", "survey", "review",
 }
 
-_TOKEN_RE = re.compile(r"[a-z0-9一-鿿]{2,}")
+
+# Re04-fix SOP §5.A: split token regex into ASCII and CJK so we can
+# route them separately. ASCII tokens go to English APIs; CJK tokens
+# never should (per AutoResearchClaw's english-only query adapters).
+_TOKEN_ASCII_RE = re.compile(r"[a-z0-9]{2,}")
+_TOKEN_CJK_RE = re.compile(r"[一-鿿]{2,}")
+_CHINESE_CHAR_RE = re.compile(r"[一-鿿]")
+
+
+def _is_chinese_dominated(text: str, threshold: float = 0.5) -> bool:
+    """Return True if >threshold of alphanumeric chars in `text` are CJK.
+
+    A single CJK character between English words (e.g. "YOLOv5模型") is
+    fine; what we want to catch is "基于YOLOv5模型" or pure Chinese strings.
+    """
+    if not text:
+        return False
+    alnum = [c for c in text if c.isalnum()]
+    if not alnum:
+        return False
+    n_zh = sum(1 for c in alnum if _CHINESE_CHAR_RE.match(c))
+    return (n_zh / len(alnum)) > threshold
+
+
+def _filter_english_tokens(tokens: list[str]) -> list[str]:
+    """Drop tokens that are Chinese-dominated so we don't feed garbled
+    queries to English-only adapters (arxiv, openalex, crossref, s2)."""
+    return [t for t in tokens if not _is_chinese_dominated(t)]
 
 
 def _tokens(text: str) -> list[str]:
-    return [t.lower() for t in _TOKEN_RE.findall(text or "") if t.lower() not in _STOPWORDS]
+    """Tokenize; only ASCII alphanumeric (CJK handled separately)."""
+    return [t.lower() for t in _TOKEN_ASCII_RE.findall(text or "") if t.lower() not in _STOPWORDS]
 
 
 def _top_k(counter: Counter, k: int) -> list[str]:
@@ -60,7 +95,13 @@ def expand_from_round1(
     top_method_k: int = 4,
     top_object_k: int = 4,
 ) -> list[dict[str, str]]:
-    """Return a list of {query, family, source_signal} for Round 2 fan-out."""
+    """Return a list of {query, family, source_signal} for Round 2 fan-out.
+
+    Re04-fix SOP §5: drop CJK-dominated tokens BEFORE building queries.
+    If after filtering nothing usable remains, return a single-element
+    list whose dict carries `degraded_reason: "all_queries_chinese_garbled_skipped"`
+    so `re04_entry` can surface it in `round_delta`.
+    """
     method_counter: Counter = Counter()
     object_counter: Counter = Counter()
     dataset_signals: list[str] = []
@@ -71,9 +112,10 @@ def expand_from_round1(
             title = item.get("title") or ""
             abstract = item.get("abstract") or ""
             text = f"{title} {abstract}"
-            for tok in _tokens(text):
+            # Re04-fix SOP §5.B: skip CJK-dominated tokens before counting.
+            for tok in _filter_english_tokens(_tokens(text)):
                 method_counter[tok] += 1
-            for tok in _tokens(item.get("abstract") or ""):
+            for tok in _filter_english_tokens(_tokens(item.get("abstract") or "")):
                 object_counter[tok] += 1
             # Capture dataset-name-like signals (short uppercase phrases)
             for m in re.findall(r"\b[A-Z][A-Za-z0-9\-]{2,}\b", title):
@@ -97,26 +139,42 @@ def expand_from_round1(
     if not objects:
         objects = _top_k(object_counter, top_object_k)
 
-    out: list[dict[str, str]] = []
+    # Re04-fix SOP §5.B (second pass): skip the actual query strings
+    # if they would be CJK-dominated. Build a list and filter post hoc.
+    raw_out: list[dict[str, str]] = []
     for m in methods:
         for o in objects:
             q = _word_cap(f"{m} {o}", 6)
             if q:
-                out.append({"query": q, "family": "method_object", "source_signal": f"r1:{m}+{o}"})
+                raw_out.append({"query": q, "family": "method_object", "source_signal": f"r1:{m}+{o}"})
     for m in methods:
-        out.append({"query": _word_cap(f"{m} benchmark", 6), "family": "benchmark", "source_signal": f"r1:{m} benchmark"})
-        out.append({"query": _word_cap(f"{m} survey", 6), "family": "survey", "source_signal": f"r1:{m} survey"})
+        raw_out.append({"query": _word_cap(f"{m} benchmark", 6), "family": "benchmark", "source_signal": f"r1:{m} benchmark"})
+        raw_out.append({"query": _word_cap(f"{m} survey", 6), "family": "survey", "source_signal": f"r1:{m} survey"})
     for ds in dataset_signals[:3]:
-        out.append({"query": _word_cap(f"{ds} dataset", 4), "family": "dataset", "source_signal": f"r1:dataset={ds}"})
+        raw_out.append({"query": _word_cap(f"{ds} dataset", 4), "family": "dataset", "source_signal": f"r1:dataset={ds}"})
     for repo in repo_signals[:3]:
         # Repos go to github (short query)
-        out.append({"query": _word_cap(repo, 4), "family": "repo", "source_signal": f"r1:repo={repo}"})
+        raw_out.append({"query": _word_cap(repo, 4), "family": "repo", "source_signal": f"r1:repo={repo}"})
 
-    # Deduplicate
+    # Deduplicate and filter out Chinese-garbled queries.
     seen: set[str] = set()
     deduped: list[dict[str, str]] = []
-    for row in out:
-        if row["query"] not in seen:
-            seen.add(row["query"])
-            deduped.append(row)
+    for row in raw_out:
+        q = row.get("query") or ""
+        if not q or q in seen:
+            continue
+        if _is_chinese_dominated(q):
+            # Skip silently — keep going to see if any English query survives.
+            continue
+        seen.add(q)
+        deduped.append(row)
+
+    # Re04-fix SOP §5.C: explicit degraded marker if nothing usable.
+    if not deduped:
+        return [{
+            "query": "",
+            "family": "method_object",
+            "source_signal": "r1:none",
+            "degraded_reason": "all_queries_chinese_garbled_skipped",
+        }]
     return deduped

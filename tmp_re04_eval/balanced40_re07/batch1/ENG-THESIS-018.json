@@ -1,0 +1,516 @@
+{
+  "status": "pass",
+  "reason": "datasets_present_but_no_topic_dataset; scenario_axis_missing",
+  "notes": [],
+  "score": 92,
+  "paper_n": 34,
+  "dataset_n": 3,
+  "repo_n": 2,
+  "baseline_n": 1,
+  "parallel_n": 7,
+  "quarantined_baseline_n": 0,
+  "quarantined_parallel_n": 0,
+  "quarantined_core_n": 0,
+  "effective_baseline_n": 1,
+  "effective_parallel_n": 7,
+  "effective_core_n": 4,
+  "core_n": 4,
+  "verification_verified_n": 11,
+  "verification_repaired_n": 0,
+  "verification_quarantined_n": 0,
+  "verification_not_found_n": 0,
+  "verification_records": [
+    {
+      "candidate_id": "c-817651f3",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-556bf35c",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes proxy-match — adjacent topic"
+    },
+    {
+      "candidate_id": "c-9a376778",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 axis directly matches — partial fit"
+    },
+    {
+      "candidate_id": "c-e80a53d8",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-817651f3",
+      "bucket": "baseline",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-470051d7",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-089b8a42",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-da01f67f",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "3/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-7468f29f",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 2 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-7049e7df",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-1eebfe0c",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-04c49e47",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 1 proxy axis — strong topical fit"
+    }
+  ],
+  "axis_status": "evaluable",
+  "topic_dataset_n": 0,
+  "proxy_dataset_n": 0,
+  "pretrain_dataset_n": 3,
+  "generic_dataset_n": 0,
+  "core_direct_n": 2,
+  "baseline_direct_n": 0,
+  "baseline_proxy_n": 1,
+  "parallel_direct_n": 6,
+  "parallel_proxy_n": 1,
+  "critical_consistency_error_n": 0,
+  "metadata_mismatch_n": 0,
+  "off_topic_core_n": 0,
+  "axis_missing_reasons": [
+    "scenario_axis_missing"
+  ],
+  "evidence_gap_reasons": [
+    "datasets_present_but_no_topic_dataset",
+    "scenario_axis_missing"
+  ],
+  "baseline_degraded": false,
+  "bucket_audit": {
+    "core": {
+      "n_total": 4,
+      "n_aligned": 2,
+      "n_proxy": 2,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-817651f3",
+          "title": "PCN: Point Completion Network",
+          "url": "http://arxiv.org/abs/1808.00671v3",
+          "doi": "",
+          "source_type": "",
+          "year": 2018,
+          "venue": "2018 International Conference on 3D Vision (3DV)",
+          "authors": "",
+          "abstract_snippet": "Shape completion, the problem of estimating the complete geometry of objects from partial observations, lies at the core of many vision and robotics applications. In this work, we propose Point Completion Network (PCN), a novel learning-based approach for shape completion. Unlike existing shape comp",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-556bf35c",
+          "title": "keneniwt/Point-Cloud-Completion-Survey",
+          "url": "https://github.com/keneniwt/Point-Cloud-Completion-Survey",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "proxy",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "proxy",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes proxy-match — adjacent topic"
+        },
+        {
+          "candidate_id": "c-9a376778",
+          "title": "PCN",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "proxy",
+          "axis_coverage": {
+            "task": "missing",
+            "object": "missing",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 axis directly matches — partial fit"
+        },
+        {
+          "candidate_id": "c-e80a53d8",
+          "title": "ShapeNet",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "direct",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        }
+      ]
+    },
+    "baseline": {
+      "n_total": 1,
+      "n_aligned": 1,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-817651f3",
+          "title": "PCN: Point Completion Network",
+          "url": "http://arxiv.org/abs/1808.00671v3",
+          "doi": "",
+          "source_type": "",
+          "year": 2018,
+          "venue": "2018 International Conference on 3D Vision (3DV)",
+          "authors": "",
+          "abstract_snippet": "Shape completion, the problem of estimating the complete geometry of objects from partial observations, lies at the core of many vision and robotics applications. In this work, we propose Point Completion Network (PCN), a novel learning-based approach for shape completion. Unlike existing shape comp",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        }
+      ]
+    },
+    "parallel": {
+      "n_total": 7,
+      "n_aligned": 7,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-470051d7",
+          "title": "Enhancing Performance of Point Cloud Completion Networks with Consistency Loss",
+          "url": "http://arxiv.org/abs/2410.07298v3",
+          "doi": "",
+          "source_type": "",
+          "year": 2024,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Point cloud completion networks are conventionally trained to minimize the disparities between the completed point cloud and the ground-truth counterpart. However, an incomplete object-level point cloud can have multiple valid completion solutions when it is examined in isolation. This one-to-many m",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-089b8a42",
+          "title": "Cascaded Refinement Network for Point Cloud Completion with Self-supervision",
+          "url": "http://arxiv.org/abs/2010.08719v3",
+          "doi": "",
+          "source_type": "",
+          "year": 2020,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Point clouds are often sparse and incomplete, which imposes difficulties for real-world applications. Existing shape completion methods tend to generate rough shapes without fine-grained details. Considering this, we introduce a two-branch network for shape completion. The first branch is a cascaded",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-da01f67f",
+          "title": "DC-PCN: Point Cloud Completion Network with Dual-Codebook Guided Quantization",
+          "url": "http://arxiv.org/abs/2501.10966v1",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Point cloud completion aims to reconstruct complete 3D shapes from partial 3D point clouds. With advancements in deep learning techniques, various methods for point cloud completion have been developed. Despite achieving encouraging results, a significant issue remains: these methods often overlook ",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "direct",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "3/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-7468f29f",
+          "title": "DCSE-PCN: A Coarse-to-Fine Point Completion Network with Details Compensation and Structure Enhancement",
+          "url": "https://doi.org/10.1007/s00371-025-04295-9",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "proxy",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 2 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-7049e7df",
+          "title": "DFG-PCN: Point Cloud Completion With Degree-Flexible Point Graph",
+          "url": "https://doi.org/10.1109/tvcg.2025.3612379",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "IEEE Transactions on Visualization and Computer Graphics",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-1eebfe0c",
+          "title": "Multimodal Shape Completion via IMLE",
+          "url": "http://arxiv.org/abs/2106.16237v2",
+          "doi": "",
+          "source_type": "",
+          "year": 2021,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Shape completion is the problem of completing partial input shapes such as partial scans. This problem finds important applications in computer vision and robotics due to issues such as occlusion or sparsity in real-world data. However, most of the existing research related to shape completion has b",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-04c49e47",
+          "title": "Structural-Adaptive Contrastive Chamfer Distance for Robust Point Cloud Completion",
+          "url": "https://doi.org/10.22541/au.177516444.46231426/v1",
+          "doi": "",
+          "source_type": "",
+          "year": 2026,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "<jats:p>Point cloud completion is vital in 3D computer vision, yet real-world data often presents incomplete representations due to occlusions and sparsity. While Chamfer Distance (CD) is a prevalent loss function, it often suffers from gradient degradation, poor global structure sensitivity, and in",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 1 proxy axis — strong topical fit"
+        }
+      ]
+    },
+    "dataset": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    },
+    "repo": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    }
+  },
+  "case_id": "ENG-THESIS-018",
+  "title": "基于深度学习的三维点云补全方法研究",
+  "source_batch": "batch1"
+}

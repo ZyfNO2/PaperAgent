@@ -1,0 +1,1591 @@
+{
+  "project_id": "agent-re04-133d50bf",
+  "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+  "parsed_topic": {
+    "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+    "normalized_topic": "Key Technologies for 3D Human Body Reconstruction Based on Patient Virtual Localization",
+    "domain_route": "medical_ai",
+    "domain_confidence": 0.75,
+    "method_terms": [
+      "3D human body reconstruction",
+      "multi-view stereo",
+      "NeRF",
+      "SMPL/SMPL-X body model",
+      "RGB-D fusion",
+      "point cloud registration"
+    ],
+    "task_terms": [
+      "patient virtual localization",
+      "3D human shape reconstruction",
+      "pose estimation",
+      "avatar generation"
+    ],
+    "object_terms": [
+      "patient",
+      "human body mesh",
+      "depth image",
+      "RGB-D scan"
+    ],
+    "query_atoms_en": [
+      "3D human body reconstruction patient",
+      "patient virtual positioning 3D reconstruction",
+      "multi-view stereo human body",
+      "NeRF human avatar reconstruction",
+      "SMPL body model fitting RGB-D",
+      "RGB-D human body scan registration"
+    ],
+    "query_atoms_zh": [
+      "三维人体重建 关键技术",
+      "患者虚拟定位 三维重建",
+      "多视图立体 人体建模",
+      "RGB-D 人体扫描",
+      "SMPL 人体模型",
+      "点云配准 人体重建"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "dl.acm.org"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+    "domain_route": "medical_ai",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "3D human body reconstruction patient virtual localization",
+        "3D human body reconstruction patient"
+      ],
+      "method_task": [
+        "3D human body reconstruction patient virtual localization",
+        "3D human body reconstruction 3D human shape reconstruction",
+        "multi-view stereo patient virtual localization",
+        "multi-view stereo 3D human shape reconstruction"
+      ],
+      "object_task": [
+        "patient patient virtual localization",
+        "patient 3D human shape reconstruction",
+        "human body mesh patient virtual localization",
+        "human body mesh 3D human shape reconstruction"
+      ],
+      "dataset": [
+        "patient virtual localization dataset",
+        "patient dataset"
+      ],
+      "repo": [
+        "patient virtual localization github",
+        "patient virtual localization implementation",
+        "3D human body reconstruction patient virtual localization"
+      ],
+      "survey": [
+        "patient virtual localization survey",
+        "medical ai survey"
+      ],
+      "benchmark": [
+        "patient virtual localization benchmark"
+      ],
+      "baseline": [
+        "3D human body reconstruction classic",
+        "multi-view stereo classic"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "3D human body reconstruction",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL/SMPL-X body model",
+        "RGB-D fusion",
+        "point cloud registration"
+      ],
+      "task_terms": [
+        "patient virtual localization",
+        "3D human shape reconstruction",
+        "pose estimation",
+        "avatar generation"
+      ],
+      "object_terms": [
+        "patient",
+        "human body mesh",
+        "depth image",
+        "RGB-D scan"
+      ],
+      "domain_route": "medical_ai"
+    },
+    "fb_atom": "3D human body reconstruction patient"
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper backends covering 3D human reconstruction, NeRF/SMPL avatars, and RGB-D body capture",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "3D human body reconstruction",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv spine: catch foundational methods on 3D human shape reconstruction",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "NeRF human avatar reconstruction",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "anchor neural radiance field approaches for animatable human avatars",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_openalex",
+            "query": "multi-view stereo human body",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex parallel: surface MVS and photogrammetry-based body modeling papers",
+            "expected_output": "paper",
+            "fallback_tool": "search_crossref"
+          },
+          {
+            "tool": "search_crossref",
+            "query": "RGB-D human body scan",
+            "target_role": "reference",
+            "why_call": "crossref: capture clinical RGB-D body scanning and registration literature",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand via benchmark / survey / recent-advances variants for SMPL, NeRF avatars, and RGB-D fusion",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "SMPL body model survey",
+            "target_role": "survey",
+            "why_call": "surface survey/review of parametric body model fitting",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "NeRF human avatar benchmark",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "recent-advances angle for neural human radiance fields",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "point cloud registration human",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "expand into geometric registration methods for body scans",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "RGB-D fusion 3D reconstruction",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "generic expansion for depth-color fusion reconstruction",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code repos and patient/body datasets for 3D human reconstruction",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "SMPL body model",
+            "target_role": "repo",
+            "why_call": "github repo: official SMPL/SMPL-X model and fitting library",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "NeRF human avatar",
+            "target_role": "repo",
+            "why_call": "github repo: neural radiance field human avatar implementations",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "RGB-D body scan",
+            "target_role": "dataset",
+            "why_call": "github dataset: RGB-D human body capture corpora",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "patient 3D body dataset",
+            "target_role": "dataset",
+            "why_call": "crossref for clinical patient body-shape datasets",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "dl.acm.org"
+    ],
+    "arxiv_queries": [
+      "3D human body reconstruction",
+      "NeRF human avatar reconstruction",
+      "SMPL body model survey",
+      "NeRF human avatar benchmark"
+    ],
+    "openalex_queries": [
+      "multi-view stereo human body",
+      "point cloud registration human"
+    ],
+    "crossref_queries": [
+      "RGB-D human body scan",
+      "RGB-D fusion 3D reconstruction",
+      "patient 3D body dataset"
+    ],
+    "github_queries": [
+      "SMPL body model",
+      "NeRF human avatar",
+      "RGB-D body scan"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "non-rigid 3d reconstruction of the human body in motion",
+      "candidate_id": "c-b7e4392d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Non-rigid 3D reconstruction of the human body in motion",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://doi.org/10.5204/thesis.eprints.205095",
+      "identifier": "10.5204/thesis.eprints.205095",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "3d human body model reconstruction algorithm based on multi-view synchronized video sequences",
+      "candidate_id": "c-9cdb1e1a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "3D Human Body Model Reconstruction Algorithm Based on Multi-View Synchronized Video Sequences",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 2nd International Conference on Data Analysis and Machine Learning",
+      "url": "https://doi.org/10.5220/0013512800004619",
+      "identifier": "10.5220/0013512800004619",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "figure 1: 3d body scanner and 3d reconstruction process.",
+      "candidate_id": "c-db16a094",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Figure 1: 3D body scanner and 3D reconstruction process.",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://doi.org/10.7717/peerj.20752/fig-1",
+      "identifier": "10.7717/peerj.20752/fig-1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "3d human body reconstruction from head-mounted omnidirectional camera and light sources",
+      "candidate_id": "c-c48bc24e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "3D Human Body Reconstruction from Head-Mounted Omnidirectional Camera and Light Sources",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Proceedings of the 18th International Joint Conference on Computer Vision, Imaging and Computer Graphics Theory and Applications",
+      "url": "https://doi.org/10.5220/0011724600003417",
+      "identifier": "10.5220/0011724600003417",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a survey of 3d human body reconstruction from single and multiple camera views",
+      "candidate_id": "c-a6120f4a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Survey of 3d Human Body Reconstruction from Single and Multiple Camera Views",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "https://doi.org/10.2139/ssrn.4333245",
+      "identifier": "10.2139/ssrn.4333245",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "remarks on 3d human body&amp;#x2019;s feature extraction from voxel reconstruction of human body posture",
+      "candidate_id": "c-25fa513a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Remarks on 3D human body&amp;#x2019;s feature extraction from voxel reconstruction of human body posture",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2007,
+      "venue": "2007 IEEE International Conference on Robotics and Biomimetics (ROBIO)",
+      "url": "https://doi.org/10.1109/robio.2007.4522146",
+      "identifier": "10.1109/robio.2007.4522146",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "towards accurate 3d human body reconstruction from silhouettes",
+      "candidate_id": "c-f2fbe7c1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Towards Accurate 3D Human Body Reconstruction from Silhouettes",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2019,
+      "venue": "2019 International Conference on 3D Vision (3DV)",
+      "url": "https://doi.org/10.1109/3dv.2019.00039",
+      "identifier": "10.1109/3dv.2019.00039",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "neurologic examination of the comatose patient and localization principles",
+      "candidate_id": "c-f86b584a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Neurologic Examination of the Comatose Patient and Localization Principles",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2008,
+      "venue": "The Comatose Patient",
+      "url": "https://doi.org/10.1093/med/9780195326260.003.0003",
+      "identifier": "10.1093/med/9780195326260.003.0003",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "replicate engineered virtual patient populations as surrogates for real patient-level data",
+      "candidate_id": "c-a0ee1cc7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Replicate Engineered Virtual Patient Populations as Surrogates for Real Patient-Level Data",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2018,
+      "venue": null,
+      "url": "https://doi.org/10.1101/308403",
+      "identifier": "10.1101/308403",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:title>Abstract</jats:title>\n                <jats:sec>\n                  <jats:title>Objectives</jats:title>\n                  <jats:p>To demonstrate a new method for generating virtual, individual-level data by testing it on a known clinical trial population.</jats:p>\n                </jats:sec>\n                <jats:sec>\n                  <jats:title>Design</jats:title>\n                  <jats:p>Virtualization of aggregate data from a clinical trial.</jats:p>\n                </jats:sec>\n                <jats:sec>\n                  <jats:title>Setting</jats:title>\n                  <jats:p>Virtual</jats:p>\n                </jats:sec>\n                <jats:sec>\n                  <jats:title>Participants</jats:title>\n                  <jats:p>936,100 virtual patients</jats:p>\n                </jats:sec>\n                <jats:sec>\n                  <jats:title>Interventions</jats:title>\n                  <jats:p>None</jats:p>\n                </jats:sec>\n                <jats:sec>\n                  <jats:title>Main Outcomes Measures</jats:title>\n                  <jats:p>Odds ratios for adverse outcomes in virtual patient populations compared to clinical trial participants.</jats:p>\n                </jats:sec>\n                <jats:sec>\n                  <jats:title>Methods</jats:title>\n                  <jats:p>The replicate engineered virtual patient populations (RE-ViPPs) method, based on aggregate cross-tabulated categorical population data, does not require access to individual-level data. Using sequential regression combined with randomization, it generates virtual individual patients to comprise populations that, on average, closely resemble the real population in question. The method is validated by applying it to aggregated data from the seminal SPRINT trial, which compared intensive versus standard blood pressure treatment goals on major adverse cardiovascular events.</jats:p>\n                </jats:sec>\n                <jats:sec>\n                  <jats:title>Results</jats:title>\n                  <jats:p>The method yields virtual populations, each with 9361 patients, faithfully mimicking the real SPRINT participants. Multiple logistic regression on 100 such populations shows that factors with the highest odds ratios for the primary event are, in descending order, past clinical cardiovascular disease, age ≥ 75, chronic kidney disease, high non-HDL, and smoking history. Intensive blood pressure treatment, the trial’s intervention, had an odds ratio of 0.74 [0.63-0.87]. On all these measures, the 100 RE-ViPPs mirrored the real SPRINT participants, including the intensive therapy result (actual SPRINT odds ratio: 0.74 [0.62-0.88]).</jats:p>\n                </jats:sec>\n                <jats:sec>\n                  <jats:title>Conclusions</jats:title>\n                  <jats:p>Clinical data dissemination has limitations. The most coveted data is descriptive at the individual level but comes with significant cost, effort, and time. There is potential for privacy breaches, and the open-data movement has progressed slowly due to data-ownership concerns. RE-ViPPs closely matched the true SPRINT population. Applied to trials, registries, and databases, RE-ViPPs could reduce open-data burdens by encouraging dissemination of aggregate cross-tabulated real data that allow investigators to generate and measure virtual patients.</jats:p>\n                </jats:sec>",
+      "extra": {}
+    },
+    {
+      "stable_id": "shifting from the “analogic virtual patient” to the “digital virtual patient” in prosthodontics. a scoping review",
+      "candidate_id": "c-54bfd053",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Shifting from the “Analogic Virtual Patient” to the “Digital Virtual Patient” in Prosthodontics. A Scoping Review",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "European Journal of Prosthodontics and Restorative Dentistry",
+      "url": "https://doi.org/10.1922/ejprd_2485pradies17",
+      "identifier": "10.1922/ejprd_2485pradies17",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "supplemental information 5: questionnaire and virtual patient scenarios",
+      "candidate_id": "c-ca23e8b5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Supplemental Information 5: Questionnaire and virtual patient scenarios",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://doi.org/10.7717/peerj.4151/supp-5",
+      "identifier": "10.7717/peerj.4151/supp-5",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "virtual patient encounter",
+      "candidate_id": "c-740cc3bf",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Virtual Patient Encounter",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2020,
+      "venue": "Definitions",
+      "url": "https://doi.org/10.32388/tjh7jk",
+      "identifier": "10.32388/tjh7jk",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "patient-to-patient communication: support groups and virtual communities",
+      "candidate_id": "c-8f49efef",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Patient-to-Patient Communication: Support Groups and Virtual Communities",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": "Health Informatics",
+      "url": "https://doi.org/10.1007/0-387-27652-1_8",
+      "identifier": "10.1007/0-387-27652-1_8",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "the data-driven cyber patient",
+      "candidate_id": "c-2a9c7658",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Data-Driven Cyber Patient",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2019,
+      "venue": "The Cyber Patient",
+      "url": "https://doi.org/10.4324/9780429490040-10",
+      "identifier": "10.4324/9780429490040-10",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "3d reconstruction of human body in virtual fitting room based on kinect",
+      "candidate_id": "c-acd759b2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "3D Reconstruction of Human Body in Virtual Fitting Room Based on Kinect",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "International Journal of Multimedia Computing",
+      "url": "https://doi.org/10.38007/ijmc.2022.030403",
+      "identifier": "10.38007/ijmc.2022.030403",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "image-based 3d reconstruction and articulation of the human body shape and its use in the creation of virtual fitting rooms",
+      "candidate_id": "c-310ee0fe",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Image-based 3D reconstruction and articulation of the human body shape and its use in the creation of virtual fitting rooms",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://doi.org/10.17918/00000196",
+      "identifier": "10.17918/00000196",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>Image-based 3D shape reconstruction is essential for 3D modeling in recognition, virtual reality, generation of video games, 3D animation, and in the creation of 3D virtual fitting rooms - the sought-after application in this dissertation. In this work, we propose a novel reconstruction method that uses a generic 3D model that roughly controls the overall reconstruction shape which in turn, reduces the number of 2D images needed to just two (frontal and profile) for obtaining a 3D point model. The generic model consists of a massive set of 3D points that lack saliency, topological meaning, and relational interconnections. This is also true about points in the two canonical images. In this work, we propose finding a small set of interconnected ordered intrinsic salient points (control points) residing on the silhouette of the projections of the generic model onto the two image spaces, as well as finding those for the canonical images. Points on the generic model and the images are automatically given saliency with order and interconnections through loop-subdivision operating on those control points and their equivalent points on the canonical images. The transformation of the generic model into the specific object is done through morphing the points on the generic model to follow and be consistent with their equivalent points on the canonical images. The control points on the canonical images are automatically obtained using an active shape model (ASM) that modifies an average trained control point set attained using an offline training, to account for class shape variability and boundary regularization guaranteeing the control points to reside on the silhouette (boundary) of the individual. The reconstructed 3D model is furtherly refined through smoothing the reconstructed surface, while fixing local holes using a principle component analysis (PCA) decomposition. This reconstruction method is convenient, simple, efficient, and results in an average geometric error of less than 0.5% over 700 diverse body models from the CAESAR dataset. We then implement the contour-based articulated model to the personalized 3D model for pose recovery. The evolution of the model through the articulation process is captured in a video clip. 3D transformations are found and applied to the 3D model on its parts so that the projections of the 3D model 'match' those observed in the video sequence at corresponding frames. This is done by minimizing the error between the frontal projection body region points and the target points from the image for each independent moving part, with sub-resolution recovery errors. Once the personalized 3D model is obtained and the articulated model is implemented, the algorithm simulates how garments virtually appear on the reconstructed person under different poses. Different types of clothes are classified as tight or loose, where for the first type of garments, the garment is mapped onto the person's body, whereas for the second type, the mapping adjusts to accommodate the loose nature of the garment, and its fitting on the body of the reconstructed person model. This creates a virtual in-home fitting room for garment fitting, which is timely and is a needed application that would go hand in hand with online clothes shopping, allowing the trying of garments at home with changing poses before ordering them, and can be updated as often as necessary to accommodate changes in physique, weight, aging, etc. This is also done with minimum requirements from the user aside from taking two images and a video of pose articulations using their cam or smart phone, and stands as a useful, needed, and attractive App.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "a high precision 3d human body reconstruction  scheme based on multi-view image for virtual fitting",
+      "candidate_id": "c-e7af122e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A High Precision 3d Human Body Reconstruction  Scheme Based on Multi-View Image for Virtual Fitting",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "SSRN Electronic Journal",
+      "url": "https://doi.org/10.2139/ssrn.4019471",
+      "identifier": "10.2139/ssrn.4019471",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "peeledhuman: robust shape representation for textured 3d human body reconstruction",
+      "candidate_id": "c-7c030080",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "PeeledHuman: Robust Shape Representation for Textured 3D Human Body Reconstruction",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2020,
+      "venue": "2020 International Conference on 3D Vision (3DV)",
+      "url": "https://doi.org/10.1109/3dv50981.2020.00098",
+      "identifier": "10.1109/3dv50981.2020.00098",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "openalex",
+      "query": "3D human body reconstruction patient virtual localization|3D human body reconstruction 3D human shape reconstruction|mul",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "patient virtual localization dataset|patient dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "patient patient virtual localization|patient 3D human shape reconstruction|human body mesh patient virtual localization",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "3D human body reconstruction patient virtual localization|3D human body reconstruction patient",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "patient virtual localization survey|medical ai survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "patient virtual localization benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "patient virtual localization github|patient virtual localization implementation|3D human body reconstruction patient vir",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "patient virtual localization benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "patient virtual localization dataset|patient dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "3D human body reconstruction classic|multi-view stereo classic",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "patient patient virtual localization|patient 3D human shape reconstruction|human body mesh patient virtual localization",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "3D human body reconstruction patient virtual localization|3D human body reconstruction patient",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 7,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "patient virtual localization survey|medical ai survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "3D human body reconstruction classic|multi-view stereo classic",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "3D human body reconstruction patient virtual localization|3D human body reconstruction patient",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "3D human body reconstruction patient virtual localization|3D human body reconstruction 3D human shape reconstruction|mul",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "jats jats|jats title|jats sec",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: Non-rigid 3D reconstruction of the human body in motion",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: 3D Human Body Model Reconstruction Algorithm Based on Multi-",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: Figure 1: 3D body scanner and 3D reconstruction process.",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: 3D Human Body Reconstruction from Head-Mounted Omnidirection",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: A Survey of 3d Human Body Reconstruction from Single and Mul",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-b7e4392d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D reconstruction",
+        "human body"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "RGB-D"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Related non-rigid 3D human body reconstruction work, relevant method reference but patient-specific focus missing.",
+      "reason": "Thesis on non-rigid 3D human body reconstruction in motion. Method-aligned with topic's 3D human reconstruction theme; lacks patient virtual localization emphasis. Listed under crossref with DOI."
+    },
+    {
+      "candidate_id": "c-9cdb1e1a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D Human Body Reconstruction",
+        "multi-view"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "NeRF",
+        "SMPL",
+        "RGB-D",
+        "point cloud registration"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Multi-view synchronized video for 3D body model; method match strong, but not patient-scene specific.",
+      "reason": "2024 conference paper on 3D body reconstruction from multi-view synchronized video. Directly aligns with topic's multi-view stereo method, but lacks the patient virtual localization framing and modern NeRF/SMPL terms."
+    },
+    {
+      "candidate_id": "c-db16a094",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "needs_manual",
+      "matched_terms": [
+        "3D reconstruction",
+        "3D body scanner"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "RGB-D"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "metadata_mismatch",
+      "rank_reason": "Only a figure title; no abstract/method content available for substantive topic match.",
+      "reason": "Title is just a figure caption from a peerj article (DOI 10.7717/peerj.20752/fig-1). Topic relevance uncertain; metadata suggests a figure-only record rather than a full paper."
+    },
+    {
+      "candidate_id": "c-c48bc24e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D Human Body Reconstruction"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "multi-view stereo",
+        "SMPL",
+        "RGB-D"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "3D body reconstruction from omnidirectional camera; novel sensing modality adjacent to topic.",
+      "reason": "2023 VISIGRAPP paper reconstructing human body via head-mounted omnidirectional camera with light sources. Related sensing-to-3D reconstruction pipeline but differs from RGB-D/multi-view stereo patient setup."
+    },
+    {
+      "candidate_id": "c-a6120f4a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "core",
+      "matched_terms": [
+        "3D Human Body Reconstruction",
+        "single and multiple camera views",
+        "survey"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "NeRF",
+        "SMPL",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey spanning single and multi-view 3D human reconstruction; ideal top-tier background reference.",
+      "reason": "2023 SSRN survey of 3D human body reconstruction from single and multiple camera views. Covers method landscape directly relevant to topic's multi-view stereo and 3D reconstruction dimensions."
+    },
+    {
+      "candidate_id": "c-25fa513a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D reconstruction",
+        "human body posture"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "RGB-D"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Older voxel-based human posture reconstruction; historical background, not state-of-the-art.",
+      "reason": "2007 ROBIO paper on voxel-based human body posture reconstruction and feature extraction. Methodologically dated (voxel) but relevant as historical background for body shape reconstruction."
+    },
+    {
+      "candidate_id": "c-f2fbe7c1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D Human Body Reconstruction",
+        "silhouettes"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Multi-view silhouette-based 3D human reconstruction at 3DV 2019; method-aligned.",
+      "reason": "2019 3DV paper on accurate 3D human body reconstruction from silhouettes. Strong method alignment with topic's 3D body reconstruction theme; lacks explicit patient localization framing."
+    },
+    {
+      "candidate_id": "c-f86b584a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "patient",
+        "localization"
+      ],
+      "missing_terms": [
+        "3D reconstruction",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "RGB-D",
+        "human body mesh"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Cross-domain clinical neurology paper; shares only 'patient' + 'localization' terms.",
+      "reason": "2008 clinical chapter on neurologic examination of the comatose patient. 'Localization' refers to neuroanatomical lesion localization, not virtual positioning for 3D reconstruction. Cross-domain; reject."
+    },
+    {
+      "candidate_id": "c-a0ee1cc7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "virtual patient",
+        "patient-level data"
+      ],
+      "missing_terms": [
+        "3D reconstruction",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "human body mesh",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Statistical virtual patient population study, no 3D body reconstruction content.",
+      "reason": "2018 paper on generating virtual individual-level patient data as statistical surrogates. No connection to 3D human body reconstruction, NeRF, SMPL, or RGB-D scanning. Cross-domain."
+    },
+    {
+      "candidate_id": "c-54bfd053",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "virtual patient",
+        "digital"
+      ],
+      "missing_terms": [
+        "3D reconstruction",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "human body mesh",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Prosthodontics scoping review about digital virtual patient workflow, not 3D body reconstruction.",
+      "reason": "2023 prosthodontics scoping review on analogic-to-digital virtual patient transition. Domain is dental/clinical simulation, not 3D human body reconstruction from RGB-D or multi-view input."
+    },
+    {
+      "candidate_id": "c-ca23e8b5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "virtual patient"
+      ],
+      "missing_terms": [
+        "3D reconstruction",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "human body mesh",
+        "RGB-D",
+        "patient virtual localization"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "metadata_mismatch",
+      "rank_reason": "Supplemental questionnaire material; not a research paper on 3D reconstruction.",
+      "reason": "Title indicates supplemental information (questionnaire and virtual patient scenarios). Not a substantive research paper on 3D human body reconstruction; metadata mismatch."
+    },
+    {
+      "candidate_id": "c-740cc3bf",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "virtual patient"
+      ],
+      "missing_terms": [
+        "3D reconstruction",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "RGB-D",
+        "human body mesh"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Medical definition entry; no research content on 3D body reconstruction.",
+      "reason": "2020 'Definitions' entry for Virtual Patient Encounter, from a clinical/medical definitions reference. No technical content on 3D human body reconstruction."
+    },
+    {
+      "candidate_id": "c-8f49efef",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "patient",
+        "virtual"
+      ],
+      "missing_terms": [
+        "3D reconstruction",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "human body mesh",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Health informatics chapter on patient communities; unrelated to 3D reconstruction.",
+      "reason": "Health informatics chapter on patient support groups and virtual communities. Topic concerns online health communities, not 3D human body reconstruction from sensing data."
+    },
+    {
+      "candidate_id": "c-2a9c7658",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "cyber patient"
+      ],
+      "missing_terms": [
+        "3D reconstruction",
+        "multi-view stereo",
+        "NeRF",
+        "SMPL",
+        "human body mesh",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Medical/cyber-physical patient modeling; no 3D body reconstruction pipeline.",
+      "reason": "2019 chapter in 'The Cyber Patient' book on data-driven cyber patient. Likely digital twin/medical modeling, not 3D human body mesh reconstruction via NeRF/SMPL/RGB-D."
+    },
+    {
+      "candidate_id": "c-acd759b2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D Reconstruction",
+        "Human Body",
+        "Kinect",
+        "RGB-D"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "NeRF",
+        "SMPL",
+        "multi-view stereo"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "RGB-D (Kinect) based human body reconstruction for virtual fitting; strong method overlap.",
+      "reason": "2022 paper reconstructing 3D human body in virtual fitting rooms using Kinect (RGB-D). Directly aligns with topic's RGB-D fusion and body mesh reconstruction methods."
+    },
+    {
+      "candidate_id": "c-310ee0fe",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D reconstruction",
+        "human body shape",
+        "virtual fitting"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "NeRF",
+        "SMPL",
+        "RGB-D"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Image-based human body 3D reconstruction for virtual fitting; method-aligned reference.",
+      "reason": "Dissertation on image-based 3D reconstruction and articulation of human body shape for virtual fitting rooms. Relevant method reference; lacks explicit patient localization context."
+    },
+    {
+      "candidate_id": "c-e7af122e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D Human Body Reconstruction",
+        "multi-view image",
+        "virtual"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "NeRF",
+        "SMPL",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "High-precision multi-view 3D body reconstruction; strong method overlap with topic.",
+      "reason": "2022 SSRN paper on high-precision 3D human body reconstruction from multi-view images for virtual fitting. Multi-view stereo is a core topic method, strongly aligned though patient framing absent."
+    },
+    {
+      "candidate_id": "c-7c030080",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D Human Body Reconstruction",
+        "shape representation"
+      ],
+      "missing_terms": [
+        "patient virtual localization",
+        "multi-view stereo",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "Robust textured 3D human body shape representation; a useful module for body reconstruction pipeline.",
+      "reason": "2020 3DV paper proposing PeeledHuman for textured 3D human body shape reconstruction. Provides a robust shape-representation module aligned with SMPL-style body modeling in topic."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Topic lacks a single tight technological scope; 'patient virtual localization' is ambiguous and the retrieved evidence collapses into two camps: (a) general 3D human body reconstruction methods (multi-view stereo, RGB-D/Kinect, silhouette/voxel, parametric body models) and (b) unrelated clinical 'virtual patient' literature. Recommended direction: reframe the thesis around a well-defined technical pipeline — multi-view + RGB-D fusion with a parametric body model (SMPL/SMPL-X) for patient-aligned 3D human reconstruction — and treat 'virtual localization' as the calibration/registration step that places the reconstructed body in a clinical reference frame. Use c-a6120f4a as the spine survey, c-acd759b2 (Kinect/RGB-D), c-e7af122e and c-9cdb1e1a (multi-view) as method baselines, c-7c030080 and c-f2fbe7c1 (shape representation, silhouettes) as parallel/background modules, and c-b7e4392d (non-rigid motion) as a long-tail extension. Defer all 'virtual patient' clinical papers (c-f86b584a, c-a0ee1cc7, c-54bfd053, c-ca23e8b5, c-740cc3bf, c-8f49efef, c-2a9c7658) to rejected. Manual clarification on the 'patient virtual localization' semantics is required before baseline selection.",
+    "baseline_options": [
+      "c-acd759b2",
+      "c-e7af122e",
+      "c-9cdb1e1a",
+      "c-a6120f4a",
+      "c-7c030080"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-a6120f4a",
+          "title": "A Survey of 3d Human Body Reconstruction from Single and Multiple Camera Views",
+          "role_hint": "reference",
+          "reason": "Survey spanning single and multi-view 3D human reconstruction; ideal top-tier background reference."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-b7e4392d",
+          "title": "Non-rigid 3D reconstruction of the human body in motion",
+          "role_hint": "reference",
+          "reason": "Related non-rigid 3D human body reconstruction work, relevant method reference but patient-specific focus missing."
+        },
+        {
+          "candidate_id": "c-9cdb1e1a",
+          "title": "3D Human Body Model Reconstruction Algorithm Based on Multi-View Synchronized Video Sequences",
+          "role_hint": "reference",
+          "reason": "Multi-view synchronized video for 3D body model; method match strong, but not patient-scene specific."
+        },
+        {
+          "candidate_id": "c-c48bc24e",
+          "title": "3D Human Body Reconstruction from Head-Mounted Omnidirectional Camera and Light Sources",
+          "role_hint": "reference",
+          "reason": "3D body reconstruction from omnidirectional camera; novel sensing modality adjacent to topic."
+        },
+        {
+          "candidate_id": "c-25fa513a",
+          "title": "Remarks on 3D human body&amp;#x2019;s feature extraction from voxel reconstruction of human body posture",
+          "role_hint": "reference",
+          "reason": "Older voxel-based human posture reconstruction; historical background, not state-of-the-art."
+        },
+        {
+          "candidate_id": "c-f2fbe7c1",
+          "title": "Towards Accurate 3D Human Body Reconstruction from Silhouettes",
+          "role_hint": "reference",
+          "reason": "Multi-view silhouette-based 3D human reconstruction at 3DV 2019; method-aligned."
+        },
+        {
+          "candidate_id": "c-acd759b2",
+          "title": "3D Reconstruction of Human Body in Virtual Fitting Room Based on Kinect",
+          "role_hint": "reference",
+          "reason": "RGB-D (Kinect) based human body reconstruction for virtual fitting; strong method overlap."
+        },
+        {
+          "candidate_id": "c-310ee0fe",
+          "title": "Image-based 3D reconstruction and articulation of the human body shape and its use in the creation of virtual fitting ro",
+          "role_hint": "reference",
+          "reason": "Image-based human body 3D reconstruction for virtual fitting; method-aligned reference."
+        },
+        {
+          "candidate_id": "c-e7af122e",
+          "title": "A High Precision 3d Human Body Reconstruction  Scheme Based on Multi-View Image for Virtual Fitting",
+          "role_hint": "reference",
+          "reason": "High-precision multi-view 3D body reconstruction; strong method overlap with topic."
+        },
+        {
+          "candidate_id": "c-7c030080",
+          "title": "PeeledHuman: Robust Shape Representation for Textured 3D Human Body Reconstruction",
+          "role_hint": "reference",
+          "reason": "Robust textured 3D human body shape representation; a useful module for body reconstruction pipeline."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-db16a094",
+          "title": "Figure 1: 3D body scanner and 3D reconstruction process.",
+          "role_hint": "reference",
+          "reason": "Only a figure title; no abstract/method content available for substantive topic match."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-f86b584a",
+          "title": "Neurologic Examination of the Comatose Patient and Localization Principles",
+          "role_hint": "reference",
+          "reason": "Cross-domain clinical neurology paper; shares only 'patient' + 'localization' terms."
+        },
+        {
+          "candidate_id": "c-a0ee1cc7",
+          "title": "Replicate Engineered Virtual Patient Populations as Surrogates for Real Patient-Level Data",
+          "role_hint": "reference",
+          "reason": "Statistical virtual patient population study, no 3D body reconstruction content."
+        },
+        {
+          "candidate_id": "c-54bfd053",
+          "title": "Shifting from the “Analogic Virtual Patient” to the “Digital Virtual Patient” in Prosthodontics. A Scoping Review",
+          "role_hint": "reference",
+          "reason": "Prosthodontics scoping review about digital virtual patient workflow, not 3D body reconstruction."
+        },
+        {
+          "candidate_id": "c-ca23e8b5",
+          "title": "Supplemental Information 5: Questionnaire and virtual patient scenarios",
+          "role_hint": "reference",
+          "reason": "Supplemental questionnaire material; not a research paper on 3D reconstruction."
+        },
+        {
+          "candidate_id": "c-740cc3bf",
+          "title": "Virtual Patient Encounter",
+          "role_hint": "reference",
+          "reason": "Medical definition entry; no research content on 3D body reconstruction."
+        },
+        {
+          "candidate_id": "c-8f49efef",
+          "title": "Patient-to-Patient Communication: Support Groups and Virtual Communities",
+          "role_hint": "reference",
+          "reason": "Health informatics chapter on patient communities; unrelated to 3D reconstruction."
+        },
+        {
+          "candidate_id": "c-2a9c7658",
+          "title": "The Data-Driven Cyber Patient",
+          "role_hint": "reference",
+          "reason": "Medical/cyber-physical patient modeling; no 3D body reconstruction pipeline."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-acd759b2",
+          "title": "3D Reconstruction of Human Body in Virtual Fitting Room Based on Kinect",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-e7af122e",
+          "title": "A High Precision 3d Human Body Reconstruction  Scheme Based on Multi-View Image for Virtual Fitting",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-9cdb1e1a",
+          "title": "3D Human Body Model Reconstruction Algorithm Based on Multi-View Synchronized Video Sequences",
+          "role_hint": "reference",
+          "year": 2024
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-7c030080",
+          "title": "PeeledHuman: Robust Shape Representation for Textured 3D Human Body Reconstruction",
+          "role_hint": "reference",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-f2fbe7c1",
+          "title": "Towards Accurate 3D Human Body Reconstruction from Silhouettes",
+          "role_hint": "reference",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-c48bc24e",
+          "title": "3D Human Body Reconstruction from Head-Mounted Omnidirectional Camera and Light Sources",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-310ee0fe",
+          "title": "Image-based 3D reconstruction and articulation of the human body shape and its use in the creation of virtual fitting rooms",
+          "role_hint": "reference",
+          "year": null
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-a6120f4a",
+          "title": "A Survey of 3d Human Body Reconstruction from Single and Multiple Camera Views",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-25fa513a",
+          "title": "Remarks on 3D human body&amp;#x2019;s feature extraction from voxel reconstruction of human body posture",
+          "role_hint": "reference",
+          "year": 2007
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-b7e4392d",
+          "title": "Non-rigid 3D reconstruction of the human body in motion",
+          "role_hint": "reference",
+          "year": null
+        },
+        {
+          "candidate_id": "c-db16a094",
+          "title": "Figure 1: 3D body scanner and 3D reconstruction process.",
+          "role_hint": "reference",
+          "year": null
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "No dataset or code repo evidence was retrieved (openalex, github, arxiv all empty); student must source SMPL/SMPL-X, AGORA, THuman, or RenderPeople independently.",
+      "RGB-D body datasets (e.g., Kinect-based body scans referenced in c-acd759b2) should be verified for patient/clinical access constraints.",
+      "Multi-view datasets (e.g., CMU Panoptic, Human3.6M) are candidate evaluation sets but none are confirmed in retrieved evidence."
+    ],
+    "work_suggestions": [
+      "Anchor the thesis on the multi-view + RGB-D fusion pipeline described in c-acd759b2 (Kinect baseline) and extend with multi-view precision from c-e7af122e and c-9cdb1e1a.",
+      "Use c-a6120f4a as the methodological survey backbone to position contributions against single/multi-view reconstruction literature.",
+      "Adopt a parametric body model (SMPL/SMPL-X) following c-7c030080's robust shape-representation approach as the mesh output layer.",
+      "Define 'patient virtual localization' as camera-to-patient calibration + world-frame registration; cite c-f2fbe7c1 silhouette method and c-c48bc24e omnidirectional sensing as alternative registration modalities.",
+      "Investigate non-rigid / dynamic reconstruction (c-b7e4392d) as an extension for patient-pose variation, keeping it in long_tail until localization scope is fixed."
+    ],
+    "risk_reminders": [
+      "'Patient virtual localization' is underspecified; mixed clinical vs. computer-vision semantics observed in evidence.",
+      "Openalex, arxiv, github, and semantic_scholar returned zero hits; coverage of NeRF/SMPL/RGB-D medical work is shallow.",
+      "c-db16a094 is a figure caption, not a paper; manual verification required before any citation.",
+      "No medical imaging datasets (CT/MRI-based body meshes) appeared in retrieval; scope may be mis-routed.",
+      "Several rejected 'virtual patient' papers risk scope drift if included without reframing."
+    ],
+    "manual_questions": [
+      "Does 'patient virtual localization' mean camera-to-patient calibration, or world-frame pose/position registration of the reconstructed body?",
+      "Is the target output a SMPL/SMPL-X parametric mesh, a textured scan mesh, or a NeRF radiance field?",
+      "Which sensing modality is in scope: multi-view RGB only, RGB-D (Kinect), or both fused?",
+      "Is the clinical context (e.g., radiology, rehabilitation, surgical planning) required, or is generic human reconstruction acceptable?",
+      "Is real patient data required, or are public body datasets (THuman, AGORA) sufficient for evaluation?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "Does 'patient virtual localization' mean camera-to-patient calibration, or world-frame registration of the reconstructed body?",
+      "Is the target output a SMPL/SMPL-X parametric mesh, a textured scan, or a NeRF radiance field?",
+      "Which sensing modality is in scope: multi-view RGB only, RGB-D (Kinect), or both fused?",
+      "Is clinical context (radiology, rehabilitation, surgical planning) required, or generic human reconstruction acceptable?",
+      "Is real patient data required, or are public datasets (THuman, AGORA) sufficient for evaluation?"
+    ],
+    "weak_points": [
+      "Topic boundary is ambiguous: 'patient virtual localization' lacks a tight technical definition across medical and CV communities.",
+      "Baseline group mixes generic 3D body reconstruction papers with no patient-specific or clinical validation work.",
+      "Evidence_gaps is empty despite the synthesis acknowledging ambiguous scope and 7 rejected candidates.",
+      "Reference group is thin: only 2 entries including a dated 2007 voxel paper, missing recent SMPL/NeRF surveys.",
+      "Work suggestions rely heavily on role_hint='reference' papers without clear baseline-vs-parallel distinction."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Topic scope around 'patient virtual localization' is ambiguous, mixing medical virtual-patient literature with generic 3D human reconstruction. Baseline and reference groups exist but evidence_gaps is empty despite acknowledged ambiguity. Five blocking clarification questions must be answered before the opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+      "domain_route": "medical_ai",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 2
+      },
+      "needs_clarification": false
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "crossref": 20
+      },
+      "ledger_n_calls": 22
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 24,
+      "queries": [
+        "jats jats",
+        "jats title",
+        "jats sec",
+        "jats model",
+        "title jats",
+        "title title",
+        "title sec",
+        "title model"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 0,
+      "seeds_rejected": 5,
+      "refs_added": 0,
+      "round_status": "no_eligible_seeds"
+    }
+  },
+  "elapsed_s": 169.0
+}

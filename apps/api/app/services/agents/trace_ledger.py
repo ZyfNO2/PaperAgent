@@ -103,6 +103,9 @@ class TraceLedger:
             "reflection": dict(reflection or {}),
             "new_candidates_n": int(new_candidates_n),
             "accepted_candidates_n": int(accepted_n),
+            # Keep ``accepted_n`` as the validator-facing alias (see
+            # validate_re10_reflection_search._derive_evidence L118).
+            "accepted_n": int(accepted_n),
             "rejected_candidates_n": int(rejected_n),
             "url_repair_n": int(url_repair_n),
             "query_repair_n": int(query_repair_n),

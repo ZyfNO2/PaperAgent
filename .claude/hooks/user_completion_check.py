@@ -24,6 +24,38 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+DEDUP_STATE = REPO / ".claude" / "hooks" / ".last_completion_check"
+
+
+def _should_skip_for_dedup(min_age_seconds: int = 60) -> bool:
+    """Skip the check if a previous run produced output within
+    ``min_age_seconds``.  The Stop hook fires after every agent
+    turn-end, so a multi-stop burst (e.g. hook fires on tool end,
+    then on user message) would otherwise emit the same self-audit
+    block 3-5 times in a row.
+
+    State file: ``.claude/hooks/.last_completion_check`` (single-line
+    Unix timestamp).  We use mtime for the comparison so we don't
+    need any external state library.
+    """
+    try:
+        if not DEDUP_STATE.exists():
+            return False
+        mtime = DEDUP_STATE.stat().st_mtime
+        import time as _t
+        if _t.time() - mtime < min_age_seconds:
+            return True
+    except Exception:  # noqa: BLE001
+        return False
+    return False
+
+
+def _mark_dedup() -> None:
+    try:
+        DEDUP_STATE.parent.mkdir(parents=True, exist_ok=True)
+        DEDUP_STATE.touch()
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def _git_log(n: int = 20) -> list[str]:
@@ -249,6 +281,15 @@ def _trace_per_round_delta() -> list[str]:
 
 
 def main() -> int:
+    # Dedup: if a previous run produced output within 60s, skip the
+    # multi-line self-audit (still emit one short "skip" line so the
+    # harness pipe reader sees activity).
+    if _should_skip_for_dedup(min_age_seconds=60):
+        print("[user_completion_check] dedup-skip (recent run within 60s)",
+              file=sys.stderr)
+        return 0
+    _mark_dedup()
+
     # Always emit one line first (stderr AND stdout, both flushed) so the
     # harness's pipe readers see output even if stderr capture races.
     print("[user_completion_check] running Stop-hook self-audit", file=sys.stderr)

@@ -76,7 +76,9 @@ async def run_one(case: dict, out_dir: Path) -> dict:
             "elapsed_s": round(time.time() - t0, 2),
             "paper_n": 0, "dataset_n": 0, "repo_n": 0,
             "baseline_n": 0, "parallel_n": 0,
-            "has_strong_noise_in_core": False,
+            "topic_dataset_n": 0, "pretrain_dataset_n": 0,
+            "core_direct_n": 0, "baseline_direct_n": 0,
+            "critical_consistency_error_n": 0,
         }
     elapsed = round(time.time() - t0, 2)
     status = compute_resource_status(result)

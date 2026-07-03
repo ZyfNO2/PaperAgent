@@ -1,0 +1,191 @@
+2026-07-03 00:48:27,485 [INFO] re04_smoke: Re04 Online Smoke running 5 case(s)
+2026-07-03 00:48:27,621 [INFO] re04_smoke: [ENG-THESIS-073] starting LLM-online Re04 run
+2026-07-03 00:48:33,192 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:48:41,564 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:50:13,669 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=simulated+image+generation+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:20,469 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=simulated+image+generation+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:20,477 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=driving+scene+simulated+image+generation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:20,478 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=simulated+image+generation+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:20,478 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=GAN+simulated+image+generation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:20,479 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AGAN+simulated+image+generation&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:50:20,479 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AGAN+simulated+image+generation&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:50:20,480 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AGAN+simulated+image+generation&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:50:20,480 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Asimulated+image+generation+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:50:26,314 [INFO] httpx: HTTP Request: GET https://api.github.com/search/repositories?q=simulated%20image%20generation%20github&per_page=6&sort=stars&order=desc "HTTP/1.1 200 OK"
+2026-07-03 00:50:41,079 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=GAN+simulated+image+generation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:41,079 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=simulated%20image%20generation%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:50:46,353 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:50:46,354 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=driving%20scene%20simulated%20image%20generation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:50:46,354 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=GAN%20simulated%20image%20generation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:50:46,354 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=GAN%20simulated%20image%20generation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:50:46,357 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=driving scene simulated image generation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:50:46,358 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=GAN simulated image generation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:50:46,382 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=simulated%20image%20generation%20dataset&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:50:46,487 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=simulated%20image%20generation%20benchmark&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:50:46,986 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=GAN+simulated+image+generation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:46,988 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=simulated+image+generation+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:47,010 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=GAN+simulated+image+generation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:47,131 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=simulated+image+generation+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:47,152 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=driving%20scene%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:50:47,187 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=driving+scene+simulated+image+generation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:50:50,688 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=image+image&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:50:50,689 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=image+image&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=image image
+2026-07-03 00:50:53,981 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=image+we&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:50:53,981 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=image+we&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=image we
+2026-07-03 00:50:57,588 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=image+segmentation&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:50:57,589 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=image+segmentation&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=image segmentation
+2026-07-03 00:51:04,348 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:51:32,719 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:51:49,894 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:52:18,272 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:52:21,050 [INFO] re04_smoke: [ENG-THESIS-073] done in 233.4s — status=pass paper=23 dataset=3 repo=1 baseline=1 parallel=2
+2026-07-03 00:52:21,050 [INFO] re04_smoke: [ENG-THESIS-079] starting LLM-online Re04 run
+2026-07-03 00:52:27,337 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:52:34,942 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:53:35,358 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=structured+light+crack+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:38,179 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=crack+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:38,180 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=crack+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:38,180 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=crack%20detection%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:53:38,182 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=crack+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:38,182 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Acrack+detection+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:53:38,183 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=structured+light+crack+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:38,183 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Astructured+light+crack+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:53:38,184 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Astructured+light+crack+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:53:38,184 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Astructured+light+crack+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:53:38,189 [INFO] httpx: HTTP Request: GET https://api.github.com/search/repositories?q=crack%20detection%20github&per_page=6&sort=stars&order=desc "HTTP/1.1 200 OK"
+2026-07-03 00:53:54,437 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:53:54,438 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: RemoteProtocolError: Server disconnected without sending a response.
+2026-07-03 00:53:54,821 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=tunnel%20lining%20surface%20crack%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:53:54,822 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=crack%20detection%20benchmark&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:53:54,824 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=tunnel lining surface crack detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:53:54,824 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=crack detection benchmark&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:53:55,027 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=structured+light+crack+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:55,030 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=crack+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:55,038 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Avision+2d+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:53:55,049 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=crack+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:55,181 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=tunnel%20lining%20surface%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:53:55,221 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=crack+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:53:57,478 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=structured%20light%20crack%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:53:58,226 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=structured%20light%20crack%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:53:59,917 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=crack%20detection%20dataset&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:54:04,388 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=crack+that&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 200 OK"
+2026-07-03 00:54:09,137 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:54:45,871 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:55:11,038 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:55:39,249 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:55:42,429 [INFO] re04_smoke: [ENG-THESIS-079] done in 201.4s — status=pass paper=27 dataset=0 repo=6 baseline=3 parallel=4
+2026-07-03 00:55:42,430 [INFO] re04_smoke: [ENG-THESIS-083] starting LLM-online Re04 run
+2026-07-03 00:55:47,153 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:55:54,685 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:57:03,441 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=semantic+segmentation+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:06,330 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=multi-resolution+network+semantic+segmentation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:06,330 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=semantic+segmentation+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:06,330 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=multi-resolution+network+semantic+segmentation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:06,330 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=semantic+segmentation+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:06,331 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=semantic%20segmentation%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:57:06,333 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Asemantic+segmentation+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:57:06,333 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=bridge+crack+images+semantic+segmentation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:06,333 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Amulti-resolution+network+semantic+segmentation&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:57:06,334 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Amulti-resolution+network+semantic+segmentation&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:57:06,334 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Amulti-resolution+network+semantic+segmentation&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:57:23,400 [INFO] httpx: HTTP Request: GET https://api.github.com/search/repositories?q=semantic%20segmentation%20github&per_page=6&sort=stars&order=desc "HTTP/1.1 200 OK"
+2026-07-03 00:57:23,403 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:57:23,762 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=multi-resolution%20network%20semantic%20segmentation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:57:23,762 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=multi-resolution network semantic segmentation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:57:23,817 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=semantic+segmentation+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:23,824 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=multi-resolution+network+semantic+segmentation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:23,828 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=multi-resolution+network+semantic+segmentation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:23,982 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=bridge%20crack%20images%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:57:23,999 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=semantic%20segmentation%20dataset&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:57:23,999 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=semantic segmentation dataset&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:57:24,027 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=semantic+segmentation+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:24,027 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=bridge+crack+images+semantic+segmentation&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:57:27,700 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=bridge%20crack%20images%20semantic%20segmentation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:57:29,499 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=semantic%20segmentation%20benchmark&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:57:29,941 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=multi-resolution%20network%20semantic%20segmentation&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:57:33,516 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=segmentation+segmentation&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:57:33,516 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=segmentation+segmentation&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=segmentation segmentation
+2026-07-03 00:57:37,859 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=segmentation+semantic&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 200 OK"
+2026-07-03 00:57:42,402 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:58:22,599 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:58:58,481 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:59:13,768 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:59:46,702 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:59:48,829 [INFO] re04_smoke: [ENG-THESIS-083] done in 246.4s — status=pass paper=42 dataset=0 repo=6 baseline=5 parallel=5
+2026-07-03 00:59:48,829 [INFO] re04_smoke: [ENG-THESIS-089] starting LLM-online Re04 run
+2026-07-03 00:59:54,169 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:00:02,151 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:00:58,126 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=deep+learning+pavement+distress+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:00:58,131 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=pavement+distress+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:00:58,131 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=pavement+distress+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:10,355 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Apavement+distress+detection+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 01:01:10,355 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Adeep+learning+pavement+distress+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 01:01:10,357 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Adeep+learning+pavement+distress+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 01:01:10,357 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Adeep+learning+pavement+distress+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 01:01:10,357 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=deep+learning+pavement+distress+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:10,357 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=road+pavement+surface+pavement+distress+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:10,359 [WARNING] app.services.agents.re04_entry: dispatch github failed: ConnectTimeout: 
+2026-07-03 01:01:10,359 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 01:01:10,359 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 01:01:10,360 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 01:01:10,360 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 01:01:10,360 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 01:01:16,138 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=pavement+distress+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:16,139 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=pavement%20distress%20detection%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 01:01:21,952 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=road+pavement+surface+pavement+distress+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:21,953 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=deep+learning+pavement+distress+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:21,958 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=deep+learning+pavement+distress+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:21,958 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=pavement+distress+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:21,958 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=pavement+distress+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:22,175 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=pavement+distress+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:01:22,306 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=road%20pavement%20surface%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 01:01:26,163 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=pavement+pavement&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 200 OK"
+2026-07-03 01:01:32,133 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:02:16,821 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:02:49,744 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:02:53,081 [INFO] re04_smoke: [ENG-THESIS-089] done in 184.2s — status=weak paper=20 dataset=0 repo=0 baseline=5 parallel=6
+2026-07-03 01:02:53,081 [INFO] re04_smoke: [ENG-THESIS-100] starting LLM-online Re04 run
+2026-07-03 01:02:58,171 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:03:05,416 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:03:57,306 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=object+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:03:57,308 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Aobject+detection+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 01:03:59,832 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:03:59,833 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=object+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:03:59,833 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:03:59,836 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+object+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 01:03:59,836 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+object+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 01:03:59,836 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+object+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 01:03:59,837 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=power+distribution+equipment+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:03:59,842 [INFO] httpx: HTTP Request: GET https://api.github.com/search/repositories?q=object%20detection%20github&per_page=6&sort=stars&order=desc "HTTP/1.1 200 OK"
+2026-07-03 01:04:09,423 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=object%20detection%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 01:04:09,630 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=object+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:04:12,150 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=YOLOv5%20object%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 01:04:12,151 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=YOLOv5%20object%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 01:04:12,157 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=YOLOv5 object detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 01:04:12,158 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=YOLOv5 object detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 01:04:12,367 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:04:12,368 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=object+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:04:12,368 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=object+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:04:12,369 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:04:12,373 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=power+distribution+equipment+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:04:12,803 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=object+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 01:04:15,400 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=object%20detection%20dataset&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 01:04:15,836 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=object%20detection%20benchmark&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 01:04:17,887 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=power%20distribution%20equipment%20object%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 01:04:21,133 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=object+object&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 01:04:21,133 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=object+object&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=object object
+2026-07-03 01:04:24,106 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=object+detection&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 01:04:24,107 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=object+detection&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=object detection
+2026-07-03 01:04:27,204 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=object+we&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 01:04:27,204 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=object+we&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=object we
+2026-07-03 01:04:31,907 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:04:58,123 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:05:18,862 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:06:31,725 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 01:06:34,973 [INFO] re04_smoke: [ENG-THESIS-100] done in 221.9s — status=weak paper=27 dataset=3 repo=6 baseline=4 parallel=1
+
+=== Re04 Online Smoke done ===
+  pass: 3/5  weak: 2  fail: 0  blocked: 0
+  per-case dumps: tmp_re04_eval\balanced40\r6/<case_id>.json
+  summary:        tmp_re04_eval\balanced40\r6/summary.json
+  markdown:       tmp_re04_eval\balanced40\r6/report.md

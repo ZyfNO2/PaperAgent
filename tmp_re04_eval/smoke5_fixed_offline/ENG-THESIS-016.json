@@ -1,0 +1,1373 @@
+{
+  "project_id": "agent-re04-a063f178",
+  "raw_topic": "基于深度学习的视觉SLAM语义地图的研究",
+  "parsed_topic": {
+    "raw_topic": "基于深度学习的视觉SLAM语义地图的研究",
+    "normalized_topic": "基于深度学习的视觉SLAM语义地图的研究",
+    "domain_route": "robotics_control",
+    "domain_confidence": 0.9,
+    "method_terms": [
+      "ORB-SLAM",
+      "LSD-SLAM",
+      "DSO",
+      "DynaSLAM"
+    ],
+    "task_terms": [
+      "visual odometry",
+      "loop closure",
+      "semantic mapping"
+    ],
+    "object_terms": [
+      "RGB-D frame",
+      "keyframe"
+    ],
+    "query_atoms_en": [
+      "ORB-SLAM semantic mapping",
+      "DynaSLAM SLAM",
+      "visual odometry CNN"
+    ],
+    "query_atoms_zh": [
+      "基于深度学习的视觉SLAM语义地图的研究"
+    ],
+    "needs_clarification": [],
+    "site_hints": []
+  },
+  "query_matrix": {
+    "raw_topic": "基于深度学习的视觉SLAM语义地图的研究",
+    "domain_route": "robotics_control",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "ORB-SLAM visual odometry",
+        "ORB-SLAM RGB-D frame"
+      ],
+      "method_task": [
+        "ORB-SLAM visual odometry",
+        "ORB-SLAM loop closure",
+        "LSD-SLAM visual odometry",
+        "LSD-SLAM loop closure"
+      ],
+      "object_task": [
+        "RGB-D frame visual odometry",
+        "RGB-D frame loop closure",
+        "keyframe visual odometry",
+        "keyframe loop closure"
+      ],
+      "dataset": [
+        "visual odometry dataset",
+        "RGB-D frame dataset"
+      ],
+      "repo": [
+        "visual odometry github",
+        "visual odometry implementation",
+        "ORB-SLAM visual odometry"
+      ],
+      "survey": [
+        "visual odometry survey",
+        "robotics control survey"
+      ],
+      "benchmark": [
+        "visual odometry benchmark"
+      ],
+      "baseline": [
+        "ORB-SLAM visual odometry",
+        "ORB-SLAM loop closure",
+        "LSD-SLAM visual odometry",
+        "LSD-SLAM loop closure"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "ORB-SLAM",
+        "LSD-SLAM",
+        "DSO",
+        "DynaSLAM"
+      ],
+      "task_terms": [
+        "visual odometry",
+        "loop closure",
+        "semantic mapping"
+      ],
+      "object_terms": [
+        "RGB-D frame",
+        "keyframe"
+      ],
+      "domain_route": "robotics_control"
+    },
+    "fb_atom": "ORB-SLAM semantic mapping",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide sweep over the topic's method + object atoms",
+        "calls": [
+          {
+            "tool": "search_crossref",
+            "query": "ORB-SLAM semantic mapping",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "establish crossref baseline pool",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "ORB-SLAM semantic mapping",
+            "target_role": "reference",
+            "why_call": "openalex baseline reference",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "ORB-SLAM semantic mapping",
+            "target_role": "broad_recall",
+            "why_call": "arxiv spine",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage with benchmark / survey expansions",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "ORB-SLAM semantic mapping survey",
+            "target_role": "survey",
+            "why_call": "survey expansion",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "ORB-SLAM semantic mapping benchmark",
+            "target_role": "benchmark",
+            "why_call": "benchmark expansion",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find implementation repos",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "ORB-SLAM",
+            "target_role": "repo",
+            "why_call": "github for implementation",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [],
+    "arxiv_queries": [
+      "ORB-SLAM semantic mapping",
+      "ORB-SLAM semantic mapping survey"
+    ],
+    "openalex_queries": [
+      "ORB-SLAM semantic mapping",
+      "ORB-SLAM semantic mapping benchmark"
+    ],
+    "crossref_queries": [
+      "ORB-SLAM semantic mapping"
+    ],
+    "github_queries": [
+      "ORB-SLAM"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "visual-inertial slam with semantic segmentation for dynamic environments",
+      "candidate_id": "c-9acdedf3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Visual-Inertial SLAM with Semantic Segmentation for Dynamic Environments",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "https://arxiv.org/abs/2305.08150v1",
+      "identifier": "2305.08150v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Visual-inertial SLAM combining semantic segmentation.",
+      "extra": {}
+    },
+    {
+      "stable_id": "dynaslam ii: tightly-coupled multi-object tracking and visual-inertial slam",
+      "candidate_id": "c-ef3d75e3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DynaSLAM II: Tightly-Coupled Multi-Object Tracking and Visual-Inertial SLAM",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "https://arxiv.org/abs/2303.02404v1",
+      "identifier": "2303.02404v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Tracking + VIO for monocular SLAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "relocalization-free visual slam with sparse-event cameras",
+      "candidate_id": "c-cb3dd4b2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Relocalization-Free Visual SLAM with Sparse-Event Cameras",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "https://arxiv.org/abs/2402.00001v1",
+      "identifier": "2402.00001v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Event-camera SLAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "orb-slam-sem: a semantic slam system for dynamic environments",
+      "candidate_id": "c-45cc7b49",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ORB-SLAM-Sem: A Semantic SLAM System for Dynamic Environments",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "https://arxiv.org/abs/2211.10018v1",
+      "identifier": "2211.10018v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Semantic SLAM extension of ORB-SLAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a benchmark for multi-modal slam in challenging indoor environments",
+      "candidate_id": "c-710b88f1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Benchmark for Multi-Modal SLAM in Challenging Indoor Environments",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "https://arxiv.org/abs/2405.01234v1",
+      "identifier": "2405.01234v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Multi-modal SLAM benchmark.",
+      "extra": {}
+    },
+    {
+      "stable_id": "orb-slam2: a versatile and accurate monocular slam system",
+      "candidate_id": "c-9f23d0ff",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference",
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "ORB-SLAM2: A Versatile and Accurate Monocular SLAM System",
+      "sources": [
+        "crossref",
+        "semantic_scholar"
+      ],
+      "year": 2017,
+      "venue": "IEEE T-RO",
+      "url": "https://doi.org/10.1109/TRO.2017.2705103",
+      "identifier": "10.1109/TRO.2017.2705103",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Monocular, stereo and RGB-D SLAM system.",
+      "extra": {}
+    },
+    {
+      "stable_id": "visual slam survey: past, present and future",
+      "candidate_id": "c-6515b494",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Visual SLAM Survey: Past, Present and Future",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2018,
+      "venue": "Robotics and Autonomous Systems",
+      "url": "https://doi.org/10.1016/j.robot.2017.10.015",
+      "identifier": "10.1016/j.robot.2017.10.015",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Comprehensive visual SLAM survey.",
+      "extra": {}
+    },
+    {
+      "stable_id": "cnn-slam: real-time dense monocular slam with learned depth prediction",
+      "candidate_id": "c-e89f30d7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "CNN-SLAM: Real-time dense monocular SLAM with learned depth prediction",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2017,
+      "venue": "CVPR",
+      "url": "https://doi.org/10.1109/CVPR.2017.711",
+      "identifier": "10.1109/CVPR.2017.711",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "CNN-based monocular dense SLAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a survey on visual place recognition under challenging conditions",
+      "candidate_id": "c-f4f3e679",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Survey on Visual Place Recognition under Challenging Conditions",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2019,
+      "venue": "TPAMI",
+      "url": "https://doi.org/10.1109/TPAMI.2019.2903850",
+      "identifier": "10.1109/TPAMI.2019.2903850",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Visual place recognition for SLAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "orb-slam3: an accurate open-source library for visual, visual-inertial and multi-map slam",
+      "candidate_id": "c-b2678366",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "IEEE T-RO",
+      "url": "https://doi.org/10.1109/TRO.2021.3137834",
+      "identifier": "10.1109/TRO.2021.3137834",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Open-source multi-map visual-inertial SLAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "real-time loop closure in 2d lidar slam",
+      "candidate_id": "c-38f86c16",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Real-Time Loop Closure in 2D LIDAR SLAM",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2016,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/ICRA.2016.7487258",
+      "identifier": "10.1109/ICRA.2016.7487258",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Cartographer: real-time loop closure in 2D LIDAR SLAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "semantic monocular slam for highly dynamic environments",
+      "candidate_id": "c-00fafad0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Semantic Monocular SLAM for Highly Dynamic Environments",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2018,
+      "venue": "ICRA",
+      "url": "https://doi.org/10.1109/ICRA.2018.8261182",
+      "identifier": "10.1109/ICRA.2018.8261182",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Semantic SLAM in dynamic scenes.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ds-slam: a real-time dynamic slam with semantic segmentation",
+      "candidate_id": "c-abc43e8b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DS-SLAM: A Real-Time Dynamic SLAM with Semantic Segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2018,
+      "venue": "ROBIO",
+      "url": "https://doi.org/10.1109/ROBIO.2018.8664785",
+      "identifier": "10.1109/ROBIO.2018.8664785",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Dynamic SLAM with semantic segmentation.",
+      "extra": {}
+    },
+    {
+      "stable_id": "raulmur/orb_slam2",
+      "candidate_id": "c-6ddc415f",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "raulmur/ORB_SLAM2",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/raulmur/ORB_SLAM2",
+      "identifier": null,
+      "description": "Real-Time SLAM for Monocular, Stereo and RGB-D cameras (T-RO 2017)",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 7800,
+        "language": "C++"
+      }
+    },
+    {
+      "stable_id": "uz-slamlab/orb_slam3",
+      "candidate_id": "c-e29b5b4f",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "UZ-SLAMLab/ORB_SLAM3",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/UZ-SLAMLab/ORB_SLAM3",
+      "identifier": null,
+      "description": "ORB-SLAM3: Accurate Open-Source SLAM for Monocular, Stereo and RGB-D",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 5800,
+        "language": "C++"
+      }
+    },
+    {
+      "stable_id": "introlab/rtabmap",
+      "candidate_id": "c-8c4ba844",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "introlab/rtabmap",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/introlab/rtabmap",
+      "identifier": null,
+      "description": "RTAB-Map: Real-Time Appearance-Based Mapping",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 3100,
+        "language": "C++"
+      }
+    },
+    {
+      "stable_id": "xvzemin/pl-vins",
+      "candidate_id": "c-821de54b",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "xvzemin/PL-VINS",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/xvzemin/PL-VINS",
+      "identifier": null,
+      "description": "PL-VINS: Real-Time Monocular Visual-Inertial SLAM with Point and Line Features",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 600,
+        "language": "C++"
+      }
+    },
+    {
+      "stable_id": "monoslam-gangwang/openvslam",
+      "candidate_id": "c-ec9ddefa",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "MonoSLAM-GangWang/OpenVSLAM",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/MonoSLAM-GangWang/OpenVSLAM",
+      "identifier": null,
+      "description": "OpenVSLAM: Versatile Open-Source Visual SLAM",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 1100,
+        "language": "C++"
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "arxiv",
+      "query": "ORB-SLAM visual odometry|ORB-SLAM RGB-D frame",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 5,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "ORB-SLAM visual odometry|ORB-SLAM RGB-D frame",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "ORB-SLAM visual odometry|ORB-SLAM RGB-D frame",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "ORB-SLAM visual odometry|ORB-SLAM loop closure|LSD-SLAM visual odometry",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 5,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "ORB-SLAM visual odometry|ORB-SLAM loop closure|LSD-SLAM visual odometry",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "RGB-D frame visual odometry|RGB-D frame loop closure|keyframe visual odometry",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "RGB-D frame visual odometry|RGB-D frame loop closure|keyframe visual odometry",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "visual odometry dataset|RGB-D frame dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "visual odometry dataset|RGB-D frame dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "visual odometry github|visual odometry implementation|ORB-SLAM visual odometry",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 5,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "visual odometry survey|robotics control survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 5,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "visual odometry survey|robotics control survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "visual odometry benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "visual odometry benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "ORB-SLAM visual odometry|ORB-SLAM loop closure|LSD-SLAM visual odometry",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 5,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "ORB-SLAM visual odometry|ORB-SLAM loop closure|LSD-SLAM visual odometry",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "isual isual|isual inertial|isual semantic",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "ok",
+      "result_count": 1,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Visual-Inertial SLAM with Semantic Segmentation for Dynamic ",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: DynaSLAM II: Tightly-Coupled Multi-Object Tracking and Visua",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Relocalization-Free Visual SLAM with Sparse-Event Cameras",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: ORB-SLAM-Sem: A Semantic SLAM System for Dynamic Environment",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: A Benchmark for Multi-Modal SLAM in Challenging Indoor Envir",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-9acdedf3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-ef3d75e3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-cb3dd4b2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-45cc7b49",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-710b88f1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-9f23d0ff",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-6515b494",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-e89f30d7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-f4f3e679",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-b2678366",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-38f86c16",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-00fafad0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-abc43e8b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-6ddc415f",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-e29b5b4f",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-8c4ba844",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-821de54b",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-ec9ddefa",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "offline mock: chain ran past R1; degrade-promote path exercised (pool_rows=18)",
+    "baseline_options": [],
+    "candidate_pool": {
+      "core": [],
+      "candidate": [
+        {
+          "candidate_id": "c-9acdedf3",
+          "title": "Visual-Inertial SLAM with Semantic Segmentation for Dynamic Environments",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-ef3d75e3",
+          "title": "DynaSLAM II: Tightly-Coupled Multi-Object Tracking and Visual-Inertial SLAM",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-cb3dd4b2",
+          "title": "Relocalization-Free Visual SLAM with Sparse-Event Cameras",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-45cc7b49",
+          "title": "ORB-SLAM-Sem: A Semantic SLAM System for Dynamic Environments",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-710b88f1",
+          "title": "A Benchmark for Multi-Modal SLAM in Challenging Indoor Environments",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-9f23d0ff",
+          "title": "ORB-SLAM2: A Versatile and Accurate Monocular SLAM System",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-6515b494",
+          "title": "Visual SLAM Survey: Past, Present and Future",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-e89f30d7",
+          "title": "CNN-SLAM: Real-time dense monocular SLAM with learned depth prediction",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-f4f3e679",
+          "title": "A Survey on Visual Place Recognition under Challenging Conditions",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-b2678366",
+          "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-38f86c16",
+          "title": "Real-Time Loop Closure in 2D LIDAR SLAM",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-00fafad0",
+          "title": "Semantic Monocular SLAM for Highly Dynamic Environments",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-abc43e8b",
+          "title": "DS-SLAM: A Real-Time Dynamic SLAM with Semantic Segmentation",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-6ddc415f",
+          "title": "raulmur/ORB_SLAM2",
+          "role_hint": "repo",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-e29b5b4f",
+          "title": "UZ-SLAMLab/ORB_SLAM3",
+          "role_hint": "repo",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-8c4ba844",
+          "title": "introlab/rtabmap",
+          "role_hint": "repo",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-821de54b",
+          "title": "xvzemin/PL-VINS",
+          "role_hint": "repo",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-ec9ddefa",
+          "title": "MonoSLAM-GangWang/OpenVSLAM",
+          "role_hint": "repo",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        }
+      ],
+      "needs_manual": [],
+      "rejected": []
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-9acdedf3",
+          "title": "Visual-Inertial SLAM with Semantic Segmentation for Dynamic Environments",
+          "role_hint": "reference",
+          "year": 2023,
+          "degraded_role": "self_cannot_find_baseline_promoted_from_parallel",
+          "degraded_reason": "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+        },
+        {
+          "candidate_id": "c-ef3d75e3",
+          "title": "DynaSLAM II: Tightly-Coupled Multi-Object Tracking and Visual-Inertial SLAM",
+          "role_hint": "reference",
+          "year": 2023,
+          "degraded_role": "self_cannot_find_baseline_promoted_from_parallel",
+          "degraded_reason": "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-9acdedf3",
+          "title": "Visual-Inertial SLAM with Semantic Segmentation for Dynamic Environments",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-ef3d75e3",
+          "title": "DynaSLAM II: Tightly-Coupled Multi-Object Tracking and Visual-Inertial SLAM",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-cb3dd4b2",
+          "title": "Relocalization-Free Visual SLAM with Sparse-Event Cameras",
+          "role_hint": "reference",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-45cc7b49",
+          "title": "ORB-SLAM-Sem: A Semantic SLAM System for Dynamic Environments",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-710b88f1",
+          "title": "A Benchmark for Multi-Modal SLAM in Challenging Indoor Environments",
+          "role_hint": "reference",
+          "year": 2024
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-9f23d0ff",
+          "title": "ORB-SLAM2: A Versatile and Accurate Monocular SLAM System",
+          "role_hint": "reference",
+          "year": 2017
+        },
+        {
+          "candidate_id": "c-6515b494",
+          "title": "Visual SLAM Survey: Past, Present and Future",
+          "role_hint": "reference",
+          "year": 2018
+        },
+        {
+          "candidate_id": "c-e89f30d7",
+          "title": "CNN-SLAM: Real-time dense monocular SLAM with learned depth prediction",
+          "role_hint": "reference",
+          "year": 2017
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-f4f3e679",
+          "title": "A Survey on Visual Place Recognition under Challenging Conditions",
+          "role_hint": "reference",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-b2678366",
+          "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM",
+          "role_hint": "reference",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-38f86c16",
+          "title": "Real-Time Loop Closure in 2D LIDAR SLAM",
+          "role_hint": "reference",
+          "year": 2016
+        },
+        {
+          "candidate_id": "c-00fafad0",
+          "title": "Semantic Monocular SLAM for Highly Dynamic Environments",
+          "role_hint": "reference",
+          "year": 2018
+        },
+        {
+          "candidate_id": "c-abc43e8b",
+          "title": "DS-SLAM: A Real-Time Dynamic SLAM with Semantic Segmentation",
+          "role_hint": "reference",
+          "year": 2018
+        }
+      ],
+      "_baseline_degraded": true,
+      "_baseline_degraded_marker": "self_cannot_find_baseline_degradation",
+      "_baseline_degraded_source": "parallel"
+    },
+    "dataset_and_repo_notes": [
+      "github repo: raulmur/ORB_SLAM2",
+      "github repo: UZ-SLAMLab/ORB_SLAM3",
+      "github repo: introlab/rtabmap",
+      "candidate pool size 18"
+    ],
+    "work_suggestions": [
+      "offline mock work suggestion A"
+    ],
+    "risk_reminders": [
+      "offline mock risk reminder"
+    ],
+    "manual_questions": [
+      "offline mock manual question"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "pass",
+    "blocking_questions": [],
+    "weak_points": [],
+    "can_continue_to_opening_report": true,
+    "summary": "offline mock: paper pool non-empty"
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于深度学习的视觉SLAM语义地图的研究",
+      "domain_route": "robotics_control",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 5,
+        "crossref": 8,
+        "github": 5
+      },
+      "ledger_n_calls": 22
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 28,
+      "queries": [
+        "isual isual",
+        "isual inertial",
+        "isual semantic",
+        "isual segmentation",
+        "emantic isual",
+        "emantic inertial",
+        "emantic semantic",
+        "emantic segmentation"
+      ],
+      "added_count": 1
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [
+    "evidence_review:all_heuristic_blocked",
+    "pool:zero_baseline_self_cannot_find_degraded_to_parallel"
+  ],
+  "elapsed_s": 0.0
+}

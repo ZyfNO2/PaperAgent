@@ -1,0 +1,298 @@
+{
+  "case_id": "ENG-THESIS-048",
+  "topic": "面向动态环境的视觉SLAM研究",
+  "max_rounds": 3,
+  "seed_sources": {
+    "re08_candidates_n": 26,
+    "re09_candidates_n": 6
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "agent": "SearchReflectionLoop",
+      "input_summary": {
+        "must_search_n": 2,
+        "avoid_search_n": 0,
+        "seed_pool_n": 32
+      },
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "visual SLAM task benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "dynamic environment object benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "deep learning github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "observations": {
+        "round": 1,
+        "executed_queries": [
+          {
+            "query": "visual SLAM task benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (visual SLAM task benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "dynamic environment object benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (dynamic environment object benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "fallback repo probe from domain_keywords.en[0]",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "visual SLAM task benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "dynamic environment object benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      },
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': 'visual SLAM task benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'dynamic environment object benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'deep learning github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "new_candidates_n": 0,
+      "accepted_candidates_n": 0,
+      "rejected_candidates_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0
+    },
+    {
+      "round": 2,
+      "agent": "SearchReflectionLoop",
+      "input_summary": {
+        "must_search_n": 3,
+        "avoid_search_n": 0,
+        "seed_pool_n": 32
+      },
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "面向动态环境的视觉SLAM研究 dataset benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "面向动态环境的视觉SLAM研究 baseline method",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "面向动态环境的视觉SLAM研究 github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "observations": {
+        "round": 2,
+        "executed_queries": [
+          {
+            "query": "面向动态环境的视觉SLAM研究 dataset benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (面向动态环境的视觉SLAM研究 dataset benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "面向动态环境的视觉SLAM研究 baseline method",
+            "tool": "openalex",
+            "target_role": "baseline",
+            "why": "must_search from DomainScout (面向动态环境的视觉SLAM研究 baseline method)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "面向动态环境的视觉SLAM研究 github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "must_search from DomainScout (面向动态环境的视觉SLAM研究 github implementation)",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "面向动态环境的视觉SLAM研究 dataset benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "面向动态环境的视觉SLAM研究 baseline method",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "面向动态环境的视觉SLAM研究 github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      },
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': '面向动态环境的视觉SLAM研究 dataset benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '面向动态环境的视觉SLAM研究 baseline method', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '面向动态环境的视觉SLAM研究 github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "new_candidates_n": 0,
+      "accepted_candidates_n": 0,
+      "rejected_candidates_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0
+    }
+  ],
+  "final": {
+    "stop_reason": "no_new_signal",
+    "paper_n": 32,
+    "baseline_n": 0,
+    "parallel_n": 0,
+    "dataset_n": 0,
+    "repo_n": 0,
+    "remaining_gaps": [
+      "dataset_gap",
+      "repo_gap",
+      "baseline_gap"
+    ]
+  }
+}

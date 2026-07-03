@@ -1,0 +1,3168 @@
+{
+  "project_id": "agent-re04-e149a378",
+  "raw_topic": "基于多分辨率网络的桥梁裂缝分割算法研究",
+  "parsed_topic": {
+    "raw_topic": "基于多分辨率网络的桥梁裂缝分割算法研究",
+    "normalized_topic": "Bridge crack segmentation algorithm based on multi-resolution network",
+    "domain_route": "civil_infra",
+    "domain_confidence": 0.92,
+    "method_terms": [
+      "multi-resolution network",
+      "encoder-decoder",
+      "atrous spatial pyramid pooling (ASPP)",
+      "U-Net variants",
+      "feature pyramid network (FPN)",
+      "deep supervision"
+    ],
+    "task_terms": [
+      "semantic segmentation",
+      "pixel-level crack detection",
+      "crack segmentation"
+    ],
+    "object_terms": [
+      "bridge crack images",
+      "concrete surface cracks",
+      "pavement crack dataset",
+      "structural defect images"
+    ],
+    "query_atoms_en": [
+      "bridge crack segmentation multi-resolution network",
+      "semantic segmentation concrete crack deep learning",
+      "U-Net crack pixel-level segmentation",
+      "ASPP atrous convolution crack detection",
+      "feature pyramid network bridge surface defect",
+      "deep supervision encoder-decoder crack segmentation"
+    ],
+    "query_atoms_zh": [
+      "桥梁裂缝分割 多分辨率网络",
+      "混凝土裂缝 语义分割",
+      "U-Net 裂缝像素级分割",
+      "桥梁表观病害 深度学习",
+      "特征金字塔 裂缝检测",
+      "编解码网络 路面裂缝分割"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "openaccess.thecvf.com",
+      "arxiv.org",
+      "ascelibrary.org",
+      "mdpi.com",
+      "sciencedirect.com"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于多分辨率网络的桥梁裂缝分割算法研究",
+    "domain_route": "civil_infra",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "multi-resolution network semantic segmentation",
+        "multi-resolution network bridge crack images"
+      ],
+      "method_task": [
+        "multi-resolution network semantic segmentation",
+        "multi-resolution network pixel-level crack detection",
+        "encoder-decoder semantic segmentation",
+        "encoder-decoder pixel-level crack detection"
+      ],
+      "object_task": [
+        "bridge crack images semantic segmentation",
+        "bridge crack images pixel-level crack detection",
+        "concrete surface cracks semantic segmentation",
+        "concrete surface cracks pixel-level crack detection"
+      ],
+      "dataset": [
+        "semantic segmentation dataset",
+        "bridge crack images dataset"
+      ],
+      "repo": [
+        "semantic segmentation github",
+        "semantic segmentation implementation",
+        "multi-resolution network semantic segmentation"
+      ],
+      "survey": [
+        "semantic segmentation survey",
+        "civil infra survey"
+      ],
+      "benchmark": [
+        "semantic segmentation benchmark"
+      ],
+      "baseline": [
+        "multi-resolution network semantic segmentation",
+        "multi-resolution network pixel-level crack detection",
+        "encoder-decoder semantic segmentation",
+        "encoder-decoder pixel-level crack detection"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "multi-resolution network",
+        "encoder-decoder",
+        "atrous spatial pyramid pooling (ASPP)",
+        "U-Net variants",
+        "feature pyramid network (FPN)",
+        "deep supervision"
+      ],
+      "task_terms": [
+        "semantic segmentation",
+        "pixel-level crack detection",
+        "crack segmentation"
+      ],
+      "object_terms": [
+        "bridge crack images",
+        "concrete surface cracks",
+        "pavement crack dataset",
+        "structural defect images"
+      ],
+      "domain_route": "civil_infra"
+    },
+    "fb_atom": "bridge crack segmentation multi-resolution network",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper + repo backends",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "bridge crack segmentation multi-resolution",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv is the spine; surface the primary literature on multi-resolution bridge crack segmentation.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "U-Net crack pixel segmentation",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "capture encoder-decoder baselines that underpin multi-resolution variants.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "semantic segmentation concrete crack deep learning",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex widens recall to civil-engineering venues beyond arxiv.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "atrous spatial pyramid pooling crack detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "pull civil-infra ASPP studies indexed by DOI (ASCE / Elsevier).",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark / survey / recent-advances variants",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "crack segmentation survey recent advances",
+            "target_role": "survey",
+            "why_call": "locate surveys that anchor the crack-segmentation landscape.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "feature pyramid bridge surface defect",
+            "target_role": "reference",
+            "why_call": "find FPN-based methods adjacent to the multi-resolution family.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "pavement crack benchmark dataset deep learning",
+            "target_role": "reference",
+            "why_call": "identify the dominant public benchmarks (Crack500, DeepCrack, CFD) used for evaluation.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "deep supervision encoder-decoder crack",
+            "target_role": "reference",
+            "why_call": "surface deep-supervision architectural studies from engineering journals.",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code + datasets for the topic",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "crack segmentation pytorch",
+            "target_role": "repo",
+            "why_call": "discover runnable PyTorch crack-segmentation implementations to compare against.",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "crack segmentation unet",
+            "target_role": "repo",
+            "why_call": "find encoder-decoder repos directly relevant to multi-resolution U-Net variants.",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "deepcrack dataset",
+            "target_role": "dataset",
+            "why_call": "locate the canonical pixel-level crack benchmark dataset.",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "bridge crack detection",
+            "target_role": "repo",
+            "why_call": "hunt for bridge-specific crack pipelines and demo scripts.",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "openaccess.thecvf.com",
+      "arxiv.org",
+      "ascelibrary.org",
+      "mdpi.com",
+      "sciencedirect.com"
+    ],
+    "arxiv_queries": [
+      "bridge crack segmentation multi-resolution",
+      "U-Net crack pixel segmentation",
+      "crack segmentation survey recent advances",
+      "feature pyramid bridge surface defect"
+    ],
+    "openalex_queries": [
+      "semantic segmentation concrete crack deep learning",
+      "pavement crack benchmark dataset deep learning"
+    ],
+    "crossref_queries": [
+      "atrous spatial pyramid pooling crack detection",
+      "deep supervision encoder-decoder crack"
+    ],
+    "github_queries": [
+      "crack segmentation pytorch",
+      "crack segmentation unet",
+      "deepcrack dataset",
+      "bridge crack detection"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "image segmentation in foundation model era: a survey",
+      "candidate_id": "c-d7c56d95",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Image Segmentation in Foundation Model Era: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2408.12957v3",
+      "identifier": "2408.12957v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Image segmentation is a long-standing challenge in computer vision, studied continuously over several decades, as evidenced by seminal algorithms such as N-Cut, FCN, and MaskFormer. With the advent of foundation models (FMs), contemporary segmentation methodologies have embarked on a new epoch by either adapting FMs (e.g., CLIP, Stable Diffusion, DINO) for image segmentation or developing dedicated segmentation foundation models (e.g., SAM). These approaches not only deliver superior segmentation performance, but also herald newfound segmentation capabilities previously unseen in deep learning context. However, current research in image segmentation lacks a detailed analysis of distinct characteristics, challenges, and solutions associated with these advancements. This survey seeks to fill this gap by providing a thorough review of cutting-edge research centered around FM-driven image segmentation. We investigate two basic lines of research -- generic image segmentation (i.e., semantic segmentation, instance segmentation, panoptic segmentation), and promptable image segmentation (i.e., interactive segmentation, referring segmentation, few-shot segmentation) -- by delineating their respective task settings, background concepts, and key challenges. Furthermore, we provide insights into the emergence of segmentation knowledge from FMs like CLIP, Stable Diffusion, and DINO. An exhaustive overview of over 300 segmentation approaches is provided to encapsulate the breadth of current research efforts. Subsequently, we engage in a discussion of open issues and potential avenues for future research. We envisage that this fresh, comprehensive, and systematic survey catalyzes the evolution of advanced image segmentation systems. A public website is created to continuously track developments in this fast advancing field: \\url{https://github.com/stanley-313/ImageSegFM-Survey}.",
+      "extra": {}
+    },
+    {
+      "stable_id": "3d kidneys and kidney tumor semantic segmentation using boundary-aware networks",
+      "candidate_id": "c-8e8e90b7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "3D Kidneys and Kidney Tumor Semantic Segmentation using Boundary-Aware Networks",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1909.06684v1",
+      "identifier": "1909.06684v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Automated segmentation of kidneys and kidney tumors is an important step in quantifying the tumor's morphometrical details to monitor the progression of the disease and accurately compare decisions regarding the kidney tumor treatment. Manual delineation techniques are often tedious, error-prone and require expert knowledge for creating unambiguous representation of kidneys and kidney tumors segmentation. In this work, we propose an end-to-end boundary aware fully Convolutional Neural Networks (CNNs) for reliable kidney and kidney tumor semantic segmentation from arterial phase abdominal 3D CT scans. We propose a segmentation network consisting of an encoder-decoder architecture that specifically accounts for organ and tumor edge information by devising a dedicated boundary branch supervised by edge-aware loss terms. We have evaluated our model on 2019 MICCAI KiTS Kidney Tumor Segmentation Challenge dataset and our method has achieved dice scores of 0.9742 and 0.8103 for kidney and tumor repetitively and an overall composite dice score of 0.8923.",
+      "extra": {}
+    },
+    {
+      "stable_id": "decoupling continual semantic segmentation",
+      "candidate_id": "c-1fe3c805",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Decoupling Continual Semantic Segmentation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2508.05065v2",
+      "identifier": "2508.05065v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Continual Semantic Segmentation (CSS) requires learning new classes without forgetting previously acquired knowledge, addressing the fundamental challenge of catastrophic forgetting in dense prediction tasks. However, existing CSS methods typically employ single-stage encoder-decoder architectures where segmentation masks and class labels are tightly coupled, leading to interference between old and new class learning and suboptimal retention-plasticity balance. We introduce DecoupleCSS, a novel two-stage framework for CSS. By decoupling class-aware detection from class-agnostic segmentation, DecoupleCSS enables more effective continual learning, preserving past knowledge while learning new classes. The first stage leverages pre-trained text and image encoders, adapted using LoRA, to encode class-specific information and generate location-aware prompts. In the second stage, the Segment Anything Model (SAM) is employed to produce precise segmentation masks, ensuring that segmentation knowledge is shared across both new and previous classes. This approach improves the balance between retention and adaptability in CSS, achieving state-of-the-art performance across a variety of challenging tasks. Our code is publicly available at: https://github.com/euyis1019/Decoupling-Continual-Semantic-Segmentation.",
+      "extra": {}
+    },
+    {
+      "stable_id": "segnext: rethinking convolutional attention design for semantic segmentation",
+      "candidate_id": "c-344a0549",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SegNeXt: Rethinking Convolutional Attention Design for Semantic Segmentation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2209.08575v1",
+      "identifier": "2209.08575v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We present SegNeXt, a simple convolutional network architecture for semantic segmentation. Recent transformer-based models have dominated the field of semantic segmentation due to the efficiency of self-attention in encoding spatial information. In this paper, we show that convolutional attention is a more efficient and effective way to encode contextual information than the self-attention mechanism in transformers. By re-examining the characteristics owned by successful segmentation models, we discover several key components leading to the performance improvement of segmentation models. This motivates us to design a novel convolutional attention network that uses cheap convolutional operations. Without bells and whistles, our SegNeXt significantly improves the performance of previous state-of-the-art methods on popular benchmarks, including ADE20K, Cityscapes, COCO-Stuff, Pascal VOC, Pascal Context, and iSAID. Notably, SegNeXt outperforms EfficientNet-L2 w/ NAS-FPN and achieves 90.6% mIoU on the Pascal VOC 2012 test leaderboard using only 1/10 parameters of it. On average, SegNeXt achieves about 2.0% mIoU improvements compared to the state-of-the-art methods on the ADE20K datasets with the same or fewer computations. Code is available at https://github.com/uyzhang/JSeg (Jittor) and https://github.com/Visual-Attention-Network/SegNeXt (Pytorch).",
+      "extra": {}
+    },
+    {
+      "stable_id": "unsupervised semantic segmentation by contrasting object mask proposals",
+      "candidate_id": "c-3dcc4b87",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Unsupervised Semantic Segmentation by Contrasting Object Mask Proposals",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2102.06191v3",
+      "identifier": "2102.06191v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Being able to learn dense semantic representations of images without supervision is an important problem in computer vision. However, despite its significance, this problem remains rather unexplored, with a few exceptions that considered unsupervised semantic segmentation on small-scale datasets with a narrow visual domain. In this paper, we make a first attempt to tackle the problem on datasets that have been traditionally utilized for the supervised case. To achieve this, we introduce a two-step framework that adopts a predetermined mid-level prior in a contrastive optimization objective to learn pixel embeddings. This marks a large deviation from existing works that relied on proxy tasks or end-to-end clustering. Additionally, we argue about the importance of having a prior that contains information about objects, or their parts, and discuss several possibilities to obtain such a prior in an unsupervised manner.\n  Experimental evaluation shows that our method comes with key advantages over existing works. First, the learned pixel embeddings can be directly clustered in semantic groups using K-Means on PASCAL. Under the fully unsupervised setting, there is no precedent in solving the semantic segmentation task on such a challenging benchmark. Second, our representations can improve over strong baselines when transferred to new datasets, e.g. COCO and DAVIS. The code is available.",
+      "extra": {}
+    },
+    {
+      "stable_id": "1st place solution of the robust vision challenge 2022 semantic segmentation track",
+      "candidate_id": "c-dbec4ab0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "1st Place Solution of The Robust Vision Challenge 2022 Semantic Segmentation Track",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2210.12852v3",
+      "identifier": "2210.12852v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This report describes the winning solution to the Robust Vision Challenge (RVC) semantic segmentation track at ECCV 2022. Our method adopts the FAN-B-Hybrid model as the encoder and uses SegFormer as the segmentation framework. The model is trained on a composite dataset consisting of images from 9 datasets (ADE20K, Cityscapes, Mapillary Vistas, ScanNet, VIPER, WildDash 2, IDD, BDD, and COCO) with a simple dataset balancing strategy. All the original labels are projected to a 256-class unified label space, and the model is trained using a cross-entropy loss. Without significant hyperparameter tuning or any specific loss weighting, our solution ranks the first place on all the testing semantic segmentation benchmarks from multiple domains (ADE20K, Cityscapes, Mapillary Vistas, ScanNet, VIPER, and WildDash 2). The proposed method can serve as a strong baseline for the multi-domain segmentation task and benefit future works. Code will be available at https://github.com/lambert-x/RVC_Segmentation.",
+      "extra": {}
+    },
+    {
+      "stable_id": "solution for cvpr 2024 ug2+ challenge track on all weather semantic segmentation",
+      "candidate_id": "c-e7fe7b19",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Solution for CVPR 2024 UG2+ Challenge Track on All Weather Semantic Segmentation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2406.05837v1",
+      "identifier": "2406.05837v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In this report, we present our solution for the semantic segmentation in adverse weather, in UG2+ Challenge at CVPR 2024. To achieve robust and accurate segmentation results across various weather conditions, we initialize the InternImage-H backbone with pre-trained weights from the large-scale joint dataset and enhance it with the state-of-the-art Upernet segmentation method. Specifically, we utilize offline and online data augmentation approaches to extend the train set, which helps us to further improve the performance of the segmenter. As a result, our proposed solution demonstrates advanced performance on the test set and achieves 3rd position in this challenge.",
+      "extra": {}
+    },
+    {
+      "stable_id": "lidarmultinet: unifying lidar semantic segmentation, 3d object detection, and panoptic segmentation in a single multi-task network",
+      "candidate_id": "c-7918f4fb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "LidarMultiNet: Unifying LiDAR Semantic Segmentation, 3D Object Detection, and Panoptic Segmentation in a Single Multi-task Network",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2206.11428v2",
+      "identifier": "2206.11428v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This technical report presents the 1st place winning solution for the Waymo Open Dataset 3D semantic segmentation challenge 2022. Our network, termed LidarMultiNet, unifies the major LiDAR perception tasks such as 3D semantic segmentation, object detection, and panoptic segmentation in a single framework. At the core of LidarMultiNet is a strong 3D voxel-based encoder-decoder network with a novel Global Context Pooling (GCP) module extracting global contextual features from a LiDAR frame to complement its local features. An optional second stage is proposed to refine the first-stage segmentation or generate accurate panoptic segmentation results. Our solution achieves a mIoU of 71.13 and is the best for most of the 22 classes on the Waymo 3D semantic segmentation test set, outperforming all the other 3D semantic segmentation methods on the official leaderboard. We demonstrate for the first time that major LiDAR perception tasks can be unified in a single strong network that can be trained end-to-end.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a novel adaptive deep network for building footprint segmentation",
+      "candidate_id": "c-34f8b718",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Novel Adaptive Deep Network for Building Footprint Segmentation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2103.00286v1",
+      "identifier": "2103.00286v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Building footprint segmentations for high resolution images are increasingly demanded for many remote sensing applications. By the emerging deep learning approaches, segmentation networks have made significant advances in the semantic segmentation of objects. However, these advances and the increased access to satellite images require the generation of accurate object boundaries in satellite images. In the current paper, we propose a novel network-based on Pix2Pix methodology to solve the problem of inaccurate boundaries obtained by converting satellite images into maps using segmentation networks in order to segment building footprints. To define the new network named G2G, our framework includes two generators where the first generator extracts localization features in order to merge them with the boundary features extracted from the second generator to segment all detailed building edges. Moreover, different strategies are implemented to enhance the quality of the proposed networks' results, implying that the proposed network outperforms state-of-the-art networks in segmentation accuracy with a large margin for all evaluation metrics. The implementation is available at https://github.com/A2Amir/A-Novel-Adaptive-Deep-Network-for-Building-Footprint-Segmentation.",
+      "extra": {}
+    },
+    {
+      "stable_id": "efficient embedding network for 3d brain tumor segmentation",
+      "candidate_id": "c-d0f9f714",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Efficient embedding network for 3D brain tumor segmentation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2011.11052v1",
+      "identifier": "2011.11052v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "3D medical image processing with deep learning greatly suffers from a lack of data. Thus, studies carried out in this field are limited compared to works related to 2D natural image analysis, where very large datasets exist. As a result, powerful and efficient 2D convolutional neural networks have been developed and trained. In this paper, we investigate a way to transfer the performance of a two-dimensional classiffication network for the purpose of three-dimensional semantic segmentation of brain tumors. We propose an asymmetric U-Net network by incorporating the EfficientNet model as part of the encoding branch. As the input data is in 3D, the first layers of the encoder are devoted to the reduction of the third dimension in order to fit the input of the EfficientNet network. Experimental results on validation and test data from the BraTS 2020 challenge demonstrate that the proposed method achieve promising performance.",
+      "extra": {}
+    },
+    {
+      "stable_id": "on enhancing crack semantic segmentation using stylegan and brownian bridge diffusion",
+      "candidate_id": "c-b3eea2c3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "On Enhancing Crack Semantic Segmentation Using StyleGAN and Brownian Bridge Diffusion",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "IEEE Access",
+      "url": "https://doi.org/10.1109/access.2024.3368376",
+      "identifier": "10.1109/access.2024.3368376",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "text-enhanced label-efficient automated bridge defect semantic segmentation from inspection images",
+      "candidate_id": "c-f7f6dbb0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Text-Enhanced Label-Efficient Automated Bridge Defect Semantic Segmentation from Inspection Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "Computing in Civil Engineering 2024",
+      "url": "https://doi.org/10.1061/9780784486115.022",
+      "identifier": "10.1061/9780784486115.022",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "image-based autonomous concrete crack semantic segmentation using the deep fully convolutional encoder-decoder network for bridge inspection",
+      "candidate_id": "c-83cc7650",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Image-Based Autonomous Concrete Crack Semantic Segmentation Using the Deep Fully Convolutional Encoder-Decoder Network for Bridge Inspection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "SSRN Electronic Journal",
+      "url": "https://doi.org/10.2139/ssrn.3995191",
+      "identifier": "10.2139/ssrn.3995191",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "semantic segmentation using generative knowledge distillation for crack detection",
+      "candidate_id": "c-854e5c78",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Semantic Segmentation Using Generative Knowledge Distillation for Crack Detection",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "https://doi.org/10.2139/ssrn.4836215",
+      "identifier": "10.2139/ssrn.4836215",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "crack size measurements on fracture surface images using deep neural networks for semantic segmentation",
+      "candidate_id": "c-86a1bfad",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Crack Size Measurements on Fracture Surface Images Using Deep Neural Networks for Semantic Segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Volume 2: Computer Technology &amp; Bolted Joints; Design &amp; Analysis",
+      "url": "https://doi.org/10.1115/pvp2023-106773",
+      "identifier": "10.1115/pvp2023-106773",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:title>Abstract</jats:title>\n               <jats:p>For the safe evaluation of nuclear-relevant safety components, a precise and reliable analysis of the fracture surfaces after the test procedure is required. Within the scope of the studies a framework for automated crack size measurements based on image segmentation has been developed, capable of accelerating the standardized but tedious measurement procedure. Different known image segmentation architectures have been trained and assessed based on a specially created fracture surface image dataset. The fracture surfaces originate from SE(B) specimens made of the German reactor pressure vessel steel 22NiMoCr3-7 and its weld material. The evaluation of the model performances via the mIoU metric show that the investigated architectures are very well suited for the pixel-fine classification of fracture mechanisms. Based on the obtained prediction masks, the initial crack size a0 could be measured using the so-called area average (AA) method. The results have been compared to manual 5-point average (5PA) measurements. The automated crack length measurements show statistically verifiable very high precision, comparability, and economic efficiency.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "semantic segmentation with glcm images",
+      "candidate_id": "c-bb23a31e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Semantic Segmentation with GLCM Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 21st International Conference on Informatics in Control, Automation and Robotics",
+      "url": "https://doi.org/10.5220/0013072200003822",
+      "identifier": "10.5220/0013072200003822",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "research on the application of semantic segmentation in pavement crack images",
+      "candidate_id": "c-55e4e192",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Research on the application of semantic segmentation in pavement crack images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "International Conference on Signal Processing and Neural Network Applications (SPNNA 2024)",
+      "url": "https://doi.org/10.1117/12.3065042",
+      "identifier": "10.1117/12.3065042",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "4 bsp-based semantic segmentation",
+      "candidate_id": "c-e236b97d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "4 BSP-Based Semantic Segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": "Semantic Segmentation and Domain Adaptation of Aerial Images Using Binary Space Partitioning",
+      "url": "https://doi.org/10.51202/9783186890108-44",
+      "identifier": "10.51202/9783186890108-44",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a language-guided benchmark for weakly supervised open vocabulary semantic segmentation",
+      "candidate_id": "c-f3903a70",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Language-Guided Benchmark for Weakly Supervised Open Vocabulary Semantic Segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "https://doi.org/10.2139/ssrn.4391370",
+      "identifier": "10.2139/ssrn.4391370",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "automotive corrosion semantic segmentation: a benchmark study of segformer and cnn-based models",
+      "candidate_id": "c-06a7a2bb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Automotive Corrosion Semantic Segmentation: A Benchmark Study of SegFormer and CNN-Based Models",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "https://doi.org/10.21203/rs.3.rs-9991436/v1",
+      "identifier": "10.21203/rs.3.rs-9991436/v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<title>Abstract</title>\n                <p>Automotive corrosion threatens vehicle structural integrity, yet accelerated corrosion test results are still assessed by time-consuming manual inspection. Weconstruct a semantic segmentation dataset for early-stage automotive corrosioncomprising 1,158 annotated tiles from 144 high-resolution vehicle inspection photographs. A systematic benchmark of four models—U-Net, DeepLabV3+ (bothResNet-50), SegFormer-B0, and SegFormer-B2—is conducted under a unified protocol on this class-imbalanced dataset (0.56% corrosion pixels). SegFormer-B2achieves the highest mIoU of 0.8667 and Recall of 0.9171, outperforming CNN-basedcounterparts by 3.0–4.0 percentage points. The lightweight SegFormer-B0 (3.7Mparameters) also surpasses both CNN baselines despite 11.8× fewer parameters,confirming that the Mix Transformer encoder’s large effective receptive field, ratherthan raw capacity, drives the advantage on sparse multi-scale corrosion patterns.The dataset and results provide a reproducible baseline for intelligent automotivecorrosion assessment.</p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "stsd：a large-scale benchmark for semantic segmentation of subway tunnel point cloud",
+      "candidate_id": "c-951e013e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Stsd：A Large-Scale Benchmark for Semantic Segmentation of Subway Tunnel Point Cloud",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "https://doi.org/10.2139/ssrn.4518284",
+      "identifier": "10.2139/ssrn.4518284",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "semanticrail3d - a mobile lidar benchmark for semantic and instance segmentation of railway corridors",
+      "candidate_id": "c-d21fa7b0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SemanticRail3D - A Mobile LiDAR Benchmark for Semantic and Instance Segmentation of Railway Corridors",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "Scientific Data",
+      "url": "https://doi.org/10.1038/s41597-025-06392-9",
+      "identifier": "10.1038/s41597-025-06392-9",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "mass13k: a matting-level semantic segmentation benchmark",
+      "candidate_id": "c-d4bb1208",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "MaSS13K: A Matting-level Semantic Segmentation Benchmark",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+      "url": "https://doi.org/10.1109/cvpr52734.2025.01311",
+      "identifier": "10.1109/cvpr52734.2025.01311",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "dacl10k: benchmark for semantic bridge damage segmentation",
+      "candidate_id": "c-0d2a8044",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "dacl10k: Benchmark for Semantic Bridge Damage Segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)",
+      "url": "https://doi.org/10.1109/wacv57701.2024.00843",
+      "identifier": "10.1109/wacv57701.2024.00843",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "multi-scale network with attentional multi-resolution fusion for point cloud semantic segmentation",
+      "candidate_id": "c-008d09f0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Multi-scale Network with Attentional Multi-resolution Fusion for Point Cloud Semantic Segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "2022 26th International Conference on Pattern Recognition (ICPR)",
+      "url": "https://doi.org/10.1109/icpr56361.2022.9956365",
+      "identifier": "10.1109/icpr56361.2022.9956365",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "mbnet: a multi-resolution branch network for semantic segmentation of ultra-high resolution images",
+      "candidate_id": "c-ff130f27",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "MBNet: A Multi-Resolution Branch Network for Semantic Segmentation Of Ultra-High Resolution Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+      "url": "https://doi.org/10.1109/icassp43922.2022.9746595",
+      "identifier": "10.1109/icassp43922.2022.9746595",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a multi-step fusion network for semantic segmentation of high-resolution aerial images",
+      "candidate_id": "c-0521ce1f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Multi-Step Fusion Network for Semantic Segmentation of High-Resolution Aerial Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "Sensors",
+      "url": "https://doi.org/10.3390/s23115323",
+      "identifier": "10.3390/s23115323",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>The demand for semantic segmentation of ultra-high-resolution remote sensing images is becoming increasingly stronger in various fields, posing a great challenge with concern to the accuracy requirement. Most of the existing methods process ultra-high-resolution images using downsampling or cropping, but using this approach could result in a decline in the accuracy of segmenting data, as it may cause the omission of local details or global contextual information. Some scholars have proposed the two-branch structure, but the noise introduced by the global image will interfere with the result of semantic segmentation and reduce the segmentation accuracy. Therefore, we propose a model that can achieve ultra-high-precision semantic segmentation. The model consists of a local branch, a surrounding branch, and a global branch. To achieve high precision, the model is designed with a two-level fusion mechanism. The high-resolution fine structures are captured through the local and surrounding branches in the low-level fusion process, and the global contextual information is captured from downsampled inputs in the high-level fusion process. We conducted extensive experiments and analyses using the Potsdam and Vaihingen datasets of the ISPRS. The results show that our model has extremely high precision.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "multi-resolution learning and semantic edge enhancement for super-resolution semantic segmentation of urban scene images",
+      "candidate_id": "c-9d536430",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Multi-Resolution Learning and Semantic Edge Enhancement for Super-Resolution Semantic Segmentation of Urban Scene Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "Sensors",
+      "url": "https://doi.org/10.3390/s24144522",
+      "identifier": "10.3390/s24144522",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>Super-resolution semantic segmentation (SRSS) is a technique that aims to obtain high-resolution semantic segmentation results based on resolution-reduced input images. SRSS can significantly reduce computational cost and enable efficient, high-resolution semantic segmentation on mobile devices with limited resources. Some of the existing methods require modifications of the original semantic segmentation network structure or add additional and complicated processing modules, which limits the flexibility of actual deployment. Furthermore, the lack of detailed information in the low-resolution input image renders existing methods susceptible to misdetection at the semantic edges. To address the above problems, we propose a simple but effective framework called multi-resolution learning and semantic edge enhancement-based super-resolution semantic segmentation (MS-SRSS) which can be applied to any existing encoder-decoder based semantic segmentation network. Specifically, a multi-resolution learning mechanism (MRL) is proposed that enables the feature encoder of the semantic segmentation network to improve its feature extraction ability. Furthermore, we introduce a semantic edge enhancement loss (SEE) to alleviate the false detection at the semantic edges. We conduct extensive experiments on the three challenging benchmarks, Cityscapes, Pascal Context, and Pascal VOC 2012, to verify the effectiveness of our proposed MS-SRSS method. The experimental results show that, compared with the existing methods, our method can obtain the new state-of-the-art semantic segmentation performance.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "hstnet: an iterative optimization network for semantic segmentation of high-resolution remote sensing images",
+      "candidate_id": "c-9b272ca7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "HSTNet: An Iterative Optimization Network for Semantic Segmentation of High-Resolution Remote Sensing Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "International Journal of Scientific Engineering and Research",
+      "url": "https://doi.org/10.70729/se24326190901",
+      "identifier": "10.70729/se24326190901",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "mafmamba: a multi-scale adaptive fusion network for semantic segmentation of high-resolution remote sensing images",
+      "candidate_id": "c-c466173b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "MAFMamba: A Multi-Scale Adaptive Fusion Network for Semantic Segmentation of High-Resolution Remote Sensing Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": "Sensors",
+      "url": "https://doi.org/10.3390/s26020531",
+      "identifier": "10.3390/s26020531",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>With rapid advancements in sub-meter satellite and aerial imaging technologies, high-resolution remote sensing imagery has become a pivotal source for geospatial information acquisition. However, current semantic segmentation models encounter two primary challenges: (1) the inherent trade-off between capturing long-range global context and preserving precise local structural details—where excessive reliance on downsampled deep semantics often results in blurred boundaries and the loss of small objects and (2) the difficulty in modeling complex scenes with extreme scale variations, where objects of the same category exhibit drastically different morphological features. To address these issues, this paper introduces MAFMamba, a multi-scale adaptive fusion visual Mamba network tailored for high-resolution remote sensing images. To mitigate scale variation, we design a lightweight hybrid encoder incorporating an Adaptive Multi-scale Mamba Block (AMMB) in each stage. Driven by a Multi-scale Adaptive Fusion (MSAF) mechanism, the AMMB dynamically generates pixel-level weights to recalibrate cross-level features, establishing a robust multi-scale representation. Simultaneously, to strictly balance local details and global semantics, we introduce a Global–Local Feature Enhancement Mamba (GLMamba) in the decoder. This module synergistically integrates local fine-grained features extracted by convolutions with global long-range dependencies modeled by the Visual State Space (VSS) layer. Furthermore, we propose a Multi-Scale Cross-Attention Fusion (MSCAF) module to bridge the semantic gap between the encoder’s shallow details and the decoder’s high-level semantics via an efficient cross-attention mechanism. Extensive experiments on the ISPRS Potsdam and Vaihingen datasets demonstrate that MAFMamba surpasses state-of-the-art Convolutional Neural Network (CNN), Transformer, and Mamba-based methods in terms of mIoU and mF1 scores. Notably, it achieves superior accuracy while maintaining linear computational complexity and low memory usage, underscoring its efficiency in complex remote sensing scenarios.</jats:p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "reparameterizable dual-resolution network for real-time semantic segmentation",
+      "candidate_id": "c-8e514374",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Reparameterizable Dual-Resolution Network for Real-Time Semantic Segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "https://doi.org/10.2139/ssrn.5248070",
+      "identifier": "10.2139/ssrn.5248070",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a benchmark for semantic image segmentation",
+      "candidate_id": "c-25853cfe",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A benchmark for semantic image segmentation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2013,
+      "venue": "2013 IEEE International Conference on Multimedia and Expo (ICME)",
+      "url": "https://doi.org/10.1109/icme.2013.6607512",
+      "identifier": "10.1109/icme.2013.6607512",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "how to benchmark vision foundation models for semantic segmentation?",
+      "candidate_id": "c-cdc9a47e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "How to Benchmark Vision Foundation Models for Semantic Segmentation?",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+      "url": "https://doi.org/10.1109/cvprw63382.2024.00123",
+      "identifier": "10.1109/cvprw63382.2024.00123",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "itsprakhar/downstream-dinov2",
+      "candidate_id": "c-a3ecbac7",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "itsprakhar/Downstream-Dinov2",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/itsprakhar/Downstream-Dinov2",
+      "identifier": null,
+      "description": "Downstream-Dino-V2: A GitHub repository featuring an easy-to-use implementation of the DINOv2 model by Facebook for downstream tasks such as Classification, Semantic Segmentation and Monocular depth estimation.",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 272,
+        "language": "Jupyter Notebook"
+      }
+    },
+    {
+      "stable_id": "jiankun-chen/cvcmffnet-master",
+      "candidate_id": "c-16896eed",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Jiankun-chen/CVCMFFNet-master",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Jiankun-chen/CVCMFFNet-master",
+      "identifier": null,
+      "description": "We present a novel complex-valued convolutional and multi-feature fusion network (CVCMFF Net) specifically for building semantic segmentation of InSAR images. It can effectively segment the layover, shadow, and background on both the simulated InSAR building images and the real airborne InSAR images. The segmentation performance of CVCMFF Net is significantly improved compared with other state-of-the-art networks. The comparative experiments are link to https://github.com/Jiankun-chen/building-semantic-segmentation-of-InSAR-images",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 28,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "jiankun-chen/building-semantic-segmentation-of-insar-images",
+      "candidate_id": "c-f3c65d38",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Jiankun-chen/building-semantic-segmentation-of-InSAR-images",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Jiankun-chen/building-semantic-segmentation-of-InSAR-images",
+      "identifier": null,
+      "description": "We apply some state-of-the-art semantic segmentation methods to InSAR image building segmentation, directly. They are Unet, SegNet, RefineNet, PSPNet, and Deeplab v3+. These segmentation patterns are regarded as the comparative results with CVCMFFNet, which links to https://github.com/Jiankun-chen/CVCMFFNet-master",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 27,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "philliec459/semantic-segmentation-of-petrographic-thin-sections-using-keras",
+      "candidate_id": "c-f3934b2e",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Philliec459/Semantic-Segmentation-of-Petrographic-Thin-Sections-using-Keras",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Philliec459/Semantic-Segmentation-of-Petrographic-Thin-Sections-using-Keras",
+      "identifier": null,
+      "description": "This repository was inspired from Divam Gupta's GitHub repository on Image Segmentation Keras",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 22,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "liviaets/miccai_2020-weakly_supervised_tutorial",
+      "candidate_id": "c-3d71a370",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "LIVIAETS/miccai_2020-weakly_supervised_tutorial",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/LIVIAETS/miccai_2020-weakly_supervised_tutorial",
+      "identifier": null,
+      "description": "Material of the MICCAI 2020 tutorial on weakly supervised learning for semantic segmentation. The updated tutorial (2021 and onwards) is available there: https://github.com/LIVIAETS/miccai_weakly_supervised_tutorial",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 17,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "bzkrtslh/enriched-pointnetpp-and-randla-net-point-cloud-semantic-segmentation",
+      "candidate_id": "c-8202f437",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "bzkrtslh/Enriched-PointNetPP-and-RandLA-NET-Point-Cloud-Semantic-Segmentation",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/bzkrtslh/Enriched-PointNetPP-and-RandLA-NET-Point-Cloud-Semantic-Segmentation",
+      "identifier": null,
+      "description": "This GitHub repository has been created for the research project titled \"Improving Aerial Targeting Precision: A Study on Point Cloud Semantic Segmentation with Advanced Deep Learning Algorithms.\"",
+      "quoted_paper_titles": [
+        "Improving Aerial Targeting Precision: A Study on Point Cloud Semantic Segmentation with Advanced Deep Learning Algorithms."
+      ],
+      "abstract": null,
+      "extra": {
+        "stars": 16,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "improving aerial targeting precision: a study on point cloud semantic segmentation with advanced deep learning algorithms.",
+      "candidate_id": "c-4f372c33",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Improving Aerial Targeting Precision: A Study on Point Cloud Semantic Segmentation with Advanced Deep Learning Algorithms.",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "bzkrtslh/Enriched-PointNetPP-and-RandLA-NET-Point-Cloud-Semantic-Segmentation"
+      }
+    },
+    {
+      "stable_id": "segformer: simple and efficient design for semantic segmentation with transformers",
+      "candidate_id": "c-ca6c4dca",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "encoder-decoder with atrous separable convolution for semantic image segmentation",
+      "candidate_id": "c-e337cfa9",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "rethinking atrous convolution for semantic image segmentation",
+      "candidate_id": "c-39d8172f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Rethinking Atrous Convolution for Semantic Image Segmentation",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "deeplab: semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs",
+      "candidate_id": "c-e7817d7b",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "swin unetr: swin transformers for semantic segmentation of brain tumors in mri images",
+      "candidate_id": "c-9c8c8ff5",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "rethinking semantic segmentation from a sequence-to-sequence perspective with transformers",
+      "candidate_id": "c-caf1d926",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Rethinking Semantic Segmentation from a Sequence-to-Sequence Perspective with Transformers",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "fully convolutional networks for semantic segmentation",
+      "candidate_id": "c-bbade6f6",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Fully convolutional networks for semantic segmentation",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    },
+    {
+      "stable_id": "learning deconvolution network for semantic segmentation",
+      "candidate_id": "c-57273cfc",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Learning Deconvolution Network for Semantic Segmentation",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "multi-resolution network semantic segmentation|multi-resolution network bridge crack images",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "semantic segmentation dataset|bridge crack images dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "semantic segmentation survey|civil infra survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "multi-resolution network semantic segmentation|multi-resolution network bridge crack images",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "multi-resolution network semantic segmentation|multi-resolution network pixel-level crack detection|encoder-decoder sema",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "multi-resolution network semantic segmentation|multi-resolution network pixel-level crack detection|encoder-decoder sema",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "semantic segmentation benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "semantic segmentation github|semantic segmentation implementation|multi-resolution network semantic segmentation",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 6,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "multi-resolution network semantic segmentation|multi-resolution network bridge crack images",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "semantic segmentation survey|civil infra survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "multi-resolution network semantic segmentation|multi-resolution network pixel-level crack detection|encoder-decoder sema",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "multi-resolution network semantic segmentation|multi-resolution network bridge crack images",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "semantic segmentation dataset|bridge crack images dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 5,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "semantic segmentation dataset|bridge crack images dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "semantic segmentation dataset|bridge crack images dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "bridge crack images semantic segmentation|bridge crack images pixel-level crack detection|concrete surface cracks semant",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "bridge crack images semantic segmentation|bridge crack images pixel-level crack detection|concrete surface cracks semant",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "semantic segmentation benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "multi-resolution network semantic segmentation|multi-resolution network pixel-level crack detection|encoder-decoder sema",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "segmentation segmentation|segmentation semantic|segmentation that",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Image Segmentation in Foundation Model Era: A Survey",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: 3D Kidneys and Kidney Tumor Semantic Segmentation using Boun",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Decoupling Continual Semantic Segmentation",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: SegNeXt: Rethinking Convolutional Attention Design for Seman",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Unsupervised Semantic Segmentation by Contrasting Object Mas",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-d7c56d95",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation",
+        "image segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete crack",
+        "U-Net",
+        "ASPP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "General segmentation survey; useful background but not domain-specific to bridge cracks.",
+      "reason": "Covers broad image segmentation methods including foundation models. Tangential reference for method overview; lacks bridge/crack-specific content."
+    },
+    {
+      "candidate_id": "c-8e8e90b7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation",
+        "encoder-decoder"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface",
+        "multi-resolution network",
+        "civil infrastructure"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Medical imaging paper on kidney tumors; cross-domain with no relevance to bridge cracks.",
+      "reason": "Boundary-aware network applied to 3D kidney/tumor CT segmentation. Domain mismatch with civil infrastructure crack segmentation."
+    },
+    {
+      "candidate_id": "c-1fe3c805",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface",
+        "multi-resolution",
+        "crack"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Continual learning paper; not relevant to bridge crack segmentation.",
+      "reason": "Focuses on catastrophic forgetting in CSS. No connection to bridge defect or multi-resolution segmentation."
+    },
+    {
+      "candidate_id": "c-344a0549",
+      "evidence_type": "paper",
+      "role_hint": "baseline",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation",
+        "encoder-decoder",
+        "convolutional attention"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface crack",
+        "ASPP",
+        "deep supervision"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Strong general segmentation backbone; could serve as a baseline/parallel comparator.",
+      "reason": "SegNeXt is a competitive semantic segmentation architecture. Useful as a parallel comparison method, though not bridge-specific."
+    },
+    {
+      "candidate_id": "c-3dcc4b87",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete",
+        "multi-resolution",
+        "crack detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Unsupervised segmentation on natural images; unrelated to bridge crack task.",
+      "reason": "Deals with unsupervised dense representations for general objects. No overlap with bridge crack or multi-resolution networks."
+    },
+    {
+      "candidate_id": "c-dbec4ab0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution",
+        "concrete",
+        "U-Net"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Challenge report on robust vision benchmark; no bridge/crack relevance.",
+      "reason": "RVC 2022 winning solution using FAN-B-Hybrid/SegFormer on generic benchmarks. Domain-mismatched with bridge inspection."
+    },
+    {
+      "candidate_id": "c-e7fe7b19",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete crack",
+        "multi-resolution",
+        "crack"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Adverse weather segmentation challenge; unrelated to bridge defects.",
+      "reason": "UG2+ challenge solution for all-weather segmentation. Not related to crack detection or multi-resolution architectures."
+    },
+    {
+      "candidate_id": "c-7918f4fb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface",
+        "multi-resolution",
+        "2D image"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "LiDAR-based autonomous driving paper; irrelevant to bridge crack images.",
+      "reason": "LidarMultiNet unifies LiDAR perception tasks. Domain mismatch with 2D bridge surface crack segmentation."
+    },
+    {
+      "candidate_id": "c-34f8b718",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation",
+        "deep learning",
+        "high resolution images",
+        "segmentation network"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface crack",
+        "ASPP",
+        "U-Net"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Building footprint segmentation in remote sensing; same civil-infra-adjacent domain.",
+      "reason": "Adaptive deep network for building footprints from aerial images. Related civil-infrastructure segmentation but different object (buildings vs. cracks)."
+    },
+    {
+      "candidate_id": "c-d0f9f714",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete",
+        "multi-resolution",
+        "crack",
+        "semantic segmentation"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Medical 3D brain tumor paper; cross-domain mismatch.",
+      "reason": "Embedding network for 3D brain tumor segmentation. No relevance to bridge crack or multi-resolution 2D crack networks."
+    },
+    {
+      "candidate_id": "c-b3eea2c3",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "crack semantic segmentation",
+        "deep learning",
+        "crack detection"
+      ],
+      "missing_terms": [
+        "multi-resolution network",
+        "bridge crack",
+        "U-Net",
+        "ASPP",
+        "concrete surface"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct crack segmentation paper but uses StyleGAN/diffusion, not multi-resolution networks.",
+      "reason": "Enhances crack segmentation via generative augmentation (StyleGAN, Brownian Bridge diffusion). Relevant parallel work on the same task but different method family."
+    },
+    {
+      "candidate_id": "c-f7f6dbb0",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "bridge defect semantic segmentation",
+        "inspection images",
+        "semantic segmentation",
+        "bridge"
+      ],
+      "missing_terms": [
+        "multi-resolution network",
+        "U-Net",
+        "ASPP",
+        "FPN"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Directly on bridge defect semantic segmentation; strong domain match despite different method.",
+      "reason": "Text-enhanced weakly supervised bridge defect segmentation from inspection images. Highly relevant to bridge surface defect segmentation task."
+    },
+    {
+      "candidate_id": "c-83cc7650",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "core",
+      "matched_terms": [
+        "bridge crack",
+        "concrete crack",
+        "semantic segmentation",
+        "encoder-decoder",
+        "deep fully convolutional",
+        "pixel-level"
+      ],
+      "missing_terms": [
+        "multi-resolution network",
+        "ASPP",
+        "FPN",
+        "deep supervision"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct match: concrete bridge crack segmentation using encoder-decoder FCN; core front-of-list candidate.",
+      "reason": "Autonomous concrete crack semantic segmentation with deep fully convolutional encoder-decoder network for bridge inspection. Closest parallel method to multi-resolution U-Net variants on the same object."
+    },
+    {
+      "candidate_id": "c-854e5c78",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation",
+        "crack detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "multi-resolution network",
+        "bridge crack",
+        "U-Net",
+        "concrete surface"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Crack segmentation paper via knowledge distillation; relevant parallel method.",
+      "reason": "Generative knowledge distillation for crack detection semantic segmentation. Same task family but different method (distillation-based, not multi-resolution)."
+    },
+    {
+      "candidate_id": "c-86a1bfad",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "needs_manual",
+      "matched_terms": [
+        "semantic segmentation",
+        "deep neural networks"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface crack",
+        "multi-resolution",
+        "U-Net"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Fracture surface crack measurement for nuclear components; domain-adjacent but not civil infra.",
+      "reason": "Semantic segmentation for crack size on fracture surfaces of nuclear components. Shares method (DNN segmentation) and object (cracks) but in materials/mechanical domain."
+    },
+    {
+      "candidate_id": "c-bb23a31e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution",
+        "crack",
+        "concrete",
+        "U-Net"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "GLCM-based segmentation; no connection to bridge crack or deep multi-resolution networks.",
+      "reason": "Uses GLCM texture features for segmentation. No relevance to deep learning crack segmentation or bridge infrastructure."
+    },
+    {
+      "candidate_id": "c-55e4e192",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation",
+        "pavement crack images",
+        "crack detection"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "U-Net",
+        "concrete surface"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Pavement crack segmentation; same surface-defect task family, sibling to bridge cracks.",
+      "reason": "Semantic segmentation applied to pavement crack images. Closely related civil-infrastructure defect segmentation but targets pavement rather than bridges."
+    },
+    {
+      "candidate_id": "c-e236b97d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface",
+        "multi-resolution",
+        "crack"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Aerial image segmentation via BSP; unrelated to bridge surface cracks.",
+      "reason": "Binary Space Partitioning for aerial/satellite image segmentation. Domain mismatch with bridge crack pixel-level detection."
+    },
+    {
+      "candidate_id": "c-f3903a70",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution",
+        "crack",
+        "concrete"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Weakly supervised open-vocabulary benchmark; no bridge/crack relevance.",
+      "reason": "Language-guided benchmark for weakly supervised open-vocabulary segmentation. No link to crack detection or bridge inspection."
+    },
+    {
+      "candidate_id": "c-06a7a2bb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation",
+        "benchmark",
+        "SegFormer",
+        "CNN-based"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface crack",
+        "multi-resolution",
+        "U-Net"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Automotive corrosion paper; wrong infrastructure domain (vehicles not bridges).",
+      "reason": "Benchmark of SegFormer and CNN models on automotive corrosion. Cross-domain infrastructure (vehicles, not bridges); no crack segmentation focus."
+    },
+    {
+      "candidate_id": "c-951e013e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete surface",
+        "ASPP",
+        "encoder-decoder"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Subway tunnel point cloud segmentation; cross-domain (3D point cloud vs. 2D bridge crack images).",
+      "reason": "Topic targets 2D bridge/concrete crack segmentation. This paper covers 3D point cloud segmentation of subway tunnels, a different modality and infrastructure type."
+    },
+    {
+      "candidate_id": "c-d21fa7b0",
+      "evidence_type": "paper",
+      "role_hint": "dataset",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete surface",
+        "pixel-level crack"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Railway corridor LiDAR benchmark; wrong domain (rail, 3D LiDAR) for bridge crack 2D imagery.",
+      "reason": "Topic is about 2D crack images on bridges. This is a 3D LiDAR dataset for railway corridors; modality and object both differ."
+    },
+    {
+      "candidate_id": "c-d4bb1208",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete",
+        "ASPP",
+        "encoder-decoder"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "General matting benchmark; no bridge/crack domain relevance.",
+      "reason": "MaSS13K is a matting-level segmentation benchmark unrelated to bridge crack or multi-resolution encoder-decoder networks."
+    },
+    {
+      "candidate_id": "c-0d2a8044",
+      "evidence_type": "paper",
+      "role_hint": "dataset",
+      "status": "core",
+      "matched_terms": [
+        "bridge",
+        "semantic segmentation",
+        "structural defect"
+      ],
+      "missing_terms": [
+        "multi-resolution network",
+        "ASPP",
+        "crack pixel-level"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Directly relevant bridge damage segmentation benchmark; strong object match.",
+      "reason": "dacl10k is a benchmark for semantic segmentation of bridge damage (including cracks) at WACV 2024. Closest dataset match for bridge crack segmentation."
+    },
+    {
+      "candidate_id": "c-008d09f0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "multi-resolution",
+        "multi-scale",
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete",
+        "ASPP",
+        "encoder-decoder crack"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Multi-resolution/multi-scale segmentation method, but point cloud domain, not 2D crack images.",
+      "reason": "Proposes multi-scale attentional multi-resolution fusion for point cloud segmentation. Method concept is transferable but object is point clouds, not bridge cracks."
+    },
+    {
+      "candidate_id": "c-ff130f27",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "multi-resolution",
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete",
+        "ASPP",
+        "encoder-decoder crack"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Multi-resolution branch network for segmentation; method relevant, object not cracks.",
+      "reason": "MBNet targets semantic segmentation of ultra-high-resolution images with a multi-resolution branch design. Method aligns but domain is general, not bridge cracks."
+    },
+    {
+      "candidate_id": "c-0521ce1f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation",
+        "multi-scale"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface",
+        "ASPP",
+        "encoder-decoder crack"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Aerial remote sensing imagery; cross-domain vs. bridge surface crack segmentation.",
+      "reason": "Multi-step fusion for high-resolution aerial image segmentation. Domain is remote sensing aerial imagery, not close-range bridge surface crack images."
+    },
+    {
+      "candidate_id": "c-9d536430",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "multi-resolution",
+        "semantic segmentation",
+        "high-resolution"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete",
+        "ASPP",
+        "encoder-decoder crack"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Multi-resolution + segmentation method, but urban scene SRSS, not crack imagery.",
+      "reason": "Super-resolution semantic segmentation with multi-resolution learning for urban scenes. Method transferable but objects are urban scenes, not bridge surface cracks."
+    },
+    {
+      "candidate_id": "c-9b272ca7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation",
+        "high-resolution"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete",
+        "ASPP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Remote sensing imagery segmentation; wrong object domain.",
+      "reason": "HSTNet targets remote sensing image semantic segmentation. No relation to bridge crack images or close-range surface defect imagery."
+    },
+    {
+      "candidate_id": "c-c466173b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "multi-scale",
+        "semantic segmentation",
+        "high-resolution"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete surface",
+        "ASPP",
+        "encoder-decoder crack"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Remote sensing imagery; cross-domain vs. bridge surface cracks.",
+      "reason": "MAFMamba handles high-resolution remote sensing image segmentation. Domain mismatch: satellite/aerial imagery, not bridge surface defect images."
+    },
+    {
+      "candidate_id": "c-8e514374",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "dual-resolution",
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "concrete",
+        "ASPP",
+        "encoder-decoder crack"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Dual-resolution network for segmentation; method concept matches, object does not.",
+      "reason": "Reparameterizable dual-resolution network for real-time segmentation. Method aligns with multi-resolution networks but targets general scenes, not cracks."
+    },
+    {
+      "candidate_id": "c-25853cfe",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation",
+        "benchmark"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete",
+        "ASPP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Old general segmentation benchmark; no relevance to bridge/crack domain.",
+      "reason": "2013 generic semantic image segmentation benchmark. Neither method (multi-resolution nets) nor object (bridge cracks) matches."
+    },
+    {
+      "candidate_id": "c-cdc9a47e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation",
+        "benchmark"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete",
+        "ASPP"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Vision foundation model benchmark; no bridge/crack specific relevance.",
+      "reason": "Benchmarks vision foundation models for semantic segmentation. No specific focus on bridge cracks or multi-resolution network designs."
+    },
+    {
+      "candidate_id": "c-a3ecbac7",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "ASPP",
+        "encoder-decoder"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "DINOv2 downstream tasks repo; unrelated to bridge crack segmentation.",
+      "reason": "General-purpose DINOv2 repo for classification/segmentation/depth. No bridge crack or multi-resolution network components."
+    },
+    {
+      "candidate_id": "c-16896eed",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "ASPP",
+        "encoder-decoder crack"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "InSAR building segmentation; cross-domain vs. bridge surface cracks.",
+      "reason": "CVCMFFNet is for InSAR building segmentation. Wrong modality (radar) and wrong object (buildings, not bridge cracks)."
+    },
+    {
+      "candidate_id": "c-f3c65d38",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation",
+        "encoder-decoder",
+        "U-Net",
+        "ASPP"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Repo applying SegNet/PSPNet/Deeplab v3+; method modules match but object is InSAR buildings.",
+      "reason": "Applies classical segmentation models (U-Net, PSPNet, DeepLab v3+) which overlap with multi-resolution/ASPP methods, but on InSAR building images, not bridge cracks."
+    },
+    {
+      "candidate_id": "c-f3934b2e",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "ASPP",
+        "concrete"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Petrographic thin section segmentation; unrelated domain.",
+      "reason": "Keras-based semantic segmentation for petrographic thin sections. Geology microscopy domain, not civil infrastructure cracks."
+    },
+    {
+      "candidate_id": "c-3d71a370",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "ASPP",
+        "concrete"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "MICCAI weakly-supervised tutorial; medical imaging domain.",
+      "reason": "Tutorial material for weakly supervised segmentation in medical imaging (MICCAI). Domain mismatch with bridge crack segmentation."
+    },
+    {
+      "candidate_id": "c-8202f437",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "ASPP",
+        "concrete"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Aerial point cloud segmentation; wrong modality and domain.",
+      "reason": "PointNet++ / RandLA-Net for aerial LiDAR point cloud segmentation. Wrong modality (3D point clouds) and object (aerial targeting), not bridge cracks."
+    },
+    {
+      "candidate_id": "c-4f372c33",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "ASPP",
+        "concrete"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Aerial LiDAR point cloud segmentation; unrelated to bridge crack imagery.",
+      "reason": "Paper companion of repo c-8202f437. Targets aerial point cloud segmentation with deep learning; no bridge/crack relation."
+    },
+    {
+      "candidate_id": "c-ca6c4dca",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "ASPP",
+        "U-Net",
+        "FPN",
+        "deep supervision",
+        "encoder-decoder",
+        "crack detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "General transformer segmentation model; no crack/bridge focus.",
+      "reason": "SegFormer is a generic semantic segmentation method. Useful as a parallel/background segmentation architecture but lacks any connection to bridge cracks or multi-resolution design."
+    },
+    {
+      "candidate_id": "c-e337cfa9",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "encoder-decoder",
+        "atrous convolution",
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "crack detection",
+        "FPN",
+        "deep supervision",
+        "concrete surface"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "DeepLab V3+ directly underpins ASPP+encoder-decoder crack segmentation methods.",
+      "reason": "DeepLab V3+ paper defines the encoder-decoder with atrous separable convolution backbone widely reused in crack segmentation. Strong method overlap (ASPP, encoder-decoder) though not crack-specific."
+    },
+    {
+      "candidate_id": "c-39d8172f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "atrous convolution",
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "encoder-decoder",
+        "crack detection",
+        "FPN",
+        "deep supervision"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Origin of ASPP module; foundational method reference for crack segmentation.",
+      "reason": "DeepLab V2 introduces ASPP/atrous convolution. Referenced as method baseline for many crack segmentation works; generic semantic segmentation focus, not bridge-specific."
+    },
+    {
+      "candidate_id": "c-e7817d7b",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "atrous convolution",
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "encoder-decoder",
+        "FPN",
+        "crack detection"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Original DeepLab; provides foundational atrous/CRF concepts used in crack work.",
+      "reason": "DeepLab V1 is a seminal semantic segmentation paper with atrous convolution and CRF. Relevant as methodological background but no crack/bridge or multi-resolution focus."
+    },
+    {
+      "candidate_id": "c-9c8c8ff5",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "rejected",
+      "matched_terms": [
+        "semantic segmentation",
+        "U-Net"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "concrete surface",
+        "pavement"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Medical (brain MRI) segmentation; cross-domain relative to bridge cracks.",
+      "reason": "Swin UNETR targets brain tumor segmentation in MRI. Domain (medical imaging) is unrelated to bridge/concrete crack segmentation despite using a transformer-UNet architecture."
+    },
+    {
+      "candidate_id": "c-caf1d926",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "atrous convolution",
+        "encoder-decoder",
+        "crack detection",
+        "FPN",
+        "deep supervision"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "General transformer segmentation backbone; no crack relevance.",
+      "reason": "SegFormer-like seq2seq transformer for semantic segmentation. Cited as architectural inspiration in many segmentation surveys, but lacks domain link to bridge cracks."
+    },
+    {
+      "candidate_id": "c-bbade6f6",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "semantic segmentation",
+        "pixel-level"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "atrous convolution",
+        "encoder-decoder",
+        "FPN",
+        "deep supervision",
+        "ASPP"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "FCN is the foundational pixel-level segmentation method.",
+      "reason": "Fully Convolutional Networks is a foundational pixel-level semantic segmentation paper. Frequently cited as baseline in crack segmentation literature, though not multi-resolution or bridge-specific."
+    },
+    {
+      "candidate_id": "c-57273cfc",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "encoder-decoder",
+        "semantic segmentation"
+      ],
+      "missing_terms": [
+        "bridge crack",
+        "multi-resolution network",
+        "atrous convolution",
+        "ASPP",
+        "FPN",
+        "deep supervision",
+        "crack detection"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Early deconvolution encoder-decoder; methodological predecessor.",
+      "reason": "Deconvolution Network paper is an early encoder-decoder for semantic segmentation. Relevant as methodological precedent for U-Net-style crack segmentation networks; no direct crack focus."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Recommended direction: a multi-resolution encoder–decoder network for pixel-level bridge crack segmentation, integrating ASPP/atrous convolution, FPN-style multi-scale fusion, and deep supervision. Use dacl10k (c-0d2a8044) as primary benchmark and the concrete crack FCN encoder–decoder paper (c-83cc7650) as primary domain baseline, with pavement cracks (c-55e4e192) and StyleGAN/diffusion-augmented crack segmentation (c-b3eea2c3) as parallel comparators. Use DeepLab V3+ (c-e337cfa9), DeepLab V2 ASPP (c-39d8172f), and FCN (c-bbade6f6) as method references. Caveat: the corpus lacks a single canonical 'multi-resolution bridge crack' paper, so the proposal must be framed as a synthesis of multi-resolution/multi-scale segmentation ideas applied to bridge crack data. Confirm dataset/license before committing.",
+    "baseline_options": [
+      "c-83cc7650",
+      "c-0d2a8044",
+      "c-55e4e192",
+      "c-b3eea2c3",
+      "c-e337cfa9"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-83cc7650",
+          "title": "Image-Based Autonomous Concrete Crack Semantic Segmentation Using the Deep Fully Convolutional Encoder-Decoder Network f",
+          "role_hint": "unknown",
+          "reason": "Direct match: concrete bridge crack segmentation using encoder-decoder FCN; core front-of-list candidate."
+        },
+        {
+          "candidate_id": "c-0d2a8044",
+          "title": "dacl10k: Benchmark for Semantic Bridge Damage Segmentation",
+          "role_hint": "dataset",
+          "reason": "Directly relevant bridge damage segmentation benchmark; strong object match."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-d7c56d95",
+          "title": "Image Segmentation in Foundation Model Era: A Survey",
+          "role_hint": "unknown",
+          "reason": "General segmentation survey; useful background but not domain-specific to bridge cracks."
+        },
+        {
+          "candidate_id": "c-344a0549",
+          "title": "SegNeXt: Rethinking Convolutional Attention Design for Semantic Segmentation",
+          "role_hint": "baseline",
+          "reason": "Strong general segmentation backbone; could serve as a baseline/parallel comparator."
+        },
+        {
+          "candidate_id": "c-34f8b718",
+          "title": "A Novel Adaptive Deep Network for Building Footprint Segmentation",
+          "role_hint": "parallel",
+          "reason": "Building footprint segmentation in remote sensing; same civil-infra-adjacent domain."
+        },
+        {
+          "candidate_id": "c-b3eea2c3",
+          "title": "On Enhancing Crack Semantic Segmentation Using StyleGAN and Brownian Bridge Diffusion",
+          "role_hint": "parallel",
+          "reason": "Direct crack segmentation paper but uses StyleGAN/diffusion, not multi-resolution networks."
+        },
+        {
+          "candidate_id": "c-f7f6dbb0",
+          "title": "Text-Enhanced Label-Efficient Automated Bridge Defect Semantic Segmentation from Inspection Images",
+          "role_hint": "parallel",
+          "reason": "Directly on bridge defect semantic segmentation; strong domain match despite different method."
+        },
+        {
+          "candidate_id": "c-854e5c78",
+          "title": "Semantic Segmentation Using Generative Knowledge Distillation for Crack Detection",
+          "role_hint": "parallel",
+          "reason": "Crack segmentation paper via knowledge distillation; relevant parallel method."
+        },
+        {
+          "candidate_id": "c-55e4e192",
+          "title": "Research on the application of semantic segmentation in pavement crack images",
+          "role_hint": "parallel",
+          "reason": "Pavement crack segmentation; same surface-defect task family, sibling to bridge cracks."
+        },
+        {
+          "candidate_id": "c-008d09f0",
+          "title": "Multi-scale Network with Attentional Multi-resolution Fusion for Point Cloud Semantic Segmentation",
+          "role_hint": "reference",
+          "reason": "Multi-resolution/multi-scale segmentation method, but point cloud domain, not 2D crack images."
+        },
+        {
+          "candidate_id": "c-ff130f27",
+          "title": "MBNet: A Multi-Resolution Branch Network for Semantic Segmentation Of Ultra-High Resolution Images",
+          "role_hint": "reference",
+          "reason": "Multi-resolution branch network for segmentation; method relevant, object not cracks."
+        },
+        {
+          "candidate_id": "c-9d536430",
+          "title": "Multi-Resolution Learning and Semantic Edge Enhancement for Super-Resolution Semantic Segmentation of Urban Scene Images",
+          "role_hint": "reference",
+          "reason": "Multi-resolution + segmentation method, but urban scene SRSS, not crack imagery."
+        },
+        {
+          "candidate_id": "c-8e514374",
+          "title": "Reparameterizable Dual-Resolution Network for Real-Time Semantic Segmentation",
+          "role_hint": "reference",
+          "reason": "Dual-resolution network for segmentation; method concept matches, object does not."
+        },
+        {
+          "candidate_id": "c-f3c65d38",
+          "title": "Jiankun-chen/building-semantic-segmentation-of-InSAR-images",
+          "role_hint": "repo",
+          "reason": "Repo applying SegNet/PSPNet/Deeplab v3+; method modules match but object is InSAR buildings."
+        },
+        {
+          "candidate_id": "c-ca6c4dca",
+          "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+          "role_hint": "parallel",
+          "reason": "General transformer segmentation model; no crack/bridge focus."
+        },
+        {
+          "candidate_id": "c-e337cfa9",
+          "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+          "role_hint": "parallel",
+          "reason": "DeepLab V3+ directly underpins ASPP+encoder-decoder crack segmentation methods."
+        },
+        {
+          "candidate_id": "c-39d8172f",
+          "title": "Rethinking Atrous Convolution for Semantic Image Segmentation",
+          "role_hint": "parallel",
+          "reason": "Origin of ASPP module; foundational method reference for crack segmentation."
+        },
+        {
+          "candidate_id": "c-e7817d7b",
+          "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+          "role_hint": "parallel",
+          "reason": "Original DeepLab; provides foundational atrous/CRF concepts used in crack work."
+        },
+        {
+          "candidate_id": "c-caf1d926",
+          "title": "Rethinking Semantic Segmentation from a Sequence-to-Sequence Perspective with Transformers",
+          "role_hint": "parallel",
+          "reason": "General transformer segmentation backbone; no crack relevance."
+        },
+        {
+          "candidate_id": "c-bbade6f6",
+          "title": "Fully convolutional networks for semantic segmentation",
+          "role_hint": "parallel",
+          "reason": "FCN is the foundational pixel-level segmentation method."
+        },
+        {
+          "candidate_id": "c-57273cfc",
+          "title": "Learning Deconvolution Network for Semantic Segmentation",
+          "role_hint": "parallel",
+          "reason": "Early deconvolution encoder-decoder; methodological predecessor."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-86a1bfad",
+          "title": "Crack Size Measurements on Fracture Surface Images Using Deep Neural Networks for Semantic Segmentation",
+          "role_hint": "reference",
+          "reason": "Fracture surface crack measurement for nuclear components; domain-adjacent but not civil infra."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-8e8e90b7",
+          "title": "3D Kidneys and Kidney Tumor Semantic Segmentation using Boundary-Aware Networks",
+          "role_hint": "reference",
+          "reason": "Medical imaging paper on kidney tumors; cross-domain with no relevance to bridge cracks."
+        },
+        {
+          "candidate_id": "c-1fe3c805",
+          "title": "Decoupling Continual Semantic Segmentation",
+          "role_hint": "reference",
+          "reason": "Continual learning paper; not relevant to bridge crack segmentation."
+        },
+        {
+          "candidate_id": "c-3dcc4b87",
+          "title": "Unsupervised Semantic Segmentation by Contrasting Object Mask Proposals",
+          "role_hint": "reference",
+          "reason": "Unsupervised segmentation on natural images; unrelated to bridge crack task."
+        },
+        {
+          "candidate_id": "c-dbec4ab0",
+          "title": "1st Place Solution of The Robust Vision Challenge 2022 Semantic Segmentation Track",
+          "role_hint": "reference",
+          "reason": "Challenge report on robust vision benchmark; no bridge/crack relevance."
+        },
+        {
+          "candidate_id": "c-e7fe7b19",
+          "title": "Solution for CVPR 2024 UG2+ Challenge Track on All Weather Semantic Segmentation",
+          "role_hint": "reference",
+          "reason": "Adverse weather segmentation challenge; unrelated to bridge defects."
+        },
+        {
+          "candidate_id": "c-7918f4fb",
+          "title": "LidarMultiNet: Unifying LiDAR Semantic Segmentation, 3D Object Detection, and Panoptic Segmentation in a Single Multi-ta",
+          "role_hint": "reference",
+          "reason": "LiDAR-based autonomous driving paper; irrelevant to bridge crack images."
+        },
+        {
+          "candidate_id": "c-d0f9f714",
+          "title": "Efficient embedding network for 3D brain tumor segmentation",
+          "role_hint": "reference",
+          "reason": "Medical 3D brain tumor paper; cross-domain mismatch."
+        },
+        {
+          "candidate_id": "c-bb23a31e",
+          "title": "Semantic Segmentation with GLCM Images",
+          "role_hint": "reference",
+          "reason": "GLCM-based segmentation; no connection to bridge crack or deep multi-resolution networks."
+        },
+        {
+          "candidate_id": "c-e236b97d",
+          "title": "4 BSP-Based Semantic Segmentation",
+          "role_hint": "reference",
+          "reason": "Aerial image segmentation via BSP; unrelated to bridge surface cracks."
+        },
+        {
+          "candidate_id": "c-f3903a70",
+          "title": "A Language-Guided Benchmark for Weakly Supervised Open Vocabulary Semantic Segmentation",
+          "role_hint": "reference",
+          "reason": "Weakly supervised open-vocabulary benchmark; no bridge/crack relevance."
+        },
+        {
+          "candidate_id": "c-06a7a2bb",
+          "title": "Automotive Corrosion Semantic Segmentation: A Benchmark Study of SegFormer and CNN-Based Models",
+          "role_hint": "reference",
+          "reason": "Automotive corrosion paper; wrong infrastructure domain (vehicles not bridges)."
+        },
+        {
+          "candidate_id": "c-951e013e",
+          "title": "Stsd：A Large-Scale Benchmark for Semantic Segmentation of Subway Tunnel Point Cloud",
+          "role_hint": "reference",
+          "reason": "Subway tunnel point cloud segmentation; cross-domain (3D point cloud vs. 2D bridge crack images)."
+        },
+        {
+          "candidate_id": "c-d21fa7b0",
+          "title": "SemanticRail3D - A Mobile LiDAR Benchmark for Semantic and Instance Segmentation of Railway Corridors",
+          "role_hint": "dataset",
+          "reason": "Railway corridor LiDAR benchmark; wrong domain (rail, 3D LiDAR) for bridge crack 2D imagery."
+        },
+        {
+          "candidate_id": "c-d4bb1208",
+          "title": "MaSS13K: A Matting-level Semantic Segmentation Benchmark",
+          "role_hint": "reference",
+          "reason": "General matting benchmark; no bridge/crack domain relevance."
+        },
+        {
+          "candidate_id": "c-0521ce1f",
+          "title": "A Multi-Step Fusion Network for Semantic Segmentation of High-Resolution Aerial Images",
+          "role_hint": "reference",
+          "reason": "Aerial remote sensing imagery; cross-domain vs. bridge surface crack segmentation."
+        },
+        {
+          "candidate_id": "c-9b272ca7",
+          "title": "HSTNet: An Iterative Optimization Network for Semantic Segmentation of High-Resolution Remote Sensing Images",
+          "role_hint": "reference",
+          "reason": "Remote sensing imagery segmentation; wrong object domain."
+        },
+        {
+          "candidate_id": "c-c466173b",
+          "title": "MAFMamba: A Multi-Scale Adaptive Fusion Network for Semantic Segmentation of High-Resolution Remote Sensing Images",
+          "role_hint": "reference",
+          "reason": "Remote sensing imagery; cross-domain vs. bridge surface cracks."
+        },
+        {
+          "candidate_id": "c-25853cfe",
+          "title": "A benchmark for semantic image segmentation",
+          "role_hint": "reference",
+          "reason": "Old general segmentation benchmark; no relevance to bridge/crack domain."
+        },
+        {
+          "candidate_id": "c-cdc9a47e",
+          "title": "How to Benchmark Vision Foundation Models for Semantic Segmentation?",
+          "role_hint": "reference",
+          "reason": "Vision foundation model benchmark; no bridge/crack specific relevance."
+        },
+        {
+          "candidate_id": "c-a3ecbac7",
+          "title": "itsprakhar/Downstream-Dinov2",
+          "role_hint": "repo",
+          "reason": "DINOv2 downstream tasks repo; unrelated to bridge crack segmentation."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-83cc7650",
+          "title": "Image-Based Autonomous Concrete Crack Semantic Segmentation Using the Deep Fully Convolutional Encoder-Decoder Network for Bridge Inspection",
+          "role_hint": "unknown",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-0d2a8044",
+          "title": "dacl10k: Benchmark for Semantic Bridge Damage Segmentation",
+          "role_hint": "dataset",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-55e4e192",
+          "title": "Research on the application of semantic segmentation in pavement crack images",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-e337cfa9",
+          "title": "Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-39d8172f",
+          "title": "Rethinking Atrous Convolution for Semantic Image Segmentation",
+          "role_hint": "parallel",
+          "year": null
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-b3eea2c3",
+          "title": "On Enhancing Crack Semantic Segmentation Using StyleGAN and Brownian Bridge Diffusion",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-854e5c78",
+          "title": "Semantic Segmentation Using Generative Knowledge Distillation for Crack Detection",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-f7f6dbb0",
+          "title": "Text-Enhanced Label-Efficient Automated Bridge Defect Semantic Segmentation from Inspection Images",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-344a0549",
+          "title": "SegNeXt: Rethinking Convolutional Attention Design for Semantic Segmentation",
+          "role_hint": "baseline",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-ca6c4dca",
+          "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+          "role_hint": "parallel",
+          "year": null
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-e7817d7b",
+          "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-bbade6f6",
+          "title": "Fully convolutional networks for semantic segmentation",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-57273cfc",
+          "title": "Learning Deconvolution Network for Semantic Segmentation",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-caf1d926",
+          "title": "Rethinking Semantic Segmentation from a Sequence-to-Sequence Perspective with Transformers",
+          "role_hint": "parallel",
+          "year": null
+        },
+        {
+          "candidate_id": "c-d7c56d95",
+          "title": "Image Segmentation in Foundation Model Era: A Survey",
+          "role_hint": "unknown",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-f3c65d38",
+          "title": "Jiankun-chen/building-semantic-segmentation-of-InSAR-images",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-86a1bfad",
+          "title": "Crack Size Measurements on Fracture Surface Images Using Deep Neural Networks for Semantic Segmentation",
+          "role_hint": "reference",
+          "year": 2023
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-008d09f0",
+          "title": "Multi-scale Network with Attentional Multi-resolution Fusion for Point Cloud Semantic Segmentation",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-ff130f27",
+          "title": "MBNet: A Multi-Resolution Branch Network for Semantic Segmentation Of Ultra-High Resolution Images",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-9d536430",
+          "title": "Multi-Resolution Learning and Semantic Edge Enhancement for Super-Resolution Semantic Segmentation of Urban Scene Images",
+          "role_hint": "reference",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-8e514374",
+          "title": "Reparameterizable Dual-Resolution Network for Real-Time Semantic Segmentation",
+          "role_hint": "reference",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-34f8b718",
+          "title": "A Novel Adaptive Deep Network for Building Footprint Segmentation",
+          "role_hint": "parallel",
+          "year": 2021
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "c-0d2a8044 (dacl10k) is the closest public bridge-damage segmentation benchmark; confirm license, label taxonomy, and crack-class availability before use.",
+      "c-83cc7650 uses bridge inspection imagery with deep FCN encoder-decoder; obtain dataset split/metrics reported to enable faithful replication.",
+      "c-55e4e192 covers pavement crack images (sibling domain) and may provide cross-domain transfer data.",
+      "c-34f8b718 (building footprint) is a civil-infra-adjacent aerial dataset usable for pretraining or negative-class diversification.",
+      "c-f3c65d38 repo bundles U-Net/PSPNet/DeepLab v3+ baselines usable as starting code for ASPP/multi-resolution ablation."
+    ],
+    "work_suggestions": [
+      "Combine the dacl10k benchmark (c-0d2a8044) with the concrete crack FCN encoder-decoder pipeline (c-83cc7650) as the primary training and evaluation stack.",
+      "Adopt DeepLab V3+'s ASPP+encoder-decoder design (c-e337cfa9, c-39d8172f) as the multi-resolution/atrous module inside the proposed network.",
+      "Incorporate a Feature Pyramid / multi-scale fusion branch (inspired by c-ff130f27 and c-008d09f0) to enable multi-resolution feature aggregation for fine crack pixels.",
+      "Add deep supervision heads on multiple decoder stages (building on the FCN encoder-decoder precedent c-83cc7650) to stabilise thin-class training on imbalanced crack pixels.",
+      "Compare against crack-segmentation peers (c-b3eea2c3, c-854e5c78, c-55e4e192) and a strong general backbone (SegNeXt c-344a0549, SegFormer c-ca6c4dca) under matched splits on dacl10k."
+    ],
+    "risk_reminders": [
+      "No retrieved paper is a direct 'multi-resolution bridge crack' method; the proposal is a synthesis and must be framed as such.",
+      "dacl10k (c-0d2a8044) covers multiple damage classes — verify crack-specific labels and splits exist.",
+      "c-83cc7650 is a SSRN preprint; verify peer-reviewed version and exact reported metrics.",
+      "OpenAlex and several targeted queries returned empty; manual search on ASCE/MDPI may be needed to fill the bridge-crack multi-resolution gap.",
+      "Several 'crack' candidates are from non-civil domains (nuclear fracture c-86a1bfad, pavement c-55e4e192); treat their transfer claims cautiously."
+    ],
+    "manual_questions": [
+      "Which dataset should be primary: dacl10k (c-0d2a8044) or the concrete crack dataset from c-83cc7650?",
+      "What evaluation metrics are required (IoU, F1, precision on thin cracks, or others)?",
+      "Is real-time inference a constraint (relevant to dual-resolution c-8e514374)?",
+      "Should the network include transformer blocks or stay CNN-only (DeepLab V3+ vs. SegFormer)?",
+      "What hardware/training budget is assumed for the multi-resolution design?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "pass",
+    "blocking_questions": [],
+    "weak_points": [
+      "direction_recommendation text is truncated mid-sentence, so the full recommended design is not visible",
+      "manual_questions list is not resolved into synthesis choices, leaving baseline selection ambiguous",
+      "evidence_gaps is empty though dataset primary choice (dacl10k vs c-83cc7650 crack set) is still open",
+      "work_suggestions mix candidate roles loosely (baseline vs reference vs parallel) without strict separation",
+      "DeepLab V2 paper c-e7817d7b is listed as parallel rather than reference for the atrous convolution lineage"
+    ],
+    "can_continue_to_opening_report": true,
+    "summary": "Topic is well bounded for civil-infra crack segmentation. Baseline, dataset, and reference papers are all populated. Work suggestions reference candidate IDs. Minor truncation and unresolved manual questions noted but not blocking."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于多分辨率网络的桥梁裂缝分割算法研究",
+      "domain_route": "civil_infra",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 10,
+        "crossref": 24,
+        "huggingface": 5,
+        "github": 6
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 30,
+      "queries": [
+        "segmentation segmentation",
+        "segmentation semantic",
+        "segmentation that",
+        "segmentation we",
+        "egmentation segmentation",
+        "egmentation semantic",
+        "egmentation that",
+        "egmentation we"
+      ],
+      "added_count": 8
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 246.4
+}

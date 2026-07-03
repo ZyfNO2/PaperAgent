@@ -1,0 +1,293 @@
+{
+  "status": "weak",
+  "reason": "datasets_present_but_no_topic_dataset; scenario_axis_missing",
+  "notes": [],
+  "score": 62,
+  "paper_n": 23,
+  "dataset_n": 3,
+  "repo_n": 1,
+  "baseline_n": 1,
+  "parallel_n": 2,
+  "quarantined_baseline_n": 0,
+  "quarantined_parallel_n": 0,
+  "quarantined_core_n": 0,
+  "effective_baseline_n": 1,
+  "effective_parallel_n": 2,
+  "effective_core_n": 0,
+  "core_n": 0,
+  "verification_verified_n": 2,
+  "verification_repaired_n": 0,
+  "verification_quarantined_n": 0,
+  "verification_not_found_n": 1,
+  "verification_records": [
+    {
+      "candidate_id": "c-1c38c3f9",
+      "bucket": "baseline",
+      "verification_status": "not_found",
+      "recommended_action": "quarantine",
+      "reason": "off_topic per evidence_consistency audit"
+    },
+    {
+      "candidate_id": "c-4f56d910",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes proxy-match — adjacent topic"
+    },
+    {
+      "candidate_id": "c-c44ce341",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 2 proxy axis — strong topical fit"
+    }
+  ],
+  "axis_status": "evaluable",
+  "topic_dataset_n": 0,
+  "proxy_dataset_n": 0,
+  "pretrain_dataset_n": 3,
+  "generic_dataset_n": 0,
+  "core_direct_n": 0,
+  "baseline_direct_n": 0,
+  "baseline_proxy_n": 1,
+  "parallel_direct_n": 0,
+  "parallel_proxy_n": 2,
+  "critical_consistency_error_n": 1,
+  "metadata_mismatch_n": 0,
+  "off_topic_core_n": 0,
+  "axis_missing_reasons": [
+    "scenario_axis_missing"
+  ],
+  "evidence_gap_reasons": [
+    "datasets_present_but_no_topic_dataset",
+    "scenario_axis_missing"
+  ],
+  "baseline_degraded": false,
+  "bucket_audit": {
+    "core": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    },
+    "baseline": {
+      "n_total": 1,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 1,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 1,
+      "members": [
+        {
+          "candidate_id": "c-1c38c3f9",
+          "title": "Cityscapes",
+          "url": "",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "off_topic",
+          "axis_coverage": {
+            "task": "missing",
+            "object": "missing",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": false,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "no axis token matches the topic atoms"
+        }
+      ]
+    },
+    "parallel": {
+      "n_total": 2,
+      "n_aligned": 1,
+      "n_proxy": 1,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-4f56d910",
+          "title": "Large-scale Simulated Dataset for Aerial Image Deblurring based on DOTA Dataset",
+          "url": "https://doi.org/10.1109/iciba50161.2020.9276819",
+          "doi": "",
+          "source_type": "",
+          "year": 2020,
+          "venue": "2020 IEEE International Conference on Information Technology,Big Data and Artificial Intelligence (ICIBA)",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "proxy",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "proxy",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes proxy-match — adjacent topic"
+        },
+        {
+          "candidate_id": "c-c44ce341",
+          "title": "Asymmetric GAN for Unpaired Image-to-image Translation",
+          "url": "http://arxiv.org/abs/1912.11660v1",
+          "doi": "",
+          "source_type": "",
+          "year": 2019,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Unpaired image-to-image translation problem aims to model the mapping from one domain to another with unpaired training data. Current works like the well-acknowledged Cycle GAN provide a general solution for any two domains through modeling injective mappings with a symmetric structure. While in sit",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "proxy",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 2 proxy axis — strong topical fit"
+        }
+      ]
+    },
+    "dataset": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    },
+    "repo": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    }
+  },
+  "repair_plan": {
+    "repair_plan": [
+      {
+        "gap": "datasets_present_but_no_topic_dataset",
+        "target_role": "dataset",
+        "queries": [
+          {
+            "query": "driving scene X benchmark",
+            "tool": "huggingface",
+            "why": "targets dataset; closes 'datasets_present_but_no_topic_dataset'"
+          },
+          {
+            "query": "driving scene simulated image generation real-world dataset",
+            "tool": "huggingface",
+            "why": "targets dataset; closes 'datasets_present_but_no_topic_dataset'"
+          },
+          {
+            "query": "driving scene simulated image generation GAN survey",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'datasets_present_but_no_topic_dataset'"
+          }
+        ]
+      },
+      {
+        "gap": "scenario_axis_missing",
+        "target_role": "parallel_paper",
+        "queries": [
+          {
+            "query": "driving scene X detection",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'scenario_axis_missing'"
+          },
+          {
+            "query": "X GAN driving scene",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'scenario_axis_missing'"
+          },
+          {
+            "query": "X driving scene dataset",
+            "tool": "huggingface",
+            "why": "targets dataset; closes 'scenario_axis_missing'"
+          }
+        ]
+      },
+      {
+        "gap": "scenario_axis_missing",
+        "target_role": "parallel_paper",
+        "queries": [
+          {
+            "query": "driving scene X detection",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'scenario_axis_missing'"
+          },
+          {
+            "query": "X GAN driving scene",
+            "tool": "openalex",
+            "why": "targets parallel_paper; closes 'scenario_axis_missing'"
+          },
+          {
+            "query": "X driving scene dataset",
+            "tool": "huggingface",
+            "why": "targets dataset; closes 'scenario_axis_missing'"
+          }
+        ]
+      }
+    ],
+    "unrepairable_reason": ""
+  },
+  "re08_topic_atoms_present": true,
+  "verification_stats_by_bucket": {
+    "core": {},
+    "baseline": {
+      "weak_metadata": 1
+    },
+    "parallel": {
+      "weak_metadata": 2
+    },
+    "dataset": {},
+    "repo": {}
+  },
+  "verification_stats_total": {
+    "weak_metadata": 3
+  },
+  "case_id": "ENG-THESIS-073",
+  "title": "面向汽车自动驾驶的模拟图像生成技术及应用研究",
+  "source_batch": "r6",
+  "re08_audit_version": "Re08"
+}

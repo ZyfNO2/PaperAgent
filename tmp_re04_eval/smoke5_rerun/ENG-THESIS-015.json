@@ -1,0 +1,1609 @@
+{
+  "project_id": "agent-re04-99165435",
+  "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+  "parsed_topic": {
+    "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+    "normalized_topic": "Key Technologies for 3D Human Body Reconstruction Based on Patient Virtual Positioning",
+    "domain_route": "vision_3d",
+    "domain_confidence": 0.82,
+    "method_terms": [
+      "SMPL/SMPL-X parametric body model",
+      "PIFu/PIFuHD implicit function",
+      "NeRF human reconstruction",
+      "multi-view stereo",
+      "3D Gaussian splatting human avatar"
+    ],
+    "task_terms": [
+      "3D human body reconstruction",
+      "patient virtual positioning",
+      "human avatar generation",
+      "multi-view human digitization",
+      "shape and pose estimation"
+    ],
+    "object_terms": [
+      "3D human body mesh",
+      "RGB/RGB-D human scans",
+      "medical patient avatars",
+      "CT/MRI patient body model",
+      "parametric human body model"
+    ],
+    "query_atoms_en": [
+      "3D human body reconstruction SMPL",
+      "patient avatar reconstruction from images",
+      "PIFuHD implicit human reconstruction",
+      "NeRF human body avatar",
+      "multi-view 3D human digitization",
+      "virtual patient positioning 3D mesh"
+    ],
+    "query_atoms_zh": [
+      "三维人体重建 SMPL 参数化模型",
+      "患者虚拟定位 三维重建",
+      "多视角人体数字化 重建",
+      "隐式函数 人体三维重建",
+      "NeRF 人体 重建",
+      "医学虚拟人 三维重建"
+    ],
+    "needs_clarification": [
+      "Is the focus on RGB/RGB-D image-based reconstruction or on CT/MRI volumetric medical reconstruction?",
+      "Is the 'virtual positioning' for surgical planning, radiotherapy, or general avatar/scene placement?",
+      "Is the target body representation a parametric model (SMPL) or a dense implicit/volumetric mesh?"
+    ],
+    "site_hints": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "paperswithcode.com",
+      "human-body-foundation-model",
+      "smpl-x.is.tue.mpg.de"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+    "domain_route": "vision_3d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "SMPL/SMPL-X parametric body model 3D human body reconstruction",
+        "SMPL/SMPL-X parametric body model 3D human body mesh"
+      ],
+      "method_task": [
+        "SMPL/SMPL-X parametric body model 3D human body reconstruction",
+        "SMPL/SMPL-X parametric body model patient virtual positioning",
+        "PIFu/PIFuHD implicit function 3D human body reconstruction",
+        "PIFu/PIFuHD implicit function patient virtual positioning"
+      ],
+      "object_task": [
+        "3D human body mesh 3D human body reconstruction",
+        "3D human body mesh patient virtual positioning",
+        "RGB/RGB-D human scans 3D human body reconstruction",
+        "RGB/RGB-D human scans patient virtual positioning"
+      ],
+      "dataset": [
+        "3D human body reconstruction dataset",
+        "3D human body mesh dataset"
+      ],
+      "repo": [
+        "3D human body reconstruction github",
+        "3D human body reconstruction implementation",
+        "SMPL/SMPL-X parametric body model 3D human body reconstruction"
+      ],
+      "survey": [
+        "3D human body reconstruction survey",
+        "vision 3d survey"
+      ],
+      "benchmark": [
+        "3D human body reconstruction benchmark"
+      ],
+      "baseline": [
+        "SMPL/SMPL-X parametric body model 3D human body reconstruction",
+        "SMPL/SMPL-X parametric body model patient virtual positioning",
+        "PIFu/PIFuHD implicit function 3D human body reconstruction",
+        "PIFu/PIFuHD implicit function patient virtual positioning"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "SMPL/SMPL-X parametric body model",
+        "PIFu/PIFuHD implicit function",
+        "NeRF human reconstruction",
+        "multi-view stereo",
+        "3D Gaussian splatting human avatar"
+      ],
+      "task_terms": [
+        "3D human body reconstruction",
+        "patient virtual positioning",
+        "human avatar generation",
+        "multi-view human digitization",
+        "shape and pose estimation"
+      ],
+      "object_terms": [
+        "3D human body mesh",
+        "RGB/RGB-D human scans",
+        "medical patient avatars",
+        "CT/MRI patient body model",
+        "parametric human body model"
+      ],
+      "domain_route": "vision_3d"
+    },
+    "fb_atom": "3D human body reconstruction SMPL",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across SMPL, implicit, NeRF, Gaussian splatting human reconstruction",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "3D human body reconstruction SMPL",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv spine call to retrieve foundational SMPL-based parametric human reconstruction papers",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "PIFuHD implicit human reconstruction",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "cover implicit function based clothed human reconstruction methods",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "NeRF human body avatar",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "surface NeRF-based human avatar generation literature",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "multi-view human digitization",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex broad sweep for multi-view stereo human digitization papers",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark, survey, recent-advances variants of the core methods",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "SMPL parametric model benchmark",
+            "target_role": "survey",
+            "why_call": "surface benchmark and survey papers benchmarking SMPL-based reconstruction",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "3D Gaussian splatting human avatar",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "capture recent 3D Gaussian splatting advances for human avatars",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "human body reconstruction survey",
+            "target_role": "survey",
+            "why_call": "retrieve recent survey / review papers on human body reconstruction",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "RGB-D clothed human reconstruction",
+            "target_role": "reference",
+            "why_call": "crossref expansion on RGB-D input methods and follow-up references",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code, libraries, and datasets for 3D human body reconstruction and patient avatars",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "SMPL human body",
+            "target_role": "repo",
+            "why_call": "find runnable SMPL/SMPL-X body model repositories",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "PIFuHD",
+            "target_role": "repo",
+            "why_call": "locate the PIFu/PIFuHD implicit human reconstruction codebase",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "NeRF human avatar",
+            "target_role": "repo",
+            "why_call": "discover NeRF-based human avatar generation repositories",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "gaussian splatting avatar",
+            "target_role": "repo",
+            "why_call": "find 3D Gaussian splatting human avatar repositories",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "paperswithcode.com",
+      "smpl-x.is.tue.mpg.de"
+    ],
+    "arxiv_queries": [
+      "3D human body reconstruction SMPL",
+      "PIFuHD implicit human reconstruction",
+      "NeRF human body avatar",
+      "SMPL parametric model benchmark",
+      "3D Gaussian splatting human avatar"
+    ],
+    "openalex_queries": [
+      "multi-view human digitization",
+      "human body reconstruction survey"
+    ],
+    "crossref_queries": [
+      "RGB-D clothed human reconstruction"
+    ],
+    "github_queries": [
+      "SMPL human body",
+      "PIFuHD",
+      "NeRF human avatar",
+      "gaussian splatting avatar"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "recovering 3d human mesh from monocular images: a survey",
+      "candidate_id": "c-2fd5ff58",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Recovering 3D Human Mesh from Monocular Images: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2203.01923v6",
+      "identifier": "2203.01923v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Estimating human pose and shape from monocular images is a long-standing problem in computer vision. Since the release of statistical body models, 3D human mesh recovery has been drawing broader attention. With the same goal of obtaining well-aligned and physically plausible mesh results, two paradigms have been developed to overcome challenges in the 2D-to-3D lifting process: i) an optimization-based paradigm, where different data terms and regularization terms are exploited as optimization objectives; and ii) a regression-based paradigm, where deep learning techniques are embraced to solve the problem in an end-to-end fashion. Meanwhile, continuous efforts are devoted to improving the quality of 3D mesh labels for a wide range of datasets. Though remarkable progress has been achieved in the past decade, the task is still challenging due to flexible body motions, diverse appearances, complex environments, and insufficient in-the-wild annotations. To the best of our knowledge, this is the first survey that focuses on the task of monocular 3D human mesh recovery. We start with the introduction of body models and then elaborate recovery frameworks and training objectives by providing in-depth analyses of their strengths and weaknesses. We also summarize datasets, evaluation metrics, and benchmark results. Open issues and future directions are discussed in the end, hoping to motivate researchers and facilitate their research in this area. A regularly updated project page can be found at https://github.com/tinatiansjz/hmr-survey.",
+      "extra": {}
+    },
+    {
+      "stable_id": "software implementation of the krylov methods based reconstruction for the 3d cone beam ct operator",
+      "candidate_id": "c-304fb9cd",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Software Implementation of the Krylov Methods Based Reconstruction for the 3D Cone Beam CT Operator",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2110.13526v1",
+      "identifier": "2110.13526v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Krylov subspace methods are considered a standard tool to solve large systems of linear algebraic equations in many scientific disciplines such as image restoration or solving partial differential equations in mechanics of continuum. In the context of computer tomography however, the mostly used algebraic reconstruction techniques are based on classical iterative schemes. In this work we present software package that implements fully 3D cone beam projection operator and uses Krylov subspace methods, namely CGLS and LSQR to solve related tomographic reconstruction problems. It also implements basic preconditioning strategies. On the example of the cone beam CT reconstruction of 3D Shepp-Logan phantom we show that the speed of convergence of the CGLS clearly outperforms PSIRT algorithm. Therefore Krylov subspace methods present an interesting option for the reconstruction of large 3D cone beam CT problems.",
+      "extra": {}
+    },
+    {
+      "stable_id": "sam 3d body: robust full-body human mesh recovery",
+      "candidate_id": "c-6dc7fd30",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SAM 3D Body: Robust Full-Body Human Mesh Recovery",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2602.15989v1",
+      "identifier": "2602.15989v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We introduce SAM 3D Body (3DB), a promptable model for single-image full-body 3D human mesh recovery (HMR) that demonstrates state-of-the-art performance, with strong generalization and consistent accuracy in diverse in-the-wild conditions. 3DB estimates the human pose of the body, feet, and hands. It is the first model to use a new parametric mesh representation, Momentum Human Rig (MHR), which decouples skeletal structure and surface shape. 3DB employs an encoder-decoder architecture and supports auxiliary prompts, including 2D keypoints and masks, enabling user-guided inference similar to the SAM family of models. We derive high-quality annotations from a multi-stage annotation pipeline that uses various combinations of manual keypoint annotation, differentiable optimization, multi-view geometry, and dense keypoint detection. Our data engine efficiently selects and processes data to ensure data diversity, collecting unusual poses and rare imaging conditions. We present a new evaluation dataset organized by pose and appearance categories, enabling nuanced analysis of model behavior. Our experiments demonstrate superior generalization and substantial improvements over prior methods in both qualitative user preference studies and traditional quantitative analysis. Both 3DB and MHR are open-source.",
+      "extra": {}
+    },
+    {
+      "stable_id": "advances in feed-forward 3d reconstruction and view synthesis: a survey",
+      "candidate_id": "c-1d5013c5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advances in Feed-Forward 3D Reconstruction and View Synthesis: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2507.14501v5",
+      "identifier": "2507.14501v5",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "3D reconstruction and view synthesis are foundational problems in computer vision, graphics, and immersive technologies such as augmented reality (AR), virtual reality (VR), and digital twins. Traditional methods rely on computationally intensive iterative optimization in a complex chain, limiting their applicability in real-world scenarios. Recent advances in feed-forward approaches, driven by deep learning, have revolutionized this field by enabling fast and generalizable 3D reconstruction and view synthesis. This survey offers a comprehensive review of feed-forward techniques for 3D reconstruction and view synthesis, with a taxonomy according to the underlying representation architectures including point cloud, 3D Gaussian Splatting (3DGS), Neural Radiance Fields (NeRF), etc. We examine key tasks such as pose-free reconstruction, dynamic 3D reconstruction, and 3D-aware image and video synthesis, highlighting their applications in digital humans, SLAM, robotics, and beyond. In addition, we review commonly used datasets with detailed statistics, along with evaluation protocols for various downstream tasks. We conclude by discussing open research challenges and promising directions for future work, emphasizing the potential of feed-forward approaches to advance the state of the art in 3D vision.",
+      "extra": {}
+    },
+    {
+      "stable_id": "motion-x: a large-scale 3d expressive whole-body human motion dataset",
+      "candidate_id": "c-d0803f08",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Motion-X: A Large-scale 3D Expressive Whole-body Human Motion Dataset",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2307.00818v2",
+      "identifier": "2307.00818v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In this paper, we present Motion-X, a large-scale 3D expressive whole-body motion dataset. Existing motion datasets predominantly contain body-only poses, lacking facial expressions, hand gestures, and fine-grained pose descriptions. Moreover, they are primarily collected from limited laboratory scenes with textual descriptions manually labeled, which greatly limits their scalability. To overcome these limitations, we develop a whole-body motion and text annotation pipeline, which can automatically annotate motion from either single- or multi-view videos and provide comprehensive semantic labels for each video and fine-grained whole-body pose descriptions for each frame. This pipeline is of high precision, cost-effective, and scalable for further research. Based on it, we construct Motion-X, which comprises 15.6M precise 3D whole-body pose annotations (i.e., SMPL-X) covering 81.1K motion sequences from massive scenes. Besides, Motion-X provides 15.6M frame-level whole-body pose descriptions and 81.1K sequence-level semantic labels. Comprehensive experiments demonstrate the accuracy of the annotation pipeline and the significant benefit of Motion-X in enhancing expressive, diverse, and natural motion generation, as well as 3D whole-body human mesh recovery.",
+      "extra": {}
+    },
+    {
+      "stable_id": "motion-x++: a large-scale multimodal 3d whole-body human motion dataset",
+      "candidate_id": "c-32743b2e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Motion-X++: A Large-Scale Multimodal 3D Whole-body Human Motion Dataset",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2501.05098v1",
+      "identifier": "2501.05098v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In this paper, we introduce Motion-X++, a large-scale multimodal 3D expressive whole-body human motion dataset. Existing motion datasets predominantly capture body-only poses, lacking facial expressions, hand gestures, and fine-grained pose descriptions, and are typically limited to lab settings with manually labeled text descriptions, thereby restricting their scalability. To address this issue, we develop a scalable annotation pipeline that can automatically capture 3D whole-body human motion and comprehensive textural labels from RGB videos and build the Motion-X dataset comprising 81.1K text-motion pairs. Furthermore, we extend Motion-X into Motion-X++ by improving the annotation pipeline, introducing more data modalities, and scaling up the data quantities. Motion-X++ provides 19.5M 3D whole-body pose annotations covering 120.5K motion sequences from massive scenes, 80.8K RGB videos, 45.3K audios, 19.5M frame-level whole-body pose descriptions, and 120.5K sequence-level semantic labels. Comprehensive experiments validate the accuracy of our annotation pipeline and highlight Motion-X++'s significant benefits for generating expressive, precise, and natural motion with paired multimodal labels supporting several downstream tasks, including text-driven whole-body motion generation,audio-driven motion generation, 3D whole-body human mesh recovery, and 2D whole-body keypoints estimation, etc.",
+      "extra": {}
+    },
+    {
+      "stable_id": "an integrated platform for live 3d human reconstruction and motion capturing",
+      "candidate_id": "c-6a711f49",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "An Integrated Platform for Live 3D Human Reconstruction and Motion Capturing",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2017,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1712.03084v1",
+      "identifier": "1712.03084v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The latest developments in 3D capturing, processing, and rendering provide means to unlock novel 3D application pathways. The main elements of an integrated platform, which target tele-immersion and future 3D applications, are described in this paper, addressing the tasks of real-time capturing, robust 3D human shape/appearance reconstruction, and skeleton-based motion tracking. More specifically, initially, the details of a multiple RGB-depth (RGB-D) capturing system are given, along with a novel sensors' calibration method. A robust, fast reconstruction method from multiple RGB-D streams is then proposed, based on an enhanced variation of the volumetric Fourier transform-based method, parallelized on the Graphics Processing Unit, and accompanied with an appropriate texture-mapping algorithm. On top of that, given the lack of relevant objective evaluation methods, a novel framework is proposed for the quantitative evaluation of real-time 3D reconstruction systems. Finally, a generic, multiple depth stream-based method for accurate real-time human skeleton tracking is proposed. Detailed experimental results with multi-Kinect2 data sets verify the validity of our arguments and the effectiveness of the proposed system and methodologies.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-371e243c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "manifestation of three-body forces in three-body bethe-salpeter and light-front equations",
+      "candidate_id": "c-7f18a664",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Manifestation of three-body forces in three-body Bethe-Salpeter and light-front equations",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2008,
+      "venue": null,
+      "url": "http://arxiv.org/abs/0811.1100v1",
+      "identifier": "0811.1100v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Bethe-Salpeter and light-front bound state equations for three scalar particles interacting by scalar exchange-bosons are solved in ladder truncation. In contrast to two-body systems, the three-body binding energies obtained in these two approaches differ significantly from each other: the ladder kernel in light-front dynamics underbinds by approximately a factor of two compared to the ladder Bethe-Salpeter equation. By taking into account three-body forces in the light-front approach, generated by two exchange-bosons in flight, we find that most of this difference disappears; for small exchange masses, the obtained binding energies coincide with each other.",
+      "extra": {}
+    },
+    {
+      "stable_id": "three-body scattering in poincaré invariant quantum mechanics",
+      "candidate_id": "c-64273dc3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Three-body scattering in Poincaré invariant quantum mechanics",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2007,
+      "venue": null,
+      "url": "http://arxiv.org/abs/0711.1635v1",
+      "identifier": "0711.1635v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The relativistic three-nucleon problem is formulated by constructing a dynamical unitary representation of the Poincaré group on the three-nucleon Hilbert space. Two-body interactions are included that preserve the Poincaré symmetry, lead to the same invariant two-body S-matrix as the corresponding non-relativistic problem, and result in a three-body S-matrix satisfying cluster properties. The resulting Faddeev equations are solved by direct integration, without partial waves for both elastic and breakup reactions at laboratory energies up to 2 Gev.",
+      "extra": {}
+    },
+    {
+      "stable_id": "relativistic descriptions of few-body systems",
+      "candidate_id": "c-2e982bc7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Relativistic descriptions of few-body systems",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2010,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1011.0314v2",
+      "identifier": "1011.0314v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A brief review of relativistic effects in few-body systems, of theoretical approaches, recent developments and applications is given. Manifestations of relativistic effects in the binding energies, in the electromagnetic form factors and in three-body observables are demonstrated. The three-body forces of relativistic origin are also discussed.",
+      "extra": {}
+    },
+    {
+      "stable_id": "fitted avatars: automatic skeleton adjustment for self-avatars in virtual reality",
+      "candidate_id": "c-a9f56b80",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Fitted avatars: automatic skeleton adjustment for self-avatars in virtual reality",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2307.09558v1",
+      "identifier": "2307.09558v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In the era of the metaverse, self-avatars are gaining popularity, as they can enhance presence and provide embodiment when a user is immersed in Virtual Reality. They are also very important in collaborative Virtual Reality to improve communication through gestures. Whether we are using a complex motion capture solution or a few trackers with inverse kinematics (IK), it is essential to have a good match in size between the avatar and the user, as otherwise mismatches in self-avatar posture could be noticeable for the user. To achieve such a correct match in dimensions, a manual process is often required, with the need for a second person to take measurements of body limbs and introduce them into the system. This process can be time-consuming, and prone to errors. In this paper, we propose an automatic measuring method that simply requires the user to do a small set of exercises while wearing a Head-Mounted Display (HMD), two hand controllers, and three trackers. Our work provides an affordable and quick method to automatically extract user measurements and adjust the virtual humanoid skeleton to the exact dimensions. Our results show that our method can reduce the misalignment produced by the IK system when compared to other solutions that simply apply a uniform scaling to an avatar based on the height of the HMD, and make assumptions about the locations of joints with respect to the trackers.",
+      "extra": {}
+    },
+    {
+      "stable_id": "human body 3d measurement method and application based on human body model—smpl",
+      "candidate_id": "c-b9caea0a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Human Body 3D Measurement Method and Application Based on Human Body Model—SMPL",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "Modeling and Simulation",
+      "url": "https://doi.org/10.12677/mos.2024.132112",
+      "identifier": "10.12677/mos.2024.132112",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "evaluation of automated skeleton fitting to 4d human body scan data using open-source smpl- and osso models",
+      "candidate_id": "c-f29655f5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Evaluation of Automated Skeleton Fitting to 4D Human Body Scan Data Using Open-Source SMPL- and OSSO Models",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "3DBODY.TECH Journal - International Journal of 3D Body Technologies",
+      "url": "https://doi.org/10.15701/kcgs.2022.28.4.1",
+      "identifier": "10.15701/kcgs.2022.28.4.1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a parametric framework for population-specific 3d human body shape reconstruction using smpl",
+      "candidate_id": "c-64620683",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A parametric framework for population-specific 3D human body shape reconstruction using SMPL",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": "Ergonomics",
+      "url": "https://doi.org/10.1080/00140139.2026.2648586",
+      "identifier": "10.1080/00140139.2026.2648586",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "smpl variable model for 3d reconstruction and image fusion in animation media applications",
+      "candidate_id": "c-d160660f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SMPL Variable Model for 3D Reconstruction and Image Fusion in Animation Media Applications",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "IEEE Access",
+      "url": "https://doi.org/10.1109/access.2025.3549466",
+      "identifier": "10.1109/access.2025.3549466",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "rc-smpl: real-time cumulative smpl-based avatar body generation",
+      "candidate_id": "c-cdded365",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "RC-SMPL: Real-time Cumulative SMPL-based Avatar Body Generation",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "2023 IEEE International Symposium on Mixed and Augmented Reality (ISMAR)",
+      "url": "https://doi.org/10.1109/ismar59233.2023.00023",
+      "identifier": "10.1109/ismar59233.2023.00023",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "yongyct/densebody-poc",
+      "candidate_id": "c-cc30f081",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "yongyct/densebody-poc",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/yongyct/densebody-poc",
+      "identifier": null,
+      "description": "DenseBody POC Implementation for 3D reconstruction of human body from 2D images. Referencing https://github.com/Lotayou/densebody_pytorch & https://arxiv.org/pdf/1903.10153.pdf",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 5,
+        "language": "Jupyter Notebook"
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "openalex",
+      "query": "SMPL/SMPL-X parametric body model 3D human body reconstruction|SMPL/SMPL-X parametric body model patient virtual positio",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "3D human body reconstruction benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "3D human body mesh 3D human body reconstruction|3D human body mesh patient virtual positioning|RGB/RGB-D human scans 3D ",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "3D human body reconstruction survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "SMPL/SMPL-X parametric body model 3D human body reconstruction|SMPL/SMPL-X parametric body model 3D human body mesh",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "3D human body reconstruction github|3D human body reconstruction implementation|SMPL/SMPL-X parametric body model 3D hum",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 1,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "3D human body reconstruction benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "3D human body reconstruction dataset|3D human body mesh dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "3D human body reconstruction dataset|3D human body mesh dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "3D human body mesh 3D human body reconstruction|3D human body mesh patient virtual positioning|RGB/RGB-D human scans 3D ",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "3D human body reconstruction survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "SMPL/SMPL-X parametric body model 3D human body reconstruction|SMPL/SMPL-X parametric body model 3D human body mesh",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "SMPL/SMPL-X parametric body model 3D human body reconstruction|SMPL/SMPL-X parametric body model patient virtual positio",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "SMPL/SMPL-X parametric body model 3D human body reconstruction|SMPL/SMPL-X parametric body model 3D human body mesh",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "SMPL/SMPL-X parametric body model 3D human body reconstruction|SMPL/SMPL-X parametric body model patient virtual positio",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "SMPL/SMPL-X parametric body model 3D human body reconstruction|SMPL/SMPL-X parametric body model patient virtual positio",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "body body|body motion|body we",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Recovering 3D Human Mesh from Monocular Images: A Survey",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Software Implementation of the Krylov Methods Based Reconstr",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: SAM 3D Body: Robust Full-Body Human Mesh Recovery",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Advances in Feed-Forward 3D Reconstruction and View Synthesi",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Motion-X: A Large-scale 3D Expressive Whole-body Human Motio",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-2fd5ff58",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "core",
+      "matched_terms": [
+        "3D human body reconstruction",
+        "3D human body mesh",
+        "shape and pose estimation",
+        "parametric human body model"
+      ],
+      "missing_terms": [
+        "patient virtual positioning",
+        "medical patient avatars",
+        "PIFu/PIFuHD",
+        "NeRF human reconstruction"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "survey",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct survey on monocular 3D human mesh recovery; strong foundational reference for parametric methods.",
+      "reason": "Covers statistical body models (SMPL family), pose/shape estimation, and mesh recovery techniques central to the topic. Lacks explicit medical/patient positioning focus but methodologically foundational."
+    },
+    {
+      "candidate_id": "c-304fb9cd",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "3D reconstruction"
+      ],
+      "missing_terms": [
+        "human body",
+        "SMPL",
+        "patient",
+        "NeRF",
+        "PIFu"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Cone Beam CT operator reconstruction, not human body/avatar topic.",
+      "reason": "This paper addresses algebraic reconstruction methods for cone beam CT medical imaging operators. It is cross-domain (medical imaging reconstruction algorithms, not human body mesh/avatar reconstruction)."
+    },
+    {
+      "candidate_id": "c-6dc7fd30",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "3D human body reconstruction",
+        "3D human body mesh",
+        "shape and pose estimation"
+      ],
+      "missing_terms": [
+        "patient virtual positioning",
+        "medical patient avatars",
+        "multi-view",
+        "CT/MRI"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "SOTA single-image full-body HMR method; relevant parallel baseline for parametric mesh recovery.",
+      "reason": "SAM 3D Body is a state-of-the-art promptable model for single-image full-body human mesh recovery. Highly relevant as a parallel method, but focuses on general (not medical/patient) use cases."
+    },
+    {
+      "candidate_id": "c-1d5013c5",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D reconstruction",
+        "view synthesis",
+        "human avatar"
+      ],
+      "missing_terms": [
+        "SMPL",
+        "PIFu",
+        "patient",
+        "human mesh",
+        "implicit function"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "General 3D reconstruction/view synthesis survey; useful background but not human-body specific.",
+      "reason": "Covers feed-forward 3D reconstruction and view synthesis broadly (NeRF, Gaussian splatting, digital twins). Provides useful background context for avatar/3D methods but lacks focus on human body reconstruction specifically."
+    },
+    {
+      "candidate_id": "c-d0803f08",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "3D human body",
+        "whole-body",
+        "human avatar"
+      ],
+      "missing_terms": [
+        "SMPL",
+        "reconstruction",
+        "PIFu",
+        "patient",
+        "mesh"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "Large-scale whole-body motion dataset; useful for training pose/shape models.",
+      "reason": "Motion-X provides large-scale 3D whole-body motion data including body, hands, and face. Relevant as a dataset resource for expressive human pose/shape modeling, though not directly about reconstruction from images."
+    },
+    {
+      "candidate_id": "c-32743b2e",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "3D whole-body",
+        "multimodal",
+        "human avatar"
+      ],
+      "missing_terms": [
+        "SMPL",
+        "reconstruction",
+        "patient",
+        "mesh"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "Extended multimodal whole-body dataset; supplementary training resource.",
+      "reason": "Motion-X++ is the multimodal extension of Motion-X with larger scale. Similar role: training data for whole-body human motion and pose, relevant to avatar generation pipelines."
+    },
+    {
+      "candidate_id": "c-6a711f49",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D human reconstruction",
+        "motion capturing",
+        "human avatar"
+      ],
+      "missing_terms": [
+        "SMPL",
+        "PIFu",
+        "patient",
+        "implicit function"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Integrated platform for live 3D human reconstruction; relevant tele-immersion reference.",
+      "reason": "Describes an integrated platform for live 3D human reconstruction and motion capture targeting tele-immersion. Older work, captures systems-level considerations for real-time human digitization."
+    },
+    {
+      "candidate_id": "c-371e243c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "3D",
+        "human body",
+        "reconstruction",
+        "avatar",
+        "SMPL"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "NLP/LLM survey coding paper; completely off-topic.",
+      "reason": "Uses LLMs to code German open-ended survey responses on survey motivation. Entirely unrelated to 3D human body reconstruction or patient positioning."
+    },
+    {
+      "candidate_id": "c-7f18a664",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "human body",
+        "3D reconstruction",
+        "avatar",
+        "mesh",
+        "patient"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Theoretical particle physics paper on three-body forces; off-topic.",
+      "reason": "Solves Bethe-Salpeter and light-front equations for three scalar particles. Quantum physics/particle theory paper with no relation to 3D human body reconstruction."
+    },
+    {
+      "candidate_id": "c-64273dc3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "human body",
+        "reconstruction",
+        "avatar",
+        "mesh",
+        "patient"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Nuclear physics Poincaré-invariant scattering; off-topic.",
+      "reason": "Relativistic three-nucleon scattering problem in Poincaré invariant quantum mechanics. Theoretical nuclear physics, no relevance to human body modeling."
+    },
+    {
+      "candidate_id": "c-2e982bc7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "human body",
+        "3D",
+        "reconstruction",
+        "avatar",
+        "mesh"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Relativistic few-body physics review; off-topic.",
+      "reason": "Brief review of relativistic effects in few-body nuclear/particle systems. Pure physics review, unrelated to 3D human body or avatar reconstruction."
+    },
+    {
+      "candidate_id": "c-a9f56b80",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "avatar",
+        "virtual reality",
+        "self-avatars"
+      ],
+      "missing_terms": [
+        "SMPL",
+        "PIFu",
+        "patient",
+        "mesh reconstruction"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Self-avatar skeleton adjustment for VR; relevant to avatar positioning context.",
+      "reason": "Automatic skeleton adjustment for self-avatars in VR. Addresses avatar fitting and embodiment in virtual environments, loosely related to 'virtual positioning' concept but not medical patient context."
+    },
+    {
+      "candidate_id": "c-b9caea0a",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "3D human body reconstruction",
+        "SMPL parametric body model",
+        "3D human body mesh"
+      ],
+      "missing_terms": [
+        "patient",
+        "PIFu",
+        "NeRF",
+        "medical"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "SMPL-based 3D human body measurement; direct methodological match.",
+      "reason": "Directly applies SMPL parametric body model to 3D human body measurement. Strong methodological match to topic's parametric modeling focus. Lacks medical/patient dimension but highly relevant for core methods."
+    },
+    {
+      "candidate_id": "c-f29655f5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "SMPL",
+        "3D human body",
+        "skeleton fitting"
+      ],
+      "missing_terms": [
+        "PIFu",
+        "NeRF",
+        "patient",
+        "reconstruction from images"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Open-source SMPL fitting to 4D scan data; relevant body modeling evaluation.",
+      "reason": "Evaluates SMPL and OSSO skeleton fitting to 4D human scan data. Provides validation methodology for parametric body model fitting, relevant to reconstruction pipelines."
+    },
+    {
+      "candidate_id": "c-64620683",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "3D human body shape reconstruction",
+        "SMPL parametric framework",
+        "population-specific"
+      ],
+      "missing_terms": [
+        "PIFu",
+        "NeRF",
+        "patient",
+        "implicit function"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Population-specific SMPL reconstruction; directly on-topic parametric method.",
+      "reason": "Parametric framework for population-specific 3D human body shape reconstruction using SMPL. Directly aligned with topic's parametric body modeling objective; population-specific angle is novel."
+    },
+    {
+      "candidate_id": "c-d160660f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "SMPL",
+        "3D reconstruction",
+        "animation"
+      ],
+      "missing_terms": [
+        "patient",
+        "PIFu",
+        "NeRF",
+        "medical"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "SMPL variable model for animation media; adjacent application domain.",
+      "reason": "SMPL variable model for 3D reconstruction and image fusion in animation media. Methodologically relevant SMPL work but focused on animation rather than medical/patient applications."
+    },
+    {
+      "candidate_id": "c-cdded365",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "SMPL-based avatar",
+        "avatar body generation",
+        "real-time"
+      ],
+      "missing_terms": [
+        "PIFu",
+        "NeRF",
+        "patient",
+        "reconstruction"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Real-time SMPL avatar generation; directly relevant to avatar creation.",
+      "reason": "RC-SMPL provides real-time cumulative SMPL-based avatar body generation. Directly relevant to avatar generation pipeline and virtual positioning of body models."
+    },
+    {
+      "candidate_id": "c-cc30f081",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "3D reconstruction",
+        "human body",
+        "2D images"
+      ],
+      "missing_terms": [
+        "SMPL",
+        "PIFu",
+        "NeRF",
+        "patient"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "repo",
+      "exists_verdict": "exists",
+      "rank_reason": "DenseBody POC implementation; proof-of-concept repo for 2D-to-3D human body.",
+      "reason": "Proof-of-concept GitHub implementation of DenseBody for 3D human body reconstruction from 2D images. Repo role; relevant code resource but description is incomplete and method is not the latest."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Topic straddles vision-3D human reconstruction (SMPL parametric models, implicit functions, NeRF/Gaussian splatting avatars) and clinical patient virtual positioning (surgical planning, radiotherapy setup, CT/MRI avatar registration). Retrieved evidence is strong on the general 3D human mesh side: core survey c-2fd5ff58 and parametric SMPL papers c-b9caea0a and c-64620683 anchor the methodological foundation; SOTA HMR c-6dc7fd30 and real-time avatar c-cdded365 serve as strong parallel baselines; dataset resources c-d0803f08/c-32743b2e support training. The clinical/patient-positioning dimension is weakly evidenced — only an unrelated CT-reconstruction paper (c-304fb9cd, rejected) and a generic VR-avatar skeleton-fitting paper (c-a9f56b80) touch it tangentially. Recommendation: anchor the survey on RGB/RGB-D parametric (SMPL/SMPL-X) human reconstruction with multi-view and implicit-function extensions, while flagging the medical/patient positioning translation as an open gap requiring manual scoping. Proceed with parametric-modeling baseline and treat clinical positioning as application context, not core methodology.",
+    "baseline_options": [
+      "c-b9caea0a",
+      "c-64620683",
+      "c-6dc7fd30",
+      "c-cdded365",
+      "c-2fd5ff58"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-2fd5ff58",
+          "title": "Recovering 3D Human Mesh from Monocular Images: A Survey",
+          "role_hint": "unknown",
+          "reason": "Direct survey on monocular 3D human mesh recovery; strong foundational reference for parametric methods."
+        },
+        {
+          "candidate_id": "c-b9caea0a",
+          "title": "Human Body 3D Measurement Method and Application Based on Human Body Model—SMPL",
+          "role_hint": "parallel",
+          "reason": "SMPL-based 3D human body measurement; direct methodological match."
+        },
+        {
+          "candidate_id": "c-64620683",
+          "title": "A parametric framework for population-specific 3D human body shape reconstruction using SMPL",
+          "role_hint": "parallel",
+          "reason": "Population-specific SMPL reconstruction; directly on-topic parametric method."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-6dc7fd30",
+          "title": "SAM 3D Body: Robust Full-Body Human Mesh Recovery",
+          "role_hint": "parallel",
+          "reason": "SOTA single-image full-body HMR method; relevant parallel baseline for parametric mesh recovery."
+        },
+        {
+          "candidate_id": "c-1d5013c5",
+          "title": "Advances in Feed-Forward 3D Reconstruction and View Synthesis: A Survey",
+          "role_hint": "unknown",
+          "reason": "General 3D reconstruction/view synthesis survey; useful background but not human-body specific."
+        },
+        {
+          "candidate_id": "c-d0803f08",
+          "title": "Motion-X: A Large-scale 3D Expressive Whole-body Human Motion Dataset",
+          "role_hint": "dataset",
+          "reason": "Large-scale whole-body motion dataset; useful for training pose/shape models."
+        },
+        {
+          "candidate_id": "c-32743b2e",
+          "title": "Motion-X++: A Large-Scale Multimodal 3D Whole-body Human Motion Dataset",
+          "role_hint": "dataset",
+          "reason": "Extended multimodal whole-body dataset; supplementary training resource."
+        },
+        {
+          "candidate_id": "c-6a711f49",
+          "title": "An Integrated Platform for Live 3D Human Reconstruction and Motion Capturing",
+          "role_hint": "reference",
+          "reason": "Integrated platform for live 3D human reconstruction; relevant tele-immersion reference."
+        },
+        {
+          "candidate_id": "c-a9f56b80",
+          "title": "Fitted avatars: automatic skeleton adjustment for self-avatars in virtual reality",
+          "role_hint": "reference",
+          "reason": "Self-avatar skeleton adjustment for VR; relevant to avatar positioning context."
+        },
+        {
+          "candidate_id": "c-f29655f5",
+          "title": "Evaluation of Automated Skeleton Fitting to 4D Human Body Scan Data Using Open-Source SMPL- and OSSO Models",
+          "role_hint": "reference",
+          "reason": "Open-source SMPL fitting to 4D scan data; relevant body modeling evaluation."
+        },
+        {
+          "candidate_id": "c-d160660f",
+          "title": "SMPL Variable Model for 3D Reconstruction and Image Fusion in Animation Media Applications",
+          "role_hint": "parallel",
+          "reason": "SMPL variable model for animation media; adjacent application domain."
+        },
+        {
+          "candidate_id": "c-cdded365",
+          "title": "RC-SMPL: Real-time Cumulative SMPL-based Avatar Body Generation",
+          "role_hint": "parallel",
+          "reason": "Real-time SMPL avatar generation; directly relevant to avatar creation."
+        },
+        {
+          "candidate_id": "c-cc30f081",
+          "title": "yongyct/densebody-poc",
+          "role_hint": "repo",
+          "reason": "DenseBody POC implementation; proof-of-concept repo for 2D-to-3D human body."
+        }
+      ],
+      "needs_manual": [],
+      "rejected": [
+        {
+          "candidate_id": "c-304fb9cd",
+          "title": "Software Implementation of the Krylov Methods Based Reconstruction for the 3D Cone Beam CT Operator",
+          "role_hint": "reference",
+          "reason": "Cone Beam CT operator reconstruction, not human body/avatar topic."
+        },
+        {
+          "candidate_id": "c-371e243c",
+          "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+          "role_hint": "reference",
+          "reason": "NLP/LLM survey coding paper; completely off-topic."
+        },
+        {
+          "candidate_id": "c-7f18a664",
+          "title": "Manifestation of three-body forces in three-body Bethe-Salpeter and light-front equations",
+          "role_hint": "reference",
+          "reason": "Theoretical particle physics paper on three-body forces; off-topic."
+        },
+        {
+          "candidate_id": "c-64273dc3",
+          "title": "Three-body scattering in Poincaré invariant quantum mechanics",
+          "role_hint": "reference",
+          "reason": "Nuclear physics Poincaré-invariant scattering; off-topic."
+        },
+        {
+          "candidate_id": "c-2e982bc7",
+          "title": "Relativistic descriptions of few-body systems",
+          "role_hint": "reference",
+          "reason": "Relativistic few-body physics review; off-topic."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-b9caea0a",
+          "title": "Human Body 3D Measurement Method and Application Based on Human Body Model—SMPL",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-64620683",
+          "title": "A parametric framework for population-specific 3D human body shape reconstruction using SMPL",
+          "role_hint": "parallel",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-6dc7fd30",
+          "title": "SAM 3D Body: Robust Full-Body Human Mesh Recovery",
+          "role_hint": "parallel",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-cdded365",
+          "title": "RC-SMPL: Real-time Cumulative SMPL-based Avatar Body Generation",
+          "role_hint": "parallel",
+          "year": 2023
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-f29655f5",
+          "title": "Evaluation of Automated Skeleton Fitting to 4D Human Body Scan Data Using Open-Source SMPL- and OSSO Models",
+          "role_hint": "reference",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-d160660f",
+          "title": "SMPL Variable Model for 3D Reconstruction and Image Fusion in Animation Media Applications",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-6a711f49",
+          "title": "An Integrated Platform for Live 3D Human Reconstruction and Motion Capturing",
+          "role_hint": "reference",
+          "year": 2017
+        },
+        {
+          "candidate_id": "c-a9f56b80",
+          "title": "Fitted avatars: automatic skeleton adjustment for self-avatars in virtual reality",
+          "role_hint": "reference",
+          "year": 2023
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-2fd5ff58",
+          "title": "Recovering 3D Human Mesh from Monocular Images: A Survey",
+          "role_hint": "unknown",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-1d5013c5",
+          "title": "Advances in Feed-Forward 3D Reconstruction and View Synthesis: A Survey",
+          "role_hint": "unknown",
+          "year": 2025
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-d0803f08",
+          "title": "Motion-X: A Large-scale 3D Expressive Whole-body Human Motion Dataset",
+          "role_hint": "dataset",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-32743b2e",
+          "title": "Motion-X++: A Large-Scale Multimodal 3D Whole-body Human Motion Dataset",
+          "role_hint": "dataset",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-cc30f081",
+          "title": "yongyct/densebody-poc",
+          "role_hint": "repo",
+          "year": null
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "c-d0803f08 / c-32743b2e (Motion-X, Motion-X++) provide large-scale whole-body SMPL-compatible motion data; useful as training/evaluation corpora for parametric avatars.",
+      "c-cc30f081 (densebody-poc) is a small proof-of-concept repo (5 stars) referencing DenseBody; consider only as code reference, not a maintained baseline.",
+      "c-f29655f5 offers an evaluation protocol (SMPL/OSSO fitting to 4D scans) suitable for benchmarking parametric reconstruction quality."
+    ],
+    "work_suggestions": [
+      "Build the methodology spine on c-2fd5ff58 (survey) plus c-b9caea0a and c-64620683 (SMPL-based reconstruction) as the core parametric baseline.",
+      "Use c-6dc7fd30 (SAM 3D Body) and c-cdded365 (RC-SMPL) as strong parallel SOTA baselines to compare against parametric-only approaches.",
+      "Augment the 3D reconstruction background with c-1d5013c5 to cover NeRF / Gaussian splatting feed-forward methods beyond SMPL.",
+      "For training and evaluation, integrate c-d0803f08 / c-32743b2e whole-body datasets and the c-f29655f5 4D-scan fitting protocol.",
+      "Flag the patient virtual positioning / clinical translation (surgical planning, radiotherapy, CT/MRI registration) as an explicit open gap; manual scoping is required since retrieved evidence does not cover it."
+    ],
+    "risk_reminders": [
+      "Clinical/medical patient positioning evidence is absent; only tangentially supported by c-a9f56b80 (VR avatars).",
+      "c-cc30f081 is a low-star POC repo; not suitable as primary implementation reference.",
+      "Implicit-function (PIFu/PIFuHD) and NeRF human reconstruction methods are not represented in the current pool.",
+      "Several candidate_ids (c-371e243c, c-7f18a664, c-64273dc3, c-2e982bc7) are physics/NLP off-topic noise from broad keyword matching.",
+      "Topic ambiguity: 'virtual positioning' may mean surgical/radiotherapy planning OR avatar placement; both interpretations are not equally covered."
+    ],
+    "manual_questions": [
+      "Is 'patient virtual positioning' for surgical planning, radiotherapy setup, or general medical avatar placement?",
+      "Should the reconstruction pipeline be RGB/RGB-D image-based or CT/MRI volumetric?",
+      "Is the target body representation a parametric SMPL model or a dense implicit/volumetric mesh?",
+      "Are real-time constraints required for clinical workflow integration?",
+      "What evaluation metrics matter: geometric accuracy, anatomical landmarks, or pose fidelity?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "Is the patient virtual positioning clinical (surgical/radiotherapy) or general avatar use?",
+      "Is the input modality RGB/RGB-D images or CT/MRI volumetric scans?",
+      "Should the body representation be parametric SMPL or dense implicit/volumetric?",
+      "Are real-time constraints required for clinical workflow integration?",
+      "Which evaluation metrics matter: geometric accuracy, anatomical landmarks, or pose fidelity?"
+    ],
+    "weak_points": [
+      "evidence_gaps is empty despite no clinical/patient-positioning papers being retrieved.",
+      "No medical imaging, surgical planning, or radiotherapy-specific candidates in the pool.",
+      "All work_suggestions are general vision-3D; none target the patient/clinical axis.",
+      "Baseline group is RGB-vision heavy; no CT/MRI volumetric baseline present.",
+      "No dataset candidate addresses patient scans or medical body imaging."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Vision-3D reconstruction evidence is solid (SMPL, NeRF, surveys), but the clinical patient-positioning axis is unaddressed. evidence_gaps must declare the medical gap, and work_suggestions need clinical-targeted candidates before proceeding."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+      "domain_route": "vision_3d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "crossref": 5,
+        "arxiv": 12,
+        "github": 1
+      },
+      "ledger_n_calls": 22
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 27,
+      "queries": [
+        "body body",
+        "body motion",
+        "body we",
+        "body that",
+        "motion body",
+        "motion motion",
+        "motion we",
+        "motion that"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 233.53
+}

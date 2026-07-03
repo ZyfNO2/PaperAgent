@@ -1,0 +1,1765 @@
+{
+  "project_id": "agent-re04-3c7fe97b",
+  "raw_topic": "基于点云多平面检测的三维重建关键技术研究",
+  "parsed_topic": {
+    "raw_topic": "基于点云多平面检测的三维重建关键技术研究",
+    "normalized_topic": "Key technologies for 3D reconstruction based on multi-plane detection from point clouds",
+    "domain_route": "vision_3d",
+    "domain_confidence": 0.95,
+    "method_terms": [
+      "RANSAC plane fitting",
+      "Hough transform 3D",
+      "deep learning plane segmentation",
+      "point cloud plane detection",
+      "multi-view stereo"
+    ],
+    "task_terms": [
+      "point cloud plane detection",
+      "3D reconstruction",
+      "indoor scene reconstruction",
+      "point cloud segmentation"
+    ],
+    "object_terms": [
+      "indoor point cloud",
+      "RGB-D point cloud",
+      "LiDAR point cloud",
+      "architectural scene"
+    ],
+    "query_atoms_en": [
+      "point cloud multi-plane detection",
+      "point cloud 3D reconstruction RANSAC",
+      "indoor point cloud plane segmentation",
+      "RGB-D point cloud plane fitting",
+      "deep learning point cloud plane detection",
+      "multi-plane 3D reconstruction"
+    ],
+    "query_atoms_zh": [
+      "点云多平面检测",
+      "点云三维重建",
+      "室内点云平面分割",
+      "点云平面拟合",
+      "多平面三维重建",
+      "点云RANSAC平面检测"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "openaccess.thecvf.com",
+      "arxiv.org",
+      "ieeexplore.ieee.org"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于点云多平面检测的三维重建关键技术研究",
+    "domain_route": "vision_3d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "RANSAC plane fitting point cloud plane detection",
+        "RANSAC plane fitting indoor point cloud"
+      ],
+      "method_task": [
+        "RANSAC plane fitting point cloud plane detection",
+        "RANSAC plane fitting 3D reconstruction",
+        "Hough transform 3D point cloud plane detection",
+        "Hough transform 3D 3D reconstruction"
+      ],
+      "object_task": [
+        "indoor point cloud point cloud plane detection",
+        "indoor point cloud 3D reconstruction",
+        "RGB-D point cloud point cloud plane detection",
+        "RGB-D point cloud 3D reconstruction"
+      ],
+      "dataset": [
+        "point cloud plane detection dataset",
+        "indoor point cloud dataset"
+      ],
+      "repo": [
+        "point cloud plane detection github",
+        "point cloud plane detection implementation",
+        "RANSAC plane fitting point cloud plane detection"
+      ],
+      "survey": [
+        "point cloud plane detection survey",
+        "vision 3d survey"
+      ],
+      "benchmark": [
+        "point cloud plane detection benchmark"
+      ],
+      "baseline": [
+        "RANSAC plane fitting point cloud plane detection",
+        "RANSAC plane fitting 3D reconstruction",
+        "Hough transform 3D point cloud plane detection",
+        "Hough transform 3D 3D reconstruction"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "RANSAC plane fitting",
+        "Hough transform 3D",
+        "deep learning plane segmentation",
+        "point cloud plane detection",
+        "multi-view stereo"
+      ],
+      "task_terms": [
+        "point cloud plane detection",
+        "3D reconstruction",
+        "indoor scene reconstruction",
+        "point cloud segmentation"
+      ],
+      "object_terms": [
+        "indoor point cloud",
+        "RGB-D point cloud",
+        "LiDAR point cloud",
+        "architectural scene"
+      ],
+      "domain_route": "vision_3d"
+    },
+    "fb_atom": "point cloud multi-plane detection",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper + repo backends for point-cloud multi-plane detection and 3D reconstruction",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud plane detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv is the spine; this atomic term covers both classical and learning-based plane detection from point clouds",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud 3D reconstruction RANSAC",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "captures the classical RANSAC-based pipeline central to multi-plane 3D reconstruction",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "indoor point cloud plane segmentation",
+            "target_role": "parallel_paper",
+            "why_call": "OpenAlex broadens recall on indoor-scene plane segmentation literature",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "deep learning point cloud plane detection",
+            "target_role": "parallel_paper",
+            "why_call": "Crossref surfaces peer-reviewed deep-learning plane detection works beyond arxiv",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark / survey / recent-advances noun-phrase variants",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud plane detection benchmark",
+            "target_role": "survey",
+            "why_call": "benchmark variant surfaces evaluation papers and datasets used in multi-plane detection",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "multi-plane 3D reconstruction survey",
+            "target_role": "survey",
+            "why_call": "survey variant aggregates overarching reviews on multi-plane reconstruction",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "RGB-D point cloud reconstruction recent advances",
+            "target_role": "reference",
+            "why_call": "captures recent-advances follow-ups for RGB-D driven 3D reconstruction",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud segmentation deep learning",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "adjacent learning-based segmentation literature that fuels plane-detection models",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code and datasets for point-cloud plane detection and 3D reconstruction",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "pointcloud plane",
+            "target_role": "repo",
+            "why_call": "concrete-object query to surface GitHub implementations of plane detection in point clouds",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "RANSAC plane fitting",
+            "target_role": "repo",
+            "why_call": "captures runnable RANSAC fitting repos used in plane-based reconstruction pipelines",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "indoor point cloud dataset plane",
+            "target_role": "dataset",
+            "why_call": "identifies canonical indoor point-cloud datasets supporting plane-detection benchmarks",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "indoor reconstruction",
+            "target_role": "dataset",
+            "why_call": "concrete-object query to locate indoor reconstruction datasets/code repos",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "openaccess.thecvf.com",
+      "arxiv.org",
+      "ieeexplore.ieee.org"
+    ],
+    "arxiv_queries": [
+      "point cloud plane detection",
+      "point cloud 3D reconstruction RANSAC",
+      "point cloud plane detection benchmark",
+      "point cloud segmentation deep learning"
+    ],
+    "openalex_queries": [
+      "indoor point cloud plane segmentation",
+      "multi-plane 3D reconstruction survey",
+      "indoor point cloud dataset plane"
+    ],
+    "crossref_queries": [
+      "deep learning point cloud plane detection",
+      "RGB-D point cloud reconstruction recent advances"
+    ],
+    "github_queries": [
+      "pointcloud plane",
+      "RANSAC plane fitting",
+      "indoor reconstruction"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "roman galactic plane survey definition committee report",
+      "candidate_id": "c-1bd9a335",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Roman Galactic Plane Survey Definition Committee Report",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2511.07494v1",
+      "identifier": "2511.07494v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The Roman Galactic Plane Survey (RGPS) is a 700-hour program approved for early definition as a community-designed General Astrophysics Survey. It was selected following a proposal call for science programs that would benefit from an early community-based definition (Sanderson et al 2024). The community was invited to submit white papers and science pitches with a deadline of May 20, 2024; the Roman Galactic Plane Survey Definition Committee (RGPS-DC) first met on Sep 11, 2024. Based on the input provided, the RGPS-DC recommends a survey consisting of three elements: (1) a wide-field science element (691 sq deg, 541 hrs) covering the Galactic plane, Galactic latitude |b|<2 deg and Galactic longitude l=+50.1 deg to -79 deg (281 deg), in four filters (F129, F159, F184, and F213) with higher latitude extensions for the bulge, the Serpens South/W40 star formation region, and Carina, (2) a time-domain science element (19 sq deg , 130 hrs) of six fields, including the full Nuclear Stellar Disk (NSD) and Central Molecular Zone (CMZ), with coverage in seven filters and repeat observations in one or more filters with cadences from 11 minutes to weeks, and (3) a deep-field/spectroscopic science element (4 sq deg , 30 hrs) consisting of fifteen Roman pointings (with a wide range of extinction, diffuse emission, stellar density and population) using longer exposure times in seven filters in addition to grism and prism observations. This document summarizes the science that can be done with this survey, the process of survey definition, and details on all of the program elements.",
+      "extra": {}
+    },
+    {
+      "stable_id": "janus: benchmarking commercial and open-source cloud and edge platforms for object and anomaly detection workloads",
+      "candidate_id": "c-08eabcae",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "JANUS: Benchmarking Commercial and Open-Source Cloud and Edge Platforms for Object and Anomaly Detection Workloads",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2012.04880v1",
+      "identifier": "2012.04880v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "With diverse IoT workloads, placing compute and analytics close to where data is collected is becoming increasingly important. We seek to understand what is the performance and the cost implication of running analytics on IoT data at the various available platforms. These workloads can be compute-light, such as outlier detection on sensor data, or compute-intensive, such as object detection from video feeds obtained from drones. In our paper, JANUS, we profile the performance/$ and the compute versus communication cost for a compute-light IoT workload and a compute-intensive IoT workload. In addition, we also look at the pros and cons of some of the proprietary deep-learning object detection packages, such as Amazon Rekognition, Google Vision, and Azure Cognitive Services, to contrast with open-source and tunable solutions, such as Faster R-CNN (FRCNN). We find that AWS IoT Greengrass delivers at least 2X lower latency and 1.25X lower cost compared to all other cloud platforms for the compute-light outlier detection workload. For the compute-intensive streaming video analytics task, an opensource solution to object detection running on cloud VMs saves on dollar costs compared to proprietary solutions provided by Amazon, Microsoft, and Google, but loses out on latency (up to 6X). If it runs on a low-powered edge device, the latency is up to 49X lower.",
+      "extra": {}
+    },
+    {
+      "stable_id": "sequential point clouds: a survey",
+      "candidate_id": "c-eec95f91",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Sequential Point Clouds: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2204.09337v2",
+      "identifier": "2204.09337v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point cloud has drawn more and more research attention as well as real-world applications. However, many of these applications (e.g. autonomous driving and robotic manipulation) are actually based on sequential point clouds (i.e. four dimensions) because the information of the static point cloud data could provide is still limited. Recently, researchers put more and more effort into sequential point clouds. This paper presents an extensive review of the deep learning-based methods for sequential point cloud research including dynamic flow estimation, object detection \\& tracking, point cloud segmentation, and point cloud forecasting. This paper further summarizes and compares the quantitative results of the reviewed methods over the public benchmark datasets. Finally, this paper is concluded by discussing the challenges in the current sequential point cloud research and pointing out insightful potential future research directions.",
+      "extra": {}
+    },
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-1f3e3c42",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "r3evision: a survey on robust rendering, restoration, and enhancement for 3d low-level vision",
+      "candidate_id": "c-88702b0e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.16262v2",
+      "identifier": "2506.16262v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Neural rendering methods such as Neural Radiance Fields (NeRF) and 3D Gaussian Splatting (3DGS) have achieved significant progress in photorealistic 3D scene reconstruction and novel view synthesis. However, most existing models assume clean and high-resolution (HR) multi-view inputs, which limits their robustness under real-world degradations such as noise, blur, low-resolution (LR), and weather-induced artifacts. To address these limitations, the emerging field of 3D Low-Level Vision (3D LLV) extends classical 2D Low-Level Vision tasks including super-resolution (SR), deblurring, weather degradation removal, restoration, and enhancement into the 3D spatial domain. This survey, referred to as R\\textsuperscript{3}eVision, provides a comprehensive overview of robust rendering, restoration, and enhancement for 3D LLV by formalizing the degradation-aware rendering problem and identifying key challenges related to spatio-temporal consistency and ill-posed optimization. Recent methods that integrate LLV into neural rendering frameworks are categorized to illustrate how they enable high-fidelity 3D reconstruction under adverse conditions. Application domains such as autonomous driving, AR/VR, and robotics are also discussed, where reliable 3D perception from degraded inputs is critical. By reviewing representative methods, datasets, and evaluation protocols, this work positions 3D LLV as a fundamental direction for robust 3D content generation and scene-level reconstruction in real-world environments.",
+      "extra": {}
+    },
+    {
+      "stable_id": "advances in global solvers for 3d vision",
+      "candidate_id": "c-decb4312",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advances in Global Solvers for 3D Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2602.14662v1",
+      "identifier": "2602.14662v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Global solvers have emerged as a powerful paradigm for 3D vision, offering certifiable solutions to nonconvex geometric optimization problems traditionally addressed by local or heuristic methods. This survey presents the first systematic review of global solvers in geometric vision, unifying the field through a comprehensive taxonomy of three core paradigms: Branch-and-Bound (BnB), Convex Relaxation (CR), and Graduated Non-Convexity (GNC). We present their theoretical foundations, algorithmic designs, and practical enhancements for robustness and scalability, examining how each addresses the fundamental nonconvexity of geometric estimation problems. Our analysis spans ten core vision tasks, from Wahba problem to bundle adjustment, revealing the optimality-robustness-scalability trade-offs that govern solver selection. We identify critical future directions: scaling algorithms while maintaining guarantees, integrating data-driven priors with certifiable optimization, establishing standardized benchmarks, and addressing societal implications for safety-critical deployment. By consolidating theoretical foundations, practical advances, and broader impacts, this survey provides a unified perspective and roadmap toward certifiable, trustworthy perception for real-world applications. A continuously-updated literature summary and companion code tutorials are available at https://github.com/ericzzj1989/Awesome-Global-Solvers-for-3D-Vision.",
+      "extra": {}
+    },
+    {
+      "stable_id": "molecular cloud determination in the northern galactic plane",
+      "candidate_id": "c-dffac1d4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Molecular cloud determination in the Northern Galactic Plane",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2010,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1007.3627v2",
+      "identifier": "1007.3627v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The Exeter FCRAO CO Galactic Plane Survey consists of 12CO and 13CO (J=1-0) observations over the galactic plane covering 55 degrees <= l <= 102 degrees, |b| >= 1 degree and 141 degrees <= l <= 195 degrees, -3.5 degrees <= b <= 5.5 degrees with a spatial resolution of ~45\" and a spectral resolution of ~0.15km/s. We will present the methodology of a threshold-based cloud and clump determination method which retains hierarchical information, then discuss associating sources with clouds in the catalogue. Once complete, this catalogue of clouds and clumps will encompass the majority of the Northern Galactic Plane, providing knowledge of the molecular structure of the galaxy and the starting point for studies of the variation in star formation efficiency. In addition, it will allow us to identify clouds that have no or little star formation taking place inside them, which are often overlooked in the study of the conditions required for star formation to take place.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the transform of a line of desargues affine plane in an additive group of its points",
+      "candidate_id": "c-e6a26217",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Transform of a line of Desargues Affine Plane in an additive Group of its Points",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2016,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1609.01155v1",
+      "identifier": "1609.01155v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In this paper we present a set transformation of points in a line of the Desargues affine plane in a additive group. For this, the first stop on the meaning of the Desargues affine plane, formulating first axiom of his that show proposition D1. Afterwards we show that little Pappus theorem, which we use in the construction of group proofs in additions of points on a line on desargues plane, also applies in the Desargues affine plane.",
+      "extra": {}
+    },
+    {
+      "stable_id": "evaluation of plane detection with ransac according to density of 3d point clouds",
+      "candidate_id": "c-714578e3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Evaluation of Plane Detection with RANSAC According to Density of 3D Point Clouds",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2013,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1312.5033v1",
+      "identifier": "1312.5033v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We have implemented a method that detects planar regions from 3D scan data using Random Sample Consensus (RANSAC) algorithm to address the issue of a trade-off between the scanning speed and the point density of 3D scanning. However, the limitation of the implemented method has not been clear yet. In this paper, we conducted an additional experiment to evaluate the implemented method by changing its parameter and environments in both high and low point density data. As a result, the number of detected planes in high point density data was different from that in low point density data with the same parameter value.",
+      "extra": {}
+    },
+    {
+      "stable_id": "software implementation of the krylov methods based reconstruction for the 3d cone beam ct operator",
+      "candidate_id": "c-91817ed8",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Software Implementation of the Krylov Methods Based Reconstruction for the 3D Cone Beam CT Operator",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2110.13526v1",
+      "identifier": "2110.13526v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Krylov subspace methods are considered a standard tool to solve large systems of linear algebraic equations in many scientific disciplines such as image restoration or solving partial differential equations in mechanics of continuum. In the context of computer tomography however, the mostly used algebraic reconstruction techniques are based on classical iterative schemes. In this work we present software package that implements fully 3D cone beam projection operator and uses Krylov subspace methods, namely CGLS and LSQR to solve related tomographic reconstruction problems. It also implements basic preconditioning strategies. On the example of the cone beam CT reconstruction of 3D Shepp-Logan phantom we show that the speed of convergence of the CGLS clearly outperforms PSIRT algorithm. Therefore Krylov subspace methods present an interesting option for the reconstruction of large 3D cone beam CT problems.",
+      "extra": {}
+    },
+    {
+      "stable_id": "nope-sac: neural one-plane ransac for sparse-view planar 3d reconstruction",
+      "candidate_id": "c-6f8e9361",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "NOPE-SAC: Neural One-Plane RANSAC for Sparse-View Planar 3D Reconstruction",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2211.16799v2",
+      "identifier": "2211.16799v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This paper studies the challenging two-view 3D reconstruction in a rigorous sparse-view configuration, which is suffering from insufficient correspondences in the input image pairs for camera pose estimation. We present a novel Neural One-PlanE RANSAC framework (termed NOPE-SAC in short) that exerts excellent capability to learn one-plane pose hypotheses from 3D plane correspondences. Building on the top of a siamese plane detection network, our NOPE-SAC first generates putative plane correspondences with a coarse initial pose. It then feeds the learned 3D plane parameters of correspondences into shared MLPs to estimate the one-plane camera pose hypotheses, which are subsequently reweighed in a RANSAC manner to obtain the final camera pose. Because the neural one-plane pose minimizes the number of plane correspondences for adaptive pose hypotheses generation, it enables stable pose voting and reliable pose refinement in a few plane correspondences for the sparse-view inputs. In the experiments, we demonstrate that our NOPE-SAC significantly improves the camera pose estimation for the two-view inputs with severe viewpoint changes, setting several new state-of-the-art performances on two challenging benchmarks, i.e., MatterPort3D and ScanNet, for sparse-view 3D reconstruction. The source code is released at https://github.com/IceTTTb/NopeSAC for reproducible research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "indoor positioning based on active radar sensing and passive reflectors: concepts & initial results",
+      "candidate_id": "c-eb63af86",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Indoor Positioning based on Active Radar Sensing and Passive Reflectors: Concepts & Initial Results",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2310.04231v2",
+      "identifier": "2310.04231v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "To navigate reliably in indoor environments, an industrial autonomous vehicle must know its position. However, current indoor vehicle positioning technologies either lack accuracy, usability or are too expensive. Thus, we propose a novel concept called local reference point assisted active radar positioning, which is able to overcome these drawbacks. It is based on distributing passive retroreflectors in the indoor environment such that each position of the vehicle can be identified by a unique reflection characteristic regarding the reflectors. To observe these characteristics, the autonomous vehicle is equipped with an active radar system. On one hand, this paper presents the basic idea and concept of our new approach towards indoor vehicle positioning and especially focuses on the crucial placement of the reflectors. On the other hand, it also provides a proof of concept by conducting a full system simulation including the placement of the local reference points, the radar-based distance estimation and the comparison of two different positioning methods. It successfully demonstrates the feasibility of our proposed approach.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a systematic approach for cross-source point cloud registration by preserving macro and micro structures",
+      "candidate_id": "c-cb4f8318",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2016,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1608.05143v2",
+      "identifier": "1608.05143v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We propose a systematic approach for registering cross-source point clouds. The compelling need for cross-source point cloud registration is motivated by the rapid development of a variety of 3D sensing techniques, but many existing registration methods face critical challenges as a result of the large variations in cross-source point clouds. This paper therefore illustrates a novel registration method which successfully aligns two cross-source point clouds in the presence of significant missing data, large variations in point density, scale difference and so on. The robustness of the method is attributed to the extraction of macro and micro structures. Our work has three main contributions: (1) a systematic pipeline to deal with cross-source point cloud registration; (2) a graph construction method to maintain macro and micro structures; (3) a new graph matching method is proposed which considers the global geometric constraint to robustly register these variable graphs. Compared to most of the related methods, the experiments show that the proposed method successfully registers in cross-source datasets, while other methods have difficulty achieving satisfactory results. The proposed method also shows great ability in same-source datasets.",
+      "extra": {}
+    },
+    {
+      "stable_id": "simulation-based performance evaluation of 3d object detection methods with deep learning for a lidar point cloud dataset in a sotif-related use case",
+      "candidate_id": "c-aab3c7fe",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Simulation-Based Performance Evaluation of 3D Object Detection Methods with Deep Learning for a LiDAR Point Cloud Dataset in a SOTIF-related Use Case",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "https://doi.org/10.2139/ssrn.5334126",
+      "identifier": "10.2139/ssrn.5334126",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a new plane segmentation method of point cloud based on mean shift and ransac",
+      "candidate_id": "c-4d18e5fc",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A new plane segmentation method of point cloud based on mean shift and RANSAC",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2018,
+      "venue": "2018 Chinese Control And Decision Conference (CCDC)",
+      "url": "https://doi.org/10.1109/ccdc.2018.8407394",
+      "identifier": "10.1109/ccdc.2018.8407394",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "3d point cloud plane segmentation method based on ransac and support vector machine",
+      "candidate_id": "c-1adf37be",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "3D Point Cloud Plane Segmentation Method Based on RANSAC And Support Vector Machine",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2019,
+      "venue": "2019 14th IEEE Conference on Industrial Electronics and Applications (ICIEA)",
+      "url": "https://doi.org/10.1109/iciea.2019.8834367",
+      "identifier": "10.1109/iciea.2019.8834367",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "welding seam detection between cylinder and plane using point cloud data",
+      "candidate_id": "c-c7916db7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Welding seam detection between cylinder and plane using point cloud data",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "2022 International Symposium on Micro-NanoMehatronics and Human Science (MHS)",
+      "url": "https://doi.org/10.1109/mhs56725.2022.10092146",
+      "identifier": "10.1109/mhs56725.2022.10092146",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "towards robust and efficient plane detection from 3d point cloud",
+      "candidate_id": "c-8c1d0c60",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Towards Robust and Efficient Plane Detection from 3D Point Cloud",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "2021 International Conference on Unmanned Aircraft Systems (ICUAS)",
+      "url": "https://doi.org/10.1109/icuas51884.2021.9476824",
+      "identifier": "10.1109/icuas51884.2021.9476824",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "point cloud plane fitting based on ransac and robust eigenvalue method",
+      "candidate_id": "c-bde2eca9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Point Cloud Plane Fitting Based on RANSAC and Robust Eigenvalue Method",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "2022 IEEE 8th International Conference on Computer and Communications (ICCC)",
+      "url": "https://doi.org/10.1109/iccc56324.2022.10065838",
+      "identifier": "10.1109/iccc56324.2022.10065838",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "matterport3d",
+      "candidate_id": "c-25921dcc",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "Matterport3D",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    },
+    {
+      "stable_id": "scannet",
+      "candidate_id": "c-63e8e6c5",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "ScanNet",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "RANSAC plane fitting point cloud plane detection|RANSAC plane fitting indoor point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "point cloud plane detection dataset|indoor point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "point cloud plane detection github|point cloud plane detection implementation|RANSAC plane fitting point cloud plane det",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud plane detection dataset|indoor point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud plane detection survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "RANSAC plane fitting point cloud plane detection|RANSAC plane fitting indoor point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "indoor point cloud point cloud plane detection|indoor point cloud 3D reconstruction|RGB-D point cloud point cloud plane ",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud plane detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "point cloud plane detection survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "RANSAC plane fitting point cloud plane detection|RANSAC plane fitting 3D reconstruction|Hough transform 3D point cloud p",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "indoor point cloud point cloud plane detection|indoor point cloud 3D reconstruction|RGB-D point cloud point cloud plane ",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "point cloud plane detection dataset|indoor point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "RANSAC plane fitting point cloud plane detection|RANSAC plane fitting indoor point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "RANSAC plane fitting point cloud plane detection|RANSAC plane fitting 3D reconstruction|Hough transform 3D point cloud p",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "RANSAC plane fitting point cloud plane detection|RANSAC plane fitting 3D reconstruction|Hough transform 3D point cloud p",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "RANSAC plane fitting point cloud plane detection|RANSAC plane fitting indoor point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "RANSAC plane fitting point cloud plane detection|RANSAC plane fitting 3D reconstruction|Hough transform 3D point cloud p",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "point cloud plane detection dataset|indoor point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "point cloud plane detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "point point|point methods|point that",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Roman Galactic Plane Survey Definition Committee Report",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: JANUS: Benchmarking Commercial and Open-Source Cloud and Edg",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Sequential Point Clouds: A Survey",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Oriented object detection in optical remote sensing images u",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: R3eVision: A Survey on Robust Rendering, Restoration, and En",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-1bd9a335",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud",
+        "plane detection",
+        "3D reconstruction",
+        "RANSAC",
+        "indoor scene"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Astronomy survey about galactic plane; no relation to point cloud 3D reconstruction.",
+      "reason": "Roman Galactic Plane Survey is an astrophysics program. The word 'plane' refers to galactic plane, not geometric planes in point clouds. Cross-domain mismatch."
+    },
+    {
+      "candidate_id": "c-08eabcae",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud",
+        "plane detection",
+        "3D reconstruction",
+        "RANSAC"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "IoT/cloud benchmarking paper; no relation to point cloud or 3D reconstruction.",
+      "reason": "JANUS benchmarks cloud and edge platforms for object/anomaly detection workloads. Topic mismatch: cloud computing vs. geometric point cloud plane detection."
+    },
+    {
+      "candidate_id": "c-eec95f91",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud"
+      ],
+      "missing_terms": [
+        "plane detection",
+        "RANSAC",
+        "indoor scene",
+        "3D reconstruction",
+        "multi-plane"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Point cloud survey but focused on sequential/LiDAR data, not plane detection.",
+      "reason": "Sequential Point Clouds survey covers autonomous driving and robotic manipulation point clouds. Tangentially relevant as point cloud background but does not address plane detection or 3D reconstruction specifically."
+    },
+    {
+      "candidate_id": "c-1f3e3c42",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud",
+        "plane detection",
+        "3D reconstruction",
+        "indoor"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Optical remote sensing oriented object detection; domain mismatch.",
+      "reason": "Survey on oriented object detection in optical RS images. Topic is about point cloud plane detection/3D reconstruction, not 2D image object detection in remote sensing."
+    },
+    {
+      "candidate_id": "c-88702b0e",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D",
+        "3D reconstruction"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "plane detection",
+        "RANSAC",
+        "indoor",
+        "multi-plane"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "3D reconstruction survey but focuses on NeRF/3DGS rendering, not point cloud plane detection.",
+      "reason": "R3eVision covers neural rendering methods (NeRF, 3DGS) for 3D scene reconstruction and novel view synthesis. Different paradigm from point cloud plane-based reconstruction."
+    },
+    {
+      "candidate_id": "c-decb4312",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "plane detection",
+        "RANSAC",
+        "indoor",
+        "multi-plane"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "3D vision global solvers survey; tangentially related to geometric optimization.",
+      "reason": "Advances in Global Solvers for 3D Vision covers certifiable geometric optimization. Potentially relevant as mathematical background but does not specifically address point cloud plane detection."
+    },
+    {
+      "candidate_id": "c-dffac1d4",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud",
+        "plane detection",
+        "3D reconstruction",
+        "indoor"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Astronomy paper on molecular clouds; no relation to geometric point clouds.",
+      "reason": "Molecular cloud determination in galactic plane. 'Cloud' here is astrophysical, 'plane' is galactic. Completely different domain from 3D point cloud plane detection."
+    },
+    {
+      "candidate_id": "c-e6a26217",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud",
+        "3D reconstruction",
+        "RANSAC",
+        "indoor",
+        "segmentation"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Pure mathematics on affine planes; no connection to 3D point cloud processing.",
+      "reason": "Theoretical paper on Desargues affine plane transformations. Mathematical concept unrelated to computational point cloud plane detection."
+    },
+    {
+      "candidate_id": "c-714578e3",
+      "evidence_type": "paper",
+      "role_hint": "baseline",
+      "status": "core",
+      "matched_terms": [
+        "RANSAC plane fitting",
+        "point cloud plane detection",
+        "3D",
+        "plane detection"
+      ],
+      "missing_terms": [
+        "indoor scene reconstruction",
+        "multi-plane",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct evaluation of RANSAC plane detection on 3D point clouds; highly relevant baseline.",
+      "reason": "Explicitly evaluates RANSAC-based plane detection from 3D point clouds with respect to point density. A directly relevant method paper for the topic."
+    },
+    {
+      "candidate_id": "c-91817ed8",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [
+        "3D"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "plane detection",
+        "RANSAC",
+        "indoor",
+        "reconstruction"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Medical imaging CT reconstruction; domain mismatch.",
+      "reason": "Krylov methods for 3D Cone Beam CT reconstruction is medical imaging, not point cloud plane detection for scene reconstruction."
+    },
+    {
+      "candidate_id": "c-6f8e9361",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "RANSAC",
+        "plane detection",
+        "3D reconstruction",
+        "sparse-view"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "indoor",
+        "multi-plane",
+        "RGB-D"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Neural-enhanced RANSAC for planar 3D reconstruction; strongly aligned method+task.",
+      "reason": "NOPE-SAC combines neural networks with one-plane RANSAC for sparse-view planar 3D reconstruction. Direct parallel method to topic's RANSAC plane detection approach."
+    },
+    {
+      "candidate_id": "c-eb63af86",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [
+        "indoor"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "plane detection",
+        "3D reconstruction",
+        "RANSAC"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Indoor positioning via radar; not about point cloud reconstruction.",
+      "reason": "Paper addresses indoor vehicle positioning using radar and reflectors. Different application domain from point cloud multi-plane 3D reconstruction."
+    },
+    {
+      "candidate_id": "c-cb4f8318",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud"
+      ],
+      "missing_terms": [
+        "plane detection",
+        "RANSAC",
+        "indoor",
+        "3D reconstruction"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Point cloud registration paper; adjacent topic but not plane detection.",
+      "reason": "Cross-source point cloud registration addressing macro/micro structures. Useful background for 3D reconstruction pipelines but does not address plane detection."
+    },
+    {
+      "candidate_id": "c-aab3c7fe",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [
+        "LiDAR point cloud",
+        "3D"
+      ],
+      "missing_terms": [
+        "plane detection",
+        "RANSAC",
+        "indoor",
+        "multi-plane"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "LiDAR 3D object detection for autonomous driving; tangential to plane detection topic.",
+      "reason": "Evaluates 3D object detection on LiDAR point clouds. LiDAR point cloud is a relevant object but task (object detection for SOTIF) differs from plane detection/3D reconstruction."
+    },
+    {
+      "candidate_id": "c-4d18e5fc",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud plane detection",
+        "RANSAC",
+        "plane segmentation"
+      ],
+      "missing_terms": [
+        "3D reconstruction",
+        "indoor",
+        "multi-plane",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Plane segmentation method combining mean shift and RANSAC; directly relevant method.",
+      "reason": "Proposes point cloud plane segmentation using mean shift with RANSAC. Directly aligned with topic's RANSAC plane fitting and point cloud segmentation tasks."
+    },
+    {
+      "candidate_id": "c-1adf37be",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud plane detection",
+        "RANSAC",
+        "3D Point Cloud",
+        "plane segmentation"
+      ],
+      "missing_terms": [
+        "indoor scene reconstruction",
+        "multi-plane",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "RANSAC + SVM point cloud plane segmentation; direct method match.",
+      "reason": "Combines RANSAC with SVM for 3D point cloud plane segmentation. Strongly relevant to RANSAC plane fitting methodology in topic."
+    },
+    {
+      "candidate_id": "c-c7916db7",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "needs_manual",
+      "matched_terms": [
+        "point cloud",
+        "plane"
+      ],
+      "missing_terms": [
+        "RANSAC",
+        "3D reconstruction",
+        "indoor",
+        "multi-plane",
+        "segmentation"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Welding seam detection between cylinder and plane; industrial application, relevance uncertain.",
+      "reason": "Uses point cloud data to detect welding seams on cylinder-plane intersections. Industrial focus, not indoor scene reconstruction. Tangentially related plane detection."
+    },
+    {
+      "candidate_id": "c-8c1d0c60",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud plane detection",
+        "3D Point Cloud",
+        "Plane Detection"
+      ],
+      "missing_terms": [
+        "RANSAC",
+        "indoor",
+        "multi-plane",
+        "3D reconstruction"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Robust and efficient plane detection from 3D point cloud; direct topic match.",
+      "reason": "Title directly addresses plane detection from 3D point clouds with focus on robustness and efficiency. Highly relevant to topic's plane detection requirements."
+    },
+    {
+      "candidate_id": "c-bde2eca9",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud plane detection",
+        "RANSAC",
+        "plane fitting"
+      ],
+      "missing_terms": [
+        "indoor",
+        "multi-plane",
+        "3D reconstruction",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "RANSAC + eigenvalue point cloud plane fitting; strong method match.",
+      "reason": "Point cloud plane fitting using RANSAC with robust eigenvalue method. Directly aligned with topic's RANSAC plane fitting method."
+    },
+    {
+      "candidate_id": "c-25921dcc",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "core",
+      "matched_terms": [
+        "indoor scene reconstruction",
+        "3D reconstruction",
+        "RGB-D point cloud"
+      ],
+      "missing_terms": [
+        "plane detection",
+        "RANSAC",
+        "multi-plane"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "Matterport3D is a canonical indoor RGB-D 3D reconstruction dataset; highly relevant.",
+      "reason": "Matterport3D is a widely-used indoor RGB-D dataset for 3D scene reconstruction. Perfect object match for topic's indoor scene reconstruction experiments."
+    },
+    {
+      "candidate_id": "c-63e8e6c5",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "indoor point cloud",
+        "RGB-D point cloud",
+        "3D reconstruction",
+        "point cloud segmentation"
+      ],
+      "missing_terms": [
+        "multi-plane detection",
+        "RANSAC plane fitting",
+        "deep learning plane segmentation",
+        "architectural scene"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "ScanNet is a widely-used RGB-D indoor scene dataset enabling plane segmentation and 3D reconstruction benchmarks; relevant but not plane-specific.",
+      "reason": "ScanNet provides large-scale indoor RGB-D point clouds with annotations used for 3D reconstruction and segmentation tasks. While it supports plane detection research, it is not plane-specific and lacks explicit multi-plane ground truth used by the topic's methods."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Focus on the classical-geometry pipeline for indoor multi-plane 3D reconstruction: (1) RANSAC-based plane fitting and segmentation as the dominant baseline family, (2) efficiency/robustness improvements (mean-shift seeding, SVM refinement, robust eigenvalue, neural-guided one-plane RANSAC), and (3) downstream reconstruction on indoor RGB-D benchmarks (Matterport3D as primary, ScanNet as secondary). Evidence supports RANSAC variants (c-714578e3, c-4d18e5fc, c-1adf37be, c-bde2eca9, c-8c1d0c60) as core baselines and NOPE-SAC (c-6f8e9361) as a neural-enhanced parallel. Tangential background (sequential PC survey, NeRF/3DGS survey, global solvers survey) provides useful framing but is not plane-specific. Recommend the student scope the thesis to classical + light-learning RANSAC plane detection feeding indoor planar reconstruction, explicitly contrasting against NeRF/3DGS reconstruction paradigms. Avoid LiDAR-only object detection, industrial welding, CT, and astrophysics references — all rejected as domain mismatches.",
+    "baseline_options": [
+      "c-714578e3",
+      "c-4d18e5fc",
+      "c-1adf37be",
+      "c-bde2eca9",
+      "c-8c1d0c60"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-714578e3",
+          "title": "Evaluation of Plane Detection with RANSAC According to Density of 3D Point Clouds",
+          "role_hint": "baseline",
+          "reason": "Direct evaluation of RANSAC plane detection on 3D point clouds; highly relevant baseline."
+        },
+        {
+          "candidate_id": "c-6f8e9361",
+          "title": "NOPE-SAC: Neural One-Plane RANSAC for Sparse-View Planar 3D Reconstruction",
+          "role_hint": "parallel",
+          "reason": "Neural-enhanced RANSAC for planar 3D reconstruction; strongly aligned method+task."
+        },
+        {
+          "candidate_id": "c-4d18e5fc",
+          "title": "A new plane segmentation method of point cloud based on mean shift and RANSAC",
+          "role_hint": "parallel",
+          "reason": "Plane segmentation method combining mean shift and RANSAC; directly relevant method."
+        },
+        {
+          "candidate_id": "c-1adf37be",
+          "title": "3D Point Cloud Plane Segmentation Method Based on RANSAC And Support Vector Machine",
+          "role_hint": "parallel",
+          "reason": "RANSAC + SVM point cloud plane segmentation; direct method match."
+        },
+        {
+          "candidate_id": "c-8c1d0c60",
+          "title": "Towards Robust and Efficient Plane Detection from 3D Point Cloud",
+          "role_hint": "parallel",
+          "reason": "Robust and efficient plane detection from 3D point cloud; direct topic match."
+        },
+        {
+          "candidate_id": "c-bde2eca9",
+          "title": "Point Cloud Plane Fitting Based on RANSAC and Robust Eigenvalue Method",
+          "role_hint": "parallel",
+          "reason": "RANSAC + eigenvalue point cloud plane fitting; strong method match."
+        },
+        {
+          "candidate_id": "c-25921dcc",
+          "title": "Matterport3D",
+          "role_hint": "dataset",
+          "reason": "Matterport3D is a canonical indoor RGB-D 3D reconstruction dataset; highly relevant."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-eec95f91",
+          "title": "Sequential Point Clouds: A Survey",
+          "role_hint": "unknown",
+          "reason": "Point cloud survey but focused on sequential/LiDAR data, not plane detection."
+        },
+        {
+          "candidate_id": "c-88702b0e",
+          "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+          "role_hint": "unknown",
+          "reason": "3D reconstruction survey but focuses on NeRF/3DGS rendering, not point cloud plane detection."
+        },
+        {
+          "candidate_id": "c-decb4312",
+          "title": "Advances in Global Solvers for 3D Vision",
+          "role_hint": "unknown",
+          "reason": "3D vision global solvers survey; tangentially related to geometric optimization."
+        },
+        {
+          "candidate_id": "c-cb4f8318",
+          "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+          "role_hint": "unknown",
+          "reason": "Point cloud registration paper; adjacent topic but not plane detection."
+        },
+        {
+          "candidate_id": "c-63e8e6c5",
+          "title": "ScanNet",
+          "role_hint": "dataset",
+          "reason": "ScanNet is a widely-used RGB-D indoor scene dataset enabling plane segmentation and 3D reconstruction benchmarks; relevant but not plane-specific."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-c7916db7",
+          "title": "Welding seam detection between cylinder and plane using point cloud data",
+          "role_hint": "unknown",
+          "reason": "Welding seam detection between cylinder and plane; industrial application, relevance uncertain."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-1bd9a335",
+          "title": "Roman Galactic Plane Survey Definition Committee Report",
+          "role_hint": "unknown",
+          "reason": "Astronomy survey about galactic plane; no relation to point cloud 3D reconstruction."
+        },
+        {
+          "candidate_id": "c-08eabcae",
+          "title": "JANUS: Benchmarking Commercial and Open-Source Cloud and Edge Platforms for Object and Anomaly Detection Workloads",
+          "role_hint": "unknown",
+          "reason": "IoT/cloud benchmarking paper; no relation to point cloud or 3D reconstruction."
+        },
+        {
+          "candidate_id": "c-1f3e3c42",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "unknown",
+          "reason": "Optical remote sensing oriented object detection; domain mismatch."
+        },
+        {
+          "candidate_id": "c-dffac1d4",
+          "title": "Molecular cloud determination in the Northern Galactic Plane",
+          "role_hint": "unknown",
+          "reason": "Astronomy paper on molecular clouds; no relation to geometric point clouds."
+        },
+        {
+          "candidate_id": "c-e6a26217",
+          "title": "The Transform of a line of Desargues Affine Plane in an additive Group of its Points",
+          "role_hint": "unknown",
+          "reason": "Pure mathematics on affine planes; no connection to 3D point cloud processing."
+        },
+        {
+          "candidate_id": "c-91817ed8",
+          "title": "Software Implementation of the Krylov Methods Based Reconstruction for the 3D Cone Beam CT Operator",
+          "role_hint": "unknown",
+          "reason": "Medical imaging CT reconstruction; domain mismatch."
+        },
+        {
+          "candidate_id": "c-eb63af86",
+          "title": "Indoor Positioning based on Active Radar Sensing and Passive Reflectors: Concepts & Initial Results",
+          "role_hint": "unknown",
+          "reason": "Indoor positioning via radar; not about point cloud reconstruction."
+        },
+        {
+          "candidate_id": "c-aab3c7fe",
+          "title": "Simulation-Based Performance Evaluation of 3D Object Detection Methods with Deep Learning for a LiDAR Point Cloud Datase",
+          "role_hint": "unknown",
+          "reason": "LiDAR 3D object detection for autonomous driving; tangential to plane detection topic."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-714578e3",
+          "title": "Evaluation of Plane Detection with RANSAC According to Density of 3D Point Clouds",
+          "role_hint": "baseline",
+          "year": 2013
+        },
+        {
+          "candidate_id": "c-4d18e5fc",
+          "title": "A new plane segmentation method of point cloud based on mean shift and RANSAC",
+          "role_hint": "parallel",
+          "year": 2018
+        },
+        {
+          "candidate_id": "c-1adf37be",
+          "title": "3D Point Cloud Plane Segmentation Method Based on RANSAC And Support Vector Machine",
+          "role_hint": "parallel",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-8c1d0c60",
+          "title": "Towards Robust and Efficient Plane Detection from 3D Point Cloud",
+          "role_hint": "parallel",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-bde2eca9",
+          "title": "Point Cloud Plane Fitting Based on RANSAC and Robust Eigenvalue Method",
+          "role_hint": "parallel",
+          "year": 2022
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-6f8e9361",
+          "title": "NOPE-SAC: Neural One-Plane RANSAC for Sparse-View Planar 3D Reconstruction",
+          "role_hint": "parallel",
+          "year": 2022
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-eec95f91",
+          "title": "Sequential Point Clouds: A Survey",
+          "role_hint": "unknown",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-88702b0e",
+          "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+          "role_hint": "unknown",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-decb4312",
+          "title": "Advances in Global Solvers for 3D Vision",
+          "role_hint": "unknown",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-cb4f8318",
+          "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+          "role_hint": "unknown",
+          "year": 2016
+        },
+        {
+          "candidate_id": "c-25921dcc",
+          "title": "Matterport3D",
+          "role_hint": "dataset",
+          "year": null
+        },
+        {
+          "candidate_id": "c-63e8e6c5",
+          "title": "ScanNet",
+          "role_hint": "dataset",
+          "year": null
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-c7916db7",
+          "title": "Welding seam detection between cylinder and plane using point cloud data",
+          "role_hint": "unknown",
+          "year": 2022
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "c-25921dcc Matterport3D: primary indoor RGB-D mesh+point cloud dataset; suitable for indoor multi-plane reconstruction evaluation.",
+      "c-63e8e6c5 ScanNet: large-scale indoor RGB-D with semantic/instance labels; enables plane segmentation benchmarking.",
+      "c-c7916db7 Welding seam paper: needs manual read to decide if cylinder-plane intersection reasoning transfers to indoor reconstruction."
+    ],
+    "work_suggestions": [
+      "Compare density-aware RANSAC (c-714578e3) against mean-shift-seeded RANSAC (c-4d18e5fc) and RANSAC+SVM (c-1adf37be) on Matterport3D indoor scans for plane count and fit accuracy.",
+      "Use robust/efficient plane detection (c-8c1d0c60) and RANSAC+eigenvalue fitting (c-bde2eca9) as efficiency-oriented baselines for runtime benchmarking.",
+      "Adopt NOPE-SAC (c-6f8e9361) as a neural-enhanced parallel method to argue whether learned plane hypotheses outperform pure RANSAC on sparse indoor views.",
+      "Run multi-plane reconstruction experiments on ScanNet (c-63e8e6c5) using semantic plane labels to measure reconstruction completeness vs Matterport3D (c-25921dcc) mesh ground truth.",
+      "Contrast classical RANSAC-plane reconstruction with NeRF/3DGS paradigms using c-88702b0e to motivate the planar representation in the thesis."
+    ],
+    "risk_reminders": [
+      "Core evidence is dominated by arxiv/crossref Chinese-conference works; English peer-reviewed coverage is thin.",
+      "No deep-learning plane segmentation papers (e.g. PlaneSeg, KPConv-based) appeared in retrieval — coverage gap.",
+      "Industrial/LiDAR/autonomous-driving work was actively rejected; stay scoped to indoor RGB-D.",
+      "Matterport3D/ScanNet lack explicit multi-plane ground truth; plane labels may need to be derived via baselines."
+    ],
+    "manual_questions": [
+      "Is the thesis scoped to indoor RGB-D reconstruction, or also outdoor LiDAR building facades?",
+      "Should deep-learning plane segmentation be a required component or only an optional comparison?",
+      "Are multi-plane intersection modeling and plane-merging rules part of the contribution?",
+      "Is real-time efficiency a thesis requirement, or is offline reconstruction quality sufficient?",
+      "Which ground-truth plane annotations will be used — manual, derived, or benchmark-provided?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "Is the thesis scoped to indoor RGB-D scenes, or must it cover outdoor LiDAR building facades as well?",
+      "Should deep-learning plane segmentation be a mandatory contribution or only an optional baseline comparison?",
+      "Are multi-plane intersection modeling and plane-merging rules part of the novel contribution?",
+      "Is real-time efficiency a hard thesis requirement, or is offline reconstruction quality sufficient?",
+      "Which ground-truth plane annotations will be used — manual, benchmark-provided, or derived?"
+    ],
+    "weak_points": [
+      "direction_recommendation summary is truncated mid-sentence, leaving the final clause unreadable.",
+      "All five baseline_options are RANSAC-family; no deep-learning plane-segmentation baseline (e.g., PlaneRecover, CPF) is included.",
+      "evidence_gaps is empty despite only 5 candidates being kept after rejecting 8 — coverage gaps are not surfaced.",
+      "c-c7916db7 (welding-seam cylinder-plane detection) is a long-tail industrial outlier with no clear justification.",
+      "work_suggestion 5 invokes c-88702b0e (a 3DGS/NeRF survey) without explaining why it maps to multi-plane reconstruction."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Direction is bounded on classical RANSAC-based indoor multi-plane reconstruction with datasets identified, but the recommendation text is truncated, deep-learning plane baselines are missing, and empty evidence_gaps hides candidate-coverage holes. One revision pass is needed."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于点云多平面检测的三维重建关键技术研究",
+      "domain_route": "vision_3d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "crossref": 6,
+        "arxiv": 13
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 27,
+      "queries": [
+        "point point",
+        "point methods",
+        "point that",
+        "point plane",
+        "plane point",
+        "plane methods",
+        "plane that",
+        "plane plane"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 266.25
+}

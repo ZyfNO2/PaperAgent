@@ -1,0 +1,998 @@
+{
+  "topic": "面向动态环境的视觉SLAM研究",
+  "final_candidate_pool": [
+    {
+      "stable_id": "dsvo: direct stereo visual odometry",
+      "candidate_id": "c-8dfd8218",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DSVO: Direct Stereo Visual Odometry",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2018,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1810.03963v2",
+      "identifier": "1810.03963v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This paper proposes a novel approach to stereo visual odometry without stereo matching. It is particularly robust in scenes of repetitive high-frequency textures. Referred to as DSVO (Direct Stereo Visual Odometry), it operates directly on pixel intensities, without any explicit feature matching, and is thus efficient and more accurate than the state-of-the-art stereo-matching-based methods. It applies a semi-direct monocular visual odometry running on one camera of the stereo pair, tracking the camera pose and mapping the environment simultaneously; the other camera is used to optimize the scale of monocular visual odometry. We evaluate DSVO in a number of challenging scenes to evaluate its performance and present comparisons with the state-of-the-art stereo visual odometry algorithms.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "df-vo: what should be learnt for visual odometry?",
+      "candidate_id": "c-67167a40",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DF-VO: What Should Be Learnt for Visual Odometry?",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2103.00933v1",
+      "identifier": "2103.00933v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Multi-view geometry-based methods dominate the last few decades in monocular Visual Odometry for their superior performance, while they have been vulnerable to dynamic and low-texture scenes. More importantly, monocular methods suffer from scale-drift issue, i.e., errors accumulate over time. Recent studies show that deep neural networks can learn scene depths and relative camera in a self-supervised manner without acquiring ground truth labels. More surprisingly, they show that the well-trained networks enable scale-consistent predictions over long videos, while the accuracy is still inferior to traditional methods because of ignoring geometric information. Building on top of recent progress in computer vision, we design a simple yet robust VO system by integrating multi-view geometry and deep learning on Depth and optical Flow, namely DF-VO. In this work, a) we propose a method to carefully sample high-quality correspondences from deep flows and recover accurate camera poses with a geometric module; b) we address the scale-drift issue by aligning geometrically triangulated depths to the scale-consistent deep depths, where the dynamic scenes are taken into account. Comprehensive ablation studies show the effectiveness of the proposed method, and extensive evaluation results show the state-of-the-art performance of our system, e.g., Ours (1.652%) v.s. ORB-SLAM (3.247%}) in terms of translation error in KITTI Odometry benchmark. Source code is publicly available at: \\href{https://github.com/Huangying-Zhan/DF-VO}{DF-VO}.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a visual study of icp variants for lidar odometry",
+      "candidate_id": "c-bbb86dcf",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A visual study of ICP variants for Lidar Odometry",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2511.14919v1",
+      "identifier": "2511.14919v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Odometry with lidar sensors is a state-of-the-art method to estimate the ego pose of a moving vehicle. Many implementations of lidar odometry use variants of the Iterative Closest Point (ICP) algorithm. Real-world effects such as dynamic objects, non-overlapping areas, and sensor noise diminish the accuracy of ICP. We build on a recently proposed method that makes these effects visible by visualizing the multidimensional objective function of ICP in two dimensions. We use this method to study different ICP variants in the context of lidar odometry. In addition, we propose a novel method to filter out dynamic objects and to address the ego blind spot problem.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "vipr: visual-odometry-aided pose regression for 6dof camera localization",
+      "candidate_id": "c-1a03eece",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ViPR: Visual-Odometry-aided Pose Regression for 6DoF Camera Localization",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1912.08263v3",
+      "identifier": "1912.08263v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Visual Odometry (VO) accumulates a positional drift in long-term robot navigation tasks. Although Convolutional Neural Networks (CNNs) improve VO in various aspects, VO still suffers from moving obstacles, discontinuous observation of features, and poor textures or visual information. While recent approaches estimate a 6DoF pose either directly from (a series of) images or by merging depth maps with optical flow (OF), research that combines absolute pose regression with OF is limited. We propose ViPR, a novel modular architecture for long-term 6DoF VO that leverages temporal information and synergies between absolute pose estimates (from PoseNet-like modules) and relative pose estimates (from FlowNet-based modules) by combining both through recurrent layers. Experiments on known datasets and on our own Industry dataset show that our modular design outperforms state of the art in long-term navigation tasks.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "an equivariant filter for visual inertial odometry",
+      "candidate_id": "c-5cd95f5c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "An Equivariant Filter for Visual Inertial Odometry",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2104.03532v1",
+      "identifier": "2104.03532v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Visual Inertial Odometry (VIO) is of great interest due the ubiquity of devices equipped with both a monocular camera and Inertial Measurement Unit (IMU). Methods based on the extended Kalman Filter remain popular in VIO due to their low memory requirements, CPU usage, and processing time when compared to optimisation-based methods. In this paper, we analyse the VIO problem from a geometric perspective and propose a novel formulation on a smooth quotient manifold where the equivalence relationship is the well-known invariance of VIO to choice of reference frame. We propose a novel Lie group that acts transitively on this manifold and is compatible with the visual measurements. This structure allows for the application of Equivariant Filter (EqF) design leading to a novel filter for the VIO problem. Combined with a very simple vision processing front-end, the proposed filter demonstrates state-of-the-art performance on the EuRoC dataset compared to other EKF-based VIO algorithms.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "benchmarking visual feature representations for lidar-inertial-visual odometry under challenging conditions",
+      "candidate_id": "c-6bd2b430",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Benchmarking Visual Feature Representations for LiDAR-Inertial-Visual Odometry Under Challenging Conditions",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2603.18589v1",
+      "identifier": "2603.18589v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Accurate localization in autonomous driving is critical for successful missions including environmental mapping and survivor searches. In visually challenging environments, including low-light conditions, overexposure, illumination changes, and high parallax, the performance of conventional visual odometry methods significantly degrade undermining robust robotic navigation. Researchers have recently proposed LiDAR-inertial-visual odometry (LIVO) frameworks, that integrate LiDAR, IMU, and camera sensors, to address these challenges. This paper extends the FAST-LIVO2-based framework by introducing a hybrid approach that integrates direct photometric methods with descriptor-based feature matching. For the descriptor-based feature matching, this work proposes pairs of ORB with the Hamming distance, SuperPoint with SuperGlue, SuperPoint with LightGlue, and XFeat with the mutual nearest neighbor. The proposed configurations are benchmarked by accuracy, computational cost, and feature tracking stability, enabling a quantitative comparison of the adaptability and applicability of visual descriptors. The experimental results reveal that the proposed hybrid approach outperforms the conventional sparse-direct method. Although the sparse-direct method often fails to converge in regions where photometric inconsistency arises due to illumination changes, the proposed approach still maintains robust performance under the same conditions. Furthermore, the hybrid approach with learning-based descriptors enables robust and reliable visual state estimation across challenging environments.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-89613e26",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a photometrically calibrated benchmark for monocular visual odometry",
+      "candidate_id": "c-c4c41104",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Photometrically Calibrated Benchmark For Monocular Visual Odometry",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2016,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1607.02555v2",
+      "identifier": "1607.02555v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We present a dataset for evaluating the tracking accuracy of monocular visual odometry and SLAM methods. It contains 50 real-world sequences comprising more than 100 minutes of video, recorded across dozens of different environments -- ranging from narrow indoor corridors to wide outdoor scenes. All sequences contain mostly exploring camera motion, starting and ending at the same position. This allows to evaluate tracking accuracy via the accumulated drift from start to end, without requiring ground truth for the full sequence. In contrast to existing datasets, all sequences are photometrically calibrated. We provide exposure times for each frame as reported by the sensor, the camera response function, and dense lens attenuation factors. We also propose a novel, simple approach to non-parametric vignette calibration, which requires minimal set-up and is easy to reproduce. Finally, we thoroughly evaluate two existing methods (ORB-SLAM and DSO) on the dataset, including an analysis of the effect of image resolution, camera field of view, and the camera motion direction.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "orb-based slam accelerator on soc fpga",
+      "candidate_id": "c-aec63858",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ORB-based SLAM accelerator on SoC FPGA",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2207.08405v1",
+      "identifier": "2207.08405v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Simultaneous Localization and Mapping (SLAM) is one of the main components of autonomous navigation systems. With the increase in popularity of drones, autonomous navigation on low-power systems is seeing widespread application. Most SLAM algorithms are computationally intensive and struggle to run in real-time on embedded devices with reasonable accuracy. ORB-SLAM is an open-sourced feature-based SLAM that achieves high accuracy with reduced computational complexity. We propose an SoC based ORB-SLAM system that accelerates the computationally intensive visual feature extraction and matching on hardware. Our FPGA system based on a Zynq-family SoC runs 8.5x, 1.55x and 1.35x faster compared to an ARM CPU, Intel Desktop CPU, and a state-of-the-art FPGA system respectively, while averaging a 2x improvement in accuracy compared to prior work on FPGA.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a rich bounty of agn in the 9 square degree bootes survey: high-z obscured agn and large-scale structure",
+      "candidate_id": "c-a3d8365f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A rich bounty of AGN in the 9 square degree Bootes survey: high-z obscured AGN and large-scale structure",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "https://doi.org/10.36227/techrxiv.21691949",
+      "identifier": "10.36227/techrxiv.21691949",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>&lt;p&gt;This paper presents ORB-LINE-SLAM, a real-time hybrid point-line and only-line based visual SLAM system for stereo cameras which can operate in standard CPUs. This work is based on the ORB-SLAM3 open-source library, which is here expanded and adapted to further cope with line features. The main contribution of this paper concerns the introduction of an adaptation scheme, based on an experimentally tuned adapting factor, which aims to achieve a more efficient fusion of point and line features during the SLAM process. Furthermore, to the best of our knowledge, this work constitutes the first open-source visual SLAM system that has the ability to perform effectively by using exclusively line features. This paper also performs a systematic comparison of different error functions used in the bundle adjustment process, to deduce which ones are the more efficient for the visual SLAM problem. The experimental results obtained indicate that the proposed point-line method significantly improves the accuracy of ORB-SLAM3 in challenging conditions. Furthermore, the only-line method implemented in this work, despite its simplified nature, also manages to work in a standalone mode and to successfully complete even difficult sequences with remarkable precision. &lt;/p&gt;</jats:p>",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "visual slam and visual odometry with semantic-based filtering of dynamic objects",
+      "candidate_id": "c-4c7686be",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://doi.org/10.47749/t/unicamp.2023.1347033",
+      "identifier": "10.47749/t/unicamp.2023.1347033",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "on combining visual slam and visual odometry",
+      "candidate_id": "c-41dc15fc",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "On combining visual SLAM and visual odometry",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2010,
+      "venue": "2010 IEEE International Conference on Robotics and Automation",
+      "url": "https://doi.org/10.1109/robot.2010.5509248",
+      "identifier": "10.1109/robot.2010.5509248",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "gyubeomim/simple_mono_vo_ros",
+      "candidate_id": "c-b0510d29",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "gyubeomim/simple_mono_vo_ros",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/gyubeomim/simple_mono_vo_ros",
+      "identifier": null,
+      "description": "Simple Monocular Visual Odometry method in ROS package (inspired by https://github.com/avisingh599/mono-vo)",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 20,
+        "language": "C++"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "atomoclast/ros_mono_vo",
+      "candidate_id": "c-cb677b34",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "atomoclast/ros_mono_vo",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/atomoclast/ros_mono_vo",
+      "identifier": null,
+      "description": "An OpenCV based Implementation of Monocular Visual Odometry for ROS. Inspired by Avi Singh: https://github.com/avisingh599/mono-vo",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 16,
+        "language": "C++"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "maazmb/lep-hybrid-visual-odometry",
+      "candidate_id": "c-c956339b",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "maazmb/LEP-Hybrid-Visual-Odometry",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/maazmb/LEP-Hybrid-Visual-Odometry",
+      "identifier": null,
+      "description": "We propose a novel real time monocular Hybrid visual odometry formulation which combines the high precision of indirect approaches with the fast performance of direct methods. The system initializes inverse depth estimates represented as a Gaussian probability distribution for features (lines, edges and points) extracted in each keyframe which we continuously propagate and update with new measurements in the following frames. The key idea is to incorporate the depth filter distributions into the initial pose tracking via sparse image alignment and also the pose refinement via map localization. We also propose a comprehensive initialization method of these depth filters and classify the map points into different categories based on the uncertainty of these depth estimates which as a result greatly improves the tracking performance. The experimental evaluation on benchmark datasets shows that the proposed approach is significantly faster than the state-of-the-art algorithms while achieving comparable accuracy. We make our implementation publically open source at github to provide as a valuable reference for the SLAM community.  ",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 14,
+        "language": "CMake"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "adu143/finken-eye",
+      "candidate_id": "c-6ef81efb",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Adu143/FINken-EYE",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Adu143/FINken-EYE",
+      "identifier": null,
+      "description": "Semi Visual Odometry based on the original rpg_svo project found at https://github.com/uzh-rpg/rpg_svo",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 3,
+        "language": "C++"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "estods3/jettank-mappingpkg",
+      "candidate_id": "c-1888ea55",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "estods3/JetTank-MappingPkg",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/estods3/JetTank-MappingPkg",
+      "identifier": null,
+      "description": "A visual-odometry based ROS mapping package. Based on the work of: https://github.com/uoip/monoVO-python",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 3,
+        "language": "Python"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "geoeo/visual_odometry",
+      "candidate_id": "c-88743107",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "geoeo/visual_odometry",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/geoeo/visual_odometry",
+      "identifier": null,
+      "description": "A rust port of https://github.com/geoeo/Dense_VO",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 1,
+        "language": "Rust"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "affordances and platformed visual misogyny: a call for feminist approaches in visual methods",
+      "candidate_id": "c-68eb8367",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Affordances and platformed visual misogyny: a call for feminist approaches in visual methods",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a simple framework for contrastive learning of visual representations",
+      "candidate_id": "c-0771e47a",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "dinov2: learning robust visual features without supervision",
+      "candidate_id": "c-0a25cdd0",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "DINOv2: Learning Robust Visual Features without Supervision",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "the use of visual methods to support communication with older adults with cognitive impairment: a scoping review",
+      "candidate_id": "c-2280ee0c",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "The Use of Visual Methods to Support Communication with Older Adults with Cognitive Impairment: A Scoping Review",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "recent progress in visual methods for aflatoxin detection",
+      "candidate_id": "c-80bc117b",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Recent progress in visual methods for aflatoxin detection",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "rate effect on crack propagation measurement results with crack propagation gauge, digital image correlation, and visual methods",
+      "candidate_id": "c-3cb60e71",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Rate effect on crack propagation measurement results with crack propagation gauge, digital image correlation, and visual methods",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "when fieldwork “fails”: participatory visual methods and fieldwork encounters with resettled refugees*",
+      "candidate_id": "c-1d2556b8",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "When Fieldwork “Fails”: Participatory Visual Methods And Fieldwork Encounters With Resettled Refugees*",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "spectrophotometric evaluation of shade selection with digital and visual methods",
+      "candidate_id": "c-c23335c6",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "role_hints": [
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "Spectrophotometric Evaluation of Shade Selection with Digital and Visual Methods",
+      "sources": [
+        "semantic_scholar"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_round": 2
+      },
+      "source_run": "re08"
+    },
+    {
+      "candidate_id": "https://openalex.org/W2979750740",
+      "title": "Dynamic Graph CNN for Learning on Point Clouds",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "面向动态环境的视觉SLAM研究",
+      "_query_origin": "dynamic scene X detection",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W2736611505",
+      "title": "Deep high dynamic range imaging of dynamic scenes",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "面向动态环境的视觉SLAM研究",
+      "_query_origin": "dynamic scene X detection",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W2090518410",
+      "title": "SIFT Flow: Dense Correspondence across Scenes and Its Applications",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "面向动态环境的视觉SLAM研究",
+      "_query_origin": "dynamic scene X detection",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W3043971245",
+      "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual–Inertial, and Multimap SLAM",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "面向动态环境的视觉SLAM研究",
+      "_query_origin": "X ORB-SLAM dynamic scene",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W3120564201",
+      "title": "RDS-SLAM: Real-Time Dynamic SLAM Using Semantic Segmentation Methods",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "面向动态环境的视觉SLAM研究",
+      "_query_origin": "X ORB-SLAM dynamic scene",
+      "source_run": "re09"
+    },
+    {
+      "candidate_id": "https://openalex.org/W2621274416",
+      "title": "Visual SLAM algorithms: a survey from 2010 to 2016",
+      "abstract": "",
+      "url": "",
+      "year": "",
+      "venue": "",
+      "authors": [],
+      "source_type": "openalex",
+      "_topic": "面向动态环境的视觉SLAM研究",
+      "_query_origin": "X ORB-SLAM dynamic scene",
+      "source_run": "re09"
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "visual SLAM task benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "dynamic environment object benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "deep learning github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': 'visual SLAM task benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'dynamic environment object benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'deep learning github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 1,
+        "executed_queries": [
+          {
+            "query": "visual SLAM task benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (visual SLAM task benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "dynamic environment object benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (dynamic environment object benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "fallback repo probe from domain_keywords.en[0]",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "visual SLAM task benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "dynamic environment object benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "面向动态环境的视觉SLAM研究 dataset benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "面向动态环境的视觉SLAM研究 baseline method",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "面向动态环境的视觉SLAM研究 github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': '面向动态环境的视觉SLAM研究 dataset benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '面向动态环境的视觉SLAM研究 baseline method', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '面向动态环境的视觉SLAM研究 github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 2,
+        "executed_queries": [
+          {
+            "query": "面向动态环境的视觉SLAM研究 dataset benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (面向动态环境的视觉SLAM研究 dataset benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "面向动态环境的视觉SLAM研究 baseline method",
+            "tool": "openalex",
+            "target_role": "baseline",
+            "why": "must_search from DomainScout (面向动态环境的视觉SLAM研究 baseline method)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "面向动态环境的视觉SLAM研究 github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "must_search from DomainScout (面向动态环境的视觉SLAM研究 github implementation)",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "面向动态环境的视觉SLAM研究 dataset benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "面向动态环境的视觉SLAM研究 baseline method",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "面向动态环境的视觉SLAM研究 github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    }
+  ],
+  "trace_path": "tmp_re04_eval\\balanced40_re10_worker3\\traces\\ENG-THESIS-048.json",
+  "stop_reason": "no_new_signal",
+  "summary": {
+    "paper_n": 32,
+    "baseline_n": 0,
+    "parallel_n": 0,
+    "dataset_n": 0,
+    "repo_n": 0,
+    "remaining_gaps": [
+      "dataset_gap",
+      "repo_gap",
+      "baseline_gap"
+    ]
+  },
+  "case_id": "ENG-THESIS-048",
+  "title": "面向动态环境的视觉SLAM研究",
+  "source_batch": "batch1",
+  "elapsed_s": 79.03,
+  "seed_n": 32
+}

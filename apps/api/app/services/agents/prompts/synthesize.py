@@ -1,37 +1,29 @@
-"""Re02 synthesize prompt — consumes reviewed evidence + candidate pool (SOP §8).
+"""Re07 synthesize prompt — consumes reviewed evidence + candidate pool.
 
-Inputs:
-    - parsed_topic
-    - source ledger (counts per adapter per round)
-    - reviewed evidence (list of EvidenceReview rows)
-    - candidate pool (paper / dataset / repo breakdown)
-    - raw tool output (small, for grounding the verifier)
+Re07 changes (per SOP ``Plan/PaperAgent_Re06_Review_评分规则与Prompt流程重写.md``
+§4.3 + §4.4 + §4.5):
+  * EVIDENCE_REVIEW_SYSTEM now emits ``core|candidate|long_tail|needs_manual|
+    rejected`` with full axis_hit / matched_terms / missing_terms.
+  * SYNTHESIZE_SYSTEM / USER_TEMPLATE_SYNTHESIZE_V2 must output
+    ``topic_atoms + readiness + baseline_selection + data_route +
+    work_suggestions`` with explicit candidate_id binding.
+  * LOW_BAR_REVIEWER_SYSTEM is now a permissive "next-stage gate" —
+    verdict ``pass|needs_revision|stop`` with explicit
+    ``can_continue_to_next_stage``.
 
-Output:
-    direction_recommendation
-    baseline_options[]
-    candidate_pool.{core, candidate, needs_manual, rejected}
-    paper_groups.{baseline, parallel, reference, long_tail_candidates}
-    dataset_and_repo_notes[]
-    work_suggestions[]
-    risk_reminders[]
-    manual_questions[]
-    stop_here: true
-    human_gate.{enabled, future_gates, auto_mode_reason}
-
-Hard rules:
-    - Use ONLY reviewed evidence; never re-pick from raw.
-    - core / candidate / needs_manual / rejected counts come from the
-      EvidenceReview pass; the synthesizer may MOVE items between
-      `paper_groups` but must NOT change an EvidenceReview status.
-    - If low-bar reviewer hasn't run yet, set `human_gate.enabled = false`.
-    - 1 LLM call max_tokens=4000 (constrained by Re02 budget).
+Hard rules (all apply):
+  - Use ONLY reviewed evidence; never re-pick from raw.
+  - Do NOT invent paper / repo / dataset / author.
+  - Every work_suggestion MUST reference at least one candidate_id.
+  - Never default to "add attention mechanism" as a work_suggestion.
+  - Never reject a candidate solely because the match is weak — move
+    it to ``long_tail`` or ``candidate`` instead.
 """
 
 SYNTHESIZE_SYSTEM = """You are the synthesis agent for an autonomous literature-survey
-agent (Re02). You receive parsed topic + source ledger + reviewed evidence
-(list[EvidenceReview] rows, each with status: core|candidate|needs_manual|rejected)
-+ candidate pool breakdown + raw tool output summary.
+agent (Re07). You receive parsed topic + topic_atoms + source ledger +
+reviewed evidence (list[EvidenceReview] rows) + candidate pool breakdown +
+raw tool output summary.
 
 Your single deliverable is a STRICT JSON object describing the FINAL
 research direction and the supporting evidence. You do NOT re-pick from raw
@@ -44,27 +36,63 @@ output; you consume the EvidenceReview already done.
 3. Do NOT change an EvidenceReview `status`. You may move items between
    `paper_groups.{baseline, parallel, reference, long_tail_candidates}` —
    that's structural reshuffling, not status change.
-4. `baseline_options[]` lists candidate_ids only; do NOT inline the title.
-5. `candidate_pool.core / candidate / needs_manual / rejected` count rows
-   are filled from the EvidenceReview input verbatim.
-6. `manual_questions[]` lists clarifying questions a human would need to
-   answer before the student can proceed. Up to 5, ≤ 30 words each.
-7. `work_suggestions[]` MUST reference at least one candidate_id per item
-   (no orphan suggestions). ≤ 5 items, ≤ 40 words each.
-8. `risk_reminders[]` covers known limitations / mismatches / scoping
-   concerns; ≤ 5 items, ≤ 30 words each.
-9. `stop_here: true` always. This is a single-shot synthesizer; the next
-   stage is the Low-bar Reviewer, not a re-run.
+4. ``baseline_options[]`` lists candidate_ids only; do NOT inline the title.
+5. ``topic_atoms`` MUST be echoed back into the output unchanged from the
+   parsed topic (do not re-derive).
+6. ``readiness.can_enter_next_stage`` MUST be true if at least one
+   baseline or baseline scaffold is present.  Only set false when the
+   candidate pool is empty or every candidate is rejected.
+7. ``baseline_selection[]`` items MUST be ``{"candidate_id": "...",
+   "baseline_type": "domain_direct | framework_scaffold | proxy_baseline",
+   "why": "<≤ 30 words>", "risk": "<≤ 30 words>"}``.
+8. ``data_route.topic_dataset / proxy_dataset / pretrain_dataset`` are
+   arrays of candidate_ids separated by role.  ``data_route.gap_note``
+   is a single string explaining the data source plan when no topic
+   dataset is available.
+9. ``work_suggestions[]`` MUST bind ``baseline_candidate_id`` +
+   ``parallel_candidate_ids`` + (optional) ``dataset_candidate_ids``
+   to each suggestion.  No orphan suggestions.  ≤ 5 items, ≤ 40 words each.
+10. ``risk_reminders[]`` covers known limitations / mismatches / scoping
+    concerns; ≤ 5 items, ≤ 30 words each.  NEVER default to
+    "add attention mechanism" or other generic template innovations —
+    innovation must come from a real parallel candidate.
+11. ``stop_here: true`` always. This is a single-shot synthesizer.
 
 ===================== JSON SCHEMA =====================
 {
+  "topic_atoms": {
+    "task":     [{"zh": "...", "en": "...", "aliases": ["..."]}],
+    "object":   [{"zh": "...", "en": "...", "aliases": ["..."]}],
+    "method":   [{"zh": "...", "en": "...", "aliases": ["..."]}],
+    "scenario": [{"zh": "...", "en": "...", "aliases": ["..."]}]
+  },
+  "readiness": {
+    "can_enter_next_stage": true,
+    "level": "ready | needs_supplement | repair_required",
+    "why": "..."
+  },
   "direction_recommendation": "<≤ 200 word plain-text recommendation>",
   "baseline_options": ["<candidate_id>", ...],
+  "baseline_selection": [
+    {
+      "candidate_id": "...",
+      "baseline_type": "domain_direct | framework_scaffold | proxy_baseline",
+      "why": "...",
+      "risk": "..."
+    }
+  ],
+  "data_route": {
+    "topic_dataset":    ["<candidate_id>", ...],
+    "proxy_dataset":    ["<candidate_id>", ...],
+    "pretrain_dataset": ["<candidate_id>", ...],
+    "gap_note": "..."
+  },
   "candidate_pool": {
     "core":          [{"candidate_id": "...", "title": "...", "role_hint": "..."}],
     "candidate":     [{"candidate_id": "...", "title": "...", "role_hint": "..."}],
+    "long_tail":     [{"candidate_id": "...", "title": "...", "role_hint": "..."}],
     "needs_manual":  [{"candidate_id": "...", "title": "...", "role_hint": "..."}],
-    "rejected":      [{"candidate_id": "...", "title": "...", "reason": "..."}]
+    "rejected":      [{"candidate_id": "...", "reason": "..."}]
   },
   "paper_groups": {
     "baseline":               [{"candidate_id": "...", "title": "..."}],
@@ -72,26 +100,35 @@ output; you consume the EvidenceReview already done.
     "reference":              [{"candidate_id": "...", "title": "..."}],
     "long_tail_candidates":   [{"candidate_id": "...", "title": "..."}]
   },
-  "dataset_and_repo_notes": ["<≤ 30 words per item>", ...],
-  "work_suggestions":       ["<≤ 40 words; ref a candidate_id in text>", ...],
-  "risk_reminders":         ["<≤ 30 words>", ...],
-  "manual_questions":       ["<≤ 30 words>", ...],
+  "work_suggestions": [
+    {
+      "baseline_candidate_id": "...",
+      "parallel_candidate_ids": ["..."],
+      "dataset_candidate_ids":  ["..."],
+      "suggestion": "..."
+    }
+  ],
+  "risk_reminders":   ["<≤ 30 words>", ...],
+  "manual_questions": ["<≤ 30 words>", ...],
   "stop_here": true,
   "human_gate": {
     "enabled": false,
     "future_gates": ["topic_understanding", "search_plan", "baseline_selection"],
-    "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    "auto_mode_reason": "Re07 focuses on resource availability grading. HumanGate reserved for Re08+."
   }
 }
 
 ===================== ANTI-PATTERNS =====================
 - A paper_groups entry whose candidate_id is NOT in the EvidenceReview input.
 - A work_suggestion that does NOT reference any candidate_id.
+- A work_suggestion whose text says "add attention mechanism" or any
+  other generic template innovation not tied to a real parallel candidate.
 - Changing an EvidenceReview status (e.g. flipping `needs_manual` to `core`).
 - Calling `core` items "confirmed evidence" — they are "tier=core; auditor
   says strong match" — not the same as verified citation.
 - Re-running the search; this stage consumes evidence only.
 """
+
 
 USER_TEMPLATE_SYNTHESIZE = """\
 RAW TOPIC: {raw_topic}
@@ -120,7 +157,7 @@ reference_papers as appropriate; cite the GitHub repo as the source.
 - Before you finish, do a final integrity sweep of your JSON: every right brace closes,
   every double-quote matched. If unsure, emit a smaller bucket set rather than a broken JSON.
 
-Emit the 7-bucket JSON now.
+Emit the readiness + topic_atoms + baseline_selection + data_route + work_suggestions JSON now.
 """
 
 
@@ -150,50 +187,63 @@ Emit the direction_recommendation + candidate_pool + paper_groups + work_suggest
 """
 
 
-# ---- Re02 NEW prompts (EvidenceReview + Low-bar Reviewer) ------------------
+# ---- Re07 NEW prompts (EvidenceReview + Low-bar Reviewer) ------------------
 
 EVIDENCE_REVIEW_SYSTEM = """You are the EvidenceReview auditor for an autonomous
-literature-survey agent (Re02). You receive a candidate pool + the parsed topic
-+ a small raw-output digest, and you must return a STRICT JSON object with
-a `reviews` array — one row per candidate in the input.
+literature-survey agent (Re07). You receive a candidate pool + the parsed
+topic (with topic_atoms) + a small raw-output digest, and you must return a
+STRICT JSON object with a `reviews` array — one row per candidate in the input.
 
 ===================== PER-ROW CONTRACT =====================
 For every candidate, emit a JSON object with EXACTLY these keys:
 
     candidate_id        — MUST equal the input's candidate_id verbatim
     evidence_type       — paper | dataset | repo | survey | unknown
-    role_hint           — baseline | parallel | module | reference | dataset | repo | needs_manual | unknown
-    status              — core | candidate | needs_manual | rejected
-    matched_terms       — array of strings the candidate shares with the topic (≤ 8)
+    role_hint           — core | baseline | parallel | dataset | repo |
+                          reference | long_tail | needs_manual | unknown
+    status              — core | candidate | long_tail | needs_manual | rejected
+    axis_hit            — {"task": "direct|proxy|missing",
+                           "object": "direct|proxy|missing",
+                           "method": "direct|proxy|missing",
+                           "scenario": "direct|proxy|missing"}
+    matched_terms       — array of strings the candidate shares with the
+                          topic atoms (≤ 8)
     missing_terms       — array of strings the candidate lacks vs. topic (≤ 8)
-    confidence_label    — high | medium | low | unknown
-    relation_to_topic   — baseline | parallel | module | dataset | repo | survey | background | weak_related | unrelated
-    exists_verdict      — exists | likely_exists | not_found | metadata_mismatch
+    relation_to_topic   — baseline | parallel | module | dataset | repo |
+                          survey | background | weak_related | unrelated
+    exists_verdict      — exists | likely_exists | metadata_mismatch | not_found
+    next_stage_use      — baseline_candidate | parallel_reference |
+                          dataset_candidate | repo_candidate |
+                          background_only | do_not_use
     rank_reason         — ≤ 25 words: why this tier
     reason              — ≤ 50 words: factual justification
 
 ===================== TIER RULES =====================
-- `core`           — strong match on method+task OR method+object; source type
-                       consistent with role_hint; suitable for front-of-list
-                       recommendation.
-- `candidate`      — real, partial match, or comes from a referenced source;
-                       not strong enough for the front rank.
-- `needs_manual`   — real but relation is uncertain (e.g. material-statistics
-                       paper adjacent to a segmentation topic; repo with
-                       incomplete description).
+- `core`           — strong match on method+task OR method+object; source
+                      type consistent with role_hint; suitable for
+                      front-of-list recommendation.
+- `candidate`      — real, partial match, or comes from a referenced
+                      source; not strong enough for the front rank.
+- `long_tail`      — weak / adjacent relationship; keep around but never
+                      use as a baseline or as core evidence.
+- `needs_manual`   — real but relation is uncertain (e.g. material-
+                      statistics paper adjacent to a segmentation topic;
+                      repo with incomplete description).
 - `rejected`       — ONLY for confirmed fabrication, cross-domain content
-                       (medical paper for a remote-sensing topic), or
-                       obviously wrong metadata.
+                      (medical paper for a remote-sensing topic), or
+                      obviously wrong metadata (title-abstract mismatch).
 
-DO NOT reject for "weak match"; downgrade to `candidate` instead.
+DO NOT reject for "weak match"; downgrade to `candidate` / `long_tail`
+instead.
 
 ===================== OUTPUT SCHEMA =====================
 {
   "reviews": [
     { "candidate_id": "...", "evidence_type": "...", "role_hint": "...",
-      "status": "...", "matched_terms": [...], "missing_terms": [...],
-      "confidence_label": "...", "relation_to_topic": "...",
-      "exists_verdict": "...", "rank_reason": "...", "reason": "..." },
+      "status": "...", "axis_hit": {...}, "matched_terms": [...],
+      "missing_terms": [...], "relation_to_topic": "...",
+      "exists_verdict": "...", "next_stage_use": "...",
+      "rank_reason": "...", "reason": "..." },
     ...
   ]
 }
@@ -203,7 +253,10 @@ DO NOT reject for "weak match"; downgrade to `candidate` instead.
 - Returning the same row twice.
 - Rejecting a candidate solely because the match is weak.
 - Outputting scores (0.0–1.0); tier enums only.
+- Treating a generic framework paper (YOLO / U-Net / PointNet++) as a
+  ``core`` baseline — it is ``baseline_scaffold`` with a known risk note.
 """
+
 
 USER_TEMPLATE_EVIDENCE_REVIEW = """\
 PARSED TOPIC:
@@ -219,43 +272,49 @@ Emit the `reviews` array JSON now.
 """
 
 
+# Re07 — Low-bar Reviewer is a permissive next-stage gate, not a strict
+# committee review.
 LOW_BAR_REVIEWER_SYSTEM = """You are the Low-bar Reviewer for an autonomous
-literature-survey agent (Re02). You receive the synthesis output +
-parsed topic + evidence-review stats + candidate-pool stats, and you
-must emit a STRICT JSON verdict with EXACTLY 5 fields:
+literature-survey agent (Re07). Your job is to answer ONE question:
 
-    review_verdict              — pass | needs_revision | stop
-    blocking_questions          — array of ≤ 5 strings (≤ 30 words each)
-    weak_points                 — array of ≤ 5 strings (≤ 30 words each)
-    can_continue_to_opening_report — boolean
-    summary                     — ≤ 60 words
+    Can the student proceed to the next-stage (baseline selection +
+    direction writing) given the current evidence?
 
-===================== FIVE-LIGHT-CHECK DIMENSIONS =====================
-D1 Topic boundary           — is the topic bounded enough to recommend a
-                              direction without a human clarification?
-D2 Baseline candidate       — is there ≥ 1 baseline candidate in
-                              paper_groups.baseline OR an explicit gap in
-                              evidence_gaps?
-D3 Data-source candidate    — is there ≥ 1 dataset candidate OR an explicit
-                              data-source gap in evidence_gaps?
-D4 Reference papers         — is paper_groups.reference non-empty OR is
-                              continue_search_direction explicit?
-D5 Evidence-bound work suggestions — does each work_suggestion reference
-                              a candidate_id from the input?
+You receive the synthesis output + parsed topic + evidence-review stats +
+candidate-pool stats, and you MUST emit a STRICT JSON object with EXACTLY
+6 fields:
+
+    review_verdict           — pass | needs_revision | stop
+    can_continue_to_next_stage — boolean
+    blocking_issues          — array of ≤ 5 strings (≤ 30 words each)
+    supplement_needed        — array of ≤ 5 strings (≤ 30 words each)
+    readiness_level          — ready | needs_supplement | repair_required
+    summary                  — ≤ 60 words
 
 ===================== VERDICT RULES =====================
-- `pass`             — all 5 dimensions satisfied; can_continue_to_opening_report=true
-- `needs_revision`   — 1 or 2 dimensions unsatisfied; not blocking
-- `stop`             — 3+ dimensions unsatisfied; the agent should not
-                        proceed without a human
 
-NEVER mark `pass` if paper_groups.baseline is empty AND no baseline gap
-was declared in evidence_gaps.
+`pass`              — at least one baseline OR baseline scaffold;
+                       ≥ 4 candidate-pool items;
+                       no unquarantined metadata_mismatch in front rank;
+                       data route or explicit data gap note present.
+
+`needs_revision`    — baseline present but needs human confirmation;
+                       data route missing but papers + repo enough;
+                       parallel paper coverage thin.
+
+`stop`              — no baseline AND no baseline scaffold;
+                       unquarantined critical evidence in front rank;
+                       topic parse failed (needs_clarification);
+                       candidate pool too small to proceed.
+
+NEVER mark ``pass`` if paper_groups.baseline is empty AND no baseline
+gap was declared in evidence_gaps.
 
 ===================== ANTI-PATTERNS =====================
 - Marking `pass` when the candidate pool is empty.
 - Inventing dimensions / metrics / scores.
 - Producing a `summary` longer than 60 words.
+- Suggesting a verdict stronger than the evidence supports.
 """
 
 
@@ -323,6 +382,7 @@ RE04_SYNTHESIZE_BINDING_BLOCK = """
 - 每条 paper 引用必须有 citation_key 链回 raw tool candidate；
   `"auto_generated" in citation_key` 不允许出现
 """
+
 
 USER_TEMPLATE_LOW_BAR = """\
 PARSED TOPIC:

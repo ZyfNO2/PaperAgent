@@ -1,0 +1,920 @@
+{
+  "project_id": "agent-re04-0a95b21d",
+  "raw_topic": "基于深度学习的三维点云补全方法研究",
+  "parsed_topic": {
+    "raw_topic": "基于深度学习的三维点云补全方法研究",
+    "normalized_topic": "基于深度学习的三维点云补全方法研究",
+    "domain_route": "vision_3d",
+    "domain_confidence": 0.4,
+    "method_terms": [],
+    "task_terms": [],
+    "object_terms": [],
+    "query_atoms_en": [],
+    "query_atoms_zh": [
+      ""
+    ],
+    "needs_clarification": [
+      "raw_topic_non_english_no_llm_parse"
+    ],
+    "site_hints": [],
+    "_heuristic": true
+  },
+  "query_matrix": {
+    "raw_topic": "基于深度学习的三维点云补全方法研究",
+    "domain_route": "vision_3d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "基于深度学习的三维点云补全方法研究"
+      ],
+      "method_task": [
+        "基于深度学习的三维点云补全方法研究"
+      ],
+      "object_task": [
+        "基于深度学习的三维点云补全方法研究"
+      ],
+      "dataset": [],
+      "repo": [],
+      "survey": [
+        "vision 3d survey"
+      ],
+      "benchmark": [],
+      "baseline": [
+        "基于深度学习的三维点云补全方法研究"
+      ]
+    },
+    "axes": {
+      "method_terms": [],
+      "task_terms": [],
+      "object_terms": [],
+      "domain_route": "vision_3d"
+    },
+    "fb_atom": "基于深度学习的三维点云补全方法研究",
+    "baseline_fallback_reason": "no_lexical_terms_use_raw_topic_fallback"
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper + repo backends for deep-learning point cloud completion",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud completion deep learning",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv is the spine — establish baseline papers on learned point cloud completion",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_openalex",
+            "query": "point cloud completion neural network",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex widens coverage to journal/conference variants of completion networks",
+            "expected_output": "paper",
+            "fallback_tool": "search_crossref"
+          },
+          {
+            "tool": "search_crossref",
+            "query": "3d point cloud shape completion",
+            "target_role": "reference",
+            "why_call": "crossref surfaces journal/doi-indexed completion methods",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_github",
+            "query": "point cloud completion",
+            "target_role": "repo",
+            "why_call": "find runnable codebases for point cloud completion to anchor practical implementations",
+            "expected_output": "repo",
+            "fallback_tool": "search_arxiv"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark, survey, and recent-advances variants on completion methods",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud completion survey",
+            "target_role": "survey",
+            "why_call": "surface a survey of completion methods to map the landscape",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud completion benchmark",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "find benchmark studies that compare completion approaches",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_openalex",
+            "query": "point cloud completion recent advances",
+            "target_role": "survey",
+            "why_call": "catch review-style work on recent advances in completion",
+            "expected_output": "paper",
+            "fallback_tool": "search_crossref"
+          },
+          {
+            "tool": "search_crossref",
+            "query": "shape completion transformer",
+            "target_role": "reference",
+            "why_call": "capture transformer-based completion variants that bypass the core 'completion' term",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code and standard datasets for point cloud completion",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "PCN completion",
+            "target_role": "repo",
+            "why_call": "locate official-style PCN completion repos for the standard benchmark",
+            "expected_output": "repo",
+            "fallback_tool": "search_github"
+          },
+          {
+            "tool": "search_github",
+            "query": "pytorch point completion",
+            "target_role": "repo",
+            "why_call": "find general pytorch implementations of point completion networks",
+            "expected_output": "repo",
+            "fallback_tool": "search_github"
+          },
+          {
+            "tool": "search_openalex",
+            "query": "point cloud dataset completion",
+            "target_role": "dataset",
+            "why_call": "identify dataset papers accompanying completion benchmarks",
+            "expected_output": "dataset",
+            "fallback_tool": "search_crossref"
+          },
+          {
+            "tool": "search_crossref",
+            "query": "ShapeNet completion dataset",
+            "target_role": "dataset",
+            "why_call": "surface the canonical ShapeNet-based completion dataset references",
+            "expected_output": "dataset",
+            "fallback_tool": "search_openalex"
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [],
+    "arxiv_queries": [
+      "point cloud completion deep learning",
+      "point cloud completion survey",
+      "point cloud completion benchmark"
+    ],
+    "openalex_queries": [
+      "point cloud completion neural network",
+      "point cloud completion recent advances",
+      "point cloud dataset completion"
+    ],
+    "crossref_queries": [
+      "3d point cloud shape completion",
+      "shape completion transformer",
+      "ShapeNet completion dataset"
+    ],
+    "github_queries": [
+      "point cloud completion",
+      "PCN completion",
+      "pytorch point completion"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "r3evision: a survey on robust rendering, restoration, and enhancement for 3d low-level vision",
+      "candidate_id": "c-52bfc37c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.16262v2",
+      "identifier": "2506.16262v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Neural rendering methods such as Neural Radiance Fields (NeRF) and 3D Gaussian Splatting (3DGS) have achieved significant progress in photorealistic 3D scene reconstruction and novel view synthesis. However, most existing models assume clean and high-resolution (HR) multi-view inputs, which limits their robustness under real-world degradations such as noise, blur, low-resolution (LR), and weather-induced artifacts. To address these limitations, the emerging field of 3D Low-Level Vision (3D LLV) extends classical 2D Low-Level Vision tasks including super-resolution (SR), deblurring, weather degradation removal, restoration, and enhancement into the 3D spatial domain. This survey, referred to as R\\textsuperscript{3}eVision, provides a comprehensive overview of robust rendering, restoration, and enhancement for 3D LLV by formalizing the degradation-aware rendering problem and identifying key challenges related to spatio-temporal consistency and ill-posed optimization. Recent methods that integrate LLV into neural rendering frameworks are categorized to illustrate how they enable high-fidelity 3D reconstruction under adverse conditions. Application domains such as autonomous driving, AR/VR, and robotics are also discussed, where reliable 3D perception from degraded inputs is critical. By reviewing representative methods, datasets, and evaluation protocols, this work positions 3D LLV as a fundamental direction for robust 3D content generation and scene-level reconstruction in real-world environments.",
+      "extra": {}
+    },
+    {
+      "stable_id": "advances in global solvers for 3d vision",
+      "candidate_id": "c-3332d04b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advances in Global Solvers for 3D Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2602.14662v1",
+      "identifier": "2602.14662v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Global solvers have emerged as a powerful paradigm for 3D vision, offering certifiable solutions to nonconvex geometric optimization problems traditionally addressed by local or heuristic methods. This survey presents the first systematic review of global solvers in geometric vision, unifying the field through a comprehensive taxonomy of three core paradigms: Branch-and-Bound (BnB), Convex Relaxation (CR), and Graduated Non-Convexity (GNC). We present their theoretical foundations, algorithmic designs, and practical enhancements for robustness and scalability, examining how each addresses the fundamental nonconvexity of geometric estimation problems. Our analysis spans ten core vision tasks, from Wahba problem to bundle adjustment, revealing the optimality-robustness-scalability trade-offs that govern solver selection. We identify critical future directions: scaling algorithms while maintaining guarantees, integrating data-driven priors with certifiable optimization, establishing standardized benchmarks, and addressing societal implications for safety-critical deployment. By consolidating theoretical foundations, practical advances, and broader impacts, this survey provides a unified perspective and roadmap toward certifiable, trustworthy perception for real-world applications. A continuously-updated literature summary and companion code tutorials are available at https://github.com/ericzzj1989/Awesome-Global-Solvers-for-3D-Vision.",
+      "extra": {}
+    },
+    {
+      "stable_id": "vlp: a survey on vision-language pre-training",
+      "candidate_id": "c-fb794959",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "VLP: A Survey on Vision-Language Pre-training",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2202.09061v4",
+      "identifier": "2202.09061v4",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In the past few years, the emergence of pre-training models has brought uni-modal fields such as computer vision (CV) and natural language processing (NLP) to a new era. Substantial works have shown they are beneficial for downstream uni-modal tasks and avoid training a new model from scratch. So can such pre-trained models be applied to multi-modal tasks? Researchers have explored this problem and made significant progress. This paper surveys recent advances and new frontiers in vision-language pre-training (VLP), including image-text and video-text pre-training. To give readers a better overall grasp of VLP, we first review its recent advances from five aspects: feature extraction, model architecture, pre-training objectives, pre-training datasets, and downstream tasks. Then, we summarize the specific VLP models in detail. Finally, we discuss the new frontiers in VLP. To the best of our knowledge, this is the first survey focused on VLP. We hope that this survey can shed light on future research in the VLP field.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the evolution of first person vision methods: a survey",
+      "candidate_id": "c-a24f1ce7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Evolution of First Person Vision Methods: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2014,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1409.1484v3",
+      "identifier": "1409.1484v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The emergence of new wearable technologies such as action cameras and smart-glasses has increased the interest of computer vision scientists in the First Person perspective. Nowadays, this field is attracting attention and investments of companies aiming to develop commercial devices with First Person Vision recording capabilities. Due to this interest, an increasing demand of methods to process these videos, possibly in real-time, is expected. Current approaches present a particular combinations of different image features and quantitative methods to accomplish specific objectives like object detection, activity recognition, user machine interaction and so on. This paper summarizes the evolution of the state of the art in First Person Vision video analysis between 1997 and 2014, highlighting, among others, most commonly used features, methods, challenges and opportunities within the field.",
+      "extra": {}
+    },
+    {
+      "stable_id": "vision mamba: a comprehensive survey and taxonomy",
+      "candidate_id": "c-85efbce9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Vision Mamba: A Comprehensive Survey and Taxonomy",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2405.04404v1",
+      "identifier": "2405.04404v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "State Space Model (SSM) is a mathematical model used to describe and analyze the behavior of dynamic systems. This model has witnessed numerous applications in several fields, including control theory, signal processing, economics and machine learning. In the field of deep learning, state space models are used to process sequence data, such as time series analysis, natural language processing (NLP) and video understanding. By mapping sequence data to state space, long-term dependencies in the data can be better captured. In particular, modern SSMs have shown strong representational capabilities in NLP, especially in long sequence modeling, while maintaining linear time complexity. Notably, based on the latest state-space models, Mamba merges time-varying parameters into SSMs and formulates a hardware-aware algorithm for efficient training and inference. Given its impressive efficiency and strong long-range dependency modeling capability, Mamba is expected to become a new AI architecture that may outperform Transformer. Recently, a number of works have attempted to study the potential of Mamba in various fields, such as general vision, multi-modal, medical image analysis and remote sensing image analysis, by extending Mamba from natural language domain to visual domain. To fully understand Mamba in the visual domain, we conduct a comprehensive survey and present a taxonomy study. This survey focuses on Mamba's application to a variety of visual tasks and data types, and discusses its predecessors, recent advances and far-reaching impact on a wide range of domains. Since Mamba is now on an upward trend, please actively notice us if you have new findings, and new progress on Mamba will be included in this survey in a timely manner and updated on the Mamba project at https://github.com/lx6c78/Vision-Mamba-A-Comprehensive-Survey-and-Taxonomy.",
+      "extra": {}
+    },
+    {
+      "stable_id": "advances in feed-forward 3d reconstruction and view synthesis: a survey",
+      "candidate_id": "c-d47a53f8",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advances in Feed-Forward 3D Reconstruction and View Synthesis: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2507.14501v5",
+      "identifier": "2507.14501v5",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "3D reconstruction and view synthesis are foundational problems in computer vision, graphics, and immersive technologies such as augmented reality (AR), virtual reality (VR), and digital twins. Traditional methods rely on computationally intensive iterative optimization in a complex chain, limiting their applicability in real-world scenarios. Recent advances in feed-forward approaches, driven by deep learning, have revolutionized this field by enabling fast and generalizable 3D reconstruction and view synthesis. This survey offers a comprehensive review of feed-forward techniques for 3D reconstruction and view synthesis, with a taxonomy according to the underlying representation architectures including point cloud, 3D Gaussian Splatting (3DGS), Neural Radiance Fields (NeRF), etc. We examine key tasks such as pose-free reconstruction, dynamic 3D reconstruction, and 3D-aware image and video synthesis, highlighting their applications in digital humans, SLAM, robotics, and beyond. In addition, we review commonly used datasets with detailed statistics, along with evaluation protocols for various downstream tasks. We conclude by discussing open research challenges and promising directions for future work, emphasizing the potential of feed-forward approaches to advance the state of the art in 3D vision.",
+      "extra": {}
+    },
+    {
+      "stable_id": "recovering 3d human mesh from monocular images: a survey",
+      "candidate_id": "c-b3d3edae",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Recovering 3D Human Mesh from Monocular Images: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2203.01923v6",
+      "identifier": "2203.01923v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Estimating human pose and shape from monocular images is a long-standing problem in computer vision. Since the release of statistical body models, 3D human mesh recovery has been drawing broader attention. With the same goal of obtaining well-aligned and physically plausible mesh results, two paradigms have been developed to overcome challenges in the 2D-to-3D lifting process: i) an optimization-based paradigm, where different data terms and regularization terms are exploited as optimization objectives; and ii) a regression-based paradigm, where deep learning techniques are embraced to solve the problem in an end-to-end fashion. Meanwhile, continuous efforts are devoted to improving the quality of 3D mesh labels for a wide range of datasets. Though remarkable progress has been achieved in the past decade, the task is still challenging due to flexible body motions, diverse appearances, complex environments, and insufficient in-the-wild annotations. To the best of our knowledge, this is the first survey that focuses on the task of monocular 3D human mesh recovery. We start with the introduction of body models and then elaborate recovery frameworks and training objectives by providing in-depth analyses of their strengths and weaknesses. We also summarize datasets, evaluation metrics, and benchmark results. Open issues and future directions are discussed in the end, hoping to motivate researchers and facilitate their research in this area. A regularly updated project page can be found at https://github.com/tinatiansjz/hmr-survey.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a rich bounty of agn in the 9 square degree bootes survey: high-z obscured agn and large-scale structure",
+      "candidate_id": "c-cc67f1b7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A rich bounty of AGN in the 9 square degree Bootes survey: high-z obscured AGN and large-scale structure",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "10.70693/cjst.v1i4.1650",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We use observations from the 9 square degree multiwavelength survey in Bootes to identify hundreds of obscured active galactic nuclei (AGN) with high redshifts (z > 0.7), luminosities (L_bol > 10^45 ergs/s), and moderate obscuring columns (N_H > 10^22 cm^-2), and to measure the clustering properties of X-ray AGN at z > 1. In the Bootes region, shallow (5 ks) Chandra X-ray observations have detected ~4,000 X-ray sources, and the same region has been mapped with deep optical imaging and by Spitzer IRAC, which detects ~300,000 point sources, of which ~30,000 have detections in all four IRAC bands, for which we can select AGN on the basis of their mid-IR colors. With the MMT/Hectospec we have obtained modest resolution optical spectra for about half the X-ray sources (out to z > 3) and ~20,000 galaxies (out to z = 0.7). With this multiwavelength data we select >400 AGN per square degree (compared to 12 per square degree from SDSS). Among a sample of IRAC-selected AGN we identify 641 candidate obscured objects based on their R band and IRAC luminosities. We use X-ray stacking techniques to verify that they are obscured AGN and measure their absorbing column densities. We also measure the three-dimensional two-point correlation function for X-ray selected AGN.",
+      "extra": {}
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "openalex",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "基于深度学习的三维点云补全方法研究",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "ision have|ision this|ision such",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: R3eVision: A Survey on Robust Rendering, Restoration, and En",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: Advances in Global Solvers for 3D Vision",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: VLP: A Survey on Vision-Language Pre-training",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: The Evolution of First Person Vision Methods: A Survey",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: Vision Mamba: A Comprehensive Survey and Taxonomy",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-52bfc37c",
+      "evidence_type": "survey",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D",
+        "survey",
+        "vision"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "completion",
+        "deep learning"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on 3D rendering/enhancement; not about point cloud completion.",
+      "reason": "Covers NeRF/3DGS rendering robustness, not point cloud completion. Only loosely related as a 3D vision survey."
+    },
+    {
+      "candidate_id": "c-3332d04b",
+      "evidence_type": "survey",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D",
+        "vision",
+        "survey"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "completion",
+        "deep learning"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on 3D geometric optimization solvers; not point cloud completion.",
+      "reason": "Focuses on certifiable global solvers for geometric estimation, not deep-learning-based point cloud shape completion."
+    },
+    {
+      "candidate_id": "c-fb794959",
+      "evidence_type": "survey",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "survey"
+      ],
+      "missing_terms": [
+        "3D",
+        "point cloud",
+        "completion",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Vision-language pre-training survey; cross-domain to 3D point cloud completion.",
+      "reason": "Topic concerns NLP/CV pre-training with language modality. No relevance to 3D point cloud completion methods."
+    },
+    {
+      "candidate_id": "c-a24f1ce7",
+      "evidence_type": "survey",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "vision"
+      ],
+      "missing_terms": [
+        "3D",
+        "point cloud",
+        "completion",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Egocentric/first-person vision survey; not related to 3D point cloud completion.",
+      "reason": "Covers wearable egocentric video analysis. No connection to point cloud completion or deep 3D shape inference."
+    },
+    {
+      "candidate_id": "c-85efbce9",
+      "evidence_type": "survey",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "survey"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "completion",
+        "3D"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Vision Mamba taxonomy; possible backbone reference but not point cloud completion.",
+      "reason": "Surveys Mamba/SSM models for vision. Could inform backbone choices for deep-learning point cloud methods, but topic mismatch."
+    },
+    {
+      "candidate_id": "c-d47a53f8",
+      "evidence_type": "survey",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "3D reconstruction",
+        "deep learning",
+        "survey"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "completion"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Feed-forward 3D reconstruction survey; adjacent but focuses on reconstruction/view synthesis.",
+      "reason": "Covers deep-learning 3D reconstruction and view synthesis. Related 3D deep-learning paradigm but not point cloud completion specifically."
+    },
+    {
+      "candidate_id": "c-b3d3edae",
+      "evidence_type": "survey",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "3D"
+      ],
+      "missing_terms": [
+        "point cloud",
+        "completion",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Human mesh recovery survey; specific to human pose/shape, not general point cloud completion.",
+      "reason": "Surveys monocular human mesh recovery (SMPL-based). Niche human-specific domain, not general 3D point cloud completion."
+    },
+    {
+      "candidate_id": "c-cc67f1b7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "3D",
+        "point cloud",
+        "completion",
+        "deep learning",
+        "vision"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Astrophysics paper on AGN; completely off-topic for computer vision.",
+      "reason": "Active galactic nuclei observational astronomy paper. No relevance whatsoever to deep-learning point cloud completion."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "检索失败：原始中文查询在所有适配器上返回为空，crossref 仅命中 8 条不相关条目，arxiv 'vision 3d survey' 命中 8 条全部为泛 3D 视觉综述，无一与点云补全直接相关。EvidenceReview 中 0 项 core/candidate 可作为点云补全证据，5 项 candidate 均为弱相关或背景类，无 baseline。当前证据池对 '基于深度学习的三维点云补全方法研究' 这一选题完全不足，无法形成有意义的 baseline 或方法对比。建议：先用英文术语（point cloud completion、shape completion、PointNet、PCN、SnowflakeNet、PoinTr 等）重新检索，并明确范围（类别级 vs 场景级、有监督 vs 无监督/扩散、单一形状 vs 部分-整体）。在获得至少 3-5 篇直接相关核心文献前，不要进入方法学分析阶段。",
+    "baseline_options": [],
+    "candidate_pool": {
+      "core": [],
+      "candidate": [
+        {
+          "candidate_id": "c-52bfc37c",
+          "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+          "role_hint": "reference",
+          "reason": "Survey on 3D rendering/enhancement; not about point cloud completion."
+        },
+        {
+          "candidate_id": "c-3332d04b",
+          "title": "Advances in Global Solvers for 3D Vision",
+          "role_hint": "reference",
+          "reason": "Survey on 3D geometric optimization solvers; not point cloud completion."
+        },
+        {
+          "candidate_id": "c-85efbce9",
+          "title": "Vision Mamba: A Comprehensive Survey and Taxonomy",
+          "role_hint": "reference",
+          "reason": "Vision Mamba taxonomy; possible backbone reference but not point cloud completion."
+        },
+        {
+          "candidate_id": "c-d47a53f8",
+          "title": "Advances in Feed-Forward 3D Reconstruction and View Synthesis: A Survey",
+          "role_hint": "reference",
+          "reason": "Feed-forward 3D reconstruction survey; adjacent but focuses on reconstruction/view synthesis."
+        }
+      ],
+      "needs_manual": [],
+      "rejected": [
+        {
+          "candidate_id": "c-fb794959",
+          "title": "VLP: A Survey on Vision-Language Pre-training",
+          "role_hint": "reference",
+          "reason": "Vision-language pre-training survey; cross-domain to 3D point cloud completion."
+        },
+        {
+          "candidate_id": "c-a24f1ce7",
+          "title": "The Evolution of First Person Vision Methods: A Survey",
+          "role_hint": "reference",
+          "reason": "Egocentric/first-person vision survey; not related to 3D point cloud completion."
+        },
+        {
+          "candidate_id": "c-b3d3edae",
+          "title": "Recovering 3D Human Mesh from Monocular Images: A Survey",
+          "role_hint": "reference",
+          "reason": "Human mesh recovery survey; specific to human pose/shape, not general point cloud completion."
+        },
+        {
+          "candidate_id": "c-cc67f1b7",
+          "title": "A rich bounty of AGN in the 9 square degree Bootes survey: high-z obscured AGN and large-scale structure",
+          "role_hint": "reference",
+          "reason": "Astrophysics paper on AGN; completely off-topic for computer vision."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-d47a53f8",
+          "title": "Advances in Feed-Forward 3D Reconstruction and View Synthesis: A Survey",
+          "role_hint": "reference",
+          "year": 2025,
+          "degraded_role": "self_cannot_find_baseline_promoted_from_parallel",
+          "degraded_reason": "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-d47a53f8",
+          "title": "Advances in Feed-Forward 3D Reconstruction and View Synthesis: A Survey",
+          "role_hint": "reference",
+          "year": 2025
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-52bfc37c",
+          "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+          "role_hint": "reference",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-3332d04b",
+          "title": "Advances in Global Solvers for 3D Vision",
+          "role_hint": "reference",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-85efbce9",
+          "title": "Vision Mamba: A Comprehensive Survey and Taxonomy",
+          "role_hint": "reference",
+          "year": 2024
+        }
+      ],
+      "long_tail_candidates": [],
+      "_baseline_degraded": true,
+      "_baseline_degraded_marker": "self_cannot_find_baseline_degradation",
+      "_baseline_degraded_source": "parallel"
+    },
+    "dataset_and_repo_notes": [
+      "本轮未检索到点云补全常用数据集（PCN、ShapeNet-Completion、Completion3D、KITTI、ScanNet 等）或开源仓库说明；需在下一轮用英文关键词重新拉取。"
+    ],
+    "work_suggestions": [
+      "先用英文 'point cloud completion deep learning survey' 在 arxiv/openalex 重检以获得核心文献 (no candidate_id; pre-search)。",
+      "明确点云补全子方向：类别级形状补全 / 场景级补全 / 扩散模型补全，再决定 baseline 组合 (no candidate_id; scoping)。",
+      "若可接受 c-d47a53f8 作为'深度学习 3D 重建'并行综述，可在背景章节讨论点云补全与 feed-forward 重建的范式关联 [c-d47a53f8]。",
+      "若需讨论新型 backbone，可引用 c-85efbce9 评估 SSM/Mamba 在点云补全中的潜力 [c-85efbce9]。",
+      "当前 4 项 candidate 均非核心证据，不应在文献综述正文中作为'点云补全'主线引用，仅可作背景或相邻领域脚注 [c-52bfc37c,c-3332d04b]。"
+    ],
+    "risk_reminders": [
+      "检索失败导致 baseline_options 为空，方法学分析无法落地。",
+      "4 项 candidate 均为'弱相关'或'背景'，置信度 low/medium，不可作为方法对比依据。",
+      "中文查询在 OpenAlex/SemanticScholar 完全无返回，需切换英文策略。",
+      "raw_topic 非英文且未走 LLM 解析，query_atoms 为空，进一步检索需人工补全关键词。",
+      "本结论仅反映当前 EvidenceReview；不代表真实点云补全文献池空缺。"
+    ],
+    "manual_questions": [
+      "选题要覆盖'类别级形状补全'、'场景级补全'、还是'部分到整体生成'哪一类？",
+      "是否要求对比监督学习与最新扩散/生成式方法？",
+      "baseline 是否需限定具体数据集（PCN / ShapeNet-55 / KITTI）？",
+      "目标产出是综述、方法改进，还是 benchmark 复现？",
+      "是否允许英文文献为主、中文文献仅作辅助？"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "stop",
+    "blocking_questions": [
+      "Use English query terms (point cloud completion, PCN, PoinTr) — the Chinese query returned zero relevant hits across all adapters.",
+      "Which sub-direction is in scope: category-level shape completion, scene-level completion, or part-to-whole generation?",
+      "Should the baseline include diffusion/generative methods (e.g., SnowflakeNet, PoinTr) or only supervised methods?",
+      "Is the goal a survey, a method improvement, or a benchmark reproduction on PCN/ShapeNet-55/KITTI?",
+      "Confirm which of c-d47a53f8, c-52bfc37c, c-3332d04b, c-85efbce9 may be cited as background only, not as core."
+    ],
+    "weak_points": [
+      "Zero core papers and zero baseline candidates for point cloud completion; evidence pool is entirely adjacent.",
+      "Topic was never LLM-parsed (needs_clarification flag), so direction_recommendation is heuristic-only.",
+      "baseline_options and evidence_gaps both empty; the system self-flagged _baseline_degraded.",
+      "All four candidates are degraded/weak relevance; no work_suggestion can stand alone without new search.",
+      "domain_confidence is only 0.4, suggesting routing may have missed the correct adapter family."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Search yielded zero point cloud completion papers. All candidates are adjacent (3D reconstruction, Mamba, global solvers) and explicitly flagged degraded. Baseline and evidence_gaps are empty. Human re-scoping in English with clarified sub-direction is required before any report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于深度学习的三维点云补全方法研究",
+      "domain_route": "vision_3d",
+      "family_counts": {
+        "core": 1,
+        "method_task": 1,
+        "object_task": 1,
+        "dataset": 0,
+        "repo": 0,
+        "survey": 1,
+        "benchmark": 0,
+        "baseline": 1
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": "no_lexical_terms_use_raw_topic_fallback"
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 8
+      },
+      "ledger_n_calls": 17
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 26,
+      "queries": [
+        "ision have",
+        "ision this",
+        "ision such",
+        "ision vision",
+        "have have",
+        "have this",
+        "have such",
+        "have vision"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 0,
+      "seeds_rejected": 5,
+      "refs_added": 0,
+      "round_status": "no_eligible_seeds"
+    }
+  },
+  "degradation_chain": [
+    "parse:heuristic_fallback",
+    "query_matrix:baseline_no_lexical_terms_use_raw_topic_fallback",
+    "query_matrix:zero_dataset_queries",
+    "citation_expand:all_seeds_rejected",
+    "pool:zero_baseline_self_cannot_find_degraded_to_parallel"
+  ],
+  "elapsed_s": 165.64
+}

@@ -1,0 +1,1005 @@
+{
+  "project_id": "agent-re04-0076a5d1",
+  "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+  "parsed_topic": {
+    "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+    "normalized_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+    "domain_route": "vision_3d",
+    "domain_confidence": 0.9,
+    "method_terms": [
+      "PIFu",
+      "PointNet",
+      "ConvNet",
+      "Transformer"
+    ],
+    "task_terms": [
+      "reconstruction",
+      "completion",
+      "registration"
+    ],
+    "object_terms": [
+      "point cloud",
+      "human body",
+      "mesh"
+    ],
+    "query_atoms_en": [
+      "PIFu 3D human body",
+      "point cloud completion PCN",
+      "PointNetLK registration"
+    ],
+    "query_atoms_zh": [
+      "基于患者虚拟定位的三维人体重建关键技术研究"
+    ],
+    "needs_clarification": [],
+    "site_hints": []
+  },
+  "query_matrix": {
+    "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+    "domain_route": "vision_3d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "PIFu reconstruction",
+        "PIFu point cloud"
+      ],
+      "method_task": [
+        "PIFu reconstruction",
+        "PIFu completion",
+        "PointNet reconstruction",
+        "PointNet completion"
+      ],
+      "object_task": [
+        "point cloud reconstruction",
+        "point cloud completion",
+        "human body reconstruction",
+        "human body completion"
+      ],
+      "dataset": [
+        "reconstruction dataset",
+        "point cloud dataset"
+      ],
+      "repo": [
+        "reconstruction github",
+        "reconstruction implementation",
+        "PIFu reconstruction"
+      ],
+      "survey": [
+        "reconstruction survey",
+        "vision 3d survey"
+      ],
+      "benchmark": [
+        "reconstruction benchmark"
+      ],
+      "baseline": [
+        "PIFu reconstruction",
+        "PIFu completion",
+        "PointNet reconstruction",
+        "PointNet completion"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "PIFu",
+        "PointNet",
+        "ConvNet",
+        "Transformer"
+      ],
+      "task_terms": [
+        "reconstruction",
+        "completion",
+        "registration"
+      ],
+      "object_terms": [
+        "point cloud",
+        "human body",
+        "mesh"
+      ],
+      "domain_route": "vision_3d"
+    },
+    "fb_atom": "PIFu 3D human body",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide sweep over the topic's method + object atoms",
+        "calls": [
+          {
+            "tool": "search_crossref",
+            "query": "PIFu 3D human body",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "establish crossref baseline pool",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "PIFu 3D human body",
+            "target_role": "reference",
+            "why_call": "openalex baseline reference",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "PIFu 3D human body",
+            "target_role": "broad_recall",
+            "why_call": "arxiv spine",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage with benchmark / survey expansions",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "PIFu 3D human body survey",
+            "target_role": "survey",
+            "why_call": "survey expansion",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "PIFu 3D human body benchmark",
+            "target_role": "benchmark",
+            "why_call": "benchmark expansion",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find implementation repos",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "PIFu",
+            "target_role": "repo",
+            "why_call": "github for implementation",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [],
+    "arxiv_queries": [
+      "PIFu 3D human body",
+      "PIFu 3D human body survey"
+    ],
+    "openalex_queries": [
+      "PIFu 3D human body",
+      "PIFu 3D human body benchmark"
+    ],
+    "crossref_queries": [
+      "PIFu 3D human body"
+    ],
+    "github_queries": [
+      "PIFu"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "pifu: pixel-aligned implicit function for high-resolution clothed human digitization",
+      "candidate_id": "c-9df0aef7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference",
+        "parallel"
+      ],
+      "role_evidence": [],
+      "title": "PIFu: Pixel-Aligned Implicit Function for High-Resolution Clothed Human Digitization",
+      "sources": [
+        "crossref",
+        "semantic_scholar"
+      ],
+      "year": 2019,
+      "venue": "ICCV",
+      "url": "https://doi.org/10.1109/ICCV.2019.00516",
+      "identifier": "10.1109/ICCV.2019.00516",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Pixel-aligned implicit function for 3D human reconstruction.",
+      "extra": {}
+    },
+    {
+      "stable_id": "icon: implicit clothed humans obtained from normals",
+      "candidate_id": "c-eaf7f5b0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ICON: Implicit Clothed humans Obtained from Normals",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "CVPR",
+      "url": "https://doi.org/10.1109/CVPR52688.2022.01254",
+      "identifier": "10.1109/CVPR52688.2022.01254",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Normal-conditioned human reconstruction.",
+      "extra": {}
+    },
+    {
+      "stable_id": "deephuman: 3d human reconstruction from a single image",
+      "candidate_id": "c-b4dbde24",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DeepHuman: 3D Human Reconstruction from a Single Image",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2019,
+      "venue": "ICCV",
+      "url": "https://doi.org/10.1109/ICCV.2019.00789",
+      "identifier": "10.1109/ICCV.2019.00789",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Volumetric human reconstruction from a single photo.",
+      "extra": {}
+    },
+    {
+      "stable_id": "pifuhd: multi-level pixel-aligned implicit function for high-resolution 3d human digitization",
+      "candidate_id": "c-4563ce11",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "PIFuHD: Multi-Level Pixel-Aligned Implicit Function for High-Resolution 3D Human Digitization",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2020,
+      "venue": "CVPR",
+      "url": "https://doi.org/10.1109/CVPR42600.2020.01240",
+      "identifier": "10.1109/CVPR42600.2020.01240",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "High-resolution clothed human digitization.",
+      "extra": {}
+    },
+    {
+      "stable_id": "high-fidelity 3d human digitization from single 2k resolution images",
+      "candidate_id": "c-c43bfb0e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "High-Fidelity 3D Human Digitization from Single 2K Resolution Images",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "TVCG",
+      "url": "https://doi.org/10.1109/TVCG.2021.3118093",
+      "identifier": "10.1109/TVCG.2021.3118093",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "High-resolution human body modeling from single image.",
+      "extra": {}
+    },
+    {
+      "stable_id": "econ: explicit clothed humans optimized via normal integration",
+      "candidate_id": "c-029557f7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ECON: Explicit Clothed humans Optimized via Normal integration",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "CVPR",
+      "url": "https://doi.org/10.1109/CVPR52729.2023.00090",
+      "identifier": "10.1109/CVPR52729.2023.00090",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Explicit 3D clothed human reconstruction.",
+      "extra": {}
+    },
+    {
+      "stable_id": "pamir: parametric model-conditioned implicit representation for image-based human reconstruction",
+      "candidate_id": "c-eae99683",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "PaMIR: Parametric Model-Conditioned Implicit Representation for Image-based Human Reconstruction",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "TPAMI",
+      "url": "https://doi.org/10.1109/TPAMI.2021.3050515",
+      "identifier": "10.1109/TPAMI.2021.3050515",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "SMPL-conditioned body implicit.",
+      "extra": {}
+    },
+    {
+      "stable_id": "hybridfusion: real-time performance capture using a single depth sensor",
+      "candidate_id": "c-4db1ffc6",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "HybridFusion: Real-Time Performance Capture Using a Single Depth Sensor",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2017,
+      "venue": "TVCG",
+      "url": "https://doi.org/10.1109/TVCG.2017.2768404",
+      "identifier": "10.1109/TVCG.2017.2768404",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Depth-based human performance capture.",
+      "extra": {}
+    },
+    {
+      "stable_id": "facebookresearch/pifuhd",
+      "candidate_id": "c-d921e477",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "facebookresearch/pifuhd",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/facebookresearch/pifuhd",
+      "identifier": null,
+      "description": "PIFuHD: High-Fidelity 3D Human Digitization (CVPR 2020)",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 2400,
+        "language": "Python"
+      }
+    },
+    {
+      "stable_id": "yuliangxiu/icon",
+      "candidate_id": "c-2b780ee3",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "yuliangxiu/ICON",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/yuliangxiu/ICON",
+      "identifier": null,
+      "description": "ICON: Implicit Clothed humans Obtained from Normals (CVPR 2022)",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 1100,
+        "language": "Python"
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "arxiv",
+      "query": "PIFu reconstruction|PIFu point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "PIFu reconstruction|PIFu point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "PIFu reconstruction|PIFu point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "PIFu reconstruction|PIFu completion|PointNet reconstruction",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "PIFu reconstruction|PIFu completion|PointNet reconstruction",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "point cloud reconstruction|point cloud completion|human body reconstruction",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud reconstruction|point cloud completion|human body reconstruction",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "reconstruction dataset|point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "reconstruction dataset|point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "reconstruction github|reconstruction implementation|PIFu reconstruction",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 2,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "reconstruction survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "reconstruction survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "reconstruction benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "reconstruction benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "PIFu reconstruction|PIFu completion|PointNet reconstruction",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "PIFu reconstruction|PIFu completion|PointNet reconstruction",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "human human|human reconstruction|human implicit",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "ok",
+      "result_count": 1,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: PIFu: Pixel-Aligned Implicit Function for High-Resolution Cl",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: ICON: Implicit Clothed humans Obtained from Normals",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: DeepHuman: 3D Human Reconstruction from a Single Image",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: PIFuHD: Multi-Level Pixel-Aligned Implicit Function for High",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_rejected: High-Fidelity 3D Human Digitization from Single 2K Resolutio",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_rejected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-9df0aef7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-eaf7f5b0",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-b4dbde24",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-4563ce11",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-c43bfb0e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-029557f7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-eae99683",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-4db1ffc6",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-d921e477",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    },
+    {
+      "candidate_id": "c-2b780ee3",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [],
+      "missing_terms": [],
+      "confidence_label": "unknown",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "heursitic-default: candidate present in pool, LLM did not return row",
+      "reason": "auto-defaulted to candidate tier; manual review may upgrade or downgrade [llm_blocker: evidence_review_parse_failed]"
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "offline mock: chain ran past R1; degrade-promote path exercised (pool_rows=10)",
+    "baseline_options": [],
+    "candidate_pool": {
+      "core": [],
+      "candidate": [
+        {
+          "candidate_id": "c-9df0aef7",
+          "title": "PIFu: Pixel-Aligned Implicit Function for High-Resolution Clothed Human Digitization",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-eaf7f5b0",
+          "title": "ICON: Implicit Clothed humans Obtained from Normals",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-b4dbde24",
+          "title": "DeepHuman: 3D Human Reconstruction from a Single Image",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-4563ce11",
+          "title": "PIFuHD: Multi-Level Pixel-Aligned Implicit Function for High-Resolution 3D Human Digitization",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-c43bfb0e",
+          "title": "High-Fidelity 3D Human Digitization from Single 2K Resolution Images",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-029557f7",
+          "title": "ECON: Explicit Clothed humans Optimized via Normal integration",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-eae99683",
+          "title": "PaMIR: Parametric Model-Conditioned Implicit Representation for Image-based Human Reconstruction",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-4db1ffc6",
+          "title": "HybridFusion: Real-Time Performance Capture Using a Single Depth Sensor",
+          "role_hint": "reference",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-d921e477",
+          "title": "facebookresearch/pifuhd",
+          "role_hint": "repo",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        },
+        {
+          "candidate_id": "c-2b780ee3",
+          "title": "yuliangxiu/ICON",
+          "role_hint": "repo",
+          "reason": "heursitic-default: candidate present in pool, LLM did not return row"
+        }
+      ],
+      "needs_manual": [],
+      "rejected": []
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-9df0aef7",
+          "title": "PIFu: Pixel-Aligned Implicit Function for High-Resolution Clothed Human Digitization",
+          "role_hint": "reference",
+          "year": 2019,
+          "degraded_role": "self_cannot_find_baseline_promoted_from_parallel",
+          "degraded_reason": "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+        },
+        {
+          "candidate_id": "c-eaf7f5b0",
+          "title": "ICON: Implicit Clothed humans Obtained from Normals",
+          "role_hint": "reference",
+          "year": 2022,
+          "degraded_role": "self_cannot_find_baseline_promoted_from_parallel",
+          "degraded_reason": "system_cannot_locate_true_baseline_do_not_treat_as_reproducible"
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-9df0aef7",
+          "title": "PIFu: Pixel-Aligned Implicit Function for High-Resolution Clothed Human Digitization",
+          "role_hint": "reference",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-eaf7f5b0",
+          "title": "ICON: Implicit Clothed humans Obtained from Normals",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-b4dbde24",
+          "title": "DeepHuman: 3D Human Reconstruction from a Single Image",
+          "role_hint": "reference",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-4563ce11",
+          "title": "PIFuHD: Multi-Level Pixel-Aligned Implicit Function for High-Resolution 3D Human Digitization",
+          "role_hint": "reference",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-c43bfb0e",
+          "title": "High-Fidelity 3D Human Digitization from Single 2K Resolution Images",
+          "role_hint": "reference",
+          "year": 2021
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-029557f7",
+          "title": "ECON: Explicit Clothed humans Optimized via Normal integration",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-eae99683",
+          "title": "PaMIR: Parametric Model-Conditioned Implicit Representation for Image-based Human Reconstruction",
+          "role_hint": "reference",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-4db1ffc6",
+          "title": "HybridFusion: Real-Time Performance Capture Using a Single Depth Sensor",
+          "role_hint": "reference",
+          "year": 2017
+        }
+      ],
+      "long_tail_candidates": [],
+      "_baseline_degraded": true,
+      "_baseline_degraded_marker": "self_cannot_find_baseline_degradation",
+      "_baseline_degraded_source": "parallel"
+    },
+    "dataset_and_repo_notes": [
+      "github repo: facebookresearch/pifuhd",
+      "github repo: yuliangxiu/ICON",
+      "candidate pool size 10"
+    ],
+    "work_suggestions": [
+      "offline mock work suggestion A"
+    ],
+    "risk_reminders": [
+      "offline mock risk reminder"
+    ],
+    "manual_questions": [
+      "offline mock manual question"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "pass",
+    "blocking_questions": [],
+    "weak_points": [],
+    "can_continue_to_opening_report": true,
+    "summary": "offline mock: paper pool non-empty"
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于患者虚拟定位的三维人体重建关键技术研究",
+      "domain_route": "vision_3d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "crossref": 8,
+        "github": 2
+      },
+      "ledger_n_calls": 22
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 28,
+      "queries": [
+        "human human",
+        "human reconstruction",
+        "human implicit",
+        "human conditioned",
+        "uman human",
+        "uman reconstruction",
+        "uman implicit",
+        "uman conditioned"
+      ],
+      "added_count": 1
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 1,
+      "seeds_rejected": 4,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [
+    "evidence_review:all_heuristic_blocked",
+    "pool:zero_baseline_self_cannot_find_degraded_to_parallel"
+  ],
+  "elapsed_s": 0.0
+}

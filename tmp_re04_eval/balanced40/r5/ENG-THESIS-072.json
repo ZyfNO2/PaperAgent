@@ -1,0 +1,1959 @@
+{
+  "project_id": "agent-re04-83e826bd",
+  "raw_topic": "基于深度学习的动态SLAM研究",
+  "parsed_topic": {
+    "raw_topic": "基于深度学习的动态SLAM研究",
+    "normalized_topic": "Deep learning based dynamic SLAM research",
+    "domain_route": "robotics_control",
+    "domain_confidence": 0.85,
+    "method_terms": [
+      "deep learning",
+      "ORB-SLAM2",
+      "DynaSLAM",
+      "DS-SLAM",
+      "MaskRCNN",
+      "semantic segmentation",
+      "visual odometry"
+    ],
+    "task_terms": [
+      "dynamic SLAM",
+      "moving object detection",
+      "semantic SLAM",
+      "robust localization"
+    ],
+    "object_terms": [
+      "dynamic scenes",
+      "indoor scenes",
+      "TUM RGB-D dataset",
+      "KITTI dataset",
+      "moving objects"
+    ],
+    "query_atoms_en": [
+      "deep learning dynamic SLAM",
+      "semantic SLAM moving objects",
+      "DynaSLAM dynamic environment",
+      "DS-SLAM semantic segmentation",
+      "visual SLAM dynamic scene",
+      "robust SLAM moving object detection"
+    ],
+    "query_atoms_zh": [
+      "基于深度学习的动态SLAM",
+      "动态场景语义SLAM",
+      "动态环境视觉SLAM",
+      "DynaSLAM 动态特征",
+      "深度学习移动目标检测SLAM",
+      "视觉SLAM 动态物体分割"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "arxiv.org",
+      "github.com",
+      "openaccess.thecvf.com",
+      "ieeexplore.ieee.org"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于深度学习的动态SLAM研究",
+    "domain_route": "robotics_control",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "deep learning dynamic SLAM",
+        "deep learning dynamic scenes"
+      ],
+      "method_task": [
+        "deep learning dynamic SLAM",
+        "deep learning moving object detection",
+        "ORB-SLAM2 dynamic SLAM",
+        "ORB-SLAM2 moving object detection"
+      ],
+      "object_task": [
+        "dynamic scenes dynamic SLAM",
+        "dynamic scenes moving object detection",
+        "indoor scenes dynamic SLAM",
+        "indoor scenes moving object detection"
+      ],
+      "dataset": [
+        "dynamic SLAM dataset",
+        "dynamic scenes dataset"
+      ],
+      "repo": [
+        "dynamic SLAM github",
+        "dynamic SLAM implementation",
+        "deep learning dynamic SLAM"
+      ],
+      "survey": [
+        "dynamic SLAM survey",
+        "robotics control survey"
+      ],
+      "benchmark": [
+        "dynamic SLAM benchmark"
+      ],
+      "baseline": [
+        "deep learning dynamic SLAM",
+        "deep learning moving object detection",
+        "ORB-SLAM2 dynamic SLAM",
+        "ORB-SLAM2 moving object detection"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "deep learning",
+        "ORB-SLAM2",
+        "DynaSLAM",
+        "DS-SLAM",
+        "MaskRCNN",
+        "semantic segmentation",
+        "visual odometry"
+      ],
+      "task_terms": [
+        "dynamic SLAM",
+        "moving object detection",
+        "semantic SLAM",
+        "robust localization"
+      ],
+      "object_terms": [
+        "dynamic scenes",
+        "indoor scenes",
+        "TUM RGB-D dataset",
+        "KITTI dataset",
+        "moving objects"
+      ],
+      "domain_route": "robotics_control"
+    },
+    "fb_atom": "deep learning dynamic SLAM",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper + repo backends",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "deep learning dynamic SLAM",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "core spine query to retrieve primary papers on deep learning based dynamic SLAM",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "semantic SLAM moving objects",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "captures the semantic-segmentation-augmented SLAM branch",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "visual SLAM dynamic scene",
+            "target_role": "parallel_paper",
+            "why_call": "cross-backend broad sweep for dynamic-environment visual SLAM",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "robust SLAM moving object detection",
+            "target_role": "parallel_paper",
+            "why_call": "surveys robustness-oriented approaches that filter moving features",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "dynamic SLAM benchmark RGB-D",
+            "target_role": "reference",
+            "why_call": "retrieves benchmark and dataset-citation papers used for evaluation",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "DynaSLAM",
+            "target_role": "repo",
+            "why_call": "canonical reference implementation of dynamic SLAM with MaskRCNN",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark / survey / recent-advances variants",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "dynamic SLAM survey",
+            "target_role": "survey",
+            "why_call": "locates survey papers providing an overview of the field",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "semantic segmentation SLAM benchmark",
+            "target_role": "survey",
+            "why_call": "finds benchmark-focused papers using TUM/KITTI dynamic sequences",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "visual odometry dynamic environment",
+            "target_role": "parallel_paper",
+            "why_call": "expands into odometry-level methods handling dynamic scenes",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "moving object detection SLAM",
+            "target_role": "reference",
+            "why_call": "captures cross-domain references on foreground/moving-object detection in SLAM",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "deep SLAM recent advances",
+            "target_role": "parallel_paper",
+            "why_call": "surfaces latest deep-SLAM advances beyond the canonical DynaSLAM line",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code + datasets for the topic",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "DS-SLAM",
+            "target_role": "repo",
+            "why_call": "companion repo to the DS-SLAM semantic segmentation SLAM paper",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "semantic SLAM ROS",
+            "target_role": "repo",
+            "why_call": "finds runnable semantic-SLAM stacks packaged for ROS",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "dynamic SLAM python",
+            "target_role": "repo",
+            "why_call": "captures lighter-weight Python implementations of dynamic SLAM",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "TUM RGB-D dynamic dataset",
+            "target_role": "dataset",
+            "why_call": "locates dataset cards / papers describing the TUM dynamic evaluation sequences",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "KITTI odometry benchmark SLAM",
+            "target_role": "dataset",
+            "why_call": "anchors KITTI usage in SLAM benchmarking literature",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "arxiv.org",
+      "github.com",
+      "openaccess.thecvf.com",
+      "ieeexplore.ieee.org"
+    ],
+    "arxiv_queries": [
+      "deep learning dynamic SLAM",
+      "semantic SLAM moving objects",
+      "dynamic SLAM survey",
+      "semantic segmentation SLAM benchmark",
+      "deep SLAM recent advances"
+    ],
+    "openalex_queries": [
+      "visual SLAM dynamic scene",
+      "robust SLAM moving object detection",
+      "visual odometry dynamic environment",
+      "TUM RGB-D dynamic dataset"
+    ],
+    "crossref_queries": [
+      "dynamic SLAM benchmark RGB-D",
+      "moving object detection SLAM",
+      "KITTI odometry benchmark SLAM"
+    ],
+    "github_queries": [
+      "DynaSLAM",
+      "DS-SLAM",
+      "semantic SLAM ROS",
+      "dynamic SLAM python"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "learn to accumulate evidence from all training samples: theory and practice",
+      "candidate_id": "c-c7b30903",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Learn to Accumulate Evidence from All Training Samples: Theory and Practice",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2306.11113v2",
+      "identifier": "2306.11113v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Evidential deep learning, built upon belief theory and subjective logic, offers a principled and computationally efficient way to turn a deterministic neural network uncertainty-aware. The resultant evidential models can quantify fine-grained uncertainty using the learned evidence. To ensure theoretically sound evidential models, the evidence needs to be non-negative, which requires special activation functions for model training and inference. This constraint often leads to inferior predictive performance compared to standard softmax models, making it challenging to extend them to many large-scale datasets. To unveil the real cause of this undesired behavior, we theoretically investigate evidential models and identify a fundamental limitation that explains the inferior performance: existing evidential activation functions create zero evidence regions, which prevent the model to learn from training samples falling into such regions. A deeper analysis of evidential activation functions based on our theoretical underpinning inspires the design of a novel regularizer that effectively alleviates this fundamental limitation. Extensive experiments over many challenging real-world datasets and settings confirm our theoretical findings and demonstrate the effectiveness of our proposed approach.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the modern mathematics of deep learning",
+      "candidate_id": "c-2e26d29e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Modern Mathematics of Deep Learning",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2105.04026v2",
+      "identifier": "2105.04026v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, and which fine aspects of an architecture affect the behavior of a learning task in which way. We present an overview of modern approaches that yield partial answers to these questions. For selected approaches, we describe the main ideas in more detail.",
+      "extra": {}
+    },
+    {
+      "stable_id": "deep learning and computational physics (lecture notes)",
+      "candidate_id": "c-027cb868",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Deep Learning and Computational Physics (Lecture Notes)",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2301.00942v1",
+      "identifier": "2301.00942v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "These notes were compiled as lecture notes for a course developed and taught at the University of the Southern California. They should be accessible to a typical engineering graduate student with a strong background in Applied Mathematics.\n  The main objective of these notes is to introduce a student who is familiar with concepts in linear algebra and partial differential equations to select topics in deep learning. These lecture notes exploit the strong connections between deep learning algorithms and the more conventional techniques of computational physics to achieve two goals. First, they use concepts from computational physics to develop an understanding of deep learning algorithms. Not surprisingly, many concepts in deep learning can be connected to similar concepts in computational physics, and one can utilize this connection to better understand these algorithms. Second, several novel deep learning algorithms can be used to solve challenging problems in computational physics. Thus, they offer someone who is interested in modeling a physical phenomena with a complementary set of tools.",
+      "extra": {}
+    },
+    {
+      "stable_id": "deep learning observables in computational fluid dynamics",
+      "candidate_id": "c-bd35c471",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Deep learning observables in computational fluid dynamics",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1903.03040v2",
+      "identifier": "1903.03040v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Many large scale problems in computational fluid dynamics such as uncertainty quantification, Bayesian inversion, data assimilation and PDE constrained optimization are considered very challenging computationally as they require a large number of expensive (forward) numerical solutions of the corresponding PDEs. We propose a machine learning algorithm, based on deep artificial neural networks, that predicts the underlying \\emph{input parameters to observable} map from a few training samples (computed realizations of this map). By a judicious combination of theoretical arguments and empirical observations, we find suitable network architectures and training hyperparameters that result in robust and efficient neural network approximations of the parameters to observable map. Numerical experiments are presented to demonstrate low prediction errors for the trained network networks, even when the network has been trained with a few samples, at a computational cost which is several orders of magnitude lower than the underlying PDE solver.\n  Moreover, we combine the proposed deep learning algorithm with Monte Carlo (MC) and Quasi-Monte Carlo (QMC) methods to efficiently compute uncertainty propagation for nonlinear PDEs. Under the assumption that the underlying neural networks generalize well, we prove that the deep learning MC and QMC algorithms are guaranteed to be faster than the baseline (quasi-) Monte Carlo methods. Numerical experiments demonstrating one to two orders of magnitude speed up over baseline QMC and MC algorithms, for the intricate problem of computing probability distributions of the observable, are also presented.",
+      "extra": {}
+    },
+    {
+      "stable_id": "mlp-slam: multilayer perceptron-based simultaneous localization and mapping",
+      "candidate_id": "c-3f68798c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "MLP-SLAM: Multilayer Perceptron-Based Simultaneous Localization and Mapping",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2410.10669v2",
+      "identifier": "2410.10669v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The Visual Simultaneous Localization and Mapping (V-SLAM) system has seen significant development in recent years, demonstrating high precision in environments with limited dynamic objects. However, their performance significantly deteriorates when deployed in settings with a higher presence of movable objects, such as environments with pedestrians, cars, and buses, which are common in outdoor scenes. To address this issue, we propose a Multilayer Perceptron (MLP)-based real-time stereo SLAM system that leverages complete geometry information to avoid information loss. Moreover, there is currently no publicly available dataset for directly evaluating the effectiveness of dynamic and static feature classification methods, and to bridge this gap, we have created a publicly available dataset containing over 50,000 feature points. Experimental results demonstrate that our MLP-based dynamic and static feature point discriminator has achieved superior performance compared to other methods on this dataset. Furthermore, the MLP-based real-time stereo SLAM system has shown the highest average precision and fastest speed on the outdoor KITTI tracking datasets compared to other dynamic SLAM systems.The open-source code and datasets are available at https://github.com/TaozheLi/MLP-SLAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "monodense deep neural model for determining item price elasticity",
+      "candidate_id": "c-e1b2196f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Monodense Deep Neural Model for Determining Item Price Elasticity",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2603.29261v1",
+      "identifier": "2603.29261v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Item Price Elasticity is used to quantify the responsiveness of consumer demand to changes in item prices, enabling businesses to create pricing strategies and optimize revenue management. Sectors such as store retail, e-commerce, and consumer goods rely on elasticity information derived from historical sales and pricing data. This elasticity provides an understanding of purchasing behavior across different items, consumer discount sensitivity, and demand elastic departments. This information is particularly valuable for competitive markets and resource-constrained businesses decision making which aims to maximize profitability and market share. Price elasticity also uncovers historical shifts in consumer responsiveness over time. In this paper, we model item-level price elasticity using large-scale transactional datasets, by proposing a novel elasticity estimation framework which has the capability to work in an absence of treatment control setting. We test this framework by using Machine learning based algorithms listed below, including our newly proposed Monodense deep neural network.\n  (1) Monodense-DL network -- Hybrid neural network architecture combining embedding, dense, and Monodense layers (2) DML -- Double machine learning setting using regression models (3) LGBM -- Light Gradient Boosting Model\n  We evaluate our model on multi-category retail data spanning millions of transactions using a back testing framework. Experimental results demonstrate the superiority of our proposed neural network model within the framework compared to other prevalent ML based methods listed above.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a multitask deep learning model for real-time deployment in embedded systems",
+      "candidate_id": "c-b16e6093",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A multitask deep learning model for real-time deployment in embedded systems",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2017,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1711.00146v1",
+      "identifier": "1711.00146v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training process that introduces challenges not present in single-task models.",
+      "extra": {}
+    },
+    {
+      "stable_id": "generalized regularized evidential deep learning models: theory and comprehensive evaluation",
+      "candidate_id": "c-3b867281",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2512.23753v1",
+      "identifier": "2512.23753v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Evidential deep learning (EDL) models, based on Subjective Logic, introduce a principled and computationally efficient way to make deterministic neural networks uncertainty-aware. The resulting evidential models can quantify fine-grained uncertainty using learned evidence. However, the Subjective-Logic framework constrains evidence to be non-negative, requiring specific activation functions whose geometric properties can induce activation-dependent learning-freeze behavior: a regime where gradients become extremely small for samples mapped into low-evidence regions. We theoretically characterize this behavior and analyze how different evidential activations influence learning dynamics. Building on this analysis, we design a general family of activation functions and corresponding evidential regularizers that provide an alternative pathway for consistent evidence updates across activation regimes. Extensive experiments on four benchmark classification problems (MNIST, CIFAR-10, CIFAR-100, and Tiny-ImageNet), two few-shot classification problems, and blind face restoration problem empirically validate the developed theory and demonstrate the effectiveness of the proposed generalized regularized evidential models.",
+      "extra": {}
+    },
+    {
+      "stable_id": "var-slam: visual adaptive and robust slam for dynamic environments",
+      "candidate_id": "c-ef0b2f05",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2510.16205v1",
+      "identifier": "2510.16205v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Visual SLAM in dynamic environments remains challenging, as several existing methods rely on semantic filtering that only handles known object classes, or use fixed robust kernels that cannot adapt to unknown moving objects, leading to degraded accuracy when they appear in the scene. We present VAR-SLAM (Visual Adaptive and Robust SLAM), an ORB-SLAM3-based system that combines a lightweight semantic keypoint filter to deal with known moving objects, with Barron's adaptive robust loss to handle unknown ones. The shape parameter of the robust kernel is estimated online from residuals, allowing the system to automatically adjust between Gaussian and heavy-tailed behavior. We evaluate VAR-SLAM on the TUM RGB-D, Bonn RGB-D Dynamic, and OpenLORIS datasets, which include both known and unknown moving objects. Results show improved trajectory accuracy and robustness over state-of-the-art baselines, achieving up to 25% lower ATE RMSE than NGD-SLAM on challenging sequences, while maintaining performance at 27 FPS on average.",
+      "extra": {}
+    },
+    {
+      "stable_id": "dynosam: open-source smoothing and mapping framework for dynamic slam",
+      "candidate_id": "c-4e29ea98",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2501.11893v3",
+      "identifier": "2501.11893v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Traditional Visual Simultaneous Localization and Mapping (vSLAM) systems focus solely on static scene structures, overlooking dynamic elements in the environment. Although effective for accurate visual odometry in complex scenarios, these methods discard crucial information about moving objects. By incorporating this information into a Dynamic SLAM framework, the motion of dynamic entities can be estimated, enhancing navigation whilst ensuring accurate localization. However, the fundamental formulation of Dynamic SLAM remains an open challenge, with no consensus on the optimal approach for accurate motion estimation within a SLAM pipeline. Therefore, we developed DynoSAM, an open-source framework for Dynamic SLAM that enables the efficient implementation, testing, and comparison of various Dynamic SLAM optimization formulations. DynoSAM integrates static and dynamic measurements into a unified optimization problem solved using factor graphs, simultaneously estimating camera poses, static scene, object motion or poses, and object structures. We evaluate DynoSAM across diverse simulated and real-world datasets, achieving state-of-the-art motion estimation in indoor and outdoor environments, with substantial improvements over existing systems. Additionally, we demonstrate DynoSAM utility in downstream applications, including 3D reconstruction of dynamic scenes and trajectory prediction, thereby showcasing potential for advancing dynamic object-aware SLAM systems. DynoSAM is open-sourced at https://github.com/ACFR-RPG/DynOSAM.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ds-slam: a semantic visual slam towards dynamic environments",
+      "candidate_id": "c-84f699c7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2018,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1809.08379v2",
+      "identifier": "1809.08379v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Simultaneous Localization and Mapping (SLAM) is considered to be a fundamental capability for intelligent mobile robots. Over the past decades, many impressed SLAM systems have been developed and achieved good performance under certain circumstances. However, some problems are still not well solved, for example, how to tackle the moving objects in the dynamic environments, how to make the robots truly understand the surroundings and accomplish advanced tasks. In this paper, a robust semantic visual SLAM towards dynamic environments named DS-SLAM is proposed. Five threads run in parallel in DS-SLAM: tracking, semantic segmentation, local mapping, loop closing, and dense semantic map creation. DS-SLAM combines semantic segmentation network with moving consistency check method to reduce the impact of dynamic objects, and thus the localization accuracy is highly improved in dynamic environments. Meanwhile, a dense semantic octo-tree map is produced, which could be employed for high-level tasks. We conduct experiments both on TUM RGB-D dataset and in the real-world environment. The results demonstrate the absolute trajectory accuracy in DS-SLAM can be improved by one order of magnitude compared with ORB-SLAM2. It is one of the state-of-the-art SLAM systems in high-dynamic environments. Now the code is available at our github: https://github.com/ivipsourcecode/DS-SLAM",
+      "extra": {}
+    },
+    {
+      "stable_id": "simulation of dynamic environments for slam",
+      "candidate_id": "c-8993b089",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Simulation of Dynamic Environments for SLAM",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2305.04286v2",
+      "identifier": "2305.04286v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Simulation engines are widely adopted in robotics. However, they lack either full simulation control, ROS integration, realistic physics, or photorealism. Recently, synthetic data generation and realistic rendering has advanced tasks like target tracking and human pose estimation. However, when focusing on vision applications, there is usually a lack of information like sensor measurements or time continuity. On the other hand, simulations for most robotics tasks are performed in (semi)static environments, with specific sensors and low visual fidelity. To solve this, we introduced in our previous work a fully customizable framework for generating realistic animated dynamic environments (GRADE) [1]. We use GRADE to generate an indoor dynamic environment dataset and then compare multiple SLAM algorithms on different sequences. By doing that, we show how current research over-relies on known benchmarks, failing to generalize. Our tests with refined YOLO and Mask R-CNN models provide further evidence that additional research in dynamic SLAM is necessary. The code, results, and generated data are provided as open-source at https://eliabntt.github.io/grade-rrSimulation of Dynamic Environments for SLAM",
+      "extra": {}
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-cbe8d939",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "slam-former: putting slam into one transformer",
+      "candidate_id": "c-b6bfce20",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "SLAM-Former: Putting SLAM into One Transformer",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2509.16909v1",
+      "identifier": "2509.16909v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We present SLAM-Former, a novel neural approach that integrates full SLAM capabilities into a single transformer. Similar to traditional SLAM systems, SLAM-Former comprises both a frontend and a backend that operate in tandem. The frontend processes sequential monocular images in real-time for incremental mapping and tracking, while the backend performs global refinement to ensure a geometrically consistent result. This alternating execution allows the frontend and backend to mutually promote one another, enhancing overall system performance. Comprehensive experimental results demonstrate that SLAM-Former achieves superior or highly competitive performance compared to state-of-the-art dense SLAM methods.",
+      "extra": {}
+    },
+    {
+      "stable_id": "bpc-slam: part-level dynamic suppression and structure-constrained rgb-d slam for human-centric dynamic environments",
+      "candidate_id": "c-6c2e7d38",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "BPC-SLAM: Part-Level Dynamic Suppression and Structure-Constrained RGB-D SLAM for Human-Centric Dynamic Environments",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "10.2139/ssrn.5396198",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<title>Abstract</title>\n                <p>In indoor dynamic scenes, traditional visual SLAM algorithms often suffer from a significant decline in localization accuracy due to interference from dynamic objects. To address this issue, this study proposes a visual SLAM method based on deep learning. Built upon the ORB-SLAM3 framework, the proposed method effectively enhances the system's capability in complex dynamic environments by constructing a dual dynamic feature suppression mechanism that integrates object detection and epipolar geometric constraints. Specifically, the YOLOv8m network is first lightweighted by introducing GhostConv modules to replace the original convolutional layers, reducing computational overhead. Additionally, the CBAM attention mechanism is incorporated into the backbone network to improve the accuracy of dynamic object detection. To further enhance feature stability in complex scenes, the algorithm introduces LSD line features for joint extraction alongside point features. Leveraging the robustness of line features in low-texture or dynamic edge regions, it initially filters out obvious dynamic features. Subsequently, epipolar geometric constraints are applied for a secondary screening of residual dynamic points, achieving high-precision retention of static features. Finally, pose-assisted localization is accomplished using the P3P algorithm based on the filtered static features. Experimental results on the TUM RGB-D dataset demonstrate that the improved algorithm improves localization accuracy by an average of 53.10% compared to ORB-SLAM3, with a maximum improvement of up to 93.56%. On the EuRoC-MAV dataset, the improved algorithm reduces the average ATE-RMSE by 85.32%, with improvements exceeding 85.5% on highly challenging sequences, and maintains an ATE-StD below 0.035m under complex operating conditions, enhancing localization accuracy and anti-interference capability. Physical validation further confirms the superior accuracy and robustness of the proposed method, offering an effective approach for research on high-precision SLAM systems in dynamic environments.</p>",
+      "extra": {}
+    },
+    {
+      "stable_id": "a monocular dynamic slam algorithm based on deep learning",
+      "candidate_id": "c-af234913",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Monocular Dynamic SLAM Algorithm Based on Deep Learning",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 IEEE 13th Data Driven Control and Learning Systems Conference (DDCLS)",
+      "url": "https://doi.org/10.1109/ddcls61622.2024.10606823",
+      "identifier": "10.1109/ddcls61622.2024.10606823",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "redo-slam: robust efficient dynamic optical flow-based slam with deep reinforcement learning",
+      "candidate_id": "c-f62e729e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "REDO-SLAM: Robust Efficient Dynamic Optical Flow-Based SLAM with Deep Reinforcement Learning",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 18th International Conference on Control, Automation, Robotics and Vision (ICARCV)",
+      "url": "https://doi.org/10.1109/icarcv63323.2024.10821543",
+      "identifier": "10.1109/icarcv63323.2024.10821543",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "lift-slam",
+      "candidate_id": "c-0ff0df71",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "LIFT-SLAM",
+      "sources": [
+        "crossref"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://doi.org/10.47749/t/unicamp.2020.1129339",
+      "identifier": "10.47749/t/unicamp.2020.1129339",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "hrpslam: a benchmark for rgb-d dynamic slam and humanoid vision",
+      "candidate_id": "c-2f21db80",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "HRPSlam: A Benchmark for RGB-D Dynamic SLAM and Humanoid Vision",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2019,
+      "venue": "2019 Third IEEE International Conference on Robotic Computing (IRC)",
+      "url": "https://doi.org/10.1109/irc.2019.00024",
+      "identifier": "10.1109/irc.2019.00024",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "drm-slam: robust visual slam based on dynamic region mask for dynamic scenes",
+      "candidate_id": "c-54cc74b7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DRM-SLAM: Robust Visual SLAM Based on Dynamic Region Mask for Dynamic Scenes",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2023,
+      "venue": "2023 China Automation Congress (CAC)",
+      "url": "https://doi.org/10.1109/cac59555.2023.10451016",
+      "identifier": "10.1109/cac59555.2023.10451016",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "yichao-liang/dynamic_slam",
+      "candidate_id": "c-3284a8f6",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "yichao-liang/dynamic_slam",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/yichao-liang/dynamic_slam",
+      "identifier": null,
+      "description": "Github repo for dynamic slam simulation and algorithm",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 1,
+        "language": null
+      }
+    },
+    {
+      "stable_id": "aczheng-cai/up_slam.github.io",
+      "candidate_id": "c-5869588c",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Aczheng-cai/up_slam.github.io",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Aczheng-cai/up_slam.github.io",
+      "identifier": null,
+      "description": "Project page of UP-SLAM: Adaptively Structured Gaussian SLAM with Uncertainty Prediction in Dynamic Environments",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 0,
+        "language": "JavaScript"
+      }
+    },
+    {
+      "stable_id": "mab1144/https-github.com-users-mab1144-emails-94636098-confirm_verification-765d9142af1ea0fb3dd9dfdc374dfc",
+      "candidate_id": "c-ea63a6a0",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "MAB1144/https-github.com-users-MAB1144-emails-94636098-confirm_verification-765d9142af1ea0fb3dd9dfdc374dfc",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/MAB1144/https-github.com-users-MAB1144-emails-94636098-confirm_verification-765d9142af1ea0fb3dd9dfdc374dfc",
+      "identifier": null,
+      "description": "Master's student, dynamic V-SLAM project",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 0,
+        "language": null
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "deep learning dynamic SLAM|deep learning dynamic scenes",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "dynamic SLAM dataset|dynamic scenes dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "dynamic SLAM github|dynamic SLAM implementation|deep learning dynamic SLAM",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 3,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "deep learning dynamic SLAM|deep learning moving object detection|ORB-SLAM2 dynamic SLAM",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "deep learning dynamic SLAM|deep learning moving object detection|ORB-SLAM2 dynamic SLAM",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "deep learning dynamic SLAM|deep learning dynamic scenes",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "dynamic SLAM survey|robotics control survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "deep learning dynamic SLAM|deep learning moving object detection|ORB-SLAM2 dynamic SLAM",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "deep learning dynamic SLAM|deep learning moving object detection|ORB-SLAM2 dynamic SLAM",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "dynamic scenes dynamic SLAM|dynamic scenes moving object detection|indoor scenes dynamic SLAM",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "dynamic SLAM survey|robotics control survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "dynamic scenes dynamic SLAM|dynamic scenes moving object detection|indoor scenes dynamic SLAM",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "deep learning dynamic SLAM|deep learning dynamic scenes",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "dynamic SLAM benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "dynamic SLAM dataset|dynamic scenes dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "dynamic SLAM dataset|dynamic scenes dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "deep learning dynamic SLAM|deep learning dynamic scenes",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "dynamic SLAM benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "dynamic SLAM dataset|dynamic scenes dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "dynamic dynamic|dynamic that|dynamic learning",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Learn to Accumulate Evidence from All Training Samples: Theo",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: The Modern Mathematics of Deep Learning",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Deep Learning and Computational Physics (Lecture Notes)",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Deep learning observables in computational fluid dynamics",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: MLP-SLAM: Multilayer Perceptron-Based Simultaneous Localizat",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-c7b30903",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning"
+      ],
+      "missing_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "semantic segmentation",
+        "DynaSLAM",
+        "moving objects"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Evidential deep learning theory paper with no SLAM or robotics connection.",
+      "reason": "Paper concerns uncertainty quantification via subjective logic. No relation to visual SLAM, dynamic scenes, or moving object detection."
+    },
+    {
+      "candidate_id": "c-2e26d29e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning"
+      ],
+      "missing_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "semantic segmentation",
+        "DynaSLAM"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Mathematical theory of deep learning; no application or mention of SLAM.",
+      "reason": "A pure mathematical analysis of deep learning. Cross-domain, entirely unrelated to dynamic SLAM research."
+    },
+    {
+      "candidate_id": "c-027cb868",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning"
+      ],
+      "missing_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "semantic segmentation",
+        "DynaSLAM"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Lecture notes on deep learning + computational physics; no SLAM topic.",
+      "reason": "Pedagogical notes focused on physics applications. Cross-domain, no connection to visual SLAM or dynamic scenes."
+    },
+    {
+      "candidate_id": "c-bd35c471",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning"
+      ],
+      "missing_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "semantic segmentation",
+        "DynaSLAM"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "CFD application of deep learning; completely outside robotics/SLAM.",
+      "reason": "Applies deep learning to computational fluid dynamics problems. No relation to SLAM or dynamic scene understanding."
+    },
+    {
+      "candidate_id": "c-3f68798c",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "deep learning",
+        "moving objects"
+      ],
+      "missing_terms": [
+        "semantic segmentation",
+        "DynaSLAM",
+        "ORB-SLAM2",
+        "TUM RGB-D dataset"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "MLP-based V-SLAM explicitly addressing dynamic object degradation; directly on-topic.",
+      "reason": "V-SLAM using multilayer perceptron, motivated by performance deterioration in dynamic environments. Strong direct match to the topic of deep-learning-based dynamic SLAM."
+    },
+    {
+      "candidate_id": "c-e1b2196f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning"
+      ],
+      "missing_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "semantic segmentation",
+        "DynaSLAM"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Economics/pricing paper; cross-domain, unrelated to robotics/SLAM.",
+      "reason": "About item price elasticity modeling. Entirely outside robotics and SLAM domains."
+    },
+    {
+      "candidate_id": "c-b16e6093",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning"
+      ],
+      "missing_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "semantic segmentation",
+        "DynaSLAM"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Embedded multitask learning with no SLAM or dynamic scene content.",
+      "reason": "General multitask deep learning for embedded systems. No connection to SLAM or moving object detection."
+    },
+    {
+      "candidate_id": "c-3b867281",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "deep learning"
+      ],
+      "missing_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "semantic segmentation",
+        "DynaSLAM"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Another evidential deep learning theory paper; unrelated to SLAM.",
+      "reason": "Follow-up to evidential deep learning theory work. Cross-domain with no SLAM relevance."
+    },
+    {
+      "candidate_id": "c-ef0b2f05",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual SLAM",
+        "dynamic environments",
+        "moving objects"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "DynaSLAM",
+        "ORB-SLAM2",
+        "semantic segmentation",
+        "TUM RGB-D dataset"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "VAR-SLAM targets visual SLAM in dynamic environments with adaptive handling of moving objects.",
+      "reason": "2025 paper on visual SLAM robust to dynamic environments, addressing limitations of semantic filtering and fixed robust kernels. Strong topical match despite not being purely deep-learning based."
+    },
+    {
+      "candidate_id": "c-4e29ea98",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual odometry",
+        "dynamic environments"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "semantic segmentation",
+        "DynaSLAM",
+        "MaskRCNN"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "DynoSAM is a dynamic SLAM framework explicitly addressing dynamic scene elements.",
+      "reason": "Open-source dynamic SLAM framework handling dynamic scene elements with smoothing. Direct match to the dynamic SLAM theme; deep-learning use is not confirmed in abstract."
+    },
+    {
+      "candidate_id": "c-84f699c7",
+      "evidence_type": "paper",
+      "role_hint": "baseline",
+      "status": "core",
+      "matched_terms": [
+        "DS-SLAM",
+        "semantic SLAM",
+        "dynamic environments",
+        "semantic segmentation",
+        "SLAM"
+      ],
+      "missing_terms": [
+        "DynaSLAM",
+        "ORB-SLAM2",
+        "MaskRCNN",
+        "TUM RGB-D dataset"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "DS-SLAM is one of the canonical semantic dynamic SLAM methods listed in the topic.",
+      "reason": "The original DS-SLAM paper using semantic segmentation in dynamic environments. Core reference explicitly named in the topic's method terms."
+    },
+    {
+      "candidate_id": "c-8993b089",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "SLAM",
+        "dynamic environments"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "semantic segmentation",
+        "DynaSLAM",
+        "DS-SLAM",
+        "visual odometry"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Simulation tool for dynamic SLAM evaluation; relevant but not a method paper.",
+      "reason": "Provides dynamic environment simulation for SLAM benchmarking. Useful adjacent resource for evaluating dynamic SLAM methods, though not a deep learning method itself."
+    },
+    {
+      "candidate_id": "c-cbe8d939",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "deep learning",
+        "SLAM",
+        "dynamic SLAM",
+        "semantic segmentation",
+        "DynaSLAM"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "NLP/LLM survey research paper; entirely cross-domain.",
+      "reason": "Uses LLMs to code German survey responses. No connection to robotics, SLAM, or computer vision for dynamic scenes."
+    },
+    {
+      "candidate_id": "c-b6bfce20",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "SLAM",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "dynamic SLAM",
+        "moving objects",
+        "semantic segmentation",
+        "DynaSLAM",
+        "DS-SLAM"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Transformer-based SLAM but not focused on dynamic environments.",
+      "reason": "Neural SLAM in a single transformer. Uses deep learning for SLAM but does not specifically target dynamic scenes or moving objects as the topic requires."
+    },
+    {
+      "candidate_id": "c-6c2e7d38",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "indoor scenes",
+        "dynamic objects",
+        "RGB-D SLAM"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "DynaSLAM",
+        "ORB-SLAM2",
+        "TUM RGB-D dataset"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "BPC-SLAM targets indoor dynamic scenes with part-level suppression; highly relevant.",
+      "reason": "RGB-D SLAM handling dynamic objects in indoor scenes via part-level dynamic suppression. Directly relevant to dynamic SLAM research even though deep learning role is unclear from metadata."
+    },
+    {
+      "candidate_id": "c-af234913",
+      "evidence_type": "paper",
+      "role_hint": "baseline",
+      "status": "core",
+      "matched_terms": [
+        "dynamic SLAM",
+        "deep learning",
+        "monocular",
+        "visual SLAM"
+      ],
+      "missing_terms": [
+        "DynaSLAM",
+        "DS-SLAM",
+        "semantic segmentation",
+        "ORB-SLAM2",
+        "TUM RGB-D dataset"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "baseline",
+      "exists_verdict": "exists",
+      "rank_reason": "Title explicitly states 'Monocular Dynamic SLAM Based on Deep Learning' — perfect match.",
+      "reason": "Directly addresses the exact topic: monocular dynamic SLAM using deep learning. Core paper, though abstract is empty so confidence on method details is moderate."
+    },
+    {
+      "candidate_id": "c-f62e729e",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "dynamic SLAM",
+        "deep learning",
+        "visual SLAM",
+        "dynamic environments"
+      ],
+      "missing_terms": [
+        "DynaSLAM",
+        "ORB-SLAM2",
+        "semantic segmentation",
+        "TUM RGB-D dataset"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "REDO-SLAM explicitly uses deep reinforcement learning for dynamic SLAM.",
+      "reason": "Robust dynamic SLAM using deep reinforcement learning with optical flow. Direct match to deep-learning-based dynamic SLAM research."
+    },
+    {
+      "candidate_id": "c-0ff0df71",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "needs_manual",
+      "matched_terms": [
+        "SLAM"
+      ],
+      "missing_terms": [
+        "dynamic SLAM",
+        "deep learning",
+        "semantic segmentation",
+        "DynaSLAM",
+        "visual odometry"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "SLAM paper but no metadata confirms dynamic or deep-learning focus.",
+      "reason": "LIFT-SLAM is a known feature-based SLAM. Without abstract, dynamic-scene or deep-learning relevance is uncertain; needs manual verification."
+    },
+    {
+      "candidate_id": "c-2f21db80",
+      "evidence_type": "paper",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "RGB-D",
+        "dynamic environments"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "semantic segmentation",
+        "DynaSLAM",
+        "ORB-SLAM2",
+        "TUM RGB-D dataset"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "RGB-D dynamic SLAM benchmark for humanoid vision; relevant dataset/benchmark.",
+      "reason": "Provides a benchmark for RGB-D dynamic SLAM in humanoid scenarios. Useful as a dataset/evaluation reference though it is not a deep-learning method itself."
+    },
+    {
+      "candidate_id": "c-54cc74b7",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "candidate",
+      "matched_terms": [
+        "SLAM",
+        "dynamic SLAM",
+        "visual SLAM",
+        "dynamic scenes",
+        "dynamic objects"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "semantic segmentation",
+        "DynaSLAM",
+        "ORB-SLAM2",
+        "TUM RGB-D dataset"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "DRM-SLAM handles dynamic regions but deep-learning role is not confirmed.",
+      "reason": "Robust visual SLAM using dynamic region masks in dynamic scenes. Topic-relevant dynamic SLAM method, but unclear if deep learning is the core technique."
+    },
+    {
+      "candidate_id": "c-3284a8f6",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "dynamic SLAM",
+        "dynamic scenes"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "DynaSLAM",
+        "DS-SLAM",
+        "semantic segmentation",
+        "MaskRCNN",
+        "ORB-SLAM2"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "repo",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Repo directly named dynamic_slam; description aligns with topic but lacks explicit deep-learning details.",
+      "reason": "GitHub repo 'yichao-liang/dynamic_slam' is a real code resource for dynamic SLAM research. Description mentions simulation and algorithm but does not confirm deep-learning methodology. Useful as supporting repo."
+    },
+    {
+      "candidate_id": "c-5869588c",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "dynamic SLAM",
+        "dynamic scenes"
+      ],
+      "missing_terms": [
+        "DynaSLAM",
+        "DS-SLAM",
+        "semantic segmentation",
+        "MaskRCNN",
+        "ORB-SLAM2"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "UP-SLAM targets dynamic environments with uncertainty prediction; directly parallel method to topic.",
+      "reason": "Project page for UP-SLAM, a Gaussian SLAM method handling dynamic environments with uncertainty prediction. It addresses the same core problem of robust SLAM under dynamic scenes, though uses different methodology (Gaussian/uncertainty vs. semantic segmentation)."
+    },
+    {
+      "candidate_id": "c-ea63a6a0",
+      "evidence_type": "repo",
+      "role_hint": "needs_manual",
+      "status": "needs_manual",
+      "matched_terms": [
+        "dynamic SLAM"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "DynaSLAM",
+        "semantic segmentation",
+        "MaskRCNN",
+        "ORB-SLAM2",
+        "visual odometry"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Repository name is a verification token, description only mentions dynamic V-SLAM project; minimal verifiable content.",
+      "reason": "Title appears to be a GitHub email-verification artifact. Description says master's student working on dynamic V-SLAM, which is topically related, but no details on method, deep learning, or code availability. Needs manual inspection."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "Focus on deep-learning–driven SLAM that explicitly handles dynamic scenes, comparing canonical semantic dynamic SLAM (DS-SLAM, c-84f699c7) against ORB-SLAM2-based pipelines using semantic segmentation or object detection (DynaSLAM family — abstract missing from pool, treat as named anchor only). Use BPC-SLAM (c-6c2e7d38), REDO-SLAM (c-f62e729e), and the monocular deep-learning dynamic SLAM (c-af234913) as tier=core parallel methods; MLP-SLAM (c-3f68798c), DynoSAM (c-4e29ea98), VAR-SLAM (c-ef0b2f05) as deep/adjacent parallel methods. Evaluate on TUM RGB-D dynamic sequences and KITTI; consult Simulation of Dynamic Environments for SLAM (c-8993b089) and HRPSlam benchmark (c-2f21db80) for evaluation tooling. SLAM-Former (c-b6bfce20) and DRM-SLAM (c-54cc74b7) are secondary candidates; LIFT-SLAM (c-0ff0df71) needs manual check; the yichao-liang/dynamic_slam repo (c-3284a8f6) is a usable code resource.",
+    "baseline_options": [
+      "c-84f699c7",
+      "c-af234913",
+      "c-6c2e7d38",
+      "c-f62e729e"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-3f68798c",
+          "title": "MLP-SLAM: Multilayer Perceptron-Based Simultaneous Localization and Mapping",
+          "role_hint": "parallel",
+          "reason": "MLP-based V-SLAM explicitly addressing dynamic object degradation; directly on-topic."
+        },
+        {
+          "candidate_id": "c-ef0b2f05",
+          "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+          "role_hint": "parallel",
+          "reason": "VAR-SLAM targets visual SLAM in dynamic environments with adaptive handling of moving objects."
+        },
+        {
+          "candidate_id": "c-4e29ea98",
+          "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+          "role_hint": "parallel",
+          "reason": "DynoSAM is a dynamic SLAM framework explicitly addressing dynamic scene elements."
+        },
+        {
+          "candidate_id": "c-84f699c7",
+          "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "role_hint": "baseline",
+          "reason": "DS-SLAM is one of the canonical semantic dynamic SLAM methods listed in the topic."
+        },
+        {
+          "candidate_id": "c-6c2e7d38",
+          "title": "BPC-SLAM: Part-Level Dynamic Suppression and Structure-Constrained RGB-D SLAM for Human-Centric Dynamic Environments",
+          "role_hint": "parallel",
+          "reason": "BPC-SLAM targets indoor dynamic scenes with part-level suppression; highly relevant."
+        },
+        {
+          "candidate_id": "c-af234913",
+          "title": "A Monocular Dynamic SLAM Algorithm Based on Deep Learning",
+          "role_hint": "baseline",
+          "reason": "Title explicitly states 'Monocular Dynamic SLAM Based on Deep Learning' — perfect match."
+        },
+        {
+          "candidate_id": "c-f62e729e",
+          "title": "REDO-SLAM: Robust Efficient Dynamic Optical Flow-Based SLAM with Deep Reinforcement Learning",
+          "role_hint": "parallel",
+          "reason": "REDO-SLAM explicitly uses deep reinforcement learning for dynamic SLAM."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-8993b089",
+          "title": "Simulation of Dynamic Environments for SLAM",
+          "role_hint": "parallel",
+          "reason": "Simulation tool for dynamic SLAM evaluation; relevant but not a method paper."
+        },
+        {
+          "candidate_id": "c-b6bfce20",
+          "title": "SLAM-Former: Putting SLAM into One Transformer",
+          "role_hint": "parallel",
+          "reason": "Transformer-based SLAM but not focused on dynamic environments."
+        },
+        {
+          "candidate_id": "c-2f21db80",
+          "title": "HRPSlam: A Benchmark for RGB-D Dynamic SLAM and Humanoid Vision",
+          "role_hint": "dataset",
+          "reason": "RGB-D dynamic SLAM benchmark for humanoid vision; relevant dataset/benchmark."
+        },
+        {
+          "candidate_id": "c-54cc74b7",
+          "title": "DRM-SLAM: Robust Visual SLAM Based on Dynamic Region Mask for Dynamic Scenes",
+          "role_hint": "parallel",
+          "reason": "DRM-SLAM handles dynamic regions but deep-learning role is not confirmed."
+        },
+        {
+          "candidate_id": "c-3284a8f6",
+          "title": "yichao-liang/dynamic_slam",
+          "role_hint": "repo",
+          "reason": "Repo directly named dynamic_slam; description aligns with topic but lacks explicit deep-learning details."
+        },
+        {
+          "candidate_id": "c-5869588c",
+          "title": "Aczheng-cai/up_slam.github.io",
+          "role_hint": "repo",
+          "reason": "UP-SLAM targets dynamic environments with uncertainty prediction; directly parallel method to topic."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-0ff0df71",
+          "title": "LIFT-SLAM",
+          "role_hint": "reference",
+          "reason": "SLAM paper but no metadata confirms dynamic or deep-learning focus."
+        },
+        {
+          "candidate_id": "c-ea63a6a0",
+          "title": "MAB1144/https-github.com-users-MAB1144-emails-94636098-confirm_verification-765d9142af1ea0fb3dd9dfdc374dfc",
+          "role_hint": "needs_manual",
+          "reason": "Repository name is a verification token, description only mentions dynamic V-SLAM project; minimal verifiable content."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-c7b30903",
+          "title": "Learn to Accumulate Evidence from All Training Samples: Theory and Practice",
+          "role_hint": "reference",
+          "reason": "Evidential deep learning theory paper with no SLAM or robotics connection."
+        },
+        {
+          "candidate_id": "c-2e26d29e",
+          "title": "The Modern Mathematics of Deep Learning",
+          "role_hint": "reference",
+          "reason": "Mathematical theory of deep learning; no application or mention of SLAM."
+        },
+        {
+          "candidate_id": "c-027cb868",
+          "title": "Deep Learning and Computational Physics (Lecture Notes)",
+          "role_hint": "reference",
+          "reason": "Lecture notes on deep learning + computational physics; no SLAM topic."
+        },
+        {
+          "candidate_id": "c-bd35c471",
+          "title": "Deep learning observables in computational fluid dynamics",
+          "role_hint": "reference",
+          "reason": "CFD application of deep learning; completely outside robotics/SLAM."
+        },
+        {
+          "candidate_id": "c-e1b2196f",
+          "title": "Monodense Deep Neural Model for Determining Item Price Elasticity",
+          "role_hint": "reference",
+          "reason": "Economics/pricing paper; cross-domain, unrelated to robotics/SLAM."
+        },
+        {
+          "candidate_id": "c-b16e6093",
+          "title": "A multitask deep learning model for real-time deployment in embedded systems",
+          "role_hint": "reference",
+          "reason": "Embedded multitask learning with no SLAM or dynamic scene content."
+        },
+        {
+          "candidate_id": "c-3b867281",
+          "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+          "role_hint": "reference",
+          "reason": "Another evidential deep learning theory paper; unrelated to SLAM."
+        },
+        {
+          "candidate_id": "c-cbe8d939",
+          "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+          "role_hint": "reference",
+          "reason": "NLP/LLM survey research paper; entirely cross-domain."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-84f699c7",
+          "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "role_hint": "baseline",
+          "year": 2018
+        },
+        {
+          "candidate_id": "c-af234913",
+          "title": "A Monocular Dynamic SLAM Algorithm Based on Deep Learning",
+          "role_hint": "baseline",
+          "year": 2024
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-6c2e7d38",
+          "title": "BPC-SLAM: Part-Level Dynamic Suppression and Structure-Constrained RGB-D SLAM for Human-Centric Dynamic Environments",
+          "role_hint": "parallel",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-f62e729e",
+          "title": "REDO-SLAM: Robust Efficient Dynamic Optical Flow-Based SLAM with Deep Reinforcement Learning",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-3f68798c",
+          "title": "MLP-SLAM: Multilayer Perceptron-Based Simultaneous Localization and Mapping",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-4e29ea98",
+          "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-ef0b2f05",
+          "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-54cc74b7",
+          "title": "DRM-SLAM: Robust Visual SLAM Based on Dynamic Region Mask for Dynamic Scenes",
+          "role_hint": "parallel",
+          "year": 2023
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-8993b089",
+          "title": "Simulation of Dynamic Environments for SLAM",
+          "role_hint": "parallel",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-2f21db80",
+          "title": "HRPSlam: A Benchmark for RGB-D Dynamic SLAM and Humanoid Vision",
+          "role_hint": "dataset",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-b6bfce20",
+          "title": "SLAM-Former: Putting SLAM into One Transformer",
+          "role_hint": "parallel",
+          "year": 2025
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-0ff0df71",
+          "title": "LIFT-SLAM",
+          "role_hint": "reference",
+          "year": null
+        },
+        {
+          "candidate_id": "c-5869588c",
+          "title": "Aczheng-cai/up_slam.github.io",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-3284a8f6",
+          "title": "yichao-liang/dynamic_slam",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-ea63a6a0",
+          "title": "MAB1144/https-github.com-users-MAB1144-emails-94636098-confirm_verification-765d9142af1ea0fb3dd9dfdc374dfc",
+          "role_hint": "needs_manual",
+          "year": null
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "TUM RGB-D dynamic sequences (walking, sitting) remain the de facto benchmark for ATE/VIE evaluation of DS-SLAM (c-84f699c7) and BPC-SLAM (c-6c2e7d38).",
+      "KITTI dynamic-tracking splits support outdoor dynamic-scene comparison for MLP-SLAM (c-3f68798c) and REDO-SLAM (c-f62e729e).",
+      "c-2f21db80 HRPSlam provides a humanoid-focused RGB-D dynamic SLAM benchmark distinct from TUM/KITTI.",
+      "c-8993b089 supplies photorealistic dynamic-scene simulation; useful when real datasets lack diverse moving actors.",
+      "c-3284a8f6 is a lightweight simulation+algorithm repo that could seed re-implementations of DS-SLAM-class pipelines."
+    ],
+    "work_suggestions": [
+      "Anchor the survey on DS-SLAM (c-84f699c7) and the monocular deep-learning method (c-af234913) as the two named baselines; cite BPC-SLAM (c-6c2e7d38), REDO-SLAM (c-f62e729e), MLP-SLAM (c-3f68798c), DynoSAM (c-4e29ea98), VAR-SLAM (c-ef0b2f05) as core parallel deep-or-non-deep dynamic SLAM methods.",
+      "Use the c-3284a8f6 dynamic_slam repo to obtain a runnable DS-SLAM-class pipeline; cross-check behavior against BPC-SLAM's ORB-SLAM3 + YOLOv8 design (c-6c2e7d38).",
+      "Evaluate on TUM RGB-D dynamic sequences and KITTI; supplement with c-2f21db80 humanoid benchmark and c-8993b089 synthetic dynamic scenes when real-data coverage is thin.",
+      "Treat c-0ff0df71 LIFT-SLAM as out-of-scope unless manual verification confirms a dynamic-scene variant; do not cite as on-topic evidence.",
+      "Run manual checks on c-ea63a6a0 (verification-token repo) and c-0ff0df71 before any downstream use; remove if relevance cannot be established."
+    ],
+    "risk_reminders": [
+      "Several crossref entries (c-af234913, c-f62e729e, c-2f21db80, c-54cc74b7, c-0ff0df71) returned empty abstracts; tier=core/parallel still applies but method details need PDF reads.",
+      "arxiv abstract for c-6c2e7d38 appears to be misattached to an astrophysics entry (astro-ph/0611654); rely on title-level claim, not the raw abstract text.",
+      "C-4e29ea98 DynoSAM and c-ef0b2f05 VAR-SLAM are dynamic SLAM but not necessarily DL-based; include with explicit framing as adjacent methods.",
+      "DynaSLAM is named in the topic but absent from retrieved evidence; do not fabricate citations — treat it as a known anchor to manually add in Re03.",
+      "Openalex and Semantic Scholar queries returned empty, so citation-graph expansion evidence is weak; reference list may be incomplete."
+    ],
+    "manual_questions": [
+      "Which DynaSLAM-family paper should serve as the canonical ORB-SLAM2 + MaskRCNN baseline (none retrieved here)?",
+      "Is the focus RGB-D indoor (TUM) or monocular/stereo outdoor (KITTI), or both in a comparative study?",
+      "Should the survey stay strictly deep-learning methods or include classical/geometric dynamic SLAM as contrast (e.g., c-ef0b2f05)?",
+      "Is code re-implementation expected, and is a runnable starter repo (c-3284a8f6) acceptable?",
+      "What publication venue/target length is desired — IEEE journal, thesis chapter, or conference survey?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "DynaSLAM is named as a canonical anchor yet its abstract/paper is absent from the pool — is the missing paper acceptable to treat as a named anchor only?",
+      "DS-SLAM (2018) and a 2024 monocular DL method are both labeled baseline — which one is the true ORB-SLAM2 + MaskRCNN anchor?",
+      "Should the survey cover RGB-D indoor (TUM), monocular outdoor (KITTI), or both, before parallel methods are scoped?"
+    ],
+    "weak_points": [
+      "evidence_gaps is empty even though DynaSLAM abstract is missing — a baseline gap should be declared explicitly.",
+      "reference group mixes parallel methods, a dataset (HRPSlam), and a synthetic-environment paper — not pure reference anchors.",
+      "No explicit data-source candidate is isolated; datasets appear only inside work_suggestions, not paper_groups.",
+      "c-0ff0df71 (LIFT-SLAM) and c-ea63a6a0 (verification-token repo) sit in long_tail without clear disposition.",
+      "VAR-SLAM (c-ef0b2f05) is listed as parallel but tagged geometric/non-deep — role hint conflicts with deep-learning scope."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Topic is well-bounded but the pool lacks the DynaSLAM paper and any declared baseline/dataset gap. Two baselines are ambiguous, VAR-SLAM's deep-learning role is unclear, and reference group is heterogeneous. One revision pass needed before opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于深度学习的动态SLAM研究",
+      "domain_route": "robotics_control",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 15,
+        "crossref": 5,
+        "github": 3
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 30,
+      "queries": [
+        "dynamic dynamic",
+        "dynamic that",
+        "dynamic learning",
+        "dynamic this",
+        "that dynamic",
+        "that that",
+        "that learning",
+        "that this"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 181.84
+}

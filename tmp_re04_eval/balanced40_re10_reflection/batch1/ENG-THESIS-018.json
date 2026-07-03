@@ -1,0 +1,1266 @@
+{
+  "topic": "基于深度学习的三维点云补全方法研究",
+  "final_candidate_pool": [
+    {
+      "stable_id": "enhancing performance of point cloud completion networks with consistency loss",
+      "candidate_id": "c-470051d7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Enhancing Performance of Point Cloud Completion Networks with Consistency Loss",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2410.07298v3",
+      "identifier": "2410.07298v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point cloud completion networks are conventionally trained to minimize the disparities between the completed point cloud and the ground-truth counterpart. However, an incomplete object-level point cloud can have multiple valid completion solutions when it is examined in isolation. This one-to-many mapping issue can cause contradictory supervision signals to the network because the loss function may produce different values for identical input-output pairs of the network. In many cases, this issue could adversely affect the network optimization process. In this work, we propose to enhance the conventional learning objective using a novel completion consistency loss to mitigate the one-to-many mapping problem. Specifically, the proposed consistency loss ensure that a point cloud completion network generates a coherent completion solution for incomplete objects originating from the same source point cloud. Experimental results across multiple well-established datasets and benchmarks demonstrated the proposed completion consistency loss have excellent capability to enhance the completion performance of various existing networks without any modification to the design of the networks. The proposed consistency loss enhances the performance of the point completion network without affecting the inference speed, thereby increasing the accuracy of point cloud completion. Notably, a state-of-the-art point completion network trained with the proposed consistency loss can achieve state-of-the-art accuracy on the challenging new MVP dataset. The code and result of experiment various point completion models using proposed consistency loss will be available at: https://github.com/kaist-avelab/ConsistencyLoss .",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "cascaded refinement network for point cloud completion with self-supervision",
+      "candidate_id": "c-089b8a42",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Cascaded Refinement Network for Point Cloud Completion with Self-supervision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2010.08719v3",
+      "identifier": "2010.08719v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point clouds are often sparse and incomplete, which imposes difficulties for real-world applications. Existing shape completion methods tend to generate rough shapes without fine-grained details. Considering this, we introduce a two-branch network for shape completion. The first branch is a cascaded shape completion sub-network to synthesize complete objects, where we propose to use the partial input together with the coarse output to preserve the object details during the dense point reconstruction. The second branch is an auto-encoder to reconstruct the original partial input. The two branches share a same feature extractor to learn an accurate global feature for shape completion. Furthermore, we propose two strategies to enable the training of our network when ground truth data are not available. This is to mitigate the dependence of existing approaches on large amounts of ground truth training data that are often difficult to obtain in real-world applications. Additionally, our proposed strategies are also able to improve the reconstruction quality for fully supervised learning. We verify our approach in self-supervised, semi-supervised and fully supervised settings with superior performances. Quantitative and qualitative results on different datasets demonstrate that our method achieves more realistic outputs than state-of-the-art approaches on the point cloud completion task.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "sequential point clouds: a survey",
+      "candidate_id": "c-6cc8fc86",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Sequential Point Clouds: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2204.09337v2",
+      "identifier": "2204.09337v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point cloud has drawn more and more research attention as well as real-world applications. However, many of these applications (e.g. autonomous driving and robotic manipulation) are actually based on sequential point clouds (i.e. four dimensions) because the information of the static point cloud data could provide is still limited. Recently, researchers put more and more effort into sequential point clouds. This paper presents an extensive review of the deep learning-based methods for sequential point cloud research including dynamic flow estimation, object detection \\& tracking, point cloud segmentation, and point cloud forecasting. This paper further summarizes and compares the quantitative results of the reviewed methods over the public benchmark datasets. Finally, this paper is concluded by discussing the challenges in the current sequential point cloud research and pointing out insightful potential future research directions.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "a systematic approach for cross-source point cloud registration by preserving macro and micro structures",
+      "candidate_id": "c-343bb79e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2016,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1608.05143v2",
+      "identifier": "1608.05143v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We propose a systematic approach for registering cross-source point clouds. The compelling need for cross-source point cloud registration is motivated by the rapid development of a variety of 3D sensing techniques, but many existing registration methods face critical challenges as a result of the large variations in cross-source point clouds. This paper therefore illustrates a novel registration method which successfully aligns two cross-source point clouds in the presence of significant missing data, large variations in point density, scale difference and so on. The robustness of the method is attributed to the extraction of macro and micro structures. Our work has three main contributions: (1) a systematic pipeline to deal with cross-source point cloud registration; (2) a graph construction method to maintain macro and micro structures; (3) a new graph matching method is proposed which considers the global geometric constraint to robustly register these variable graphs. Compared to most of the related methods, the experiments show that the proposed method successfully registers in cross-source datasets, while other methods have difficulty achieving satisfactory results. The proposed method also shows great ability in same-source datasets.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "r3evision: a survey on robust rendering, restoration, and enhancement for 3d low-level vision",
+      "candidate_id": "c-77abd689",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.16262v2",
+      "identifier": "2506.16262v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Neural rendering methods such as Neural Radiance Fields (NeRF) and 3D Gaussian Splatting (3DGS) have achieved significant progress in photorealistic 3D scene reconstruction and novel view synthesis. However, most existing models assume clean and high-resolution (HR) multi-view inputs, which limits their robustness under real-world degradations such as noise, blur, low-resolution (LR), and weather-induced artifacts. To address these limitations, the emerging field of 3D Low-Level Vision (3D LLV) extends classical 2D Low-Level Vision tasks including super-resolution (SR), deblurring, weather degradation removal, restoration, and enhancement into the 3D spatial domain. This survey, referred to as R\\textsuperscript{3}eVision, provides a comprehensive overview of robust rendering, restoration, and enhancement for 3D LLV by formalizing the degradation-aware rendering problem and identifying key challenges related to spatio-temporal consistency and ill-posed optimization. Recent methods that integrate LLV into neural rendering frameworks are categorized to illustrate how they enable high-fidelity 3D reconstruction under adverse conditions. Application domains such as autonomous driving, AR/VR, and robotics are also discussed, where reliable 3D perception from degraded inputs is critical. By reviewing representative methods, datasets, and evaluation protocols, this work positions 3D LLV as a fundamental direction for robust 3D content generation and scene-level reconstruction in real-world environments.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "advances in global solvers for 3d vision",
+      "candidate_id": "c-d77579d1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advances in Global Solvers for 3D Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2602.14662v1",
+      "identifier": "2602.14662v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Global solvers have emerged as a powerful paradigm for 3D vision, offering certifiable solutions to nonconvex geometric optimization problems traditionally addressed by local or heuristic methods. This survey presents the first systematic review of global solvers in geometric vision, unifying the field through a comprehensive taxonomy of three core paradigms: Branch-and-Bound (BnB), Convex Relaxation (CR), and Graduated Non-Convexity (GNC). We present their theoretical foundations, algorithmic designs, and practical enhancements for robustness and scalability, examining how each addresses the fundamental nonconvexity of geometric estimation problems. Our analysis spans ten core vision tasks, from Wahba problem to bundle adjustment, revealing the optimality-robustness-scalability trade-offs that govern solver selection. We identify critical future directions: scaling algorithms while maintaining guarantees, integrating data-driven priors with certifiable optimization, establishing standardized benchmarks, and addressing societal implications for safety-critical deployment. By consolidating theoretical foundations, practical advances, and broader impacts, this survey provides a unified perspective and roadmap toward certifiable, trustworthy perception for real-world applications. A continuously-updated literature summary and companion code tutorials are available at https://github.com/ericzzj1989/Awesome-Global-Solvers-for-3D-Vision.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "dc-pcn: point cloud completion network with dual-codebook guided quantization",
+      "candidate_id": "c-da01f67f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DC-PCN: Point Cloud Completion Network with Dual-Codebook Guided Quantization",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2501.10966v1",
+      "identifier": "2501.10966v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point cloud completion aims to reconstruct complete 3D shapes from partial 3D point clouds. With advancements in deep learning techniques, various methods for point cloud completion have been developed. Despite achieving encouraging results, a significant issue remains: these methods often overlook the variability in point clouds sampled from a single 3D object surface. This variability can lead to ambiguity and hinder the achievement of more precise completion results. Therefore, in this study, we introduce a novel point cloud completion network, namely Dual-Codebook Point Completion Network (DC-PCN), following an encder-decoder pipeline. The primary objective of DC-PCN is to formulate a singular representation of sampled point clouds originating from the same 3D surface. DC-PCN introduces a dual-codebook design to quantize point-cloud representations from a multilevel perspective. It consists of an encoder-codebook and a decoder-codebook, designed to capture distinct point cloud patterns at shallow and deep levels. Additionally, to enhance the information flow between these two codebooks, we devise an information exchange mechanism. This approach ensures that crucial features and patterns from both shallow and deep levels are effectively utilized for completion. Extensive experiments on the PCN, ShapeNet\\_Part, and ShapeNet34 datasets demonstrate the state-of-the-art performance of our method.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pcn: point completion network",
+      "candidate_id": "c-817651f3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "PCN: Point Completion Network",
+      "sources": [
+        "arxiv",
+        "crossref"
+      ],
+      "year": 2018,
+      "venue": "2018 International Conference on 3D Vision (3DV)",
+      "url": "http://arxiv.org/abs/1808.00671v3",
+      "identifier": "1808.00671v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Shape completion, the problem of estimating the complete geometry of objects from partial observations, lies at the core of many vision and robotics applications. In this work, we propose Point Completion Network (PCN), a novel learning-based approach for shape completion. Unlike existing shape completion methods, PCN directly operates on raw point clouds without any structural assumption (e.g. symmetry) or annotation (e.g. semantic class) about the underlying shape. It features a decoder design that enables the generation of fine-grained completions while maintaining a small number of parameters. Our experiments show that PCN produces dense, complete point clouds with realistic structures in the missing regions on inputs with various levels of incompleteness and noise, including cars from LiDAR scans in the KITTI dataset.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "multimodal shape completion via imle",
+      "candidate_id": "c-1eebfe0c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Multimodal Shape Completion via IMLE",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2106.16237v2",
+      "identifier": "2106.16237v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Shape completion is the problem of completing partial input shapes such as partial scans. This problem finds important applications in computer vision and robotics due to issues such as occlusion or sparsity in real-world data. However, most of the existing research related to shape completion has been focused on completing shapes by learning a one-to-one mapping which limits the diversity and creativity of the produced results. We propose a novel multimodal shape completion technique that is effectively able to learn a one-to-many mapping and generates diverse complete shapes. Our approach is based on the conditional Implicit MaximumLikelihood Estimation (IMLE) technique wherein we condition our inputs on partial 3D point clouds. We extensively evaluate our approach by comparing it to various baselines both quantitatively and qualitatively. We show that our method is superior to alternatives in terms of completeness and diversity of shapes.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "nbv-sc: next best view planning based on shape completion for fruit mapping and reconstruction",
+      "candidate_id": "c-7ce2a4fb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "NBV-SC: Next Best View Planning based on Shape Completion for Fruit Mapping and Reconstruction",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2209.15376v3",
+      "identifier": "2209.15376v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Active perception for fruit mapping and harvesting is a difficult task since occlusions occur frequently and the location as well as size of fruits change over time. State-of-the-art viewpoint planning approaches utilize computationally expensive ray casting operations to find good viewpoints aiming at maximizing information gain and covering the fruits in the scene. In this paper, we present a novel viewpoint planning approach that explicitly uses information about the predicted fruit shapes to compute targeted viewpoints that observe as yet unobserved parts of the fruits. Furthermore, we formulate the concept of viewpoint dissimilarity to reduce the sampling space for more efficient selection of useful, dissimilar viewpoints. Our simulation experiments with a UR5e arm equipped with an RGB-D sensor provide a quantitative demonstration of the efficacy of our iterative next best view planning method based on shape completion. In comparative experiments with a state-of-the-art viewpoint planner, we demonstrate improvement not only in the estimation of the fruit sizes, but also in their reconstruction, while significantly reducing the planning time. Finally, we show the viability of our approach for mapping sweet peppers plants with a real robotic system in a commercial glasshouse.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "l-pcn: a point cloud accelerator exploiting spatial locality through octree-based islandization",
+      "candidate_id": "c-240fd55d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "L-PCN: A Point Cloud Accelerator Exploiting Spatial Locality through Octree-based Islandization",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2604.10716v3",
+      "identifier": "2604.10716v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Existing Point Cloud Networks (PCNs) have proven to achieve great success in many point cloud tasks such as object part segmentation, shape classification, and so on. The most popular point-based PCNs are usually composed of two sequential steps: Data Structuring (DS) and Feature Computation (FC). In this paper, we first describe an important characteristic of the PCN-specific DS step that has not been addressed in existing PCN accelerators: the spatial locality resulting from overlapping points of the gathered point subsets. Using algorithm-hardware co-design, L-PCN (Locality-aware PCN) proposes two novel techniques to exploit this characteristic to reduce the large amount of repetitive operations in the overall PCN. The first of which is a point cloud partitioning technique, Octree-based Islandization. Using Octree-based adjacency gathering, a point cloud is partitioned into islands in L-PCN, where the point subsets inside the same island exhibit a strong spatial correlation. After partitioning, L-PCN performs the rest of PCN steps at the granularity of islands. The second method of L-PCN is scheduling the intra-island computation with a Hub-based Scheduling to exploit the intra-island data reuse by dynamically caching, updating, and reusing the repeated data. The two methods are implemented in an Islandization Unit, which can be seamlessly integrated into standard PCN workflow. Our evaluation shows that based on our methods for exploiting spatial locality, L-PCN achieves a theoretical reduction in feature fetching ranging from 55.2% to 93.8% and in feature computation ranging from 45.4% to 80.6% during the PCN process. For experimentation, prototype L-PCN accelerators are implemented on the Intel Arria 10 GX FPGA. Experimental results prove that with the Islandization Unit as a plug-in, state-of-the-art PCN accelerators can achieve an additional speedup ranging from 1.2x to 3.2x.",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "dcse-pcn: a coarse-to-fine point completion network with details compensation and structure enhancement",
+      "candidate_id": "c-7468f29f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DCSE-PCN: A Coarse-to-Fine Point Completion Network with Details Compensation and Structure Enhancement",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "url": "https://doi.org/10.1007/s00371-025-04295-9",
+      "identifier": "10.1007/s00371-025-04295-9",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "structural-adaptive contrastive chamfer distance for robust point cloud completion",
+      "candidate_id": "c-04c49e47",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Structural-Adaptive Contrastive Chamfer Distance for Robust Point Cloud Completion",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "https://doi.org/10.22541/au.177516444.46231426/v1",
+      "identifier": "10.22541/au.177516444.46231426/v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "<jats:p>Point cloud completion is vital in 3D computer vision, yet real-world data often presents incomplete representations due to occlusions and sparsity. While Chamfer Distance (CD) is a prevalent loss function, it often suffers from gradient degradation, poor global structure sensitivity, and inadequate geometric distribution modeling, leading to artifacts and suboptimal reconstructions. To address these issues, we propose the novel Structural-Adaptive Contrastive Chamfer Distance (SA-CD). Our SA-CD integrates a structural decomposition of CD into local fitting and global coverage terms, adaptively balancing their importance based on training stage and geometric complexity. Concurrently, a point-level contrastive learning module enhances feature discriminability by maximizing similarity with ground truth neighbors and minimizing with challenging negative samples. This framework guides accurate geometric reconstruction and robust feature learning. Experiments on diverse datasets show SA-CD consistently outperforms state-of-the-art methods. Ablation studies validate component contributions, and human evaluations confirm superior perceptual quality.</jats:p>",
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "dfg-pcn: point cloud completion with degree-flexible point graph",
+      "candidate_id": "c-7049e7df",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "DFG-PCN: Point Cloud Completion With Degree-Flexible Point Graph",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "IEEE Transactions on Visualization and Computer Graphics",
+      "url": "https://doi.org/10.1109/tvcg.2025.3612379",
+      "identifier": "10.1109/tvcg.2025.3612379",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {},
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "ch-jad/ch-jadi-rajput1",
+      "candidate_id": "c-4b9407f6",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Ch-Jad/CH-JaDi-Rajput1",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Ch-Jad/CH-JaDi-Rajput1",
+      "identifier": null,
+      "description": "# Cmder  [![Join the chat at https://gitter.im/cmderdev/cmder](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cmderdev/cmder?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.appveyor.com/api/projects/status/github/cmderdev/cmder?branch=master&svg=true)](https://ci.appveyor.com/project/MartiUK/cmder)  Cmder is a **software package** created out of pure frustration over absence of usable console emulator on Windows. It is based on [ConEmu](https://conemu.github.io/) with *major* config overhaul, comes with a Monokai color scheme, amazing [clink](https://chrisant996.github.io/clink/) (further enhanced by [clink-completions](https://github.com/vladimir-kotikov/clink-completions)) and a custom prompt layout.  ![Cmder Screenshot](http://i.imgur.com/g1nNf0I.png)  ## Why use it  The main advantage of Cmder is portability. It is designed to be totally self-contained with no external dependencies, which makes it great for **USB Sticks** or **cloud storage**. So you can carry your console, aliases and binaries (like wget, curl and git) with you anywhere.  The Cmder's user interface is also designed to be more eye pleasing, and you can compare the main differences between Cmder and ConEmu [here](https://conemu.github.io/en/cmder.html).  ## Installation ### Single User Portable Config  1. Download the [latest release](https://github.com/cmderdev/cmder/releases/) 2. Extract the archive. *Note: This path should not be `C:\\Program Files` or anywhere else that would require Administrator access for modifying configuration files* 3. (optional) Place your own executable files into the `%cmder_root%\\bin` folder to be injected into your PATH. 4. Run `Cmder.exe`  ### Shared Cmder install with Non-Portable Individual User Config 1. Download the [latest release](https://github.com/cmderdev/cmder/releases/) 2. Extract the archive to a shared location. 3. (optional) Place your own executable files and custom app folders into the `%cmder_root%\\bin`. See: [bin/README.md](./bin/Readme.md)    - This folder to be injected into your PATH by default.    - See `/max_depth [1-5]` in 'Command Line Arguments for `init.bat`' table to add subdirectories recursively. 4. (optional) Place your own custom app folders into the `%cmder_root%\\opt`. See: [opt/README.md](./opt/Readme.md)    - This folder will NOT be injected into your PATH so you have total control of what gets added. 5. Run `Cmder.exe` with `/C` command line argument. Example: `cmder.exe /C %userprofile%\\cmder_config`    * This will create the following directory structure if it is missing.       ```      c:\\users\\[CH JaDi Rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt      ```    - (optional) Place your own executable files and custom app folders into `%userprofile%\\cmder_config\\bin`.     - This folder to be injected into your PATH by default.     - See `/max_depth [1-5]` in 'Command Line Arguments for `init.bat`' table to add subdirectories recursively.   - (optional) Place your own custom app folders into the `%user_profile%\\cmder_config\\opt`.     - This folder will NOT be injected into your PATH so you have total control of what gets added.   * Both the shared install and the individual user config locations can contain a full set of init and profile.d scripts enabling shared config with user overrides.  See below.  ## Cmder.exe Command Line Arguments   | Argument                  | Description                                                                              | | -------------------       | -----------------------------------------------------------------------                  | | `/C [user_root_path]`     | Individual user Cmder root folder.  Example: `%userprofile%\\cmder_config`                | | `/M`                      | Use `conemu-%computername%.xml` for ConEmu settings storage instead of `user_conemu.xml` | | `/REGISTER [ALL, USER]`   | Register a Windows Shell Menu shortcut.                                                  | | `/UNREGISTER [ALL, USER]` | Un-register a Windows Shell Menu shortcut.                                               | | `/SINGLE`                 | Start Cmder in single mode.                                                              | | `/START [start_path]`     | Folder path to start in.                                                                 | | `/TASK [task_name]`       | Task to start after launch.                                                              | | `/X [ConEmu extras pars]` | Forwards parameters to ConEmu                                                             |  ## Context Menu Integration  So you've experimented with Cmder a little and want to give it a shot in a more permanent home;  ### Shortcut to open Cmder in a chosen folder  1. Open a terminal as an Administrator 2. Navigate to the directory you have placed Cmder 3. Execute `.\\cmder.exe /REGISTER ALL`    _If you get a message \"Access Denied\" ensure you are executing the command in an **Administrator** prompt._  In a file explorer window right click in or on a directory to see \"Cmder Here\" in the context menu.  ## Keyboard shortcuts  ### Tab manipulation  * <kbd>Ctrl</kbd> + <kbd>T</kbd> : New tab dialog (maybe you want to open cmd as admin?) * <kbd>Ctrl</kbd> + <kbd>W</kbd> : Close tab * <kbd>Ctrl</kbd> + <kbd>D</kbd> : Close tab (if pressed on empty command) * <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>#Number</kbd> : Fast new tab: <kbd>1</kbd> - CMD, <kbd>2</kbd> - PowerShell * <kbd>Ctrl</kbd> + <kbd>Tab</kbd> : Switch to next tab * <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> : Switch to previous tab * <kbd>Ctrl</kbd> + <kbd>#Number</kbd> : Switch to tab #Number * <kbd>Alt</kbd> + <kbd>Enter</kbd>: Fullscreen  ### Shell  * <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>U</kbd> : Traverse up in directory structure (lovely feature!) * <kbd>End</kbd>, <kbd>Home</kbd>, <kbd>Ctrl</kbd> : Traversing text with as usual on Windows * <kbd>Ctrl</kbd> + <kbd>R</kbd> : History search * <kbd>Shift</kbd> + Mouse : Select and copy text from buffer  _(Some shortcuts are not yet documented, though they exist - please document them here)_  ## Features  ### Access to multiple shells in one window using tabs You can open multiple tabs each containing one of the following shells:  | Task                | Shell            | Description                                                                                                  | | ----                | -----            | -----------                                                                                                  | | Cmder               | `cmd.exe`        | Windows `cmd.exe` shell enhanced with Git, Git aware prompt, Clink (GNU Readline), and Aliases.              | | Cmder as Admin      | `cmd.exe`        | Administrative Windows `cmd.exe` Cmder shell.                                                                | | PowerShell          | `powershell.exe` | Windows PowerShell enhanced with Git and Git aware prompt .                                                  | | PowerShell as Admin | `powershell.exe` | Administrative Windows `powershell.exe` Cmder shell.                                                         | | Bash                | `bash.exe`       | Unix/Linux like bash shell running on Windows.                                                               | | Bash as Admin       | `bash.exe`       | Administrative Unix/Linux like bash shell running on Windows.                                                | | Mintty              | `bash.exe`       | Unix/Linux like bash shell running on Windows. See below for Mintty configuration differences                | | Mintty as Admin     | `bash.exe`       | Administrative Unix/Linux like bash shell running on Windows. See below for Mintty configuration differences |  Cmder, PowerShell, and Bash tabs all run on top of the Windows Console API and work as you might expect in Cmder with access to use ConEmu's color schemes, key bindings and other settings defined in the ConEmu Settings dialog.  ⚠ *NOTE:* Only the full edition of Cmder comes with a pre-installed bash, using a vendored [git-for-windows](https://gitforwindows.org/) installation. The pre-configured Bash tabs may not work on Cmder mini edition without additional configuration.  You may however, choose to use an external installation of bash, such as Microsoft's [Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (called WSL) or the [Cygwin](https://cygwin.com/) project which provides POSIX support on windows.  ⚠ *NOTE:* Mintty tabs use a program called 'mintty' as the terminal emulator that is not based on the Windows Console API, rather it's rendered graphically by ConEmu. Mintty differs from the other tabs in that it supports xterm/xterm-256color TERM types, and does not work with ConEmu settings like color schemes and key bindings.  As such, some differences in functionality are to be expected, such as Cmder not being able to apply a system-wide configuration to it.  As a result mintty specific config is done via the `[%USERPROFILE%|$HOME]/.minttyrc` file.  You may read more about Mintty and its config file [here](https://github.com/mintty/mintty).  An example of setting Cmder portable terminal colors for mintty:  From a bash/mintty shell:  ``` cd $CMDER_ROOT/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo source \\$CMDER_ROOT/vendor/mintty-colors-solarized/mintty-solarized-dark.sh>>$CMDER_ROOT/config/user_profile.sh ```  You may find some Monokai color schemes for mintty to match Cmder [here](https://github.com/oumu/mintty-color-schemes/blob/master/base16-monokai-mod.minttyrc).  ### Changing Cmder Default `cmd.exe` Prompt Config File  The default Cmder shell `cmd::Cmder` prompt is customized using `Clink` and is configured by editing a config file that exists in one of two locations:  - Single User Portable Config `%CMDER_ROOT%\\config\\cmder_prompt_config.lua` - Shared Cmder install with Non-Portable Individual User Config `%CMDER_USER_CONFIG%\\cmder_prompt_config.lua`  If your Cmder setup does not have this file create it from `%CMDER_ROOT%\\vendor\\cmder_prompt_config.lua.default`  Customizations include:  - Colors. - Single/Multi-line. - Full path/Folder only. - `[user]@[host]` to the beginning of the prompt. - `~` for home directory. - `λ` symbol  Documentation is in the file for each setting.  ### Changing Cmder Default `cmd.exe` Shell Startup Behaviour Using Task Arguments  1. Press <kbd>Win</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd> 1. Click either:   * `1. {cmd::Cmder as Admin}`   * `2. {cmd::Cmder}` 1. Add command line arguments where specified below:    *Note: Pay attention to the quotes!*    ```   cmd /s /k \"\"%ConEmuDir%\\..\\init.bat\" [ADD ARGS HERE]\"   ```  ##### Command Line Arguments for `init.bat`  | Argument                        | Description                                                                                                                                        | Default                                | | -----------------------------   | ----------------------------------------------------------------------------------------------                                                     | -------------------------------------  | | `/c [user cmder root]`          | Enables user bin and config folders for 'Cmder as admin' sessions due to non-shared environment.                                                   | not set                                | | `/d`                            | Enables debug output.                                                                                                                              | not set                                | | `/f`                            | Enables Cmder Fast Init Mode. This disables some features, see pull request [#1492](https://github.com/cmderdev/cmder/pull/1942) for more details. | not set                                | | `/t`                            | Enables Cmder Timed Init Mode. This displays the time taken run init scripts                                                                       | not set                                | | `/git_install_root [file path]` | User specified Git installation root path.                                                                                                         | `%CMDER_ROOT%\\vendor\\Git-for-Windows`  | | `/home [home folder]`           | User specified folder path to set `%HOME%` environment variable.                                                                                   | `%userprofile%`                        | | `/max_depth [1-5]`              | Define max recurse depth when adding to the path for `%cmder_root%\\bin` and `%cmder_user_bin%`                                                     | 1                                      | | `/nix_tools [0-2]`              | Define how `*nix` tools are added to the path.  Prefer Windows Tools: 1, Prefer *nix Tools: 2, No `/usr/bin` in `%PATH%`: 0                        | 1                                      | | `/svn_ssh [path to ssh.exe]`    | Define `%SVN_SSH%` so we can use git svn with ssh svn repositories.                                                                                | `%GIT_INSTALL_ROOT%\\bin\\ssh.exe`       | | `/user_aliases [file path]`     | File path pointing to user aliases.                                                                                                                | `%CMDER_ROOT%\\config\\user_aliases.cmd` | | `/v`                            | Enables verbose output.                                                                                                                            | not set                                | | (custom arguments)              | User defined arguments processed by `cexec`. Type `cexec /?` for more usage.                                                                      | not set                                |  ### Cmder Shell User Config Single user portable configuration is possible using the cmder specific shell config files.  Edit the below files to add your own configuration:  | Shell         | Cmder Portable User Config                | | ------------- | ----------------------------------------- | | Cmder         | `%CMDER_ROOT%\\config\\user_profile.cmd`    | | PowerShell    | `$ENV:CMDER_ROOT\\config\\user_profile.ps1` | | Bash/Mintty   | `$CMDER_ROOT/config/user_profile.sh`      |  Note: Bash and Mintty sessions will also source the `$HOME/.bashrc` file if it exists after it sources `$CMDER_ROOT/config/user_profile.sh`.  You can write `*.cmd|*.bat`, `*.ps1`, and `*.sh` scripts and just drop them in the `%CMDER_ROOT%\\config\\profile.d` folder to add startup config to Cmder.  | Shell         | Cmder `Profile.d` Scripts                          | | ------------- | -------------------------------------------------- | | Cmder         | `%CMDER_ROOT%\\config\\profile.d\\*.bat and *.cmd`    | | PowerShell    | `$ENV:CMDER_ROOT\\config\\profile.d\\*.ps1`           | | Bash/Mintty   | `$CMDER_ROOT/config/profile.d/*.sh`                |  #### Git Status Opt-Out   To disable Cmder prompt git status globally add the following to `~/.gitconfig` or locally for a single repo `[repo]/.git/config` and start a new session.   *Note: This configuration is not portable*   ```  [cmder]    status = false      # Opt out of Git status for 'ALL' Cmder supported shells.    cmdstatus = false   # Opt out of Git status for 'Cmd.exe' shells.    psstatus = false    # Opt out of Git status for 'Powershell.exe and 'Pwsh.exe' shells.    shstatus = false    # Opt out of Git status for 'bash.exe' shells.  ```  ### Aliases #### Cmder(`Cmd.exe`) Aliases You can define simple aliases for `cmd.exe` sessions with a command like `alias name=command`.  Cmd.exe aliases support optional parameters through the `$1-9` or the `$*` special characters so the alias `vi=vim.exe $*` typed as `vi [filename]` will open `[filename]` in `vim.exe`.  Cmd.exe aliases can also be more complex. See: [DOSKEY.EXE documentation](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/doskey) for additional details on complex aliases/macros for `cmd.exe`  Aliases defined using the `alias.bat` command will automatically be saved in the `%CMDER_ROOT%\\config\\user_aliases.cmd` file  To make an alias and/or any other profile settings permanent add it to one of the following:  Note: These are loaded in this order by `$CMDER_ROOT/vendor/init.bat`.  Anything stored in `%CMDER_ROOT%` will be a portable setting and will follow cmder to another machine.  * `%CMDER_ROOT%\\config\\profile.d\\*.cmd` and `\\*.bat` * `%CMDER_ROOT%\\config\\user_aliases.cmd` * `%CMDER_ROOT%\\config\\user_profile.cmd`  #### Bash.exe|Mintty.exe Aliases Bash shells support simple and complex aliases with optional parameters natively so they work a little different.  Typing `alias name=command` will create an alias only for the current running session.  To make an alias and/or any other profile settings permanent add it to one of the following:  Note: These are loaded in this order by `$CMDER_ROOT/vendor/git-for-windows/etc/profile.d/cmder.sh`.  Anything stored in `$CMDER_ROOT` will be a portable setting and will follow cmder to another machine.  * `$CMDER_ROOT/config/profile.d/*.sh` * `$CMDER_ROOT/config/user_profile.sh` * `$HOME/.bashrc`  If you add bash aliases to `$CMDER_ROOT/config/user_profile.sh` they will be portable and follow your Cmder folder if you copy it to another machine.  `$HOME/.bashrc` defined aliases are not portable.  #### PowerShell.exe Aliases PowerShell has native simple alias support, for example `[new-alias | set-alias] alias command`, so complex aliases with optional parameters are not supported in PowerShell sessions.  Type `get-help [new-alias|set-alias] -full` for help on PowerShell aliases.  To make an alias and/or any other profile settings permanent add it to one of the following:  Note: These are loaded in this order by `$ENV:CMDER_ROOT\\vendor\\user_profile.ps1`.  Anything stored in `$ENV:CMDER_ROOT` will be a portable setting and will follow cmder to another machine.  * `$ENV:CMDER_ROOT\\config\\profile.d\\*.ps1` * `$ENV:CMDER_ROOT\\config\\user_profile.ps1`  ### SSH Agent  To start the vendored SSH agent simply call `start-ssh-agent`, which is in the `vendor/git-for-windows/cmd` folder.  If you want to run SSH agent on startup, include the line `@call \"%GIT_INSTALL_ROOT%/cmd/start-ssh-agent.cmd\"` in `%CMDER_ROOT%/config/user_profile.cmd` (usually just uncomment it).  ### Vendored Git  Cmder is by default shipped with a vendored Git installation.  On each instance of launching Cmder, an attempt is made to locate any other user provided Git binaries. Upon finding a `git.exe` binary, Cmder further compares its version against the vendored one _by executing_ it. The vendored `git.exe` binary is _only_ used when it is more recent than the user-installed one.  You may use your favorite version of Git by including its path in the `%PATH%` environment variable.  Moreover, the **Mini** edition of Cmder (found on the [downloads page](https://github.com/cmderdev/cmder/releases)) excludes any vendored Git binaries.  ### Using external Cygwin/Babun, MSys2, WSL, or Git for Windows SDK with Cmder.  You may run bash (the default shell used on Linux, macOS and GNU/Hurd) externally on Cmder, using the following instructions:  1. Setup a new task by pressing <kbd>Win</kbd> +<kbd>Alt</kbd> + <kbd>T</kbd>. 1. Click the `+` button to add a task. 1. Name the new task in the top text box. 1. Provide task parameters, this is optional. 1. Add `cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console` to the `Commands` text box.  **Recommended Optional Steps:**  Copy the `vendor/cmder_exinit` file to the Cygwin/Babun, MSys2, or Git for Windows SDK environments `/etc/profile.d/` folder to use portable settings in the `$CMDER_ROOT/config` folder.  Note: MinGW could work if the init scripts include `profile.d` but this has not been tested.  The destination file extension depends on the shell you use in that environment.  For example:  * bash - Copy to `/etc/profile.d/cmder_exinit.sh` * zsh  - Copy to `/etc/profile.d/cmder_exinit.zsh`  Uncomment and edit the below line in the script to use Cmder config even when launched from outside Cmder.  ``` # CMDER_ROOT=${USERPROFILE}/cmder  # This is not required if launched from Cmder. ```  ### Customizing user sessions using `init.bat` custom arguments.  You can pass custom arguments to `init.bat` and use `cexec.cmd` in your `user_profile.cmd` to evaluate these arguments then execute commands based on a particular flag being detected or not.  `init.bat` creates two shortcuts for using `cexec.cmd` in your profile scripts.  #### `%ccall%` - Evaluates flags, runs commands if found,  and returns to the calling script and continues.  ``` ccall=call C:\\Users\\user\\cmderdev\\vendor\\bin\\cexec.cmd ```  Example: `%ccall% /startnotepad start notepad.exe`  #### `%cexec%` - Evaluates flags, runs commands if found, and does not return to the calling script.  ``` cexec=C:\\Users\\user\\cmderdev\\vendor\\bin\\cexec.cmd ```  Example: `%cexec% /startnotepad start notepad.exe`  It is useful when you have multiple tasks to execute `cmder` and need it to initialize the session differently depending on the task chosen.  To conditionally start `notepad.exe` when you start a specific `cmder` task:  * Press <kbd>win</kbd>+<kbd>alt</kbd>+<kbd>t</kbd> * Click `+` to add a new task. * Add the below to the `Commands` block:    ```batch    cmd.exe /k \"\"%ConEmuDir%\\..\\init.bat\" /startnotepad\"    ```  * Add the below to your `%cmder_root%\\config\\user_profile.cmd`    ```batch    %ccall% \"/startNotepad\" \"start\" \"notepad.exe\"`    ```  To see detailed usage of `cexec`, type `cexec /?` in cmder.  ### Integrating Cmder with [Hyper](https://github.com/zeit/hyper), [Microsoft VS Code](https://code.visualstudio.com/), and your favorite IDEs  Cmder by default comes with a vendored ConEmu installation as the underlying terminal emulator, as stated [here](https://conemu.github.io/en/cmder.html).  However, Cmder can in fact run in a variety of other terminal emulators, and even integrated IDEs. Assuming you have the latest version of Cmder, follow the following instructions to get Cmder working with your own terminal emulator.  For instructions on how to integrate Cmder with your IDE, please read our [Wiki section](https://github.com/cmderdev/cmder/wiki#cmder-integration).  ## Upgrading  The process of upgrading Cmder depends on the version/build you are currently running.  If you have a `[cmder_root]/config/user[-|_]conemu.xml`, you are running a newer version of Cmder, follow the below process:  1. Exit all Cmder sessions and relaunch `[cmder_root]/cmder.exe`, this backs up your existing `[cmder_root]/vendor/conemu-maximus5/conemu.xml` to `[cmder_root]/config/user[-|_]conemu.xml`.     * The `[cmder_root]/config/user[-|_]conemu.xml` contains any custom settings you have made using the 'Setup Tasks' settings dialog.  2. Exit all Cmder sessions and backup any files you have manually edited under `[cmder_root]/vendor`.     * Editing files under `[cmder_root]/vendor` is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in `[cmder_root]/config` folder.  3.  Delete the `[cmder_root]/vendor` folder. 4.  Extract the new `cmder.zip` or `cmder_mini.zip` into `[cmder_root]/` overwriting all files when prompted.  If you do not have a `[cmder_root]/config/user[-|_]conemu.xml`, you are running an older version of cmder, follow the below process:  1. Exit all Cmder sessions and backup `[cmder_root]/vendor/conemu-maximus5/conemu.xml` to `[cmder_root]/config/user[-|_]conemu.xml`.  2. Backup any files you have manually edited under `[cmder_root]/vendor`.     * Editing files under `[cmder_root]/vendor` is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in `[cmder_root]/config` folder.  3.  Delete the `[cmder_root]/vendor` folder. 4.  Extract the new `cmder.zip` or `cmder_mini.zip` into `[cmder_root]/` overwriting all files when prompted.  ## Current development builds  You can download builds of the current development branch by going to AppVeyor via the following link:  [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/cmderdev/cmder?svg=True)](https://ci.appveyor.com/project/MartiUK/cmder/branch/master/artifacts)  ## License  All software included is bundled with own license  The MIT License (MIT)  Copyright (c) 2016 Samuel Vasko  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.  THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+      "quoted_paper_titles": [
+        "c:\\users\\[CH JaDi Rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt",
+        "cd $CMDER_ROOT/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo source \\$CMDER_ROOT/vendor/mintty-colors-solarized/mintty-solarized-dark.sh>>$CMDER_ROOT/config/user_profile.sh",
+        "1. {cmd::Cmder as Admin}",
+        "cmd /s /k \"\"%ConEmuDir%\\..\\init.bat\" [ADD ARGS HERE]\"",
+        "[new-alias | set-alias] alias command",
+        "cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console",
+        "# CMDER_ROOT=${USERPROFILE}/cmder  # This is not required if launched from Cmder.",
+        "batch    cmd.exe /k \"\"%ConEmuDir%\\..\\init.bat\" /startnotepad\"",
+        "batch    %ccall% \"/startNotepad\" \"start\" \"notepad.exe\"",
+        "To see detailed usage of",
+        ", you are running a newer version of Cmder, follow the below process:  1. Exit all Cmder sessions and relaunch",
+        ", this backs up your existing",
+        "contains any custom settings you have made using the 'Setup Tasks' settings dialog.  2. Exit all Cmder sessions and backup any files you have manually edited under",
+        ".     * Editing files under",
+        "is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in",
+        "folder.  3.  Delete the",
+        "folder. 4.  Extract the new",
+        "overwriting all files when prompted.  If you do not have a",
+        ", you are running an older version of cmder, follow the below process:  1. Exit all Cmder sessions and backup",
+        ".  2. Backup any files you have manually edited under",
+        ".     * Editing files under",
+        "is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in",
+        "folder.  3.  Delete the",
+        "folder. 4.  Extract the new"
+      ],
+      "abstract": null,
+      "extra": {
+        "stars": 20,
+        "language": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "c:\\users\\[ch jadi rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt",
+      "candidate_id": "c-b2de0239",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "c:\\users\\[CH JaDi Rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "cd $cmder_root/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo source \\$cmder_root/vendor/mintty-colors-solarized/mintty-solarized-dark.sh>>$cmder_root/config/user_profile.sh",
+      "candidate_id": "c-cae57cf9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "cd $CMDER_ROOT/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo source \\$CMDER_ROOT/vendor/mintty-colors-solarized/mintty-solarized-dark.sh>>$CMDER_ROOT/config/user_profile.sh",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "1. {cmd::cmder as admin}",
+      "candidate_id": "c-ef02be81",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "1. {cmd::Cmder as Admin}",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "cmd /s /k \"\"%conemudir%\\..\\init.bat\" [add args here]\"",
+      "candidate_id": "c-51313796",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "cmd /s /k \"\"%ConEmuDir%\\..\\init.bat\" [ADD ARGS HERE]\"",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "[new-alias | set-alias] alias command",
+      "candidate_id": "c-4256b9c7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "[new-alias | set-alias] alias command",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console",
+      "candidate_id": "c-e0bc116e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "# cmder_root=${userprofile}/cmder  # this is not required if launched from cmder.",
+      "candidate_id": "c-07089702",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "# CMDER_ROOT=${USERPROFILE}/cmder  # This is not required if launched from Cmder.",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "batch    cmd.exe /k \"\"%conemudir%\\..\\init.bat\" /startnotepad\"",
+      "candidate_id": "c-4076ecf4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "batch    cmd.exe /k \"\"%ConEmuDir%\\..\\init.bat\" /startnotepad\"",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "batch    %ccall% \"/startnotepad\" \"start\" \"notepad.exe\"",
+      "candidate_id": "c-4150ead4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "batch    %ccall% \"/startNotepad\" \"start\" \"notepad.exe\"",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "to see detailed usage of",
+      "candidate_id": "c-ea8b8312",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "To see detailed usage of",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": ", you are running a newer version of cmder, follow the below process:  1. exit all cmder sessions and relaunch",
+      "candidate_id": "c-f8c9d8e2",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ", you are running a newer version of Cmder, follow the below process:  1. Exit all Cmder sessions and relaunch",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": ", this backs up your existing",
+      "candidate_id": "c-5214ced8",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ", this backs up your existing",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "contains any custom settings you have made using the 'setup tasks' settings dialog.  2. exit all cmder sessions and backup any files you have manually edited under",
+      "candidate_id": "c-56ca52e3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "contains any custom settings you have made using the 'Setup Tasks' settings dialog.  2. Exit all Cmder sessions and backup any files you have manually edited under",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": ".     * editing files under",
+      "candidate_id": "c-c6fa681a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ".     * Editing files under",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "is not recommended since you will need to re-apply these changes after any upgrade.  all user customizations should go in",
+      "candidate_id": "c-cfd31007",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "folder.  3.  delete the",
+      "candidate_id": "c-84925032",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "folder.  3.  Delete the",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "folder. 4.  extract the new",
+      "candidate_id": "c-3b5fac71",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "folder. 4.  Extract the new",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "overwriting all files when prompted.  if you do not have a",
+      "candidate_id": "c-90c2a649",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "overwriting all files when prompted.  If you do not have a",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": ", you are running an older version of cmder, follow the below process:  1. exit all cmder sessions and backup",
+      "candidate_id": "c-5befbd2e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ", you are running an older version of cmder, follow the below process:  1. Exit all Cmder sessions and backup",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": ".  2. backup any files you have manually edited under",
+      "candidate_id": "c-62c6960a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ".  2. Backup any files you have manually edited under",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "keneniwt/point-cloud-completion-survey",
+      "candidate_id": "c-556bf35c",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "keneniwt/Point-Cloud-Completion-Survey",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/keneniwt/Point-Cloud-Completion-Survey",
+      "identifier": null,
+      "description": "GitHub Desktop tutorial repository",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 2,
+        "language": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "pcn",
+      "candidate_id": "c-9a376778",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "PCN",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "kitti",
+      "candidate_id": "c-5cde6c91",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "KITTI",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      },
+      "source_run": "re08"
+    },
+    {
+      "stable_id": "shapenet",
+      "candidate_id": "c-e80a53d8",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "ShapeNet",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      },
+      "source_run": "re08"
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "point cloud completion task benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "3D point cloud object benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "deep learning github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': 'point cloud completion task benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '3D point cloud object benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': 'deep learning github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 1,
+        "executed_queries": [
+          {
+            "query": "point cloud completion task benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (point cloud completion task benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "3D point cloud object benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (3D point cloud object benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "fallback repo probe from domain_keywords.en[0]",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "point cloud completion task benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "3D point cloud object benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "deep learning github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "agent": "SearchReflectionLoop",
+      "actions": [
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "基于深度学习的三维点云补全方法研究 dataset benchmark",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "openalex",
+          "query": "基于深度学习的三维点云补全方法研究 baseline method",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client openalex_search"
+        },
+        {
+          "type": "search",
+          "tool": "github",
+          "query": "基于深度学习的三维点云补全方法研究 github implementation",
+          "status": "error",
+          "result_count": 0,
+          "error": "missing client github_search"
+        }
+      ],
+      "accepted_n": 0,
+      "rejected_n": 0,
+      "url_repair_n": 0,
+      "query_repair_n": 0,
+      "reflection": {
+        "diagnosis": [
+          {
+            "problem": "dataset_gap",
+            "evidence": [
+              "observation.dataset_gap == True"
+            ],
+            "root_cause": "no dataset/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "baseline_gap",
+            "evidence": [
+              "observation.baseline_gap == True"
+            ],
+            "root_cause": "no baseline/citation surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "repo_gap",
+            "evidence": [
+              "observation.repo_gap == True"
+            ],
+            "root_cause": "no github/repo surfaced from round 1 search",
+            "next_action": "repair_query"
+          },
+          {
+            "problem": "source_bias",
+            "evidence": [
+              "{'query': '基于深度学习的三维点云补全方法研究 dataset benchmark', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '基于深度学习的三维点云补全方法研究 baseline method', 'tool': 'openalex', 'error': 'missing client openalex_search'}",
+              "{'query': '基于深度学习的三维点云补全方法研究 github implementation', 'tool': 'github', 'error': 'missing client github_search'}"
+            ],
+            "root_cause": "adapter returned empty; try a different source",
+            "next_action": "switch_source"
+          }
+        ],
+        "next_round_focus": [
+          "dataset search with object term + 'benchmark'",
+          "baseline search with method+object term",
+          "github search with object + task + 'implementation'"
+        ]
+      },
+      "observations": {
+        "round": 2,
+        "executed_queries": [
+          {
+            "query": "基于深度学习的三维点云补全方法研究 dataset benchmark",
+            "tool": "openalex",
+            "target_role": "dataset",
+            "why": "must_search from DomainScout (基于深度学习的三维点云补全方法研究 dataset benchmark)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "基于深度学习的三维点云补全方法研究 baseline method",
+            "tool": "openalex",
+            "target_role": "baseline",
+            "why": "must_search from DomainScout (基于深度学习的三维点云补全方法研究 baseline method)",
+            "expected_signal": "title"
+          },
+          {
+            "query": "基于深度学习的三维点云补全方法研究 github implementation",
+            "tool": "github",
+            "target_role": "repo",
+            "why": "must_search from DomainScout (基于深度学习的三维点云补全方法研究 github implementation)",
+            "expected_signal": "repo_readme"
+          }
+        ],
+        "tool_results": [],
+        "good_candidates": [],
+        "noise_candidates": [],
+        "empty_url_candidates": [],
+        "empty_query_results": [],
+        "dataset_gap": true,
+        "baseline_gap": true,
+        "repo_gap": true,
+        "query_placeholder_leaks": [],
+        "useful_terms_discovered": [],
+        "url_repair_n": 0,
+        "failed_queries": [
+          {
+            "query": "基于深度学习的三维点云补全方法研究 dataset benchmark",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "基于深度学习的三维点云补全方法研究 baseline method",
+            "tool": "openalex",
+            "error": "missing client openalex_search"
+          },
+          {
+            "query": "基于深度学习的三维点云补全方法研究 github implementation",
+            "tool": "github",
+            "error": "missing client github_search"
+          }
+        ]
+      }
+    }
+  ],
+  "trace_path": "tmp_re04_eval\\balanced40_re10_worker1\\traces\\ENG-THESIS-018.json",
+  "stop_reason": "no_new_signal",
+  "summary": {
+    "paper_n": 39,
+    "baseline_n": 0,
+    "parallel_n": 0,
+    "dataset_n": 0,
+    "repo_n": 0,
+    "remaining_gaps": [
+      "dataset_gap",
+      "repo_gap",
+      "baseline_gap"
+    ]
+  },
+  "case_id": "ENG-THESIS-018",
+  "title": "基于深度学习的三维点云补全方法研究",
+  "source_batch": "batch1",
+  "elapsed_s": 84.91,
+  "seed_n": 39
+}

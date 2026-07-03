@@ -31,6 +31,7 @@ stringly-typed so we can extend without breaking tests.
 
 from __future__ import annotations
 
+import math
 import re
 from typing import Any, Iterable
 
@@ -44,21 +45,37 @@ def _tokens(text: str) -> set[str]:
     return {t for t in re.findall(r"[a-z0-9一-鿿]{2,}", _norm(text))}
 
 
-def _hit_count(terms: Iterable[str], haystack_tokens: set[str]) -> tuple[int, list[str]]:
+def _hit_count(
+    terms: Iterable[str], haystack_tokens: set[str],
+) -> tuple[int, list[str], list[str]]:
+    """Score each term against the haystack.
+
+    Re04-fix SOP §3: multi-word terms use OR-like matching — a term
+    "visual SLAM" is satisfied when ≥ ceil(N/2) of its words appear in
+    the haystack. Strict ALL-AND matching misses a seed like
+    "Visual Odometry Based on CNN" for "visual SLAM" (slam missing).
+
+    Returns: (n_hits, hit_terms, threshold_matched_terms).
+    """
     hits: list[str] = []
+    threshold_hits: list[str] = []
     for t in terms:
         if not t:
             continue
         tl = t.lower().strip()
         if not tl:
             continue
-        # multi-word term: require all words present
         words = re.findall(r"[a-z0-9一-鿿]{2,}", tl)
         if not words:
             continue
-        if all(w in haystack_tokens for w in words):
+        matched = [w for w in words if w in haystack_tokens]
+        if len(matched) == len(words):
             hits.append(t)
-    return len(hits), hits
+        elif len(matched) >= math.ceil(len(words) / 2):
+            # Re04-fix: OR-like threshold fallback.
+            # Marked distinctly so the caller can label `matched_axis_threshold`.
+            threshold_hits.append(t)
+    return len(hits), hits, threshold_hits
 
 
 def _core_ids(reviews: list[dict[str, Any]] | None) -> set[str]:
@@ -98,13 +115,14 @@ def evaluate_seed(
     object_terms = parsed_topic.get("object_terms") or []
     query_atoms = parsed_topic.get("query_atoms_en") or []
 
-    method_hits, method_matched = _hit_count(method_terms, haystack)
-    task_hits, task_matched = _hit_count(task_terms, haystack)
-    object_hits, object_matched = _hit_count(object_terms, haystack)
-    atom_hits, atom_matched = _hit_count(query_atoms, haystack)
+    method_hits, method_matched, method_threshold = _hit_count(method_terms, haystack)
+    task_hits, task_matched, task_threshold = _hit_count(task_terms, haystack)
+    object_hits, object_matched, object_threshold = _hit_count(object_terms, haystack)
+    atom_hits, atom_matched, atom_threshold = _hit_count(query_atoms, haystack)
 
     matched_terms: list[str] = []
     matched_axis = "none"
+    matched_mode = "strict"
     rejected_reason: str | None = None
 
     # Rule 1: method + (task or object)
@@ -116,10 +134,33 @@ def evaluate_seed(
             matched_axis = "method_task"
         else:
             matched_axis = "method_object"
-    # Rule 2: query_atoms_en ≥ 2 keyword-groups
-    elif len(atom_matched) >= 2:
-        matched_terms = list(atom_matched)
+    # Rule 1b: Re04-fix — method/task/object threshold-hit still counts
+    # for eligibility, but tagged with `_threshold` suffix.
+    elif (method_hits + len(method_threshold) >= 1) and (
+        task_hits + len(task_threshold) >= 1
+        or object_hits + len(object_threshold) >= 1
+    ):
+        matched_mode = "threshold"
+        matched_terms = (
+            list(method_matched) + list(method_threshold)
+            + list(task_matched) + list(task_threshold)
+            + list(object_matched) + list(object_threshold)
+        )
+        th_task = task_hits + len(task_threshold)
+        th_obj = object_hits + len(object_threshold)
+        if th_task >= 1 and th_obj >= 1:
+            matched_axis = "method_task_threshold" if th_task >= th_obj else "method_object_threshold"
+        elif th_task >= 1:
+            matched_axis = "method_task_threshold"
+        else:
+            matched_axis = "method_object_threshold"
+    # Rule 2: query_atoms_en ≥ 2 keyword-groups (strict or threshold)
+    elif (len(atom_matched) + len(atom_threshold)) >= 2:
+        matched_mode = "threshold" if atom_threshold and not atom_matched else "strict"
+        matched_terms = list(atom_matched) + list(atom_threshold)
         matched_axis = "method_object"  # generic
+        if matched_mode == "threshold":
+            matched_axis = "method_object_threshold"
     # Rule 3: ER already core
     elif cid in _core_ids(reviews):
         matched_terms = list(method_matched) + list(task_matched) + list(object_matched)
@@ -128,21 +169,28 @@ def evaluate_seed(
         matched_terms = []
         matched_axis = "none"
         rejected_reason = (
-            f"no relevance match: method={method_hits} task={task_hits} "
-            f"object={object_hits} atoms={len(atom_matched)}"
+            f"no relevance match: method={method_hits}+th={len(method_threshold)} "
+            f"task={task_hits}+th={len(task_threshold)} "
+            f"object={object_hits}+th={len(object_threshold)} "
+            f"atoms={len(atom_matched)}+th={len(atom_threshold)}"
         )
 
     return {
         "candidate_id": cid,
         "seed_eligible": matched_axis != "none",
         "matched_axis": matched_axis,
+        "matched_mode": matched_mode,
         "matched_terms": matched_terms[:8],
         "rejected_reason": rejected_reason,
         "_debug": {
             "method_hits": method_hits,
+            "method_threshold_hits": len(method_threshold),
             "task_hits": task_hits,
+            "task_threshold_hits": len(task_threshold),
             "object_hits": object_hits,
+            "object_threshold_hits": len(object_threshold),
             "atom_hits": len(atom_matched),
+            "atom_threshold_hits": len(atom_threshold),
         },
     }
 

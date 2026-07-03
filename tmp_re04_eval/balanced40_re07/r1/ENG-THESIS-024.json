@@ -1,0 +1,550 @@
+{
+  "status": "pass",
+  "reason": "datasets_present_but_no_topic_dataset; scenario_axis_missing",
+  "notes": [],
+  "score": 82,
+  "paper_n": 19,
+  "dataset_n": 2,
+  "repo_n": 3,
+  "baseline_n": 3,
+  "parallel_n": 7,
+  "quarantined_baseline_n": 0,
+  "quarantined_parallel_n": 0,
+  "quarantined_core_n": 0,
+  "effective_baseline_n": 3,
+  "effective_parallel_n": 7,
+  "effective_core_n": 3,
+  "core_n": 3,
+  "verification_verified_n": 9,
+  "verification_repaired_n": 0,
+  "verification_quarantined_n": 0,
+  "verification_not_found_n": 1,
+  "verification_records": [
+    {
+      "candidate_id": "c-48631d21",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-e9e4b8d7",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 2 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-23fc8dab",
+      "bucket": "core",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-e9e4b8d7",
+      "bucket": "baseline",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 2 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-23fc8dab",
+      "bucket": "baseline",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-48631d21",
+      "bucket": "baseline",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-c61d07ac",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 2 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-ba5c109c",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "2/4 axes directly match topic atoms"
+    },
+    {
+      "candidate_id": "c-89fd7b7e",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 2 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-810a25a3",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1 direct + 2 proxy axis — strong topical fit"
+    },
+    {
+      "candidate_id": "c-33b54bdb",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "3/4 axes proxy-match — adjacent topic"
+    },
+    {
+      "candidate_id": "c-471f8b2e",
+      "bucket": "parallel",
+      "verification_status": "not_found",
+      "recommended_action": "quarantine",
+      "reason": "off_topic per evidence_consistency audit"
+    },
+    {
+      "candidate_id": "c-7ad54da6",
+      "bucket": "parallel",
+      "verification_status": "verified",
+      "recommended_action": "keep",
+      "reason": "1/4 axes proxy-match — adjacent topic"
+    }
+  ],
+  "axis_status": "evaluable",
+  "topic_dataset_n": 0,
+  "proxy_dataset_n": 0,
+  "pretrain_dataset_n": 2,
+  "generic_dataset_n": 0,
+  "core_direct_n": 3,
+  "baseline_direct_n": 1,
+  "baseline_proxy_n": 2,
+  "parallel_direct_n": 4,
+  "parallel_proxy_n": 3,
+  "critical_consistency_error_n": 1,
+  "metadata_mismatch_n": 0,
+  "off_topic_core_n": 0,
+  "axis_missing_reasons": [
+    "scenario_axis_missing"
+  ],
+  "evidence_gap_reasons": [
+    "datasets_present_but_no_topic_dataset",
+    "scenario_axis_missing"
+  ],
+  "baseline_degraded": false,
+  "bucket_audit": {
+    "core": {
+      "n_total": 3,
+      "n_aligned": 3,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-48631d21",
+          "title": "Deep Learning for 3D Point Clouds: A Survey",
+          "url": "http://arxiv.org/abs/1912.12033v2",
+          "doi": "",
+          "source_type": "",
+          "year": 2019,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Point cloud learning has lately attracted increasing attention due to its wide applications in many areas, such as computer vision, autonomous driving, and robotics. As a dominating technique in AI, deep learning has been successfully used to solve various 2D vision problems. However, deep learning ",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "direct",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-e9e4b8d7",
+          "title": "Deep Closest Point: Learning Representations for Point Cloud Registration",
+          "url": "https://doi.org/10.1109/iccv.2019.00362",
+          "doi": "",
+          "source_type": "",
+          "year": 2019,
+          "venue": "2019 IEEE/CVF International Conference on Computer Vision (ICCV)",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 2 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-23fc8dab",
+          "title": "3D Point Cloud Registration with Multi-Scale Architecture and Unsupervised Transfer Learning",
+          "url": "https://doi.org/10.1109/3dv53792.2021.00142",
+          "doi": "",
+          "source_type": "",
+          "year": 2021,
+          "venue": "2021 International Conference on 3D Vision (3DV)",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "direct",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        }
+      ]
+    },
+    "baseline": {
+      "n_total": 3,
+      "n_aligned": 3,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": [
+        {
+          "candidate_id": "c-e9e4b8d7",
+          "title": "Deep Closest Point: Learning Representations for Point Cloud Registration",
+          "url": "https://doi.org/10.1109/iccv.2019.00362",
+          "doi": "",
+          "source_type": "",
+          "year": 2019,
+          "venue": "2019 IEEE/CVF International Conference on Computer Vision (ICCV)",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 2 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-23fc8dab",
+          "title": "3D Point Cloud Registration with Multi-Scale Architecture and Unsupervised Transfer Learning",
+          "url": "https://doi.org/10.1109/3dv53792.2021.00142",
+          "doi": "",
+          "source_type": "",
+          "year": 2021,
+          "venue": "2021 International Conference on 3D Vision (3DV)",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "direct",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-48631d21",
+          "title": "Deep Learning for 3D Point Clouds: A Survey",
+          "url": "http://arxiv.org/abs/1912.12033v2",
+          "doi": "",
+          "source_type": "",
+          "year": 2019,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "Point cloud learning has lately attracted increasing attention due to its wide applications in many areas, such as computer vision, autonomous driving, and robotics. As a dominating technique in AI, deep learning has been successfully used to solve various 2D vision problems. However, deep learning ",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "direct",
+            "method": "direct",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        }
+      ]
+    },
+    "parallel": {
+      "n_total": 7,
+      "n_aligned": 4,
+      "n_proxy": 2,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 1,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 1,
+      "members": [
+        {
+          "candidate_id": "c-c61d07ac",
+          "title": "Deep Models with Fusion Strategies for MVP Point Cloud Registration",
+          "url": "http://arxiv.org/abs/2110.09129v1",
+          "doi": "",
+          "source_type": "",
+          "year": 2021,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "The main goal of point cloud registration in Multi-View Partial (MVP) Challenge 2021 is to estimate a rigid transformation to align a point cloud pair. The pairs in this competition have the characteristics of low overlap, non-uniform density, unrestricted rotations and ambiguity, which pose a huge ",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 2 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-ba5c109c",
+          "title": "Geometry-to-Image Synthesis-Driven Generative Point Cloud Registration",
+          "url": "http://arxiv.org/abs/2512.09407v2",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "In this paper, we propose a novel 3D registration paradigm, Generative Point Cloud Registration, which bridges advanced 2D generative models with 3D matching tasks to enhance registration performance. Our key idea is to generate cross-view consistent image pairs that are well-aligned with the source",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "direct",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": true,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "2/4 axes directly match topic atoms"
+        },
+        {
+          "candidate_id": "c-89fd7b7e",
+          "title": "Improving Deep Learning Point Cloud Registration with Semantic Labels",
+          "url": "https://doi.org/10.1109/isctis58954.2023.10213117",
+          "doi": "",
+          "source_type": "",
+          "year": 2023,
+          "venue": "2023 3rd International Symposium on Computer Technology and Information Science (ISCTIS)",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 2 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-810a25a3",
+          "title": "An efficient point cloud registration method based on deep learning framework",
+          "url": "https://doi.org/10.1016/j.geomat.2025.100072",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "Geomatica",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "aligned",
+          "axis_coverage": {
+            "task": "direct",
+            "object": "proxy",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1 direct + 2 proxy axis — strong topical fit"
+        },
+        {
+          "candidate_id": "c-33b54bdb",
+          "title": "Deep Learning Registration Algorithm for Point Cloud Data and BIM Information Modeling Technology",
+          "url": "https://doi.org/10.1109/mpcon66082.2025.11256685",
+          "doi": "",
+          "source_type": "",
+          "year": 2025,
+          "venue": "2025 IEEE Madhya Pradesh Section Conference (MPCON)",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "proxy",
+          "axis_coverage": {
+            "task": "proxy",
+            "object": "proxy",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "3/4 axes proxy-match — adjacent topic"
+        },
+        {
+          "candidate_id": "c-471f8b2e",
+          "title": "Crane-YU/rethink_rotation",
+          "url": "https://github.com/Crane-YU/rethink_rotation",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "off_topic",
+          "axis_coverage": {
+            "task": "missing",
+            "object": "missing",
+            "method": "missing",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "no axis token matches the topic atoms"
+        },
+        {
+          "candidate_id": "c-7ad54da6",
+          "title": "jundaozhilian/DeepVCP-PyTorch",
+          "url": "https://github.com/jundaozhilian/DeepVCP-PyTorch",
+          "doi": "",
+          "source_type": "",
+          "year": "",
+          "venue": "",
+          "authors": "",
+          "abstract_snippet": "",
+          "relation_to_topic": "",
+          "consistency_status": "proxy",
+          "axis_coverage": {
+            "task": "missing",
+            "object": "missing",
+            "method": "proxy",
+            "scenario": "missing"
+          },
+          "evidence_quality": {
+            "has_title": true,
+            "has_abstract": false,
+            "has_url": true,
+            "source_type": "unknown",
+            "title_abstract_consistent": true
+          },
+          "decision_reason": "1/4 axes proxy-match — adjacent topic"
+        }
+      ]
+    },
+    "dataset": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    },
+    "repo": {
+      "n_total": 0,
+      "n_aligned": 0,
+      "n_proxy": 0,
+      "n_generic": 0,
+      "n_metadata_mismatch": 0,
+      "n_off_topic": 0,
+      "n_insufficient": 0,
+      "critical_consistency_error_n": 0,
+      "members": []
+    }
+  },
+  "case_id": "ENG-THESIS-024",
+  "title": "基于深度学习的无监督三维点云配准算法研究",
+  "source_batch": "r1"
+}

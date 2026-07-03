@@ -1,0 +1,158 @@
+2026-07-03 00:11:12,380 [INFO] re04_smoke: Re04 Online Smoke running 5 case(s)
+2026-07-03 00:11:12,515 [INFO] re04_smoke: [ENG-THESIS-028] starting LLM-online Re04 run
+2026-07-03 00:11:16,272 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:11:27,313 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:13:27,858 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=insulator+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:13:27,859 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=insulator+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:13:38,636 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+insulator+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:13:38,637 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=insulator+insulator+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:13:38,640 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=insulator%20detection%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:13:38,641 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=insulator+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:13:38,646 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Ainsulator+detection+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:13:38,646 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+insulator+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:13:38,646 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+insulator+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:13:49,540 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:13:49,540 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:13:49,540 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:13:49,540 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:13:59,881 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:13:59,883 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:13:59,884 [WARNING] app.services.retrieval.adapters.arxiv_search: arxiv fetch failed (HttpError): ConnectTimeout:  | query=YOLOv5 insulator detection
+2026-07-03 00:14:05,042 [WARNING] app.services.agents.re04_entry: dispatch github failed: ReadTimeout: 
+2026-07-03 00:14:10,325 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:14:10,326 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:14:10,743 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=insulator+insulator+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:14:10,943 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=insulator+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:14:11,116 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=insulator%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:14:11,151 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+insulator+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:14:11,316 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Avision+2d+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:14:11,335 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+insulator&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:14:18,575 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=detection+insulator&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:14:18,575 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=detection+insulator&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=detection insulator
+2026-07-03 00:14:24,870 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=v5+insulator&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:14:24,871 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=v5+insulator&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=v5 insulator
+2026-07-03 00:14:30,795 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=he+insulator&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:14:30,796 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=he+insulator&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=he insulator
+2026-07-03 00:14:38,175 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:15:26,063 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:15:40,496 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:16:10,712 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:16:16,939 [INFO] re04_smoke: [ENG-THESIS-028] done in 304.4s — status=pass paper=22 dataset=1 repo=0 baseline=4 parallel=2
+2026-07-03 00:16:16,940 [INFO] re04_smoke: [ENG-THESIS-032] starting LLM-online Re04 run
+2026-07-03 00:16:21,326 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:16:31,756 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:18:11,738 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=LCD+panel+surface+defect+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:18:11,740 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=surface+defect+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:18:22,712 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=surface+defect+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:18:22,713 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=deep+learning+surface+defect+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:18:22,713 [INFO] httpx: HTTP Request: GET https://api.github.com/search/repositories?q=surface%20defect%20detection%20github&per_page=6&sort=stars&order=desc "HTTP/1.1 200 OK"
+2026-07-03 00:18:22,714 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=surface%20defect%20detection%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:18:22,714 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=deep+learning+surface+defect+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:18:22,714 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Adeep+learning+surface+defect+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:18:22,716 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Adeep+learning+surface+defect+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:18:22,717 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Adeep+learning+surface+defect+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:18:22,723 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:18:22,724 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:18:22,724 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:18:22,724 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:18:22,724 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:18:22,724 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: ConnectTimeout: 
+2026-07-03 00:18:22,724 [WARNING] app.services.retrieval.adapters.arxiv_search: arxiv fetch failed (HttpError): ConnectTimeout:  | query=surface defect detection survey
+2026-07-03 00:18:49,549 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:18:49,549 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:18:49,954 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=surface+defect+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:18:50,151 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Avision+2d+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:18:50,295 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=LCD%20panel%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:18:50,343 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=deep+learning+surface+defect+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:18:50,568 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=deep+learning+surface+defect+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:18:54,049 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=learning+we&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:18:54,050 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=learning+we&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=learning we
+2026-07-03 00:18:57,473 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=learning+learning&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:18:57,474 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=learning+learning&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=learning learning
+2026-07-03 00:19:00,903 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=learning+this&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:19:00,903 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=learning+this&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=learning this
+2026-07-03 00:19:05,281 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:19:32,326 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:20:16,581 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:20:19,457 [INFO] re04_smoke: [ENG-THESIS-032] done in 242.5s — status=weak paper=15 dataset=0 repo=1 baseline=3 parallel=1
+2026-07-03 00:20:19,457 [INFO] re04_smoke: [ENG-THESIS-033] starting LLM-online Re04 run
+2026-07-03 00:20:23,093 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:20:32,586 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:21:23,800 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=lung+nodule+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:21:28,850 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=lung+CT+images+lung+nodule+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:21:28,851 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+lung+nodule+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:21:28,856 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+lung+nodule+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:21:28,857 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+lung+nodule+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:21:28,858 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+lung+nodule+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:21:28,858 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv5+lung+nodule+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:21:28,859 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Alung+nodule+detection+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:21:28,868 [INFO] httpx: HTTP Request: GET https://api.github.com/search/repositories?q=lung%20nodule%20detection%20github&per_page=6&sort=stars&order=desc "HTTP/1.1 200 OK"
+2026-07-03 00:21:44,729 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:21:44,730 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: RemoteProtocolError: Server disconnected without sending a response.
+2026-07-03 00:21:44,730 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: RemoteProtocolError: Server disconnected without sending a response.
+2026-07-03 00:21:45,069 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=lung%20nodule%20detection%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:21:51,205 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=lung%20CT%20images%20lung%20nodule%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:21:52,025 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=YOLOv5%20lung%20nodule%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:21:52,025 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=lung%20nodule%20detection%20dataset&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:21:52,032 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+lung+nodule+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:21:52,039 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=YOLOv5%20lung%20nodule%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:21:52,046 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=lung%20nodule%20detection%20benchmark&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:21:52,050 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=lung CT images lung nodule detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:21:52,053 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=YOLOv5 lung nodule detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:21:52,055 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=lung nodule detection dataset&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:21:52,270 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv5+lung+nodule+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:21:52,468 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=lung+CT+images+lung+nodule+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:21:53,123 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=lung%20CT%20images%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:21:59,013 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=lung+lung&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:21:59,013 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=lung+lung&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=lung lung
+2026-07-03 00:22:05,523 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=lung+nodules&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:22:05,524 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=lung+nodules&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=lung nodules
+2026-07-03 00:22:12,176 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=lung+nodule&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 200 OK"
+2026-07-03 00:22:19,871 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:22:55,896 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:23:16,856 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:24:00,926 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:24:03,242 [INFO] re04_smoke: [ENG-THESIS-033] done in 223.8s — status=pass paper=27 dataset=2 repo=1 baseline=5 parallel=9
+2026-07-03 00:24:03,243 [INFO] re04_smoke: [ENG-THESIS-043] starting LLM-online Re04 run
+2026-07-03 00:24:09,780 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:24:18,382 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:25:29,739 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv8+dynamic+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:29,739 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=dynamic+object+detection+survey&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:34,565 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=dynamic+object+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:34,567 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=dynamic+object+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:34,568 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv8+dynamic+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:34,570 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv8+dynamic+object+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:25:34,570 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv8+dynamic+object+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:25:34,571 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3AYOLOv8+dynamic+object+detection&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:25:34,571 [INFO] httpx: HTTP Request: GET https://export.arxiv.org/api/query?search_query=all%3Adynamic+object+detection+survey&start=0&max_results=8&sortBy=relevance&sortOrder=descending "HTTP/1.1 200 OK"
+2026-07-03 00:25:34,573 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=UAV+aerial+imagery+dynamic+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:34,575 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=dynamic%20object%20detection%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:25:46,616 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:25:46,617 [WARNING] app.services.agents.re04_entry: dispatch openalex failed: ConnectTimeout: 
+2026-07-03 00:25:46,617 [WARNING] app.services.agents.re04_entry: dispatch github failed: RemoteProtocolError: Server disconnected without sending a response.
+2026-07-03 00:25:46,981 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=YOLOv8%20dynamic%20object%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:25:46,982 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=YOLOv8 dynamic object detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:25:46,983 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=dynamic%20object%20detection%20benchmark&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 429 Too Many Requests"
+2026-07-03 00:25:46,983 [WARNING] app.services.agents.re04_entry: dispatch crossref failed: HTTP 429 for https://api.crossref.org/works?query=dynamic object detection benchmark&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count
+2026-07-03 00:25:47,075 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLOv8+dynamic+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:47,075 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=dynamic+object+detection+benchmark&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:47,242 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=dynamic+object+detection+dataset&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:47,295 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=UAV+aerial+imagery+dynamic+object+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"
+2026-07-03 00:25:47,457 [INFO] httpx: HTTP Request: GET https://huggingface.co/api/datasets?search=UAV%20aerial%20imagery%20dataset&limit=8 "HTTP/1.1 200 OK"
+2026-07-03 00:25:50,336 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=dynamic%20object%20detection%20dataset&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:25:52,051 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=UAV%20aerial%20imagery%20dynamic%20object%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:25:53,360 [INFO] httpx: HTTP Request: GET https://api.crossref.org/works?query=YOLOv8%20dynamic%20object%20detection&rows=8&select=DOI,title,author,issued,published-print,container-title,abstract,link,URL,type,is-referenced-by-count "HTTP/1.1 200 OK"
+2026-07-03 00:25:56,794 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=detection+detection&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:25:56,794 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=detection+detection&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=detection detection
+2026-07-03 00:26:00,703 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=detection+object&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:26:00,704 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=detection+object&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=detection object
+2026-07-03 00:26:04,930 [INFO] httpx: HTTP Request: GET https://api.semanticscholar.org/graph/v1/paper/search?query=detection+de&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl "HTTP/1.1 429 "
+2026-07-03 00:26:04,931 [WARNING] app.services.retrieval.adapters.semantic_scholar_search: semantic_scholar search HttpError: HTTP 429 for https://api.semanticscholar.org/graph/v1/paper/search?query=detection+de&limit=8&fields=paperId%2CexternalIds%2Ctitle%2Cabstract%2Cyear%2Cvenue%2CpublicationVenue%2CcitationCount%2CreferenceCount%2Curl | query=detection de
+2026-07-03 00:26:11,535 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:26:49,445 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:27:18,179 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:27:22,221 [INFO] re04_smoke: [ENG-THESIS-043] done in 199.0s — status=pass paper=16 dataset=2 repo=0 baseline=3 parallel=3
+2026-07-03 00:27:22,222 [INFO] re04_smoke: [ENG-THESIS-046] starting LLM-online Re04 run
+2026-07-03 00:27:26,516 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:27:35,942 [INFO] httpx: HTTP Request: POST https://api.minimaxi.com/anthropic/v1/messages "HTTP/1.1 200 OK"
+2026-07-03 00:28:22,897 [INFO] httpx: HTTP Request: GET https://api.openalex.org/works?search=YOLO+target+detection&per_page=8 "HTTP/1.1 503 Service Unavailable"

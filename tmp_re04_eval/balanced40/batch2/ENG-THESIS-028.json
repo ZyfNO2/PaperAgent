@@ -1,0 +1,1832 @@
+{
+  "project_id": "agent-re04-2e2b7123",
+  "raw_topic": "基于YOLOv5的绝缘子检测与缺陷识别方法研究",
+  "parsed_topic": {
+    "raw_topic": "基于YOLOv5的绝缘子检测与缺陷识别方法研究",
+    "normalized_topic": "Research on insulator detection and defect recognition method based on YOLOv5",
+    "domain_route": "vision_2d",
+    "domain_confidence": 0.95,
+    "method_terms": [
+      "YOLOv5",
+      "deep learning object detection",
+      "CNN backbone",
+      "data augmentation",
+      "transfer learning"
+    ],
+    "task_terms": [
+      "insulator detection",
+      "insulator defect recognition",
+      "defect classification",
+      "small object detection"
+    ],
+    "object_terms": [
+      "insulator",
+      "power transmission line insulator",
+      "defect (self-explosion, breakage, pollution flashover)",
+      "aerial insulator image",
+      "UAV inspection image"
+    ],
+    "query_atoms_en": [
+      "YOLOv5 insulator detection",
+      "insulator defect recognition deep learning",
+      "power line insulator defect dataset",
+      "aerial insulator image YOLO",
+      "insulator self-explosion detection",
+      "UAV insulator inspection object detection"
+    ],
+    "query_atoms_zh": [
+      "YOLOv5 绝缘子检测",
+      "绝缘子缺陷识别",
+      "航拍图像 绝缘子 深度学习",
+      "输电线路 绝缘子 缺陷识别",
+      "绝缘子自爆 破损 检测",
+      "无人机巡检 绝缘子 目标检测"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "arxiv.org",
+      "github.com",
+      "paperswithcode.com",
+      "ieeexplore.ieee.org",
+      "cnki.net"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于YOLOv5的绝缘子检测与缺陷识别方法研究",
+    "domain_route": "vision_2d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "YOLOv5 insulator detection",
+        "YOLOv5 insulator"
+      ],
+      "method_task": [
+        "YOLOv5 insulator detection",
+        "YOLOv5 insulator defect recognition",
+        "deep learning object detection insulator detection",
+        "deep learning object detection insulator defect recognition"
+      ],
+      "object_task": [
+        "insulator insulator detection",
+        "insulator insulator defect recognition",
+        "power transmission line insulator insulator detection",
+        "power transmission line insulator insulator defect recognition"
+      ],
+      "dataset": [
+        "insulator detection dataset",
+        "insulator dataset"
+      ],
+      "repo": [
+        "insulator detection github",
+        "insulator detection implementation",
+        "YOLOv5 insulator detection"
+      ],
+      "survey": [
+        "insulator detection survey",
+        "vision 2d survey"
+      ],
+      "benchmark": [
+        "insulator detection benchmark"
+      ],
+      "baseline": [
+        "YOLOv5 insulator detection",
+        "YOLOv5 insulator defect recognition",
+        "deep learning object detection insulator detection",
+        "deep learning object detection insulator defect recognition"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "YOLOv5",
+        "deep learning object detection",
+        "CNN backbone",
+        "data augmentation",
+        "transfer learning"
+      ],
+      "task_terms": [
+        "insulator detection",
+        "insulator defect recognition",
+        "defect classification",
+        "small object detection"
+      ],
+      "object_terms": [
+        "insulator",
+        "power transmission line insulator",
+        "defect (self-explosion, breakage, pollution flashover)",
+        "aerial insulator image",
+        "UAV inspection image"
+      ],
+      "domain_route": "vision_2d"
+    },
+    "fb_atom": "YOLOv5 insulator detection",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper backends for YOLOv5 insulator detection and defect recognition",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "YOLOv5 insulator defect detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "arxiv is the spine; surface the core YOLOv5-on-insulator literature directly",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_openalex",
+            "query": "insulator defect recognition deep learning",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "openalex broadens recall to peer-reviewed work beyond arxiv",
+            "expected_output": "paper",
+            "fallback_tool": "search_crossref"
+          },
+          {
+            "tool": "search_crossref",
+            "query": "aerial insulator image object detection",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "crossref indexes IEEE/Elsevier journals where power-line inspection papers live",
+            "expected_output": "paper",
+            "fallback_tool": "search_openalex"
+          },
+          {
+            "tool": "search_github",
+            "query": "YOLOv5 insulator",
+            "target_role": "repo",
+            "why_call": "anchor the survey with runnable YOLOv5 insulator implementations on GitHub",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via benchmark / survey / recent-advances noun-phrase variants of the method and object",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "UAV power line inspection survey",
+            "target_role": "survey",
+            "why_call": "survey-style noun phrase surfaces adjacent UAV transmission-line inspection reviews",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "insulator defect benchmark dataset",
+            "target_role": "reference",
+            "why_call": "benchmark noun phrase surfaces dataset papers cited as references",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "YOLOv5 small object detection improvement",
+            "target_role": "reference",
+            "why_call": "small-object variants capture recent-advances work relevant to aerial insulator scale",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "transmission line insulator self-explosion",
+            "target_role": "reference",
+            "why_call": "specific defect-type noun phrase expands to specialized fault recognition papers",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code, datasets, and benchmark artifacts for YOLOv5 insulator defect detection",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "insulator defect detection",
+            "target_role": "repo",
+            "why_call": "concrete noun phrase to surface code repos for insulator defect detection",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "insulator dataset",
+            "target_role": "dataset",
+            "why_call": "dataset-only noun phrase targets annotated insulator image releases",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "insulator defect dataset benchmark",
+            "target_role": "dataset",
+            "why_call": "openalex frequently indexes dataset / benchmark papers with public releases",
+            "expected_output": "dataset",
+            "fallback_tool": "search_crossref"
+          },
+          {
+            "tool": "search_github",
+            "query": "YOLO insulator",
+            "target_role": "repo",
+            "why_call": "broader YOLO+insulator repo query catches implementations not tagged with defect keyword",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [],
+    "arxiv_queries": [
+      "YOLOv5 insulator defect detection",
+      "UAV power line inspection survey",
+      "transmission line insulator self-explosion"
+    ],
+    "openalex_queries": [
+      "insulator defect recognition deep learning",
+      "insulator defect benchmark dataset",
+      "insulator defect dataset benchmark"
+    ],
+    "crossref_queries": [
+      "aerial insulator image object detection",
+      "YOLOv5 small object detection improvement"
+    ],
+    "github_queries": [
+      "YOLOv5 insulator",
+      "insulator defect detection",
+      "insulator dataset",
+      "YOLO insulator"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "adversarial attack on yolov5 for traffic and road sign detection",
+      "candidate_id": "c-44529da7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Adversarial Attack On Yolov5 For Traffic And Road Sign Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2306.06071v2",
+      "identifier": "2306.06071v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This paper implements and investigates popular adversarial attacks on the YOLOv5 Object Detection algorithm. The paper explores the vulnerability of the YOLOv5 to adversarial attacks in the context of traffic and road sign detection. The paper investigates the impact of different types of attacks, including the Limited memory Broyden Fletcher Goldfarb Shanno (L-BFGS), the Fast Gradient Sign Method (FGSM) attack, the Carlini and Wagner (C&W) attack, the Basic Iterative Method (BIM) attack, the Projected Gradient Descent (PGD) attack, One Pixel Attack, and the Universal Adversarial Perturbations attack on the accuracy of YOLOv5 in detecting traffic and road signs. The results show that YOLOv5 is susceptible to these attacks, with misclassification rates increasing as the magnitude of the perturbations increases. We also explain the results using saliency maps. The findings of this paper have important implications for the safety and reliability of object detection algorithms used in traffic and transportation systems, highlighting the need for more robust and secure models to ensure their effectiveness in real-world applications.",
+      "extra": {}
+    },
+    {
+      "stable_id": "yolov5 vs. yolov8 in marine fisheries: balancing class detection and instance count",
+      "candidate_id": "c-77991f8f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2405.02312v1",
+      "identifier": "2405.02312v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "This paper presents a comparative study of object detection using YOLOv5 and YOLOv8 for three distinct classes: artemia, cyst, and excrement. In this comparative study, we analyze the performance of these models in terms of accuracy, precision, recall, etc. where YOLOv5 often performed better in detecting Artemia and cysts with excellent precision and accuracy. However, when it came to detecting excrement, YOLOv5 faced notable challenges and limitations. This suggests that YOLOv8 offers greater versatility and adaptability in detection tasks while YOLOv5 may struggle in difficult situations and may need further fine-tuning or specialized training to enhance its performance. The results show insights into the suitability of YOLOv5 and YOLOv8 for detecting objects in challenging marine environments, with implications for applications such as ecological research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "hic-yolov5: improved yolov5 for small object detection",
+      "candidate_id": "c-87a331f5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2309.16393v2",
+      "identifier": "2309.16393v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Small object detection has been a challenging problem in the field of object detection. There has been some works that proposes improvements for this task, such as adding several attention blocks or changing the whole structure of feature fusion networks. However, the computation cost of these models is large, which makes deploying a real-time object detection system unfeasible, while leaving room for improvement. To this end, an improved YOLOv5 model: HIC-YOLOv5 is proposed to address the aforementioned problems. Firstly, an additional prediction head specific to small objects is added to provide a higher-resolution feature map for better prediction. Secondly, an involution block is adopted between the backbone and neck to increase channel information of the feature map. Moreover, an attention mechanism named CBAM is applied at the end of the backbone, thus not only decreasing the computation cost compared with previous works but also emphasizing the important information in both channel and spatial domain. Our result shows that HIC-YOLOv5 has improved mAP@[.5:.95] by 6.42% and mAP@0.5 by 9.38% on VisDrone-2019-DET dataset.",
+      "extra": {}
+    },
+    {
+      "stable_id": "yolov5s-gtb: light-weighted and improved yolov5s for bridge crack detection",
+      "candidate_id": "c-5a5ddeb3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2206.01498v1",
+      "identifier": "2206.01498v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In response to the situation that the conventional bridge crack manual detection method has a large amount of human and material resources wasted, this study is aimed to propose a light-weighted, high-precision, deep learning-based bridge apparent crack recognition model that can be deployed in mobile devices' scenarios. In order to enhance the performance of YOLOv5, firstly, the data augmentation methods are supplemented, and then the YOLOv5 series algorithm is trained to select a suitable basic framework. The YOLOv5s is identified as the basic framework for the light-weighted crack detection model through experiments for comparison and validation.By replacing the traditional DarkNet backbone network of YOLOv5s with GhostNet backbone network, introducing Transformer multi-headed self-attention mechanism and bi-directional feature pyramid network (BiFPN) to replace the commonly used feature pyramid network, the improved model not only has 42% fewer parameters and faster inference response, but also significantly outperforms the original model in terms of accuracy and mAP (8.5% and 1.1% improvement, respectively). Luckily each improved part has a positive impact on the result. This paper provides a feasible idea to establish a digital operation management system in the field of highway and bridge in the future and to implement the whole life cycle structure health monitoring of civil infrastructure in China.",
+      "extra": {}
+    },
+    {
+      "stable_id": "utd-yolov5: a real-time underwater targets detection method based on attention improved yolov5",
+      "candidate_id": "c-a8b30f2b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "UTD-Yolov5: A Real-time Underwater Targets Detection Method based on Attention Improved YOLOv5",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2207.00837v1",
+      "identifier": "2207.00837v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "As the treasure house of nature, the ocean contains abundant resources. But the coral reefs, which are crucial to the sustainable development of marine life, are facing a huge crisis because of the existence of COTS and other organisms. The protection of society through manual labor is limited and inefficient. The unpredictable nature of the marine environment also makes manual operations risky. The use of robots for underwater operations has become a trend. However, the underwater image acquisition has defects such as weak light, low resolution, and many interferences, while the existing target detection algorithms are not effective. Based on this, we propose an underwater target detection algorithm based on Attention Improved YOLOv5, called UTD-Yolov5. It can quickly and efficiently detect COTS, which in turn provides a prerequisite for complex underwater operations. We adjusted the original network architecture of YOLOv5 in multiple stages, including: replacing the original Backbone with a two-stage cascaded CSP (CSP2); introducing the visual channel attention mechanism module SE; designing random anchor box similarity calculation method etc. These operations enable UTD-Yolov5 to detect more flexibly and capture features more accurately. In order to make the network more efficient, we also propose optimization methods such as WBF and iterative refinement mechanism. This paper conducts a lot of experiments based on the CSIRO dataset [1]. The results show that the average accuracy of our UTD-Yolov5 reaches 78.54%, which is a great improvement compared to the baseline.",
+      "extra": {}
+    },
+    {
+      "stable_id": "fire detection from image and video using yolov5",
+      "candidate_id": "c-f8fe4b77",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Fire Detection From Image and Video Using YOLOv5",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2310.06351v1",
+      "identifier": "2310.06351v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "For the detection of fire-like targets in indoor, outdoor and forest fire images, as well as fire detection under different natural lights, an improved YOLOv5 fire detection deep learning algorithm is proposed. The YOLOv5 detection model expands the feature extraction network from three dimensions, which enhances feature propagation of fire small targets identification, improves network performance, and reduces model parameters. Furthermore, through the promotion of the feature pyramid, the top-performing prediction box is obtained. Fire-YOLOv5 attains excellent results compared to state-of-the-art object detection networks, notably in the detection of small targets of fire and smoke with mAP 90.5% and f1 score 88%. Overall, the Fire-YOLOv5 detection model can effectively deal with the inspection of small fire targets, as well as fire-like and smoke-like objects with F1 score 0.88. When the input image size is 416 x 416 resolution, the average detection time is 0.12 s per frame, which can provide real-time forest fire detection. Moreover, the algorithm proposed in this paper can also be applied to small target detection under other complicated situations. The proposed system shows an improved approach in all fire detection metrics such as precision, recall, and mean average precision.",
+      "extra": {}
+    },
+    {
+      "stable_id": "detecting botnets through log correlation",
+      "candidate_id": "c-2fb7d713",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Detecting Botnets Through Log Correlation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2010,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1001.2665v1",
+      "identifier": "1001.2665v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Botnets, which consist of thousands of compromised machines, can cause significant threats to other systems by launching Distributed Denial of Service (SSoS) attacks, keylogging, and backdoors. In response to these threats, new effective techniques are needed to detect the presence of botnets. In this paper, we have used an interception technique to monitor Windows Application Programming Interface (API) functions calls made by communication applications and store these calls with their arguments in log files. Our algorithm detects botnets based on monitoring abnormal activity by correlating the changes in log file sizes from different hosts.",
+      "extra": {}
+    },
+    {
+      "stable_id": "covid-19 detection using ct image based on yolov5 network",
+      "candidate_id": "c-86e2fc93",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "COVID-19 Detection Using CT Image Based On YOLOv5 Network",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2201.09972v1",
+      "identifier": "2201.09972v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Computer aided diagnosis (CAD) increases diagnosis efficiency, helping doctors providing a quick and confident diagnosis, it has played an important role in the treatment of COVID19. In our task, we solve the problem about abnormality detection and classification. The dataset provided by Kaggle platform and we choose YOLOv5 as our model. We introduce some methods on objective detection in the related work section, the objection detection can be divided into two streams: onestage and two stage. The representational model are Faster RCNN and YOLO series. Then we describe the YOLOv5 model in the detail. Compared Experiments and results are shown in section IV. We choose mean average precision (mAP) as our experiments' metrics, and the higher (mean) mAP is, the better result the model will gain. mAP@0.5 of our YOLOv5s is 0.623 which is 0.157 and 0.101 higher than Faster RCNN and EfficientDet respectively.",
+      "extra": {}
+    },
+    {
+      "stable_id": "oriented object detection in optical remote sensing images using deep learning: a survey",
+      "candidate_id": "c-03ca4b06",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "identifier": "2302.10473v6",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a rich bounty of agn in the 9 square degree bootes survey: high-z obscured agn and large-scale structure",
+      "candidate_id": "c-76aaf3fd",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A rich bounty of AGN in the 9 square degree Bootes survey: high-z obscured AGN and large-scale structure",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2006,
+      "venue": null,
+      "url": "http://arxiv.org/abs/astro-ph/0611654v1",
+      "identifier": "astro-ph",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We use observations from the 9 square degree multiwavelength survey in Bootes to identify hundreds of obscured active galactic nuclei (AGN) with high redshifts (z > 0.7), luminosities (L_bol > 10^45 ergs/s), and moderate obscuring columns (N_H > 10^22 cm^-2), and to measure the clustering properties of X-ray AGN at z > 1. In the Bootes region, shallow (5 ks) Chandra X-ray observations have detected ~4,000 X-ray sources, and the same region has been mapped with deep optical imaging and by Spitzer IRAC, which detects ~300,000 point sources, of which ~30,000 have detections in all four IRAC bands, for which we can select AGN on the basis of their mid-IR colors. With the MMT/Hectospec we have obtained modest resolution optical spectra for about half the X-ray sources (out to z > 3) and ~20,000 galaxies (out to z = 0.7). With this multiwavelength data we select >400 AGN per square degree (compared to 12 per square degree from SDSS). Among a sample of IRAC-selected AGN we identify 641 candidate obscured objects based on their R band and IRAC luminosities. We use X-ray stacking techniques to verify that they are obscured AGN and measure their absorbing column densities. We also measure the three-dimensional two-point correlation function for X-ray selected AGN.",
+      "extra": {}
+    },
+    {
+      "stable_id": "ain't nothing but a survey? using large language models for coding german open-ended survey responses on survey motivation",
+      "candidate_id": "c-72b72d5a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.14634v3",
+      "identifier": "2506.14634v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The recent development and wider accessibility of LLMs have spurred discussions about how they can be used in survey research, including classifying open-ended survey responses. Due to their linguistic capacities, it is possible that LLMs are an efficient alternative to time-consuming manual coding and the pre-training of supervised machine learning models. As most existing research on this topic has focused on English-language responses relating to non-complex topics or on single LLMs, it is unclear whether its findings generalize and how the quality of these classifications compares to established methods. In this study, we investigate to what extent different LLMs can be used to code open-ended survey responses in other contexts, using German data on reasons for survey participation as an example. We compare several state-of-the-art LLMs and several prompting approaches, and evaluate the LLMs' performance by using human expert codings. Overall performance differs greatly between LLMs, and only a fine-tuned LLM achieves satisfactory levels of predictive performance. Performance differences between prompting approaches are conditional on the LLM used. Finally, LLMs' unequal classification performance across different categories of reasons for survey participation results in different categorical distributions when not using fine-tuning. We discuss the implications of these findings, both for methodological research on coding open-ended responses and for their substantive analysis, and for practitioners processing or substantively analyzing such data. Finally, we highlight the many trade-offs researchers need to consider when choosing automated methods for open-ended response classification in the age of LLMs. In doing so, our study contributes to the growing body of research about the conditions under which LLMs can be efficiently, accurately, and reliably leveraged in survey research.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the methanol multibeam survey",
+      "candidate_id": "c-8bf7ed19",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The Methanol Multibeam Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2012,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1210.0979v1",
+      "identifier": "1210.0979v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "A purpose built 7-beam methanol receiver, installed on the Parkes Radio Telescope, was used to survey the Galactic plane for newly forming high mass stars, pinpointed by strong methanol maser emission at 6.7 GHz. The Methanol Multibeam (MMB) survey observed over 60% of the Galactic plane, detecting close to 1000 sources. The MMB survey provides a huge resource for studies of high-mass star formation, an important stage in the evolution of the interstellar medium. The MMB survey is also a valuable resource for investigations into the structure and dynamics of our Galaxy: with narrow velocity ranges of emission (typically only a few km/s) and velocities closely correlated with the systemic velocity of their surrounding molecular clouds, 6.7-GHz methanol masers provide estimates of the spiral arm velocities and their structure. I will discuss the techniques and properties of the MMB survey, before outlining recent results, which include the identification of regions of enhanced star formation believed to be indicative of the origins of the spiral arms and the interaction of the Galactic bar with the 3-kpc arms. I will also discuss the various follow-up programmes including a study of magnetic fields through associated hydroxyl masers.",
+      "extra": {}
+    },
+    {
+      "stable_id": "irsf/sirius jhks near-infrared variable star survey in the magellanic clouds",
+      "candidate_id": "c-81f3c71c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "IRSF/SIRIUS JHKs near-infrared variable star survey in the Magellanic Clouds",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2009,
+      "venue": null,
+      "url": "http://arxiv.org/abs/0907.5244v1",
+      "identifier": "0907.5244v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We carried out a NIR variable star survey toward the Large and Small Magellanic Clouds using the InfraRed Survey Facility (IRSF) at Sutherland, South African Astronomical Observatory. This survey project was initiated in Dember 2000, and since then, we kept monitoring a total area of 3 square degrees along the LMC bar and also an area of 1 square degree around the center of the SMC, sufficiently large to do statistical analysis and to make complete catalog of variable red giants in the Magellanic Clouds. The detection limits (S/N=10) of the survey are 17.0, 16.5 and 15.5 at J, H and Ks, respectively. In this article, we present some results on infrared variables that are not detected by the previous optical surveys. We show that they do not fall on the standard period-Ks magnitude relation for Mira-type variables pulsating in the fundamental mode.",
+      "extra": {}
+    },
+    {
+      "stable_id": "the sami galaxy survey: first 1000 galaxies",
+      "candidate_id": "c-e458d670",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "The SAMI Galaxy Survey: first 1000 galaxies",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2014,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1409.4147v1",
+      "identifier": "1409.4147v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The Sydney-AAO Multi-object Integral field spectrograph (SAMI) Galaxy Survey is an ongoing project to obtain integral field spectroscopic observations of ~3400 galaxies by mid-2016. Including the pilot survey, a total of ~1000 galaxies have been observed to date, making the SAMI Galaxy Survey the largest of its kind in existence. This unique dataset allows a wide range of investigations into different aspects of galaxy evolution.\n  The first public data from the SAMI Galaxy Survey, consisting of 107 galaxies drawn from the full sample, has now been released. By giving early access to SAMI data for the entire research community, we aim to stimulate research across a broad range of topics in galaxy evolution. As the sample continues to grow, the survey will open up a new and unique parameter space for galaxy evolution studies.",
+      "extra": {}
+    },
+    {
+      "stable_id": "roman galactic plane survey definition committee report",
+      "candidate_id": "c-91a1134c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Roman Galactic Plane Survey Definition Committee Report",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2511.07494v1",
+      "identifier": "2511.07494v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The Roman Galactic Plane Survey (RGPS) is a 700-hour program approved for early definition as a community-designed General Astrophysics Survey. It was selected following a proposal call for science programs that would benefit from an early community-based definition (Sanderson et al 2024). The community was invited to submit white papers and science pitches with a deadline of May 20, 2024; the Roman Galactic Plane Survey Definition Committee (RGPS-DC) first met on Sep 11, 2024. Based on the input provided, the RGPS-DC recommends a survey consisting of three elements: (1) a wide-field science element (691 sq deg, 541 hrs) covering the Galactic plane, Galactic latitude |b|<2 deg and Galactic longitude l=+50.1 deg to -79 deg (281 deg), in four filters (F129, F159, F184, and F213) with higher latitude extensions for the bulge, the Serpens South/W40 star formation region, and Carina, (2) a time-domain science element (19 sq deg , 130 hrs) of six fields, including the full Nuclear Stellar Disk (NSD) and Central Molecular Zone (CMZ), with coverage in seven filters and repeat observations in one or more filters with cadences from 11 minutes to weeks, and (3) a deep-field/spectroscopic science element (4 sq deg , 30 hrs) consisting of fifteen Roman pointings (with a wide range of extinction, diffuse emission, stellar density and population) using longer exposure times in seven filters in addition to grism and prism observations. This document summarizes the science that can be done with this survey, the process of survey definition, and details on all of the program elements.",
+      "extra": {}
+    },
+    {
+      "stable_id": "vlp: a survey on vision-language pre-training",
+      "candidate_id": "c-b71c6054",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "VLP: A Survey on Vision-Language Pre-training",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2202.09061v4",
+      "identifier": "2202.09061v4",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "In the past few years, the emergence of pre-training models has brought uni-modal fields such as computer vision (CV) and natural language processing (NLP) to a new era. Substantial works have shown they are beneficial for downstream uni-modal tasks and avoid training a new model from scratch. So can such pre-trained models be applied to multi-modal tasks? Researchers have explored this problem and made significant progress. This paper surveys recent advances and new frontiers in vision-language pre-training (VLP), including image-text and video-text pre-training. To give readers a better overall grasp of VLP, we first review its recent advances from five aspects: feature extraction, model architecture, pre-training objectives, pre-training datasets, and downstream tasks. Then, we summarize the specific VLP models in detail. Finally, we discuss the new frontiers in VLP. To the best of our knowledge, this is the first survey focused on VLP. We hope that this survey can shed light on future research in the VLP field.",
+      "extra": {}
+    },
+    {
+      "stable_id": "criticality of the metal-topological insulator transition driven by disorder",
+      "candidate_id": "c-5be325be",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Criticality of the metal-topological insulator transition driven by disorder",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2012,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1211.5026v2",
+      "identifier": "1211.5026v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Employing scaling analysis of the localization length, we deduce the critical exponent of the metal-topological insulator (TI) transitions induced by disorder. The obtained exponent nu~2.7 shows no conspicuous deviation from the value established for metal-ordinary insulator transitions in systems of the symplectic class. We investigate the topological phase diagram upon carrier doping to reveal the nature of the so-called topological Anderson insulator (TAI) region. The critical exponent of the metal-TAI transition is also first estimated, shown to be undistinguishable from the above value within the numerical error. By symmetry considerations we determine the explicit form of Rashba spin-orbit coupling in systems of C4v point group symmetry.",
+      "extra": {}
+    },
+    {
+      "stable_id": "tunable chern insulator with shaken optical lattices",
+      "candidate_id": "c-18da092c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Tunable Chern insulator with shaken optical lattices",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2015,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1502.07350v3",
+      "identifier": "1502.07350v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Driven optical lattices permit the engineering of effective dynamics with well-controllable tunneling properties. We describe the realization of a tunable a Chern insulator by driving particles on a shaken hexagonal lattice with optimally designed polychromatic driving forces. Its implementation does not require shallow lattices, which favors the study of strongly-correlated phases with non-trivial topology.",
+      "extra": {}
+    },
+    {
+      "stable_id": "field-induced metal-insulator transition and switching phenomenon in correlated insulators",
+      "candidate_id": "c-5e3d529f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Field-induced metal-insulator transition and switching phenomenon in correlated insulators",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2007,
+      "venue": null,
+      "url": "http://arxiv.org/abs/0712.1390v2",
+      "identifier": "0712.1390v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We study the nonequilibrium switching phenomenon associated with the metal-insulator transition under electric field E in correlated insulator by a gauge-covariant Keldysh formalism. Due to the feedback effect of the resistive current I, this occurs as a first-order transition with a hysteresis of I-V characteristics having a lower threshold electric field (\\sim 10^4 Vcm^{-1}) much weaker than that for the Zener breakdown. It is also found that the localized mid-gap states introduced by impurities and defects act as hot spots across which the resonant tunneling occurs selectively, which leads to the conductive filamentary paths and reduces the energy cost of the switching function.",
+      "extra": {}
+    },
+    {
+      "stable_id": "strained topological insulator spin field effect transistor",
+      "candidate_id": "c-8da6d304",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Strained topological insulator spin field effect transistor",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2210.13612v2",
+      "identifier": "2210.13612v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The notion of a spin field effect transistor, where transistor action is realized by manipulating the spin degree of freedom of charge carriers instead of the charge degree of freedom, has captivated researchers for at least three decades. These transistors are usually implemented by modulating the spin orbit interaction in a two- or one-dimensional semiconductor structure with an electrostatic potential, which then causes controlled spin precession in the transistor's channel that modulates the current flowing between two ferromagnetic (spin-polarized) source and drain contacts. Here, we introduce a new concept for a spin field effect transistor whose channel is made of a strained topological insulator (strained-topological-insulator-field-effect-transistor or STI-SPINFET), which does not exploit spin-orbit interaction. Instead, the transistor function is elicited by straining the topological insulator (TI) with a gate voltage which modifies the energy dispersion relation, or the Dirac velocity, to vary the interference between the two spin eigenstates on the surface of the TI. This modulates the current flowing between two ferromagnetic source and drain contacts. The conductance on/off ratio of this transistor is too poor to be useful as a switch, but it may have other uses, such as an extremely energy-efficient stand-alone frequency multiplier.",
+      "extra": {}
+    },
+    {
+      "stable_id": "realizing hopf insulators in dipolar spin systems",
+      "candidate_id": "c-cef836bb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Realizing Hopf Insulators in Dipolar Spin Systems",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1901.08597v2",
+      "identifier": "1901.08597v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "The Hopf insulator is a weak topological insulator characterized by an insulating bulk with conducting edge states protected by an integer-valued linking number invariant. The state exists in three-dimensional two-band models. We demonstrate that the Hopf insulator can be naturally realized in lattices of dipolar-interacting spins, where spin exchange plays the role of particle hopping. The long-ranged, anisotropic nature of the dipole-dipole interactions allows for the precise detail required in the momentum-space structure, while different spin orientations ensure the necessary structure of the complex phases of the hoppings. Our model features robust gapless edge states at both smooth edges, as well as sharp edges obeying a certain crystalline symmetry, despite the breakdown of the two-band picture at the latter. In a companion manuscript [2105.10504], we provide a specific experimental blueprint for implementing our proposal using ultracold polar molecules of $^{40}$K$^{87}$Rb.",
+      "extra": {}
+    },
+    {
+      "stable_id": "model compression methods for yolov5: a review",
+      "candidate_id": "c-8ff35640",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Model Compression Methods for YOLOv5: A Review",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2023,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2307.11904v1",
+      "identifier": "2307.11904v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Over the past few years, extensive research has been devoted to enhancing YOLO object detectors. Since its introduction, eight major versions of YOLO have been introduced with the purpose of improving its accuracy and efficiency. While the evident merits of YOLO have yielded to its extensive use in many areas, deploying it on resource-limited devices poses challenges. To address this issue, various neural network compression methods have been developed, which fall under three main categories, namely network pruning, quantization, and knowledge distillation. The fruitful outcomes of utilizing model compression methods, such as lowering memory usage and inference time, make them favorable, if not necessary, for deploying large neural networks on hardware-constrained edge devices. In this review paper, our focus is on pruning and quantization due to their comparative modularity. We categorize them and analyze the practical results of applying those methods to YOLOv5. By doing so, we identify gaps in adapting pruning and quantization for compressing YOLOv5, and provide future directions in this area for further exploration. Among several versions of YOLO, we specifically choose YOLOv5 for its excellent trade-off between recency and popularity in literature. This is the first specific review paper that surveys pruning and quantization methods from an implementation point of view on YOLOv5. Our study is also extendable to newer versions of YOLO as implementing them on resource-limited devices poses the same challenges that persist even today. This paper targets those interested in the practical deployment of model compression methods on YOLOv5, and in exploring different compression techniques that can be used for subsequent versions of YOLO.",
+      "extra": {}
+    },
+    {
+      "stable_id": "visdrone",
+      "candidate_id": "c-a59ff8e0",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "VisDrone",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "YOLOv5 insulator detection|YOLOv5 insulator",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "insulator detection dataset|insulator dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "insulator insulator detection|insulator insulator defect recognition|power transmission line insulator insulator detecti",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "insulator detection dataset|insulator dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "insulator detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "YOLOv5 insulator detection|YOLOv5 insulator defect recognition|deep learning object detection insulator detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "YOLOv5 insulator detection|YOLOv5 insulator",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "YOLOv5 insulator detection|YOLOv5 insulator",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "insulator detection github|insulator detection implementation|YOLOv5 insulator detection",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 insulator detection|YOLOv5 insulator defect recognition|deep learning object detection insulator detection",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 insulator detection|YOLOv5 insulator defect recognition|deep learning object detection insulator detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "insulator detection survey|vision 2d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "insulator detection dataset|insulator dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "insulator insulator detection|insulator insulator defect recognition|power transmission line insulator insulator detecti",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "insulator detection benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "insulator detection dataset|insulator dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "YOLOv5 insulator detection|YOLOv5 insulator defect recognition|deep learning object detection insulator detection",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "insulator detection survey|vision 2d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "YOLOv5 insulator detection|YOLOv5 insulator",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "detection insulator|v5 insulator|he insulator",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Adversarial Attack On Yolov5 For Traffic And Road Sign Detec",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detec",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge ",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: UTD-Yolov5: A Real-time Underwater Targets Detection Method ",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-44529da7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "object detection"
+      ],
+      "missing_terms": [
+        "insulator",
+        "insulator defect recognition",
+        "UAV inspection image",
+        "aerial insulator image",
+        "power transmission line"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Same YOLOv5 method but applied to traffic/road signs, unrelated object domain.",
+      "reason": "YOLOv5-based detection paper but targets traffic signs, not insulators. Useful only as a methodological reference for YOLOv5 behavior, not directly relevant to insulator defect recognition."
+    },
+    {
+      "candidate_id": "c-77991f8f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "object detection"
+      ],
+      "missing_terms": [
+        "insulator",
+        "insulator defect recognition",
+        "UAV inspection image",
+        "aerial insulator image",
+        "power transmission line"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "YOLOv5 vs YOLOv8 comparative study, but in marine fisheries domain, not insulators.",
+      "reason": "Comparative YOLOv5 study applied to marine biology classes. Domain mismatch with insulator detection. Could only serve as a background YOLOv5 performance reference."
+    },
+    {
+      "candidate_id": "c-87a331f5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "small object detection"
+      ],
+      "missing_terms": [
+        "insulator",
+        "insulator defect recognition",
+        "UAV inspection image",
+        "aerial insulator image",
+        "power transmission line"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Improved YOLOv5 for small object detection; relevant technique-wise for insulator detection in aerial imagery.",
+      "reason": "Targets small object detection with improved YOLOv5 architecture. Methodologically relevant because insulator defects in UAV images are small objects, but no insulator-specific evaluation or dataset."
+    },
+    {
+      "candidate_id": "c-5a5ddeb3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "defect detection",
+        "deep learning object detection"
+      ],
+      "missing_terms": [
+        "insulator",
+        "UAV inspection image",
+        "power transmission line",
+        "insulator defect recognition"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Lightweight YOLOv5 for defect (crack) detection on bridges; similar defect-detection methodology.",
+      "reason": "Applies a lightweight improved YOLOv5 to infrastructure defect (bridge cracks). Shares defect-detection methodology spirit with insulator defect recognition, but object domain (bridges) differs from insulators."
+    },
+    {
+      "candidate_id": "c-a8b30f2b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "object detection"
+      ],
+      "missing_terms": [
+        "insulator",
+        "insulator defect recognition",
+        "UAV inspection image",
+        "power transmission line"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Attention-improved YOLOv5 for underwater targets; methodologically adjacent but unrelated domain.",
+      "reason": "Improved YOLOv5 with attention mechanisms for underwater detection. Provides attention-module methodological inspiration, but domain (marine, coral reef) is unrelated to insulator inspection."
+    },
+    {
+      "candidate_id": "c-f8fe4b77",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "object detection",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "insulator",
+        "insulator defect recognition",
+        "UAV inspection image",
+        "power transmission line"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "Improved YOLOv5 fire detection; similar improvement techniques but different object class.",
+      "reason": "Improved YOLOv5 algorithm proposal applied to fire detection. Could illustrate YOLOv5 enhancement strategies, but object class and task scenario differ from insulator defect recognition."
+    },
+    {
+      "candidate_id": "c-2fb7d713",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "object detection",
+        "deep learning",
+        "UAV",
+        "image"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Cybersecurity log-correlation paper; completely cross-domain with no relation to vision or insulators.",
+      "reason": "Paper on botnet detection via log correlation is a cybersecurity/network topic. No relation to YOLOv5, computer vision, or insulator inspection. Cross-domain content."
+    },
+    {
+      "candidate_id": "c-86e2fc93",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "detection"
+      ],
+      "missing_terms": [
+        "insulator",
+        "UAV inspection image",
+        "power transmission line",
+        "aerial insulator image",
+        "small object detection"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "exists",
+      "rank_reason": "YOLOv5 applied to medical CT imaging; domain mismatch but method overlap.",
+      "reason": "Uses YOLOv5 for COVID-19 detection in CT images. Shares YOLOv5 framework but medical imaging context is unrelated to aerial insulator images and power line inspection."
+    },
+    {
+      "candidate_id": "c-03ca4b06",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "object detection",
+        "deep learning",
+        "aerial image"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "insulator defect recognition",
+        "power transmission line"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey of oriented object detection in aerial/remote sensing images; relevant background for UAV-based detection.",
+      "reason": "Survey on oriented object detection in remote sensing imagery. Useful background context for UAV-based insulator detection scenarios, but does not specifically address YOLOv5 or insulator defects."
+    },
+    {
+      "candidate_id": "c-76aaf3fd",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "object detection",
+        "deep learning",
+        "UAV"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Astronomy AGN survey paper; entirely cross-domain, no connection to vision or insulators.",
+      "reason": "Paper on obscured active galactic nuclei in the Bootes astronomical survey. Pure astrophysics content with no relation to computer vision, YOLOv5, or power line insulators."
+    },
+    {
+      "candidate_id": "c-72b72d5a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "object detection",
+        "UAV",
+        "deep learning"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "LLM-based survey response coding in social science; cross-domain, unrelated.",
+      "reason": "Uses LLMs for coding open-ended survey responses in German social science research. No overlap with object detection, YOLOv5, or insulator inspection."
+    },
+    {
+      "candidate_id": "c-8bf7ed19",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "object detection",
+        "deep learning",
+        "UAV"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Radio astronomy methanol survey; cross-domain astrophysics content.",
+      "reason": "Astronomical survey using multibeam methanol maser observations. No connection to computer vision, YOLOv5, or insulator detection."
+    },
+    {
+      "candidate_id": "c-81f3c71c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "object detection",
+        "deep learning",
+        "UAV"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Near-IR variable star survey in Magellanic Clouds; cross-domain astrophysics.",
+      "reason": "Near-infrared variable star survey of the Magellanic Clouds. Pure astronomy content with no relation to YOLOv5, computer vision, or insulator inspection."
+    },
+    {
+      "candidate_id": "c-e458d670",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "object detection",
+        "deep learning",
+        "UAV"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Integral field spectroscopy galaxy survey; cross-domain astrophysics.",
+      "reason": "SAMI Galaxy Survey using integral field spectroscopy. Astronomy content unrelated to computer vision, YOLOv5, or insulator defect recognition."
+    },
+    {
+      "candidate_id": "c-91a1134c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "object detection",
+        "deep learning",
+        "UAV"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Roman Galactic Plane Survey definition report; cross-domain astrophysics.",
+      "reason": "Roman Space Telescope Galactic Plane survey committee report. Pure astrophysics with no link to YOLOv5, computer vision, or insulator inspection."
+    },
+    {
+      "candidate_id": "c-b71c6054",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "insulator",
+        "object detection",
+        "UAV",
+        "defect recognition"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Vision-language pre-training survey; cross-domain NLP/CV topic unrelated to insulator detection.",
+      "reason": "Survey on vision-language pre-training models. Multimodal NLP/CV topic with no specific relevance to YOLOv5 object detection or insulator defect recognition."
+    },
+    {
+      "candidate_id": "c-5be325be",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "deep learning",
+        "UAV",
+        "insulator"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Condensed matter physics on metal-topological insulator transition; cross-domain physics.",
+      "reason": "Theoretical condensed matter paper on disorder-driven metal-topological insulator transitions. Physics content unrelated to computer vision or insulator inspection."
+    },
+    {
+      "candidate_id": "c-18da092c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "deep learning",
+        "UAV",
+        "defect recognition"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Cold atom physics on Chern insulators in optical lattices; cross-domain physics.",
+      "reason": "Theoretical physics paper on tunable Chern insulators in shaken optical lattices. No connection to YOLOv5, computer vision, or power line insulator inspection."
+    },
+    {
+      "candidate_id": "c-5e3d529f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "deep learning",
+        "UAV",
+        "defect recognition"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Condensed matter metal-insulator transition paper; cross-domain physics.",
+      "reason": "Theoretical condensed matter paper on field-induced switching in correlated insulators. Pure physics content unrelated to YOLOv5 or power line insulator detection."
+    },
+    {
+      "candidate_id": "c-8da6d304",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "YOLOv5",
+        "object detection",
+        "deep learning",
+        "UAV",
+        "defect recognition"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Topological insulator spin FET device paper; cross-domain device physics.",
+      "reason": "Strained topological insulator spin field-effect transistor device paper. Physics/spintronics content unrelated to YOLOv5-based insulator detection."
+    },
+    {
+      "candidate_id": "c-cef836bb",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "status": "rejected",
+      "matched_terms": [
+        "insulator"
+      ],
+      "missing_terms": [
+        "YOLOv5",
+        "defect recognition",
+        "object detection",
+        "power transmission line",
+        "UAV",
+        "aerial image"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "exists",
+      "rank_reason": "Physics paper on Hopf insulators in dipolar spin systems; zero overlap with vision-based insulator defect detection.",
+      "reason": "Topic is about electrical insulators on power lines detected via YOLOv5. This paper concerns quantum/topological insulators in spin systems. Same English word, completely different domain."
+    },
+    {
+      "candidate_id": "c-8ff35640",
+      "evidence_type": "survey",
+      "role_hint": "reference",
+      "status": "candidate",
+      "matched_terms": [
+        "YOLOv5",
+        "model compression"
+      ],
+      "missing_terms": [
+        "insulator",
+        "defect recognition",
+        "power transmission line",
+        "UAV",
+        "aerial image"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on YOLOv5 compression; method-relevant background for designing efficient YOLOv5 variants for edge deployment.",
+      "reason": "Not about insulators, but directly covers YOLOv5 architecture and compression techniques useful as background/module reference when adapting YOLOv5 for insulator detection on UAV platforms."
+    },
+    {
+      "candidate_id": "c-a59ff8e0",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "needs_manual",
+      "matched_terms": [
+        "UAV",
+        "aerial image",
+        "object detection"
+      ],
+      "missing_terms": [
+        "insulator",
+        "YOLOv5",
+        "power transmission line",
+        "defect recognition"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "VisDrone is a UAV aerial imagery dataset for object detection; may be reusable as pretraining source but lacks insulator labels.",
+      "reason": "VisDrone provides UAV-view detection benchmarks aligned with the aerial/UAV inspection setting, but it does not contain insulator or defect categories. Useful only for transfer-learning pretraining, hence needs manual check."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "检索面严重缺位:crossref/openalex/github/huggingface 全部 empty,仅 arxiv 拿到 4 段结果且全部为'YOLOv5 改进'或'YOLOv5 应用'论文,没有一篇真正命中'绝缘子检测/缺陷识别'。EvidenceReview 中 23 行里 14 行被标为 rejected(天体/凝聚态/LLM 编码等),9 行 candidate 也都是弱相关(YOLOv5 改造手法),真正可作为基线/对比的'绝缘子+YOLOv5'论文为 0;唯一的可用 dataset 候选 VisDrone (c-a59ff8e0) 不含绝缘子类别,只能作为 UAV 域预训练源。结论:不能以当前证据直接构造基于 YOLOv5 的绝缘子检测与缺陷识别研究,核心证据缺失。建议下一阶段补检索:CNKI/万方中文库('基于YOLOv5 绝缘子 缺陷识别')、IEEE Xplore('insulator defect detection deep learning')、GitHub('insulator yolov5')、Roboflow/HuggingFace('insulator dataset')、以及最新 survey 'deep learning based power line inspection'。在补检前不要锁定 baseline,候选 candidate 只能作为方法学旁证(轻量化、注意力、小目标头、压缩)。当前最稳的临时研究骨架是:YOLOv5s/l 基线 + 借鉴 HIC-YOLOv5 (c-87a331f5) 的小目标头与 UTD-YOLOv5 (c-a8b30f2b) 的注意力 + YOLOv5s-GTB (c-5a5ddeb3) 的轻量化路线,在自建/外购绝缘子数据集上做消融,并以 VisDrone 做域适应预训练。",
+    "baseline_options": [
+      "c-87a331f5",
+      "c-5a5ddeb3",
+      "c-a8b30f2b",
+      "c-8ff35640"
+    ],
+    "candidate_pool": {
+      "core": [],
+      "candidate": [
+        {
+          "candidate_id": "c-44529da7",
+          "title": "Adversarial Attack On Yolov5 For Traffic And Road Sign Detection",
+          "role_hint": "reference",
+          "reason": "Same YOLOv5 method but applied to traffic/road signs, unrelated object domain."
+        },
+        {
+          "candidate_id": "c-77991f8f",
+          "title": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+          "role_hint": "reference",
+          "reason": "YOLOv5 vs YOLOv8 comparative study, but in marine fisheries domain, not insulators."
+        },
+        {
+          "candidate_id": "c-87a331f5",
+          "title": "HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
+          "role_hint": "reference",
+          "reason": "Improved YOLOv5 for small object detection; relevant technique-wise for insulator detection in aerial imagery."
+        },
+        {
+          "candidate_id": "c-5a5ddeb3",
+          "title": "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
+          "role_hint": "reference",
+          "reason": "Lightweight YOLOv5 for defect (crack) detection on bridges; similar defect-detection methodology."
+        },
+        {
+          "candidate_id": "c-a8b30f2b",
+          "title": "UTD-Yolov5: A Real-time Underwater Targets Detection Method based on Attention Improved YOLOv5",
+          "role_hint": "reference",
+          "reason": "Attention-improved YOLOv5 for underwater targets; methodologically adjacent but unrelated domain."
+        },
+        {
+          "candidate_id": "c-f8fe4b77",
+          "title": "Fire Detection From Image and Video Using YOLOv5",
+          "role_hint": "reference",
+          "reason": "Improved YOLOv5 fire detection; similar improvement techniques but different object class."
+        },
+        {
+          "candidate_id": "c-86e2fc93",
+          "title": "COVID-19 Detection Using CT Image Based On YOLOv5 Network",
+          "role_hint": "reference",
+          "reason": "YOLOv5 applied to medical CT imaging; domain mismatch but method overlap."
+        },
+        {
+          "candidate_id": "c-03ca4b06",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "reference",
+          "reason": "Survey of oriented object detection in aerial/remote sensing images; relevant background for UAV-based detection."
+        },
+        {
+          "candidate_id": "c-8ff35640",
+          "title": "Model Compression Methods for YOLOv5: A Review",
+          "role_hint": "reference",
+          "reason": "Survey on YOLOv5 compression; method-relevant background for designing efficient YOLOv5 variants for edge deployment."
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-a59ff8e0",
+          "title": "VisDrone",
+          "role_hint": "dataset",
+          "reason": "VisDrone is a UAV aerial imagery dataset for object detection; may be reusable as pretraining source but lacks insulator labels."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-2fb7d713",
+          "title": "Detecting Botnets Through Log Correlation",
+          "role_hint": "reference",
+          "reason": "Cybersecurity log-correlation paper; completely cross-domain with no relation to vision or insulators."
+        },
+        {
+          "candidate_id": "c-76aaf3fd",
+          "title": "A rich bounty of AGN in the 9 square degree Bootes survey: high-z obscured AGN and large-scale structure",
+          "role_hint": "reference",
+          "reason": "Astronomy AGN survey paper; entirely cross-domain, no connection to vision or insulators."
+        },
+        {
+          "candidate_id": "c-72b72d5a",
+          "title": "AIn't Nothing But a Survey? Using Large Language Models for Coding German Open-Ended Survey Responses on Survey Motivati",
+          "role_hint": "reference",
+          "reason": "LLM-based survey response coding in social science; cross-domain, unrelated."
+        },
+        {
+          "candidate_id": "c-8bf7ed19",
+          "title": "The Methanol Multibeam Survey",
+          "role_hint": "reference",
+          "reason": "Radio astronomy methanol survey; cross-domain astrophysics content."
+        },
+        {
+          "candidate_id": "c-81f3c71c",
+          "title": "IRSF/SIRIUS JHKs near-infrared variable star survey in the Magellanic Clouds",
+          "role_hint": "reference",
+          "reason": "Near-IR variable star survey in Magellanic Clouds; cross-domain astrophysics."
+        },
+        {
+          "candidate_id": "c-e458d670",
+          "title": "The SAMI Galaxy Survey: first 1000 galaxies",
+          "role_hint": "reference",
+          "reason": "Integral field spectroscopy galaxy survey; cross-domain astrophysics."
+        },
+        {
+          "candidate_id": "c-91a1134c",
+          "title": "Roman Galactic Plane Survey Definition Committee Report",
+          "role_hint": "reference",
+          "reason": "Roman Galactic Plane Survey definition report; cross-domain astrophysics."
+        },
+        {
+          "candidate_id": "c-b71c6054",
+          "title": "VLP: A Survey on Vision-Language Pre-training",
+          "role_hint": "reference",
+          "reason": "Vision-language pre-training survey; cross-domain NLP/CV topic unrelated to insulator detection."
+        },
+        {
+          "candidate_id": "c-5be325be",
+          "title": "Criticality of the metal-topological insulator transition driven by disorder",
+          "role_hint": "reference",
+          "reason": "Condensed matter physics on metal-topological insulator transition; cross-domain physics."
+        },
+        {
+          "candidate_id": "c-18da092c",
+          "title": "Tunable Chern insulator with shaken optical lattices",
+          "role_hint": "reference",
+          "reason": "Cold atom physics on Chern insulators in optical lattices; cross-domain physics."
+        },
+        {
+          "candidate_id": "c-5e3d529f",
+          "title": "Field-induced metal-insulator transition and switching phenomenon in correlated insulators",
+          "role_hint": "reference",
+          "reason": "Condensed matter metal-insulator transition paper; cross-domain physics."
+        },
+        {
+          "candidate_id": "c-8da6d304",
+          "title": "Strained topological insulator spin field effect transistor",
+          "role_hint": "reference",
+          "reason": "Topological insulator spin FET device paper; cross-domain device physics."
+        },
+        {
+          "candidate_id": "c-cef836bb",
+          "title": "Realizing Hopf Insulators in Dipolar Spin Systems",
+          "role_hint": "reference",
+          "reason": "Physics paper on Hopf insulators in dipolar spin systems; zero overlap with vision-based insulator defect detection."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-87a331f5",
+          "title": "HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-5a5ddeb3",
+          "title": "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-a8b30f2b",
+          "title": "UTD-Yolov5: A Real-time Underwater Targets Detection Method based on Attention Improved YOLOv5",
+          "role_hint": "reference",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-8ff35640",
+          "title": "Model Compression Methods for YOLOv5: A Review",
+          "role_hint": "reference",
+          "year": 2023
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-03ca4b06",
+          "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-f8fe4b77",
+          "title": "Fire Detection From Image and Video Using YOLOv5",
+          "role_hint": "reference",
+          "year": 2023
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-44529da7",
+          "title": "Adversarial Attack On Yolov5 For Traffic And Road Sign Detection",
+          "role_hint": "reference",
+          "year": 2023
+        },
+        {
+          "candidate_id": "c-77991f8f",
+          "title": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+          "role_hint": "reference",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-86e2fc93",
+          "title": "COVID-19 Detection Using CT Image Based On YOLOv5 Network",
+          "role_hint": "reference",
+          "year": 2022
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-a59ff8e0",
+          "title": "VisDrone",
+          "role_hint": "dataset",
+          "year": null
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "VisDrone (c-a59ff8e0) is UAV-view but contains NO insulator classes; usable only as backbone/pretraining domain source, not a target dataset.",
+      "No insulator-specific public dataset was surfaced in this retrieval; a Chinese-language search (CNKI/Wanfang/Roboflow) is required to locate one.",
+      "No GitHub repo for insulator+YOLOv5 was retrieved; repo search returned empty and must be re-run with Chinese keywords.",
+      "VisDrone license and class list should be confirmed before treating it as a pretraining source."
+    ],
+    "work_suggestions": [
+      "Before drafting the baseline section, retrieve at least 3 CNKI/IEEE papers that actually apply YOLOv5 to insulator defect recognition; the current EvidenceReview has 0 such items.",
+      "Use c-87a331f5 (HIC-YOLOv5) as the small-object head reference when adapting YOLOv5 to small insulator defects in aerial images.",
+      "Use c-5a5ddeb3 (YOLOv5s-GTB) as the lightweight/defect-detection reference to justify backbone choice and augmentation strategy.",
+      "Borrow attention-module designs from c-a8b30f2b (UTD-YOLOv5) to handle cluttered UAV backgrounds behind insulators.",
+      "Consult c-8ff35640 (YOLOv5 compression survey) for any edge-deployment / pruning discussion; do not cite it as insulator evidence."
+    ],
+    "risk_reminders": [
+      "Core evidence missing: no insulator+YOLOv5 paper found; direction is not yet grounded.",
+      "Word-collision risk: 'insulator' returns quantum/condensed-matter papers (e.g. c-cef836bb); filter strictly by object/task terms.",
+      "Domain adapters (crossref/openalex/github) returned empty; assume coverage gap, not topic absence.",
+      "VisDrone cannot stand in as the target dataset; it lacks insulator labels.",
+      "arxiv search may be biased toward English recent work; Chinese-language baselines are likely under-retrieved."
+    ],
+    "manual_questions": [
+      "Is the target dataset self-built, public (e.g. CPLID), or synthetic? Which defect classes matter most?",
+      "Which YOLOv5 variant is mandated: YOLOv5s/m/l/x, or any?",
+      "Deployment target: server GPU, edge/Jetson, or UAV onboard?",
+      "Is single-stage detection enough, or is two-stage/cascaded defect classifier required?",
+      "Evaluation: pure accuracy, or also latency/model-size on UAV hardware?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "stop",
+    "blocking_questions": [
+      "No evidence of any YOLOv5+insulator paper; should CNKI/万方/IEEE be searched before proceeding?",
+      "No insulator-specific dataset candidate; is the dataset self-built, CPLID, or other public source?",
+      "Which defect classes (self-explosion, breakage, pollution flashover) are in scope?",
+      "Is YOLOv5 variant fixed (s/m/l/x), or is the goal a method comparison study?",
+      "What is the deployment target: server GPU, edge/Jetson, or UAV onboard?"
+    ],
+    "weak_points": [
+      "paper_groups.baseline contains only generic YOLOv5 variants, zero insulator baselines.",
+      "Core evidence row count is 0; 13/22 candidates were rejected as off-topic.",
+      "Only dataset candidate (VisDrone) lacks the insulator class and is mislabeled as dataset.",
+      "evidence_gaps is empty despite the synthesis admitting severe retrieval failure.",
+      "Work suggestions propose baseline citations for non-insulator papers, risking factual drift."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Zero insulator-specific YOLOv5 papers or datasets were retrieved; 13/22 candidates rejected. Baseline group is generic YOLOv5 variants, not insulator baselines. evidence_gaps is empty despite admitted core-evidence failure. Three+ dimensions fail, so the agent must stop and seek human clarification plus targeted CNKI/IEEE re-search before any opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于YOLOv5的绝缘子检测与缺陷识别方法研究",
+      "domain_route": "vision_2d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "arxiv": 22
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 14,
+      "queries": [
+        "detection insulator",
+        "v5 insulator",
+        "he insulator",
+        "we insulator",
+        "detection benchmark",
+        "detection survey",
+        "v5 benchmark",
+        "v5 survey"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 304.42
+}

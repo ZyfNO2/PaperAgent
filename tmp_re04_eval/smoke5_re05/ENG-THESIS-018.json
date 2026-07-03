@@ -1,0 +1,2875 @@
+{
+  "project_id": "agent-re04-c36876ac",
+  "raw_topic": "基于深度学习的三维点云补全方法研究",
+  "parsed_topic": {
+    "raw_topic": "基于深度学习的三维点云补全方法研究",
+    "normalized_topic": "Deep learning-based 3D point cloud completion methods",
+    "domain_route": "vision_3d",
+    "domain_confidence": 0.95,
+    "method_terms": [
+      "Transformer",
+      "PointNet",
+      "DGCNN",
+      "diffusion model",
+      "graph neural network",
+      "VAE"
+    ],
+    "task_terms": [
+      "point cloud completion",
+      "shape completion",
+      "3D reconstruction",
+      "occlusion recovery"
+    ],
+    "object_terms": [
+      "3D point cloud",
+      "partial point cloud",
+      "CAD model",
+      "ShapeNet",
+      "PCN dataset"
+    ],
+    "query_atoms_en": [
+      "point cloud completion deep learning",
+      "3D shape completion neural network",
+      "partial point cloud inpainting",
+      "PCN point completion network",
+      "PoinTr transformer point cloud",
+      "diffusion point cloud completion"
+    ],
+    "query_atoms_zh": [
+      "三维点云补全 深度学习",
+      "点云形状补全",
+      "不完整点云修复",
+      "点云补全网络",
+      "点云生成 扩散模型",
+      "三维重建 点云"
+    ],
+    "needs_clarification": [],
+    "site_hints": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "proceedings.mlr.press"
+    ]
+  },
+  "query_matrix": {
+    "raw_topic": "基于深度学习的三维点云补全方法研究",
+    "domain_route": "vision_3d",
+    "needs_clarification": false,
+    "query_families": {
+      "core": [
+        "Transformer point cloud completion",
+        "Transformer 3D point cloud"
+      ],
+      "method_task": [
+        "Transformer point cloud completion",
+        "Transformer shape completion",
+        "PointNet point cloud completion",
+        "PointNet shape completion"
+      ],
+      "object_task": [
+        "3D point cloud point cloud completion",
+        "3D point cloud shape completion",
+        "partial point cloud point cloud completion",
+        "partial point cloud shape completion"
+      ],
+      "dataset": [
+        "point cloud completion dataset",
+        "3D point cloud dataset"
+      ],
+      "repo": [
+        "point cloud completion github",
+        "point cloud completion implementation",
+        "Transformer point cloud completion"
+      ],
+      "survey": [
+        "point cloud completion survey",
+        "vision 3d survey"
+      ],
+      "benchmark": [
+        "point cloud completion benchmark"
+      ],
+      "baseline": [
+        "Transformer point cloud completion",
+        "Transformer shape completion",
+        "PointNet point cloud completion",
+        "PointNet shape completion"
+      ]
+    },
+    "axes": {
+      "method_terms": [
+        "Transformer",
+        "PointNet",
+        "DGCNN",
+        "diffusion model",
+        "graph neural network",
+        "VAE"
+      ],
+      "task_terms": [
+        "point cloud completion",
+        "shape completion",
+        "3D reconstruction",
+        "occlusion recovery"
+      ],
+      "object_terms": [
+        "3D point cloud",
+        "partial point cloud",
+        "CAD model",
+        "ShapeNet",
+        "PCN dataset"
+      ],
+      "domain_route": "vision_3d"
+    },
+    "fb_atom": "point cloud completion deep learning",
+    "baseline_fallback_reason": null
+  },
+  "plan": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "broad_recall",
+        "goal": "wide initial sweep across paper + repo backends for point cloud completion literature",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud completion deep learning",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "primary arxiv sweep to anchor the survey on the core task",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "PoinTr transformer point cloud",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "surface the representative transformer-based completion baseline",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "3D shape completion neural network",
+            "target_role": "parallel_paper",
+            "why_call": "OpenAlex broadens recall to non-arxiv venues (CVPR/ECCV/ICCV)",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "diffusion point cloud completion",
+            "target_role": "baseline_or_parallel_paper",
+            "why_call": "capture the diffusion-model branch of completion methods",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "point cloud completion benchmark",
+            "target_role": "reference",
+            "why_call": "Crossref returns journal/conference metadata and dataset-citation context",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "point cloud completion",
+            "target_role": "repo",
+            "why_call": "first github sweep for runnable completion implementations",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "reference_expansion",
+        "goal": "expand coverage via survey / benchmark / recent-advances variants and method-keyed expansions",
+        "calls": [
+          {
+            "tool": "search_arxiv",
+            "query": "point cloud completion survey",
+            "target_role": "survey",
+            "why_call": "find overview/survey papers to anchor the literature review",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "graph neural point cloud",
+            "target_role": "reference",
+            "why_call": "capture GCN/DGCNN-lineage completion methods",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "partial point cloud inpainting",
+            "target_role": "parallel_paper",
+            "why_call": "expand into inpainting-flavored completion literature",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_openalex",
+            "query": "VAE point cloud generation",
+            "target_role": "parallel_paper",
+            "why_call": "cover generative (VAE) branch of completion",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_crossref",
+            "query": "ShapeNet PCN benchmark",
+            "target_role": "dataset",
+            "why_call": "Crossref surfaces dataset papers and benchmark descriptions",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "PoinTr",
+            "target_role": "repo",
+            "why_call": "locate official PoinTr implementation for reproduction",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "repo_dataset_followup",
+        "goal": "find runnable code, datasets, and recent framework repos for point cloud completion",
+        "calls": [
+          {
+            "tool": "search_github",
+            "query": "point completion network",
+            "target_role": "repo",
+            "why_call": "retrieve the canonical PCN codebase as a baseline repo",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "diffusion point cloud",
+            "target_role": "repo",
+            "why_call": "find diffusion-based completion implementations",
+            "expected_output": "repo",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_github",
+            "query": "ShapeNet PCN dataset",
+            "target_role": "dataset",
+            "why_call": "locate ShapeNet/PCN dataset releases and loaders",
+            "expected_output": "dataset",
+            "fallback_tool": ""
+          },
+          {
+            "tool": "search_arxiv",
+            "query": "3D point cloud recent advances",
+            "target_role": "reference",
+            "why_call": "catch late-2024/2025 completion advances that may not appear elsewhere",
+            "expected_output": "paper",
+            "fallback_tool": ""
+          }
+        ]
+      }
+    ],
+    "year_min": 2018,
+    "top_k_per_adapter": 8,
+    "site_keywords": [
+      "arxiv.org",
+      "openaccess.thecvf.com",
+      "proceedings.mlr.press"
+    ],
+    "arxiv_queries": [
+      "point cloud completion deep learning",
+      "PoinTr transformer point cloud",
+      "point cloud completion survey",
+      "graph neural point cloud",
+      "3D point cloud recent advances"
+    ],
+    "openalex_queries": [
+      "3D shape completion neural network",
+      "diffusion point cloud completion",
+      "partial point cloud inpainting",
+      "VAE point cloud generation"
+    ],
+    "crossref_queries": [
+      "point cloud completion benchmark",
+      "ShapeNet PCN benchmark"
+    ],
+    "github_queries": [
+      "point cloud completion",
+      "PoinTr",
+      "point completion network",
+      "diffusion point cloud",
+      "ShapeNet PCN dataset"
+    ]
+  },
+  "candidate_pool": [
+    {
+      "stable_id": "enhancing performance of point cloud completion networks with consistency loss",
+      "candidate_id": "c-71b55c0a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Enhancing Performance of Point Cloud Completion Networks with Consistency Loss",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2024,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2410.07298v3",
+      "identifier": "2410.07298v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point cloud completion networks are conventionally trained to minimize the disparities between the completed point cloud and the ground-truth counterpart. However, an incomplete object-level point cloud can have multiple valid completion solutions when it is examined in isolation. This one-to-many mapping issue can cause contradictory supervision signals to the network because the loss function may produce different values for identical input-output pairs of the network. In many cases, this issue could adversely affect the network optimization process. In this work, we propose to enhance the conventional learning objective using a novel completion consistency loss to mitigate the one-to-many mapping problem. Specifically, the proposed consistency loss ensure that a point cloud completion network generates a coherent completion solution for incomplete objects originating from the same source point cloud. Experimental results across multiple well-established datasets and benchmarks demonstrated the proposed completion consistency loss have excellent capability to enhance the completion performance of various existing networks without any modification to the design of the networks. The proposed consistency loss enhances the performance of the point completion network without affecting the inference speed, thereby increasing the accuracy of point cloud completion. Notably, a state-of-the-art point completion network trained with the proposed consistency loss can achieve state-of-the-art accuracy on the challenging new MVP dataset. The code and result of experiment various point completion models using proposed consistency loss will be available at: https://github.com/kaist-avelab/ConsistencyLoss .",
+      "extra": {}
+    },
+    {
+      "stable_id": "cascaded refinement network for point cloud completion with self-supervision",
+      "candidate_id": "c-87db7a67",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Cascaded Refinement Network for Point Cloud Completion with Self-supervision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2010.08719v3",
+      "identifier": "2010.08719v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point clouds are often sparse and incomplete, which imposes difficulties for real-world applications. Existing shape completion methods tend to generate rough shapes without fine-grained details. Considering this, we introduce a two-branch network for shape completion. The first branch is a cascaded shape completion sub-network to synthesize complete objects, where we propose to use the partial input together with the coarse output to preserve the object details during the dense point reconstruction. The second branch is an auto-encoder to reconstruct the original partial input. The two branches share a same feature extractor to learn an accurate global feature for shape completion. Furthermore, we propose two strategies to enable the training of our network when ground truth data are not available. This is to mitigate the dependence of existing approaches on large amounts of ground truth training data that are often difficult to obtain in real-world applications. Additionally, our proposed strategies are also able to improve the reconstruction quality for fully supervised learning. We verify our approach in self-supervised, semi-supervised and fully supervised settings with superior performances. Quantitative and qualitative results on different datasets demonstrate that our method achieves more realistic outputs than state-of-the-art approaches on the point cloud completion task.",
+      "extra": {}
+    },
+    {
+      "stable_id": "a systematic approach for cross-source point cloud registration by preserving macro and micro structures",
+      "candidate_id": "c-d893d966",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2016,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1608.05143v2",
+      "identifier": "1608.05143v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We propose a systematic approach for registering cross-source point clouds. The compelling need for cross-source point cloud registration is motivated by the rapid development of a variety of 3D sensing techniques, but many existing registration methods face critical challenges as a result of the large variations in cross-source point clouds. This paper therefore illustrates a novel registration method which successfully aligns two cross-source point clouds in the presence of significant missing data, large variations in point density, scale difference and so on. The robustness of the method is attributed to the extraction of macro and micro structures. Our work has three main contributions: (1) a systematic pipeline to deal with cross-source point cloud registration; (2) a graph construction method to maintain macro and micro structures; (3) a new graph matching method is proposed which considers the global geometric constraint to robustly register these variable graphs. Compared to most of the related methods, the experiments show that the proposed method successfully registers in cross-source datasets, while other methods have difficulty achieving satisfactory results. The proposed method also shows great ability in same-source datasets.",
+      "extra": {}
+    },
+    {
+      "stable_id": "masked clustering prediction for unsupervised point cloud pre-training",
+      "candidate_id": "c-9bff691f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Masked Clustering Prediction for Unsupervised Point Cloud Pre-training",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2508.08910v1",
+      "identifier": "2508.08910v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Vision transformers (ViTs) have recently been widely applied to 3D point cloud understanding, with masked autoencoding as the predominant pre-training paradigm. However, the challenge of learning dense and informative semantic features from point clouds via standard ViTs remains underexplored. We propose MaskClu, a novel unsupervised pre-training method for ViTs on 3D point clouds that integrates masked point modeling with clustering-based learning. MaskClu is designed to reconstruct both cluster assignments and cluster centers from masked point clouds, thus encouraging the model to capture dense semantic information. Additionally, we introduce a global contrastive learning mechanism that enhances instance-level feature learning by contrasting different masked views of the same point cloud. By jointly optimizing these complementary objectives, i.e., dense semantic reconstruction, and instance-level contrastive learning. MaskClu enables ViTs to learn richer and more semantically meaningful representations from 3D point clouds. We validate the effectiveness of our method via multiple 3D tasks, including part segmentation, semantic segmentation, object detection, and classification, where MaskClu sets new competitive results. The code and models will be released at:https://github.com/Amazingren/maskclu.",
+      "extra": {}
+    },
+    {
+      "stable_id": "shapeadv: generating shape-aware adversarial 3d point clouds",
+      "candidate_id": "c-d598e7c5",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "ShapeAdv: Generating Shape-Aware Adversarial 3D Point Clouds",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2020,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2005.11626v1",
+      "identifier": "2005.11626v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "We introduce ShapeAdv, a novel framework to study shape-aware adversarial perturbations that reflect the underlying shape variations (e.g., geometric deformations and structural differences) in the 3D point cloud space. We develop shape-aware adversarial 3D point cloud attacks by leveraging the learned latent space of a point cloud auto-encoder where the adversarial noise is applied in the latent space. Specifically, we propose three different variants including an exemplar-based one by guiding the shape deformation with auxiliary data, such that the generated point cloud resembles the shape morphing between objects in the same category. Different from prior works, the resulting adversarial 3D point clouds reflect the shape variations in the 3D point cloud space while still being close to the original one. In addition, experimental evaluations on the ModelNet40 benchmark demonstrate that our adversaries are more difficult to defend with existing point cloud defense methods and exhibit a higher attack transferability across classifiers. Our shape-aware adversarial attacks are orthogonal to existing point cloud based attacks and shed light on the vulnerability of 3D deep neural networks.",
+      "extra": {}
+    },
+    {
+      "stable_id": "linking points with labels in 3d: a review of point cloud semantic segmentation",
+      "candidate_id": "c-0f08c56e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Linking Points With Labels in 3D: A Review of Point Cloud Semantic Segmentation",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2019,
+      "venue": null,
+      "url": "http://arxiv.org/abs/1908.08854v3",
+      "identifier": "1908.08854v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "3D Point Cloud Semantic Segmentation (PCSS) is attracting increasing interest, due to its applicability in remote sensing, computer vision and robotics, and due to the new possibilities offered by deep learning techniques. In order to provide a needed up-to-date review of recent developments in PCSS, this article summarizes existing studies on this topic. Firstly, we outline the acquisition and evolution of the 3D point cloud from the perspective of remote sensing and computer vision, as well as the published benchmarks for PCSS studies. Then, traditional and advanced techniques used for Point Cloud Segmentation (PCS) and PCSS are reviewed and compared. Finally, important issues and open questions in PCSS studies are discussed.",
+      "extra": {}
+    },
+    {
+      "stable_id": "multimodal shape completion via imle",
+      "candidate_id": "c-2efe474f",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Multimodal Shape Completion via IMLE",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2021,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2106.16237v2",
+      "identifier": "2106.16237v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Shape completion is the problem of completing partial input shapes such as partial scans. This problem finds important applications in computer vision and robotics due to issues such as occlusion or sparsity in real-world data. However, most of the existing research related to shape completion has been focused on completing shapes by learning a one-to-one mapping which limits the diversity and creativity of the produced results. We propose a novel multimodal shape completion technique that is effectively able to learn a one-to-many mapping and generates diverse complete shapes. Our approach is based on the conditional Implicit MaximumLikelihood Estimation (IMLE) technique wherein we condition our inputs on partial 3D point clouds. We extensively evaluate our approach by comparing it to various baselines both quantitatively and qualitatively. We show that our method is superior to alternatives in terms of completeness and diversity of shapes.",
+      "extra": {}
+    },
+    {
+      "stable_id": "nbv-sc: next best view planning based on shape completion for fruit mapping and reconstruction",
+      "candidate_id": "c-385bab27",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "NBV-SC: Next Best View Planning based on Shape Completion for Fruit Mapping and Reconstruction",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2209.15376v3",
+      "identifier": "2209.15376v3",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Active perception for fruit mapping and harvesting is a difficult task since occlusions occur frequently and the location as well as size of fruits change over time. State-of-the-art viewpoint planning approaches utilize computationally expensive ray casting operations to find good viewpoints aiming at maximizing information gain and covering the fruits in the scene. In this paper, we present a novel viewpoint planning approach that explicitly uses information about the predicted fruit shapes to compute targeted viewpoints that observe as yet unobserved parts of the fruits. Furthermore, we formulate the concept of viewpoint dissimilarity to reduce the sampling space for more efficient selection of useful, dissimilar viewpoints. Our simulation experiments with a UR5e arm equipped with an RGB-D sensor provide a quantitative demonstration of the efficacy of our iterative next best view planning method based on shape completion. In comparative experiments with a state-of-the-art viewpoint planner, we demonstrate improvement not only in the estimation of the fruit sizes, but also in their reconstruction, while significantly reducing the planning time. Finally, we show the viability of our approach for mapping sweet peppers plants with a real robotic system in a commercial glasshouse.",
+      "extra": {}
+    },
+    {
+      "stable_id": "sequential point clouds: a survey",
+      "candidate_id": "c-05b6d86b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Sequential Point Clouds: A Survey",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2022,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2204.09337v2",
+      "identifier": "2204.09337v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Point cloud has drawn more and more research attention as well as real-world applications. However, many of these applications (e.g. autonomous driving and robotic manipulation) are actually based on sequential point clouds (i.e. four dimensions) because the information of the static point cloud data could provide is still limited. Recently, researchers put more and more effort into sequential point clouds. This paper presents an extensive review of the deep learning-based methods for sequential point cloud research including dynamic flow estimation, object detection \\& tracking, point cloud segmentation, and point cloud forecasting. This paper further summarizes and compares the quantitative results of the reviewed methods over the public benchmark datasets. Finally, this paper is concluded by discussing the challenges in the current sequential point cloud research and pointing out insightful potential future research directions.",
+      "extra": {}
+    },
+    {
+      "stable_id": "r3evision: a survey on robust rendering, restoration, and enhancement for 3d low-level vision",
+      "candidate_id": "c-b6ebbd7d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2025,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2506.16262v2",
+      "identifier": "2506.16262v2",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Neural rendering methods such as Neural Radiance Fields (NeRF) and 3D Gaussian Splatting (3DGS) have achieved significant progress in photorealistic 3D scene reconstruction and novel view synthesis. However, most existing models assume clean and high-resolution (HR) multi-view inputs, which limits their robustness under real-world degradations such as noise, blur, low-resolution (LR), and weather-induced artifacts. To address these limitations, the emerging field of 3D Low-Level Vision (3D LLV) extends classical 2D Low-Level Vision tasks including super-resolution (SR), deblurring, weather degradation removal, restoration, and enhancement into the 3D spatial domain. This survey, referred to as R\\textsuperscript{3}eVision, provides a comprehensive overview of robust rendering, restoration, and enhancement for 3D LLV by formalizing the degradation-aware rendering problem and identifying key challenges related to spatio-temporal consistency and ill-posed optimization. Recent methods that integrate LLV into neural rendering frameworks are categorized to illustrate how they enable high-fidelity 3D reconstruction under adverse conditions. Application domains such as autonomous driving, AR/VR, and robotics are also discussed, where reliable 3D perception from degraded inputs is critical. By reviewing representative methods, datasets, and evaluation protocols, this work positions 3D LLV as a fundamental direction for robust 3D content generation and scene-level reconstruction in real-world environments.",
+      "extra": {}
+    },
+    {
+      "stable_id": "advances in global solvers for 3d vision",
+      "candidate_id": "c-efb65810",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Advances in Global Solvers for 3D Vision",
+      "sources": [
+        "arxiv"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "http://arxiv.org/abs/2602.14662v1",
+      "identifier": "2602.14662v1",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": "Global solvers have emerged as a powerful paradigm for 3D vision, offering certifiable solutions to nonconvex geometric optimization problems traditionally addressed by local or heuristic methods. This survey presents the first systematic review of global solvers in geometric vision, unifying the field through a comprehensive taxonomy of three core paradigms: Branch-and-Bound (BnB), Convex Relaxation (CR), and Graduated Non-Convexity (GNC). We present their theoretical foundations, algorithmic designs, and practical enhancements for robustness and scalability, examining how each addresses the fundamental nonconvexity of geometric estimation problems. Our analysis spans ten core vision tasks, from Wahba problem to bundle adjustment, revealing the optimality-robustness-scalability trade-offs that govern solver selection. We identify critical future directions: scaling algorithms while maintaining guarantees, integrating data-driven priors with certifiable optimization, establishing standardized benchmarks, and addressing societal implications for safety-critical deployment. By consolidating theoretical foundations, practical advances, and broader impacts, this survey provides a unified perspective and roadmap toward certifiable, trustworthy perception for real-world applications. A continuously-updated literature summary and companion code tutorials are available at https://github.com/ericzzj1989/Awesome-Global-Solvers-for-3D-Vision.",
+      "extra": {}
+    },
+    {
+      "stable_id": "pctma-net: point cloud transformer with morphing atlas-based point generation network for dense point cloud completion",
+      "candidate_id": "c-4d7833b1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "PCTMA-Net: Point Cloud Transformer with Morphing Atlas-based Point Generation Network for Dense Point Cloud Completion",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2021,
+      "venue": "2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+      "url": "https://doi.org/10.1109/iros51168.2021.9636483",
+      "identifier": "10.1109/iros51168.2021.9636483",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a point cloud completion network based on local feature super-sensing and global attention-enhanced transformer",
+      "candidate_id": "c-73c09229",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Point Cloud Completion Network Based on Local Feature Super-Sensing and Global Attention-Enhanced Transformer",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2026,
+      "venue": null,
+      "url": "https://doi.org/10.2139/ssrn.4594372",
+      "identifier": "10.2139/ssrn.4594372",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "point cloud completion by hierarchical feature modeling with anchor-guided transformer",
+      "candidate_id": "c-4c6d6df9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Point Cloud Completion by Hierarchical Feature Modeling with Anchor-Guided Transformer",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2025,
+      "venue": "2025 5th International Conference on Artificial Intelligence, Robotics, and Communication (ICAIRC)",
+      "url": "https://doi.org/10.1109/icairc68035.2025.11384948",
+      "identifier": "10.1109/icairc68035.2025.11384948",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "tnt-net++: point cloud completion by transformer in transformer with dynamic seed generator",
+      "candidate_id": "c-a1e5040d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "TNT-Net++: Point Cloud Completion by Transformer in Transformer with Dynamic Seed Generator",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 International Joint Conference on Neural Networks (IJCNN)",
+      "url": "https://doi.org/10.1109/ijcnn60899.2024.10650392",
+      "identifier": "10.1109/ijcnn60899.2024.10650392",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "multi-resolution transformer-based point cloud completion network for intelligent manufacture",
+      "candidate_id": "c-694d1aca",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "Multi-resolution transformer-based point cloud completion network for intelligent manufacture",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "2022 China Automation Congress (CAC)",
+      "url": "https://doi.org/10.1109/cac57257.2022.10055332",
+      "identifier": "10.1109/cac57257.2022.10055332",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "mlft-net: point cloud completion using multi-level feature transformer",
+      "candidate_id": "c-b3bb21ff",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "MLFT-Net: Point Cloud Completion Using Multi-Level Feature Transformer",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2022,
+      "venue": "2022 6th International Symposium on Computer Science and Intelligent Control (ISCSIC)",
+      "url": "https://doi.org/10.1109/iscsic57216.2022.00042",
+      "identifier": "10.1109/iscsic57216.2022.00042",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "a point cloud completion network based on multi-channel resolution transformer",
+      "candidate_id": "c-ac6f30d7",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "A Point Cloud Completion Network Based on Multi-Channel Resolution Transformer",
+      "sources": [
+        "crossref"
+      ],
+      "year": 2024,
+      "venue": "2024 5th International Seminar on Artificial Intelligence, Networking and Information Technology (AINIT)",
+      "url": "https://doi.org/10.1109/ainit61980.2024.10581414",
+      "identifier": "10.1109/ainit61980.2024.10581414",
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {}
+    },
+    {
+      "stable_id": "ch-jad/ch-jadi-rajput1",
+      "candidate_id": "c-baba77fe",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "Ch-Jad/CH-JaDi-Rajput1",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/Ch-Jad/CH-JaDi-Rajput1",
+      "identifier": null,
+      "description": "# Cmder  [![Join the chat at https://gitter.im/cmderdev/cmder](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cmderdev/cmder?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.appveyor.com/api/projects/status/github/cmderdev/cmder?branch=master&svg=true)](https://ci.appveyor.com/project/MartiUK/cmder)  Cmder is a **software package** created out of pure frustration over absence of usable console emulator on Windows. It is based on [ConEmu](https://conemu.github.io/) with *major* config overhaul, comes with a Monokai color scheme, amazing [clink](https://chrisant996.github.io/clink/) (further enhanced by [clink-completions](https://github.com/vladimir-kotikov/clink-completions)) and a custom prompt layout.  ![Cmder Screenshot](http://i.imgur.com/g1nNf0I.png)  ## Why use it  The main advantage of Cmder is portability. It is designed to be totally self-contained with no external dependencies, which makes it great for **USB Sticks** or **cloud storage**. So you can carry your console, aliases and binaries (like wget, curl and git) with you anywhere.  The Cmder's user interface is also designed to be more eye pleasing, and you can compare the main differences between Cmder and ConEmu [here](https://conemu.github.io/en/cmder.html).  ## Installation ### Single User Portable Config  1. Download the [latest release](https://github.com/cmderdev/cmder/releases/) 2. Extract the archive. *Note: This path should not be `C:\\Program Files` or anywhere else that would require Administrator access for modifying configuration files* 3. (optional) Place your own executable files into the `%cmder_root%\\bin` folder to be injected into your PATH. 4. Run `Cmder.exe`  ### Shared Cmder install with Non-Portable Individual User Config 1. Download the [latest release](https://github.com/cmderdev/cmder/releases/) 2. Extract the archive to a shared location. 3. (optional) Place your own executable files and custom app folders into the `%cmder_root%\\bin`. See: [bin/README.md](./bin/Readme.md)    - This folder to be injected into your PATH by default.    - See `/max_depth [1-5]` in 'Command Line Arguments for `init.bat`' table to add subdirectories recursively. 4. (optional) Place your own custom app folders into the `%cmder_root%\\opt`. See: [opt/README.md](./opt/Readme.md)    - This folder will NOT be injected into your PATH so you have total control of what gets added. 5. Run `Cmder.exe` with `/C` command line argument. Example: `cmder.exe /C %userprofile%\\cmder_config`    * This will create the following directory structure if it is missing.       ```      c:\\users\\[CH JaDi Rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt      ```    - (optional) Place your own executable files and custom app folders into `%userprofile%\\cmder_config\\bin`.     - This folder to be injected into your PATH by default.     - See `/max_depth [1-5]` in 'Command Line Arguments for `init.bat`' table to add subdirectories recursively.   - (optional) Place your own custom app folders into the `%user_profile%\\cmder_config\\opt`.     - This folder will NOT be injected into your PATH so you have total control of what gets added.   * Both the shared install and the individual user config locations can contain a full set of init and profile.d scripts enabling shared config with user overrides.  See below.  ## Cmder.exe Command Line Arguments   | Argument                  | Description                                                                              | | -------------------       | -----------------------------------------------------------------------                  | | `/C [user_root_path]`     | Individual user Cmder root folder.  Example: `%userprofile%\\cmder_config`                | | `/M`                      | Use `conemu-%computername%.xml` for ConEmu settings storage instead of `user_conemu.xml` | | `/REGISTER [ALL, USER]`   | Register a Windows Shell Menu shortcut.                                                  | | `/UNREGISTER [ALL, USER]` | Un-register a Windows Shell Menu shortcut.                                               | | `/SINGLE`                 | Start Cmder in single mode.                                                              | | `/START [start_path]`     | Folder path to start in.                                                                 | | `/TASK [task_name]`       | Task to start after launch.                                                              | | `/X [ConEmu extras pars]` | Forwards parameters to ConEmu                                                             |  ## Context Menu Integration  So you've experimented with Cmder a little and want to give it a shot in a more permanent home;  ### Shortcut to open Cmder in a chosen folder  1. Open a terminal as an Administrator 2. Navigate to the directory you have placed Cmder 3. Execute `.\\cmder.exe /REGISTER ALL`    _If you get a message \"Access Denied\" ensure you are executing the command in an **Administrator** prompt._  In a file explorer window right click in or on a directory to see \"Cmder Here\" in the context menu.  ## Keyboard shortcuts  ### Tab manipulation  * <kbd>Ctrl</kbd> + <kbd>T</kbd> : New tab dialog (maybe you want to open cmd as admin?) * <kbd>Ctrl</kbd> + <kbd>W</kbd> : Close tab * <kbd>Ctrl</kbd> + <kbd>D</kbd> : Close tab (if pressed on empty command) * <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>#Number</kbd> : Fast new tab: <kbd>1</kbd> - CMD, <kbd>2</kbd> - PowerShell * <kbd>Ctrl</kbd> + <kbd>Tab</kbd> : Switch to next tab * <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> : Switch to previous tab * <kbd>Ctrl</kbd> + <kbd>#Number</kbd> : Switch to tab #Number * <kbd>Alt</kbd> + <kbd>Enter</kbd>: Fullscreen  ### Shell  * <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>U</kbd> : Traverse up in directory structure (lovely feature!) * <kbd>End</kbd>, <kbd>Home</kbd>, <kbd>Ctrl</kbd> : Traversing text with as usual on Windows * <kbd>Ctrl</kbd> + <kbd>R</kbd> : History search * <kbd>Shift</kbd> + Mouse : Select and copy text from buffer  _(Some shortcuts are not yet documented, though they exist - please document them here)_  ## Features  ### Access to multiple shells in one window using tabs You can open multiple tabs each containing one of the following shells:  | Task                | Shell            | Description                                                                                                  | | ----                | -----            | -----------                                                                                                  | | Cmder               | `cmd.exe`        | Windows `cmd.exe` shell enhanced with Git, Git aware prompt, Clink (GNU Readline), and Aliases.              | | Cmder as Admin      | `cmd.exe`        | Administrative Windows `cmd.exe` Cmder shell.                                                                | | PowerShell          | `powershell.exe` | Windows PowerShell enhanced with Git and Git aware prompt .                                                  | | PowerShell as Admin | `powershell.exe` | Administrative Windows `powershell.exe` Cmder shell.                                                         | | Bash                | `bash.exe`       | Unix/Linux like bash shell running on Windows.                                                               | | Bash as Admin       | `bash.exe`       | Administrative Unix/Linux like bash shell running on Windows.                                                | | Mintty              | `bash.exe`       | Unix/Linux like bash shell running on Windows. See below for Mintty configuration differences                | | Mintty as Admin     | `bash.exe`       | Administrative Unix/Linux like bash shell running on Windows. See below for Mintty configuration differences |  Cmder, PowerShell, and Bash tabs all run on top of the Windows Console API and work as you might expect in Cmder with access to use ConEmu's color schemes, key bindings and other settings defined in the ConEmu Settings dialog.  ⚠ *NOTE:* Only the full edition of Cmder comes with a pre-installed bash, using a vendored [git-for-windows](https://gitforwindows.org/) installation. The pre-configured Bash tabs may not work on Cmder mini edition without additional configuration.  You may however, choose to use an external installation of bash, such as Microsoft's [Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (called WSL) or the [Cygwin](https://cygwin.com/) project which provides POSIX support on windows.  ⚠ *NOTE:* Mintty tabs use a program called 'mintty' as the terminal emulator that is not based on the Windows Console API, rather it's rendered graphically by ConEmu. Mintty differs from the other tabs in that it supports xterm/xterm-256color TERM types, and does not work with ConEmu settings like color schemes and key bindings.  As such, some differences in functionality are to be expected, such as Cmder not being able to apply a system-wide configuration to it.  As a result mintty specific config is done via the `[%USERPROFILE%|$HOME]/.minttyrc` file.  You may read more about Mintty and its config file [here](https://github.com/mintty/mintty).  An example of setting Cmder portable terminal colors for mintty:  From a bash/mintty shell:  ``` cd $CMDER_ROOT/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo source \\$CMDER_ROOT/vendor/mintty-colors-solarized/mintty-solarized-dark.sh>>$CMDER_ROOT/config/user_profile.sh ```  You may find some Monokai color schemes for mintty to match Cmder [here](https://github.com/oumu/mintty-color-schemes/blob/master/base16-monokai-mod.minttyrc).  ### Changing Cmder Default `cmd.exe` Prompt Config File  The default Cmder shell `cmd::Cmder` prompt is customized using `Clink` and is configured by editing a config file that exists in one of two locations:  - Single User Portable Config `%CMDER_ROOT%\\config\\cmder_prompt_config.lua` - Shared Cmder install with Non-Portable Individual User Config `%CMDER_USER_CONFIG%\\cmder_prompt_config.lua`  If your Cmder setup does not have this file create it from `%CMDER_ROOT%\\vendor\\cmder_prompt_config.lua.default`  Customizations include:  - Colors. - Single/Multi-line. - Full path/Folder only. - `[user]@[host]` to the beginning of the prompt. - `~` for home directory. - `λ` symbol  Documentation is in the file for each setting.  ### Changing Cmder Default `cmd.exe` Shell Startup Behaviour Using Task Arguments  1. Press <kbd>Win</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd> 1. Click either:   * `1. {cmd::Cmder as Admin}`   * `2. {cmd::Cmder}` 1. Add command line arguments where specified below:    *Note: Pay attention to the quotes!*    ```   cmd /s /k \"\"%ConEmuDir%\\..\\init.bat\" [ADD ARGS HERE]\"   ```  ##### Command Line Arguments for `init.bat`  | Argument                        | Description                                                                                                                                        | Default                                | | -----------------------------   | ----------------------------------------------------------------------------------------------                                                     | -------------------------------------  | | `/c [user cmder root]`          | Enables user bin and config folders for 'Cmder as admin' sessions due to non-shared environment.                                                   | not set                                | | `/d`                            | Enables debug output.                                                                                                                              | not set                                | | `/f`                            | Enables Cmder Fast Init Mode. This disables some features, see pull request [#1492](https://github.com/cmderdev/cmder/pull/1942) for more details. | not set                                | | `/t`                            | Enables Cmder Timed Init Mode. This displays the time taken run init scripts                                                                       | not set                                | | `/git_install_root [file path]` | User specified Git installation root path.                                                                                                         | `%CMDER_ROOT%\\vendor\\Git-for-Windows`  | | `/home [home folder]`           | User specified folder path to set `%HOME%` environment variable.                                                                                   | `%userprofile%`                        | | `/max_depth [1-5]`              | Define max recurse depth when adding to the path for `%cmder_root%\\bin` and `%cmder_user_bin%`                                                     | 1                                      | | `/nix_tools [0-2]`              | Define how `*nix` tools are added to the path.  Prefer Windows Tools: 1, Prefer *nix Tools: 2, No `/usr/bin` in `%PATH%`: 0                        | 1                                      | | `/svn_ssh [path to ssh.exe]`    | Define `%SVN_SSH%` so we can use git svn with ssh svn repositories.                                                                                | `%GIT_INSTALL_ROOT%\\bin\\ssh.exe`       | | `/user_aliases [file path]`     | File path pointing to user aliases.                                                                                                                | `%CMDER_ROOT%\\config\\user_aliases.cmd` | | `/v`                            | Enables verbose output.                                                                                                                            | not set                                | | (custom arguments)              | User defined arguments processed by `cexec`. Type `cexec /?` for more usage.                                                                      | not set                                |  ### Cmder Shell User Config Single user portable configuration is possible using the cmder specific shell config files.  Edit the below files to add your own configuration:  | Shell         | Cmder Portable User Config                | | ------------- | ----------------------------------------- | | Cmder         | `%CMDER_ROOT%\\config\\user_profile.cmd`    | | PowerShell    | `$ENV:CMDER_ROOT\\config\\user_profile.ps1` | | Bash/Mintty   | `$CMDER_ROOT/config/user_profile.sh`      |  Note: Bash and Mintty sessions will also source the `$HOME/.bashrc` file if it exists after it sources `$CMDER_ROOT/config/user_profile.sh`.  You can write `*.cmd|*.bat`, `*.ps1`, and `*.sh` scripts and just drop them in the `%CMDER_ROOT%\\config\\profile.d` folder to add startup config to Cmder.  | Shell         | Cmder `Profile.d` Scripts                          | | ------------- | -------------------------------------------------- | | Cmder         | `%CMDER_ROOT%\\config\\profile.d\\*.bat and *.cmd`    | | PowerShell    | `$ENV:CMDER_ROOT\\config\\profile.d\\*.ps1`           | | Bash/Mintty   | `$CMDER_ROOT/config/profile.d/*.sh`                |  #### Git Status Opt-Out   To disable Cmder prompt git status globally add the following to `~/.gitconfig` or locally for a single repo `[repo]/.git/config` and start a new session.   *Note: This configuration is not portable*   ```  [cmder]    status = false      # Opt out of Git status for 'ALL' Cmder supported shells.    cmdstatus = false   # Opt out of Git status for 'Cmd.exe' shells.    psstatus = false    # Opt out of Git status for 'Powershell.exe and 'Pwsh.exe' shells.    shstatus = false    # Opt out of Git status for 'bash.exe' shells.  ```  ### Aliases #### Cmder(`Cmd.exe`) Aliases You can define simple aliases for `cmd.exe` sessions with a command like `alias name=command`.  Cmd.exe aliases support optional parameters through the `$1-9` or the `$*` special characters so the alias `vi=vim.exe $*` typed as `vi [filename]` will open `[filename]` in `vim.exe`.  Cmd.exe aliases can also be more complex. See: [DOSKEY.EXE documentation](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/doskey) for additional details on complex aliases/macros for `cmd.exe`  Aliases defined using the `alias.bat` command will automatically be saved in the `%CMDER_ROOT%\\config\\user_aliases.cmd` file  To make an alias and/or any other profile settings permanent add it to one of the following:  Note: These are loaded in this order by `$CMDER_ROOT/vendor/init.bat`.  Anything stored in `%CMDER_ROOT%` will be a portable setting and will follow cmder to another machine.  * `%CMDER_ROOT%\\config\\profile.d\\*.cmd` and `\\*.bat` * `%CMDER_ROOT%\\config\\user_aliases.cmd` * `%CMDER_ROOT%\\config\\user_profile.cmd`  #### Bash.exe|Mintty.exe Aliases Bash shells support simple and complex aliases with optional parameters natively so they work a little different.  Typing `alias name=command` will create an alias only for the current running session.  To make an alias and/or any other profile settings permanent add it to one of the following:  Note: These are loaded in this order by `$CMDER_ROOT/vendor/git-for-windows/etc/profile.d/cmder.sh`.  Anything stored in `$CMDER_ROOT` will be a portable setting and will follow cmder to another machine.  * `$CMDER_ROOT/config/profile.d/*.sh` * `$CMDER_ROOT/config/user_profile.sh` * `$HOME/.bashrc`  If you add bash aliases to `$CMDER_ROOT/config/user_profile.sh` they will be portable and follow your Cmder folder if you copy it to another machine.  `$HOME/.bashrc` defined aliases are not portable.  #### PowerShell.exe Aliases PowerShell has native simple alias support, for example `[new-alias | set-alias] alias command`, so complex aliases with optional parameters are not supported in PowerShell sessions.  Type `get-help [new-alias|set-alias] -full` for help on PowerShell aliases.  To make an alias and/or any other profile settings permanent add it to one of the following:  Note: These are loaded in this order by `$ENV:CMDER_ROOT\\vendor\\user_profile.ps1`.  Anything stored in `$ENV:CMDER_ROOT` will be a portable setting and will follow cmder to another machine.  * `$ENV:CMDER_ROOT\\config\\profile.d\\*.ps1` * `$ENV:CMDER_ROOT\\config\\user_profile.ps1`  ### SSH Agent  To start the vendored SSH agent simply call `start-ssh-agent`, which is in the `vendor/git-for-windows/cmd` folder.  If you want to run SSH agent on startup, include the line `@call \"%GIT_INSTALL_ROOT%/cmd/start-ssh-agent.cmd\"` in `%CMDER_ROOT%/config/user_profile.cmd` (usually just uncomment it).  ### Vendored Git  Cmder is by default shipped with a vendored Git installation.  On each instance of launching Cmder, an attempt is made to locate any other user provided Git binaries. Upon finding a `git.exe` binary, Cmder further compares its version against the vendored one _by executing_ it. The vendored `git.exe` binary is _only_ used when it is more recent than the user-installed one.  You may use your favorite version of Git by including its path in the `%PATH%` environment variable.  Moreover, the **Mini** edition of Cmder (found on the [downloads page](https://github.com/cmderdev/cmder/releases)) excludes any vendored Git binaries.  ### Using external Cygwin/Babun, MSys2, WSL, or Git for Windows SDK with Cmder.  You may run bash (the default shell used on Linux, macOS and GNU/Hurd) externally on Cmder, using the following instructions:  1. Setup a new task by pressing <kbd>Win</kbd> +<kbd>Alt</kbd> + <kbd>T</kbd>. 1. Click the `+` button to add a task. 1. Name the new task in the top text box. 1. Provide task parameters, this is optional. 1. Add `cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console` to the `Commands` text box.  **Recommended Optional Steps:**  Copy the `vendor/cmder_exinit` file to the Cygwin/Babun, MSys2, or Git for Windows SDK environments `/etc/profile.d/` folder to use portable settings in the `$CMDER_ROOT/config` folder.  Note: MinGW could work if the init scripts include `profile.d` but this has not been tested.  The destination file extension depends on the shell you use in that environment.  For example:  * bash - Copy to `/etc/profile.d/cmder_exinit.sh` * zsh  - Copy to `/etc/profile.d/cmder_exinit.zsh`  Uncomment and edit the below line in the script to use Cmder config even when launched from outside Cmder.  ``` # CMDER_ROOT=${USERPROFILE}/cmder  # This is not required if launched from Cmder. ```  ### Customizing user sessions using `init.bat` custom arguments.  You can pass custom arguments to `init.bat` and use `cexec.cmd` in your `user_profile.cmd` to evaluate these arguments then execute commands based on a particular flag being detected or not.  `init.bat` creates two shortcuts for using `cexec.cmd` in your profile scripts.  #### `%ccall%` - Evaluates flags, runs commands if found,  and returns to the calling script and continues.  ``` ccall=call C:\\Users\\user\\cmderdev\\vendor\\bin\\cexec.cmd ```  Example: `%ccall% /startnotepad start notepad.exe`  #### `%cexec%` - Evaluates flags, runs commands if found, and does not return to the calling script.  ``` cexec=C:\\Users\\user\\cmderdev\\vendor\\bin\\cexec.cmd ```  Example: `%cexec% /startnotepad start notepad.exe`  It is useful when you have multiple tasks to execute `cmder` and need it to initialize the session differently depending on the task chosen.  To conditionally start `notepad.exe` when you start a specific `cmder` task:  * Press <kbd>win</kbd>+<kbd>alt</kbd>+<kbd>t</kbd> * Click `+` to add a new task. * Add the below to the `Commands` block:    ```batch    cmd.exe /k \"\"%ConEmuDir%\\..\\init.bat\" /startnotepad\"    ```  * Add the below to your `%cmder_root%\\config\\user_profile.cmd`    ```batch    %ccall% \"/startNotepad\" \"start\" \"notepad.exe\"`    ```  To see detailed usage of `cexec`, type `cexec /?` in cmder.  ### Integrating Cmder with [Hyper](https://github.com/zeit/hyper), [Microsoft VS Code](https://code.visualstudio.com/), and your favorite IDEs  Cmder by default comes with a vendored ConEmu installation as the underlying terminal emulator, as stated [here](https://conemu.github.io/en/cmder.html).  However, Cmder can in fact run in a variety of other terminal emulators, and even integrated IDEs. Assuming you have the latest version of Cmder, follow the following instructions to get Cmder working with your own terminal emulator.  For instructions on how to integrate Cmder with your IDE, please read our [Wiki section](https://github.com/cmderdev/cmder/wiki#cmder-integration).  ## Upgrading  The process of upgrading Cmder depends on the version/build you are currently running.  If you have a `[cmder_root]/config/user[-|_]conemu.xml`, you are running a newer version of Cmder, follow the below process:  1. Exit all Cmder sessions and relaunch `[cmder_root]/cmder.exe`, this backs up your existing `[cmder_root]/vendor/conemu-maximus5/conemu.xml` to `[cmder_root]/config/user[-|_]conemu.xml`.     * The `[cmder_root]/config/user[-|_]conemu.xml` contains any custom settings you have made using the 'Setup Tasks' settings dialog.  2. Exit all Cmder sessions and backup any files you have manually edited under `[cmder_root]/vendor`.     * Editing files under `[cmder_root]/vendor` is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in `[cmder_root]/config` folder.  3.  Delete the `[cmder_root]/vendor` folder. 4.  Extract the new `cmder.zip` or `cmder_mini.zip` into `[cmder_root]/` overwriting all files when prompted.  If you do not have a `[cmder_root]/config/user[-|_]conemu.xml`, you are running an older version of cmder, follow the below process:  1. Exit all Cmder sessions and backup `[cmder_root]/vendor/conemu-maximus5/conemu.xml` to `[cmder_root]/config/user[-|_]conemu.xml`.  2. Backup any files you have manually edited under `[cmder_root]/vendor`.     * Editing files under `[cmder_root]/vendor` is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in `[cmder_root]/config` folder.  3.  Delete the `[cmder_root]/vendor` folder. 4.  Extract the new `cmder.zip` or `cmder_mini.zip` into `[cmder_root]/` overwriting all files when prompted.  ## Current development builds  You can download builds of the current development branch by going to AppVeyor via the following link:  [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/cmderdev/cmder?svg=True)](https://ci.appveyor.com/project/MartiUK/cmder/branch/master/artifacts)  ## License  All software included is bundled with own license  The MIT License (MIT)  Copyright (c) 2016 Samuel Vasko  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.  THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+      "quoted_paper_titles": [
+        "c:\\users\\[CH JaDi Rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt",
+        "cd $CMDER_ROOT/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo source \\$CMDER_ROOT/vendor/mintty-colors-solarized/mintty-solarized-dark.sh>>$CMDER_ROOT/config/user_profile.sh",
+        "1. {cmd::Cmder as Admin}",
+        "cmd /s /k \"\"%ConEmuDir%\\..\\init.bat\" [ADD ARGS HERE]\"",
+        "[new-alias | set-alias] alias command",
+        "cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console",
+        "# CMDER_ROOT=${USERPROFILE}/cmder  # This is not required if launched from Cmder.",
+        "batch    cmd.exe /k \"\"%ConEmuDir%\\..\\init.bat\" /startnotepad\"",
+        "batch    %ccall% \"/startNotepad\" \"start\" \"notepad.exe\"",
+        "To see detailed usage of",
+        ", you are running a newer version of Cmder, follow the below process:  1. Exit all Cmder sessions and relaunch",
+        ", this backs up your existing",
+        "contains any custom settings you have made using the 'Setup Tasks' settings dialog.  2. Exit all Cmder sessions and backup any files you have manually edited under",
+        ".     * Editing files under",
+        "is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in",
+        "folder.  3.  Delete the",
+        "folder. 4.  Extract the new",
+        "overwriting all files when prompted.  If you do not have a",
+        ", you are running an older version of cmder, follow the below process:  1. Exit all Cmder sessions and backup",
+        ".  2. Backup any files you have manually edited under",
+        ".     * Editing files under",
+        "is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in",
+        "folder.  3.  Delete the",
+        "folder. 4.  Extract the new"
+      ],
+      "abstract": null,
+      "extra": {
+        "stars": 20,
+        "language": null
+      }
+    },
+    {
+      "stable_id": "c:\\users\\[ch jadi rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt",
+      "candidate_id": "c-432ae28b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "c:\\users\\[CH JaDi Rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "cd $cmder_root/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo source \\$cmder_root/vendor/mintty-colors-solarized/mintty-solarized-dark.sh>>$cmder_root/config/user_profile.sh",
+      "candidate_id": "c-6fddca2b",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "cd $CMDER_ROOT/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo source \\$CMDER_ROOT/vendor/mintty-colors-solarized/mintty-solarized-dark.sh>>$CMDER_ROOT/config/user_profile.sh",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "1. {cmd::cmder as admin}",
+      "candidate_id": "c-874c5ba1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "1. {cmd::Cmder as Admin}",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "cmd /s /k \"\"%conemudir%\\..\\init.bat\" [add args here]\"",
+      "candidate_id": "c-2047ca3d",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "cmd /s /k \"\"%ConEmuDir%\\..\\init.bat\" [ADD ARGS HERE]\"",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "[new-alias | set-alias] alias command",
+      "candidate_id": "c-dff966f1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "[new-alias | set-alias] alias command",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console",
+      "candidate_id": "c-bd0d9658",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "# cmder_root=${userprofile}/cmder  # this is not required if launched from cmder.",
+      "candidate_id": "c-0f22ac4e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "# CMDER_ROOT=${USERPROFILE}/cmder  # This is not required if launched from Cmder.",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "batch    cmd.exe /k \"\"%conemudir%\\..\\init.bat\" /startnotepad\"",
+      "candidate_id": "c-5f5164b1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "batch    cmd.exe /k \"\"%ConEmuDir%\\..\\init.bat\" /startnotepad\"",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "batch    %ccall% \"/startnotepad\" \"start\" \"notepad.exe\"",
+      "candidate_id": "c-acfaaec3",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "batch    %ccall% \"/startNotepad\" \"start\" \"notepad.exe\"",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "to see detailed usage of",
+      "candidate_id": "c-dd22b63e",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "To see detailed usage of",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": ", you are running a newer version of cmder, follow the below process:  1. exit all cmder sessions and relaunch",
+      "candidate_id": "c-1b5927b9",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ", you are running a newer version of Cmder, follow the below process:  1. Exit all Cmder sessions and relaunch",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": ", this backs up your existing",
+      "candidate_id": "c-46ddf8a4",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ", this backs up your existing",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "contains any custom settings you have made using the 'setup tasks' settings dialog.  2. exit all cmder sessions and backup any files you have manually edited under",
+      "candidate_id": "c-64128d0c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "contains any custom settings you have made using the 'Setup Tasks' settings dialog.  2. Exit all Cmder sessions and backup any files you have manually edited under",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": ".     * editing files under",
+      "candidate_id": "c-ee1b2a57",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ".     * Editing files under",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "is not recommended since you will need to re-apply these changes after any upgrade.  all user customizations should go in",
+      "candidate_id": "c-5819ddc1",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go in",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "folder.  3.  delete the",
+      "candidate_id": "c-3d4ce86a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "folder.  3.  Delete the",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "folder. 4.  extract the new",
+      "candidate_id": "c-8144c04c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "folder. 4.  Extract the new",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "overwriting all files when prompted.  if you do not have a",
+      "candidate_id": "c-b6f0bd2a",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": "overwriting all files when prompted.  If you do not have a",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": ", you are running an older version of cmder, follow the below process:  1. exit all cmder sessions and backup",
+      "candidate_id": "c-afbd8c0c",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ", you are running an older version of cmder, follow the below process:  1. Exit all Cmder sessions and backup",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": ".  2. backup any files you have manually edited under",
+      "candidate_id": "c-66301842",
+      "evidence_type": "paper",
+      "role_hint": "reference",
+      "role_hints": [
+        "reference"
+      ],
+      "role_evidence": [],
+      "title": ".  2. Backup any files you have manually edited under",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "via_repo": "Ch-Jad/CH-JaDi-Rajput1"
+      }
+    },
+    {
+      "stable_id": "keneniwt/point-cloud-completion-survey",
+      "candidate_id": "c-0823c570",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "role_hints": [
+        "repo"
+      ],
+      "role_evidence": [],
+      "title": "keneniwt/Point-Cloud-Completion-Survey",
+      "sources": [
+        "github"
+      ],
+      "year": null,
+      "venue": null,
+      "url": "https://github.com/keneniwt/Point-Cloud-Completion-Survey",
+      "identifier": null,
+      "description": "GitHub Desktop tutorial repository",
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "stars": 2,
+        "language": null
+      }
+    },
+    {
+      "stable_id": "modelnet40",
+      "candidate_id": "c-4c36c4d0",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "role_hints": [
+        "dataset"
+      ],
+      "role_evidence": [],
+      "title": "ModelNet40",
+      "sources": [
+        "whitelist_in_mentions"
+      ],
+      "year": null,
+      "venue": null,
+      "url": null,
+      "identifier": null,
+      "description": null,
+      "quoted_paper_titles": [],
+      "abstract": null,
+      "extra": {
+        "scale": null,
+        "license": null
+      }
+    }
+  ],
+  "source_ledger": [
+    {
+      "adapter": "core",
+      "query": "Transformer point cloud completion|Transformer 3D point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "core",
+      "query": "point cloud completion dataset|3D point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "github",
+      "query": "point cloud completion github|point cloud completion implementation|Transformer point cloud completion",
+      "target_role": "repo",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 2,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "Transformer point cloud completion|Transformer 3D point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "Transformer point cloud completion|Transformer shape completion|PointNet point cloud completion",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "Transformer point cloud completion|Transformer shape completion|PointNet point cloud completion",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "point cloud completion benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "point cloud completion dataset|3D point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud completion dataset|3D point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud completion survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "point cloud completion benchmark",
+      "target_role": "benchmark",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "huggingface",
+      "query": "point cloud completion dataset|3D point cloud dataset",
+      "target_role": "dataset",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex",
+      "query": "3D point cloud point cloud completion|3D point cloud shape completion|partial point cloud point cloud completion",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "Transformer point cloud completion|Transformer 3D point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "Transformer point cloud completion|Transformer 3D point cloud",
+      "target_role": "core",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "Transformer point cloud completion|Transformer shape completion|PointNet point cloud completion",
+      "target_role": "method_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "Transformer point cloud completion|Transformer shape completion|PointNet point cloud completion",
+      "target_role": "baseline",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "arxiv",
+      "query": "point cloud completion survey|vision 3d survey",
+      "target_role": "survey",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "crossref",
+      "query": "3D point cloud point cloud completion|3D point cloud shape completion|partial point cloud point cloud completion",
+      "target_role": "object_task",
+      "round": 1,
+      "round_name": "family_dispatch",
+      "status": "ok",
+      "result_count": 8,
+      "error": null
+    },
+    {
+      "adapter": "semantic_scholar",
+      "query": "point point|point cloud|point completion",
+      "target_role": "dynamic_expansion",
+      "round": 2,
+      "round_name": "r2_dynamic_expansion",
+      "status": "empty",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Enhancing Performance of Point Cloud Completion Networks wit",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Cascaded Refinement Network for Point Cloud Completion with ",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: A Systematic Approach for Cross-source Point Cloud Registrat",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: Masked Clustering Prediction for Unsupervised Point Cloud Pr",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    },
+    {
+      "adapter": "openalex_citation",
+      "query": "seed_selected: ShapeAdv: Generating Shape-Aware Adversarial 3D Point Clouds",
+      "target_role": "parallel_baseline_candidate",
+      "round": 2,
+      "round_name": "reference_expansion",
+      "status": "seed_selected",
+      "result_count": 0,
+      "error": null
+    }
+  ],
+  "evidence_review": [
+    {
+      "candidate_id": "c-71b55c0a",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "incomplete point cloud"
+      ],
+      "missing_terms": [
+        "Transformer",
+        "diffusion model",
+        "PointNet",
+        "ShapeNet"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Direct paper on point cloud completion networks with a novel loss; highly relevant to the survey topic.",
+      "reason": "Proposes consistency loss for point cloud completion networks, directly addressing the topic's core task with deep learning methods."
+    },
+    {
+      "candidate_id": "c-87db7a67",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "shape completion",
+        "partial point cloud",
+        "3D reconstruction"
+      ],
+      "missing_terms": [
+        "Transformer",
+        "diffusion model",
+        "PCN dataset",
+        "ShapeNet"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Cascaded refinement network for point cloud completion; strong deep-learning baseline candidate.",
+      "reason": "Introduces a self-supervised cascaded refinement network for shape completion of sparse/incomplete point clouds, directly relevant."
+    },
+    {
+      "candidate_id": "c-d893d966",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D point cloud"
+      ],
+      "missing_terms": [
+        "point cloud completion",
+        "shape completion",
+        "deep learning",
+        "Transformer"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Point cloud registration paper; related background but not completion.",
+      "reason": "Addresses cross-source point cloud registration preserving structures. Tangentially related as preprocessing context, not a completion method."
+    },
+    {
+      "candidate_id": "c-9bff691f",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D point cloud",
+        "Transformer",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "point cloud completion",
+        "shape completion",
+        "PCN dataset",
+        "diffusion model"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "ViT-based pre-training for point cloud; relevant background on Transformer for 3D.",
+      "reason": "Masked clustering prediction for unsupervised ViT pre-training on point clouds. Background context for Transformer-based 3D methods, not completion."
+    },
+    {
+      "candidate_id": "c-d598e7c5",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D point cloud",
+        "shape",
+        "3D"
+      ],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning completion",
+        "PCN dataset",
+        "Transformer"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Adversarial perturbations on 3D point clouds; tangentially related to shape-aware learning.",
+      "reason": "Studies adversarial perturbations for 3D point clouds rather than completion. Weakly related, included as background on shape-aware learning."
+    },
+    {
+      "candidate_id": "c-0f08c56e",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D point cloud",
+        "deep learning",
+        "3D"
+      ],
+      "missing_terms": [
+        "point cloud completion",
+        "shape completion",
+        "Transformer",
+        "PCN dataset"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on point cloud semantic segmentation; relevant domain survey for context.",
+      "reason": "Reviews deep learning methods for 3D point cloud semantic segmentation. Background reference on point cloud deep learning, not completion."
+    },
+    {
+      "candidate_id": "c-2efe474f",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "shape completion",
+        "partial point cloud",
+        "3D reconstruction",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "Transformer",
+        "diffusion model",
+        "PCN dataset",
+        "ShapeNet"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Multimodal shape completion method; directly relevant to completion task.",
+      "reason": "Proposes IMLE-based multimodal shape completion for partial scans. Strongly aligned with the survey's core task of shape completion."
+    },
+    {
+      "candidate_id": "c-385bab27",
+      "evidence_type": "paper",
+      "role_hint": "module",
+      "status": "candidate",
+      "matched_terms": [
+        "shape completion",
+        "3D reconstruction",
+        "partial point cloud"
+      ],
+      "missing_terms": [
+        "deep learning",
+        "Transformer",
+        "PCN dataset",
+        "PointNet"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "module",
+      "exists_verdict": "exists",
+      "rank_reason": "Applies shape completion to fruit mapping; application-level module relevant to completion.",
+      "reason": "Uses shape completion for next-best-view planning in fruit reconstruction. Application paper demonstrating completion usage in robotics."
+    },
+    {
+      "candidate_id": "c-05b6d86b",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D point cloud",
+        "deep learning"
+      ],
+      "missing_terms": [
+        "point cloud completion",
+        "shape completion",
+        "PCN dataset",
+        "diffusion model"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on sequential point clouds; broad context for 3D point cloud research.",
+      "reason": "Surveys sequential (4D) point cloud methods. Broad background reference for point cloud processing, not focused on completion."
+    },
+    {
+      "candidate_id": "c-b6ebbd7d",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D reconstruction",
+        "3D"
+      ],
+      "missing_terms": [
+        "point cloud completion",
+        "shape completion",
+        "PCN dataset",
+        "PointNet"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on 3D low-level vision rendering/restoration; tangentially related to 3D reconstruction.",
+      "reason": "Covers NeRF/3DGS rendering and restoration. Weakly related background on 3D vision, not point cloud completion specifically."
+    },
+    {
+      "candidate_id": "c-efb65810",
+      "evidence_type": "survey",
+      "role_hint": "unknown",
+      "status": "candidate",
+      "matched_terms": [
+        "3D",
+        "3D vision"
+      ],
+      "missing_terms": [
+        "point cloud completion",
+        "shape completion",
+        "deep learning",
+        "Transformer"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "background",
+      "exists_verdict": "exists",
+      "rank_reason": "Survey on global solvers for 3D vision; not aligned with deep learning completion.",
+      "reason": "Covers geometric optimization solvers for 3D vision. Background context on 3D vision methods, orthogonal to deep learning completion."
+    },
+    {
+      "candidate_id": "c-4d7833b1",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "Transformer",
+        "dense point cloud",
+        "3D point cloud"
+      ],
+      "missing_terms": [
+        "diffusion model",
+        "PCN dataset",
+        "PointNet",
+        "VAE"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Transformer-based point cloud completion with morphing atlas; directly on topic.",
+      "reason": "PCTMA-Net uses Transformer with morphing atlas for dense point cloud completion. Strong match on method (Transformer) and task (completion)."
+    },
+    {
+      "candidate_id": "c-73c09229",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "Transformer",
+        "local feature",
+        "global attention"
+      ],
+      "missing_terms": [
+        "PCN dataset",
+        "diffusion model",
+        "ShapeNet",
+        "VAE"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Transformer-based completion with local/global attention; directly on topic.",
+      "reason": "Completion network using local feature super-sensing and global attention-enhanced Transformer. Strongly aligned with method+task."
+    },
+    {
+      "candidate_id": "c-4c6d6df9",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "Transformer",
+        "hierarchical feature"
+      ],
+      "missing_terms": [
+        "PCN dataset",
+        "diffusion model",
+        "PointNet",
+        "ShapeNet"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Anchor-guided Transformer for hierarchical completion; directly relevant.",
+      "reason": "Hierarchical feature modeling with anchor-guided Transformer for point cloud completion. Strong method+task match."
+    },
+    {
+      "candidate_id": "c-a1e5040d",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "Transformer",
+        "dynamic seed generator"
+      ],
+      "missing_terms": [
+        "diffusion model",
+        "PCN dataset",
+        "ShapeNet",
+        "VAE"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Transformer-in-Transformer completion network; directly on topic.",
+      "reason": "TNT-Net++ uses Transformer-in-Transformer with dynamic seed generation for point cloud completion. Strong alignment."
+    },
+    {
+      "candidate_id": "c-694d1aca",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "Transformer",
+        "multi-resolution"
+      ],
+      "missing_terms": [
+        "PCN dataset",
+        "diffusion model",
+        "PointNet",
+        "ShapeNet"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Multi-resolution Transformer completion; directly relevant to survey.",
+      "reason": "Multi-resolution Transformer-based completion network for intelligent manufacturing. Method+task strong match."
+    },
+    {
+      "candidate_id": "c-b3bb21ff",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "Transformer",
+        "multi-level feature"
+      ],
+      "missing_terms": [
+        "PCN dataset",
+        "diffusion model",
+        "PointNet",
+        "ShapeNet"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Multi-level feature Transformer completion; directly on topic.",
+      "reason": "MLFT-Net applies multi-level feature Transformer to point cloud completion. Strong method+task alignment."
+    },
+    {
+      "candidate_id": "c-ac6f30d7",
+      "evidence_type": "paper",
+      "role_hint": "parallel",
+      "status": "core",
+      "matched_terms": [
+        "point cloud completion",
+        "Transformer",
+        "multi-channel resolution"
+      ],
+      "missing_terms": [
+        "PCN dataset",
+        "diffusion model",
+        "PointNet",
+        "ShapeNet"
+      ],
+      "confidence_label": "high",
+      "relation_to_topic": "parallel",
+      "exists_verdict": "exists",
+      "rank_reason": "Multi-channel resolution Transformer completion; directly relevant.",
+      "reason": "Point cloud completion via multi-channel resolution Transformer. Strong method+task match."
+    },
+    {
+      "candidate_id": "c-baba77fe",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "needs_manual",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "shape completion",
+        "deep learning",
+        "Transformer"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "weak_related",
+      "exists_verdict": "metadata_mismatch",
+      "rank_reason": "Repo metadata appears to be a Cmder shell config, not point cloud code.",
+      "reason": "Title/description indicates a Cmder terminal configuration repository, not a point cloud completion codebase. Metadata mismatch; needs manual verification."
+    },
+    {
+      "candidate_id": "c-432ae28b",
+      "evidence_type": "paper",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a filesystem path; not a real paper, unrelated to topic.",
+      "reason": "Title is a raw Windows directory path for cmder config. Not a scholarly paper and completely unrelated to point cloud completion."
+    },
+    {
+      "candidate_id": "c-6fddca2b",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "PointNet",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a Cmder shell installation command snippet; no relation to point cloud completion.",
+      "reason": "Content is a Unix/Windows shell command for installing mintty color schemes. Zero topical overlap with 3D point cloud completion or deep learning."
+    },
+    {
+      "candidate_id": "c-874c5ba1",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a Cmder admin instruction snippet; not a paper or relevant artifact.",
+      "reason": "Content is a Cmder shell usage instruction. No connection to point cloud completion research."
+    },
+    {
+      "candidate_id": "c-2047ca3d",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a ConEmu/Cmder launch command; unrelated to 3D vision.",
+      "reason": "Pure shell command for ConEmu initialization. No overlap with the research topic."
+    },
+    {
+      "candidate_id": "c-dff966f1",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a PowerShell alias directive; not a research artifact.",
+      "reason": "Content is a shell alias syntax fragment. No relation to point cloud completion."
+    },
+    {
+      "candidate_id": "c-bd0d9658",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a ConEmu bash launch command; unrelated to research topic.",
+      "reason": "Pure shell/terminal configuration snippet. No topical match."
+    },
+    {
+      "candidate_id": "c-0f22ac4e",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a Cmder environment variable comment; not a paper.",
+      "reason": "Cmder shell configuration comment. Zero connection to 3D point cloud research."
+    },
+    {
+      "candidate_id": "c-5f5164b1",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a ConEmu notepad-launch batch command; unrelated artifact.",
+      "reason": "Shell batch command snippet. No overlap with point cloud completion literature."
+    },
+    {
+      "candidate_id": "c-acfaaec3",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a Cmder %ccall% invocation snippet; not relevant.",
+      "reason": "Pure shell command for launching notepad. No relation to the topic."
+    },
+    {
+      "candidate_id": "c-dd22b63e",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a truncated documentation fragment; unrelated artifact.",
+      "reason": "Documentation sentence fragment with no technical content on point clouds."
+    },
+    {
+      "candidate_id": "c-1b5927b9",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is Cmder upgrade instruction text; not a paper.",
+      "reason": "Cmder shell usage documentation fragment. No connection to the research topic."
+    },
+    {
+      "candidate_id": "c-46ddf8a4",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a Cmder backup instruction fragment; not relevant.",
+      "reason": "Documentation fragment about Cmder settings backup. No topical match."
+    },
+    {
+      "candidate_id": "c-64128d0c",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is Cmder settings backup prose; unrelated artifact.",
+      "reason": "Cmder configuration documentation. No overlap with point cloud completion."
+    },
+    {
+      "candidate_id": "c-ee1b2a57",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is truncated Cmder doc fragment; not a research artifact.",
+      "reason": "Documentation sentence fragment about file editing. Unrelated to the topic."
+    },
+    {
+      "candidate_id": "c-5819ddc1",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is Cmder configuration prose; unrelated artifact.",
+      "reason": "Cmder documentation about user customizations. No topical overlap."
+    },
+    {
+      "candidate_id": "c-3d4ce86a",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a Cmder upgrade step fragment; not relevant.",
+      "reason": "Documentation fragment instructing folder deletion. No connection to the topic."
+    },
+    {
+      "candidate_id": "c-8144c04c",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a Cmder extraction instruction; unrelated artifact.",
+      "reason": "Cmder upgrade instruction fragment. No overlap with the research topic."
+    },
+    {
+      "candidate_id": "c-b6f0bd2a",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a Cmder file-overwrite instruction; not relevant.",
+      "reason": "Documentation fragment about file overwriting during upgrade. No topical match."
+    },
+    {
+      "candidate_id": "c-afbd8c0c",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is Cmder version-update prose; unrelated artifact.",
+      "reason": "Cmder upgrade documentation. No relation to point cloud completion research."
+    },
+    {
+      "candidate_id": "c-66301842",
+      "evidence_type": "unknown",
+      "role_hint": "unknown",
+      "status": "rejected",
+      "matched_terms": [],
+      "missing_terms": [
+        "point cloud completion",
+        "deep learning",
+        "3D point cloud",
+        "Transformer",
+        "shape completion"
+      ],
+      "confidence_label": "low",
+      "relation_to_topic": "unrelated",
+      "exists_verdict": "not_found",
+      "rank_reason": "Title is a truncated Cmder doc fragment; not relevant.",
+      "reason": "Documentation fragment about file backup. No connection to the research topic."
+    },
+    {
+      "candidate_id": "c-0823c570",
+      "evidence_type": "repo",
+      "role_hint": "repo",
+      "status": "candidate",
+      "matched_terms": [
+        "point cloud completion",
+        "Point Cloud Completion Survey"
+      ],
+      "missing_terms": [
+        "Transformer",
+        "PointNet",
+        "DGCNN",
+        "diffusion model",
+        "PCN dataset",
+        "3D reconstruction"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "survey",
+      "exists_verdict": "likely_exists",
+      "rank_reason": "Repository titled 'Point-Cloud-Completion-Survey' is topically aligned; description is generic but the title is a strong signal.",
+      "reason": "GitHub repo 'keneniwt/Point-Cloud-Completion-Survey' directly matches the survey aspect of the topic. Title is highly relevant; description is sparse (described as a 'GitHub Desktop tutorial repository'), so content quality needs manual verification."
+    },
+    {
+      "candidate_id": "c-4c36c4d0",
+      "evidence_type": "dataset",
+      "role_hint": "dataset",
+      "status": "candidate",
+      "matched_terms": [
+        "3D point cloud",
+        "CAD model"
+      ],
+      "missing_terms": [
+        "point cloud completion",
+        "partial point cloud",
+        "PCN dataset",
+        "ShapeNet",
+        "diffusion model",
+        "Transformer"
+      ],
+      "confidence_label": "medium",
+      "relation_to_topic": "dataset",
+      "exists_verdict": "exists",
+      "rank_reason": "ModelNet40 is a well-known 3D CAD dataset used to evaluate point cloud completion methods, but it is a classification/benchmark dataset, not the primary completion benchmark (PCN).",
+      "reason": "ModelNet40 exists and is commonly referenced alongside PCN/ShapeNet for evaluating 3D point cloud tasks. It is not specifically designed for completion, so it is a peripheral dataset rather than a core resource."
+    }
+  ],
+  "synthesis": {
+    "direction_recommendation": "The evidence base is dominated by Transformer-based point cloud completion methods, with 9 core-tier papers (c-71b55c0a, c-87db7a67, c-2efe474f, c-4d7833b1, c-73c09229, c-4c6d6df9, c-a1e5040d, c-694d1aca, c-b3bb21ff, c-ac6f30d7), one multimodal completion paper (IMLE), and one Cascaded Refinement Network baseline. Recommended direction: structure the survey along (1) architecture families — Transformer variants (morphing atlas, hierarchical/anchor, multi-resolution, multi-level, multi-channel, Transformer-in-Transformer, local-global attention), cascaded/refinement networks, and multimodal IMLE; (2) training objectives — consistency loss, self-supervision, IMLE diversity; (3) datasets — PCN, ShapeNet, ModelNet40. The repo keneniwt/Point-Cloud-Completion-Survey (c-0823c570) and the ModelNet40 dataset mention (c-4c36c4d0) should anchor datasets/code. Several query atoms (diffusion model, VAE, DGCNN, PointNet, Graph NN) are NOT covered by any tier=core item; the student should verify whether to add diffusion-based completion (e.g., PDR, DPCD) and PointNet/DGCNN baselines manually before finalizing scope.",
+    "baseline_options": [
+      "c-71b55c0a",
+      "c-87db7a67",
+      "c-2efe474f",
+      "c-4d7833b1",
+      "c-73c09229",
+      "c-4c6d6df9",
+      "c-a1e5040d",
+      "c-694d1aca"
+    ],
+    "candidate_pool": {
+      "core": [
+        {
+          "candidate_id": "c-71b55c0a",
+          "title": "Enhancing Performance of Point Cloud Completion Networks with Consistency Loss",
+          "role_hint": "parallel",
+          "reason": "Direct paper on point cloud completion networks with a novel loss; highly relevant to the survey topic."
+        },
+        {
+          "candidate_id": "c-87db7a67",
+          "title": "Cascaded Refinement Network for Point Cloud Completion with Self-supervision",
+          "role_hint": "parallel",
+          "reason": "Cascaded refinement network for point cloud completion; strong deep-learning baseline candidate."
+        },
+        {
+          "candidate_id": "c-2efe474f",
+          "title": "Multimodal Shape Completion via IMLE",
+          "role_hint": "parallel",
+          "reason": "Multimodal shape completion method; directly relevant to completion task."
+        },
+        {
+          "candidate_id": "c-4d7833b1",
+          "title": "PCTMA-Net: Point Cloud Transformer with Morphing Atlas-based Point Generation Network for Dense Point Cloud Completion",
+          "role_hint": "parallel",
+          "reason": "Transformer-based point cloud completion with morphing atlas; directly on topic."
+        },
+        {
+          "candidate_id": "c-73c09229",
+          "title": "A Point Cloud Completion Network Based on Local Feature Super-Sensing and Global Attention-Enhanced Transformer",
+          "role_hint": "parallel",
+          "reason": "Transformer-based completion with local/global attention; directly on topic."
+        },
+        {
+          "candidate_id": "c-4c6d6df9",
+          "title": "Point Cloud Completion by Hierarchical Feature Modeling with Anchor-Guided Transformer",
+          "role_hint": "parallel",
+          "reason": "Anchor-guided Transformer for hierarchical completion; directly relevant."
+        },
+        {
+          "candidate_id": "c-a1e5040d",
+          "title": "TNT-Net++: Point Cloud Completion by Transformer in Transformer with Dynamic Seed Generator",
+          "role_hint": "parallel",
+          "reason": "Transformer-in-Transformer completion network; directly on topic."
+        },
+        {
+          "candidate_id": "c-694d1aca",
+          "title": "Multi-resolution transformer-based point cloud completion network for intelligent manufacture",
+          "role_hint": "parallel",
+          "reason": "Multi-resolution Transformer completion; directly relevant to survey."
+        },
+        {
+          "candidate_id": "c-b3bb21ff",
+          "title": "MLFT-Net: Point Cloud Completion Using Multi-Level Feature Transformer",
+          "role_hint": "parallel",
+          "reason": "Multi-level feature Transformer completion; directly on topic."
+        },
+        {
+          "candidate_id": "c-ac6f30d7",
+          "title": "A Point Cloud Completion Network Based on Multi-Channel Resolution Transformer",
+          "role_hint": "parallel",
+          "reason": "Multi-channel resolution Transformer completion; directly relevant."
+        }
+      ],
+      "candidate": [
+        {
+          "candidate_id": "c-d893d966",
+          "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+          "role_hint": "unknown",
+          "reason": "Point cloud registration paper; related background but not completion."
+        },
+        {
+          "candidate_id": "c-9bff691f",
+          "title": "Masked Clustering Prediction for Unsupervised Point Cloud Pre-training",
+          "role_hint": "unknown",
+          "reason": "ViT-based pre-training for point cloud; relevant background on Transformer for 3D."
+        },
+        {
+          "candidate_id": "c-d598e7c5",
+          "title": "ShapeAdv: Generating Shape-Aware Adversarial 3D Point Clouds",
+          "role_hint": "unknown",
+          "reason": "Adversarial perturbations on 3D point clouds; tangentially related to shape-aware learning."
+        },
+        {
+          "candidate_id": "c-0f08c56e",
+          "title": "Linking Points With Labels in 3D: A Review of Point Cloud Semantic Segmentation",
+          "role_hint": "unknown",
+          "reason": "Survey on point cloud semantic segmentation; relevant domain survey for context."
+        },
+        {
+          "candidate_id": "c-385bab27",
+          "title": "NBV-SC: Next Best View Planning based on Shape Completion for Fruit Mapping and Reconstruction",
+          "role_hint": "module",
+          "reason": "Applies shape completion to fruit mapping; application-level module relevant to completion."
+        },
+        {
+          "candidate_id": "c-05b6d86b",
+          "title": "Sequential Point Clouds: A Survey",
+          "role_hint": "unknown",
+          "reason": "Survey on sequential point clouds; broad context for 3D point cloud research."
+        },
+        {
+          "candidate_id": "c-b6ebbd7d",
+          "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+          "role_hint": "unknown",
+          "reason": "Survey on 3D low-level vision rendering/restoration; tangentially related to 3D reconstruction."
+        },
+        {
+          "candidate_id": "c-efb65810",
+          "title": "Advances in Global Solvers for 3D Vision",
+          "role_hint": "unknown",
+          "reason": "Survey on global solvers for 3D vision; not aligned with deep learning completion."
+        },
+        {
+          "candidate_id": "c-0823c570",
+          "title": "keneniwt/Point-Cloud-Completion-Survey",
+          "role_hint": "repo",
+          "reason": "Repository titled 'Point-Cloud-Completion-Survey' is topically aligned; description is generic but the title is a strong signal."
+        },
+        {
+          "candidate_id": "c-4c36c4d0",
+          "title": "ModelNet40",
+          "role_hint": "dataset",
+          "reason": "ModelNet40 is a well-known 3D CAD dataset used to evaluate point cloud completion methods, but it is a classification/benchmark dataset, not the primary complet"
+        }
+      ],
+      "needs_manual": [
+        {
+          "candidate_id": "c-baba77fe",
+          "title": "Ch-Jad/CH-JaDi-Rajput1",
+          "role_hint": "repo",
+          "reason": "Repo metadata appears to be a Cmder shell config, not point cloud code."
+        }
+      ],
+      "rejected": [
+        {
+          "candidate_id": "c-432ae28b",
+          "title": "c:\\users\\[CH JaDi Rajput]\\cmder_config      ├───bin      ├───config      │   └───profile.d      └───opt",
+          "role_hint": "unknown",
+          "reason": "Title is a filesystem path; not a real paper, unrelated to topic."
+        },
+        {
+          "candidate_id": "c-6fddca2b",
+          "title": "cd $CMDER_ROOT/vendor git clone https://github.com/karlin/mintty-colors-solarized.git cd mintty-colors-solarized/ echo s",
+          "role_hint": "unknown",
+          "reason": "Title is a Cmder shell installation command snippet; no relation to point cloud completion."
+        },
+        {
+          "candidate_id": "c-874c5ba1",
+          "title": "1. {cmd::Cmder as Admin}",
+          "role_hint": "unknown",
+          "reason": "Title is a Cmder admin instruction snippet; not a paper or relevant artifact."
+        },
+        {
+          "candidate_id": "c-2047ca3d",
+          "title": "cmd /s /k \"\"%ConEmuDir%\\..\\init.bat\" [ADD ARGS HERE]\"",
+          "role_hint": "unknown",
+          "reason": "Title is a ConEmu/Cmder launch command; unrelated to 3D vision."
+        },
+        {
+          "candidate_id": "c-dff966f1",
+          "title": "[new-alias | set-alias] alias command",
+          "role_hint": "unknown",
+          "reason": "Title is a PowerShell alias directive; not a research artifact."
+        },
+        {
+          "candidate_id": "c-bd0d9658",
+          "title": "cmd /c \"[path_to_external_env]\\bin\\bash --login -i\" -new_console",
+          "role_hint": "unknown",
+          "reason": "Title is a ConEmu bash launch command; unrelated to research topic."
+        },
+        {
+          "candidate_id": "c-0f22ac4e",
+          "title": "# CMDER_ROOT=${USERPROFILE}/cmder  # This is not required if launched from Cmder.",
+          "role_hint": "unknown",
+          "reason": "Title is a Cmder environment variable comment; not a paper."
+        },
+        {
+          "candidate_id": "c-5f5164b1",
+          "title": "batch    cmd.exe /k \"\"%ConEmuDir%\\..\\init.bat\" /startnotepad\"",
+          "role_hint": "unknown",
+          "reason": "Title is a ConEmu notepad-launch batch command; unrelated artifact."
+        },
+        {
+          "candidate_id": "c-acfaaec3",
+          "title": "batch    %ccall% \"/startNotepad\" \"start\" \"notepad.exe\"",
+          "role_hint": "unknown",
+          "reason": "Title is a Cmder %ccall% invocation snippet; not relevant."
+        },
+        {
+          "candidate_id": "c-dd22b63e",
+          "title": "To see detailed usage of",
+          "role_hint": "unknown",
+          "reason": "Title is a truncated documentation fragment; unrelated artifact."
+        },
+        {
+          "candidate_id": "c-1b5927b9",
+          "title": ", you are running a newer version of Cmder, follow the below process:  1. Exit all Cmder sessions and relaunch",
+          "role_hint": "unknown",
+          "reason": "Title is Cmder upgrade instruction text; not a paper."
+        },
+        {
+          "candidate_id": "c-46ddf8a4",
+          "title": ", this backs up your existing",
+          "role_hint": "unknown",
+          "reason": "Title is a Cmder backup instruction fragment; not relevant."
+        },
+        {
+          "candidate_id": "c-64128d0c",
+          "title": "contains any custom settings you have made using the 'Setup Tasks' settings dialog.  2. Exit all Cmder sessions and back",
+          "role_hint": "unknown",
+          "reason": "Title is Cmder settings backup prose; unrelated artifact."
+        },
+        {
+          "candidate_id": "c-ee1b2a57",
+          "title": ".     * Editing files under",
+          "role_hint": "unknown",
+          "reason": "Title is truncated Cmder doc fragment; not a research artifact."
+        },
+        {
+          "candidate_id": "c-5819ddc1",
+          "title": "is not recommended since you will need to re-apply these changes after any upgrade.  All user customizations should go i",
+          "role_hint": "unknown",
+          "reason": "Title is Cmder configuration prose; unrelated artifact."
+        },
+        {
+          "candidate_id": "c-3d4ce86a",
+          "title": "folder.  3.  Delete the",
+          "role_hint": "unknown",
+          "reason": "Title is a Cmder upgrade step fragment; not relevant."
+        },
+        {
+          "candidate_id": "c-8144c04c",
+          "title": "folder. 4.  Extract the new",
+          "role_hint": "unknown",
+          "reason": "Title is a Cmder extraction instruction; unrelated artifact."
+        },
+        {
+          "candidate_id": "c-b6f0bd2a",
+          "title": "overwriting all files when prompted.  If you do not have a",
+          "role_hint": "unknown",
+          "reason": "Title is a Cmder file-overwrite instruction; not relevant."
+        },
+        {
+          "candidate_id": "c-afbd8c0c",
+          "title": ", you are running an older version of cmder, follow the below process:  1. Exit all Cmder sessions and backup",
+          "role_hint": "unknown",
+          "reason": "Title is Cmder version-update prose; unrelated artifact."
+        },
+        {
+          "candidate_id": "c-66301842",
+          "title": ".  2. Backup any files you have manually edited under",
+          "role_hint": "unknown",
+          "reason": "Title is a truncated Cmder doc fragment; not relevant."
+        }
+      ]
+    },
+    "paper_groups": {
+      "baseline": [
+        {
+          "candidate_id": "c-87db7a67",
+          "title": "Cascaded Refinement Network for Point Cloud Completion with Self-supervision",
+          "role_hint": "parallel",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-2efe474f",
+          "title": "Multimodal Shape Completion via IMLE",
+          "role_hint": "parallel",
+          "year": 2021
+        }
+      ],
+      "parallel": [
+        {
+          "candidate_id": "c-71b55c0a",
+          "title": "Enhancing Performance of Point Cloud Completion Networks with Consistency Loss",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-4d7833b1",
+          "title": "PCTMA-Net: Point Cloud Transformer with Morphing Atlas-based Point Generation Network for Dense Point Cloud Completion",
+          "role_hint": "parallel",
+          "year": 2021
+        },
+        {
+          "candidate_id": "c-73c09229",
+          "title": "A Point Cloud Completion Network Based on Local Feature Super-Sensing and Global Attention-Enhanced Transformer",
+          "role_hint": "parallel",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-4c6d6df9",
+          "title": "Point Cloud Completion by Hierarchical Feature Modeling with Anchor-Guided Transformer",
+          "role_hint": "parallel",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-a1e5040d",
+          "title": "TNT-Net++: Point Cloud Completion by Transformer in Transformer with Dynamic Seed Generator",
+          "role_hint": "parallel",
+          "year": 2024
+        },
+        {
+          "candidate_id": "c-694d1aca",
+          "title": "Multi-resolution transformer-based point cloud completion network for intelligent manufacture",
+          "role_hint": "parallel",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-b3bb21ff",
+          "title": "MLFT-Net: Point Cloud Completion Using Multi-Level Feature Transformer",
+          "role_hint": "parallel",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-ac6f30d7",
+          "title": "A Point Cloud Completion Network Based on Multi-Channel Resolution Transformer",
+          "role_hint": "parallel",
+          "year": 2024
+        }
+      ],
+      "reference": [
+        {
+          "candidate_id": "c-9bff691f",
+          "title": "Masked Clustering Prediction for Unsupervised Point Cloud Pre-training",
+          "role_hint": "unknown",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-0f08c56e",
+          "title": "Linking Points With Labels in 3D: A Review of Point Cloud Semantic Segmentation",
+          "role_hint": "unknown",
+          "year": 2019
+        },
+        {
+          "candidate_id": "c-05b6d86b",
+          "title": "Sequential Point Clouds: A Survey",
+          "role_hint": "unknown",
+          "year": 2022
+        },
+        {
+          "candidate_id": "c-d893d966",
+          "title": "A Systematic Approach for Cross-source Point Cloud Registration by Preserving Macro and Micro Structures",
+          "role_hint": "unknown",
+          "year": 2016
+        },
+        {
+          "candidate_id": "c-d598e7c5",
+          "title": "ShapeAdv: Generating Shape-Aware Adversarial 3D Point Clouds",
+          "role_hint": "unknown",
+          "year": 2020
+        },
+        {
+          "candidate_id": "c-b6ebbd7d",
+          "title": "R3eVision: A Survey on Robust Rendering, Restoration, and Enhancement for 3D Low-Level Vision",
+          "role_hint": "unknown",
+          "year": 2025
+        },
+        {
+          "candidate_id": "c-efb65810",
+          "title": "Advances in Global Solvers for 3D Vision",
+          "role_hint": "unknown",
+          "year": 2026
+        },
+        {
+          "candidate_id": "c-385bab27",
+          "title": "NBV-SC: Next Best View Planning based on Shape Completion for Fruit Mapping and Reconstruction",
+          "role_hint": "module",
+          "year": 2022
+        }
+      ],
+      "long_tail_candidates": [
+        {
+          "candidate_id": "c-0823c570",
+          "title": "keneniwt/Point-Cloud-Completion-Survey",
+          "role_hint": "repo",
+          "year": null
+        },
+        {
+          "candidate_id": "c-4c36c4d0",
+          "title": "ModelNet40",
+          "role_hint": "dataset",
+          "year": null
+        }
+      ]
+    },
+    "dataset_and_repo_notes": [
+      "c-4c36c4d0 ModelNet40: peripheral classification/benchmark dataset; not the primary completion benchmark — confirm PCN/ShapeNet availability before citing."
+    ],
+    "work_suggestions": [
+      "Map Transformer variants c-4d7833b1, c-73c09229, c-4c6d6df9, c-a1e5040d, c-694d1aca, c-b3bb21ff, c-ac6f30d7 into a taxonomy by attention mechanism (local/global, hierarchical, multi-resolution).",
+      "Use c-71b55c0a as the training-objective section anchor; contrast its consistency loss against c-87db7a67 self-supervision and c-2efe474f IMLE diversity."
+    ],
+    "risk_reminders": [
+      "Query atoms diffusion model, VAE, DGCNN, PointNet, Graph NN are uncovered; scope may be incomplete without manual additions.",
+      "keneniwt/Point-Cloud-Completion-Survey (c-0823c570) has 2 stars and sparse description; verify content before citing as survey repo.",
+      "All 9 Transformer core items come from crossref; abstracts empty — verify arxiv preprints and venues before referencing."
+    ],
+    "manual_questions": [
+      "Should diffusion-based completion methods (e.g., PDR/DPCD) be added manually given the topic includes 'diffusion model'?",
+      "Are PointNet and DGCNN to be covered as foundational baselines, and where to source them?",
+      "Is the multimodal IMLE line (c-2efe474f) in scope, or restricted to deterministic completion?",
+      "Which completion benchmark is primary: PCN, ShapeNet, or KITTI — and should all be benchmarked?",
+      "Is the survey restricted to object-level completion or to also cover scene-level completion?"
+    ],
+    "stop_here": true,
+    "human_gate": {
+      "enabled": false,
+      "future_gates": [
+        "topic_understanding",
+        "search_plan",
+        "baseline_selection"
+      ],
+      "auto_mode_reason": "Re02 focuses on retrieval enhancement + filter/audit repair. HumanGate reserved for Re03."
+    }
+  },
+  "low_bar_verdict": {
+    "review_verdict": "needs_revision",
+    "blocking_questions": [
+      "Should diffusion-based completion methods (e.g., PDR, DPCD) be included given the topic lists 'diffusion model'?",
+      "Are PointNet and DGCNN required as foundational baselines, and how should they be sourced?",
+      "Which benchmark is primary for the survey: PCN, ShapeNet, or KITTI — and should all be benchmarked?",
+      "Is the survey restricted to object-level completion, or should scene-level completion also be covered?"
+    ],
+    "weak_points": [
+      "Reference group mixes loosely related works (segmentation, registration, rendering) without clear relevance justification.",
+      "No explicit evidence_gaps declared despite manual questions about missing diffusion, PointNet/DGCNN, and scene-level methods.",
+      "Dataset candidate pool is thin (only ModelNet40 + ShapeNet implicit); KITTI and real-scan benchmarks missing.",
+      "work_suggestions reference only Transformer candidates, omitting diffusion and graph/VAE families listed in method_terms.",
+      "Baseline candidates are all marked 'parallel' role_hint rather than as canonical baselines like PCN or PoinTr."
+    ],
+    "can_continue_to_opening_report": false,
+    "summary": "Topic is well-bounded with 10 core candidates and 2 baselines, but the survey direction over-indexes on Transformer variants. Missing diffusion, PointNet/DGCNN baselines, scene-level coverage, and explicit data-source gaps warrant one revision pass before opening report."
+  },
+  "round_delta": {
+    "R0_query_matrix": {
+      "raw_topic": "基于深度学习的三维点云补全方法研究",
+      "domain_route": "vision_3d",
+      "family_counts": {
+        "core": 2,
+        "method_task": 4,
+        "object_task": 4,
+        "dataset": 2,
+        "repo": 3,
+        "survey": 2,
+        "benchmark": 1,
+        "baseline": 4
+      },
+      "needs_clarification": false,
+      "baseline_fallback_reason": null
+    },
+    "R1_family_dispatch": {
+      "per_adapter": {
+        "crossref": 7,
+        "arxiv": 11,
+        "github": 2
+      },
+      "ledger_n_calls": 25
+    },
+    "R2_dynamic_expansion": {
+      "n_queries": 28,
+      "queries": [
+        "point point",
+        "point cloud",
+        "point completion",
+        "point that",
+        "cloud point",
+        "cloud cloud",
+        "cloud completion",
+        "cloud that"
+      ],
+      "added_count": 0
+    },
+    "R4_citation_expand": {
+      "seeds_total": 5,
+      "seeds_eligible": 5,
+      "seeds_rejected": 0,
+      "refs_added": 0,
+      "round_status": "ok"
+    }
+  },
+  "degradation_chain": [],
+  "elapsed_s": 318.14
+}
