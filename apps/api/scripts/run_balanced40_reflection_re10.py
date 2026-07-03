@@ -195,14 +195,29 @@ def _build_retrieval_clients(loop_module) -> dict:
         return await crossref_search([query], top_k=top_k) or []
     async def _github(query: str, top_k: int = 3):
         from app.services.retrieval.adapters import github_search
-        return await github_search([query], min_stars=0, top_k=top_k) or []
+        return await github_search([query], top_k=top_k) or []
     async def _huggingface(query: str, top_k: int = 3):
         from app.services.retrieval.adapters import huggingface_search
         return await huggingface_search([query], top_k=top_k) or []
-    return {
+    retrieval_clients = {
         "arxiv": _arxiv, "openalex": _openalex, "crossref": _crossref,
         "github": _github, "huggingface": _huggingface,
     }
+    # Long-key aliases matching TOOL_CLIENT_KEYS in search_reflection_loop.
+    retrieval_clients["arxiv_search"] = _arxiv
+    retrieval_clients["openalex_search"] = _openalex
+    retrieval_clients["crossref_search"] = _crossref
+    retrieval_clients["github_search"] = _github
+    retrieval_clients["huggingface_search"] = _huggingface
+
+    required = {
+        "arxiv_search", "openalex_search", "crossref_search",
+        "github_search", "huggingface_search",
+    }
+    missing = required - set(retrieval_clients)
+    if missing:
+        raise RuntimeError(f"retrieval client missing: {sorted(missing)}")
+    return retrieval_clients
 
 
 async def main_async(args) -> int:
@@ -214,10 +229,22 @@ async def main_async(args) -> int:
     run_id = f"re10_refl_{time.strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
 
     # ---- Manifest scaffold (SOP §5 + Re09 compatibility) ----
-    cases = _load_balanced40_cases(args.ids_file)
-    # Re-key on the legacy 'case_id' alias so downstream code stays simple.
-    for c in cases:
-        c.setdefault("case_id", c.get("id"))
+    if getattr(args, "raw_topics", None):
+        # SOP §5 typical-cases path: synthesize case dicts from raw topics.
+        topics = [t.strip() for t in args.raw_topics.split("||") if t.strip()]
+        cases = []
+        for i, t in enumerate(topics, 1):
+            cases.append({
+                "id": f"TYPICAL-{i:02d}",
+                "case_id": f"TYPICAL-{i:02d}",
+                "title": t,
+                "raw_topic": t,
+            })
+    else:
+        cases = _load_balanced40_cases(args.ids_file)
+        # Re-key on the legacy 'case_id' alias so downstream code stays simple.
+        for c in cases:
+            c.setdefault("case_id", c.get("id"))
     re08_seeds = _load_re08_seeds()
     re09_seeds = _load_re09_seeds()
     seeds = _merge_seeds(re08_seeds, re09_seeds)
@@ -449,6 +476,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", default="tmp_re04_eval/balanced40_re10_reflection")
     ap.add_argument("--ids-file", default=None, help="restrict to a subset of case ids")
+    ap.add_argument("--raw-topics", default=None,
+                    help="|| separated raw topic strings (typical-case SOP §5 mode)")
     args = ap.parse_args()
     return asyncio.run(main_async(args))
 

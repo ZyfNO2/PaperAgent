@@ -86,6 +86,7 @@ class TraceLedger:
         rejected_n: int = 0,
         url_repair_n: int = 0,
         query_repair_n: int = 0,
+        tool_stats: dict | None = None,
     ) -> None:
         """Append a single round to the trace.
 
@@ -105,6 +106,7 @@ class TraceLedger:
             "rejected_candidates_n": int(rejected_n),
             "url_repair_n": int(url_repair_n),
             "query_repair_n": int(query_repair_n),
+            "tool_stats": dict(tool_stats or {}),
         }
         rounds: list[dict] = self._doc.setdefault("rounds", [])
         replaced = False

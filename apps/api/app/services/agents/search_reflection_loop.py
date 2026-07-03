@@ -82,7 +82,13 @@ async def _execute_query(
         }
     started = time.monotonic()
     try:
-        hits = await fn([query], top_k)
+        # Adapters accept (query: str, top_k: int) but historically some
+        # accept a list. Try str first, fall back to list — ponytail:
+        # one-line adaptation for legacy wrappers.
+        try:
+            hits = await fn(query, top_k=top_k)
+        except TypeError:
+            hits = await fn([query], top_k=top_k)
     except Exception as exc:
         return [], {
             "type": "search", "tool": tool, "query": query,
@@ -182,6 +188,9 @@ async def _run_one_round(
     actions: list[dict] = []
     url_repair_n = 0
     query_repair_n = 0
+    tool_error_n = 0
+    missing_client_n = 0
+    successful_action_n = 0
     seen_keys: set[str] = set(base_seed_pool.keys())
 
     for entry in plan:
@@ -207,6 +216,13 @@ async def _run_one_round(
 
         hits, action = await _execute_query(tool, q, retrieval_clients, top_k=3)
         actions.append(action)
+        if action.get("status") == "error":
+            tool_error_n += 1
+            err_msg = str(action.get("error") or "")
+            if "missing client" in err_msg:
+                missing_client_n += 1
+        elif action.get("status") in ("success", "no_results"):
+            successful_action_n += 1
         if action.get("status") in ("error", "no_results"):
             failed_queries.append({
                 "query": q, "tool": tool, "error": action.get("error") or action.get("status"),
@@ -231,6 +247,11 @@ async def _run_one_round(
         plan, [], accepted, rejected, placeholder_leaks,
         failed_queries, url_repair_n, round_num,
     )
+    observations["tool_stats"] = {
+        "tool_error_n": tool_error_n,
+        "missing_client_n": missing_client_n,
+        "successful_action_n": successful_action_n,
+    }
     reflection = await run_reflection_critic(
         topic, topic_atoms, observations, llm_client=llm_client,
     )
@@ -264,6 +285,7 @@ async def _run_one_round(
         "plan": plan,
         "url_repair_n": url_repair_n,
         "query_repair_n": query_repair_n,
+        "tool_stats": observations["tool_stats"],
     }
 
 
@@ -288,10 +310,39 @@ def _decide_stop(rounds: list[dict], all_accepted: list[dict], max_rounds: int) 
         return "sufficient_evidence"
     if len(rounds) >= max_rounds:
         return "max_rounds"
+    # Tooling failure takes precedence: if current OR last round had any tool
+    # errors AND no actions succeeded, the reflection isn't a "no new signal"
+    # verdict — it's the loop unable to talk to adapters.
+    cur = rounds[-1] if rounds else {}
+    cur_stats = cur.get("tool_stats") or {}
+    cur_has_error_no_success = (
+        cur_stats.get("tool_error_n", 0) > 0
+        and cur_stats.get("successful_action_n", 0) == 0
+    )
+    prev_has_error_no_success = False
+    if len(rounds) >= 2:
+        prev = rounds[-2]
+        prev_stats = prev.get("tool_stats") or {}
+        prev_has_error_no_success = (
+            prev_stats.get("tool_error_n", 0) > 0
+            and prev_stats.get("successful_action_n", 0) == 0
+        )
+    if cur_has_error_no_success or prev_has_error_no_success:
+        return "blocked_tooling"
     if len(rounds) >= 2:
         last_two = rounds[-2:]
         if all(r.get("accepted_n", len(r.get("accepted") or [])) < 2 for r in last_two):
-            return "no_new_signal"
+            # Only return no_new_signal if at least one action in either round
+            # was non-error (success or no_results). Otherwise surface as
+            # blocked_tooling — the loop couldn't actually exercise the search
+            # space.
+            has_real_signal = any(
+                (r.get("tool_stats") or {}).get("successful_action_n", 0) > 0
+                for r in last_two
+            )
+            if has_real_signal:
+                return "no_new_signal"
+            return "blocked_tooling"
     return ""
 
 
@@ -407,6 +458,7 @@ async def run_search_reflection_loop(
             "rejected_n": len(round_summary.get("rejected", [])),
             "url_repair_n": round_summary.get("url_repair_n", 0),
             "query_repair_n": round_summary.get("query_repair_n", 0),
+            "tool_stats": round_summary.get("tool_stats", {}),
             "reflection": round_summary.get("reflection", {}),
             "observations": round_summary.get("observations", {}),
         })
