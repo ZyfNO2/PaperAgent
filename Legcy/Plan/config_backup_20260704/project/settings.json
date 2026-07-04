@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '> TopicPilot-CN: 见 CLAUDE.md 阶段开发流程约束'",
+            "description": "提醒 agent 项目级规约"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python .claude/hooks/pre_report_audit.py 2>&1 || python .claude/hooks/pre_report_audit.py 2>&1",
+            "description": "写 *完工报告*.md 前自检：代码 bug / 规划如此 / 5 次失败停手 三选一 + 证据，禁止拿 LLM 死路径当真实数据"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run python .claude/hooks/user_completion_check.py 2>&1 || python .claude/hooks/user_completion_check.py 2>&1",
+            "description": "Stop 时做用户输入 vs 已交付物 完成度自检"
+          }
+        ]
+      }
+    ]
+  }
+}
