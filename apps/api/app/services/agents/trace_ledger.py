@@ -151,22 +151,46 @@ class TraceLedger:
     # ------------------------------------------------------------------
 
     def _persist(self) -> None:
-        """Atomic write: temp file in same dir, then rename."""
+        """Atomic write: temp file in same dir, then rename.
+
+        ponytail: on Windows, antivirus / OneDrive can briefly hold a
+        handle on the previous trace file, so ``os.replace`` raises
+        ``WinError 5``.  Retry up to 3 times with a short backoff and
+        remove a stale ``*.json.tmp`` if it lingers.
+        """
+        import time as _t
         data = json.dumps(self._doc, ensure_ascii=False, indent=2, default=str)
-        fd, tmp_name = tempfile.mkstemp(
-            prefix=f".{self.case_id}.", suffix=".json.tmp", dir=str(self.trace_dir),
-        )
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as f:
-                f.write(data)
-            os.replace(tmp_name, self.trace_path)
-        except Exception:
-            # Best effort cleanup on partial failure.
+        for attempt in range(3):
+            fd, tmp_name = tempfile.mkstemp(
+                prefix=f".{self.case_id}.", suffix=".json.tmp",
+                dir=str(self.trace_dir),
+            )
             try:
-                os.unlink(tmp_name)
-            except OSError:
-                pass
-            raise
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    f.write(data)
+                try:
+                    os.replace(tmp_name, self.trace_path)
+                    return
+                except (PermissionError, OSError) as exc:  # WinError 5 等
+                    if attempt == 2:
+                        raise
+                    logger.warning(
+                        "TraceLedger %s persist retry %d: %s",
+                        self.case_id, attempt + 1, exc,
+                    )
+                    try:
+                        os.unlink(tmp_name)
+                    except OSError:
+                        pass
+                    _t.sleep(0.3 * (attempt + 1))
+            except Exception:
+                # Best effort cleanup on partial failure.
+                try:
+                    os.unlink(tmp_name)
+                except OSError:
+                    pass
+                if attempt == 2:
+                    raise
 
 
 __all__ = ["TraceLedger"]

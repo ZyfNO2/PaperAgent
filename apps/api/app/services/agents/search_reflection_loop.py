@@ -474,7 +474,6 @@ def _decide_stop(rounds: list[dict], all_accepted: list[dict], max_rounds: int) 
         cur_stats.get("tool_error_n", 0) > 0
         and cur_stats.get("successful_action_n", 0) == 0
     )
-    prev_has_error_no_success = False
     if len(rounds) >= 2:
         prev = rounds[-2]
         prev_stats = prev.get("tool_stats") or {}
@@ -482,7 +481,11 @@ def _decide_stop(rounds: list[dict], all_accepted: list[dict], max_rounds: int) 
             prev_stats.get("tool_error_n", 0) > 0
             and prev_stats.get("successful_action_n", 0) == 0
         )
-    if cur_has_error_no_success or prev_has_error_no_success:
+    # P0-F (Iter 1): only stop on consecutive error rounds — round 1
+    # alone gets one more shot so provider_state circuit breaker can
+    # take over on round 2.  ponytail: cheaper than complicating
+    # reflection prompt; one-line guard.
+    if len(rounds) >= 2 and (cur_has_error_no_success and prev_has_error_no_success):
         return "blocked_tooling"
     if len(rounds) >= 2:
         last_two = rounds[-2:]
