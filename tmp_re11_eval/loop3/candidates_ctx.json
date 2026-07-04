@@ -1,0 +1,408 @@
+{
+  "steel_yolov5": [
+    {
+      "title": "Distributed Attacks in Persistent-State AI Control",
+      "arxiv_id": "2607.02514v1",
+      "year": "2026",
+      "abstract": "As AI coding agents become more autonomous, they increasingly ship code iteratively, with the codebase persisting across sessions. This persistence creates a new attack surface: a misaligned or prompt-injected agent can distribute attacks across pull requests (PRs) and time its payload for the PR with the best natural cover. To study the resulting dynamics, we introduce Iterative VibeCoding, a setting for AI control, the study of safely deploying capable but potentially untrusted AI. In Iterative VibeCoding, a coding agent builds software over a sequence of PRs in a persistent codebase while pursuing a covert side task. Our benchmark includes two task families: CLI tools and Flask web services, across 20 total task variations. We use Claude Sonnet 4.5 as the attack agent and GPT-4o as the monitor. We compare gradual attacks, which distribute the side task across PRs, against non-gradual attacks concentrated in a single PR. No single monitor is robust to both: which strategy evades best (success while evading the monitor) depends on the monitor type, so a defender cannot close off both gradual and non-gradual attacks with any one monitor. High evasion (>= 65%) generalizes across model attack agent backends (Sonnet 4.5, Gemini 3.1 Pro, Kimi K2.5), confirming this is a property of the persistent-state attack surface rather than a single model's capability. Evasion also remains high across state-of-the-art monitor models and the gap between gradual and non-gradual evasion widens for more capable models. We introduce a stateful link-tracker monitor that tracks suspicious buildup across PRs. On both task families, it detects gradual attacks substantially better than diff monitors that merely see more accumulated history. Combining this stronger monitor with trajectory monitors in a four-monitor ensemble reduces gradual-attack evasion from 93% under the weakest standard diff monitor to 47%.",
+      "arxiv_categories": [
+        "cs.AI"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "What LLM Agents Say When No One Is Watching: Social Structure and Latent Objective Emergence in Multi-Agent Debates",
+      "arxiv_id": "2607.02507v1",
+      "year": "2026",
+      "abstract": "LLM agents will increasingly act in socially structured settings where role, audience, and relational context can shape what is advantageous or costly to say. We study whether such social structure, without any explicit objective in the prompt, changes what an agent expresses publicly relative to an off-the-record (OTR) channel elicited under the same condition. We introduce a dual-channel debate framework in which agents produce public utterances that enter the shared history alongside OTR responses that are recorded but never shown to the other participant. Across 10 models, 3 scenarios, and 5 variations within each scenario, alignment-inducing settings produce systematic public-OTR divergence in the targeted agent, with its decision divergence rising from a $\\sim$3% baseline to roughly 40%. The effect is consistent across four aggregate analyses: stance, semantic similarity, natural language inference, and survey responses. In some cases, the OTR response explicitly attributes public accommodation to relational pressures, such as career risk or sponsorship obligation. The findings suggest that agent evaluation should extend beyond explicit goals and detect emergent objectives. We present a dual-channel evaluation framework and complementary behavioral measures that operationalize this assessment.",
+      "arxiv_categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG",
+        "cs.MA"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "The Debris Disk Host $β$ Piscis Austrinus is a Rapidly Rotating Star Seen Nearly Pole-On",
+      "arxiv_id": "2607.02487v1",
+      "year": "2026",
+      "abstract": "Previous studies of $β$ Piscis Austrinus (PsA) have speculated that the narrow and saddle-like shapes of some of its weak metallic lines are a consequence of it being a rapidly rotating star viewed nearly pole-on. Here we use the \\texttt{fastrot-spec} spectral synthesis code to model high-dispersion (R = 115,000) HARPS spectra of $β$ PsA in order to determine its inclination and photospheric properties, with additional constraints on the surface temperature set by measures of Fe II/Fe I line ratios. The analysis confirms that $β$ PsA is oriented nearly pole-on ($i = 4.75^{+0.75}_{-0.50}$$^o$) and experiences substantial gravity darkening caused by its rapid rotation ($Ω/Ω_{crit}=0.93\\pm0.17$). $β$ PsA has a polar temperature of $10300^{+200}_{-250}$ K that is 24% hotter than its equatorial temperature ($8275^{+317}_{-400}$ K). This results in its apparent luminosity being 48% larger than its actual luminosity of 26.2$^{+1.9}_{-2.4}$ L$_\\odot$. When this methodology is applied to high-dispersion spectra of the star Vega, the analysis determines a nearly pole-on orientation that is consistent with interferometric measurements, validating the technique. Based on comparisons with PARSEC evolutionary models of stars rotating at similar velocities, $β$ PsA has a mass of $2.20\\pm0.03$ M$_{\\odot}$ and an age of $141^{+113}_{-49}$ Myr; this age is consistent with the age inferred for its G5V companion star, CD-32 17127, based on lithium depletion models. The analysis demonstrates the potential for both identifying and determining the stellar properties of rapidly rotating stars viewed nearly pole-on via spectroscopy alone.",
+      "arxiv_categories": [
+        "astro-ph.SR"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "EAGLE-360: Embodied Active Global-to-Local Exploration in 360$^\\circ$",
+      "arxiv_id": "2607.02479v1",
+      "year": "2026",
+      "abstract": "While Multimodal Large Language Models (MLLMs) have demonstrated exceptional capabilities in standard visual understanding, adapting them for active visual search in 360$^\\circ$ panoramic environments exposes fundamental limitations. Specifically, standard MLLMs struggle to effectively model inherent panoramic properties, such as severe polar distortion and continuous cylindrical topologies, which significantly degrades target detection accuracy. Consequently, existing panoramic search methods attempt to compensate by relying heavily on fragmented local viewpoints. Burdened by rigid initialization and a lack of global panoramic priors, these approaches suffer from myopic, inefficient exploration and struggle with robust error recovery when targets are out of view. To overcome these challenges, we propose EAGLE-360, a novel Embodied Active Global-to-Local Exploration framework. Rather than performing exhaustive local searches, EAGLE-360 leverages global priors to establish an initial holistic perspective, iteratively reasoning and progressively narrowing the search space. Architecturally, we adapt RoPE Rolling, a coordinate-shifting positional encoding mechanism, to seamlessly model the continuous topologies of panoramas. To facilitate this paradigm, we construct the large-scale EAGLE-360 dataset, comprising 14,000+ 4K panoramas and 70,000+ rounds of high-quality VQA dialogues. By employing a training pipeline that integrates Supervised Fine-Tuning (SFT) with Group Relative Policy Optimization (GRPO), we effectively elicit complex spatial reasoning and tool-calling capabilities. Extensive experiments demonstrate that EAGLE-360 establishes a new state-of-the-art for 360$^\\circ$ visual search, achieving nearly an 8-fold increase in accuracy over the base model while significantly enhancing exploration efficiency.",
+      "arxiv_categories": [
+        "cs.CV"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Cryogenic RF characterization of the MAGO cavity for high-frequency gravitational-wave detection",
+      "arxiv_id": "2607.02476v1",
+      "year": "2026",
+      "abstract": "Superconducting radio-frequency (SRF) cavities are promising resonant sensors for gravitational-wave detection in the kHz-MHz frequency range. We report the cryogenic RF characterization of a prototype superconducting niobium cavity with an unconventional geometry designed for narrow electromagnetic mode separation. Following an adapted surface preparation procedure, cryogenic tests were performed at Fermilab and DESY at temperatures down to 2\\,K. Mechanical tuning at room temperature achieved a mode splitting of approximately 11\\,kHz at cryogenic temperature. High electromagnetic quality factors consistent with previous prototype cavities were measured. The measurements further revealed phase transfer characteristics relevant for stable low-level RF control as well as indications of mode coupling potentially caused by one-point multipacting. In addition, first cryogenic measurements of the mechanical eigenmodes yielded mechanical quality factors significantly below commonly assumed theoretical values. These results demonstrate the successful application of established SRF preparation and characterization techniques to a non-standard resonator geometry and provide important experimental input for the development of future SRF-based gravitational-wave detectors.",
+      "arxiv_categories": [
+        "physics.ins-det",
+        "physics.acc-ph"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "QuadRocket: An Aerial Robotic Testbed for Adaptive Thrust-Vector Control of Rocket-Like Vehicles",
+      "arxiv_id": "2607.02474v1",
+      "year": "2026",
+      "abstract": "This paper presents QuadRocket, a quadrotor-based rocket prototype that provides a low-cost, low-risk platform for validating advanced thrust-vector control strategies for launch vehicle-type systems. The prototype consists of a cylindrical main body mounted on top of a quadrotor through a universal joint, forming a flying inverted pendulum with non-negligible inertia. For control design, the coupled system is modeled as a single axisymmetric rigid body actuated by a vectored force applied along its longitudinal axis. A reduced-attitude representation on the two sphere is adopted to explicitly exploit the vehicle's axial symmetry and to decouple yaw from the thrust-vector direction. On this model, we derive an adaptive backstepping controller that achieves almost global trajectory tracking in the presence of unknown constant disturbances, while a control-point transformation mitigates non minimum-phase behavior. The quadrotor is then treated as a thrust vector actuator, and a dynamic-surface-based attitude controller is designed to track the desired thrust-vector, accounting for actuation dynamics and avoiding explicit differentiation of virtual control signals. The complete architecture is evaluated in simulation and validated experimentally in an indoor motion-capture arena. Results demonstrate accurate trajectory tracking, effective disturbance compensation, and confirm the suitability of the QuadRocket as a versatile testbed for thrust-vector-controlled robotic vehicles.",
+      "arxiv_categories": [
+        "cs.RO",
+        "eess.SY"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Interpretation-Oriented Cloud Removal via Observation-Anchored Residual Flow with Geo-Contextual Alignment",
+      "arxiv_id": "2607.02471v1",
+      "year": "2026",
+      "abstract": "Cloud removal (CR) is essential for optical remote sensing, serving as a prerequisite for reliable downstream interpretation, such as semantic segmentation and change detection. However, existing CR approaches often prioritize visual realism while overlooking their impact on subsequent analytical tasks, leading to semantic drift and degraded downstream performance. To address this issue, we propose Geo-Anchored Cloud Removal (GACR), a unified framework that jointly ensures faithful reconstruction and robust interpretability. At its core, GACR incorporates Observation-Anchored Residual Flow (OAR-Flow), which reformulates CR as a physically grounded residual inversion process. By anchoring the generative trajectory to the cloudy observation rather than pure noise, OAR-Flow enables fast, stable, and faithful reconstruction. To further preserve semantic structures critical for downstream interpretation, GACR integrates Geo-Contextual Prior Alignment (GCPA) to constrain the reconstruction within a semantic manifold induced by a Vision Foundation Model (VFM). Consequently, GACR strictly maintains the spatial-semantic integrity of complex landscapes. Extensive experiments across six CR datasets and twelve downstream tasks demonstrate that GACR produces superior reconstruction quality while consistently improving downstream task accuracy. The code is available at https://github.com/wzy6055/GACR.",
+      "arxiv_categories": [
+        "cs.CV"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Bifurcations of the Clifford Torus as Willmore Surfaces in Berger Spheres",
+      "arxiv_id": "2607.02468v1",
+      "year": "2026",
+      "abstract": "The Clifford torus in a Berger sphere with parameter $τ$ is a critical point of the Willmore functional for every $τ>0$, yielding a smooth path of Willmore surfaces. By estimating the Morse index along this path, we apply bifurcation theory to produce new symmetric Willmore tori emerging from the Clifford torus.",
+      "arxiv_categories": [
+        "math.DG",
+        "math.AP"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "AgentsCAD: Automated Design for Manufacturing of FDM Parts via Multi-Agent LLM Reasoning and Geometric Feature Recognition",
+      "arxiv_id": "2607.02448v1",
+      "year": "2026",
+      "abstract": "Parts manufactured with Fused Deposition Modeling (FDM) often require Design for Additive Manufacturing (DFAM) modifications to ensure printability, structural integrity, and reduced post-processing. Current slicers identify defects such as steep overhangs but are unable to modify the underlying geometry. This work presents AgentsCAD, a multi-agent system that bridges raw boundary-representation (B-Rep) geometry and Large Language Model (LLM) reasoning to automate targeted DFM. The workflow begins by parsing a STEP file. The agentic system detects overhangs above a 45°threshold, constructs a face-adjacency topology graph, and optionally injects semantic feature labels from a GraphSAGE model trained on MFCAD++ (59,665 parts), before dispatching a Claude Sonnet design-reasoning agent that recommends reorientations, fillets, chamfers, and similar modifications. A GPT-4o vision-language verifier inspects rendered views to confirm geometric integrity. Outputs include a modified STEP file and a human-readable report. A test case on a birdhouse model demonstrates that the system correctly diagnoses overhangs, selects appropriate defect mitigation strategies, and proposes physically valid corrections, partially solving the geometry-to-language translation problem central to LLM-driven CAD modification.",
+      "arxiv_categories": [
+        "cs.MA"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Curvature-induced host-mediated polarization of active particles",
+      "arxiv_id": "2607.02445v1",
+      "year": "2026",
+      "abstract": "Polar collective motion commonly arises from alignment interactions, particle anisotropy, or an imposed directional bias. Here we identify a distinct route to polar order that does not rely on alignment interactions between the active particles. We show that non-aligning active Brownian particles embedded in a dense passive medium can develop polar coherence when confined to a compact curved surface. Persistent active motion redistributes stress through the host and creates passive-depleted regions. When the stress-spreading length becomes comparable to the sphere radius, these regions merge into elongated scars that channel active motion and, through feedback with the active flux, promote a common direction of motion. Removing the passive host suppresses polar coherence even though the active particles continue to cluster on the same sphere. Our results establish an environment-mediated route to collective polarity in which symmetry breaking emerges from the coupling between active motion, passive stress redistribution, and compact geometry.",
+      "arxiv_categories": [
+        "cond-mat.soft"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "HTTP REST API Structure Learning",
+      "arxiv_id": "2607.02442v1",
+      "year": "2026",
+      "abstract": "Application Programming Interfaces (APIs) are essential in software development, enabling web services, mobile apps, and microservices. However, their widespread use introduces significant security risks, highlighting the importance of API security. This paper presents HTTP REST API Learning (HRAL), a novel unsupervised anomaly detection approach that models the structure and behavior of API endpoints directly from network traffic, without relying on predefined rules or documentation. HRAL enables robust detection of malicious activity by understanding how APIs behave and flagging deviations as potential threats. We evaluate HRAL across varying levels of OpenAPI documentation detail and compare it with existing techniques. HRAL achieves strong performance, with an average recall of 82.07% and an F1-score of 87.24%, significantly outperforming alternatives when API documentation is limited. Moreover, our results approach the effectiveness of full API document definitions. When combined with signature-based rules such as the OWASP ModSecurity CRS, our system achieves 100% detection. These results highlight HRAL's effectiveness in real-world, partially documented API environments and its potential as a foundational layer for modern API security solutions.",
+      "arxiv_categories": [
+        "cs.SE",
+        "cs.CR"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Reasoning effort, not tool access, buys first-try reliability in agentic code generation: an observational study",
+      "arxiv_id": "2607.02436v1",
+      "year": "2026",
+      "abstract": "Agentic coding assistants are increasingly given extra capabilities, such as browser based testing tools and design oriented system prompts, on the assumption that more capability yields better software. This study tested that assumption directly. Ninety independent agent runs built the same application, a real time retrospective board, from one detailed specification, each scored on a fixed 14 criterion functional rubric (42 point maximum) and a visual quality review. The runs spanned several model generations, two agent harnesses, two reasoning effort levels, a testing tool, and two design oriented prompts. Capability tier dominated: frontier models clustered near the ceiling while a low cost local model fell to 24 to 37 points. A criterion level analysis revealed what run totals conceal. Container deployment was the dominant defect, failing first try in 44 percent of runs, with its failure rate shifting sharply across model generations while mean totals moved less than a point. The testing tool raised cost by 42 to 68 percent without improving functional score or reliability, even on interface visible criteria. Raising reasoning effort from High to xHigh lifted first try perfect runs from 28 percent to 89 percent and cut corrective prompts about five fold, for 9 to 29 percent more cost. A design oriented prompt raised visual quality, 4.5 versus 3.0 on a 5 point scale, without lifting function, and a one paragraph paraphrase of its directive reproduced the entire lift. The practical lesson is to match the fix to the failure: most first run failures came from weak reasoning, which a stronger model or more effort prevents, not from visible flaws a checking tool would catch.",
+      "arxiv_categories": [
+        "cs.SE",
+        "cs.AI"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "MARVEL: Margin-Aware Robust von Mises-Fischer Expert Learning for Long-Tailed Out-of-Distribution Detection",
+      "arxiv_id": "2607.02435v1",
+      "year": "2026",
+      "abstract": "For clinical deployment, it is essential that automated diagnostic systems remain reliable when confronted with previously unseen cases, yet deep models routinely misclassify out-of-distribution (OOD) inputs with high confidence, underscoring the need for more robust OOD detection methods. Although substantial effort has been devoted to improving model robustness, most of the existing literature assumes balanced datasets, evaluates OOD detection on coarse or non-clinical OOD sources, or lacks comprehensive assessment across diverse OOD scenarios. To address the gaps, we propose a novel methodology trained on diverse and imbalanced medical datasets and evaluated across a clinically reflective OOD spectrum. Our framework comprises three key components: (1) a Nonlinear von Mises-Fisher (NvMF) classifier capable of learning non-linear decision boundaries, with theoretical proof of its asymptotic connection to cosine classifiers; (2) a multi-expert framework in which margin-aware NvMF classifiers specialise in different regions of label distribution to better handle imbalance; and (3) an outlier expert trained explicitly to distinguish inlier from outlier data, thereby strengthening OOD detection. Evaluation on RFMiD, ISIC2019, and NCTCRC datasets demonstrates consistent improvements over state-of-the-art methods, achieving mean FPR95 reductions of 8.45%, 13.02%, and 36.90% respectively. These gains are further supported by comprehensive ablations that validated the contributions of each component. This enables reliable identification of unfamiliar cases for deferral to clinicians, supporting safer AI-assisted diagnosis in real-world workflows. Our code is available at https://github.com/redboxup/MARVEL.",
+      "arxiv_categories": [
+        "cs.CV",
+        "eess.IV"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Physical surfaces make touch interactions in virtual reality precise, efficient, and bimanual",
+      "arxiv_id": "2607.02430v1",
+      "year": "2026",
+      "abstract": "Virtual reality (VR) systems can enable convenient hand-based interactions across diverse work scenarios. However, mid-air gestures lack tactile feedback and a physical reference surface to support the hand. This absence of haptic grounding can cause significant challenges in achieving precise and efficient touch interactions. This paper investigates the effect of different types of hand-grounded haptic feedback on the touch performance of VR tasks that demand high precision, such as selecting, tracing, and sketching. We compared three levels of haptic feedback: 1) No Haptic Feedback, where only visual feedback was provided; 2) Tactile Feedback, where users received vibrotactile and pressure feedback upon touching a virtual surface; 3) Physical Surface, where users interacted with a portable and tangible surface. Our study found that portable physical surfaces enabled the best selection precision, tracing efficiency, and sketch quality. Furthermore, participants showed increased bimanual hand utilization when engaging with a physical surface during tasks. These observed behaviors corresponded to participants' preference for interacting with physical surfaces, attributed to a better sense of confidence and control.",
+      "arxiv_categories": [
+        "cs.HC"
+      ],
+      "source": "arxiv"
+    }
+  ],
+  "semantic_slam": [
+    {
+      "title": "WorldDirector: Building Controllable World Simulators with Persistent Dynamic Memory",
+      "arxiv_id": "2607.02517v1",
+      "year": "2026",
+      "abstract": "We present WorldDirector, a highly controllable video world model framework designed for persistent dynamic object memory and unrestricted viewpoint exploration. Unlike existing world models that entangle physical dynamics with pixel rendering and rely on continuous visual observation to sustain motion, our framework explicitly decouples semantic motion orchestration from visual generation. By leveraging an LLM to coordinate 3D trajectories with camera movements and subsequently employing these orchestrated trajectories as control signals for video generation, our approach ensures strict physical logic and appearance stability, successfully preserving the exact visual identities of dynamic entities even when they re-enter the scene after prolonged periods out of view. Experimental results demonstrate that our method supports the synthesis of complex and extended events with unprecedented controllability and persistent dynamic object memory. Project Page: https://worlddirector.github.io/",
+      "arxiv_categories": [
+        "cs.CV"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "PointDiT: Pixel-Space Diffusion for Monocular Geometry Estimation",
+      "arxiv_id": "2607.02515v1",
+      "year": "2026",
+      "abstract": "State-of-the-art single-image 3D reconstruction methods often rely on complex hybrid architectures and loss functions, or compress geometry into latent spaces in order to leverage pre-trained latent diffusion models. In this work, we show that such architectural overhead and intricate loss formulations are unnecessary. We introduce a minimalist pixel-space Diffusion Transformer, built on a plain ViT, that operates directly on raw 3D point map patches and is conditioned on image tokens from a pre-trained DINOv3. Unlike existing latent diffusion approaches, we train our diffusion backbone entirely from scratch, eliminating the need for point map tokenizers. Despite its simplicity, our approach surpasses complex latent-based diffusion models while remaining significantly simpler than hybrid alternatives. Notably, it produces sharper geometric structure and is more robust in highly ambiguous regions, such as transparent objects.",
+      "arxiv_categories": [
+        "cs.CV"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "LACUNA: A Testbed for Evaluating Localization Precision for LLM Unlearning",
+      "arxiv_id": "2607.02513v1",
+      "year": "2026",
+      "abstract": "LLMs memorize sensitive training data, including personally identifiable information (PII), creating a pressing need for reliable post hoc removal methods. Unlearning has emerged as a promising solution, with state-of-the-art(SOTA) methods often following a localize-first, unlearn-second paradigm that targets specific model parameters. However, existing benchmarks evaluate unlearning solely at the output level, leaving open the question of whether unlearning truly erases knowledge from a model's parameters or merely obfuscates it, a concern reinforced by the success of resurfacing attacks. To bridge this gap, we introduce LACUNA: the first unlearning testbed with ground-truth parameter-level localization. LACUNA injects PII of synthetic individuals into predefined parameters of 1B and 7B OLMo-based models via masked continual pretraining, enabling direct evaluation of whether unlearning targets the weights responsible for knowledge storage. We use LACUNA to benchmark current SOTA unlearning methods and find that, despite strong output-level performance, existing methods are highly imprecise and susceptible to resurfacing attacks. We further show that when localization is successful, even a simple gradient-based unlearning method achieves strong erasure and robustness to resurfacing attacks, highlighting the importance of precise unlearning. We release LACUNA to complement behavioral evaluations and drive further advances in robust, localization-based unlearning.",
+      "arxiv_categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Program-as-Weights: A Programming Paradigm for Fuzzy Functions",
+      "arxiv_id": "2607.02512v1",
+      "year": "2026",
+      "abstract": "Many everyday programming tasks resist clean rule-based implementation, such as alerting on important log lines, repairing malformed JSON, or ranking search results by intent, and are increasingly outsourced to large language model APIs at the cost of locality, reproducibility, and price. We propose fuzzy-function programming: compiling such a function from a natural-language specification into a compact, locally-executable neural artifact. We instantiate this paradigm with Program-as-Weights (PAW), in which a 4B compiler trained on FuzzyBench, a 10M-example dataset we release, emits parameter-efficient adapters for a frozen, lightweight interpreter. A 0.6B Qwen3 interpreter executing PAW programs matches the performance of direct prompting of Qwen3-32B, while using roughly one fiftieth of the inference memory and running at 30 tokens/s on a MacBook M3. PAW reframes the foundation model from a per-input problem solver into a tool builder: invoked once per function definition, it produces a small reusable artifact whose subsequent calls per function application are cheap and offline.",
+      "arxiv_categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Online Safety Monitoring for LLMs",
+      "arxiv_id": "2607.02510v1",
+      "year": "2026",
+      "abstract": "Despite alignment training, LLMs remain prone to generating unsafe outputs at deployment time. Monitoring outputs online and raising an alarm when safety can no longer be assumed is therefore critical. We study a simple real-time monitor that turns a verifier signal from an external model into an alarm decision by thresholding, with the threshold calibrated via risk control. In experiments on mathematical reasoning and red teaming datasets, we show that this simple design is competitive with more advanced monitors based on sequential hypothesis testing.",
+      "arxiv_categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG",
+        "stat.AP",
+        "stat.ML"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "What LLM Agents Say When No One Is Watching: Social Structure and Latent Objective Emergence in Multi-Agent Debates",
+      "arxiv_id": "2607.02507v1",
+      "year": "2026",
+      "abstract": "LLM agents will increasingly act in socially structured settings where role, audience, and relational context can shape what is advantageous or costly to say. We study whether such social structure, without any explicit objective in the prompt, changes what an agent expresses publicly relative to an off-the-record (OTR) channel elicited under the same condition. We introduce a dual-channel debate framework in which agents produce public utterances that enter the shared history alongside OTR responses that are recorded but never shown to the other participant. Across 10 models, 3 scenarios, and 5 variations within each scenario, alignment-inducing settings produce systematic public-OTR divergence in the targeted agent, with its decision divergence rising from a $\\sim$3% baseline to roughly 40%. The effect is consistent across four aggregate analyses: stance, semantic similarity, natural language inference, and survey responses. In some cases, the OTR response explicitly attributes public accommodation to relational pressures, such as career risk or sponsorship obligation. The findings suggest that agent evaluation should extend beyond explicit goals and detect emergent objectives. We present a dual-channel evaluation framework and complementary behavioral measures that operationalize this assessment.",
+      "arxiv_categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG",
+        "cs.MA"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "VT-WAM: Visual-Tactile World Action Model for Contact-Rich Manipulation",
+      "arxiv_id": "2607.02503v1",
+      "year": "2026",
+      "abstract": "Contact-rich manipulation requires policies to react to local deformation, pressure, slip, and friction, yet these cues are temporally sparse and often invisible in visual observations. Existing visual-tactile policies usually feed tactile observations directly into action prediction, but rarely model tactile deformation dynamics during action generation. In this paper, we introduce VT-WAM, a Visual-Tactile World Action Model that jointly learns future visual prediction, tactile deformation prediction, and action prediction within a unified flow matching framework. In particular, VT-WAM introduces (1) Asymmetric Mixture-of-Transformers (MoT) attention to bridge a first-frame visual anchor with temporal tactile dynamics, and (2) contact-gated Action-Visual-Tactile Attention Guidance (AVTAG) to encourage action queries to rely on tactile evidence during contact phases. Across six real-world contact-rich manipulation tasks, VT-WAM achieves a 71.67% average success rate, outperforming Fast-WAM by 26.67% and OmniVTLA by 35.84%. Ablations demonstrate that modeling tactile deformation dynamics and guiding contact-phase tactile attention are both important for contact-rich tasks. Project website: https://vt-wam.github.io/.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "DemoPSD: Disagreement-Modulated Policy Self-Distillation",
+      "arxiv_id": "2607.02502v1",
+      "year": "2026",
+      "abstract": "On-policy self-distillation (OPSD) has emerged as a practical method for training large language models (LLMs) to reason, where a single model acts as both the teacher and the student with different levels of information access. However, recent studies have found that the teacher's dense token-level supervision, conditioned on privileged information, can lead to overfitting to in-domain patterns, suppress exploration, and hurt cross-domain generalization, while also introducing a more fundamental issue: *privileged information leakage*, where the student encodes answer-dependent shortcuts that are unavailable at test time. We introduce **DemoPSD**, a novel framework that resolves such problems through the idea of *selective adoption of teacher guidance*. Instead of fitting the full teacher distribution, DemoPSD steers the student toward a *reverse-KL barycenter target*, a weighted geometric combination of the teacher and student distributions, that naturally balances learning from the teacher with preserving the student's own reasoning capacity. We measure the difference between their distributions and use such a discrepancy to adaptively control the blending at each token position. We provably show that DemoPSD achieves **(1)** *leakage attenuation*, i.e., effective mitigation of privileged information leakage; and **(2)** *exploration preservation*, i.e., preservation of exploration capacity under dense token-level distillation. Extensive experiments on SciKnowEval across four scientific fields show that DemoPSD outperforms both GRPO and SDPO while maintaining higher training entropy and robustly generalizing to out-of-distribution GPQA benchmarks.",
+      "arxiv_categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Beyond Adam: SOAP and Muon for Faster, Label-Efficient Training of Machine Learning Interatomic Potentials",
+      "arxiv_id": "2607.02499v1",
+      "year": "2026",
+      "abstract": "Machine learning interatomic potentials (MLIPs) have become a hallmark of AI for scientific simulation. While efforts on new architectures and datasets have led to increasingly accurate and general models, the choice of optimizer for training has largely remained unexplored, defaulting to Adam and its variants in the community. Here, we implement and systematically compare a class of recently proposed matrix-structured optimizers, including Muon, SOAP, and the hybrid SOAP-Muon, for training NequIP and Allegro MLIP models. We find that these optimizers can substantially outperform Adam in both convergence speed and final accuracy. SOAP and SOAP-Muon emerge as robust and consistently strong methods, while Muon only provides partial gains relative to Adam. The improvements are particularly pronounced under partial force supervision. Our results indicate that optimizer choice is an overlooked yet impactful design axis for MLIPs.",
+      "arxiv_categories": [
+        "cs.LG",
+        "cs.AI",
+        "physics.chem-ph",
+        "physics.comp-ph"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Seek to Segment: Active Perception for Panoramic Referring Segmentation",
+      "arxiv_id": "2607.02497v1",
+      "year": "2026",
+      "abstract": "Existing referring segmentation models passively process static images captured from fixed perspectives, limiting their applicability in Embodied AI, where agents must perform active perception in the continuous 360$^\\circ$ environments. To bridge this gap, we introduce a novel task: Active Panoramic Referring Segmentation (APRS). In this setting, an agent is required to adjust its viewing direction ($Δθ, Δφ$) to explore the 360$^\\circ$ environment, seeking the object specified by a user instruction for segmentation. To tackle this challenging task, we propose PanoSeeker, a memory-augmented agent for efficient APRS. Rather than relying on heuristic scanning, PanoSeeker integrates a Vision-Language Model (VLM) with EgoSphere, an explicit spatial visual memory. By progressively integrating sequential local observations into a unified 360$^\\circ$ representation, EgoSphere enables the agent to plan efficient and non-redundant search trajectories. Once the target is found, the agent performs active viewpoint alignment and outputs the segmentation mask. Furthermore, we curate an expert-annotated search trajectory dataset with memory timelines for Supervised Fine-Tuning, followed by Reinforcement Learning post-training to explicitly optimize PanoSeeker's exploration efficiency. Extensive experiments on our newly established APRS benchmark demonstrate that PanoSeeker achieves superior search efficiency and segmentation accuracy, significantly outperforming adapted state-of-the-art baselines.",
+      "arxiv_categories": [
+        "cs.CV"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Controllable Sim Agents with Behavior Latents",
+      "arxiv_id": "2607.02496v1",
+      "year": "2026",
+      "abstract": "Realistic traffic simulation requires agents that imitate logged behavior and can also be steered along interpretable axes. Such controllability enables engineers to isolate variables, reproduce specific edge cases, and test autonomous systems without real-world risk. We introduce Controllable Neural Variational Agents (CNeVA), a controllable simulated-agent framework that learns to infer a per-agent Gaussian behavior latent from per-channel discounted returns via a closed-form conjugate variational update, conditioning a rectified-flow trajectory generator trained on a mixed channel-mask curriculum for classifier-free guidance. To tackle scarcity in reward signals, we propose soft eligibility gates that replace hard binary thresholds with smooth exponential decay, preserving the gradient signal for near-threshold agents. On the Waymo Open Motion Dataset, CNeVA attains competitive realism on the benchmark while exposing per-channel controllability that the higher-ranked imitation models lack. Speed- and acceleration-based steering produces monotone responses without stall-induced reward hacking. Safety controllability is monotone and substantial with the introduction of soft eligibility. We manage to achieve steerable map compliance under a context-residual return measure. Furthermore, our experiment demonstrates that steering metrics must be read alongside physical-plausibility guardrails to avoid reward-hacking confounds.",
+      "arxiv_categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Towards Robustness against Typographic Attack with Training-free Concept Localization",
+      "arxiv_id": "2607.02494v1",
+      "year": "2026",
+      "abstract": "Models trained via Contrastive Language-Image Pretraining (CLIP) serve as the foundational vision encoders for most modern Large Vision Language Models (LVLMs). Despite their widespread adoption, CLIP models exhibit a critical yet underexplored failure mode: irrelevant text appearing within images confounds visual representations, biasing them toward lexical meaning rather than true visual semantics. This robustness issue, commonly described as a Typographic Attack (TA), exposes a vulnerability that poses a significant risk to safety-critical applications such as autonomous driving. To achieve interpretable and effective robustness against TA, we propose a novel, training-free mechanistic interpretability method. Our method provides sampling-based interpretations of hidden state representations and quantitatively attributes semantic versus lexical focus to individual attention heads. Through probabilistic analysis and circuit mining, we isolate specific Vision Transformer (ViT) components that disproportionately encode lexical information, thereby identifying the mechanistic source of TA. We further show that simple interventions applied directly to the identified circuits, without any additional training, can substantially improve robustness against Typographic Attacks in object classification. These interventions, such as selective adjustment of attention weights, also outperform both supervised and training-free defense methods. Our experiments demonstrate that applying the proposed intervention to the vision encoders of several state-of-the-art LVLMs yields substantial gains in Visual Question Answering accuracy under Typographic Attack interference on RIO-Bench. These results confirm both the efficacy and the generalizability of our mechanistic approach. Code is released at https://github.com/Liu-524/SamplingTAR.",
+      "arxiv_categories": [
+        "cs.CV",
+        "cs.CL"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Stability of global self-similar solutions to the cubic wave equation and the wave maps equation",
+      "arxiv_id": "2607.02493v1",
+      "year": "2026",
+      "abstract": "We study the long-time stability of global self-similar solutions to two energy supercritical nonlinear wave equations, namely, the cubic nonlinear wave equation in $6$ dimensions and the corotational wave maps equation in $4$ dimensions. We prove the stability of self-similar solutions under perturbations that are small in the critical Sobolev spaces. The proof is based on Strichartz estimates for wave equations with potentials in similarity variables.",
+      "arxiv_categories": [
+        "math.AP"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Visually Grounded Self-Reflection for Vision-Language Models via Reinforcement Learning",
+      "arxiv_id": "2607.02490v1",
+      "year": "2026",
+      "abstract": "Large vision-language models can reason over multimodal inputs by generating textual chains of thought (CoT). A key capability exhibited in CoT reasoning is self-reflection: revisiting earlier decisions and correcting previous errors. However, existing LVLMs often fail to properly attend to visual inputs during reflection, limiting their ability to translate feedback into grounded corrections, especially for out-of-distribution images. To address this issue, we propose a novel reinforcement learning training framework VRRL, with two components explicitly designed to elicit visually grounded self-reflection. First, we randomly mask trajectory prefixes during training to emphasize recovery from incorrect intermediate predictions rather than making early mistakes. Second, we introduce buffered roll-ins from an experience replay buffer to expose the model to diverse failure states that it must learn to correct. We evaluate our approach on visual grounding tasks involving tables and charts, as well as spatial navigation benchmarks. While off-the-shelf and conventionally fine-tuned models degrade substantially under distribution shift, our method substantially improves average out-of-distribution accuracy over standard RL and reflection-oriented fine-tuning baselines by using self-reflection effectively.",
+      "arxiv_categories": [
+        "cs.CL",
+        "cs.CV"
+      ],
+      "source": "arxiv"
+    }
+  ],
+  "med_llm": [
+    {
+      "title": "WorldDirector: Building Controllable World Simulators with Persistent Dynamic Memory",
+      "arxiv_id": "2607.02517v1",
+      "year": "2026",
+      "abstract": "We present WorldDirector, a highly controllable video world model framework designed for persistent dynamic object memory and unrestricted viewpoint exploration. Unlike existing world models that entangle physical dynamics with pixel rendering and rely on continuous visual observation to sustain motion, our framework explicitly decouples semantic motion orchestration from visual generation. By leveraging an LLM to coordinate 3D trajectories with camera movements and subsequently employing these orchestrated trajectories as control signals for video generation, our approach ensures strict physical logic and appearance stability, successfully preserving the exact visual identities of dynamic entities even when they re-enter the scene after prolonged periods out of view. Experimental results demonstrate that our method supports the synthesis of complex and extended events with unprecedented controllability and persistent dynamic object memory. Project Page: https://worlddirector.github.io/",
+      "arxiv_categories": [
+        "cs.CV"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Distributed Attacks in Persistent-State AI Control",
+      "arxiv_id": "2607.02514v1",
+      "year": "2026",
+      "abstract": "As AI coding agents become more autonomous, they increasingly ship code iteratively, with the codebase persisting across sessions. This persistence creates a new attack surface: a misaligned or prompt-injected agent can distribute attacks across pull requests (PRs) and time its payload for the PR with the best natural cover. To study the resulting dynamics, we introduce Iterative VibeCoding, a setting for AI control, the study of safely deploying capable but potentially untrusted AI. In Iterative VibeCoding, a coding agent builds software over a sequence of PRs in a persistent codebase while pursuing a covert side task. Our benchmark includes two task families: CLI tools and Flask web services, across 20 total task variations. We use Claude Sonnet 4.5 as the attack agent and GPT-4o as the monitor. We compare gradual attacks, which distribute the side task across PRs, against non-gradual attacks concentrated in a single PR. No single monitor is robust to both: which strategy evades best (success while evading the monitor) depends on the monitor type, so a defender cannot close off both gradual and non-gradual attacks with any one monitor. High evasion (>= 65%) generalizes across model attack agent backends (Sonnet 4.5, Gemini 3.1 Pro, Kimi K2.5), confirming this is a property of the persistent-state attack surface rather than a single model's capability. Evasion also remains high across state-of-the-art monitor models and the gap between gradual and non-gradual evasion widens for more capable models. We introduce a stateful link-tracker monitor that tracks suspicious buildup across PRs. On both task families, it detects gradual attacks substantially better than diff monitors that merely see more accumulated history. Combining this stronger monitor with trajectory monitors in a four-monitor ensemble reduces gradual-attack evasion from 93% under the weakest standard diff monitor to 47%.",
+      "arxiv_categories": [
+        "cs.AI"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "LACUNA: A Testbed for Evaluating Localization Precision for LLM Unlearning",
+      "arxiv_id": "2607.02513v1",
+      "year": "2026",
+      "abstract": "LLMs memorize sensitive training data, including personally identifiable information (PII), creating a pressing need for reliable post hoc removal methods. Unlearning has emerged as a promising solution, with state-of-the-art(SOTA) methods often following a localize-first, unlearn-second paradigm that targets specific model parameters. However, existing benchmarks evaluate unlearning solely at the output level, leaving open the question of whether unlearning truly erases knowledge from a model's parameters or merely obfuscates it, a concern reinforced by the success of resurfacing attacks. To bridge this gap, we introduce LACUNA: the first unlearning testbed with ground-truth parameter-level localization. LACUNA injects PII of synthetic individuals into predefined parameters of 1B and 7B OLMo-based models via masked continual pretraining, enabling direct evaluation of whether unlearning targets the weights responsible for knowledge storage. We use LACUNA to benchmark current SOTA unlearning methods and find that, despite strong output-level performance, existing methods are highly imprecise and susceptible to resurfacing attacks. We further show that when localization is successful, even a simple gradient-based unlearning method achieves strong erasure and robustness to resurfacing attacks, highlighting the importance of precise unlearning. We release LACUNA to complement behavioral evaluations and drive further advances in robust, localization-based unlearning.",
+      "arxiv_categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Program-as-Weights: A Programming Paradigm for Fuzzy Functions",
+      "arxiv_id": "2607.02512v1",
+      "year": "2026",
+      "abstract": "Many everyday programming tasks resist clean rule-based implementation, such as alerting on important log lines, repairing malformed JSON, or ranking search results by intent, and are increasingly outsourced to large language model APIs at the cost of locality, reproducibility, and price. We propose fuzzy-function programming: compiling such a function from a natural-language specification into a compact, locally-executable neural artifact. We instantiate this paradigm with Program-as-Weights (PAW), in which a 4B compiler trained on FuzzyBench, a 10M-example dataset we release, emits parameter-efficient adapters for a frozen, lightweight interpreter. A 0.6B Qwen3 interpreter executing PAW programs matches the performance of direct prompting of Qwen3-32B, while using roughly one fiftieth of the inference memory and running at 30 tokens/s on a MacBook M3. PAW reframes the foundation model from a per-input problem solver into a tool builder: invoked once per function definition, it produces a small reusable artifact whose subsequent calls per function application are cheap and offline.",
+      "arxiv_categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Online Safety Monitoring for LLMs",
+      "arxiv_id": "2607.02510v1",
+      "year": "2026",
+      "abstract": "Despite alignment training, LLMs remain prone to generating unsafe outputs at deployment time. Monitoring outputs online and raising an alarm when safety can no longer be assumed is therefore critical. We study a simple real-time monitor that turns a verifier signal from an external model into an alarm decision by thresholding, with the threshold calibrated via risk control. In experiments on mathematical reasoning and red teaming datasets, we show that this simple design is competitive with more advanced monitors based on sequential hypothesis testing.",
+      "arxiv_categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG",
+        "stat.AP",
+        "stat.ML"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "ReContext: Recursive Evidence Replay as LLM Harness for Long-Context Reasoning",
+      "arxiv_id": "2607.02509v1",
+      "year": "2026",
+      "abstract": "Understanding and reasoning over long contexts has become a key requirement for deploying large language models (LLMs) in realistic applications. Although recent LLMs support increasingly long context windows, they often fail to use relevant evidence that is already present in the input, revealing a gap between context access and effective context utilization. In this work, we propose Recursive Evidence Replay as LLM Harness for Long-Context Reasoning (RECONTEXT), a training-free inference method for improving long-context reasoning. RECONTEXT uses model-internal relevance signals to construct a query-conditioned evidence pool and replays it before final generation while preserving the full original context. This recursive selection process separates evidence organization from answer generation without training, external memory, or context pruning. We also provide a theoretical analysis based on associative memory, which characterizes the context as a memory store, the question as a retrieval cue, attention as cue-trace association, and replay as trace reactivation. Experiments on eight long-context datasets with 128K context length show that RECONTEXT consistently improves evidence utilization across Qwen3-4B, Qwen3-8B, and Llama3-8B, achieving the best average rank on all three backbones. Code is available at https://github.com/Yanjun-Zhao/ReContext.",
+      "arxiv_categories": [
+        "cs.AI"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "What LLM Agents Say When No One Is Watching: Social Structure and Latent Objective Emergence in Multi-Agent Debates",
+      "arxiv_id": "2607.02507v1",
+      "year": "2026",
+      "abstract": "LLM agents will increasingly act in socially structured settings where role, audience, and relational context can shape what is advantageous or costly to say. We study whether such social structure, without any explicit objective in the prompt, changes what an agent expresses publicly relative to an off-the-record (OTR) channel elicited under the same condition. We introduce a dual-channel debate framework in which agents produce public utterances that enter the shared history alongside OTR responses that are recorded but never shown to the other participant. Across 10 models, 3 scenarios, and 5 variations within each scenario, alignment-inducing settings produce systematic public-OTR divergence in the targeted agent, with its decision divergence rising from a $\\sim$3% baseline to roughly 40%. The effect is consistent across four aggregate analyses: stance, semantic similarity, natural language inference, and survey responses. In some cases, the OTR response explicitly attributes public accommodation to relational pressures, such as career risk or sponsorship obligation. The findings suggest that agent evaluation should extend beyond explicit goals and detect emergent objectives. We present a dual-channel evaluation framework and complementary behavioral measures that operationalize this assessment.",
+      "arxiv_categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG",
+        "cs.MA"
+      ],
+      "source": "arxiv"
+    },
+    {
+      "title": "Reasoning LLM Improves Speaker Recognition in Long-form TV Dramas",
+      "arxiv_id": "2607.02504v1",
+      "year": "2026",
+      "abstract": "Long-form TV dramas present a formidable challenge for comprehensive video understanding, where deciphering complex storyline often relies on \\textbf{speaker recognition}, the task of accurately attributing each spoken utterance to its respective character. In this paper, we advance this field through two primary contributions. (1) We introduce \\textbf{DramaSR-532K}, a large-scale benchmark comprising 532K annotated dialogue lines across more than 900 unique characters, necessitating the integration of auditory, linguistic, and visual cues for speaker recognition. (2) We propose \\textbf{DramaSR-LRM}, a robust approach built upon a large reasoning model (LRM). DramaSR-LRM is designed to autonomously aggregate contextual evidence via multimodal tool-use, synthesizing diverse inputs to achieve high-fidelity attribution. Experimental results demonstrate that DramaSR-LRM significantly outperforms existing baselines, particularly on short utterances where acoustic biometrics are inherently unreliable. \\textit{All the data and code will be made publicly available at the project page: https://www.github.com/198808xc/DramaSR-LRM.}",
+      "arxiv_categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "source": "arxiv"
+    }
+  ]
+}

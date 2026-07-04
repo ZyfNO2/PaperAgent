@@ -1,0 +1,672 @@
+{
+  "case_id": "re11-l3-medical-llm",
+  "topic": "基于大语言模型的医学问答可信度评估方法研究",
+  "topic_atoms": {
+    "method": [
+      "大语言模型",
+      "large language model",
+      "医疗问答",
+      "medical QA",
+      "置信度",
+      "calibration",
+      "幻觉检测",
+      "hallucination",
+      "可信度"
+    ],
+    "object": [
+      "医学问答",
+      "clinical question answering",
+      "医疗生成"
+    ],
+    "task": [
+      "可信度评估",
+      "confidence estimation",
+      "幻觉检测",
+      "可靠性reliability"
+    ],
+    "dataset_terms": [
+      "PubMedQA",
+      "MedQA",
+      "MedMCQA",
+      "MMLU-medical",
+      "HealthBench"
+    ],
+    "baseline_terms": [
+      "GPT-4",
+      "Med-PaLM",
+      "LLaMA",
+      "Flan-PaLM",
+      "BioGPT"
+    ],
+    "avoid_terms": [
+      "视觉vision",
+      "机器翻译",
+      "代码生成"
+    ]
+  },
+  "started_at": 1783189993.5765207,
+  "elapsed_s": 65.39,
+  "state": {
+    "paper_candidates": [
+      {
+        "title": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+        "source": "arxiv",
+        "year": "2024"
+      },
+      {
+        "title": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+        "source": "arxiv",
+        "year": "2025"
+      },
+      {
+        "title": "MedExpQA: Multilingual benchmarking of Large Language Models for Medical Question Answering",
+        "source": "arxiv",
+        "year": "2024"
+      },
+      {
+        "title": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+        "source": "arxiv",
+        "year": "2026"
+      },
+      {
+        "title": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+        "source": "arxiv",
+        "year": "2026"
+      },
+      {
+        "title": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+        "source": "arxiv",
+        "year": "2025"
+      },
+      {
+        "title": "Deep Reinforcement Learning for Stock Portfolio Management",
+        "source": "decoy",
+        "year": "2022"
+      }
+    ],
+    "verified_papers": [
+      {
+        "title": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+        "verdict": "accept",
+        "hit_keywords": [
+          "大语言模型",
+          "医疗问答",
+          "置信度",
+          "幻觉检测",
+          "可靠性"
+        ],
+        "unrelated_keywords": [],
+        "related_keywords": [
+          "medical QA",
+          "LLM",
+          "hallucination",
+          "reliability"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet directly address uncertainty estimation in medical QA using LLMs, focusing on hallucination detection and response reliability, which aligns with the topic of evaluating the credibility of LLM-based medical QA."
+      },
+      {
+        "title": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+        "verdict": "accept",
+        "hit_keywords": [
+          "大语言模型",
+          "医疗问答",
+          "幻觉检测"
+        ],
+        "unrelated_keywords": [],
+        "related_keywords": [
+          "medical QA",
+          "LLM",
+          "hallucination"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet focus on a benchmark for detecting medical hallucinations in LLMs, which is directly related to the topic of assessing the credibility and reliability of LLM-based medical QA systems."
+      },
+      {
+        "title": "MedExpQA: Multilingual benchmarking of Large Language Models for Medical Question Answering",
+        "verdict": "accept",
+        "hit_keywords": [
+          "大语言模型",
+          "医疗问答",
+          "幻觉检测"
+        ],
+        "unrelated_keywords": [
+          "multilingual"
+        ],
+        "related_keywords": [
+          "medical QA",
+          "LLM",
+          "hallucination"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet discuss benchmarking LLMs for medical QA, noting that models hallucinate in medical QA, which is relevant to the topic of credibility and reliability assessment."
+      },
+      {
+        "title": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+        "verdict": "accept",
+        "hit_keywords": [
+          "大语言模型",
+          "医疗问答",
+          "可靠性"
+        ],
+        "unrelated_keywords": [],
+        "related_keywords": [
+          "medical QA",
+          "LLM",
+          "reliability"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet explore self-correction in medical QA to improve reliability, which is directly related to the topic of enhancing the credibility of LLM-based medical QA systems."
+      },
+      {
+        "title": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+        "verdict": "accept",
+        "hit_keywords": [
+          "大语言模型",
+          "医疗问答",
+          "可靠性"
+        ],
+        "unrelated_keywords": [
+          "retrieval-augmented generation",
+          "hybrid"
+        ],
+        "related_keywords": [
+          "medical QA",
+          "LLM",
+          "reliability"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet describe a framework to improve the reliability of medical QA by reducing unsupported claims, which is directly related to the topic of ensuring the credibility of LLM-based medical QA."
+      },
+      {
+        "title": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+        "verdict": "accept",
+        "hit_keywords": [
+          "大语言模型",
+          "医疗问答"
+        ],
+        "unrelated_keywords": [
+          "factual-aware",
+          "recurrence generation"
+        ],
+        "related_keywords": [
+          "medical QA",
+          "LLM"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet focus on improving the factual accuracy of LLM answers in medical QA, which is related to the topic of enhancing the credibility and reliability of LLM-based medical QA systems."
+      }
+    ],
+    "dataset_candidates": [
+      {
+        "from_paper": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+        "status": "url_missing_needs_repair"
+      },
+      {
+        "from_paper": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+        "status": "url_missing_needs_repair"
+      },
+      {
+        "from_paper": "MedExpQA: Multilingual benchmarking of Large Language Models for Medical Question Answering",
+        "status": "url_missing_needs_repair"
+      },
+      {
+        "from_paper": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+        "status": "url_missing_needs_repair"
+      },
+      {
+        "from_paper": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+        "kind": "dataset",
+        "name": "MedQuAD, PubMedQA, MedMCQA",
+        "url": "https://github.com/HealthCatalyst/self-medrag",
+        "status": "found",
+        "missing": [
+          "project_url"
+        ]
+      },
+      {
+        "from_paper": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+        "status": "url_missing_needs_repair"
+      }
+    ],
+    "repo_candidates": [
+      {
+        "from_paper": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+        "kind": "repo",
+        "url": "https://github.com/HealthCatalyst/self-medrag",
+        "mentioned_repo": "https://github.com/HealthCatalyst/self-medrag",
+        "status": "found"
+      }
+    ],
+    "work_packages": [
+      {
+        "title": "基于大语言模型的医学问答置信度估计方法研究",
+        "baseline": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+        "improved_module_source": null,
+        "risk": "大语言模型在医学领域的不确定性估计可能受到数据集偏差的影响，导致置信度评估不准确。"
+      },
+      {
+        "title": "大语言模型在医学问答中的幻觉检测方法研究",
+        "baseline": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+        "improved_module_source": null,
+        "risk": "幻觉检测的准确性可能受限于基准数据集的覆盖范围，无法全面捕捉所有类型的幻觉。"
+      },
+      {
+        "title": "大语言模型自我纠正机制在医学问答中的应用研究",
+        "baseline": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+        "improved_module_source": null,
+        "risk": "自我纠正机制可能引入额外的计算开销，且纠正效果在不同医学领域可能表现不一致。"
+      },
+      {
+        "title": "自反思混合检索增强生成框架在医学问答中的可靠性研究",
+        "baseline": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+        "improved_module_source": null,
+        "risk": "混合检索增强生成框架的性能可能依赖于外部知识库的质量，知识库不完整或过时可能影响结果。"
+      },
+      {
+        "title": "复发生成增强检索在事实感知医学问答中的应用研究",
+        "baseline": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+        "improved_module_source": null,
+        "risk": "复发生成增强检索的计算复杂度可能较高，影响模型的实时响应能力。"
+      }
+    ],
+    "evidence_audit": {
+      "n_baseline": 0,
+      "n_parallel": 6,
+      "n_survey": 0,
+      "n_total_papers": 6,
+      "dataset_candidates_n": 6,
+      "repo_candidates_n": 1,
+      "evidence_gap": [
+        {
+          "missing": "具体的大语言模型 baseline 实现细节（如 GPT-4, Med-PaLM 等）在证据中未明确提及，需进一步获取这些模型在医学问答任务中的具体实现和评估结果。",
+          "tool_calls": [
+            {
+              "tool_name": "academic_search",
+              "query": "GPT-4 Med-PaLM BioGPT in medical question answering implementation and evaluation",
+              "expected_evidence": "具体实现细节和评估结果"
+            }
+          ]
+        },
+        {
+          "missing": "代码仓库 (repos) 信息缺失，无法获取实现细节进行复现或进一步开发。",
+          "tool_calls": [
+            {
+              "tool_name": "code_repository_search",
+              "query": "Self-MedRAG RGAR MedHallu implementation repository",
+              "expected_evidence": "相关实现的代码仓库链接"
+            }
+          ]
+        }
+      ]
+    },
+    "low_bar_review": {
+      "status": "pass",
+      "issues": [],
+      "n_packages_reviewed": 5,
+      "n_packages_after_review": 5
+    },
+    "human_gate": {
+      "status": "pass_through",
+      "reason": "HUMAN_GATE_ENABLED!=true"
+    },
+    "final_recommendation": {
+      "topic": "基于大语言模型的医学问答可信度评估方法研究",
+      "n_papers": 6,
+      "n_baseline": 0,
+      "n_parallel": 6,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于大语言模型的医学问答置信度估计方法研究",
+          "research_question": "如何利用大语言模型进行医学问答的置信度估计，以提高答案的可靠性？",
+          "baseline": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+          "improved_module_source": null,
+          "data_source": "PubMedQA, MedMCQA",
+          "experiment_metrics": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+          "risk": "大语言模型在医学领域的不确定性估计可能受到数据集偏差的影响，导致置信度评估不准确。",
+          "estimated_workload": "中"
+        },
+        {
+          "title": "大语言模型在医学问答中的幻觉检测方法研究",
+          "research_question": "如何检测大语言模型在医学问答中的幻觉现象，以提升答案的可信度？",
+          "baseline": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+          "risk": "幻觉检测的准确性可能受限于基准数据集的覆盖范围，无法全面捕捉所有类型的幻觉。",
+          "estimated_workload": "中"
+        },
+        {
+          "title": "大语言模型自我纠正机制在医学问答中的应用研究",
+          "research_question": "大语言模型能否通过自我纠正机制提高医学问答的准确性与可信度？",
+          "baseline": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+          "risk": "自我纠正机制可能引入额外的计算开销，且纠正效果在不同医学领域可能表现不一致。",
+          "estimated_workload": "中"
+        },
+        {
+          "title": "自反思混合检索增强生成框架在医学问答中的可靠性研究",
+          "research_question": "Self-MedRAG框架如何提升医学问答的可靠性，并减少幻觉的产生？",
+          "baseline": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+          "risk": "混合检索增强生成框架的性能可能依赖于外部知识库的质量，知识库不完整或过时可能影响结果。",
+          "estimated_workload": "高"
+        },
+        {
+          "title": "复发生成增强检索在事实感知医学问答中的应用研究",
+          "research_question": "RGAR框架如何通过复发生成增强检索，提升医学问答的事实准确性？",
+          "baseline": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+          "risk": "复发生成增强检索的计算复杂度可能较高，影响模型的实时响应能力。",
+          "estimated_workload": "高"
+        }
+      ]
+    }
+  },
+  "final_recommendation": {
+    "topic": "基于大语言模型的医学问答可信度评估方法研究",
+    "n_papers": 6,
+    "n_baseline": 0,
+    "n_parallel": 6,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 5,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "基于大语言模型的医学问答置信度估计方法研究",
+        "research_question": "如何利用大语言模型进行医学问答的置信度估计，以提高答案的可靠性？",
+        "baseline": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+        "improved_module_source": null,
+        "data_source": "PubMedQA, MedMCQA",
+        "experiment_metrics": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+        "risk": "大语言模型在医学领域的不确定性估计可能受到数据集偏差的影响，导致置信度评估不准确。",
+        "estimated_workload": "中"
+      },
+      {
+        "title": "大语言模型在医学问答中的幻觉检测方法研究",
+        "research_question": "如何检测大语言模型在医学问答中的幻觉现象，以提升答案的可信度？",
+        "baseline": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+        "risk": "幻觉检测的准确性可能受限于基准数据集的覆盖范围，无法全面捕捉所有类型的幻觉。",
+        "estimated_workload": "中"
+      },
+      {
+        "title": "大语言模型自我纠正机制在医学问答中的应用研究",
+        "research_question": "大语言模型能否通过自我纠正机制提高医学问答的准确性与可信度？",
+        "baseline": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+        "risk": "自我纠正机制可能引入额外的计算开销，且纠正效果在不同医学领域可能表现不一致。",
+        "estimated_workload": "中"
+      },
+      {
+        "title": "自反思混合检索增强生成框架在医学问答中的可靠性研究",
+        "research_question": "Self-MedRAG框架如何提升医学问答的可靠性，并减少幻觉的产生？",
+        "baseline": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+        "risk": "混合检索增强生成框架的性能可能依赖于外部知识库的质量，知识库不完整或过时可能影响结果。",
+        "estimated_workload": "高"
+      },
+      {
+        "title": "复发生成增强检索在事实感知医学问答中的应用研究",
+        "research_question": "RGAR框架如何通过复发生成增强检索，提升医学问答的事实准确性？",
+        "baseline": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+        "risk": "复发生成增强检索的计算复杂度可能较高，影响模型的实时响应能力。",
+        "estimated_workload": "高"
+      }
+    ]
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "low_bar_review": {
+    "status": "pass",
+    "issues": [],
+    "n_packages_reviewed": 5,
+    "n_packages_after_review": 5
+  },
+  "trace_events": [
+    {
+      "node": "verify",
+      "started_at": "2026-07-04T18:33:13Z",
+      "input_summary": {
+        "n_candidates": 7,
+        "topic_len": 21
+      },
+      "output_summary": {
+        "n_accept": 6,
+        "n_reject_or_weak": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:33:34Z",
+      "elapsed_s": 20.898
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-04T18:33:59Z",
+      "input_summary": {
+        "n_papers": 6
+      },
+      "output_summary": {
+        "n_dataset": 6,
+        "n_repo": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 6
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:33:59Z",
+      "elapsed_s": 25.032
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-04T18:33:59Z",
+      "input_summary": {
+        "n_verified": 6
+      },
+      "output_summary": {
+        "n_baseline": 0,
+        "n_parallel": 6,
+        "n_survey": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11.classifier",
+          "mode": "rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:33:59Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-04T18:34:18Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_parallel": 6
+      },
+      "output_summary": {
+        "n_packages": 5,
+        "n_gap": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:34:18Z",
+      "elapsed_s": 19.456
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-04T18:34:18Z",
+      "input_summary": {
+        "n_packages": 5
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 5
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:34:18Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-04T18:34:18Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:34:18Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-04T18:34:18Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于大语言模型的医学问答可信度评估方法研究",
+        "n_papers": 6,
+        "n_baseline": 0,
+        "n_parallel": 6,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 5,
+        "low_bar_status": "pass",
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": [
+          {
+            "title": "基于大语言模型的医学问答置信度估计方法研究",
+            "research_question": "如何利用大语言模型进行医学问答的置信度估计，以提高答案的可靠性？",
+            "baseline": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+            "improved_module_source": null,
+            "data_source": "PubMedQA, MedMCQA",
+            "experiment_metrics": "Uncertainty Estimation of Large Language Models in Medical Question Answering",
+            "risk": "大语言模型在医学领域的不确定性估计可能受到数据集偏差的影响，导致置信度评估不准确。",
+            "estimated_workload": "中"
+          },
+          {
+            "title": "大语言模型在医学问答中的幻觉检测方法研究",
+            "research_question": "如何检测大语言模型在医学问答中的幻觉现象，以提升答案的可信度？",
+            "baseline": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "MedHallu: A Comprehensive Benchmark for Detecting Medical Hallucinations in Large Language Models",
+            "risk": "幻觉检测的准确性可能受限于基准数据集的覆盖范围，无法全面捕捉所有类型的幻觉。",
+            "estimated_workload": "中"
+          },
+          {
+            "title": "大语言模型自我纠正机制在医学问答中的应用研究",
+            "research_question": "大语言模型能否通过自我纠正机制提高医学问答的准确性与可信度？",
+            "baseline": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Can Large Language Models Self-Correct in Medical Question Answering? An Exploratory Study",
+            "risk": "自我纠正机制可能引入额外的计算开销，且纠正效果在不同医学领域可能表现不一致。",
+            "estimated_workload": "中"
+          },
+          {
+            "title": "自反思混合检索增强生成框架在医学问答中的可靠性研究",
+            "research_question": "Self-MedRAG框架如何提升医学问答的可靠性，并减少幻觉的产生？",
+            "baseline": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Self-MedRAG: a Self-Reflective Hybrid Retrieval-Augmented Generation Framework for Reliable Medical Question Answering",
+            "risk": "混合检索增强生成框架的性能可能依赖于外部知识库的质量，知识库不完整或过时可能影响结果。",
+            "estimated_workload": "高"
+          },
+          {
+            "title": "复发生成增强检索在事实感知医学问答中的应用研究",
+            "research_question": "RGAR框架如何通过复发生成增强检索，提升医学问答的事实准确性？",
+            "baseline": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+            "risk": "复发生成增强检索的计算复杂度可能较高，影响模型的实时响应能力。",
+            "estimated_workload": "高"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:34:18Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "failed_nodes": [],
+  "timed_out": false,
+  "errors": [],
+  "provider_profile": "stepfun"
+}

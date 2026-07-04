@@ -1,0 +1,471 @@
+{
+  "case_id": "re11-l3-steel-yolov5",
+  "topic": "基于YOLOv5的钢铁表面缺陷检测研究",
+  "topic_atoms": {
+    "method": [
+      "YOLOv5",
+      "目标检测",
+      "object detection",
+      "depth-wise卷积",
+      "channel shuffle"
+    ],
+    "object": [
+      "钢铁表面缺陷",
+      "steel surface defect",
+      "金属表面"
+    ],
+    "task": [
+      "缺陷检测",
+      "defect detection",
+      "工业视觉"
+    ],
+    "dataset_terms": [
+      "NEU-DET",
+      "GC10-DET",
+      "Severstal"
+    ],
+    "baseline_terms": [
+      "YOLOv5",
+      "Faster R-CNN",
+      "RetinaNet",
+      "YOLOv8"
+    ],
+    "avoid_terms": [
+      "textile",
+      "焊缝weld seam",
+      "遥感",
+      "医疗medical"
+    ]
+  },
+  "started_at": 1783189888.57497,
+  "elapsed_s": 47.9,
+  "state": {
+    "paper_candidates": [
+      {
+        "title": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+        "source": "arxiv",
+        "year": "2024"
+      },
+      {
+        "title": "STS-YOLO: A lightweight model for steel surface defect detection based on YOLOv5",
+        "source": "arxiv",
+        "year": "2024"
+      },
+      {
+        "title": "An Improved YOLOv5 for Steel Surface Defect Detection with Channel Pruning and Context Aggregation",
+        "source": "semanticscholar",
+        "year": "2023"
+      },
+      {
+        "title": "Real-Time Detection of Steel Surface Defects Using an Enhanced YOLOv5 Detector",
+        "source": "semanticscholar",
+        "year": "2023"
+      },
+      {
+        "title": "Deep Learning for Medical Image Classification in Chest X-ray Diagnosis",
+        "source": "decoy",
+        "year": "2023"
+      }
+    ],
+    "verified_papers": [
+      {
+        "title": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+        "verdict": "accept",
+        "hit_keywords": [
+          "YOLOv5",
+          "metallic surface defect",
+          "steel surfaces",
+          "NEU-DET",
+          "GC10-DET"
+        ],
+        "unrelated_keywords": [
+          "Channel Shuffling"
+        ],
+        "related_keywords": [
+          "defect detection",
+          "deep learning",
+          "depth-wise convolution"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet directly mention YOLOv5, steel surface defects, and relevant datasets (NEU-DET, GC10-DET), indicating a direct relation to the topic."
+      },
+      {
+        "title": "STS-YOLO: A lightweight model for steel surface defect detection based on YOLOv5",
+        "verdict": "accept",
+        "hit_keywords": [
+          "YOLOv5",
+          "steel surface defect"
+        ],
+        "unrelated_keywords": [
+          "lightweight model",
+          "attention modules",
+          "real-time"
+        ],
+        "related_keywords": [
+          "defect detection",
+          "steel strip"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet mention YOLOv5 and steel surface defect detection, with evaluation on the GC10-DET dataset, indicating a direct relation to the topic."
+      },
+      {
+        "title": "An Improved YOLOv5 for Steel Surface Defect Detection with Channel Pruning and Context Aggregation",
+        "verdict": "accept",
+        "hit_keywords": [
+          "YOLOv5",
+          "steel surface defect",
+          "NEU-DET"
+        ],
+        "unrelated_keywords": [
+          "Channel Pruning",
+          "Context Aggregation"
+        ],
+        "related_keywords": [
+          "defect detection",
+          "steel-strip"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet mention an improved YOLOv5 for steel surface defect detection and reference the NEU-DET dataset, indicating a direct relation to the topic."
+      },
+      {
+        "title": "Real-Time Detection of Steel Surface Defects Using an Enhanced YOLOv5 Detector",
+        "verdict": "accept",
+        "hit_keywords": [
+          "YOLOv5",
+          "steel surface defects",
+          "GC10-DET"
+        ],
+        "unrelated_keywords": [
+          "Real-Time",
+          "Enhanced Detector"
+        ],
+        "related_keywords": [
+          "defect detection"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title and snippet mention an enhanced YOLOv5 for steel surface defect detection and compare it with Faster R-CNN, indicating a direct relation to the topic."
+      }
+    ],
+    "dataset_candidates": [
+      {
+        "from_paper": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+        "status": "url_missing_needs_repair"
+      },
+      {
+        "from_paper": "STS-YOLO: A lightweight model for steel surface defect detection based on YOLOv5",
+        "status": "url_missing_needs_repair"
+      },
+      {
+        "from_paper": "An Improved YOLOv5 for Steel Surface Defect Detection with Channel Pruning and Context Aggregation",
+        "status": "url_missing_needs_repair"
+      }
+    ],
+    "repo_candidates": [],
+    "work_packages": [
+      {
+        "title": "基于深度可分离卷积与通道洗牌的金属表面缺陷快速检测",
+        "baseline": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+        "improved_module_source": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+        "risk": "深度可分离卷积可能降低模型的特征提取能力，影响检测精度。"
+      }
+    ],
+    "evidence_audit": {
+      "n_baseline": 0,
+      "n_parallel": 4,
+      "n_survey": 0,
+      "n_total_papers": 4,
+      "dataset_candidates_n": 3,
+      "repo_candidates_n": 0,
+      "evidence_gap": [
+        {
+          "missing": "具体数据集名称未在平行论文中明确提及，需要进一步确认用于钢铁表面缺陷检测的常用数据集。",
+          "tool_calls": [
+            {
+              "tool_name": "dataset_search",
+              "query": "钢铁表面缺陷检测 数据集",
+              "expected_evidence": "识别出用于钢铁表面缺陷检测的常用数据集，如NEU-DET、GC10-DET、Severstal等。"
+            }
+          ]
+        },
+        {
+          "missing": "缺乏具体的代码仓库信息，难以复现和进一步优化模型。",
+          "tool_calls": [
+            {
+              "tool_name": "repo_search",
+              "query": "YOLOv5 钢铁表面缺陷检测 代码仓库",
+              "expected_evidence": "找到实现YOLOv5在钢铁表面缺陷检测中的代码仓库，便于复现和优化。"
+            }
+          ]
+        }
+      ]
+    },
+    "low_bar_review": {
+      "status": "blocked",
+      "issues": [
+        "work-package baseline not in evidence: YOLOv5",
+        "work-package baseline not in evidence: YOLOv5",
+        "work-package baseline not in evidence: YOLOv5"
+      ],
+      "n_packages_reviewed": 4,
+      "n_packages_after_review": 1
+    },
+    "human_gate": {
+      "status": "pass_through",
+      "reason": "HUMAN_GATE_ENABLED!=true"
+    },
+    "final_recommendation": {
+      "topic": "基于YOLOv5的钢铁表面缺陷检测研究",
+      "n_papers": 4,
+      "n_baseline": 0,
+      "n_parallel": 4,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 1,
+      "low_bar_status": "blocked",
+      "human_gate_status": "pass_through",
+      "notes": [
+        "low-bar review blocked the proposal"
+      ],
+      "research_basis": [
+        {
+          "title": "基于深度可分离卷积与通道洗牌的金属表面缺陷快速检测",
+          "research_question": "如何利用深度可分离卷积和通道洗牌技术，提升金属表面缺陷检测的速度和效率？",
+          "baseline": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+          "improved_module_source": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+          "data_source": null,
+          "experiment_metrics": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+          "risk": "深度可分离卷积可能降低模型的特征提取能力，影响检测精度。",
+          "estimated_workload": "中"
+        }
+      ]
+    }
+  },
+  "final_recommendation": {
+    "topic": "基于YOLOv5的钢铁表面缺陷检测研究",
+    "n_papers": 4,
+    "n_baseline": 0,
+    "n_parallel": 4,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 1,
+    "low_bar_status": "blocked",
+    "human_gate_status": "pass_through",
+    "notes": [
+      "low-bar review blocked the proposal"
+    ],
+    "research_basis": [
+      {
+        "title": "基于深度可分离卷积与通道洗牌的金属表面缺陷快速检测",
+        "research_question": "如何利用深度可分离卷积和通道洗牌技术，提升金属表面缺陷检测的速度和效率？",
+        "baseline": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+        "improved_module_source": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+        "data_source": null,
+        "experiment_metrics": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+        "risk": "深度可分离卷积可能降低模型的特征提取能力，影响检测精度。",
+        "estimated_workload": "中"
+      }
+    ]
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "low_bar_review": {
+    "status": "blocked",
+    "issues": [
+      "work-package baseline not in evidence: YOLOv5",
+      "work-package baseline not in evidence: YOLOv5",
+      "work-package baseline not in evidence: YOLOv5"
+    ],
+    "n_packages_reviewed": 4,
+    "n_packages_after_review": 1
+  },
+  "trace_events": [
+    {
+      "node": "verify",
+      "started_at": "2026-07-04T18:31:28Z",
+      "input_summary": {
+        "n_candidates": 5,
+        "topic_len": 19
+      },
+      "output_summary": {
+        "n_accept": 4,
+        "n_reject_or_weak": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:31:45Z",
+      "elapsed_s": 16.432
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-04T18:31:59Z",
+      "input_summary": {
+        "n_papers": 4
+      },
+      "output_summary": {
+        "n_dataset": 3,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 3
+        }
+      ],
+      "errors": [
+        {
+          "node": "dataset_repo",
+          "for_paper": "Real-Time Detection of Steel Surface Defects Using an Enhanced YOLOv5 Detector",
+          "error": "LLMUnavailable"
+        }
+      ],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:31:59Z",
+      "elapsed_s": 14.42
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-04T18:31:59Z",
+      "input_summary": {
+        "n_verified": 4
+      },
+      "output_summary": {
+        "n_baseline": 0,
+        "n_parallel": 4,
+        "n_survey": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11.classifier",
+          "mode": "rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:31:59Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-04T18:32:16Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_parallel": 4
+      },
+      "output_summary": {
+        "n_packages": 4,
+        "n_gap": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:32:16Z",
+      "elapsed_s": 17.047
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-04T18:32:16Z",
+      "input_summary": {
+        "n_packages": 4
+      },
+      "output_summary": {
+        "status": "blocked",
+        "n_remaining": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:32:16Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-04T18:32:16Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:32:16Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-04T18:32:16Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于YOLOv5的钢铁表面缺陷检测研究",
+        "n_papers": 4,
+        "n_baseline": 0,
+        "n_parallel": 4,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 1,
+        "low_bar_status": "blocked",
+        "human_gate_status": "pass_through",
+        "notes": [
+          "low-bar review blocked the proposal"
+        ],
+        "research_basis": [
+          {
+            "title": "基于深度可分离卷积与通道洗牌的金属表面缺陷快速检测",
+            "research_question": "如何利用深度可分离卷积和通道洗牌技术，提升金属表面缺陷检测的速度和效率？",
+            "baseline": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+            "improved_module_source": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+            "data_source": null,
+            "experiment_metrics": "Faster Metallic Surface Defect Detection Using Deep Learning with Channel Shuffling",
+            "risk": "深度可分离卷积可能降低模型的特征提取能力，影响检测精度。",
+            "estimated_workload": "中"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:32:16Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "failed_nodes": [],
+  "timed_out": false,
+  "errors": [
+    {
+      "node": "dataset_repo",
+      "for_paper": "Real-Time Detection of Steel Surface Defects Using an Enhanced YOLOv5 Detector",
+      "error": "LLMUnavailable"
+    }
+  ],
+  "provider_profile": "stepfun"
+}

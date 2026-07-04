@@ -1,0 +1,587 @@
+{
+  "case_id": "re11-l3-semantic-slam",
+  "topic": "基于深度学习的视觉SLAM语义地图的研究",
+  "topic_atoms": {
+    "method": [
+      "视觉SLAM",
+      "visual SLAM",
+      "语义地图",
+      "semantic mapping",
+      "深度学习",
+      "ORB-SLAM",
+      "Kimera",
+      "RGB-D",
+      "semantic segmentation"
+    ],
+    "object": [
+      "语义地图",
+      "semantic map",
+      "机器人",
+      "室内场景"
+    ],
+    "task": [
+      "同步定位与建图",
+      "SLAM",
+      "定位localization",
+      "语义重建"
+    ],
+    "dataset_terms": [
+      "KITTI",
+      "EuRoC",
+      "TUM",
+      "Replica",
+      "ScanNet"
+    ],
+    "baseline_terms": [
+      "ORB-SLAM3",
+      "Kimera",
+      "LSD-SLAM",
+      "RTAB-Map",
+      "CubeSLAM"
+    ],
+    "avoid_terms": [
+      "textile",
+      "医疗medical",
+      "纯LiDAR"
+    ]
+  },
+  "started_at": 1783189936.4769683,
+  "elapsed_s": 57.1,
+  "state": {
+    "paper_candidates": [
+      {
+        "title": "Semantic Visual Simultaneous Localization and Mapping: A Survey on State of the Art, Challenges, and Future Directions",
+        "source": "arxiv",
+        "year": "2025"
+      },
+      {
+        "title": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+        "source": "arxiv",
+        "year": "2021"
+      },
+      {
+        "title": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "source": "arxiv",
+        "year": "2019"
+      },
+      {
+        "title": "Real-Time Monocular Object-Model Aware Sparse SLAM",
+        "source": "arxiv",
+        "year": "2018"
+      },
+      {
+        "title": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+        "source": "semanticscholar",
+        "year": "2023"
+      },
+      {
+        "title": "Deep Reinforcement Learning for Stock Portfolio Management",
+        "source": "decoy",
+        "year": "2022"
+      }
+    ],
+    "verified_papers": [
+      {
+        "title": "Semantic Visual Simultaneous Localization and Mapping: A Survey on State of the Art, Challenges, and Future Directions",
+        "verdict": "accept",
+        "hit_keywords": [
+          "Semantic",
+          "Visual",
+          "SLAM",
+          "semantic mapping"
+        ],
+        "unrelated_keywords": [],
+        "related_keywords": [
+          "Survey",
+          "state of the art",
+          "challenges",
+          "future directions"
+        ],
+        "source_type": "survey",
+        "relation_to_topic": "survey",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title directly addresses 'Semantic Visual SLAM' and 'semantic mapping', which are core to the topic. It is a survey covering the state of the art, challenges, and future directions, making it highly relevant to the research on semantic maps in visual SLAM."
+      },
+      {
+        "title": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+        "verdict": "accept",
+        "hit_keywords": [
+          "Semantic Segmentation",
+          "SLAM",
+          "semantic mapping"
+        ],
+        "unrelated_keywords": [
+          "Pose Estimation",
+          "Dense"
+        ],
+        "related_keywords": [
+          "Evaluating",
+          "Impact"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title includes 'Semantic Segmentation' and 'SLAM', which are directly related to the topic. It also mentions 'semantic mapping' implicitly through 'Dense Semantic SLAM'. The paper evaluates the impact of key components in semantic SLAM, which is directly relevant to the research on semantic maps in visual SLAM."
+      },
+      {
+        "title": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "verdict": "accept",
+        "hit_keywords": [
+          "Kimera",
+          "Semantic",
+          "SLAM",
+          "real-time",
+          "mapping"
+        ],
+        "unrelated_keywords": [
+          "Open-Source Library",
+          "Metric"
+        ],
+        "related_keywords": [
+          "Real-Time",
+          "Localization"
+        ],
+        "source_type": "repo",
+        "relation_to_topic": "baseline",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title mentions 'Kimera', which is a baseline term in the topic. It also includes 'Semantic' and 'SLAM', directly relating to the topic. The paper discusses an open-source library for real-time metric-semantic localization and mapping, which is a baseline system for semantic SLAM research."
+      },
+      {
+        "title": "Real-Time Monocular Object-Model Aware Sparse SLAM",
+        "verdict": "accept",
+        "hit_keywords": [
+          "Real-Time",
+          "Monocular",
+          "SLAM"
+        ],
+        "unrelated_keywords": [
+          "Object-Model Aware",
+          "Sparse"
+        ],
+        "related_keywords": [
+          "deep-learned",
+          "object detector",
+          "CNN-based",
+          "semantic"
+        ],
+        "source_type": "paper",
+        "relation_to_topic": "direct",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title includes 'Real-Time' and 'Monocular SLAM', which are related to visual SLAM. The snippet mentions 'deep-learned object detector' and 'CNN-based', indicating the use of deep learning. It also mentions enriching maps semantically, which is related to semantic mapping. Thus, it is directly related to the topic."
+      },
+      {
+        "title": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+        "verdict": "accept",
+        "hit_keywords": [
+          "Semantic",
+          "Object",
+          "SLAM",
+          "Monocular",
+          "Visual SLAM"
+        ],
+        "unrelated_keywords": [
+          "SoCubeSLAM",
+          "CubeSLAM"
+        ],
+        "related_keywords": [],
+        "source_type": "paper",
+        "relation_to_topic": "baseline",
+        "url_missing": false,
+        "needs_human_confirm": false,
+        "reason": "The title includes 'Semantic', 'Object', and 'Monocular Visual SLAM', which are directly related to the topic. The snippet mentions using deep-learned indoor object detectors, indicating the use of deep learning for semantic mapping in monocular SLAM. It is a specific approach (CubeSLAM) for semantic mapping, making it a relevant baseline."
+      }
+    ],
+    "dataset_candidates": [
+      {
+        "from_paper": "Semantic Visual Simultaneous Localization and Mapping: A Survey on State of the Art, Challenges, and Future Directions",
+        "status": "not_found_in_paper"
+      },
+      {
+        "from_paper": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+        "status": "url_missing_needs_repair"
+      },
+      {
+        "from_paper": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "kind": "dataset",
+        "name": null,
+        "url": "https://github.com/MIT-SPARK/Kimera",
+        "status": "found",
+        "missing": []
+      },
+      {
+        "from_paper": "Real-Time Monocular Object-Model Aware Sparse SLAM",
+        "status": "url_missing_needs_repair"
+      },
+      {
+        "from_paper": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+        "kind": "dataset",
+        "name": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+        "url": "https://github.com/SoCubeSLAM/SoCubeSLAM",
+        "status": "found",
+        "missing": [
+          "project_url"
+        ]
+      }
+    ],
+    "repo_candidates": [
+      {
+        "from_paper": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "kind": "repo",
+        "url": "https://github.com/MIT-SPARK/Kimera",
+        "mentioned_repo": "https://github.com/MIT-SPARK/Kimera",
+        "status": "found"
+      },
+      {
+        "from_paper": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+        "kind": "repo",
+        "url": "https://github.com/SoCubeSLAM/SoCubeSLAM",
+        "mentioned_repo": "https://github.com/SoCubeSLAM/SoCubeSLAM",
+        "status": "found"
+      }
+    ],
+    "work_packages": [
+      {
+        "title": "基于语义分割的单目视觉SLAM语义地图构建",
+        "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "improved_module_source": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+        "risk": "语义分割的实时性可能影响SLAM系统的帧率，需优化分割模型以满足实时性要求。"
+      },
+      {
+        "title": "RGB-D传感器下的语义SLAM性能评估",
+        "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "improved_module_source": null,
+        "risk": "RGB-D数据的深度噪声可能影响语义地图的准确性，需设计鲁棒的深度处理模块。"
+      },
+      {
+        "title": "单目视觉SLAM中语义对象的立方体表示",
+        "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "improved_module_source": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+        "risk": "立方体表示可能无法准确描述复杂物体的形状，需探索更灵活的语义对象表示方法。"
+      }
+    ],
+    "evidence_audit": {
+      "n_baseline": 2,
+      "n_parallel": 2,
+      "n_survey": 1,
+      "n_total_papers": 5,
+      "dataset_candidates_n": 5,
+      "repo_candidates_n": 2,
+      "evidence_gap": [
+        {
+          "missing": "缺少具体的代码库（repos）信息，难以进行复现和进一步开发。",
+          "tool_calls": [
+            {
+              "tool_name": "repo_search",
+              "query": "Kimera, SoCubeSLAM, semantic SLAM, visual SLAM",
+              "expected_evidence": "GitHub or other code repositories for Kimera and SoCubeSLAM"
+            }
+          ]
+        },
+        {
+          "missing": "缺少更多语义SLAM的实验指标定义，难以全面评估系统性能。",
+          "tool_calls": [
+            {
+              "tool_name": "paper_search",
+              "query": "semantic SLAM evaluation metrics, performance indicators",
+              "expected_evidence": "Papers detailing evaluation metrics for semantic SLAM systems"
+            }
+          ]
+        }
+      ]
+    },
+    "low_bar_review": {
+      "status": "pass",
+      "issues": [],
+      "n_packages_reviewed": 3,
+      "n_packages_after_review": 3
+    },
+    "human_gate": {
+      "status": "pass_through",
+      "reason": "HUMAN_GATE_ENABLED!=true"
+    },
+    "final_recommendation": {
+      "topic": "基于深度学习的视觉SLAM语义地图的研究",
+      "n_papers": 5,
+      "n_baseline": 2,
+      "n_parallel": 2,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于语义分割的单目视觉SLAM语义地图构建",
+          "research_question": "如何利用语义分割提升单目视觉SLAM的语义地图构建精度和鲁棒性？",
+          "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+          "improved_module_source": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+          "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+          "experiment_metrics": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+          "risk": "语义分割的实时性可能影响SLAM系统的帧率，需优化分割模型以满足实时性要求。",
+          "estimated_workload": "3-4个月"
+        },
+        {
+          "title": "RGB-D传感器下的语义SLAM性能评估",
+          "research_question": "在RGB-D传感器下，语义信息如何影响SLAM的定位与建图精度？",
+          "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+          "improved_module_source": null,
+          "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+          "experiment_metrics": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+          "risk": "RGB-D数据的深度噪声可能影响语义地图的准确性，需设计鲁棒的深度处理模块。",
+          "estimated_workload": "2-3个月"
+        },
+        {
+          "title": "单目视觉SLAM中语义对象的立方体表示",
+          "research_question": "使用立方体表示语义对象能否提升单目SLAM的语义地图表达能力？",
+          "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+          "improved_module_source": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+          "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+          "experiment_metrics": "Real-Time Monocular Object-Model Aware Sparse SLAM",
+          "risk": "立方体表示可能无法准确描述复杂物体的形状，需探索更灵活的语义对象表示方法。",
+          "estimated_workload": "4-5个月"
+        }
+      ]
+    }
+  },
+  "final_recommendation": {
+    "topic": "基于深度学习的视觉SLAM语义地图的研究",
+    "n_papers": 5,
+    "n_baseline": 2,
+    "n_parallel": 2,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 3,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "基于语义分割的单目视觉SLAM语义地图构建",
+        "research_question": "如何利用语义分割提升单目视觉SLAM的语义地图构建精度和鲁棒性？",
+        "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "improved_module_source": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+        "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+        "experiment_metrics": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+        "risk": "语义分割的实时性可能影响SLAM系统的帧率，需优化分割模型以满足实时性要求。",
+        "estimated_workload": "3-4个月"
+      },
+      {
+        "title": "RGB-D传感器下的语义SLAM性能评估",
+        "research_question": "在RGB-D传感器下，语义信息如何影响SLAM的定位与建图精度？",
+        "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "improved_module_source": null,
+        "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+        "experiment_metrics": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+        "risk": "RGB-D数据的深度噪声可能影响语义地图的准确性，需设计鲁棒的深度处理模块。",
+        "estimated_workload": "2-3个月"
+      },
+      {
+        "title": "单目视觉SLAM中语义对象的立方体表示",
+        "research_question": "使用立方体表示语义对象能否提升单目SLAM的语义地图表达能力？",
+        "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+        "improved_module_source": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+        "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+        "experiment_metrics": "Real-Time Monocular Object-Model Aware Sparse SLAM",
+        "risk": "立方体表示可能无法准确描述复杂物体的形状，需探索更灵活的语义对象表示方法。",
+        "estimated_workload": "4-5个月"
+      }
+    ]
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "low_bar_review": {
+    "status": "pass",
+    "issues": [],
+    "n_packages_reviewed": 3,
+    "n_packages_after_review": 3
+  },
+  "trace_events": [
+    {
+      "node": "verify",
+      "started_at": "2026-07-04T18:32:16Z",
+      "input_summary": {
+        "n_candidates": 6,
+        "topic_len": 20
+      },
+      "output_summary": {
+        "n_accept": 5,
+        "n_reject_or_weak": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:32:37Z",
+      "elapsed_s": 20.888
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-04T18:32:58Z",
+      "input_summary": {
+        "n_papers": 5
+      },
+      "output_summary": {
+        "n_dataset": 5,
+        "n_repo": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 5
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:32:58Z",
+      "elapsed_s": 21.259
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-04T18:32:58Z",
+      "input_summary": {
+        "n_verified": 5
+      },
+      "output_summary": {
+        "n_baseline": 2,
+        "n_parallel": 2,
+        "n_survey": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11.classifier",
+          "mode": "rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:32:58Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-04T18:33:13Z",
+      "input_summary": {
+        "n_baseline": 2,
+        "n_parallel": 2
+      },
+      "output_summary": {
+        "n_packages": 3,
+        "n_gap": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-04T18:33:13Z",
+      "elapsed_s": 14.951
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-04T18:33:13Z",
+      "input_summary": {
+        "n_packages": 3
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:33:13Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-04T18:33:13Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:33:13Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-04T18:33:13Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于深度学习的视觉SLAM语义地图的研究",
+        "n_papers": 5,
+        "n_baseline": 2,
+        "n_parallel": 2,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 3,
+        "low_bar_status": "pass",
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": [
+          {
+            "title": "基于语义分割的单目视觉SLAM语义地图构建",
+            "research_question": "如何利用语义分割提升单目视觉SLAM的语义地图构建精度和鲁棒性？",
+            "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+            "improved_module_source": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+            "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+            "experiment_metrics": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+            "risk": "语义分割的实时性可能影响SLAM系统的帧率，需优化分割模型以满足实时性要求。",
+            "estimated_workload": "3-4个月"
+          },
+          {
+            "title": "RGB-D传感器下的语义SLAM性能评估",
+            "research_question": "在RGB-D传感器下，语义信息如何影响SLAM的定位与建图精度？",
+            "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+            "improved_module_source": null,
+            "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+            "experiment_metrics": "Evaluating the Impact of Semantic Segmentation and Pose Estimation on Dense Semantic SLAM",
+            "risk": "RGB-D数据的深度噪声可能影响语义地图的准确性，需设计鲁棒的深度处理模块。",
+            "estimated_workload": "2-3个月"
+          },
+          {
+            "title": "单目视觉SLAM中语义对象的立方体表示",
+            "research_question": "使用立方体表示语义对象能否提升单目SLAM的语义地图表达能力？",
+            "baseline": "Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping",
+            "improved_module_source": "SoCubeSLAM: Semantic Object CubeSLAM for Monocular Visual SLAM",
+            "data_source": "TUM RGB-D, KITTI, EuRoC MAV, our SOCO dataset",
+            "experiment_metrics": "Real-Time Monocular Object-Model Aware Sparse SLAM",
+            "risk": "立方体表示可能无法准确描述复杂物体的形状，需探索更灵活的语义对象表示方法。",
+            "estimated_workload": "4-5个月"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-04T18:33:13Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "failed_nodes": [],
+  "timed_out": false,
+  "errors": [],
+  "provider_profile": "stepfun"
+}
