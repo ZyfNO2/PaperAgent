@@ -49,25 +49,38 @@ def _strip_code_fence(s: str) -> str:
     return s
 
 
-def _collect_stream(r: Any) -> str:
-    """Read an Anthropic-compatible SSE stream."""
-    chunks: list[str] = []
-    for line in r.iter_lines():
-        if not line:
-            continue
-        if line.startswith("data:"):
-            payload = line[len("data:"):].strip()
-            if not payload or payload == "[DONE]":
-                continue
-            try:
-                evt = json.loads(payload)
-            except json.JSONDecodeError:
-                continue
-            if evt.get("type") == "content_block_delta":
-                delta = evt.get("delta") or {}
-                if delta.get("type") == "text_delta":
-                    chunks.append(delta.get("text", ""))
-    return "".join(chunks)
+def _extract_json_from_text(text: str) -> Any | None:
+    """Pull the first/last balanced JSON object-or-array out of `text`.
+
+    Reasoner models (e.g. StepFun step-3.7-flash) emit reasoning prose and
+    stash the JSON payload inside the same field. Look back-to-front so the
+    final answer wins over any example/transcript JSON earlier in the stream.
+    """
+    if not text:
+        return None
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    # Backward scan → first balanced {…} or […] we can parse
+    for match in list(re.finditer(r"[{[]", text))[::-1]:
+        start = match.start()
+        opener = text[start]
+        closer = "}" if opener == "{" else "]"
+        depth = 0
+        for i in range(start, len(text)):
+            ch = text[i]
+            if ch == opener:
+                depth += 1
+            elif ch == closer:
+                depth -= 1
+                if depth == 0:
+                    try:
+                        return json.loads(text[start : i + 1])
+                    except json.JSONDecodeError:
+                        pass
+                    break
+    return None
 
 
 def _get_env(key: str, default: str = "") -> str:
@@ -192,13 +205,25 @@ def _chat_openai_compat_once(
             raise LLMUnavailable("Empty choices from OpenAI-compat API")
         msg = choices[0].get("message") or {}
         content = (msg.get("content") or "").strip()
+        if content:
+            return content
+
+        # Reasoner models (e.g. StepFun step-3.7-flash) may emit a thinking
+        # transcript under `reasoning` and put the JSON after it (or in it).
+        # Recover by scanning the reasoning text for balanced JSON.
+        reasoning = (msg.get("reasoning") or "").strip()
+        if reasoning:
+            extracted = _extract_json_from_text(reasoning)
+            if extracted is not None:
+                return json.dumps(extracted, ensure_ascii=False)
+            return reasoning
+        return ""
     except httpx.HTTPError as exc:
         raise LLMUnavailable(f"Network error: {exc}") from exc
     except LLMUnavailable:
         raise
     except Exception as exc:
         raise LLMUnavailable(f"OpenAI-compat call failed: {exc}") from exc
-    return content
 
 
 # ---------------------------------------------------------------------------

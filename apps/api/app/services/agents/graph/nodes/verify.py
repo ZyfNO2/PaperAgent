@@ -45,9 +45,17 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
                     max_tokens=min(8000, 3000 + len(chunk) * 200),
                     timeout=120,
                 )
-                verified = out.get("verified") or out.get("candidates") or (
-                    out if isinstance(out, list) else []
-                )
+                # `out` may already be a parsed object from llm_router.call_json;
+                # only scan raw text when it is still a string.
+                scanned: list = (
+                    [] if isinstance(out, (list, dict))
+                    else llm_router.extract_json_objects(out)
+                ) if hasattr(llm_router, "extract_json_objects") else []
+                verified = (
+                    out if isinstance(out, list) else None
+                ) or out.get("verified") or out.get("candidates") or (
+                    next((x for x in scanned if isinstance(x, list)), None)
+                ) or []
                 if isinstance(verified, dict):
                     for k, v in verified.items():
                         if isinstance(v, list):
