@@ -24,21 +24,46 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
     from apps.api.app.services import llm_router
     from apps.api.app.services.agents.prompts import re11_paper_verifier as P
 
-    built = P.build(topic, atoms, candidates)
-    out = llm_router.call_json(
-        built["user"],
-        system=built["system"],
-        profile="fast_json",
-        max_tokens=min(2000, 400 + len(candidates) * 250),
-    )
-    verified = out.get("verified") or out.get("candidates") or (out if isinstance(out, list) else [])
-    if isinstance(verified, dict):
-        # Sometimes the LLM wraps in a root key; best-effort flatten.
-        for k, v in verified.items():
-            if isinstance(v, list):
-                return v
-        return [verified]
-    return list(verified)
+    # StepFun step-3.7-flash is a reasoning model: it thinks out loud in a
+    # `reasoning` field and puts the clean JSON in `content`. We need a big
+    # max_tokens budget so the LLM can both think (often 1-2k tokens) and
+    # emit the JSON payload. Batch the candidates so each JSON response stays
+    # within a reasonable size and never truncates mid-object.
+    BATCH = 10
+    all_verdicts: list[dict[str, Any]] = []
+    for i in range(0, len(candidates), BATCH):
+        chunk = candidates[i:i + BATCH]
+        last_exc: BaseException | None = None
+        for attempt in range(2):
+            try:
+                built = P.build(topic, atoms, chunk)
+                out = llm_router.call_json(
+                    built["user"],
+                    system=built["system"],
+                    profile="fast_json",
+                    # reasoning (~2k tokens) + JSON (~150 per candidate, ~50 overhead)
+                    max_tokens=min(8000, 3000 + len(chunk) * 200),
+                    timeout=120,
+                )
+                verified = out.get("verified") or out.get("candidates") or (
+                    out if isinstance(out, list) else []
+                )
+                if isinstance(verified, dict):
+                    for k, v in verified.items():
+                        if isinstance(v, list):
+                            all_verdicts.extend(v)
+                            break
+                    else:
+                        all_verdicts.append(verified)
+                elif isinstance(verified, list):
+                    all_verdicts.extend(verified)
+                last_exc = None
+                break
+            except BaseException as exc:  # noqa: BLE001
+                last_exc = exc
+        if last_exc is not None:
+            raise last_exc
+    return all_verdicts
 
 
 def verify_node(state: ResearchState) -> dict[str, Any]:
@@ -91,22 +116,26 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
             "n_reject_or_weak": len(rejected),
         }
     except BaseException as exc:
-        logger.exception("verify_node failed")
-        errors.append({"node": "verify", "error": type(exc).__name__})
-        trace["errors"].append({"phase": "llm_call", "error": type(exc).__name__})
-        verified = [
-            # Graceful downgrade: forward raw candidates with weak metadata so
-            # the pipeline can still proceed to work-package stage.
-            {"title": c.get("title") or c.get("name") or "",
-             "verdict": "forwarded_no_verify",
-             "hit_keywords": [], "unrelated_keywords": [], "related_keywords": [],
-             "source_type": c.get("source") or "paper",
-             "relation_to_topic": "unknown",
-             "url_missing": not (c.get("url") or c.get("html_url") or c.get("abs_url")),
-             "needs_human_confirm": True,
-             "reason": "verifier_unavailable"}
-            for c in candidates
+        # SOP §15 / 自查方案 §2: when verification fails we MUST NOT forward
+        # raw candidates as verified. Return an empty verified list so the
+        # quarantine path (the rejection list) carries the titles forward.
+        logger.exception("verify_node LLM call failed — candidates quarantined")
+        rejected_titles = [
+            c.get("title") or c.get("name") or "" for c in candidates
         ]
+        errors.append({"node": "verify", "error": f"LLMUnavailable:{type(exc).__name__}"})
+        trace["errors"].append({
+            "phase": "llm_call",
+            "error": f"{type(exc).__name__}",
+            "action": "quarantine_all",
+            "quarantined_titles": rejected_titles[:50],
+        })
+        trace["output_summary"] = {
+            "n_accept": 0,
+            "n_reject_or_weak": len(rejected_titles),
+            "note": "verify_failed_all_quarantined",
+        }
+        verified = []
 
     trace["ended_at"] = _now_iso()
     trace["elapsed_s"] = round(time.time() - t0, 3)

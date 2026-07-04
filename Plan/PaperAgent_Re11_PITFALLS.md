@@ -76,11 +76,11 @@
 
 ---
 
-## 7. pytest 运行目录 ≠ __file__ 所在目录 — 相对路径要做成由 `.` 定位
+## 7. pytest 运行目录与 `__file__` 不一致 — 相对路径要用 `.` 定位
 
 **现象**：脚本里`ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "..")` 在 Windows pytest 上报 missing dir。
 
-**根因**：Windows 下 pytest invocation 时 __file__ 可能相对化；os.path.dirname 逐级 up 的层级不对（Windows 上我当 4 levels up 结果当了 5）。
+**根因**：Windows 下 pytest invocation 时 `__file__` 可能相对化；os.path.dirname 逐级 up 的层级不对（Windows 上我当 4 levels up 结果当了 5）。
 
 **修复**：用 `Path(__file__).resolve().parent.parent.parent.parent`（按需加 `.parent`）。
 
@@ -118,6 +118,52 @@
 
 **修复**：保留 `DEEPSEEK_BASE_URL` 允许用户覆盖（不要硬 base）。
 
+## 10. `.env` 中没有显式的 mode switch 时，legacy fallback 常会走错
+
+**现象**：Hard-coded provider（如"DeepSeek 走 /v1/chat/completions"）在不同时间因服务端升级失败。
+
+**修复**：保留 `DEEPSEEK_BASE_URL` 允许用户覆盖（不要硬 base）。
+
 ---
 
-> 更新时间：2026-07-05。每次遇到新的环境坑都追加。
+## 11. StepFun step-3.7-flash 是 reasoner 模型，max_tokens 必须给大
+
+**现象**：小 max_tokens (≤1000) 调用 step-3.7-flash 时 `content` 字段被截断为 `{}` 或空字符串，thinking 在 `reasoning` 字段里。
+
+**修复**：verify/dataset_repo/work_package 的 max_tokens 给到 6000-8000（reasoning 占 1-2k，JSON 占 1-3k）。
+
+**避免**：reasoner 模型调用前检查 `LLM_THINKING_BUDGET` env；instruct 模型 (step-1v-32k) 不需要。
+
+---
+
+## 12. verify fallback 转发 vs 隔离 — 选了隔离
+
+**现象**：verify_node 失败时，初版代码把候选全部 forward (verdict=`forwarded_no_verify`) — 违反 SOP §15。
+
+**修复**：改为隔离全部候选 (verified=[])，错误写入 trace。
+
+**代价**：拒真率上升。**P0 修复**：3 阶段稳健提取 (regex → schema normalize → fallback LLM)。
+
+---
+
+## 13. 上游 `search_reflection_helpers.build_axis_bound_queries` 缺失
+
+**现象**：`import search_reflection_loop` 失败 → retrieve_node 走 fallback seed。
+
+**修复**：Re1.1 已补 `build_axis_bound_queries` + `flatten_axis_terms` 两个 helper。
+
+**避免**：上游重构时 grep 所有 import 点。
+
+---
+
+## 14. 模型适配不应绑死
+
+**现象**：step-1v-32k 能力差 (verify accept=0)；step-3.7-flash 是 reasoner 需大 max_tokens。
+
+**修复**：通过 env (`STEPFUN_MODEL`, `FAST_JSON_PRIMARY`, `LLM_THINKING_BUDGET`) 切换，不改代码。
+
+**避免**：新增模型时只加 adapter + 默认 profile；不要写死 max_tokens。
+
+---
+
+> 更新时间：2026-07-05 Re1.1 完工。每次遇到新的环境坑都追加。

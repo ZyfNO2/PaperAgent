@@ -52,7 +52,7 @@ def bucket_for_tool(tool: str, hit: dict) -> str:
     return "paper"
 
 
-def _en_queries_only(queries: list[str], domain_kws: dict) -> list[str]:
+def _en_queries_only(queries: list[str], domain_kws: dict) -> tuple[list[str], bool]:
     """Drop queries that contain Chinese chars (non-Latin script).
 
     DomainScout must produce English queries; if it returns Chinese
@@ -60,6 +60,10 @@ def _en_queries_only(queries: list[str], domain_kws: dict) -> list[str]:
     them rather than feeding them to arxiv/openalex/github which reject
     or distort them.  ponytail: filter at the helper boundary so the
     loop never sees a CJK query.
+
+    Returns ``(queries, is_fallback)`` where ``is_fallback`` is True
+    when all input queries were CJK and we synthesized fallback probes
+    from domain_kws.
     """
     cjk = re.compile(r"[一-鿿]")
     en: list[str] = []
@@ -70,12 +74,45 @@ def _en_queries_only(queries: list[str], domain_kws: dict) -> list[str]:
         en.append(q)
     # Fall back to domain_kws.en[0] derived probes if everything was
     # Chinese (LLM bilingual parsing often produces a mixed bag).
+    # FIX-4: do NOT put "[Fallback]" prefix in query text — the tag
+    # belongs in structured metadata, not in the search string.
     if not en:
         en_kws = (domain_kws or {}).get("en") or []
         first = next((k for k in en_kws if k and not cjk.search(str(k))), "")
         if first:
-            en = [f"{first} dataset benchmark", f"{first} baseline method"]
-    return en
+            return [f"{first} dataset benchmark", f"{first} baseline method"], True
+        return [], True
+    return en, False
+
+
+def flatten_axis_terms(topic_atoms: dict, axis: str) -> list[str]:
+    """Flatten topic_atoms[axis] into a flat list of English-only term strings.
+
+    Re-added for Re1.1 after being dropped during upstream churn. Accepts
+    legacy shapes used throughout the code base — per-axis lists of strings,
+    or lists of dicts with ``en``/``zh`` subkeys. Drops CJK-only entries
+    and deduplicates case-insensitively.
+    """
+    cjk = re.compile(r"[一-鿿]")
+    out: list[str] = []
+    seen: set[str] = set()
+    for raw in (topic_atoms.get(axis) or []):
+        cand: list[str] = []
+        if isinstance(raw, dict):
+            en = str(raw.get("en") or "").strip()
+            if en:
+                cand.append(en)
+        elif raw:
+            cand.append(str(raw).strip())
+        for t in cand:
+            if not t or cjk.search(t):
+                continue
+            low = t.lower()
+            if low in seen:
+                continue
+            seen.add(low)
+            out.append(t)
+    return out
 
 
 def _en_first_atom(domain_kws: dict) -> str:
@@ -85,6 +122,76 @@ def _en_first_atom(domain_kws: dict) -> str:
         if k and not cjk.search(str(k)):
             return str(k).strip()
     return ""
+
+
+def build_axis_bound_queries(domain_kws: dict, role: str) -> list[str]:
+    """Build a small list of English-only search queries for a target role.
+
+    Reconstructed for Re1.1 after being dropped from this module during
+    upstream churn. Builds 2-4 targeted queries from the method/object/task
+    /dataset keyword axes in ``domain_kws``. All queries are English-only
+    (CJK-filtered) so they are safe for arxiv / openalex / crossref / github.
+
+    Role semantics (mirrors the legacy ``role_queries`` block in
+    ``search_reflection_loop``):
+      - dataset:  method+object + "dataset benchmark" probes
+      - repo:     method+object + "github official implementation" probes
+      - baseline: method+object baseline/method paper probes
+      - core_paper: top method+object "survey OR comparison" probes
+    """
+    cjk = re.compile(r"[一-鿿]")
+    en = [str(k).strip() for k in (domain_kws.get("en") or []) if k and not cjk.search(str(k))]
+    method = [str(k).strip() for k in (domain_kws.get("method") or []) if k and not cjk.search(str(k))]
+    obj = [str(k).strip() for k in (domain_kws.get("object") or []) if k and not cjk.search(str(k))]
+    ds = [str(k).strip() for k in (domain_kws.get("dataset_terms") or []) if k and not cjk.search(str(k))]
+
+    head = (en or method or obj)[:3]
+    m = method[:2]
+    o = obj[:2]
+
+    def q(*parts: str) -> str | None:
+        joined = " ".join(p for p in parts if p).strip()
+        return joined if joined and not cjk.search(joined) else None
+
+    out: list[str] = []
+    seen: set[str] = set()
+    candidates: list[str | None] = []
+
+    role_lower = (role or "").lower()
+    if role_lower == "dataset":
+        base_terms = ds[:2] or m[:1] + o[:1] or head[:1]
+        for t in base_terms:
+            candidates.append(q(t, "dataset benchmark"))
+            candidates.append(q(t, "public dataset download"))
+        candidates.append(q(head[0] if head else "", "dataset"))
+    elif role_lower == "repo":
+        for t in (m[:1] + o[:1] or head[:1]):
+            candidates.append(q(t, "github official implementation"))
+            candidates.append(q(t, "github code repository"))
+        candidates.append(q(head[0] if head else "", "project page"))
+    elif role_lower == "baseline":
+        for t in (m[:1] + o[:1] or head[:1]):
+            candidates.append(q(t, "baseline method"))
+            candidates.append(q(t, "state of the art comparison"))
+        candidates.append(q(head[0] if head else "", "review survey"))
+    elif role_lower == "core_paper":
+        for t in (m[:1] + o[:1] or head[:1]):
+            candidates.append(q(t, "deep learning survey"))
+            candidates.append(q(t, "benchmark comparison"))
+        candidates.append(q(head[0] if head else "", "systematic review"))
+    else:
+        # Unknown role: fall back to plain English subset.
+        candidates.extend(q(h) for h in head)
+
+    for c in candidates:
+        if c is None:
+            continue
+        low = c.lower()
+        if low in seen or len(c) < 4:
+            continue
+        seen.add(low)
+        out.append(c)
+    return out[:6]
 
 
 def build_round_plan(
@@ -101,7 +208,7 @@ def build_round_plan(
     """
     plan: list[dict] = []
     avoid = set(history.get("avoid_search") or [])
-    clean_must = _en_queries_only(must_search or [], domain_kws)
+    clean_must, must_is_fallback = _en_queries_only(must_search or [], domain_kws)
 
     for raw_q in clean_must[:4]:
         q = raw_q.strip()
@@ -117,13 +224,19 @@ def build_round_plan(
             tool, role = "openalex", "baseline"
         else:
             tool, role = "arxiv", "core_paper"
-        plan.append({
+        entry = {
             "query": q,
             "tool": tool,
             "target_role": role,
             "why": f"must_search from DomainScout ({q})",
             "expected_signal": "title" if role != "repo" else "repo_readme",
-        })
+        }
+        # FIX-4 P1-2: tag fallback queries in structured metadata
+        if must_is_fallback:
+            entry["fallback"] = True
+            entry["fallback_reason"] = "llm_parse_failed"
+            entry["why"] = f"[Fallback] {entry['why']}"
+        plan.append(entry)
 
     first_en = _en_first_atom(domain_kws)
     if first_en and not any(p.get("target_role") == "dataset" for p in plan):
@@ -135,10 +248,9 @@ def build_round_plan(
                 "target_role": "dataset",
                 "why": f"fallback dataset probe from atom {first_en!r}",
                 "expected_signal": "dataset_name",
+                "fallback": True,
+                "fallback_reason": "axis_bound_fallback",
             })
-    # Repo probe must be the first English-only atom + repo-relevant
-    # suffix.  NO hardcoded UNet/CV template.  Falls back to a domain-
-    # routed suffix to keep the probe in-bounds.
     if first_en and not any(p.get("target_role") == "repo" for p in plan):
         probe = f"{first_en} open source"
         if not any(bad.lower() in probe.lower() for bad in avoid):
@@ -148,6 +260,8 @@ def build_round_plan(
                 "target_role": "repo",
                 "why": f"fallback repo probe from atom {first_en!r}",
                 "expected_signal": "repo_readme",
+                "fallback": True,
+                "fallback_reason": "axis_bound_fallback",
             })
 
     return plan

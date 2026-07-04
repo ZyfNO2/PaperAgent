@@ -1,0 +1,172 @@
+{
+  "case_id": "re11-l4-mono-recon",
+  "title": "基于单目视觉的室内场景三维重建关键技术研究",
+  "status": "pass",
+  "n_papers_total": 23,
+  "n_verified": 23,
+  "n_baseline": 0,
+  "n_parallel": 22,
+  "n_dataset": 8,
+  "n_repo": 6,
+  "n_work_packages": 5,
+  "n_trace_events": 8,
+  "n_errors": 1,
+  "elapsed_s": 149.2,
+  "low_bar_status": "pass",
+  "human_gate_status": "pass_through",
+  "notes": [],
+  "errors": [
+    {
+      "node": "verify",
+      "error": "LLMUnavailable"
+    }
+  ],
+  "papers_top5": [
+    {
+      "title": "Manydepth2: Motion-Aware Self-Supervised Monocular Depth Estimation in Dynamic Scenes",
+      "verdict": "forwarded_no_verify",
+      "hit_keywords": [],
+      "unrelated_keywords": [],
+      "relation_to_topic": "unknown",
+      "url_missing": false
+    },
+    {
+      "title": "MonoIndoor++:Towards Better Practice of Self-Supervised Monocular Depth Estimation for Indoor Environments",
+      "verdict": "forwarded_no_verify",
+      "hit_keywords": [],
+      "unrelated_keywords": [],
+      "relation_to_topic": "unknown",
+      "url_missing": false
+    },
+    {
+      "title": "Multi-modal On-Device Learning for Monocular Depth Estimation on Ultra-low-power MCUs",
+      "verdict": "forwarded_no_verify",
+      "hit_keywords": [],
+      "unrelated_keywords": [],
+      "relation_to_topic": "unknown",
+      "url_missing": false
+    },
+    {
+      "title": "Unsupervised Monocular Depth and Ego-motion Learning with Structure and Semantics",
+      "verdict": "forwarded_no_verify",
+      "hit_keywords": [],
+      "unrelated_keywords": [],
+      "relation_to_topic": "unknown",
+      "url_missing": false
+    },
+    {
+      "title": "InSpaceType: Reconsider Space Type in Indoor Monocular Depth Estimation",
+      "verdict": "forwarded_no_verify",
+      "hit_keywords": [],
+      "unrelated_keywords": [],
+      "relation_to_topic": "unknown",
+      "url_missing": false
+    }
+  ],
+  "final_recommendation": {
+    "topic": "Monocular visual indoor 3D scene reconstruction",
+    "n_papers": 23,
+    "n_baseline": 0,
+    "n_parallel": 22,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 5,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "Improving Monocular Depth Estimation in Dynamic Indoor Scenes",
+        "research_question": "How can monocular depth estimation be improved for dynamic indoor scenes, such as rooms and corridors, using motion-aware self-supervision?",
+        "baseline": "Manydepth2: Motion-Aware Self-Supervised Monocular Depth Estimation in Dynamic Scenes",
+        "improved_module_source": null,
+        "data_source": "Cityscapes, KITTI, Make3D, and our dynamic scene dataset",
+        "experiment_metrics": "Manydepth2: Motion-Aware Self-Supervised Monocular Depth Estimation in Dynamic Scenes",
+        "risk": "The dynamic scene dataset may not be publicly available, limiting reproducibility.",
+        "estimated_workload": "Medium"
+      },
+      {
+        "title": "Enhancing Monocular Depth Estimation for Indoor Environments with Semantic Priors",
+        "research_question": "Can the integration of semantic segmentation priors improve monocular depth estimation in indoor scenes like rooms and corridors?",
+        "baseline": "Monocular Segment-Wise Depth: Monocular Depth Estimation Based on a Semantic Segmentation Prior",
+        "improved_module_source": null,
+        "data_source": "NYUv2, SUN3D, ScanNet, Replica",
+        "experiment_metrics": "Monocular Segment-Wise Depth: Monocular Depth Estimation Based on a Semantic Segmentation Prior",
+        "risk": "The effectiveness of semantic priors in complex indoor scenes may be limited by the quality of semantic segmentation models.",
+        "estimated_workload": "Medium"
+      },
+      {
+        "title": "Self-Supervised Monocular Depth Estimation for Indoor Scenes: A Reproducibility Study",
+        "research_question": "How does MonoIndoor++ perform on standard indoor datasets, and can its techniques be adapted to other indoor environments like corridors?",
+        "baseline": "MonoIndoor++:Towards Better Practice of Self-Supervised Monocular Depth Estimation for Indoor Environments",
+        "improved_module_source": null,
+        "data_source": "NYUv2, SUN3D, ScanNet, Replica",
+        "experiment_metrics": "MonoIndoor++:Towards Better Practice of Self-Supervised Monocular Depth Estimation for Indoor Environments",
+        "risk": "The dataset used for evaluation might not cover diverse indoor scenarios, such as corridors.",
+        "estimated_workload": "Low"
+      },
+      {
+        "title": "Generalizing Monocular Depth Estimation in Indoor Scenes via Distillation",
+        "research_question": "Can knowledge distillation improve the robustness and accuracy of monocular depth estimation in indoor scenes such as rooms?",
+        "baseline": "Distill Any Depth: Distillation Creates a Stronger Monocular Depth Estimator",
+        "improved_module_source": null,
+        "data_source": "NYUv2, KITTI, Make3D, DIODE",
+        "experiment_metrics": "Distill Any Depth: Distillation Creates a Stronger Monocular Depth Estimator",
+        "risk": "The distillation process may require a large amount of computational resources.",
+        "estimated_workload": "High"
+      },
+      {
+        "title": "Unsupervised Learning of Monocular Depth and Ego-Motion for Indoor 3D Reconstruction",
+        "research_question": "How effective is unsupervised monocular depth and ego-motion learning for 3D reconstruction of indoor scenes, and can it be applied to rooms and corridors?",
+        "baseline": "Unsupervised Monocular Depth and Ego-motion Learning with Structure and Semantics",
+        "improved_module_source": null,
+        "data_source": "NYUv2, SUN3D, ScanNet, Replica",
+        "experiment_metrics": "Unsupervised Monocular Depth and Ego-motion Learning with Structure and Semantics",
+        "risk": "Unsupervised methods may struggle with the lack of ground truth depth data in indoor scenes.",
+        "estimated_workload": "Medium"
+      }
+    ]
+  },
+  "events_summary": [
+    {
+      "node": "retrieve",
+      "elapsed": 51.542,
+      "errors_n": 0
+    },
+    {
+      "node": "verify",
+      "elapsed": 36.647,
+      "errors_n": 1
+    },
+    {
+      "node": "dataset_repo",
+      "elapsed": 36.227,
+      "errors_n": 0
+    },
+    {
+      "node": "evidence_auditor",
+      "elapsed": 0.0,
+      "errors_n": 0
+    },
+    {
+      "node": "work_package",
+      "elapsed": 24.762,
+      "errors_n": 0
+    },
+    {
+      "node": "low_bar_review",
+      "elapsed": 0.0,
+      "errors_n": 0
+    },
+    {
+      "node": "human_gate",
+      "elapsed": 0.0,
+      "errors_n": 0
+    },
+    {
+      "node": "final_recommendation",
+      "elapsed": 0.0,
+      "errors_n": 0
+    }
+  ]
+}

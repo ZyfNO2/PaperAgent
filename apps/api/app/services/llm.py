@@ -260,10 +260,10 @@ def _chat_stepfun(
     api_key = _get_env("STEPFUN_API_KEY")
     base_url = _get_env("STEPFUN_BASE_URL",
                         "https://api.stepfun.com").rstrip("/")
-    # StepFun default: step-1v-32k (non-reasoning, returns JSON in `content`).
-    # step-3.7-flash is a reasoning model — its content may be empty with the
-    # answer under `reasoning`, unsuitable as the default fast_json provider.
-    model = _get_env("STEPFUN_MODEL", "step-1v-32k")
+    # Default: step-3.7-flash (reasoning model — when max_tokens is big enough
+    # it thinks in the `reasoning` field and puts clean JSON in `content`).
+    # step-1v-32k is non-reasoning but much weaker on nuanced classification.
+    model = _get_env("STEPFUN_MODEL", "step-3.7-flash")
 
     if not api_key:
         raise LLMUnavailable("STEPFUN_API_KEY 未设置")
