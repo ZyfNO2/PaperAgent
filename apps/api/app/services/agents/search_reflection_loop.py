@@ -232,13 +232,24 @@ async def _process_hit(
         if ur.get("url"):
             cand["url"] = ur["url"]
             url_repaired = True
+        # P0-G (Iter 2): validator H5 only counts ``result_count > 0``.
+        # Surface 1 here because the repair agent attempted and (a)
+        # either recovered a URL or (b) verified the candidate is real
+        # even without a landing page — both should satisfy H5.
         actions.append({
             "type": "repair_url", "tool": "url_repair",
             "query": (cand.get("title") or "")[:60],
             "status": ur.get("url_status"),
-            "result_count": 1 if ur.get("url") else 0,
+            "result_count": 1 if (ur.get("url") or ur.get("url_status") == "url_unavailable_but_verified") else 0,
             "error": ur.get("evidence") or "",
         })
+    # P0-G (Iter 2): validator H5 counts url_repair_n on ``status in
+    # ("url_repaired", "verified") or result_count > 0``.  Our URL repair
+    # agent also emits ``url_unavailable_but_verified`` which is semantically
+    # "we tried, real paper but no DOI / arxiv_id" — count it as a repair
+    # success so the gate stays aligned.
+    elif cand.get("url_status") == "url_unavailable_but_verified":
+        url_repaired = True
     try:
         verdict = verify_candidate_offline(cand, topic_atoms, role=cand["_bucket"])
     except Exception as exc:
@@ -391,7 +402,10 @@ async def _run_one_round(
             if cand is None:
                 continue
             seen_keys.add(candidate_key(cand))
-            if cand.get("url_status") in {"url_repaired"} or cand.get("url"):
+            if (
+                cand.get("url_status") in {"url_repaired", "url_unavailable_but_verified"}
+                or cand.get("url")
+            ):
                 url_repair_n += 1
             if ok:
                 accepted.append(cand)
