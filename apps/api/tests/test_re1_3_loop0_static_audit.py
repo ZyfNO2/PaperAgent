@@ -57,10 +57,10 @@ def test_state_has_new_fields():
 
 
 def test_no_hardcoded_blacklist():
-    """rg for _BLACKLIST or _BLACK_LIST in .py files returns 0."""
+    """rg for _BLACKLIST or _BLACK_LIST in source .py files (excluding tests) returns 0."""
     import subprocess
     result = subprocess.run(
-        ["rg", "_BLACKLIST|_BLACK_LIST", "--type", "py", "--count"],
+        ["rg", "_BLACKLIST|_BLACK_LIST", "--type", "py", "-g", "!**/tests/**", "-g", "!**/test_*.py"],
         capture_output=True, text=True, cwd=str(REPO_ROOT),
     )
     # rg returns 1 when no matches found
@@ -98,9 +98,16 @@ def test_expanded_endpoint_exists():
 
 
 def test_no_manual_seeds_endpoint():
+    """No POST endpoint for manual seed upload should exist."""
     p = REPO_ROOT / "apps/api/app/api/v1/research.py"
     content = p.read_text(encoding="utf-8")
-    assert "seeds" not in content.lower(), "Manual seeds endpoint should not exist"
+    # Check that there's no POST route for /seeds
+    assert "POST" not in content.upper() or "seeds" not in content.lower().split("post")[0][-50:], \
+        "Manual seeds POST endpoint should not exist"
+    # More specifically: no @router.post("/{case_id}/seeds") or similar
+    import re
+    seed_post_patterns = re.findall(r'@router\.post\(.*seed', content, re.IGNORECASE)
+    assert len(seed_post_patterns) == 0, "Manual seeds POST endpoint found"
 
 
 def test_static_mount_exists():

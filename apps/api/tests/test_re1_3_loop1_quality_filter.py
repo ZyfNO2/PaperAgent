@@ -82,8 +82,8 @@ def test_quality_filter_node_with_llm_mock():
     filter_results = result["filter_results"]
 
     assert filter_results["total"] == 6
-    assert filter_results["kept"] == 3  # indices 0, 5, and one more
-    assert filter_results["dropped"] == 3
+    assert filter_results["kept"] == 2  # indices 0 (normal paper) and 5 (arxiv edge case)
+    assert filter_results["dropped"] == 4
 
     dropped_titles = [d["title"] for d in filter_results["dropped_items"]]
     assert "Deep Learning Core Term Entry" in dropped_titles

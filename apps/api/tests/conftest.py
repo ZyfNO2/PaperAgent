@@ -1,7 +1,7 @@
 """Pytest config for the S66v agent suite.
 
 Session 66+ test files (``test_session66_*`` and earlier) import legcy
-backend modules that have been moved to ``app.Legcy/``. Each such test file
+backend modules that have been archived to ``Legcy/services_legacy/``. Each such test file
 now starts with ``pytest.importorskip("app.services.<legcy_module>")``
 OR a top-level ``import pytest; pytest.skip(...)``; here we expose the
 needed ``sys.path`` and an opt-in env var for running legcy tests.

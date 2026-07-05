@@ -1,7 +1,7 @@
 """S66v minimal retrieval package — only the 4 adapters our agent uses.
 
 Legcy siblings (normalizer / dedup / ranker / orchestrator / query_plan /
-...) live under `apps/api/app/services/Legcy/retrieval/` and are
+...) have been archived to `Legcy/services_legacy/retrieval/` and are
 NOT re-exported here.
 """
 
