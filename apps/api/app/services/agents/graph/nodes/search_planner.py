@@ -1,4 +1,4 @@
-"""LangGraph node A2 — search_planner_node.
+"""LangGraph node A2 - search_planner_node.
 
 Produces `search_plan` defining broad / focused / repair rounds of tool
 calls. Idempotent when state already carries a non-empty search_plan AND no
@@ -18,7 +18,7 @@ from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
 from apps.api.app.services.agents.prompts import re11_planner as P
-from apps.api.app.services.llm_router import call_json, LLMUnavailable
+from apps.api.app.services.llm_router import LLMUnavailable, call_json
 
 logger = logging.getLogger(__name__)
 
@@ -29,11 +29,19 @@ _ROUNDS = frozenset({"broad", "focused", "repair", "seed_expansion"})
 
 def _now_iso() -> str:
     from datetime import datetime, timezone
+
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def _emit(node: str, t0: float, ins: dict, out: dict,
-          tools: list[dict], prov: str, errs: list[dict]) -> dict[str, Any]:
+def _emit(
+    node: str,
+    t0: float,
+    ins: dict,
+    out: dict,
+    tools: list[dict],
+    prov: str,
+    errs: list[dict],
+) -> dict[str, Any]:
     return {
         "node": node,
         "started_at": _now_iso(),
@@ -66,13 +74,15 @@ def _normalize_queries(queries: Any) -> list[dict[str, str]]:
         query = _as_str(q.get("query"))
         if not query:
             continue
-        out.append({
-            "tool": tool,
-            "query": query,
-            "why": _as_str(q.get("why")),
-            "expected_evidence": _as_str(q.get("expected_evidence")),
-            "stop_condition": _as_str(q.get("stop_condition")),
-        })
+        out.append(
+            {
+                "tool": tool,
+                "query": query,
+                "why": _as_str(q.get("why")),
+                "expected_evidence": _as_str(q.get("expected_evidence")),
+                "stop_condition": _as_str(q.get("stop_condition")),
+            },
+        )
     return out
 
 
@@ -90,8 +100,7 @@ def _needs_repair(state: ResearchState) -> bool:
     reported errors, we should re-plan rather than re-use the old plan."""
     for err in state.get("errors") or []:
         node = (err.get("node") or "").lower()
-        if node in ("topic_parser", "verify", "dataset_repo",
-                     "evidence_auditor", "retrieve"):
+        if node in ("topic_parser", "verify", "dataset_repo", "evidence_auditor", "retrieve"):
             return True
     return False
 
@@ -100,16 +109,17 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
     """Template-based search plan: builds queries directly from atoms without LLM.
 
     Used when ``PAPERAGENT_SKIP_SEARCH_PLANNER=true``. Generates a deterministic
-    set of OpenAlex / arxiv / crossref queries from method/object/task/dataset
-    atoms. Saves ~22s wall-clock per case vs. the LLM-based planner.
+    set of OpenAlex / arxiv queries from method/object/task/dataset atoms.
     """
     import re as _re
 
-    cjk = _re.compile(r"[一-鿿]")
+    cjk = _re.compile(r"[\u4e00-\u9fff]")
+    lowered_topic = (topic or "").lower()
     method = [str(k).strip() for k in (atoms.get("method") or []) if k and not cjk.search(str(k))]
     obj = [str(k).strip() for k in (atoms.get("object") or []) if k and not cjk.search(str(k))]
     ds_terms = [str(k).strip() for k in (atoms.get("dataset_terms") or []) if k and not cjk.search(str(k))]
     baseline = [str(k).strip() for k in (atoms.get("baseline_terms") or []) if k and not cjk.search(str(k))]
+    domain = str(atoms.get("domain") or "unknown").strip().lower()
 
     queries: list[dict[str, str]] = []
     seen: set[str] = set()
@@ -119,25 +129,65 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
         if not q or q.lower() in seen or len(q) < 5:
             return
         seen.add(q.lower())
-        queries.append({
-            "tool": tool, "query": q, "why": why,
-            "expected_evidence": ev, "stop_condition": stop,
-        })
+        queries.append(
+            {
+                "tool": tool,
+                "query": q,
+                "why": why,
+                "expected_evidence": ev,
+                "stop_condition": stop,
+            },
+        )
 
-    # method × object → baseline-targeted queries
+    def _compact(term: str) -> str:
+        text = " ".join((term or "").split())
+        if not text:
+            return ""
+        parts = [p for p in _re.split(r"[\s,/;:()]+", text) if p]
+        return " ".join(parts[:8])
+
+    explicit_rag = (
+        "retrieval-augmented generation" in lowered_topic
+        or "检索增强生成" in topic
+        or ("检索增强" in topic and "生成" in topic)
+        or _re.search(r"\brag\b", lowered_topic) is not None
+    )
+    if explicit_rag:
+        _add(
+            "openalex",
+            "retrieval-augmented generation enterprise knowledge base question answering",
+            "explicit rag topic",
+            "rag / enterprise qa baseline papers",
+            "n>=5",
+        )
+        _add(
+            "arxiv",
+            "retrieval-augmented generation knowledge base question answering",
+            "explicit rag topic recent papers",
+            "recent rag qa papers",
+            "n>=5",
+        )
+        _add(
+            "openalex",
+            "enterprise knowledge base question answering",
+            "explicit enterprise knowledge-base qa topic",
+            "enterprise qa papers",
+            "n>=5",
+        )
+
     for m in method[:2]:
         for o in obj[:1]:
-            _add("openalex", f"{m} {o}", "baseline method+object", "baseline papers", "n>=5")
-    # dataset-term queries
+            _add("openalex", _compact(f"{m} {o}"), "baseline method+object", "baseline papers", "n>=5")
     for d in ds_terms[:2]:
-        _add("openalex", f"{d} dataset benchmark", "dataset", "dataset papers", "n>=3")
-    # baseline-term queries
+        _add("openalex", _compact(f"{d} dataset benchmark"), "dataset", "dataset papers", "n>=3")
     for b in baseline[:1]:
-        _add("openalex", f"{b} survey review", "baseline", "survey or baseline papers", "n>=3")
-    # arxiv fallback
+        _add("openalex", _compact(f"{b} survey review"), "baseline", "survey or baseline papers", "n>=3")
     if method:
-        _add("arxiv", f"{method[0]}", "broad arxiv", "recent preprints", "n>=8")
-    # final fallback from raw topic
+        _add("arxiv", _compact(method[0]), "broad arxiv", "recent preprints", "n>=8")
+    if domain == "unknown" and baseline:
+        _add("openalex", _compact(baseline[0]), "domain unknown baseline fallback", "any baseline papers", "n>=4")
+    if domain == "unknown" and obj:
+        _add("openalex", _compact(obj[0]), "domain unknown object fallback", "object-specific papers", "n>=4")
     if not queries:
         head = (topic or "deep learning").split()[0]
         _add("openalex", head, "fallback topic head", "any relevant papers", "n>=5")
@@ -150,13 +200,7 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
 
 
 def search_planner_node(state: ResearchState) -> dict[str, Any]:
-    """Produce search_plan. Skips LLM call when a valid plan already exists.
-
-    When ``PAPERAGENT_SKIP_SEARCH_PLANNER=true``, queries are generated from a
-    deterministic template derived from ``topic_atoms`` — no LLM call, saving
-    ~22s wall-clock. The LLM-based planner remains available for cases where
-    the template is insufficient (set the env to ``false`` to force LLM).
-    """
+    """Produce search_plan. Skips LLM call when a valid plan already exists."""
     topic = state.get("topic") or ""
     atoms = state.get("topic_atoms") or {}
     existing_plan = state.get("search_plan") or {}
@@ -164,23 +208,29 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
 
     has_plan = bool(existing_plan.get("queries")) and bool(existing_plan.get("rounds"))
     if has_plan and not _needs_repair(state):
-        trace = _emit("search_planner", t0,
-                      {"topic_len": len(topic)},
-                      {"skipped": True,
-                       "n_queries": len(existing_plan.get("queries") or [])},
-                      [{"tool": "re11_planner.llm", "mode": "skipped"}],
-                      "none", [])
+        trace = _emit(
+            "search_planner",
+            t0,
+            {"topic_len": len(topic)},
+            {"skipped": True, "n_queries": len(existing_plan.get("queries") or [])},
+            [{"tool": "re11_planner.llm", "mode": "skipped"}],
+            "none",
+            [],
+        )
         return {"trace_events": list(state.get("trace_events") or []) + [trace]}
 
-    # Template bypass: generate queries from atoms, no LLM.
     skip_llm = __import__("os").environ.get("PAPERAGENT_SKIP_SEARCH_PLANNER", "true").lower() == "true"
     if skip_llm and atoms:
         plan = _template_plan(topic, atoms)
-        trace = _emit("search_planner", t0,
-                      {"topic_len": len(topic), "mode": "template"},
-                      {"n_queries": len(plan.get("queries") or []),
-                       "rounds": plan.get("rounds")},
-                      [{"tool": "search_planner.template"}], "local", [])
+        trace = _emit(
+            "search_planner",
+            t0,
+            {"topic_len": len(topic), "mode": "template"},
+            {"n_queries": len(plan.get("queries") or []), "rounds": plan.get("rounds")},
+            [{"tool": "search_planner.template"}],
+            "local",
+            [],
+        )
         return {
             "search_plan": plan,
             "trace_events": list(state.get("trace_events") or []) + [trace],
@@ -188,15 +238,15 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
             "provider_profile": "local",
         }
 
-    # Build prior_rounds for follow-up mode — pull the previous plan's queries
-    # (and any negative_feedback already stored) so the next round can improve.
     prior_rounds: list[dict[str, Any]] | None = None
     if has_plan:
-        prior_rounds = [{
-            "queries": existing_plan.get("queries") or [],
-            "rounds": existing_plan.get("rounds") or [],
-            "negative_feedback": existing_plan.get("negative_feedback") or "",
-        }]
+        prior_rounds = [
+            {
+                "queries": existing_plan.get("queries") or [],
+                "rounds": existing_plan.get("rounds") or [],
+                "negative_feedback": existing_plan.get("negative_feedback") or "",
+            },
+        ]
 
     errors_out: list[dict[str, Any]] = []
     plan: dict[str, Any] = {"queries": [], "rounds": ["broad"], "negative_feedback": ""}
@@ -229,12 +279,15 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
         logger.warning("search_planner_node LLM call failed (%s); using empty plan", kind)
         errors_out.append({"node": "search_planner", "error": kind})
 
-    trace = _emit("search_planner", t0,
-                  {"topic_len": len(topic), "has_prior": bool(prior_rounds)},
-                  {"n_queries": len(plan.get("queries") or []),
-                   "rounds": plan.get("rounds")},
-                  [{"tool": "re11_planner.llm", "attempts": tries}],
-                  "fast_json", errors_out)
+    trace = _emit(
+        "search_planner",
+        t0,
+        {"topic_len": len(topic), "has_prior": bool(prior_rounds)},
+        {"n_queries": len(plan.get("queries") or []), "rounds": plan.get("rounds")},
+        [{"tool": "re11_planner.llm", "attempts": tries}],
+        "fast_json",
+        errors_out,
+    )
 
     return {
         "search_plan": plan,

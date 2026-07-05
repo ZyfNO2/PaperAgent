@@ -7,12 +7,23 @@ the fields it owns (see ResearchState docstring).
 from __future__ import annotations
 
 import logging
+import os
 import time
 from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
 
 
 def _now_iso() -> str:
@@ -58,7 +69,9 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
             built = P.build(title, p.get("abstract") or p.get("snippet") or "")
             out = llm_router.call_json(
                 built["user"], system=built["system"], profile="fast_json",
-                max_tokens=700, expected="dict",
+                max_tokens=700,
+                timeout=max(5, _env_int("DATASET_REPO_TIMEOUT_S", 45)),
+                expected="dict",
                 schema_hint='Top-level object with keys: dataset_name, official_code_url, project_page_url, status',
             )
             tried += 1
@@ -176,7 +189,9 @@ def work_package_node(state: ResearchState) -> dict[str, Any]:
                             datasets=datasets, repos=repos, constraints=constraints)
             out = llm_router.call_json(
                 built["user"], system=built["system"], profile="fast_json",
-                max_tokens=1800, expected="dict",
+                max_tokens=1800,
+                timeout=max(5, _env_int("WORK_PACKAGE_TIMEOUT_S", 45)),
+                expected="dict",
                 schema_hint='Top-level object with keys: work_packages (list), evidence_gap (list)',
             )
             packages = out.get("work_packages") or []

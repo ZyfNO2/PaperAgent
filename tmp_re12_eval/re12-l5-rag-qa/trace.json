@@ -1,0 +1,290 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T13:26:58Z",
+    "input_summary": {
+      "topic": "Retrieval-augmented generation for enterprise knowledge base question answering"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T13:26:58Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T13:28:04Z",
+    "input_summary": {
+      "topic_len": 79
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "unknown"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T13:28:04Z",
+    "elapsed_s": 65.221
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T13:28:04Z",
+    "input_summary": {
+      "topic_len": 79,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T13:28:04Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T13:28:04Z",
+    "input_summary": {
+      "topic_len": 79,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 24,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T13:28:21Z",
+    "elapsed_s": 17.252
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T13:28:21Z",
+    "input_summary": {
+      "n_candidates": 24,
+      "topic_len": 79
+    },
+    "output_summary": {
+      "n_accept": 6,
+      "n_reject_or_weak": 18
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T13:38:57Z",
+    "elapsed_s": 636.552
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T13:38:57Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T13:38:57Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T13:40:13Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 6,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T13:40:13Z",
+    "elapsed_s": 75.334
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T13:40:13Z",
+    "input_summary": {
+      "papers": 6
+    },
+    "output_summary": {
+      "nodes": 6,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T13:40:13Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T13:40:13Z",
+    "input_summary": {
+      "n_verified": 6
+    },
+    "output_summary": {
+      "n_baseline": 6,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T13:40:13Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T13:41:44Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 0,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T13:41:44Z",
+    "elapsed_s": 90.991
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T13:41:44Z",
+    "input_summary": {
+      "n_packages": 0
+    },
+    "output_summary": {
+      "status": "blocked",
+      "n_remaining": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T13:41:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-05T13:41:44Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T13:41:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-05T13:41:44Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "Retrieval-augmented generation for enterprise knowledge base question answering",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "low_bar_status": "blocked",
+      "human_gate_status": "pass_through",
+      "notes": [
+        "low-bar review blocked the proposal"
+      ],
+      "research_basis": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T13:41:44Z",
+    "elapsed_s": 0.0
+  }
+]

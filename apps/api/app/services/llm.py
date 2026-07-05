@@ -33,31 +33,47 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Lightweight client-side rate limiter
+# Lightweight client-side rate limiter (thread-safe)
 # ---------------------------------------------------------------------------
-# StepFun caps free-tier accounts at 10 RPM.  Without client-side pacing the
-# parallel verifier (2 workers × 24 candidates) immediately trips 429.  The
-# limiter batches inter-call gaps so we stay safely under the cap.
+# StepFun caps accounts at 10 RPM.  Without client-side pacing the parallel
+# verifier immediately trips 429.  The limiter batches inter-call gaps so we
+# stay safely under the cap.  With RPM=10 the interval is 6s: fast enough to
+# keep total case time ~8-12 min while avoiding the expensive 429 retry cycle.
 _limiter_lock = threading.Lock()
-_limiter_min_interval = 0.0  # computed from env on first use
-_limiter_last_call = 0.0
+_limiter_state: dict[str, dict[str, float]] = {}
 
 
-def _rate_limit_pause() -> None:
+def _rpm_limit_for(bucket: str | None) -> int:
+    bucket_key = (bucket or "").strip().upper()
+    if bucket_key:
+        scoped = _get_env(f"{bucket_key}_RPM_LIMIT", "")
+        if scoped:
+            try:
+                return int(scoped)
+            except ValueError:
+                return 0
+    try:
+        return int(_get_env("LLM_RPM_LIMIT", "0"))
+    except ValueError:
+        return 0
+
+
+def _rate_limit_pause(bucket: str | None = None) -> None:
     """Block until the minimum inter-call interval has elapsed."""
-    global _limiter_min_interval, _limiter_last_call
-    rpm = int(_get_env("LLM_RPM_LIMIT", "0"))
+    rpm = _rpm_limit_for(bucket)
     if rpm <= 0:
         return
+    bucket_name = (bucket or "default").lower()
     with _limiter_lock:
-        if _limiter_min_interval == 0.0:
-            # aim for 80 % of the cap so transient bursts don't trip it
-            _limiter_min_interval = 60.0 / (rpm * 0.8)
+        state = _limiter_state.setdefault(
+            bucket_name, {"min_interval": 60.0 / rpm, "last_call": 0.0},
+        )
+        state["min_interval"] = 60.0 / rpm
         now = _time.monotonic()
-        wait = _limiter_min_interval - (now - _limiter_last_call)
+        wait = state["min_interval"] - (now - state["last_call"])
         if wait > 0.0:
             _time.sleep(wait)
-        _limiter_last_call = _time.monotonic()
+        state["last_call"] = _time.monotonic()
 
 
 class LLMUnavailable(RuntimeError):
@@ -116,6 +132,31 @@ def _extract_json_from_text(text: str) -> Any | None:
 def _get_env(key: str, default: str = "") -> str:
     """Read env at call-time so monkeypatch.setenv works in tests."""
     return os.environ.get(key, default).strip()
+
+
+def _normalize_openai_base_url(base_url: str) -> str:
+    url = (base_url or "").strip().rstrip("/")
+    if url.endswith("/v1"):
+        return url[:-3]
+    return url
+
+
+def _coerce_text_payload(value: Any) -> str:
+    """Flatten string/list/dict provider payloads into plain text."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, list):
+        parts = [_coerce_text_payload(item) for item in value]
+        return "\n".join(part for part in parts if part).strip()
+    if isinstance(value, dict):
+        for key in ("text", "content", "value", "output_text", "reasoning", "reasoning_content"):
+            text = _coerce_text_payload(value.get(key))
+            if text:
+                return text
+        return ""
+    return str(value).strip()
 
 
 # ---------------------------------------------------------------------------
@@ -200,6 +241,7 @@ def _chat_openai_compat_once(
     temperature: float = 0.2,
     max_tokens: int = 1500,
     timeout: float = 60.0,
+    rate_limit_bucket: str | None = None,
 ) -> str:
     """Generic OpenAI-compatible chat call. Returns raw text.
 
@@ -213,7 +255,7 @@ def _chat_openai_compat_once(
 
     import httpx
 
-    url = f"{base_url}/v1/chat/completions"
+    url = f"{_normalize_openai_base_url(base_url)}/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -232,11 +274,11 @@ def _chat_openai_compat_once(
 
     max_retries = 3
     for attempt in range(max_retries):
-        _rate_limit_pause()
+        _rate_limit_pause(rate_limit_bucket)
         try:
             r = httpx.post(url, headers=headers, json=body, timeout=timeout)
             if r.status_code == 429:
-                wait = 60.0 / max(int(_get_env("LLM_RPM_LIMIT", "10")), 1)
+                wait = 2 ** attempt
                 logger.warning("rate limited (429) on %s (attempt %d/%d); waiting %ds",
                                model, attempt + 1, max_retries, int(wait))
                 _time.sleep(wait)
@@ -248,9 +290,10 @@ def _chat_openai_compat_once(
             if not choices:
                 raise LLMUnavailable("Empty choices from OpenAI-compat API")
             msg = choices[0].get("message") or {}
-            content = (msg.get("content") or "").strip()
-            reasoning = (msg.get("reasoning") or "").strip() or (msg.get(
-                "reasoning_content") or "").strip()
+            content = _coerce_text_payload(msg.get("content"))
+            reasoning = _coerce_text_payload(msg.get("reasoning")) or _coerce_text_payload(
+                msg.get("reasoning_content"),
+            )
 
             import json
             def _json_value(text: str):
@@ -295,7 +338,9 @@ def _chat_once_json_via_fallback(prompt, *, system, fallback_model, temperature,
     import httpx
 
     api_key = _get_env("STEPFUN_API_KEY")
-    base_url = _get_env("STEPFUN_BASE_URL", "https://api.stepfun.com").rstrip("/")
+    base_url = _normalize_openai_base_url(
+        _get_env("STEPFUN_BASE_URL", "https://api.stepfun.com/step_plan/v1"),
+    )
     msgs = []
     if system:
         msgs.append({"role": "system", "content": system})
@@ -303,7 +348,7 @@ def _chat_once_json_via_fallback(prompt, *, system, fallback_model, temperature,
                  "content": prompt + "\n\n[Reply with ONLY the strict JSON object.]"})
     max_retries = 3
     for attempt in range(max_retries):
-        _rate_limit_pause()
+        _rate_limit_pause("STEPFUN")
         try:
             r = httpx.post(
                 f"{base_url}/v1/chat/completions",
@@ -314,7 +359,7 @@ def _chat_once_json_via_fallback(prompt, *, system, fallback_model, temperature,
                 timeout=timeout,
             )
             if r.status_code == 429:
-                wait = 60.0 / max(int(_get_env("LLM_RPM_LIMIT", "10")), 1)
+                wait = 60.0 / max(_rpm_limit_for("STEPFUN") or 10, 1)
                 logger.warning("fallback model %s rate limited (429) attempt %d/%d; waiting %ds",
                                fallback_model, attempt + 1, max_retries, int(wait))
                 _time.sleep(wait)
@@ -345,13 +390,14 @@ def _chat_deepseek(
 ) -> str:
     """Deepseek with flash→pro fallback on JSON parse failure."""
     api_key = _get_env("DEEPSEEK_API_KEY")
-    base_url = _get_env("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/")
+    base_url = _normalize_openai_base_url(_get_env("DEEPSEEK_BASE_URL", "https://api.deepseek.com"))
     flash_model = _get_env("DEEPSEEK_FLASH_MODEL", "deepseek-chat")
     pro_model = _get_env("DEEPSEEK_PRO_MODEL", "deepseek-reasoner")
 
     raw = _chat_openai_compat_once(
         prompt, system=system, model=flash_model, api_key=api_key,
         base_url=base_url, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+        rate_limit_bucket="DEEPSEEK",
     )
     cleaned = _strip_code_fence(raw)
     try:
@@ -364,6 +410,7 @@ def _chat_deepseek(
         raw = _chat_openai_compat_once(
             prompt, system=system, model=pro_model, api_key=api_key,
             base_url=base_url, temperature=temperature, max_tokens=max_tokens * 2, timeout=timeout,
+            rate_limit_bucket="DEEPSEEK",
         )
     return raw
 
@@ -395,19 +442,20 @@ def _chat_stepfun(
     directive — re-add only if cost reduction becomes necessary.
     """
     api_key = _get_env("STEPFUN_API_KEY")
-    primary_base = _get_env("STEPFUN_BASE_URL", "https://api.stepfun.com/step_plan/v1").rstrip("/").removesuffix("/v1")
-    fallback_base = _get_env("STEPFUN_FALLBACK_BASE_URL", "https://api.stepfun.com").rstrip("/").removesuffix("/v1")
+    base_url = _normalize_openai_base_url(
+        _get_env("STEPFUN_BASE_URL", "https://api.stepfun.com/step_plan/v1"),
+    )
     model = _get_env("STEPFUN_MODEL", "step-3.7-flash")
     if not api_key:
         raise LLMUnavailable("STEPFUN_API_KEY 未设置")
 
-    # — attempt 1: primary (step_plan) —
+    # — attempt 1: normal call —
     raw = _chat_openai_compat_once(
         prompt, system=system, model=model, api_key=api_key,
-        base_url=primary_base, temperature=temperature,
-        max_tokens=max_tokens, timeout=timeout,
+        base_url=base_url, temperature=temperature,
+        max_tokens=max_tokens, timeout=timeout, rate_limit_bucket="STEPFUN",
     )
-    if raw and _contains_json_object(raw):
+    if raw:
         return raw
 
     # — attempt 2: reinforce prompt —
@@ -426,28 +474,14 @@ def _chat_stepfun(
     try:
         raw2 = _chat_openai_compat_once(
             prompt, system=reinforced, model=model, api_key=api_key,
-            base_url=primary_base, temperature=temperature,
-            max_tokens=max_tokens, timeout=timeout,
+            base_url=base_url, temperature=temperature,
+            max_tokens=max_tokens, timeout=timeout, rate_limit_bucket="STEPFUN",
         )
-        if raw2 and _contains_json_object(raw2):
+        if raw2:
             return raw2
     except Exception as exc:
         logger.debug("stepfun reinforce attempt failed: %s", exc)
 
-    # — attempt 3: fallback base URL (standard endpoint) —
-    if fallback_base and fallback_base != primary_base:
-        try:
-            raw3 = _chat_openai_compat_once(
-                prompt, system=system, model=model, api_key=api_key,
-                base_url=fallback_base, temperature=temperature,
-                max_tokens=max_tokens, timeout=timeout,
-            )
-            if raw3 and _contains_json_object(raw3):
-                return raw3
-        except Exception as exc:
-            logger.debug("stepfun fallback base URL failed: %s", exc)
-
-    # — last resort: return raw —
     return raw
 
 
@@ -502,13 +536,14 @@ def _chat_opencode(
     # base_url may or may not include a trailing /v1 — strip it so
     # _chat_openai_compat_once can append /v1/chat/completions unambiguously.
     raw_base = _get_env("OPENCODE_BASE_URL", "https://opencode.ai/zen").rstrip("/")
-    base_url = raw_base.removesuffix("/v1")
+    base_url = _normalize_openai_base_url(raw_base)
     model = _get_env("OPENCODE_MODEL", "big-pickle")
     if not api_key:
         raise LLMUnavailable("OPENCODE_API_KEY not set")
     return _chat_openai_compat_once(
         prompt, system=system, model=model, api_key=api_key,
-        base_url=base_url, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+        base_url=base_url, temperature=temperature, max_tokens=max_tokens,
+        timeout=timeout, rate_limit_bucket="OPENCODE",
     )
 
 
@@ -522,12 +557,13 @@ def _chat_voapi(
 ) -> str:
     """VOAPI OpenAI-compatible proxy (GPT-5.4-medium etc.)."""
     api_key = _get_env("VOAPI_API_KEY")
-    base_url = _get_env("VOAPI_BASE_URL", "https://demo.voapi.top").rstrip("/")
+    base_url = _normalize_openai_base_url(_get_env("VOAPI_BASE_URL", "https://demo.voapi.top"))
     model = _get_env("VOAPI_MODEL", "gpt-5.4-medium")
 
     return _chat_openai_compat_once(
         prompt, system=system, model=model, api_key=api_key,
-        base_url=base_url, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+        base_url=base_url, temperature=temperature, max_tokens=max_tokens,
+        timeout=timeout, rate_limit_bucket="VOAPI",
     )
 
 

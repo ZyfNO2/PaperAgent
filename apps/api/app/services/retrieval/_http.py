@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import re
 import socket
 import time
@@ -105,6 +106,13 @@ async def fetch_with_timeout(
     失败时抛 ``HttpError``, 由 orchestrator 捕获后降级.
     测试可通过 ``client`` 参数注入 mock.
     """
+
+    env_timeout = os.environ.get("PAPERAGENT_HTTP_TIMEOUT_S", "").strip()
+    if env_timeout:
+        try:
+            timeout = min(timeout, max(1.0, float(env_timeout)))
+        except ValueError:
+            pass
 
     if client is not None:
         # 测试用 mock client, 期望有 ``.request(method, url, headers=...) -> (status, body)``

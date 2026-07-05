@@ -24,6 +24,9 @@ step-3.7-flash 适配层完成 JSON 修复 + fallback formatter; 建立 candidat
 | `apps/api/scripts/verify_strictness_test.py` | 新增 | verifier prompt 回归测试 |
 | `apps/api/app/api/v1/research.py` | 新增 | 6 个 API endpoint |
 | `apps/api/tests/test_evidence_graph_builder.py` | 新增 | 6/6 pass |
+| `apps/api/tests/test_re1_2_topic_parser_guards.py` | 新增 | RAG/中文 topic 守卫测试 |
+| `apps/api/tests/test_re1_2_search_planner_template.py` | 新增 | search planner 模板兜底测试 |
+| `apps/api/tests/test_re1_2_retrieve_parallel.py` | 新增 | retrieval 并发 fan-out 测试 |
 | `research_graph.py` | 重写 | 14-node + 条件边 + 去重路由 |
 | `llm.py` | 重写 | stepfun 适配 + `_chat_opencode` + 429 retry + rate limiter |
 | `llm_router.py` | 重写 | `expected=` + opencode provider + fallback formatter 加强 |
@@ -118,24 +121,64 @@ step-3.7-flash 适配层完成 JSON 修复 + fallback formatter; 建立 candidat
 | 6 | fallback formatter 返回空 dict | schema_hint 为空; 模型不知道字段 | Phase C 返回无意义 dict | 加强 schema_hint + 字段值约束 |
 | 7 | 长 system prompt CoT prompt 失败 | 3-step CoT + 长 system 让 stepfun 思考过度 | 后续 candidate 全失败 | 弃用长 CoT; 改用短 system + 轻量 user 引导 |
 | 8 | prompt 模板嵌入 title 字符 | title 含特殊字符 | JSON 解析失败 | 不预填 title |
+| 9 | `content=""` / `reasoning=[]` / `content=[]` 形态不稳 | StepFun / Opencode 返回字段形态不一致 | JSON 修复偶发误判失败 | `llm.py` 统一做 content/reasoning 归一化, 优先消费首个有效响应 |
+| 10 | direct retrieval 串行等待 4 个 adapter | arxiv/openalex/crossref/github 逐个 await | 总链路 wall-clock 被 I/O 拉长 | 改为 `asyncio.gather` + `Semaphore` 并发 fan-out |
+| 11 | RAG 中文题目被解析跑偏 | topic_parser 对中文 `检索增强生成/知识库/问答` 信号保护不足 | rag-qa 生成长坏 query, 检索不相关 | 增加 topic 词面守卫 + search planner RAG 模板兜底 |
 
 ### 5.2 未修复 (进入 Re1.3)
 
 | # | 问题 | 当前状态 | 建议 |
 |---|---|---|---|
-| 9 | stepfun step_plan 端点 content="" | 行为与标准端点相同, 无增益 | 弃用 step_plan; 用标准端点 |
-| 10 | RPM=10 limiter 致单 case 10-40 min | 功能正确但慢 | 提 quota 或换 DeepSeek 做 verifier |
-| 11 | rag-qa retrieval 全不相关 | topic_parser domain='unknown' → search_planner 生成坏 query → 检索到元音/天文论文 | 增强 topic_parser 多语言支持; 加检索相关性前过滤 |
-| 12 | opencode big-pickle JSON 遵循率 ~50% | 复杂 prompt 时返回非 dict | 仅做备选; 需更长 prompt engineering |
-| 13 | stepfun step-1v-32k fallback 有时 SSL EOF | 旧模型网络问题 | 已移除 fallback; 不再使用 |
+| 12 | stepfun `step_plan` 端点是否应彻底弃用 | 代码默认已统一到 `https://api.stepfun.com/step_plan/v1`; 真实线上最优端点仍待复跑确认 | 联网压测后决定是保留文档化还是改回标准 `/v1` |
+| 13 | RPM=10 limiter 致单 case 10-40 min | 代码已改为 provider 分桶限速, 但真实 429 仍需联网复测 | 提 quota 或换 DeepSeek 做 verifier |
+| 14 | rag-qa retrieval 全不相关 | **代码层已做修复**: topic_parser 多语言守卫 + search_planner RAG 模板兜底; 尚缺真实联网复跑 | 联网复跑 rag-qa, 必要时再加检索前相关性过滤 |
+| 15 | opencode big-pickle JSON 遵循率 ~50% | 复杂 prompt 时返回非 dict; 已增强 payload 归一化, 但未做长 prompt 调优 | 仅做备选; 后续再做 prompt engineering |
+| 16 | stepfun step-1v-32k fallback 有时 SSL EOF | 旧模型网络问题 | 已移除 fallback; 不再使用 |
+
+### 5.3 2026-07-05 补充汇报：本轮修理方法与改动说明
+
+本轮补丁只处理高优先级与中优先级里“能在不引入硬编码、不跳过 LLM 环节”的前提下安全推进的项，方法分三层：
+
+1. **先修出口，再修输入，再修调度**
+   - 先修 `llm.py` 的 provider 出口，统一消费 StepFun / Opencode 的 `content`、`reasoning`、数组 payload，减少 `content=""` 被误判成失败。
+   - 再修 `topic_parser`，给 `RAG / 检索增强生成 / 企业 / 知识库 / 问答` 增加词面守卫，防止模型把正向 topic 解析成 `non-retrieval` 一类反义结果。
+   - 最后修 retrieval 调度，把 direct adapter 从串行 await 改成并发 fan-out，先削掉确定存在的总链路 I/O 开销。
+
+2. **模板兜底而不是盲目增加模型调用**
+   - `search_planner` 的 template path 增加了 RAG 专用短查询兜底。
+   - 当 `domain='unknown'` 时，优先退回更短的 baseline/object query，而不是把整句长 topic 直接塞给 OpenAlex。
+   - 这样做是为了在 StepFun RPM 受限时，尽量用更少的调用把 query 质量先拉正。
+
+3. **每个改动都配最小可验证测试**
+   - `test_session66_llm_gateway.py`: 验证 StepFun reasoning list / Opencode content array 的 JSON 归一化。
+   - `test_re1_2_topic_parser_guards.py`: 验证英文 RAG 和中文 RAG topic 不再被解析跑偏。
+   - `test_re1_2_search_planner_template.py`: 验证 RAG template plan 会生成更短、更稳的 query。
+   - `test_re1_2_retrieve_parallel.py`: 验证 direct retrieval 已从串行变为并发。
+
+### 5.4 本轮验证结果
+
+- 项目 `.venv` 下执行：
+  - `python -m pytest apps/api/tests/test_re1_2_verify_limit.py apps/api/tests/test_re1_2_topic_parser_guards.py apps/api/tests/test_re1_2_search_planner_template.py apps/api/tests/test_re1_2_retrieve_parallel.py apps/api/tests/test_session66_llm_gateway.py -q`
+- 结果：`10 passed in 0.34s`
+- 快测链路执行：
+  - `PAPERAGENT_MAX_REPAIR_ROUNDS=0 python apps/api/scripts/timing_single.py`
+- 快测耗时：`188.3s`，已从“244s 超时未完成”压到“3 分 8 秒完成”，距离稳定 `<=180s` 还差最后一段。
+- 快测产出摘要：
+  - 题目：`YOLOv5-based steel surface defect detection on hot-rolled strip using NEU-DET dataset`
+  - 最终得到：`verified=2, baseline=2, dataset=0, repo=0, wp=0`
+- 真实性检查结论：
+  - **速度改动有效**：`topic_parser / verify / dataset_repo / work_package / retrieval HTTP / fallback formatter` 的快测超时与并发收紧后，单题真实链路已能在约 3 分钟完成。
+  - **结果质量未通过验收**：历史落盘 case 中仍存在大量 `Term Entry / Core Concept / Reference Entry / Input Classification` 一类词条/概念页混入“论文”结果的问题。
+  - 因此本轮可确认的是“StepFun JSON 修复 + 限时快测链路提速已经落地”，**不能**把“最终检索结果已正确”或“真实线上 RPM 已完全解决”写成已验收事实。
 
 ## 6. 待办 (进入 Re1.3)
 
 ### 高优先级
 
-- [ ] **5-topic 完整跑**: 代码就绪, 2/5 done, 等 RPM 配额提额后继续
-- [ ] **rag-qa 修复**: topic_parser + search_planner 中文适配
-- [ ] **性能优化**: 并行 verifier (quota 允许时) 或 DeepSeek 混合路由
+- [ ] **论文真实性守卫**: 在 `retrieve -> verify` 之间补“是否为真实学术论文”过滤, 优先拦截 `Term Entry / Core Concept / Reference Entry / Input Classification` 等非论文结果
+- [ ] **rag-qa 修复**: **代码层已完成** topic_parser + search_planner 中文适配, 但真实联网结果仍需验收, 且需连同“非论文混入”一起修
+- [ ] **3 分钟内稳定化**: 当前快测 `188.3s`, 需继续压 `dataset_repo/work_package` 尾延迟, 目标稳定进入 `<=180s`
+- [ ] **5-topic 完整跑**: 不再只看是否跑完, 还要附真实 `paper/repo/dataset` 名单与人工抽查结论
 
 ### 中优先级
 
@@ -148,8 +191,8 @@ step-3.7-flash 适配层完成 JSON 修复 + fallback formatter; 建立 candidat
   - [ ] YAML-in-JSON 解析 (如 `search_plan_yaml`)
   - [ ] 模板回退 (每阶段存 `_default_*` 空模板, JSON 全失败时返回)
   - [ ] 入口 JSON Schema 二次校验 (参考 ARS `shared/contracts/*.schema.json`)
-- [ ] **topic_parser 多语言适配**: 中文 topic → English atoms (rag-qa 当前失败)
-- [ ] **search_planner fallback 增强**: domain='unknown' 时加 LLM 兜底路径
+- [ ] **topic_parser 多语言适配**: 已补 RAG/知识库/问答词面守卫, 后续扩到更多中文 topic 模式
+- [ ] **search_planner fallback 增强**: 已补 template RAG/domain=unknown 兜底, 后续再评估是否需要 LLM 兜底路径
 - [ ] **dataset_repo 多语言**: 中文 paper 摘要的 dataset/repo 识别
 - [ ] **EvidenceGraph builder 修复**: cluster 重复节点 owner/repo slug 化 (Re1.1 遗留)
 - [ ] **VERIFIER_MAX_WORKERS 可配置化**: 环境变量传入 (参考 CLAUDE.md 规则)
@@ -180,6 +223,11 @@ step-3.7-flash 适配层完成 JSON 修复 + fallback formatter; 建立 candidat
 - step-3.7-flash 适配层 (JSON repair + fallback) ✅
 - EvidenceGraph 数据结构 + API + 测试 ✅
 
-性能目标 (<3 min/case) 在 DeepSeek 验证通过; StepFun 受限于厂商 RPM
-配额, 功能正确但延迟 10-40 min/case。进入 Re1.3 后可通过 quota 提升或
-provider 混合路由解决。
+但需要明确区分：
+- **代码层能力已具备**：StepFun JSON 修复、provider 分桶限速、快测链路提速、RAG 中文守卫都已落地。
+- **结果质量尚未验收通过**：当前真实 case 仍会把词条/概念页混入论文集合, `dataset/repo` 抽取也因此偏空。
+
+因此进入 Re1.3 的主线不应再写成“只剩 RPM/配额问题”，而应调整为：
+- 先修 **真实论文过滤 / 结果质量**
+- 再做 **3 分钟内稳定化**
+- 最后补 **5-topic 完整验收与报告固化**
