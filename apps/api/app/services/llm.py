@@ -348,12 +348,19 @@ def _chat_stepfun(
     max_tokens: int = 1500,
     timeout: float = 60.0,
 ) -> str:
-    """StepFun primary provider.
+    """StepFun primary provider (step-3.7-flash, reasoner model).
 
-    Uses StepFun's OpenAI-compatible `/v1/chat/completions` surface. The
-    default model is step-3.7-flash (reasoner).  When step-3.7-flash returns an
-    empty or unparseable content AND a JSON fallback model is configured, the
-    call is retried against that fallback so JSON-producing nodes stay stable.
+    The model may emit a ``reasoning`` thinking transcript and put the real
+    JSON payload in ``content`` (or ``reasoner`` mode).  Recovery chain:
+
+      1. Call normally; if ``content`` carries a JSON object → return.
+      2. Scan ``reasoning`` for a balanced JSON blob → return.
+      3. Reinforce the system prompt with an explicit "MUST output JSON"
+         instruction and retry once.
+      4. Last resort: return the raw content; caller decides.
+
+    The old instruct-model fallback (step-1v-32k) has been removed per user
+    directive — re-add only if cost reduction becomes necessary.
     """
     api_key = _get_env("STEPFUN_API_KEY")
     base_url = _get_env("STEPFUN_BASE_URL",
@@ -362,27 +369,40 @@ def _chat_stepfun(
     if not api_key:
         raise LLMUnavailable("STEPFUN_API_KEY 未设置")
 
+    # — attempt 1: normal call —
     raw = _chat_openai_compat_once(
         prompt, system=system, model=model, api_key=api_key,
-        base_url=base_url, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+        base_url=base_url, temperature=temperature,
+        max_tokens=max_tokens, timeout=timeout,
     )
-    # The reasoner should emit at least one JSON object; if ``raw`` is empty,
-    # unparseable, or only contains a bare array of strings, fall back to a
-    # structured-JSON-capable instruct model so downstream callers get
-    # usable shape.
     if raw and _contains_json_object(raw):
         return raw
-    fallback = _get_env("STEPFUN_JSON_FALLBACK_MODEL", "step-1v-32k").strip()
-    if fallback and fallback.lower() != model.lower():
-        try:
-            return _chat_openai_compat_once(
-                prompt, system=system, model=fallback, api_key=api_key,
-                base_url=base_url, temperature=temperature,
-                max_tokens=max_tokens, timeout=timeout,
-            )
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("stepfun json fallback %s failed: %s", fallback, exc)
-            return raw
+
+    # — attempt 2: reinforce prompt —
+    if system:
+        reinforced = (
+            system.strip()
+            + "\n\n[OUTPUT CONTRACT] After your step-by-step analysis, "
+            "your ENTIRE final message must be exactly ONE valid JSON "
+            "object — no prose, no fences, no text outside the JSON."
+        )
+    else:
+        reinforced = (
+            "[OUTPUT CONTRACT] Your ENTIRE final message must be exactly "
+            "ONE valid JSON object — no prose, no fences."
+        )
+    try:
+        raw2 = _chat_openai_compat_once(
+            prompt, system=reinforced, model=model, api_key=api_key,
+            base_url=base_url, temperature=temperature,
+            max_tokens=max_tokens, timeout=timeout,
+        )
+        if raw2 and _contains_json_object(raw2):
+            return raw2
+    except Exception as exc:
+        logger.debug("stepfun reinforce attempt failed: %s", exc)
+
+    # — last resort: return raw (let caller decide) —
     return raw
 
 

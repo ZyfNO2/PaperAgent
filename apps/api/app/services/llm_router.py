@@ -274,12 +274,17 @@ def _fallback_formatter(raw_text, expected, schema_hint, profile=None):
         "The following response failed JSON parsing. Re-write so the ENTIRE "
         "output is exactly one valid JSON object.\n"
         f"Required top-level shape: {expected}\n"
-        f"{schema_hint}\nRaw to fix:\n---\n"
-        + raw_text[:4000] + "\n---\n"
+        f"{schema_hint}\n"
+        "Fill EVERY field.  hit_keywords MUST be a list of concrete terms "
+        "extracted from the text below.  verdict MUST be exactly one of: "
+        "accept, weak_reject, reject.  relation_to_topic MUST be one of: "
+        "baseline, parallel, survey, none.\nRaw to fix:\n---\n"
+        + raw_text[:3000] + "\n---\n"
           "Reply ONLY with JSON, no prose, no fences."
     )
     try:
-        result = _r.call_json(prompt, profile=profile, max_tokens=4000, timeout=120, expected=expected)
+        result = _r.call_json(prompt, profile=profile, max_tokens=4000, timeout=120,
+                              expected=expected, schema_hint=schema_hint)
         return result, True
     except Exception as exc:
         logger.warning("call_json fallback_formatter failed: %s", exc)

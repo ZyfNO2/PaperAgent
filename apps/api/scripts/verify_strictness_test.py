@@ -154,7 +154,8 @@ def main() -> None:
         try:
             built = P.build_one(TOPIC, ATOMS, cand)
             out = call_json(built["user"], system=built["system"],
-                            profile="fast_json", max_tokens=1200, timeout=120)
+                            profile="fast_json", max_tokens=1200, timeout=120,
+                            expected="dict")
             elapsed = round(time.time() - t0, 1)
 
             verdict = (out.get("verdict") or "").lower().strip()

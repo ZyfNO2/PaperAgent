@@ -53,6 +53,8 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
                     profile="fast_json",
                     max_tokens=1200,
                     timeout=120,
+                    expected="dict",
+                    schema_hint='Top-level object with keys: title, verdict, hit_keywords, relation_to_topic, reason',
                 )
                 verdicts = _normalise_verifier_output(out)
                 if not verdicts and attempt == 0:

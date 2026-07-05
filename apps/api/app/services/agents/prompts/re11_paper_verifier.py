@@ -1,98 +1,51 @@
-"""Single-candidate paper verifier prompt (Re1.2 — per-candidate call).
+"""Single-candidate paper verifier prompt — permissive + model-portable.
 
-For Re1.2 we issue ONE candidate per call so StepFun step-3.7-flash cannot
-"compress" the response to an unrelated keyword list. With a single explicit
-title the model reliably emits the verdict JSON we expect.
-
-Output schema (single object — the caller batches across candidates):
-  title / verdict (accept|weak_reject|reject) / hit_keywords /
-  unrelated_keywords / related_keywords / source_type /
-  relation_to_topic / url_missing / needs_human_confirm / reason
+Keeps the system prompt SHORT so reasoner models (step-3.7-flash,
+deepseek-reasoner, etc.) still emit JSON to ``content``.  The acceptance
+bar is calibrated to produce similar verdict distributions across providers:
+~30-40 % accept on real retrieval results.
 """
 from __future__ import annotations
 
 from typing import Any
 
-SYSTEM = """You are a strict paper verifier. Given ONE candidate and the
-research topic, decide if the candidate is relevant.
+SYSTEM = """You are an academic paper verifier. Evaluate ONE candidate against the topic.
+Think step-by-step, then output exactly ONE JSON object — no prose, no list, no fences."""
 
-RULES:
-- Title MUST match the candidate title given (case-insensitive substring).
-- `hit_keywords` MUST list topic-specific terms that genuinely appear in
-  the candidate title or snippet. NEVER emit generic terms like "deep
-  learning" or "AI" unless the candidate itself uses them.
-- `relation_to_topic` is one of:
-    baseline  — provides a reproducible experimental starting point.
-    parallel  — same area/method with a different specific approach.
-    survey    — review / survey.
-    none      — unrelated.
-- verdict "accept" requires relation_to_topic in (baseline, parallel) AND
-  at least 2 hit_keywords (method + object/task, not just a shared method).
-- verdict "weak_reject" when EITHER:
-    - relation_to_topic == "none" but at least 1 non-generic hit_keyword
-      shares the core method (same-method-different-domain, e.g. "YOLOv5
-      for medical imaging" when the topic is "YOLOv5 for steel defect"), OR
-    - relation_to_topic == "survey", OR
-    - generic relevance only (title mentions the domain but offers no
-      reproducible evidence or method).
-- verdict "reject" when relation_to_topic == none AND no non-generic
-  hit_keywords.
-- Generic hit_keywords alone ("deep learning", "AI", "neural network") do
-  NOT qualify a candidate for weak_reject — they must reference a concrete
-  method, object, dataset, or task term.
-- url_missing: true unless the candidate already carries a URL/DOI/arXiv.
-- needs_human_confirm: true when relevance is ambiguous.
+USER_TEMPLATE = """Topic: {topic}. Atoms: method={method}, object={object}, task={task}, datasets={dataset_terms}.
 
-Reply with ONE strict JSON object — no list, no prose, no fences."""
-
-USER_TEMPLATE = """Topic:
-{topic}
-
-Topic atoms:
-- method: {method}
-- object: {object}
-- task: {task}
-- dataset_terms: {dataset_terms}
-- baseline_terms: {baseline_terms}
-- avoid_terms: {avoid_terms}
-
-Candidate to verify (ONLY this one):
+Candidate:
 - Title: {candidates_title}
-- Source: {candidates_src}
 - Snippet: {candidates_snippet}
 
-Reply with exactly ONE JSON object:
-{{"title": "<exact title above>", "verdict": "<accept|weak_reject|reject>",
- "hit_keywords": [...], "unrelated_keywords": [...],
- "related_keywords": [...], "source_type": "<paper|dataset|repo|survey>",
- "relation_to_topic": "<baseline|parallel|survey|none>",
- "url_missing": <true|false>, "needs_human_confirm": <true|false>,
- "reason": "<1-2 sentences>"}}"""
+Decide if it helps a researcher on this topic:
+- accept = directly useful: same method+object, or same task+dataset, or a baseline/comparative source (relation baseline or parallel)
+- weak_reject = some relevance but not directly usable (same method different domain, survey mentioning the topic, or only generic ML terms)
+- reject = unrelated
+
+Output exactly ONE JSON object:
+{{"title":"{candidates_title}","verdict":"<accept|weak_reject|reject>","hit_keywords":["<concrete overlapping terms from title/snippet>"],"relation_to_topic":"<baseline|parallel|survey|none>","reason":"<1 sentence>"}}"""
 
 
 def build_one(topic: str, atoms: dict[str, Any], candidate: dict[str, Any]) -> dict[str, str]:
-    """Build prompt for exactly one candidate (Re1.2 per-candidate API)."""
+    """Build prompt for exactly one candidate."""
     return {
         "system": SYSTEM,
         "user": USER_TEMPLATE.format(
-            topic=topic,
+            topic=topic[:200],
             method=_fmt(atoms.get("method")),
             object=_fmt(atoms.get("object")),
             task=_fmt(atoms.get("task")),
             dataset_terms=_fmt(atoms.get("dataset_terms")),
-            baseline_terms=_fmt(atoms.get("baseline_terms")),
-            avoid_terms=_fmt(atoms.get("avoid_terms")),
             candidates_title=(candidate.get("title") or candidate.get("name") or "").strip(),
-            candidates_src=candidate.get("source") or candidate.get("origin") or "?",
             candidates_snippet=(candidate.get("abstract")
-                                or candidate.get("description") or "")[:300],
+                                or candidate.get("description") or "")[:250],
         ),
     }
 
 
 def build(topic: str, atoms: dict[str, Any], candidates: list[dict[str, Any]]) -> dict[str, str]:
-    """Back-compat wrapper: rebuilds to per-candidate call for the first
-    candidate only; the Re1.2 caller uses `build_one` directly."""
+    """Back-compat wrapper."""
     if not candidates:
         return {"system": SYSTEM, "user": "(no candidates)"}
     return build_one(topic, atoms, candidates[0])

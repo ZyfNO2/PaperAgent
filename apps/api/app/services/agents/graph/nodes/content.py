@@ -58,7 +58,8 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
             built = P.build(title, p.get("abstract") or p.get("snippet") or "")
             out = llm_router.call_json(
                 built["user"], system=built["system"], profile="fast_json",
-                max_tokens=700,
+                max_tokens=700, expected="dict",
+                schema_hint='Top-level object with keys: dataset_name, official_code_url, project_page_url, status',
             )
             tried += 1
             status = out.get("status", "not_found_in_paper")
@@ -175,7 +176,8 @@ def work_package_node(state: ResearchState) -> dict[str, Any]:
                             datasets=datasets, repos=repos, constraints=constraints)
             out = llm_router.call_json(
                 built["user"], system=built["system"], profile="fast_json",
-                max_tokens=1800,
+                max_tokens=1800, expected="dict",
+                schema_hint='Top-level object with keys: work_packages (list), evidence_gap (list)',
             )
             packages = out.get("work_packages") or []
             gap = out.get("evidence_gap") or []
@@ -209,28 +211,66 @@ def work_package_node(state: ResearchState) -> dict[str, Any]:
 def low_bar_review_node(state: ResearchState) -> dict[str, Any]:
     packages = state.get("work_packages") or []
     papers = state.get("verified_papers") or []
+    baseline = state.get("baseline_candidates") or []
+    parallel = state.get("parallel_candidates") or []
+    datasets = state.get("dataset_candidates") or []
+    repos = state.get("repo_candidates") or []
+    evidence_graph = state.get("evidence_graph") or {}
     t0 = time.time()
 
     issues: list[str] = []
     if not papers:
-        issues.append("no verified papers — cannot ground a work package")
+        issues.append("no verified papers -- cannot ground a work package")
     if not packages:
         issues.append("no work packages produced; evidence may be insufficient")
     if len(papers) < 3:
         issues.append(f"thin evidence: only {len(papers)} verified paper(s); "
                       "review repair plan")
-    # Drop packages that cite nothing from the evidence.
-    cited_titles = {p.get("title", "").strip().lower() for p in papers if p.get("title")}
+
+    # Build the set of evidence-backed sources a work package may cite.
+    # Accept ANY entry from verified_papers / baseline / parallel / datasets
+    # / repos, plus all node ids appearing in the evidence_graph.
+    evidence_titles: set[str] = set()
+    for p in papers + baseline + parallel + datasets + repos:
+        for key in ("title", "name", "full_name"):
+            v = (p.get(key) or "").strip().lower()
+            if v:
+                evidence_titles.add(v)
+    for n in (evidence_graph.get("nodes") or []):
+        nid = (n.get("id") or "").strip().lower()
+        if nid:
+            evidence_titles.add(nid)
+        nt = (n.get("title") or "").strip().lower()
+        if nt:
+            evidence_titles.add(nt)
+
+    # Drop packages whose critical sources do not appear anywhere in the
+    # evidence pool.  This blocks hallucinated citations (SOP §15).
     kept: list[dict[str, Any]] = []
     for pkg in packages:
-        baseline = (pkg.get("baseline") or "").lower()
-        source = (pkg.get("improved_module_source") or "").lower()
-        if baseline and baseline not in cited_titles:
-            issues.append(f"work-package baseline not in evidence: {pkg.get('baseline')}")
+        pkg_baseline = (pkg.get("baseline") or "").strip().lower()
+        pkg_source = (pkg.get("improved_module_source") or "").strip().lower()
+        pkg_data = (pkg.get("data_source") or "").strip().lower()
+        pkg_metrics = (pkg.get("experiment_metrics") or "").strip().lower()
+
+        if pkg_baseline and pkg_baseline not in evidence_titles:
+            issues.append(
+                f"work-package baseline not in evidence graph: {pkg.get('baseline')}")
             continue
-        if source and source not in cited_titles:
-            issues.append(f"work-package module source not in evidence: {pkg.get('improved_module_source')}")
+        if pkg_source and pkg_source not in evidence_titles:
+            issues.append(
+                f"work-package module source not in evidence graph: "
+                f"{pkg.get('improved_module_source')}")
             continue
+        # data_source / metrics are softer; only warn, do not drop.
+        if pkg_data and pkg_data not in evidence_titles:
+            issues.append(
+                f"work-package data_source not in evidence graph (weak): "
+                f"{pkg.get('data_source')}")
+        if pkg_metrics and pkg_metrics not in evidence_titles:
+            issues.append(
+                f"work-package metrics source not in evidence graph (weak): "
+                f"{pkg.get('experiment_metrics')}")
         kept.append(pkg)
 
     review = {"status": "pass" if not issues else "blocked",
