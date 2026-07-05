@@ -361,27 +361,41 @@ def _chat_json_strict(
     max_tokens: int = 1500,
     temperature: float = 0.2,
     timeout: float = 60.0,
+    _retries: int = 2,
 ) -> dict:
-    """chat_json with quota guard. Raises LLMUnavailable when budget exhausted."""
+    """chat_json with quota guard + retry on JSON truncation.
+
+    FIX-4: MiniMax M3 occasionally returns truncated JSON (mid-string
+    Unterminated).  Retry up to ``_retries`` times with progressively
+    higher max_tokens before giving up.
+    """
     if GLOBAL_COUNTER.budget_exhausted():
         raise LLMUnavailable(
             f"LLM budget exhausted ({GLOBAL_COUNTER.n_calls}/{LLM_CALL_BUDGET})"
         )
-    try:
-        GLOBAL_COUNTER.n_calls += 1
-        data = chat_json(
-            prompt,
-            system=system,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            timeout=timeout,
-        )
-    except LLMUnavailable:
-        GLOBAL_COUNTER.n_failures += 1
-        raise
-    if not isinstance(data, dict):
-        raise LLMUnavailable(f"chat_json returned non-dict: {type(data).__name__}")
-    return data
+    last_exc: Exception | None = None
+    for attempt in range(1 + _retries):
+        try:
+            GLOBAL_COUNTER.n_calls += 1
+            data = chat_json(
+                prompt,
+                system=system,
+                max_tokens=max_tokens * (attempt + 1),
+                temperature=temperature,
+                timeout=timeout,
+            )
+            if not isinstance(data, dict):
+                raise LLMUnavailable(f"chat_json returned non-dict: {type(data).__name__}")
+            return data
+        except LLMUnavailable as exc:
+            last_exc = exc
+            GLOBAL_COUNTER.n_failures += 1
+            if attempt < _retries:
+                logger.warning(
+                    "LLM call failed (attempt %d/%d): %s — retrying",
+                    attempt + 1, _retries + 1, exc,
+                )
+    raise last_exc  # type: ignore[misc]
 
 
 # --- heuristic fallback for parse_topic --------------------------------------

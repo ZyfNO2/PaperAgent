@@ -118,6 +118,10 @@ def _derive_evidence(case: dict, trace: dict) -> dict:
 
 
 def _classify(ev: dict) -> str:
+    if ev.get("batch_repeated_accepted_title_n", 0) > 0:
+        return "fail"
+    if ev.get("topic_axis_pass_n", 0) == 0 and ev.get("new_candidates_n", 0) > 0:
+        return "fail"
     if ev["missing_client_n"] > 0 or ev["adapter_success_n"] == 0:
         return "blocked_tooling"
     if ev["adapter_attempt_n"] == 0:
@@ -143,8 +147,13 @@ def _failure_mode(ev: dict, status: str) -> str:
 
 def _accepted_titles(case: dict, trace: dict) -> list[str]:
     """Pull candidate titles from the per-case batch JSON's final_candidate_pool."""
+    return [c["title"][:80] for c in _accepted_candidate_items(case, trace)]
+
+
+def _accepted_candidate_items(case: dict, trace: dict) -> list[dict]:
+    """Pull accepted candidates with verifier metadata from final_candidate_pool."""
     seen: set[str] = set()
-    out: list[str] = []
+    out: list[dict] = []
     batch_path = case.get("_batch_case_path") or (
         Path(case.get("trace_path", "")).parent.parent / case.get("source_batch", "batch1") / f"{case.get('case_id')}.json"
         if case.get("trace_path") else None
@@ -159,10 +168,47 @@ def _accepted_titles(case: dict, trace: dict) -> list[str]:
                 t = (c.get("title") or c.get("name") or c.get("full_name") or "").strip()
                 if t and t not in seen:
                     seen.add(t)
-                    out.append(t[:80])
+                    out.append({
+                        "title": t,
+                        "bucket": c.get("_bucket") or "",
+                        "relation": c.get("verification_topic_relation") or "",
+                        "matched": c.get("verification_matched_keywords") or [],
+                        "related": c.get("verification_related_keywords") or [],
+                    })
         except Exception:
             pass
     return out[:8]  # type: ignore[unreachable]  # noqa: ERA001
+
+
+def _axis_stats(items: list[dict]) -> dict:
+    axis_pass = 0
+    paper_pass = 0
+    repo_pass = 0
+    dataset_pass = 0
+    repo_only = 0
+    for item in items:
+        relation = item.get("relation")
+        has_axis_hit = bool(item.get("matched") or item.get("related"))
+        ok = relation in {"direct", "proxy"} and has_axis_hit
+        if not ok:
+            continue
+        axis_pass += 1
+        bucket = item.get("bucket") or "paper"
+        if bucket == "repo":
+            repo_pass += 1
+        elif bucket == "dataset":
+            dataset_pass += 1
+        else:
+            paper_pass += 1
+    if axis_pass and axis_pass == repo_pass:
+        repo_only = 1
+    return {
+        "topic_axis_pass_n": axis_pass,
+        "paper_axis_pass_n": paper_pass,
+        "dataset_axis_pass_n": dataset_pass,
+        "repo_axis_pass_n": repo_pass,
+        "repo_only_pass": repo_only,
+    }
 
 
 def _rejected_titles(case: dict) -> list[str]:
@@ -183,15 +229,14 @@ def main() -> int:
         return 1
 
     rows: list[dict] = []
-    by_status = Counter()
     for c in cases:
         cid = c["case_id"]
         tp = c.get("trace_path") or (rd / "traces" / f"{cid}.json")
         trace = json.loads(Path(tp).read_text(encoding="utf-8"))
         ev = _derive_evidence(c, trace)
+        items = _accepted_candidate_items(c, trace)
+        ev.update(_axis_stats(items))
         status = c.get("stop_reason", "")
-        est = _classify(ev)
-        by_status[est] += 1
         rows.append({
             "case_id": cid,
             "title": c.get("title", ""),
@@ -208,6 +253,13 @@ def main() -> int:
             "query_repair_n": ev["query_repair_n"],
             "url_repair_n": ev["url_repair_n"],
             "empty_url_n": ev["empty_url_n"],
+            "topic_axis_pass_n": ev["topic_axis_pass_n"],
+            "paper_axis_pass_n": ev["paper_axis_pass_n"],
+            "dataset_axis_pass_n": ev["dataset_axis_pass_n"],
+            "repo_axis_pass_n": ev["repo_axis_pass_n"],
+            "repo_only_pass": ev["repo_only_pass"],
+            "batch_repeated_accepted_title_n": 0,
+            "batch_repeated_accepted_titles": "[]",
             "provider_error_summary": json.dumps(
                 ev["provider_error_summary"], ensure_ascii=False,
             ),
@@ -219,9 +271,9 @@ def main() -> int:
                 ev["chinese_query_leaks"], ensure_ascii=False,
             ),
             "fixed_unet_fallback_seen": ev["fixed_unet_fallback_seen"],
-            "primary_failure_mode": _failure_mode(ev, status),
+            "primary_failure_mode": "",
             "accepted_titles": json.dumps(
-                _accepted_titles(c, trace), ensure_ascii=False,
+                [item["title"][:80] for item in items], ensure_ascii=False,
             ),
             "rejected_noise_titles": json.dumps(
                 _rejected_titles(c), ensure_ascii=False,
@@ -229,12 +281,53 @@ def main() -> int:
             "trace_path": str(Path(tp).resolve()),
         })
 
+    title_counter: Counter[str] = Counter()
+    for r in rows:
+        for title in json.loads(r["accepted_titles"]):
+            title_counter[str(title).strip().lower()] += 1
+    repeated = {
+        t for t, n in title_counter.items()
+        if t and n >= 3
+    }
+
+    by_status = Counter()
+    for r in rows:
+        repeated_titles = [
+            t for t in json.loads(r["accepted_titles"])
+            if str(t).strip().lower() in repeated
+        ]
+        r["batch_repeated_accepted_title_n"] = len(repeated_titles)
+        r["batch_repeated_accepted_titles"] = json.dumps(
+            repeated_titles[:5], ensure_ascii=False,
+        )
+        ev_for_status = dict(r)
+        ev_for_status["new_candidates_n"] = int(r["new_candidates_n"])
+        ev_for_status["accepted_candidates_n"] = int(r["accepted_candidates_n"])
+        ev_for_status["adapter_attempt_n"] = int(r["adapter_attempt_n"])
+        ev_for_status["adapter_success_n"] = int(r["adapter_success_n"])
+        ev_for_status["missing_client_n"] = int(r["missing_client_n"])
+        ev_for_status["topic_axis_pass_n"] = int(r["topic_axis_pass_n"])
+        ev_for_status["batch_repeated_accepted_title_n"] = int(
+            r["batch_repeated_accepted_title_n"]
+        )
+        est = _classify(ev_for_status)
+        r["evidence_status"] = est
+        r["primary_failure_mode"] = _failure_mode(ev_for_status, r["stop_reason"])
+        if r["batch_repeated_accepted_title_n"]:
+            r["primary_failure_mode"] = "batch repeated accepted title pollution"
+        elif r["topic_axis_pass_n"] == 0 and r["new_candidates_n"]:
+            r["primary_failure_mode"] = "accepted candidates lack topic-axis match"
+        by_status[est] += 1
+
     cols = [
         "case_id", "title", "domain_route", "re10_status", "stop_reason",
         "evidence_status", "adapter_attempt_n", "adapter_success_n",
         "adapter_error_n", "missing_client_n", "new_candidates_n",
         "accepted_candidates_n", "query_repair_n", "url_repair_n",
-        "empty_url_n", "provider_error_summary",
+        "empty_url_n", "topic_axis_pass_n", "paper_axis_pass_n",
+        "dataset_axis_pass_n", "repo_axis_pass_n", "repo_only_pass",
+        "batch_repeated_accepted_title_n", "batch_repeated_accepted_titles",
+        "provider_error_summary",
         "provider_circuit_breaker", "query_placeholder_leaks",
         "chinese_query_leaks", "fixed_unet_fallback_seen",
         "primary_failure_mode", "accepted_titles",

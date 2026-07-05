@@ -89,32 +89,106 @@ def test_graph_compiles_and_runs_offline() -> None:
     import apps.api.app.services.agents.graph.nodes.verify as v_mod
     import apps.api.app.services.agents.graph.nodes.content as c_mod
 
+    baseline_titles = ["P1", "P2", "P3"]
+
     def fake_call_json(*a, **k):  # type: ignore[no-untyped-def]
-        return {"verified": [{"title": "P", "verdict": "accept",
-                              "hit_keywords": ["h"], "unrelated_keywords": [],
-                              "related_keywords": [], "source_type": "paper",
-                              "relation_to_topic": "baseline",
-                              "url_missing": False,
-                              "needs_human_confirm": False, "reason": "ok"}],
-                "work_packages": [], "evidence_gap": []}
+        prompt = a[0] if a else k.get("prompt", "")
+        # ORDER MATTERS: check work_package BEFORE the dataset/repo branch
+        # because the work-package user template contains the word "datasets".
+        if ("work package" in prompt.lower() or "brainstorm" in prompt.lower()
+                or "research_question" in prompt.lower()
+                or "improved_module_source" in prompt.lower()
+                or "work_packages" in prompt.lower()
+                or "baseline (a title" in prompt.lower()
+                or "研究问题" in prompt):
+            return {
+                "work_packages": [
+                    {"title": f"Improve {baseline_titles[0]}",
+                     "research_question": "R can we improve?",
+                     "baseline": baseline_titles[0],
+                     "improved_module_source": baseline_titles[1],
+                     "data_source": "NEU-DET",
+                     "experiment_metrics": "mAP@0.5",
+                     "risk": "limited",
+                     "estimated_workload": "6 months"},
+                ],
+                "evidence_gap": [],
+            }
+        if "paper verifier" in prompt.lower() or "verdict" in prompt.lower():
+            # paper verifier path
+            return {
+                "verified": [
+                    {"title": t, "verdict": "accept",
+                     "hit_keywords": ["kw"], "unrelated_keywords": [],
+                     "related_keywords": [""], "source_type": "paper",
+                     "relation_to_topic": "baseline", "url_missing": False,
+                     "needs_human_confirm": False, "reason": "ok"}
+                    for t in baseline_titles
+                ],
+                "work_packages": [],
+                "evidence_gap": [],
+            }
+        if "search planner" in prompt.lower() or "repair" in prompt.lower():
+            return {
+                "queries": [
+                    {"tool": "openalex", "query": f"{t} review",
+                     "why": "seed", "expected_evidence": "paper",
+                     "stop_condition": "n>=5"}
+                    for t in baseline_titles
+                ],
+                "rounds": ["repair"],
+                "negative_feedback": "targeted repair",
+            }
+        if "dataset" in prompt.lower() or "repo" in prompt.lower():
+            return [
+                {"from_paper": t, "status": "not_found_in_paper",
+                 "linked_paper_id": t.lower().replace(" ", "-"),
+                 "kind": "dataset", "name": None, "url": None,
+                 "source": "paper_abstract"}
+                for t in baseline_titles[:1]
+            ]
+        if ("work package" in prompt.lower() or "brainstorm" in prompt.lower()
+                or "research_question" in prompt.lower()
+                or "improved_module_source" in prompt.lower()
+                or "work_packages" in prompt.lower()
+                or "baseline (a title" in prompt.lower()
+                or "实验方案" in prompt or "研究问题" in prompt):
+            return {
+                "work_packages": [
+                    {"title": f"Improve {baseline_titles[0]}",
+                     "research_question": "Can we improve recall on NEU-DET?",
+                     "baseline": baseline_titles[0],
+                     "improved_module_source": baseline_titles[1],
+                     "data_source": "NEU-DET",
+                     "experiment_metrics": "mAP@0.5",
+                     "risk": "limited baseline variants",
+                     "estimated_workload": "6 months"},
+                ],
+                "evidence_gap": [],
+            }
+        # default
+        return {"ok": True, "baseline": baseline_titles,
+                "parallel": [], "dataset_papers": [], "surveys": []}
 
     r_mod._run_legacy_retrieval = lambda topic, atoms: {  # type: ignore[assignment]
-        "buckets": {"baseline_papers": [{"title": "P", "abstract": "a", "source": "x"}],
+        "buckets": {"baseline_papers": [{"title": t, "abstract": "a", "source": "x"} for t in baseline_titles],
                     "parallel_papers": [], "module_papers": [],
                     "reference_papers": []},
-        "raw": {"openalex": [{"title": "P"}]},
+        "raw": {"openalex": [{"title": t} for t in baseline_titles]},
     }
     v_mod._call_verifier = lambda t, a, c: [  # type: ignore[assignment]
-        {"title": "P", "verdict": "accept", "hit_keywords": ["h"],
+        {"title": (c[i].get("title") if i < len(c) else "P"),
+         "verdict": "accept", "hit_keywords": ["kw"],
          "unrelated_keywords": [], "related_keywords": [],
          "source_type": "paper", "relation_to_topic": "baseline",
-         "url_missing": False, "needs_human_confirm": False, "reason": "ok"}]
+         "url_missing": False, "needs_human_confirm": False, "reason": "ok"}
+        for i in range(min(len(c), 3))]
     import apps.api.app.services.agents.graph.nodes.retrieve as r_mod
     orig_retrieve = r_mod._run_legacy_retrieval
 
     def fake_retrieve(topic, atoms):  # type: ignore[no-untyped-def]
         return {
-            "buckets": {"baseline_papers": [{"title": "P", "abstract": "a", "source": "x"}],
+            "buckets": {"baseline_papers": [{"title": "P1", "abstract": "a", "source": "x"},{"title": "P2", "abstract": "a", "source": "x"},{"title": "P3", "abstract": "a", "source": "x"}],
                         "parallel_papers": [], "module_papers": [],
                         "reference_papers": []},
             "raw": {"openalex": [{"title": "P"}]},

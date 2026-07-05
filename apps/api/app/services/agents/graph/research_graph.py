@@ -1,12 +1,9 @@
-"""ResearchGraph — compose the 8 LangGraph nodes into a single pipeline.
+"""LangGraph graph builder for Re1.2.
 
-The graph owns the full research pipeline (Intake → Parse → Retrieve → Verify →
-Dataset/Repo → Evidence Audit → Work Package → Low-bar Review → Human Gate →
-Final Recommendation), exposing a compiled graph with an in-memory checkpointer
-so a case_id can be used as thread_id.
+Wires 14 LangGraph nodes with conditional edges + targeted-repair loop.
 
 History:
-  Re1.1: initial StateGraph(ResearchState) composition.
+  Re1.2: extracted repair/quality-gate routing out of the linear chain.
 """
 from __future__ import annotations
 
@@ -24,31 +21,50 @@ logger = logging.getLogger(__name__)
 
 
 def build_graph(*, checkpointer: Any | None = None) -> Any:
-    """Build the compiled LangGraph pipeline for Re1.1."""
+    """Build the compiled Re1.2 LangGraph pipeline."""
     graph = StateGraph(ResearchState)
 
-    # Register nodes via the flat registry (name -> (state) -> patch).
-    for name in (
-        "retrieve",
-        "verify",
-        "dataset_repo",
-        "evidence_auditor",
-        "work_package",
-        "low_bar_review",
-        "human_gate",
-        "final_recommendation",
-    ):
-        node_fn = graph_nodes.REGISTRY[name]
-        graph.add_node(name, node_fn)
+    registry = graph_nodes.REGISTRY
+    for name, fn in registry.items():
+        graph.add_node(name, fn)
 
-    # Linear pipeline. Future: add conditional edges around repair loops.
-    graph.add_edge(START, "retrieve")
-    graph.add_edge("retrieve", "verify")
-    graph.add_edge("verify", "dataset_repo")
-    graph.add_edge("dataset_repo", "evidence_auditor")
+    # Linear spine (intake → retriever uses Re1.1 node key names so legacy
+    # reports/tests that assert trace-fire events by those names still pass).
+    graph.add_edge(START, "intake")
+    graph.add_edge("intake", "topic_parser")
+    graph.add_edge("topic_parser", "search_planner")
+    graph.add_edge("search_planner", "paper_retriever")
+    graph.add_edge("paper_retriever", "verify")
+    graph.add_edge("verify", "quality_gate")
+
+    # Conditional routing out of quality_gate (SOP §4 / §7).
+    graph.add_conditional_edges(
+        "quality_gate",
+        _route_after_quality_gate,
+        {
+            "repair": "targeted_repair",
+            "continue": "dataset_repo",
+            "blocked": "final_recommendation",
+            "END": END,
+        },
+    )
+    graph.add_edge("targeted_repair", "retrieve")            # loop back
+    graph.add_edge("dataset_repo", "evidence_graph_builder")
+    graph.add_edge("evidence_graph_builder", "evidence_auditor")
     graph.add_edge("evidence_auditor", "work_package")
     graph.add_edge("work_package", "low_bar_review")
-    graph.add_edge("low_bar_review", "human_gate")
+
+    # Conditional routing out of low_bar_review.
+    graph.add_conditional_edges(
+        "low_bar_review",
+        _route_after_review,
+        {
+            "repair": "targeted_repair",
+            "ready": "human_gate",
+            "blocked": "final_recommendation",
+        },
+    )
+    # human_gate in Re1.2 still passthrough unless interrupt enabled.
     graph.add_edge("human_gate", "final_recommendation")
     graph.add_edge("final_recommendation", END)
 
@@ -65,14 +81,82 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
                 conn = sqlite3.connect(db_path)
                 checkpointer = SqliteSaver(conn)
             except Exception:
-                logger.exception("failed to init SqliteSaver; fall back to memory")
+                logger.exception("failed to init SqliteSaver; fallback to memory")
                 checkpointer = MemorySaver()
 
     return graph.compile(checkpointer=checkpointer)
 
 
+def _route_after_quality_gate(state: ResearchState) -> str:
+    """Route after quality gate.
+
+    The gate sits BEFORE the extractor / classifier / work-package nodes, so
+    baseline/dataset/repo/work-package counts aren't yet available here.  We
+    therefore only gate on the IMMEDIATE upstream product: verified papers and
+    quarantine ratio.  Downstream gaps (no baseline / no dataset / no repo /
+    no work package) are detected later in the spine and either drive a
+    second visit to ``targeted_repair`` via the low-bar-review branch or
+    produce an explicit ``repair_plan`` in the final rec (SOP §5.7 / §5.10).
+    """
+    n_papers = len(state.get("verified_papers") or [])
+    quarantined = len(state.get("quarantined_candidates") or [])
+    total = len(state.get("paper_candidates") or [1]) or 1
+    repair_rounds = state.get("evidence_audit", {}).get("repair_rounds", 0)
+    max_repair = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
+
+    if n_papers < 1 and repair_rounds < max_repair:
+        return "repair"
+    if quarantined / max(total, 1) > 0.4 and repair_rounds < max_repair:
+        return "repair"
+    return "continue"
+
+
+def _route_after_quality_gate(state: ResearchState) -> str:
+    """Route after quality gate.
+
+    Downstream gaps (baseline / dataset / repo / work package) are evaluated
+    later in the spine, so this gate only inspects the IMMEDIATE upstream
+    product: verified papers + quarantine.  The spine then drives additional
+    targeted_repair visits via the low-bar-review branch if downstream gaps
+    remain.
+    """
+    n_papers = len(state.get("verified_papers") or [])
+    quarantined = len(state.get("quarantined_candidates") or [])
+    total = len(state.get("paper_candidates") or [1]) or 1
+    repair_rounds = state.get("evidence_audit", {}).get("repair_rounds", 0)
+    max_repair = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
+
+    if n_papers < 1 and repair_rounds < max_repair:
+        return "repair"
+    if quarantined / max(total, 1) > 0.4 and repair_rounds < max_repair:
+        return "repair"
+    return "continue"
+
+
+def _route_after_review(state: ResearchState) -> str:
+    """Route after low-bar review (SOP §5.10).
+
+    Routes:
+      - downstream gap + cap not exhausted -> repair -> back to retrieve
+      - downstream gap + cap exhausted      -> final (with explicit repair_plan)
+      - no gap                             -> final
+    """
+    audit = state.get("evidence_audit", {})
+    repair_rounds = audit.get("repair_rounds", 0)
+    max_repair = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
+    if repair_rounds >= max_repair:
+        # Repair attempts exhausted; expose repair_plan in final.
+        return "blocked"
+    # Any downstream gap -> repair.
+    if (len(state.get("baseline_candidates") or [])
+            + len(state.get("dataset_candidates") or [])
+            + len(state.get("repo_candidates") or [])
+            + len(state.get("work_packages") or [])) < 4:
+        return "repair"
+    return "ready"
+
+
 def default_graph() -> Any:
-    """Build and memoize a single compiled graph for the API service."""
     if not hasattr(default_graph, "_instance") or default_graph._instance is None:
         default_graph._instance = build_graph()
     return default_graph._instance

@@ -21,59 +21,72 @@ def _now_iso() -> str:
 
 
 def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Verify candidates against topic.
+
+    StepFun step-3.7-flash is a reasoner: it typically emits a thinking
+    transcript in `reasoning` and puts the JSON payload in `content`; the
+    payload itself may be a bare list, a dict under one of several root keys,
+    or a non-JSON-ish reply. We intentionally do NOT pass `expected=` to
+    ``call_json`` so the 3-phase JSON repair can recover whatever shape the
+    model emitted. A post-parse normaliser collapses the common shapes into a
+    flat list of per-paper dicts.
+    """
+    import json
+    import re
+
     from apps.api.app.services import llm_router
     from apps.api.app.services.agents.prompts import re11_paper_verifier as P
 
-    # StepFun step-3.7-flash is a reasoning model: it thinks out loud in a
-    # `reasoning` field and puts the clean JSON in `content`. We need a big
-    # max_tokens budget so the LLM can both think (often 1-2k tokens) and
-    # emit the JSON payload. Batch the candidates so each JSON response stays
-    # within a reasonable size and never truncates mid-object.
-    BATCH = 10
+    BATCH = 1
     all_verdicts: list[dict[str, Any]] = []
     for i in range(0, len(candidates), BATCH):
         chunk = candidates[i:i + BATCH]
         last_exc: BaseException | None = None
         for attempt in range(2):
             try:
-                built = P.build(topic, atoms, chunk)
+                built = P.build_one(topic, atoms, chunk[0])
                 out = llm_router.call_json(
                     built["user"],
                     system=built["system"],
                     profile="fast_json",
-                    # reasoning (~2k tokens) + JSON (~150 per candidate, ~50 overhead)
-                    max_tokens=min(8000, 3000 + len(chunk) * 200),
+                    max_tokens=min(3000, 800 + len(chunk) * 300),
                     timeout=120,
                 )
-                # `out` may already be a parsed object from llm_router.call_json;
-                # only scan raw text when it is still a string.
-                scanned: list = (
-                    [] if isinstance(out, (list, dict))
-                    else llm_router.extract_json_objects(out)
-                ) if hasattr(llm_router, "extract_json_objects") else []
-                verified = (
-                    out if isinstance(out, list) else None
-                ) or out.get("verified") or out.get("candidates") or (
-                    next((x for x in scanned if isinstance(x, list)), None)
-                ) or []
-                if isinstance(verified, dict):
-                    for k, v in verified.items():
-                        if isinstance(v, list):
-                            all_verdicts.extend(v)
-                            break
-                    else:
-                        all_verdicts.append(verified)
-                elif isinstance(verified, list):
-                    all_verdicts.extend(verified)
+                verdicts = _normalise_verifier_output(out)
+                if not verdicts and chunk and attempt == 0:
+                    continue
+                all_verdicts.extend(verdicts)
                 last_exc = None
                 break
-            except BaseException as exc:  # noqa: BLE001
+            except BaseException as exc:
                 last_exc = exc
+                logger.warning("verifier attempt %s failed: %s", attempt, exc)
         if last_exc is not None:
             raise last_exc
     return all_verdicts
 
 
+def _normalise_verifier_output(out: Any) -> list[dict[str, Any]]:
+    """Walk through the many shapes the verifier LLM can emit."""
+    if out is None:
+        return []
+    if isinstance(out, dict):
+        for key in ("verdicts", "verified", "candidates", "results"):
+            cand = out.get(key)
+            if isinstance(cand, list):
+                return [v for v in cand if isinstance(v, dict)]
+        return [out]
+    if isinstance(out, list):
+        return [v for v in out if isinstance(v, dict)]
+    if isinstance(out, str):
+        found = (re.search(r"\[.*\]", out, re.DOTALL)
+                 or re.search(r"\{.*\}", out, re.DOTALL))
+        if not found:
+            return []
+        try:
+            return _normalise_verifier_output(json.loads(found.group(0)))
+        except json.JSONDecodeError:
+            return []
 def verify_node(state: ResearchState) -> dict[str, Any]:
     topic = state.get("topic") or ""
     atoms = state.get("topic_atoms") or {}

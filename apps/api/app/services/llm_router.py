@@ -35,9 +35,9 @@ class ProviderSpec:
 _PROFILE_TABLE: dict[str, ProviderSpec] = {
     "fast_json": ProviderSpec(
         profile="fast_json",
-        provider="deepseek",
+        provider="stepfun",
         json_mode=True,
-        purpose="topic parse / planner / verifier JSON (no long reasoning)",
+        purpose="topic parse / planner / verifier JSON",
     ),
     "execution": ProviderSpec(
         profile="execution",
@@ -165,7 +165,7 @@ def call_json(
     temperature: float = 0.2,
     max_tokens: int | None = None,
     timeout: float = 60.0,
-    expected: Literal["dict", "list", "any"] = "dict",
+    expected: Literal["dict", "list", "any"] = "any",
     schema_hint: str = "",
 ) -> Any:
     """Call the profile provider and return parsed JSON.

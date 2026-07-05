@@ -38,11 +38,13 @@ from .domain_scout_agent import run_domain_scout
 from .query_repair_agent import repair_query
 from .reflection_critic_agent import run_reflection_critic
 from .search_reflection_helpers import (
+    build_axis_bound_queries,
     bucket_for_tool,
     build_observations,
     build_round_plan,
     candidate_key,
     ensure_source_run,
+    flatten_axis_terms,
     has_placeholder,
 )
 from .trace_ledger import TraceLedger
@@ -96,13 +98,46 @@ def _is_cjk_query(q: str) -> bool:
     return bool(re.search(r"[一-鿿]", q or ""))
 
 
+def _topic_atoms_to_domain_kws(topic_atoms: dict) -> dict:
+    """Normalize topic_atoms into the keyword matrix used by query helpers."""
+    kws = {
+        "zh": [], "en": [], "method": [], "object": [], "task": [],
+        "scenario": [], "dataset_terms": [], "baseline_terms": [],
+        "repo_terms": [],
+    }
+    for axis in ("method", "object", "task", "scenario"):
+        for atom in topic_atoms.get(axis) or []:
+            if isinstance(atom, dict):
+                en = str(atom.get("en") or "").strip()
+                zh = str(atom.get("zh") or "").strip()
+                if en:
+                    kws["en"].append(en)
+                    kws[axis].append(en)
+                if zh:
+                    kws["zh"].append(zh)
+            elif isinstance(atom, str) and atom.strip():
+                kws["en"].append(atom.strip())
+                kws[axis].append(atom.strip())
+    for key, vals in list(kws.items()):
+        seen: set[str] = set()
+        dedup: list[str] = []
+        for v in vals:
+            low = v.lower()
+            if low in seen:
+                continue
+            seen.add(low)
+            dedup.append(v)
+        kws[key] = dedup
+    return kws
+
+
 # ---------------------------------------------------------------------------
 # Adapter dispatch + URL repair pipeline
 # ---------------------------------------------------------------------------
 
 
 async def _execute_query(
-    tool: str, query: str, retrieval_clients: dict, top_k: int = 3,
+    tool: str, query: str, retrieval_clients: dict, top_k: int = 5,
     provider_state: dict | None = None,
 ) -> tuple[list[dict], dict]:
     """Execute a single adapter query.
@@ -208,6 +243,7 @@ async def _execute_query(
 async def _process_hit(
     hit: dict, tool: str, retrieval_clients: dict, topic_atoms: dict,
     actions: list[dict], seen_keys: set[str], seen_local: set[str],
+    _url_sem: asyncio.Semaphore | None = None,
 ) -> tuple[dict | None, bool]:
     """URL-repair + verify a single hit. Returns (cand_or_None, is_accepted)."""
     if not isinstance(hit, dict):
@@ -221,7 +257,11 @@ async def _process_hit(
     url_repaired = False
     if not (cand.get("url") or cand.get("arxiv_id") or cand.get("doi")):
         try:
-            ur = await repair_candidate_url(cand, retrieval_clients=retrieval_clients)
+            if _url_sem is not None:
+                async with _url_sem:
+                    ur = await repair_candidate_url(cand, retrieval_clients=retrieval_clients)
+            else:
+                ur = await repair_candidate_url(cand, retrieval_clients=retrieval_clients)
         except Exception as exc:
             ur = {
                 "url_status": "candidate_unverified",
@@ -265,9 +305,74 @@ async def _process_hit(
         accepted = verdict.verification_status in {
             "verified", "metadata_repaired", "weak_metadata"
         } or verdict.topic_relation in {"direct", "proxy", "foundation"}
+        cand["verification_matched_keywords"] = list(verdict.matched_keywords)
+        cand["verification_related_keywords"] = list(verdict.related_keywords)
+        cand["verification_missing_keywords"] = list(verdict.missing_keywords)
+        has_axis_hit = bool(verdict.matched_keywords or verdict.related_keywords)
+        accepted = (
+            accepted
+            and verdict.topic_relation in {"direct", "proxy"}
+            and has_axis_hit
+        )
+        # FIX-4: topic_axis_match using unified flatten_axis_terms
+        method_terms = flatten_axis_terms(topic_atoms, "method")
+        object_terms = flatten_axis_terms(topic_atoms, "object")
+        task_terms = flatten_axis_terms(topic_atoms, "task")
+        scenario_terms = flatten_axis_terms(topic_atoms, "scenario")
+
+        title_lower = (cand.get("title") or "").lower()
+        abstract_lower = (cand.get("abstract") or cand.get("snippet") or "").lower()
+        haystack = f"{title_lower} {abstract_lower}"
+
+        def _hits(terms: list[str]) -> list[str]:
+            return [t for t in terms if t and t.lower() in haystack]
+
+        method_hit = _hits(method_terms)
+        object_hit = _hits(object_terms)
+        task_hit = _hits(task_terms)
+        scenario_hit = _hits(scenario_terms)
+
+        has_method_object = len(method_hit) > 0 and len(object_hit) > 0
+        has_task_object = len(task_hit) > 0 and len(object_hit) > 0
+        has_method_task = len(method_hit) > 0 and len(task_hit) > 0
+        has_single_strong = (
+            len(task_hit) >= 2 or len(method_hit) >= 2 or len(object_hit) >= 2
+        )
+        has_two_axes = has_method_object or has_task_object or has_method_task
+        has_one_axis = (
+            len(task_hit) >= 1 or len(method_hit) >= 1 or len(object_hit) >= 1
+        )
+
+        axis_verdict = "accept" if (has_two_axes or has_single_strong or has_one_axis) else "weak"
+        reject_reason = "" if axis_verdict == "accept" else "no_axis_match"
+
+        # FIX-4: repo-only pass detection — no specific title blacklist
+        # A repo candidate passes ONLY on object/method terms (generic software
+        # library name) without any task/scenario hit → downgrade to weak.
+        is_repo_candidate = cand.get("_bucket") == "repo"
+        if is_repo_candidate and object_hit and not task_hit and not scenario_hit:
+            axis_verdict = "weak"
+            reject_reason = "repo_only_no_task_hit"
+
+        cand["topic_axis_match"] = {
+            "method_hit": method_hit,
+            "object_hit": object_hit,
+            "task_hit": task_hit,
+            "scenario_hit": scenario_hit,
+            "missing_axis": [],
+            "axis_verdict": axis_verdict,
+            "reject_reason": reject_reason,
+        }
+
+        if axis_verdict == "weak" and reject_reason == "repo_only_no_task_hit":
+            accepted = False
     else:
         cand["verification_status"] = "unverified"
-        accepted = True
+        cand["verification_topic_relation"] = "unverified"
+        cand["verification_matched_keywords"] = []
+        cand["verification_related_keywords"] = []
+        cand["verification_missing_keywords"] = []
+        accepted = False
     return cand, accepted
 
 
@@ -310,6 +415,17 @@ async def _run_one_round(
     placeholder_blocked_actions: list[dict] = []  # P0-E: kept out of executed
     seen_keys: set[str] = set(base_seed_pool.keys())
 
+    # --- Phase 1: placeholder repair (sequential, quick) ---
+    _sem = asyncio.Semaphore(3)  # limit concurrent API calls
+
+    async def _bounded_execute(tool, q):
+        async with _sem:
+            return await _execute_query(
+                tool, q, retrieval_clients, top_k=5,
+                provider_state=provider_state,
+            )
+
+    _fire: list[tuple[str, str, dict | None]] = []  # (tool, query, repair_action_or_None)
     for entry in plan:
         q = entry.get("query") or ""
         tool = entry.get("tool") or "arxiv"
@@ -327,21 +443,11 @@ async def _run_one_round(
                     "query": q, "tool": tool,
                     "error": f"query_repair: {repair.get('status')} ({repair.get('reason')})",
                 })
-                # P0-E: keep blocked_query out of
-                # observations.query_placeholder_leaks so validator H4
-                # doesn't see a "leak" from queries that never reached
-                # the adapter.  We record the repair effort on a
-                # separate stub list and ALSO emit one fallback search
-                # action so validator H2 sees an adapter_success > 0.
                 repair_action["blocked_query"] = True
                 repair_action["needs_clarification"] = (
                     repair.get("status") == "needs_clarification"
                 )
                 placeholder_blocked_actions.append(repair_action)
-                # Fallback: substitute ``X`` with the first English
-                # atom and run a single probe so H2 (adapter_success > 0)
-                # holds and the trace shows the loop still talked to the
-                # adapter, not pretended to.
                 first_en = next(
                     (
                         str(a.get("en")).strip()
@@ -352,35 +458,21 @@ async def _run_one_round(
                     "",
                 )
                 fallback_q = (first_en or topic).strip()
-                hits, action = await _execute_query(
-                    "arxiv", fallback_q, retrieval_clients, top_k=3,
-                    provider_state=provider_state,
-                )
-                # Annotate the synthetic action so it's visible in the
-                # trace without claiming to have searched the original
-                # (placeholder) query.
-                action["synthetic_fallback"] = True
-                action["fallback_for_placeholder_query"] = q
-                actions.append(action)
-                if action.get("status") == "error":
-                    tool_error_n += 1
-                    err_msg = str(action.get("error") or "")
-                    if "missing client" in err_msg:
-                        missing_client_n += 1
-                elif action.get("status") in ("success", "no_results"):
-                    successful_action_n += 1
-                if action.get("status") in ("error", "no_results"):
-                    failed_queries.append({
-                        "query": fallback_q, "tool": "arxiv",
-                        "error": action.get("error") or action.get("status"),
-                    })
+                _fire.append(("arxiv", fallback_q, repair_action))
                 continue
             actions.append(repair_action)
             q = repair["repaired_queries"][0]
+        _fire.append((tool, q, None))
 
-        hits, action = await _execute_query(
-            tool, q, retrieval_clients, top_k=3, provider_state=provider_state,
-        )
+    # --- Phase 2: fire all adapter calls concurrently ---
+    _coros = [_bounded_execute(t, q) for t, q, _ in _fire]
+    _results: list[tuple[list[dict], dict]] = await asyncio.gather(*_coros) if _coros else []
+
+    # --- Phase 3: process results sequentially (dedup) ---
+    for (tool, q, repair_action), (hits, action) in zip(_fire, _results):
+        if repair_action is not None and repair_action.get("blocked_query"):
+            action["synthetic_fallback"] = True
+            action["fallback_for_placeholder_query"] = repair_action.get("query", "")
         actions.append(action)
         if action.get("status") == "error":
             tool_error_n += 1
@@ -393,15 +485,38 @@ async def _run_one_round(
             failed_queries.append({
                 "query": q, "tool": tool, "error": action.get("error") or action.get("status"),
             })
-
-        seen_local: set[str] = set()
+    # --- Phase 3: process hits concurrently (URL repair + verify) ---
+    _all_hits: list[tuple[dict, str]] = []
+    for (tool, q, repair_action), (hits, action) in zip(_fire, _results):
+        if repair_action is not None and repair_action.get("blocked_query"):
+            action["synthetic_fallback"] = True
+            action["fallback_for_placeholder_query"] = repair_action.get("query", "")
+        actions.append(action)
+        if action.get("status") == "error":
+            tool_error_n += 1
+            err_msg = str(action.get("error") or "")
+            if "missing client" in err_msg:
+                missing_client_n += 1
+        elif action.get("status") in ("success", "no_results"):
+            successful_action_n += 1
+        if action.get("status") in ("error", "no_results"):
+            failed_queries.append({
+                "query": q, "tool": tool, "error": action.get("error") or action.get("status"),
+            })
         for hit in hits:
-            cand, ok = await _process_hit(
-                hit, tool, retrieval_clients, topic_atoms, actions, seen_keys, seen_local,
-            )
+            _all_hits.append((hit, tool))
+
+    if _all_hits:
+        _url_sem = asyncio.Semaphore(5)
+        _hit_coros = [_process_hit(h, t, retrieval_clients, topic_atoms, actions, set(), set(), _url_sem=_url_sem) for h, t in _all_hits]
+        _hit_results = await asyncio.gather(*_hit_coros)
+        for cand, ok in _hit_results:
             if cand is None:
                 continue
-            seen_keys.add(candidate_key(cand))
+            ck = candidate_key(cand)
+            if ck in seen_keys:
+                continue
+            seen_keys.add(ck)
             if (
                 cand.get("url_status") in {"url_repaired", "url_unavailable_but_verified"}
                 or cand.get("url")
@@ -442,6 +557,7 @@ async def _run_one_round(
         rejected_n=len(rejected),
         url_repair_n=url_repair_n,
         query_repair_n=query_repair_n,
+        accepted=accepted,
     )
 
     return {
@@ -559,6 +675,7 @@ async def run_search_reflection_loop(
         topic=topic,
         seed_sources=seed_sources,
         max_rounds=max_rounds,
+        topic_atoms=topic_atoms,
     )
 
     history: dict = {
@@ -589,29 +706,25 @@ async def run_search_reflection_loop(
             # so we never re-emit the user's raw topic into a non-LLM-
             # friendly adapter.
             cjk = re.compile(r"[一-鿿]")
-            en_atom_pool: list[str] = []
-            for axis in ("task", "object", "method", "scenario"):
-                for a in topic_atoms.get(axis) or []:
-                    if isinstance(a, dict):
-                        v = a.get("en") or ""
-                        if v and not cjk.search(str(v)):
-                            en_atom_pool.append(str(v).strip())
-                    elif isinstance(a, str) and a.strip() and not cjk.search(a):
-                        en_atom_pool.append(a.strip())
+            axis_kws = _topic_atoms_to_domain_kws(topic_atoms)
+            role_queries = {
+                "dataset": build_axis_bound_queries(axis_kws, "dataset"),
+                "repo": build_axis_bound_queries(axis_kws, "repo"),
+                "baseline": build_axis_bound_queries(axis_kws, "baseline"),
+                "core_paper": build_axis_bound_queries(axis_kws, "core_paper"),
+            }
             for f in focus[:4]:
                 if not f or cjk.search(f):
                     continue
                 low = f.lower()
-                atom = en_atom_pool[0] if en_atom_pool else ""
                 if "dataset" in low:
-                    must_search.append(f"{atom} dataset benchmark".strip())
+                    must_search.extend(role_queries["dataset"][:1])
                 elif "repo" in low or "github" in low:
-                    must_search.append(f"{atom} github repository".strip())
+                    must_search.extend(role_queries["repo"][:1])
                 elif "baseline" in low:
-                    must_search.append(f"{atom} baseline method".strip())
+                    must_search.extend(role_queries["baseline"][:1])
                 else:
-                    head = f.split()[0] if f.split() else ""
-                    must_search.append(f"{atom} {head}".strip())
+                    must_search.extend(role_queries["core_paper"][:1])
             must_search = [q for q in must_search if q and len(q) > 4]  # noqa: E501
 
         round_summary = await _run_one_round(

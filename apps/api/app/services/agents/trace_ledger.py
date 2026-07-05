@@ -41,6 +41,7 @@ class TraceLedger:
         topic: str = "",
         seed_sources: dict | None = None,
         max_rounds: int = 3,
+        topic_atoms: dict | None = None,
     ) -> None:
         self.case_id = case_id
         self.max_rounds = max_rounds
@@ -55,6 +56,7 @@ class TraceLedger:
             "seed_sources": dict(seed_sources or {}),
             "rounds": [],
             "final": None,
+            "topic_atoms": topic_atoms or {},
         }
         # Best-effort: load any existing trace (e.g. rerun over the same
         # case).  We never silently overwrite — append rounds only.
@@ -87,6 +89,7 @@ class TraceLedger:
         url_repair_n: int = 0,
         query_repair_n: int = 0,
         tool_stats: dict | None = None,
+        accepted: list[dict] | None = None,
     ) -> None:
         """Append a single round to the trace.
 
@@ -110,6 +113,15 @@ class TraceLedger:
             "url_repair_n": int(url_repair_n),
             "query_repair_n": int(query_repair_n),
             "tool_stats": dict(tool_stats or {}),
+            "accepted": [
+                {
+                    "title": c.get("title", ""),
+                    "topic_axis_match": c.get("topic_axis_match", {}),
+                    "verification_status": c.get("verification_status", ""),
+                    "verification_topic_relation": c.get("verification_topic_relation", ""),
+                }
+                for c in (accepted or [])
+            ],
         }
         rounds: list[dict] = self._doc.setdefault("rounds", [])
         replaced = False

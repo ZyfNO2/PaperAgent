@@ -19,6 +19,7 @@ ponytail:
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import re
@@ -40,7 +41,7 @@ _EMPTY_DOMAIN_KEYWORDS = {
 
 def _empty_payload(search_notes: str = "") -> dict:
     return {
-        "domain_keywords": dict(_EMPTY_DOMAIN_KEYWORDS),
+        "domain_keywords": copy.deepcopy(_EMPTY_DOMAIN_KEYWORDS),
         "must_search": [],
         "avoid_search": [],
         "known_baseline_families": [],
@@ -88,7 +89,7 @@ def _offline_must_search(topic_atoms: dict) -> list[str]:
 
 def _offline_domain_keywords(topic_atoms: dict) -> dict:
     """Build a minimal keyword matrix from topic_atoms (no LLM)."""
-    kws = dict(_EMPTY_DOMAIN_KEYWORDS)
+    kws = copy.deepcopy(_EMPTY_DOMAIN_KEYWORDS)
     for axis in ("method", "object", "task", "scenario"):
         for a in topic_atoms.get(axis) or []:
             if isinstance(a, dict):
@@ -180,7 +181,7 @@ def _parse_llm_payload(raw: Any) -> dict:
         return _empty_payload(search_notes="LLM returned non-dict")
     kws = raw.get("domain_keywords")
     if not isinstance(kws, dict):
-        kws = dict(_EMPTY_DOMAIN_KEYWORDS)
+        kws = copy.deepcopy(_EMPTY_DOMAIN_KEYWORDS)
     # Coerce each axis to a list[str].
     normalized_kws: dict[str, list[str]] = {}
     for axis, default in _EMPTY_DOMAIN_KEYWORDS.items():
@@ -256,12 +257,12 @@ async def run_domain_scout(
             logger.warning("DomainScout LLM failed, falling back offline: %s", exc)
 
     # 2. Offline path.
-    payload = _empty_payload(search_notes="LLM offline — must_search empty")
+    payload = _empty_payload(search_notes="[Fallback] LLM offline — must_search empty")
     payload["domain_keywords"] = _offline_domain_keywords(topic_atoms)
     payload["must_search"] = _offline_must_search(topic_atoms)
     if not payload["must_search"]:
         payload["search_notes"] = (
-            "LLM offline — must_search empty; no English atoms in topic_atoms"
+            "[Fallback] LLM offline — must_search empty; no English atoms in topic_atoms"
         )
     return payload
 

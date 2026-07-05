@@ -125,6 +125,9 @@ async def fetch_with_timeout(
         try:
             async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client_:
                 resp = await client_.request(method, url, headers=headers or {})
+            if resp.status_code == 429:
+                retry_after = resp.headers.get("retry-after", "")
+                raise HttpError(f"HTTP 429 retry-after={retry_after} for {url}")
             if resp.status_code >= 400:
                 raise HttpError(f"HTTP {resp.status_code} for {url}")
             ctype = resp.headers.get("content-type", "")

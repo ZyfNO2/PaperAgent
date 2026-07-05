@@ -337,6 +337,73 @@ def validate(re10_dir: Path, re08_summary: Path, re09_summary: Path,
           pw > 0,
           f"pass={pass_n} weak={weak_n} blocked={blocked_n} fail={fail_n}  by_status={dict(status_counter)}")
 
+    # H10 (FIX-4): batch-level repeated-main-candidate pollution detection.
+    # No hardcoded repo/specific title blacklist.  Instead: find candidate
+    # titles that appear as main evidence (axis_verdict=accept) in >=3
+    # different cases whose topics differ, and verify each appearance has
+    # at least one object/task hit.
+    from collections import defaultdict
+    title_to_cases: dict[str, list[tuple[str, dict]]] = defaultdict(list)
+    for cid, ev in by_case_evidence.items():
+        trace = _load_trace(
+            next((c.get("trace_path") for c in per_case if c["case_id"] == cid), None),
+            re10_dir / "traces" / f"{cid}.json",
+        )
+        for r in (trace.get("rounds") or []):
+            for cand in (r.get("accepted") or []):
+                axis_match = cand.get("topic_axis_match") or {}
+                if axis_match.get("axis_verdict") != "accept":
+                    continue
+                t = (cand.get("title") or "").strip()
+                if t:
+                    title_to_cases[t].append((cid, axis_match))
+
+    polluted_cases: list[str] = []
+    repeated_main_title_n = 0
+    repeated_main_case_n = 0
+    repeated_axis_miss_n = 0
+    for title, appearances in title_to_cases.items():
+        unique_case_ids = list({cid for cid, _ in appearances})
+        if len(unique_case_ids) < 3:
+            continue
+        repeated_main_title_n += 1
+        repeated_main_case_n += len(unique_case_ids)
+        # Check that every appearance has at least object_hit or task_hit.
+        for cid, am in appearances:
+            obj_hit = am.get("object_hit") or []
+            task_hit = am.get("task_hit") or []
+            if not obj_hit and not task_hit:
+                repeated_axis_miss_n += 1
+                polluted_cases.append(f"{cid}({title})")
+                break  # one violation per title is enough to flag
+
+    _gate(errors, "H10 no repeated-generic-main-candidate pollution",
+          not polluted_cases,
+          f"repeated_main_title_n={repeated_main_title_n} "
+          f"repeated_main_case_n={repeated_main_case_n} "
+          f"repeated_axis_miss_n={repeated_axis_miss_n} "
+          f"polluted={polluted_cases[:5]}")
+
+    # H11: topic_axis_pass_n >= 1 (FIX-3 SOP §5.4)
+    axis_pass_cases = []
+    for cid, ev in by_case_evidence.items():
+        trace = _load_trace(
+            next((c.get("trace_path") for c in per_case if c["case_id"] == cid), None),
+            re10_dir / "traces" / f"{cid}.json",
+        )
+        axis_pass_n = 0
+        for r in (trace.get("rounds") or []):
+            for cand in (r.get("accepted") or []):
+                axis_match = cand.get("topic_axis_match", {})
+                if axis_match.get("axis_verdict") == "accept":
+                    axis_pass_n += 1
+        if axis_pass_n == 0:
+            axis_pass_cases.append(cid)
+    
+    _gate(errors, "H11 topic_axis_pass_n >= 1",
+          not axis_pass_cases,
+          f"no_axis_pass_cases={axis_pass_cases[:5]}")
+
     return _report_with_errors(errors)
 
 

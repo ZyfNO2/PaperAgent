@@ -27,6 +27,9 @@ class ResearchState(TypedDict, total=False):
     # --- Retrieval ---
     raw_results: dict[str, list[dict[str, Any]]]
 
+    # --- Evidence graph (Re1.2: front-end contract, SOP §5.8) ---
+    evidence_graph: dict[str, Any]
+
     # --- Paper verification ---
     paper_candidates: list[dict[str, Any]]
     verified_papers: list[dict[str, Any]]
@@ -38,6 +41,8 @@ class ResearchState(TypedDict, total=False):
     # --- Evidence audit + classification ---
     baseline_candidates: list[dict[str, Any]]
     parallel_candidates: list[dict[str, Any]]
+    dataset_papers: list[dict[str, Any]]
+    surveys: list[dict[str, Any]]
     evidence_audit: dict[str, Any]
 
     # --- Work package + low-bar review ---

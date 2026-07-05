@@ -192,8 +192,12 @@ def _chat_openai_compat_once(
         "messages": messages,
         "temperature": temperature,
         "max_tokens": max_tokens,
-        "response_format": {"type": "json_object"},
     }
+    # Do NOT set response_format=json_object: StepFun step-3.7-flash treats the
+    # flag as a container instruction and emits ``content`` = ``{}`` with the
+    # real JSON buried in ``reasoning``.  By leaving the field out, the model
+    # writes clean JSON directly into ``content`` (or ``reasoning`` when in
+    # reasoner mode), which our reasoning-scan recovery picks up.
 
     try:
         r = httpx.post(url, headers=headers, json=body, timeout=timeout)
@@ -205,25 +209,75 @@ def _chat_openai_compat_once(
             raise LLMUnavailable("Empty choices from OpenAI-compat API")
         msg = choices[0].get("message") or {}
         content = (msg.get("content") or "").strip()
-        if content:
-            return content
+        reasoning = (msg.get("reasoning") or "").strip() or (msg.get(
+            "reasoning_content") or "").strip()
 
-        # Reasoner models (e.g. StepFun step-3.7-flash) may emit a thinking
-        # transcript under `reasoning` and put the JSON after it (or in it).
-        # Recover by scanning the reasoning text for balanced JSON.
-        reasoning = (msg.get("reasoning") or "").strip()
+        # StepFun step-3.7-flash with ``response_format=json_object`` sends
+        # ``content`` as ``{}``/``{"":""}`` and puts the real JSON under
+        # ``reasoning``.  When ``content`` does not parse as JSON, prefer a
+        # ``reasoning``-embedded blob.
+        import json
+        def _json_value(text: str):
+            text = (text or "").strip()
+            try:
+                return json.loads(text) if text else None
+            except json.JSONDecodeError:
+                return None
+
+        if _json_value(content) is not None:
+            return content
         if reasoning:
             extracted = _extract_json_from_text(reasoning)
             if extracted is not None:
                 return json.dumps(extracted, ensure_ascii=False)
+            # reasoner-only output that contains no balanced JSON at all; the
+            # most common case is step-3.7-flash emitting a thinking loop that
+            # never materialises the payload.  Fall back to a non-reasoning
+            # instruct model that reliably writes JSON to ``content``.
+            fallback = _get_env("STEPFUN_JSON_FALLBACK_MODEL", "").strip()
+            if fallback:
+                return _chat_once_json_via_fallback(
+                    prompt, system=system, fallback_model=fallback,
+                    temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+                )
             return reasoning
-        return ""
+        return content
+    except httpx.HTTPError as exc:
+        raise LLMUnavailable(f"Network error: {exc}") from exc
     except httpx.HTTPError as exc:
         raise LLMUnavailable(f"Network error: {exc}") from exc
     except LLMUnavailable:
         raise
     except Exception as exc:
         raise LLMUnavailable(f"OpenAI-compat call failed: {exc}") from exc
+
+
+def _chat_once_json_via_fallback(prompt, *, system, fallback_model, temperature,
+                                 max_tokens, timeout):
+    """Re-issue the same prompt to a small instruct model for shape-safe JSON."""
+    api_key = _get_env("STEPFUN_API_KEY")
+    base_url = _get_env("STEPFUN_BASE_URL", "https://api.stepfun.com").rstrip("/")
+    msgs = []
+    if system:
+        msgs.append({"role": "system", "content": system})
+    msgs.append({"role": "user",
+                 "content": prompt + "\n\n[Reply with ONLY the strict JSON object.]"})
+    try:
+        r = httpx.post(
+            f"{base_url}/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}",
+                     "Content-Type": "application/json"},
+            json={"model": fallback_model, "messages": msgs,
+                  "temperature": temperature, "max_tokens": max_tokens},
+            timeout=timeout,
+        )
+        r.raise_for_status()
+        data = r.json()
+        content = ((data.get("choices") or [{}])[0].get("message") or {}).get("content", "")
+        return (content or "").strip()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("stepfun fallback model %s failed: %s", fallback_model, exc)
+        return prompt  # last resort; caller will later fail validation
 
 
 # ---------------------------------------------------------------------------
@@ -275,36 +329,76 @@ def _chat_stepfun(
     max_tokens: int = 1500,
     timeout: float = 60.0,
 ) -> str:
-    """StepFun lightweight provider (low-cost execution / connectivity tests).
+    """StepFun primary provider.
 
-    Uses StepFun's OpenAI-compatible `/v1/chat/completions` surface when the
-    env base points there. Request + response bodies are redacted by the caller.
-
-    Env: STEPFUN_API_KEY / STEPFUN_BASE_URL / STEPFUN_MODEL
+    Uses StepFun's OpenAI-compatible `/v1/chat/completions` surface. The
+    default model is step-3.7-flash (reasoner).  When step-3.7-flash returns an
+    empty or unparseable content AND a JSON fallback model is configured, the
+    call is retried against that fallback so JSON-producing nodes stay stable.
     """
     api_key = _get_env("STEPFUN_API_KEY")
     base_url = _get_env("STEPFUN_BASE_URL",
                         "https://api.stepfun.com").rstrip("/")
-    # Default: step-3.7-flash (reasoning model — when max_tokens is big enough
-    # it thinks in the `reasoning` field and puts clean JSON in `content`).
-    # step-1v-32k is non-reasoning but much weaker on nuanced classification.
     model = _get_env("STEPFUN_MODEL", "step-3.7-flash")
-
     if not api_key:
         raise LLMUnavailable("STEPFUN_API_KEY 未设置")
 
-    # StepFun advertises an OpenAI-compatible chat surface. Imported lazily so
-    # the failure mode is explicit if the endpoint diverges.
-    return _chat_openai_compat_once(
-        prompt,
-        system=system,
-        model=model,
-        api_key=api_key,
-        base_url=base_url,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        timeout=timeout,
+    raw = _chat_openai_compat_once(
+        prompt, system=system, model=model, api_key=api_key,
+        base_url=base_url, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
     )
+    # The reasoner should emit at least one JSON object; if ``raw`` is empty,
+    # unparseable, or only contains a bare array of strings, fall back to a
+    # structured-JSON-capable instruct model so downstream callers get
+    # usable shape.
+    if raw and _contains_json_object(raw):
+        return raw
+    fallback = _get_env("STEPFUN_JSON_FALLBACK_MODEL", "step-1v-32k").strip()
+    if fallback and fallback.lower() != model.lower():
+        try:
+            return _chat_openai_compat_once(
+                prompt, system=system, model=fallback, api_key=api_key,
+                base_url=base_url, temperature=temperature,
+                max_tokens=max_tokens, timeout=timeout,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("stepfun json fallback %s failed: %s", fallback, exc)
+            return raw
+    return raw
+
+
+def _contains_json_object(raw: str) -> bool:
+    """True if ``raw`` parses to JSON whose tree contains at least one object.
+
+    Used to conclude whether StepFun's step-3.7-flash produced a structured
+    answer (which we keep) or a bare keyword list / transcript (which we
+    treat as a model failure and fall back to a JSON-friendlier model).
+    """
+    import json
+    text = (raw or "").strip()
+    if not text:
+        return False
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        # Try the last balanced {…} / […] slice.
+        import re
+        matched = re.search(r"\{.*\}|\[.*\]", text, re.DOTALL)
+        if not matched:
+            return False
+        try:
+            parsed = json.loads(matched.group(0))
+        except json.JSONDecodeError:
+            return False
+    stack = [parsed]
+    while stack:
+        cur = stack.pop()
+        if isinstance(cur, dict):
+            return True
+        if isinstance(cur, list):
+            stack.extend(cur)
+    return False
+
 
 def _chat_voapi(
     prompt: str,
