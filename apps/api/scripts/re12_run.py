@@ -13,6 +13,7 @@ Env knobs:
   LLM_PROVIDER=stepfun
   LLM_THINKING_BUDGET=6000
   PAPERAGENT_MAX_REPAIR_ROUNDS=2
+  PAPERAGENT_SKIP_SEARCH_PLANNER=true
 """
 from __future__ import annotations
 
@@ -40,6 +41,7 @@ os.environ.setdefault("LLM_THINKING_BUDGET", "6000")
 os.environ.setdefault("HUMAN_GATE_ENABLED", "false")
 os.environ.setdefault("LANGGRAPH_CHECKPOINTER", "memory")
 os.environ.setdefault("PAPERAGENT_MAX_REPAIR_ROUNDS", "2")
+os.environ.setdefault("PAPERAGENT_SKIP_SEARCH_PLANNER", "true")
 os.environ.setdefault("VOAPI_USAGE_POLICY", "premium_review_only")
 os.environ.setdefault("MINIMAX_DISABLED", "true")
 
@@ -104,6 +106,15 @@ def run_one(case: dict) -> dict:
         json.dumps(out.get("evidence_graph") or {}, ensure_ascii=False, indent=2, default=str),
         encoding="utf-8",
     )
+    # Per-node timing breakdown
+    node_timings: dict[str, float] = {}
+    for ev in out.get("trace_events") or []:
+        nd = ev.get("node", "?")
+        el = float(ev.get("elapsed_s") or 0)
+        node_timings[nd] = node_timings.get(nd, 0) + el
+    top5 = sorted(node_timings.items(), key=lambda kv: kv[1], reverse=True)[:8]
+    timing_str = " | ".join(f"{n}:{t:.1f}s" for n, t in top5)
+
     print(f"[{case_id}] t={elapsed}s | "
           f"papers={len(out.get('verified_papers') or [])} | "
           f"baseline={len(out.get('baseline_candidates') or [])} | "
@@ -112,6 +123,7 @@ def run_one(case: dict) -> dict:
           f"repo={len(out.get('repo_candidates') or [])} | "
           f"wp={len(out.get('work_packages') or [])} | "
           f"nodes_fired={len(out.get('trace_events') or [])}")
+    print(f"  timing: {timing_str}")
     return out
 
 

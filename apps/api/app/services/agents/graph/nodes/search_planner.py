@@ -96,8 +96,67 @@ def _needs_repair(state: ResearchState) -> bool:
     return False
 
 
+def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
+    """Template-based search plan: builds queries directly from atoms without LLM.
+
+    Used when ``PAPERAGENT_SKIP_SEARCH_PLANNER=true``. Generates a deterministic
+    set of OpenAlex / arxiv / crossref queries from method/object/task/dataset
+    atoms. Saves ~22s wall-clock per case vs. the LLM-based planner.
+    """
+    import re as _re
+
+    cjk = _re.compile(r"[一-鿿]")
+    method = [str(k).strip() for k in (atoms.get("method") or []) if k and not cjk.search(str(k))]
+    obj = [str(k).strip() for k in (atoms.get("object") or []) if k and not cjk.search(str(k))]
+    ds_terms = [str(k).strip() for k in (atoms.get("dataset_terms") or []) if k and not cjk.search(str(k))]
+    baseline = [str(k).strip() for k in (atoms.get("baseline_terms") or []) if k and not cjk.search(str(k))]
+
+    queries: list[dict[str, str]] = []
+    seen: set[str] = set()
+
+    def _add(tool: str, query: str, why: str, ev: str, stop: str) -> None:
+        q = query.strip()
+        if not q or q.lower() in seen or len(q) < 5:
+            return
+        seen.add(q.lower())
+        queries.append({
+            "tool": tool, "query": q, "why": why,
+            "expected_evidence": ev, "stop_condition": stop,
+        })
+
+    # method × object → baseline-targeted queries
+    for m in method[:2]:
+        for o in obj[:1]:
+            _add("openalex", f"{m} {o}", "baseline method+object", "baseline papers", "n>=5")
+    # dataset-term queries
+    for d in ds_terms[:2]:
+        _add("openalex", f"{d} dataset benchmark", "dataset", "dataset papers", "n>=3")
+    # baseline-term queries
+    for b in baseline[:1]:
+        _add("openalex", f"{b} survey review", "baseline", "survey or baseline papers", "n>=3")
+    # arxiv fallback
+    if method:
+        _add("arxiv", f"{method[0]}", "broad arxiv", "recent preprints", "n>=8")
+    # final fallback from raw topic
+    if not queries:
+        head = (topic or "deep learning").split()[0]
+        _add("openalex", head, "fallback topic head", "any relevant papers", "n>=5")
+
+    return {
+        "queries": queries[:10],
+        "rounds": ["broad", "focused"],
+        "negative_feedback": "",
+    }
+
+
 def search_planner_node(state: ResearchState) -> dict[str, Any]:
-    """Produce search_plan. Skips LLM call when a valid plan already exists."""
+    """Produce search_plan. Skips LLM call when a valid plan already exists.
+
+    When ``PAPERAGENT_SKIP_SEARCH_PLANNER=true``, queries are generated from a
+    deterministic template derived from ``topic_atoms`` — no LLM call, saving
+    ~22s wall-clock. The LLM-based planner remains available for cases where
+    the template is insufficient (set the env to ``false`` to force LLM).
+    """
     topic = state.get("topic") or ""
     atoms = state.get("topic_atoms") or {}
     existing_plan = state.get("search_plan") or {}
@@ -112,6 +171,22 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
                       [{"tool": "re11_planner.llm", "mode": "skipped"}],
                       "none", [])
         return {"trace_events": list(state.get("trace_events") or []) + [trace]}
+
+    # Template bypass: generate queries from atoms, no LLM.
+    skip_llm = __import__("os").environ.get("PAPERAGENT_SKIP_SEARCH_PLANNER", "true").lower() == "true"
+    if skip_llm and atoms:
+        plan = _template_plan(topic, atoms)
+        trace = _emit("search_planner", t0,
+                      {"topic_len": len(topic), "mode": "template"},
+                      {"n_queries": len(plan.get("queries") or []),
+                       "rounds": plan.get("rounds")},
+                      [{"tool": "search_planner.template"}], "local", [])
+        return {
+            "search_plan": plan,
+            "trace_events": list(state.get("trace_events") or []) + [trace],
+            "errors": list(state.get("errors") or []),
+            "provider_profile": "local",
+        }
 
     # Build prior_rounds for follow-up mode — pull the previous plan's queries
     # (and any negative_feedback already stored) so the next round can improve.

@@ -48,6 +48,13 @@ def _slug_of(text: str) -> str:
 
 
 def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
+    """Extract dataset + repo links from verified papers in parallel.
+
+    Up to ``limit`` verified papers (default 8) are processed concurrently via
+    ThreadPoolExecutor. Each extraction is an independent LLM call to
+    ``re11_dataset_repo_extractor``; parallelising reduces wall-clock time
+    from ~8×4s=30s to ~5-8s.
+    """
     papers = list(state.get("verified_papers") or [])
     t0 = time.time()
 
@@ -55,8 +62,6 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
     existing_repo = list(state.get("repo_candidates") or [])
     audit = dict(state.get("evidence_audit") or {})
 
-    datasets: list[dict[str, Any]] = []
-    repos: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
     tried = 0
     ok_count = 0
@@ -82,16 +87,18 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
     limit = int(state.get("user_constraints", {}).get("max_dataset_paper_lookups", 8)
                   if isinstance(state.get("user_constraints"), dict) else 8)
     limit = max(0, min(8, limit))
+    target_papers = papers[:limit]
 
-    for p in papers[:limit]:
-        title = (p.get("title") or p.get("name") or "").strip()
+    def _extract_one(paper: dict[str, Any]) -> dict[str, Any]:
+        """Extract datasets + repos from a single paper. Returns result dict."""
+        title = (paper.get("title") or paper.get("name") or "").strip()
         if not title:
-            continue
+            return {"tried": 0, "ok": 0, "datasets": [], "repos": []}
         paper_slug = _slug_of(title)
         try:
             from apps.api.app.services import llm_router
             from apps.api.app.services.agents.prompts import re11_dataset_repo_extractor as P
-            built = P.build(title, p.get("abstract") or p.get("snippet") or "")
+            built = P.build(title, paper.get("abstract") or paper.get("snippet") or "")
             out = llm_router.call_json(
                 built["user"], system=built["system"], profile="fast_json",
                 max_tokens=700, expected="list",
@@ -101,14 +108,12 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                              "paper_used_baselines (list[str]), missing (list[str]), "
                              "status (found|not_found_in_paper|url_missing_needs_repair)"),
             )
-            tried += 1
             item: dict[str, Any]
             if isinstance(out, list):
                 item = out[0] if out else {}
                 if not isinstance(item, dict):
                     item = {}
             elif isinstance(out, dict):
-                # sometimes wrapped as {"extractions": [...]} or bare object
                 wrapped = out.get("extractions") or out.get("results")
                 if isinstance(wrapped, list) and wrapped:
                     item = wrapped[0] if isinstance(wrapped[0], dict) else {}
@@ -118,8 +123,9 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                 item = {}
 
             status = (item.get("status") or "not_found_in_paper")
+            ds_found: list[dict[str, Any]] = []
+            repo_found: list[dict[str, Any]] = []
             if status in ("found", "url_missing_needs_repair"):
-                ok_count += 1
                 ds_name = (item.get("dataset_name") or "").strip()
                 official = (item.get("official_code_url") or "").strip()
                 mentioned = (item.get("paper_mentioned_repo") or "").strip()
@@ -127,64 +133,75 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                 supp = (item.get("supplementary_url") or "").strip()
                 if ds_name or official:
                     rec = {
-                        "from_paper": title,
-                        "linked_paper_id": paper_slug,
-                        "kind": "dataset",
-                        "name": ds_name or None,
-                        "url": official or None,
-                        "source": "paper_abstract",
+                        "from_paper": title, "linked_paper_id": paper_slug,
+                        "kind": "dataset", "name": ds_name or None,
+                        "url": official or None, "source": "paper_abstract",
                         "availability": "url" if official else ("named" if ds_name else "unknown"),
-                        "status": status,
-                        "reproducibility_hint": "",
-                        "risk": "",
+                        "status": status, "reproducibility_hint": "", "risk": "",
                     }
-                    k = ds_key(rec)
-                    if k and k not in ds_seen:
-                        ds_seen.add(k)
-                        datasets.append(rec)
+                    if ds_key(rec) and ds_key(rec) not in ds_seen:
+                        ds_found.append(rec)
                 if official or mentioned:
                     url = official or mentioned
                     rrec = {
-                        "from_paper": title,
-                        "linked_paper_id": paper_slug,
-                        "kind": "repo",
-                        "url": url,
+                        "from_paper": title, "linked_paper_id": paper_slug,
+                        "kind": "repo", "url": url,
                         "mentioned_repo": mentioned or None,
                         "source": "paper_official_link",
                         "availability": "url" if url.startswith("http") else "named",
-                        "status": status,
-                        "reproducibility_hint": "",
-                        "risk": "",
+                        "status": status, "reproducibility_hint": "", "risk": "",
                     }
-                    k = repo_key(rrec)
-                    if k and k not in repo_seen:
-                        repo_seen.add(k)
-                        repos.append(rrec)
-                # extra project / supplementary URL become repo records too
+                    if repo_key(rrec) and repo_key(rrec) not in repo_seen:
+                        repo_found.append(rrec)
                 for extra_url in (proj, supp):
                     if extra_url:
                         rrec = {
-                            "from_paper": title,
-                            "linked_paper_id": paper_slug,
-                            "kind": "repo",
-                            "url": extra_url,
+                            "from_paper": title, "linked_paper_id": paper_slug,
+                            "kind": "repo", "url": extra_url,
                             "mentioned_repo": mentioned or None,
                             "source": "paper_metadata_url",
-                            "availability": "url",
-                            "status": status,
-                            "reproducibility_hint": "",
-                            "risk": "",
+                            "availability": "url", "status": status,
+                            "reproducibility_hint": "", "risk": "",
                         }
-                        k = repo_key(rrec)
-                        if k and k not in repo_seen:
-                            repo_seen.add(k)
-                            repos.append(rrec)
-            # not_found_in_paper: drop silently per SOP
+                        if repo_key(rrec) and repo_key(rrec) not in repo_seen:
+                            repo_found.append(rrec)
+            return {
+                "tried": 1,
+                "ok": 1 if (ds_found or repo_found) else 0,
+                "datasets": ds_found,
+                "repos": repo_found,
+            }
         except BaseException as exc:
             logger.debug("dataset_repo extraction failed for %r: %s",
                          title, type(exc).__name__)
             errors.append({"node": "dataset_repo", "for_paper": title,
                            "error": type(exc).__name__})
+            return {"tried": 1, "ok": 0, "datasets": [], "repos": []}
+
+    # Parallel extraction across papers
+    import concurrent.futures
+    datasets: list[dict[str, Any]] = []
+    repos: list[dict[str, Any]] = []
+    max_workers = min(len(target_papers), 4)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_extract_one, p): p for p in target_papers}
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                tried += result.get("tried", 0)
+                ok_count += result.get("ok", 0)
+                for d in result.get("datasets", []):
+                    k = ds_key(d)
+                    if k and k not in ds_seen:
+                        ds_seen.add(k)
+                        datasets.append(d)
+                for r in result.get("repos", []):
+                    k = repo_key(r)
+                    if k and k not in repo_seen:
+                        repo_seen.add(k)
+                        repos.append(r)
+            except BaseException as exc:
+                logger.warning("dataset_repo future failed: %s", exc)
 
     merged_ds = existing_ds + datasets
     merged_repo = existing_repo + repos

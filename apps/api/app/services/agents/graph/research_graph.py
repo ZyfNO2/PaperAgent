@@ -90,30 +90,6 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
 def _route_after_quality_gate(state: ResearchState) -> str:
     """Route after quality gate.
 
-    The gate sits BEFORE the extractor / classifier / work-package nodes, so
-    baseline/dataset/repo/work-package counts aren't yet available here.  We
-    therefore only gate on the IMMEDIATE upstream product: verified papers and
-    quarantine ratio.  Downstream gaps (no baseline / no dataset / no repo /
-    no work package) are detected later in the spine and either drive a
-    second visit to ``targeted_repair`` via the low-bar-review branch or
-    produce an explicit ``repair_plan`` in the final rec (SOP §5.7 / §5.10).
-    """
-    n_papers = len(state.get("verified_papers") or [])
-    quarantined = len(state.get("quarantined_candidates") or [])
-    total = len(state.get("paper_candidates") or [1]) or 1
-    repair_rounds = state.get("evidence_audit", {}).get("repair_rounds", 0)
-    max_repair = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
-
-    if n_papers < 1 and repair_rounds < max_repair:
-        return "repair"
-    if quarantined / max(total, 1) > 0.4 and repair_rounds < max_repair:
-        return "repair"
-    return "continue"
-
-
-def _route_after_quality_gate(state: ResearchState) -> str:
-    """Route after quality gate.
-
     Downstream gaps (baseline / dataset / repo / work package) are evaluated
     later in the spine, so this gate only inspects the IMMEDIATE upstream
     product: verified papers + quarantine.  The spine then drives additional

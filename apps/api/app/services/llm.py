@@ -171,9 +171,15 @@ def _chat_openai_compat_once(
     max_tokens: int = 1500,
     timeout: float = 60.0,
 ) -> str:
-    """Generic OpenAI-compatible chat call. Returns raw text."""
+    """Generic OpenAI-compatible chat call. Returns raw text.
+
+    Retries with exponential backoff on HTTP 429 (rate limit) up to 3 attempts
+    so the pipeline survives short bursts past the RPM cap.
+    """
     if not api_key:
         raise LLMUnavailable("API key not set")
+
+    import time as _time
 
     import httpx
 
@@ -193,68 +199,70 @@ def _chat_openai_compat_once(
         "temperature": temperature,
         "max_tokens": max_tokens,
     }
-    # Do NOT set response_format=json_object: StepFun step-3.7-flash treats the
-    # flag as a container instruction and emits ``content`` = ``{}`` with the
-    # real JSON buried in ``reasoning``.  By leaving the field out, the model
-    # writes clean JSON directly into ``content`` (or ``reasoning`` when in
-    # reasoner mode), which our reasoning-scan recovery picks up.
 
-    try:
-        r = httpx.post(url, headers=headers, json=body, timeout=timeout)
-        if r.status_code >= 400:
-            raise LLMUnavailable(f"HTTP {r.status_code}: {r.text[:200]}")
-        data = r.json()
-        choices = data.get("choices") or []
-        if not choices:
-            raise LLMUnavailable("Empty choices from OpenAI-compat API")
-        msg = choices[0].get("message") or {}
-        content = (msg.get("content") or "").strip()
-        reasoning = (msg.get("reasoning") or "").strip() or (msg.get(
-            "reasoning_content") or "").strip()
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            r = httpx.post(url, headers=headers, json=body, timeout=timeout)
+            if r.status_code == 429:
+                wait = 2 ** attempt
+                logger.warning("rate limited (429) on %s (attempt %d/%d); waiting %ds",
+                               model, attempt + 1, max_retries, wait)
+                _time.sleep(wait)
+                continue
+            if r.status_code >= 400:
+                raise LLMUnavailable(f"HTTP {r.status_code}: {r.text[:200]}")
+            data = r.json()
+            choices = data.get("choices") or []
+            if not choices:
+                raise LLMUnavailable("Empty choices from OpenAI-compat API")
+            msg = choices[0].get("message") or {}
+            content = (msg.get("content") or "").strip()
+            reasoning = (msg.get("reasoning") or "").strip() or (msg.get(
+                "reasoning_content") or "").strip()
 
-        # StepFun step-3.7-flash with ``response_format=json_object`` sends
-        # ``content`` as ``{}``/``{"":""}`` and puts the real JSON under
-        # ``reasoning``.  When ``content`` does not parse as JSON, prefer a
-        # ``reasoning``-embedded blob.
-        import json
-        def _json_value(text: str):
-            text = (text or "").strip()
-            try:
-                return json.loads(text) if text else None
-            except json.JSONDecodeError:
-                return None
+            import json
+            def _json_value(text: str):
+                text = (text or "").strip()
+                try:
+                    return json.loads(text) if text else None
+                except json.JSONDecodeError:
+                    return None
 
-        if _json_value(content) is not None:
+            if _json_value(content) is not None:
+                return content
+            if reasoning:
+                extracted = _extract_json_from_text(reasoning)
+                if extracted is not None:
+                    return json.dumps(extracted, ensure_ascii=False)
+                fallback = _get_env("STEPFUN_JSON_FALLBACK_MODEL", "").strip()
+                if fallback:
+                    return _chat_once_json_via_fallback(
+                        prompt, system=system, fallback_model=fallback,
+                        temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+                    )
+                return reasoning
             return content
-        if reasoning:
-            extracted = _extract_json_from_text(reasoning)
-            if extracted is not None:
-                return json.dumps(extracted, ensure_ascii=False)
-            # reasoner-only output that contains no balanced JSON at all; the
-            # most common case is step-3.7-flash emitting a thinking loop that
-            # never materialises the payload.  Fall back to a non-reasoning
-            # instruct model that reliably writes JSON to ``content``.
-            fallback = _get_env("STEPFUN_JSON_FALLBACK_MODEL", "").strip()
-            if fallback:
-                return _chat_once_json_via_fallback(
-                    prompt, system=system, fallback_model=fallback,
-                    temperature=temperature, max_tokens=max_tokens, timeout=timeout,
-                )
-            return reasoning
-        return content
-    except httpx.HTTPError as exc:
-        raise LLMUnavailable(f"Network error: {exc}") from exc
-    except httpx.HTTPError as exc:
-        raise LLMUnavailable(f"Network error: {exc}") from exc
-    except LLMUnavailable:
-        raise
-    except Exception as exc:
-        raise LLMUnavailable(f"OpenAI-compat call failed: {exc}") from exc
+        except LLMUnavailable:
+            raise
+        except httpx.HTTPError as exc:
+            raise LLMUnavailable(f"Network error: {exc}") from exc
+        except Exception as exc:
+            raise LLMUnavailable(f"OpenAI-compat call failed: {exc}") from exc
+
+    raise LLMUnavailable(f"rate limit (429) persisted after {max_retries} retries")
 
 
 def _chat_once_json_via_fallback(prompt, *, system, fallback_model, temperature,
                                  max_tokens, timeout):
-    """Re-issue the same prompt to a small instruct model for shape-safe JSON."""
+    """Re-issue the same prompt to a small instruct model for shape-safe JSON.
+
+    Retries with backoff on HTTP 429 (rate limit) up to 3 attempts.
+    """
+    import time as _time
+
+    import httpx
+
     api_key = _get_env("STEPFUN_API_KEY")
     base_url = _get_env("STEPFUN_BASE_URL", "https://api.stepfun.com").rstrip("/")
     msgs = []
@@ -262,22 +270,33 @@ def _chat_once_json_via_fallback(prompt, *, system, fallback_model, temperature,
         msgs.append({"role": "system", "content": system})
     msgs.append({"role": "user",
                  "content": prompt + "\n\n[Reply with ONLY the strict JSON object.]"})
-    try:
-        r = httpx.post(
-            f"{base_url}/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}",
-                     "Content-Type": "application/json"},
-            json={"model": fallback_model, "messages": msgs,
-                  "temperature": temperature, "max_tokens": max_tokens},
-            timeout=timeout,
-        )
-        r.raise_for_status()
-        data = r.json()
-        content = ((data.get("choices") or [{}])[0].get("message") or {}).get("content", "")
-        return (content or "").strip()
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("stepfun fallback model %s failed: %s", fallback_model, exc)
-        return prompt  # last resort; caller will later fail validation
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            r = httpx.post(
+                f"{base_url}/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}",
+                         "Content-Type": "application/json"},
+                json={"model": fallback_model, "messages": msgs,
+                      "temperature": temperature, "max_tokens": max_tokens},
+                timeout=timeout,
+            )
+            if r.status_code == 429:
+                wait = 2 ** attempt
+                logger.warning("fallback model %s rate limited (429) attempt %d/%d; waiting %ds",
+                               fallback_model, attempt + 1, max_retries, wait)
+                _time.sleep(wait)
+                continue
+            r.raise_for_status()
+            data = r.json()
+            content = ((data.get("choices") or [{}])[0].get("message") or {}).get("content", "")
+            return (content or "").strip()
+        except Exception as exc:  # noqa: BLE001
+            if attempt == max_retries - 1:
+                logger.warning("stepfun fallback model %s failed: %s", fallback_model, exc)
+                return prompt  # last resort; caller will later fail validation
+            _time.sleep(2 ** attempt)
+    return prompt  # last resort
 
 
 # ---------------------------------------------------------------------------
