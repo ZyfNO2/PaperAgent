@@ -36,18 +36,23 @@ def quality_gate_node(state: ResearchState) -> dict[str, Any]:
     repair_rounds: int = state.get("evidence_audit", {}).get("repair_rounds", 0)
     max_repair: int = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
 
-    if n_papers < 3 and repair_rounds < max_repair:
+    # Re1.3: citation_expansion_done flag
+    citation_done: bool = state.get("citation_expansion_done", False)
+
+    if n_papers < 3 and repair_rounds < max_repair and not citation_done:
         route = "repair"
-    elif quarantined / max(total, 1) > 0.4 and repair_rounds < max_repair:
+    elif quarantined / max(total, 1) > 0.4 and repair_rounds < max_repair and not citation_done:
         route = "repair"
-    elif baseline_n == 0 and repair_rounds < max_repair:
+    elif baseline_n == 0 and repair_rounds < max_repair and not citation_done:
         route = "repair"
-    elif dataset_n == 0 and repair_rounds < max_repair:
+    elif dataset_n == 0 and repair_rounds < max_repair and not citation_done:
         route = "repair"
-    elif repo_n == 0 and repair_rounds < max_repair:
+    elif repo_n == 0 and repair_rounds < max_repair and not citation_done:
         route = "repair"
-    elif work_packages == 0 and repair_rounds < max_repair:
+    elif work_packages == 0 and repair_rounds < max_repair and not citation_done:
         route = "repair"
+    elif not citation_done and n_papers >= 1:
+        route = "citation_expander"
     else:
         route = "continue"
 

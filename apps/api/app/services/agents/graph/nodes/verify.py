@@ -122,7 +122,14 @@ def _normalise_verifier_output(out: Any) -> list[dict[str, Any]]:
 def verify_node(state: ResearchState) -> dict[str, Any]:
     topic = state.get("topic") or ""
     atoms = state.get("topic_atoms") or {}
-    candidates = list(state.get("paper_candidates") or [])
+
+    # Re1.3: support second-round verify for expanded papers
+    citation_done = state.get("citation_expansion_done", False)
+    if citation_done:
+        candidates = list(state.get("expanded_papers") or [])
+    else:
+        candidates = list(state.get("paper_candidates") or [])
+
     user_constraints = state.get("user_constraints") or {}
     if isinstance(user_constraints, dict):
         verify_limit = int(user_constraints.get("max_verify_candidates", len(candidates)) or len(candidates))
@@ -133,7 +140,8 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
     trace: dict[str, Any] = {
         "node": "verify",
         "started_at": _now_iso(),
-        "input_summary": {"n_candidates": len(candidates), "topic_len": len(topic)},
+        "input_summary": {"n_candidates": len(candidates), "topic_len": len(topic),
+                          "round": 2 if citation_done else 1},
         "output_summary": {},
         "tool_calls": [{"tool": "re11_paper_verifier.llm", "profile": "fast_json"}],
         "errors": [],
@@ -196,12 +204,43 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
         verified = []
 
     trace["ended_at"] = _now_iso()
+
     trace["elapsed_s"] = round(time.time() - t0, 3)
 
+
+    # Re1.3: merge verified_papers in second round
+
+    if citation_done:
+
+        existing_verified = list(state.get("verified_papers") or [])
+
+        merged_verified = existing_verified + verified
+
+        return {
+
+            "verified_papers": merged_verified,
+
+            "paper_candidates": candidates,
+
+            "trace_events": list(state.get("trace_events") or []) + [trace],
+
+            "errors": list(state.get("errors") or []) + errors,
+
+            "provider_profile": "fast_json",
+
+        }
+
+
     return {
+
         "verified_papers": verified,
+
         "paper_candidates": candidates,
+
         "trace_events": list(state.get("trace_events") or []) + [trace],
+
         "errors": list(state.get("errors") or []) + errors,
+
         "provider_profile": "fast_json",
+
     }

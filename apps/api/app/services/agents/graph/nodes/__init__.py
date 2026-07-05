@@ -1,19 +1,19 @@
-"""Graph node package — flat registry of all 14 Re1.2 LangGraph nodes.
+"""Graph node package — flat registry of all Re1.3 LangGraph nodes.
 
 Each module exposes a `<name>_node(state: ResearchState) -> dict[str, Any]`
-patch function.  Re1.2 adds the following standalone nodes (Re1.1 had them
-inline inside `content.py`):
+patch function.
 
-  topic_parser, search_planner, targeted_repair, quality_gate,
-  json_graph_builder, dataset_repo_extractor, baseline_classifier
+Re1.3 adds: quality_filter, citation_expander
 """
 from __future__ import annotations
 
 from . import baseline_classifier as _baseline_classifier
+from . import citation_expander as _citation_expander
 from . import content as _content
 from . import dataset_repo_extractor as _dataset_repo_extractor
 from . import intake as _intake
 from . import json_graph_builder as _json_graph_builder
+from . import quality_filter as _quality_filter
 from . import quality_gate as _quality_gate
 from . import retrieve as _retrieve
 from . import search_planner as _search_planner
@@ -28,15 +28,17 @@ REGISTRY: dict[str, callable] = {
     "search_planner": _search_planner.search_planner_node,
     "paper_retriever": _retrieve.retrieve_node,
     "retrieve": _retrieve.retrieve_node,                    # Re1.1 compat alias
+    "quality_filter": _quality_filter.quality_filter_node,  # Re1.3
     "paper_verifier": _verify.verify_node,
     "verify": _verify.verify_node,                          # Re1.1 compat alias
+    "citation_expander": _citation_expander.citation_expander_node,  # Re1.3
     "dataset_repo_extractor": _dataset_repo_extractor.dataset_repo_extractor_node,
     "dataset_repo": _dataset_repo_extractor.dataset_repo_extractor_node,  # Re1.1 compat
     "quality_gate": _quality_gate.quality_gate_node,
     "targeted_repair": _targeted_repair.targeted_repair_node,
     "evidence_graph_builder": _json_graph_builder.json_graph_builder_node,
     "baseline_classifier": _baseline_classifier.baseline_classifier_node,
-    "evidence_auditor": _baseline_classifier.baseline_classifier_node,  # Re1.1 compat (role split lives in baseline_classifier)
+    "evidence_auditor": _baseline_classifier.baseline_classifier_node,  # Re1.1 compat
     "work_package_brainstorm": _content.work_package_node,
     "work_package": _content.work_package_node,             # Re1.1 compat alias
     "low_bar_review": _content.low_bar_review_node,
@@ -50,8 +52,12 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "search_planner": ("search_plan", "trace_events", "errors", "provider_profile"),
     "paper_retriever": ("raw_results", "paper_candidates", "trace_events",
                        "errors", "provider_profile"),
+    "quality_filter": ("paper_candidates", "filter_results", "trace_events", "errors"),
     "paper_verifier": ("verified_papers", "paper_candidates", "trace_events",
                       "errors", "provider_profile"),
+    "citation_expander": ("seed_papers", "expanded_papers", "surveys_found",
+                         "repos_found", "citation_expansion_done", "paper_candidates",
+                         "trace_events", "errors"),
     "quality_gate": ("evidence_audit", "trace_events"),
     "targeted_repair": ("search_plan", "evidence_audit", "trace_events", "errors"),
     "dataset_repo_extractor": ("dataset_candidates", "repo_candidates",

@@ -1,9 +1,13 @@
-"""LangGraph graph builder for Re1.2.
+"""LangGraph graph builder for Re1.3.
 
-Wires 14 LangGraph nodes with conditional edges + targeted-repair loop.
+Wires 16 LangGraph nodes with conditional edges + targeted-repair loop +
+citation expansion loop.
 
-History:
-  Re1.2: extracted repair/quality-gate routing out of the linear chain.
+Re1.3 changes:
+  - quality_filter inserted between paper_retriever and verify
+  - citation_expander inserted between quality_gate(continue) and dataset_repo
+  - verify supports second-round for expanded papers
+  - quality_gate supports second-round routing (citation_expansion_done)
 """
 from __future__ import annotations
 
@@ -21,37 +25,44 @@ logger = logging.getLogger(__name__)
 
 
 def build_graph(*, checkpointer: Any | None = None) -> Any:
-    """Build the compiled Re1.2 LangGraph pipeline."""
+    """Build the compiled Re1.3 LangGraph pipeline."""
     graph = StateGraph(ResearchState)
 
     registry = graph_nodes.REGISTRY
     for name, fn in registry.items():
         graph.add_node(name, fn)
 
-    # Linear spine (intake → retriever uses Re1.1 node key names so legacy
-    # reports/tests that assert trace-fire events by those names still pass).
+    # Linear spine (Re1.3: quality_filter inserted before verify)
     graph.add_edge(START, "intake")
     graph.add_edge("intake", "topic_parser")
     graph.add_edge("topic_parser", "search_planner")
     graph.add_edge("search_planner", "paper_retriever")
-    graph.add_edge("paper_retriever", "verify")
+    graph.add_edge("paper_retriever", "quality_filter")     # Re1.3
+    graph.add_edge("quality_filter", "verify")              # Re1.3
     graph.add_edge("verify", "quality_gate")
 
-    # Conditional routing out of quality_gate (SOP §4 / §7).
+    # Conditional routing out of quality_gate (Re1.3: adds citation_expander)
     graph.add_conditional_edges(
         "quality_gate",
         _route_after_quality_gate,
         {
             "repair": "targeted_repair",
-            "continue": "dataset_repo",
+            "citation_expander": "citation_expander",   # Re1.3
+            "continue": "dataset_repo_extractor",
             "blocked": "final_recommendation",
             "END": END,
         },
     )
     graph.add_edge("targeted_repair", "retrieve")            # loop back
-    graph.add_edge("dataset_repo", "evidence_graph_builder")
-    graph.add_edge("evidence_graph_builder", "evidence_auditor")
-    graph.add_edge("evidence_auditor", "work_package")
+
+    # Re1.3: citation_expander → verify (second round) → quality_gate (second round)
+    graph.add_edge("citation_expander", "verify")
+    # verify → quality_gate is already defined above (same edge, verify checks round internally)
+
+    # Post-expansion linear spine
+    graph.add_edge("dataset_repo_extractor", "evidence_graph_builder")
+    graph.add_edge("evidence_graph_builder", "baseline_classifier")
+    graph.add_edge("baseline_classifier", "work_package")
     graph.add_edge("work_package", "low_bar_review")
 
     # Conditional routing out of low_bar_review.
@@ -64,7 +75,6 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
             "blocked": "final_recommendation",
         },
     )
-    # human_gate in Re1.2 still passthrough unless interrupt enabled.
     graph.add_edge("human_gate", "final_recommendation")
     graph.add_edge("final_recommendation", END)
 
@@ -88,42 +98,43 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
 
 
 def _route_after_quality_gate(state: ResearchState) -> str:
-    """Route after quality gate.
+    """Route after quality gate (Re1.3: adds citation_expander path).
 
-    Downstream gaps (baseline / dataset / repo / work package) are evaluated
-    later in the spine, so this gate only inspects the IMMEDIATE upstream
-    product: verified papers + quarantine.  The spine then drives additional
-    targeted_repair visits via the low-bar-review branch if downstream gaps
-    remain.
+    First round (citation_expansion_done=False):
+      - n_papers < 1 and repair_rounds < max → repair
+      - n_papers >= 1 → citation_expander (do expansion before continuing)
+    
+    Second round (citation_expansion_done=True):
+      - n_papers < 1 → blocked (expansion didn't help, really stuck)
+      - n_papers >= 1 → continue
     """
     n_papers = len(state.get("verified_papers") or [])
-    quarantined = len(state.get("quarantined_candidates") or [])
-    total = len(state.get("paper_candidates") or [1]) or 1
     repair_rounds = state.get("evidence_audit", {}).get("repair_rounds", 0)
     max_repair = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
+    citation_done = state.get("citation_expansion_done", False)
 
-    if n_papers < 1 and repair_rounds < max_repair:
-        return "repair"
-    if quarantined / max(total, 1) > 0.4 and repair_rounds < max_repair:
-        return "repair"
-    return "continue"
+    if not citation_done:
+        # First round
+        if n_papers < 1 and repair_rounds < max_repair:
+            return "repair"
+        if n_papers < 1 and repair_rounds >= max_repair:
+            return "blocked"
+        # Have enough papers → do citation expansion first
+        return "citation_expander"
+    else:
+        # Second round (after citation expansion)
+        if n_papers < 1:
+            return "blocked"  # expansion didn't help
+        return "continue"
 
 
 def _route_after_review(state: ResearchState) -> str:
-    """Route after low-bar review (SOP §5.10).
-
-    Routes:
-      - downstream gap + cap not exhausted -> repair -> back to retrieve
-      - downstream gap + cap exhausted      -> final (with explicit repair_plan)
-      - no gap                             -> final
-    """
+    """Route after low-bar review (SOP §5.10)."""
     audit = state.get("evidence_audit", {})
     repair_rounds = audit.get("repair_rounds", 0)
     max_repair = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
     if repair_rounds >= max_repair:
-        # Repair attempts exhausted; expose repair_plan in final.
         return "blocked"
-    # Any downstream gap -> repair.
     if (len(state.get("baseline_candidates") or [])
             + len(state.get("dataset_candidates") or [])
             + len(state.get("repo_candidates") or [])
