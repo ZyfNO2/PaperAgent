@@ -218,16 +218,21 @@ def _route_after_devils(state: ResearchState) -> str:
     - ACCEPT → human_gate
     - MINOR_REVISION → narrative_builder (if revisions < MAX)
     - MINOR_REVISION → human_gate (if revisions >= MAX, stop looping)
-    - BLOCK → optimization_advisor (if revisions < MAX)
-    - BLOCK → human_gate (if revisions >= MAX, stop looping)
+    - BLOCK → optimization_advisor (if revisions < MAX AND there is evidence to improve)
+    - BLOCK → human_gate (if revisions >= MAX OR feasibility=not_recommended with no evidence)
     """
     verdict = state.get("review_report", {}).get("overall_verdict", "ACCEPT")
     revisions = state.get("narrative_revision_count", 0)
+    feas_verdict = state.get("feasibility_report", {}).get("verdict", "")
 
     if verdict == "ACCEPT":
         return "human_gate"
 
     if revisions >= MAX_NARRATIVE_REVISIONS:
+        return "human_gate"
+
+    # If feasibility is not_recommended, there's no evidence to optimize — stop looping
+    if feas_verdict == "not_recommended" and verdict == "BLOCK":
         return "human_gate"
 
     if verdict == "MINOR_REVISION":

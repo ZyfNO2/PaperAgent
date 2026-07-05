@@ -111,6 +111,14 @@ LangGraph 会自动并行执行 innovation_extractor 和 sota_matcher, narrative
 3. **并行执行未验证**: 由于条件边跳过了 innovation/sota 路径, 并行 fan-out/fan-in 未被实际执行。graph 拓扑正确 (build_graph 不报错), 但需要 feasibility=feasible/risky 的 case 才能验证并行时间戳。
 4. **feasibility_diversity 仍 fail**: 3 case 全 not_recommended(15)。根因是 OpenAlex 429 导致搜索结果不足, 非 prompt 问题。Re1.5 的 20 篇 smoke test (OpenAlex 正常时) 显示全 risky(30-45), Re2 增强后 prompt 传入摘要, 但没有足够的论文数据让 LLM 区分。
 5. **devils_advocate 全 BLOCK**: 即使传入完整上下文, LLM 仍判 BLOCK。原因: not_recommended case 无 baseline/innovation/narrative, 证据严重不足, BLOCK 是正确的判断。
+6. **devils_advocate BLOCK 回环修复**: 审核反馈指出 not_recommended + BLOCK 时回环到 optimization_advisor 无意义。已修复: `_route_after_devils` 检查 `feas_verdict == "not_recommended" and verdict == "BLOCK"` → 直接 human_gate, 不再回环。
+7. **创新链路验证**: 用 medical-LLM 题目 ("基于大语言模型的医学问答可信度评估方法研究") 运行, 成功触发全链路 23 节点。feasibility=risky(45), 2 baseline + 4 parallel, 4 innovation points (引用 PediatricsGPT), 3 sota comparison papers, narrative_builder 执行, devils_advocate BLOCK 回环 2 次后停止。**并行验证成功**: innovation started=23:29:23Z, sota started=23:29:21Z (几乎同时启动)。
+
+### 额外验证: medical-LLM 创新链路测试
+
+| Case | n_nodes | feasibility | review | n_baseline | n_parallel | n_innovation | n_sota | parallel |
+|---|---|---|---|---|---|---|---|---|
+| re2-innovation-test | 23 | risky(45) | BLOCK | 2 | 4 | 4 | 3 | ✅ innovation∥sota 同时启动 |
 
 ---
 
@@ -121,7 +129,7 @@ LangGraph 会自动并行执行 innovation_extractor 和 sota_matcher, narrative
 | 文件 | 变更 |
 |---|---|
 | `graph/state.py` | 新增 `narrative_revision_count: int` |
-| `graph/research_graph.py` | 新增 `_route_after_feasibility`, `_route_after_devils`, `MAX_NARRATIVE_REVISIONS`, `NODE_TIMEOUTS`; feasibility/devils 改为条件边; innovation∥sota 并行; 删除重复 edge |
+| `graph/research_graph.py` | 新增 `_route_after_feasibility`, `_route_after_devils` (含 not_recommended+BLOCK 直接 human_gate 优化), `MAX_NARRATIVE_REVISIONS`, `NODE_TIMEOUTS`; feasibility/devils 改为条件边; innovation∥sota 并行; 删除重复 edge |
 | `graph/nodes/narrative_builder.py` | 递增 `narrative_revision_count` |
 | `graph/nodes/optimization_advisor.py` | 递增 `narrative_revision_count`; 传 baselines+parallels 给 prompt |
 | `graph/nodes/feasibility_assessor.py` | 传 baselines+parallels 对象 (不再只传计数) |
@@ -146,8 +154,8 @@ LangGraph 会自动并行执行 innovation_extractor 和 sota_matcher, narrative
 | 5 | feasibility prompt 传论文摘要 | ✅ | 传 title+abstract+year+venue |
 | 6 | optimization prompt 传 parallel 摘要 | ✅ | TODO-1 验证, ref_parallel 引用论文 |
 | 7 | devils_advocate prompt 传完整 JSON | ✅ | 传 feasibility+innovation+narrative+work_packages |
-| 8 | devils_advocate 不总是 BLOCK | ❌ | 3 case 全 BLOCK (因 not_recommended 无证据) |
-| 9 | innovation + sota 并行 | ✅ 接线 | 拓扑正确, 但未触发 (条件边跳过) |
+| 8 | devils_advocate 不总是 BLOCK | ⚠ | not_recommended case 全 BLOCK (无证据); 但 medical-LLM (risky) 也 BLOCK (有证据但 LLM 保守) |
+| 9 | innovation + sota 并行 | ✅ | medical-LLM: innovation started=23:29:23Z, sota started=23:29:21Z |
 | 10 | 3 case 完成 | ✅ | 3/3 has_final=True |
 | 11 | e2e_completeness | ✅ | 3/3 pass (更新了 validator) |
 | 12 | paper_authenticity | ✅ | 3/3 pass |
