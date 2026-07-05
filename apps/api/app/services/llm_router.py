@@ -78,7 +78,7 @@ def _resolve_spec(profile: str | None) -> ProviderSpec:
         # chain, so here we just hand back the StepFun-capable leaf that is
         # known to be up when DeepSeek is unavailable.
         primary = _get_env("FAST_JSON_PRIMARY", "stepfun").lower()
-        if primary in ("deepseek", "stepfun", "voapi"):
+        if primary in ("deepseek", "stepfun", "voapi", "opencode"):
             return ProviderSpec(
                 profile=p, provider=primary,
                 json_mode=(primary != "stepfun"),
@@ -190,6 +190,8 @@ def call_json(
             raw = _llm._chat_deepseek(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
         elif spec.provider == "voapi":
             raw = _llm._chat_voapi(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
+        elif spec.provider == "opencode":
+            raw = _llm._chat_opencode(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
         elif spec.provider == "stepfun":
             raw = _llm._chat_stepfun(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
         else:

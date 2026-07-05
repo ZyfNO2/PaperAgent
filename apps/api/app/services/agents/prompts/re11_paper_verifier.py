@@ -27,9 +27,19 @@ RULES:
     survey    — review / survey.
     none      — unrelated.
 - verdict "accept" requires relation_to_topic in (baseline, parallel) AND
-  at least 1 hit_keyword.
-- verdict "weak_reject" when only generic relevance.
-- verdict "reject" when relation_to_topic == none.
+  at least 2 hit_keywords (method + object/task, not just a shared method).
+- verdict "weak_reject" when EITHER:
+    - relation_to_topic == "none" but at least 1 non-generic hit_keyword
+      shares the core method (same-method-different-domain, e.g. "YOLOv5
+      for medical imaging" when the topic is "YOLOv5 for steel defect"), OR
+    - relation_to_topic == "survey", OR
+    - generic relevance only (title mentions the domain but offers no
+      reproducible evidence or method).
+- verdict "reject" when relation_to_topic == none AND no non-generic
+  hit_keywords.
+- Generic hit_keywords alone ("deep learning", "AI", "neural network") do
+  NOT qualify a candidate for weak_reject — they must reference a concrete
+  method, object, dataset, or task term.
 - url_missing: true unless the candidate already carries a URL/DOI/arXiv.
 - needs_human_confirm: true when relevance is ambiguous.
 

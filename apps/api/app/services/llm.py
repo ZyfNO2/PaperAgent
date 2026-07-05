@@ -419,6 +419,34 @@ def _contains_json_object(raw: str) -> bool:
     return False
 
 
+def _chat_opencode(
+    prompt: str,
+    *,
+    system: str | None = None,
+    temperature: float = 0.2,
+    max_tokens: int = 1500,
+    timeout: float = 60.0,
+) -> str:
+    """Open Code Zen (opencode.ai/zen/v1) provider.
+
+    Uses the OpenAI-compatible surface at ``OPENCODE_BASE_URL``.  The default
+    model is ``big-pickle``.  This provider does NOT use the stepfun-specific
+    fallback path because it writes JSON directly to ``content``.
+    """
+    api_key = _get_env("OPENCODE_API_KEY")
+    # base_url may or may not include a trailing /v1 — strip it so
+    # _chat_openai_compat_once can append /v1/chat/completions unambiguously.
+    raw_base = _get_env("OPENCODE_BASE_URL", "https://opencode.ai/zen").rstrip("/")
+    base_url = raw_base.removesuffix("/v1")
+    model = _get_env("OPENCODE_MODEL", "big-pickle")
+    if not api_key:
+        raise LLMUnavailable("OPENCODE_API_KEY not set")
+    return _chat_openai_compat_once(
+        prompt, system=system, model=model, api_key=api_key,
+        base_url=base_url, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
+    )
+
+
 def _chat_voapi(
     prompt: str,
     *,
