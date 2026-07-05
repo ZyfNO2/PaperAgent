@@ -7,12 +7,23 @@ into trace for auditability.
 from __future__ import annotations
 
 import logging
+import os
 import time
 from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
 
 
 def _now_iso() -> str:
@@ -39,12 +50,15 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
     if not candidates:
         return []
 
-    max_workers = min(len(candidates), 2)
+    max_workers = max(1, min(len(candidates), _env_int("VERIFIER_MAX_WORKERS", 2)))
+    timeout_s = max(5, _env_int("VERIFIER_TIMEOUT_S", 120))
+
+    max_attempts = max(1, _env_int("VERIFIER_MAX_ATTEMPTS", 2))
 
     def _verify_one(candidate: dict[str, Any]) -> list[dict[str, Any]]:
         """Verify a single candidate; returns list of normalised verdict dicts."""
         last_exc: BaseException | None = None
-        for attempt in range(2):
+        for attempt in range(max_attempts):
             try:
                 built = P.build_one(topic, atoms, candidate)
                 out = llm_router.call_json(
@@ -52,12 +66,12 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
                     system=built["system"],
                     profile="fast_json",
                     max_tokens=1200,
-                    timeout=120,
+                    timeout=timeout_s,
                     expected="dict",
                     schema_hint='Top-level object with keys: title, verdict, hit_keywords, relation_to_topic, reason',
                 )
                 verdicts = _normalise_verifier_output(out)
-                if not verdicts and attempt == 0:
+                if not verdicts and attempt + 1 < max_attempts:
                     continue
                 return verdicts
             except BaseException as exc:
@@ -108,7 +122,12 @@ def _normalise_verifier_output(out: Any) -> list[dict[str, Any]]:
 def verify_node(state: ResearchState) -> dict[str, Any]:
     topic = state.get("topic") or ""
     atoms = state.get("topic_atoms") or {}
-    candidates = state.get("paper_candidates") or []
+    candidates = list(state.get("paper_candidates") or [])
+    user_constraints = state.get("user_constraints") or {}
+    if isinstance(user_constraints, dict):
+        verify_limit = int(user_constraints.get("max_verify_candidates", len(candidates)) or len(candidates))
+        verify_limit = max(0, min(len(candidates), verify_limit))
+        candidates = candidates[:verify_limit]
     t0 = time.time()
 
     trace: dict[str, Any] = {

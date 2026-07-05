@@ -64,16 +64,21 @@ async def _run_direct_adapter_retrieval(topic: str, atoms: dict[str, Any]) -> di
     queries = [q for q in dict.fromkeys(queries).keys() if len(q) > 5][:6]
 
     raw: dict[str, list[dict[str, Any]]] = {}
-    # Use the configured tools; fall back to arxiv/openalex/crossref only
-    for tool in ("arxiv", "openalex", "crossref", "github"):
-        if tool not in REGISTRY:
-            continue
-        try:
-            hits = await REGISTRY[tool](queries, 8)
-            if hits:
-                raw[tool] = hits
-        except BaseException as exc:  # noqa: BLE001
-            logger.warning("direct adapter %s failed: %s", tool, type(exc).__name__)
+    tool_order = [tool for tool in ("arxiv", "openalex", "crossref", "github") if tool in REGISTRY]
+    if tool_order:
+        semaphore = asyncio.Semaphore(min(4, len(tool_order)))
+
+        async def _fetch_one(tool: str) -> tuple[str, list[dict[str, Any]]]:
+            try:
+                async with semaphore:
+                    hits = await REGISTRY[tool](queries, 8)
+                return tool, hits or []
+            except BaseException as exc:  # noqa: BLE001
+                logger.warning("direct adapter %s failed: %s", tool, type(exc).__name__)
+                return tool, []
+
+        results = await asyncio.gather(*[_fetch_one(tool) for tool in tool_order])
+        raw = {tool: hits for tool, hits in results if hits}
 
     # Build a unified paper candidate pool (strip down titles for verify later)
     papers: list[dict[str, Any]] = []

@@ -225,7 +225,7 @@ def call_json(
         return blobs[-1]
 
     # Phase C
-    value, ok = _fallback_formatter(raw, expected, schema_hint, profile=profile)
+    value, ok = _fallback_formatter(raw, expected, schema_hint, profile=profile, timeout=timeout)
     repair_stages.append("fallback_formatter" if ok else "fallback_formatter_failed")
     if ok:
         return value
@@ -267,8 +267,9 @@ def _json_repair_parse_direct(text, expected):
     return value, True
 
 
-def _fallback_formatter(raw_text, expected, schema_hint, profile=None):
+def _fallback_formatter(raw_text, expected, schema_hint, profile=None, timeout: float = 60.0):
     """Re-prompt LLM to repair JSON."""
+    fallback_timeout = min(timeout, float(_get_env("JSON_FALLBACK_TIMEOUT_S", str(int(timeout) if timeout else 60))))
     from apps.api.app.services import llm_router as _r
     prompt = (
         "The following response failed JSON parsing. Re-write so the ENTIRE "
@@ -283,7 +284,7 @@ def _fallback_formatter(raw_text, expected, schema_hint, profile=None):
           "Reply ONLY with JSON, no prose, no fences."
     )
     try:
-        result = _r.call_json(prompt, profile=profile, max_tokens=4000, timeout=120,
+        result = _r.call_json(prompt, profile=profile, max_tokens=4000, timeout=fallback_timeout,
                               expected=expected, schema_hint=schema_hint)
         return result, True
     except Exception as exc:

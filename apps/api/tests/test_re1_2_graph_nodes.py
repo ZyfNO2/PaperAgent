@@ -66,8 +66,10 @@ def _fake_retrieval(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
             "module_papers": [],
             "reference_papers": [],
         },
-        "raw": {"arxiv": [{"title": "Fake"},
-                          "openalex": [{"title": "Fake2"}]},
+        "raw": {
+            "arxiv": [{"title": "Fake"}],
+            "openalex": [{"title": "Fake2"}],
+        },
     }
 
 
@@ -141,3 +143,37 @@ def test_node_modules_expose_expected_node_funcs() -> None:
         assert mod is not None, f"module {mod_name} not registered"
         assert hasattr(mod, fn_name), f"{mod_name} missing {fn_name}"
         assert callable(getattr(mod, fn_name)), f"{mod_name}.{fn_name} not callable"
+
+
+def test_topic_parser_preserves_explicit_rag_terms(monkeypatch) -> None:
+    from apps.api.app.services.agents.graph.nodes import topic_parser as tp
+
+    def fake_call_json(*args, **kwargs):  # type: ignore[no-untyped-def]
+        return {
+            "method": [
+                "Non-retrieval augmented generative and knowledge graph-based question answering",
+            ],
+            "object": ["enterprise chatbot"],
+            "task": ["Answering without retrieval"],
+            "scenario": ["enterprise deployment without external retrieval"],
+            "domain": "unknown",
+            "dataset_terms": [],
+            "baseline_terms": [],
+            "avoid_terms": ["external retrieval for QA pipelines"],
+        }
+
+    monkeypatch.setattr(tp, "call_json", fake_call_json)
+    out = tp.topic_parser_node(
+        {
+            "topic": "Retrieval-augmented generation for enterprise knowledge base question answering",
+            "trace_events": [],
+            "errors": [],
+        },
+    )
+
+    atoms = out["topic_atoms"]
+    assert atoms["domain"] == "nlp_llm"
+    assert atoms["method"][0] == "retrieval-augmented generation"
+    assert any("question answering" in item.lower() for item in atoms["task"])
+    assert all("non-" not in item.lower() for item in atoms["method"])
+    assert all("without retrieval" not in item.lower() for item in atoms["task"])

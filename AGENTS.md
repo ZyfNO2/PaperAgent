@@ -1,5 +1,60 @@
 # AI 工程协作增强规则
 
+## 测试策略
+
+> **所有执行者必读**。本节规则适用于项目中的任何 AI 执行者（执行 AI、SOP AI、Review AI 等），不限于特定 SOP。
+
+### 核心原则：能并行就并行，不值得并行就串行，并行时不空转
+
+1. **可并行的测试必须并行**：多个相互独立的测试用例（如多题目端到端测试、多节点单元测试、多 validator 各跑一次）必须分发 subagent 并行执行，禁止逐条串行等待。
+
+2. **分发前评估并行价值**：
+   - 单条测试 <10s 且串行总耗时 <60s → 直接串行跑，不值得 subagent 开销。
+   - 总耗时 >60s 且各用例相互独立 → 必须分发 subagent 并行。
+   - 如果用例之间有数据依赖（如 Loop B 依赖 Loop A 的输出）→ 不能并行，串行执行。
+
+3. **大规模测试需先判断必要性**：
+   - 超过 10 条用例的大规模回归测试，先评估"是否每条都有独立发现价值"。
+   - 如果前 3 条已覆盖核心路径，后续用例降级为 smoke test（只验证不 crash、`final_recommendation` 非空），不做全量断言。
+   - 禁止为了"看起来全面"而跑 20 条本质重复的测试。
+
+4. **并行时主线程不空转**：
+   - subagent 跑测试时，主线程必须同时做推进性工作：review 已完成的代码、编写下一阶段的 prompt 草稿、检查文档一致性、准备下一阶段测试数据、撰写进度报告。
+   - **禁止**分发 subagent 后主线程空转等待。等待 = 浪费。
+
+5. **测试结果汇总后统一判断**：
+   - 所有并行 subagent 返回后，主线程统一汇总 pass/fail。
+   - 全 pass → 进入下一阶段。
+   - 有 fail → 分析失败模式，决定是全部重跑还是只重跑失败项。不逐条处理。
+
+### 并行分发示例
+
+```
+# 场景：5 个题目端到端测试，每个 ~3min，相互独立
+
+# ❌ 错误：串行跑 5 个，等 15min
+for topic in topics:
+    run_e2e(topic)  # 主线程阻塞 15min
+
+# ❌ 错误：分发后空转等待
+subagents = [dispatch(run_e2e, t) for t in topics]
+# 主线程什么都不做，等 subagent 返回 ← 浪费
+
+# ✅ 正确：分发后做推进性工作
+subagents = [dispatch(run_e2e, t) for t in topics]
+review_completed_code()           # review 已完成节点
+write_next_phase_prompts()         # 写下一阶段 prompt 草稿
+check_docs_consistency()           # 检查文档一致性
+# subagent 返回后统一汇总
+results = collect_all(subagents)
+if all(r.passed for r in results):
+    proceed_to_next_phase()
+else:
+    rerun_failed([r for r in results if not r.passed])
+```
+
+---
+
 ## 认知盲区提醒
 
 - 如果用户的需求描述过于直接跳到实现，AI 应先反问产品目标、用户场景、成功标准，避免为了做功能而做功能。

@@ -21,6 +21,7 @@ Patch fields:
 from __future__ import annotations
 
 import logging
+import os
 import time
 from typing import Any
 
@@ -42,6 +43,16 @@ REPAIR_TYPES = [
 ]
 
 _TOOLS = frozenset({"arxiv", "openalex", "crossref", "web", "github"})
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
 
 
 def _now_iso() -> str:
@@ -193,6 +204,7 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
             system=built["system"],
             profile="fast_json",
             max_tokens=4000,
+            timeout=max(5, _env_int("TARGETED_REPAIR_TIMEOUT_S", 60)),
             expected="dict",
             schema_hint=(
                 '{"queries":[{tool,query,why,expected_evidence,stop_condition}...],'

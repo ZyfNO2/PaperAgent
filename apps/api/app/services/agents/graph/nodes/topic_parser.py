@@ -12,6 +12,8 @@ Patch fields:
 from __future__ import annotations
 
 import logging
+import os
+import re
 import time
 from typing import Any
 
@@ -20,6 +22,16 @@ from apps.api.app.services.agents.prompts import re11_parser as P
 from apps.api.app.services.llm_router import call_json, LLMUnavailable
 
 logger = logging.getLogger(__name__)
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
 
 
 # Allowed domain values — single string (see ResearchState docstring & prompt).
@@ -83,6 +95,76 @@ def _normalize(raw: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _contains_negation(text: str) -> bool:
+    lowered = text.lower()
+    return any(token in lowered for token in ("non-", "without ", "w/o ", "no ", "not "))
+
+
+def _enforce_literal_topic_guards(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
+    """Preserve literal topic signals when the LLM drifts into adjacent terms."""
+    out = dict(atoms)
+    topic_text = (topic or "").strip()
+    lowered = topic_text.lower()
+
+    # If the topic itself is positive-form, drop invented negations.
+    if topic_text and not _contains_negation(topic_text):
+        for key in ("method", "object", "task", "scenario", "avoid_terms"):
+            cleaned = []
+            for item in out.get(key) or []:
+                text = str(item).strip()
+                if text and not _contains_negation(text):
+                    cleaned.append(text)
+            out[key] = cleaned
+
+    explicit_rag = (
+        "retrieval-augmented generation" in lowered
+        or "检索增强生成" in topic_text
+        or ("检索增强" in topic_text and "生成" in topic_text)
+        or re.search(r"\brag\b", lowered) is not None
+    )
+    if explicit_rag:
+        method = list(out.get("method") or [])
+        if not any("retrieval-augmented generation" in str(x).lower() for x in method):
+            method.insert(0, "retrieval-augmented generation")
+        out["method"] = method
+        baseline = list(out.get("baseline_terms") or [])
+        if not any("retrieval-augmented generation" in str(x).lower() for x in baseline):
+            baseline.insert(0, "retrieval-augmented generation")
+        out["baseline_terms"] = baseline
+        out["avoid_terms"] = [
+            x for x in (out.get("avoid_terms") or [])
+            if "retrieval" not in str(x).lower() or _contains_negation(str(x))
+        ]
+        object_terms = list(out.get("object") or [])
+        if not any("knowledge base" in str(x).lower() for x in object_terms) and "知识库" in topic_text:
+            object_terms.insert(0, "knowledge base")
+        out["object"] = object_terms
+        if out.get("domain") == "unknown":
+            out["domain"] = "nlp_llm"
+
+    if "question answering" in lowered or "问答" in topic_text or re.search(r"\bqa\b", lowered):
+        task = list(out.get("task") or [])
+        if not any("question answering" in str(x).lower() for x in task):
+            task.insert(0, "question answering")
+        out["task"] = task
+        if out.get("domain") == "unknown":
+            out["domain"] = "nlp_llm"
+
+    if "knowledge base" in lowered or "知识库" in topic_text:
+        scenario = list(out.get("scenario") or [])
+        if not any("knowledge base" in str(x).lower() for x in scenario):
+            scenario.insert(0, "knowledge base question answering")
+        out["scenario"] = scenario
+
+    if "enterprise" in lowered or "企业" in topic_text:
+        scenario = list(out.get("scenario") or [])
+        if not any("enterprise" in str(x).lower() for x in scenario):
+            scenario.insert(0, "enterprise deployment")
+        out["scenario"] = scenario
+
+    return out
+
+
 def topic_parser_node(state: ResearchState) -> dict[str, Any]:
     """Parse topic -> topic_atoms. Skips LLM call if atoms already present."""
     topic = state.get("topic") or ""
@@ -112,6 +194,7 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
             system=built["system"],
             profile="fast_json",
             max_tokens=2500,
+            timeout=max(5, _env_int("TOPIC_PARSER_TIMEOUT_S", 60)),
             expected="dict",
             schema_hint=(
                 'JSON object with keys: method/object/task/scenario/'
@@ -119,7 +202,10 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
                 'domain is a single string.'
             ),
         )
-        atoms = _normalize(raw if isinstance(raw, dict) else {})
+        atoms = _enforce_literal_topic_guards(
+            topic,
+            _normalize(raw if isinstance(raw, dict) else {}),
+        )
     except BaseException as exc:  # noqa: BLE001
         kind = "LLMUnavailable" if isinstance(exc, LLMUnavailable) else type(exc).__name__
         logger.warning("topic_parser_node LLM call failed (%s); using empty atoms", kind)

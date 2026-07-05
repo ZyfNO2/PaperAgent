@@ -102,3 +102,15 @@ workers × 24 candidates 仍会击穿。**减轻而非消除** — 用户需知 
 | 新 provider 接入 | `_chat_opencode` 模板 |
 | prompt schema 变动 | `prompts/re11_paper_verifier.py` |
 | verifier caller 变动 | `nodes/verify.py` \| `nodes/content.py` |
+
+---
+
+## 7. 测试策略 (必须遵守)
+
+> 完整规则见 `AGENTS.md` "测试策略" 章节。以下为摘要。
+
+- **能并行就并行**：独立测试用例总耗时 >60s 时，必须分发 subagent 并行执行。
+- **不值得并行就串行**：单条 <10s 或总耗时 <60s，直接串行。
+- **大规模测试先评估**：超过 10 条用例，前 3 条全量断言，后续降级为 smoke test。
+- **并行时主线程不空转**：subagent 跑测试时，主线程必须做推进性工作（review 代码、写下一阶段 prompt、检查文档、准备测试数据）。禁止空转等待。
+- **结果统一汇总**：所有 subagent 返回后统一判断 pass/fail，不逐条处理。

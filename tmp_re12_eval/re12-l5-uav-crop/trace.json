@@ -1,0 +1,214 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T14:04:35Z",
+    "input_summary": {
+      "topic": "UAV remote sensing for crop pest and disease detection using deep learning"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T14:04:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T14:05:56Z",
+    "input_summary": {
+      "topic_len": 74
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "unknown"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T14:05:56Z",
+    "elapsed_s": 80.898
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T14:05:56Z",
+    "input_summary": {
+      "topic_len": 74,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T14:05:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T14:05:56Z",
+    "input_summary": {
+      "topic_len": 74,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T14:06:28Z",
+    "elapsed_s": 32.498
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T14:06:28Z",
+    "input_summary": {
+      "n_candidates": 31,
+      "topic_len": 74
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_reject_or_weak": 31
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T14:11:22Z",
+    "elapsed_s": 294.222
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T14:11:22Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T14:11:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-05T14:11:57Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 4,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T14:11:57Z",
+    "elapsed_s": 34.416
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T14:11:57Z",
+    "input_summary": {
+      "topic_len": 74,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T14:12:35Z",
+    "elapsed_s": 37.792
+  }
+]

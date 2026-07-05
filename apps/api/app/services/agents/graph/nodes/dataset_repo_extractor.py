@@ -12,12 +12,23 @@ Output fields: dataset_candidates, repo_candidates, evidence_audit, trace_events
 from __future__ import annotations
 
 import logging
+import os
 import time
 from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
 
 
 def _now_iso() -> str:
@@ -101,7 +112,9 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
             built = P.build(title, paper.get("abstract") or paper.get("snippet") or "")
             out = llm_router.call_json(
                 built["user"], system=built["system"], profile="fast_json",
-                max_tokens=700, expected="list",
+                max_tokens=700,
+                timeout=max(5, _env_int("DATASET_REPO_TIMEOUT_S", 45)),
+                expected="list",
                 schema_hint=("list of one object with keys: dataset_name, "
                              "benchmark_name, official_code_url, project_page_url, "
                              "supplementary_url, paper_mentioned_repo, "
@@ -182,7 +195,7 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
     import concurrent.futures
     datasets: list[dict[str, Any]] = []
     repos: list[dict[str, Any]] = []
-    max_workers = min(len(target_papers), 4)
+    max_workers = max(1, min(len(target_papers), _env_int("DATASET_REPO_MAX_WORKERS", 4)))
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(_extract_one, p): p for p in target_papers}
         for future in concurrent.futures.as_completed(futures):
