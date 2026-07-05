@@ -1,4 +1,4 @@
-"""LangGraph nodes: dataset/repo extractor + evidence auditor/baseline classifier
+﻿"""LangGraph nodes: dataset/repo extractor + evidence auditor/baseline classifier
 + work package + low-bar review + human gate + final recommendation.
 
 Each node writes trace_events, never mutates state in place, and returns only
@@ -102,8 +102,8 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
     return {
         "dataset_candidates": datasets,
         "repo_candidates": repos,
-        "trace_events": list(state.get("trace_events") or []) + [trace],
-        "errors": list(state.get("errors") or []) + errors,
+        "trace_events": [trace],
+        "errors": errors,
     }
 
 
@@ -151,7 +151,7 @@ def evidence_auditor_node(state: ResearchState) -> dict[str, Any]:
             "dataset_candidates_n": len(state.get("dataset_candidates") or []),
             "repo_candidates_n": len(state.get("repo_candidates") or []),
         },
-        "trace_events": list(state.get("trace_events") or []) + [trace],
+        "trace_events": [trace],
     }
 
 
@@ -214,8 +214,8 @@ def work_package_node(state: ResearchState) -> dict[str, Any]:
             **(state.get("evidence_audit") or {}),
             "evidence_gap": gap,
         },
-        "trace_events": list(state.get("trace_events") or []) + [trace],
-        "errors": list(state.get("errors") or []) + errors_out,
+        "trace_events": [trace],
+        "errors": errors_out,
     }
 
 
@@ -299,7 +299,7 @@ def low_bar_review_node(state: ResearchState) -> dict[str, Any]:
                   "local", [])
     return {"low_bar_review": review,
             "work_packages": kept,
-            "trace_events": list(state.get("trace_events") or []) + [trace]}
+            "trace_events": [trace]}
 
 
 # ---------------------------------------------------------------------------
@@ -329,7 +329,7 @@ def human_gate_node(state: ResearchState) -> dict[str, Any]:
                   {"status": gate["status"]}, [],
                   "local", [])
     return {"human_gate": gate,
-            "trace_events": list(state.get("trace_events") or []) + [trace]}
+            "trace_events": [trace]}
 
 
 # ---------------------------------------------------------------------------
@@ -365,4 +365,4 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
     trace = _emit("final_recommendation", t0, {}, recommendation,
                   [], "local", [])
     return {"final_recommendation": recommendation,
-            "trace_events": list(state.get("trace_events") or []) + [trace]}
+            "trace_events": [trace]}

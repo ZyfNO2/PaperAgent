@@ -1,72 +1,71 @@
-"""Self-test validator: paper authenticity — verifies quality_filter results."""
+"""Self-test validator: paper authenticity — detects LLM-hallucinated non-paper entries.
+
+Checks verified_papers and weak_papers for known pollution patterns that indicate
+the LLM generated fake "paper" entries (e.g. "Term Entry", "Core Concept", "Figure N").
+"""
 from __future__ import annotations
 
 import re
-import json
-from pathlib import Path
 from typing import Any
 
 
-KNOWN_POLLUTION = [
-    "Question Answering Input Classification",
-    "Question Answering and Knowledge Bases Core Concepts",
-    "Deep Learning Core Term Entry",
-    "Deep Learning Term Entry",
-    "Deep Learning Core Concept Entry",
-    "Deep Term Entry",
-    "Deep Learning Technical Term Entry",
-    "Indoor Environment Term Entry",
-    "Indoor Input Term Assessment",
-    "Indoor Term Assessment",
-    "Table 2: Accuracy comparison between YOLOv5 and SDG-YOLOv5",
-    "Figure 3: YOLOv5 model.",
-    "Figure 3: YOLOv5 architecture.",
-    "Figure 6: Improved YOLOv5 model.",
-    "Supplemental Information 2: Code of yolov5.",
-]
-
-KNOWN_REAL = [
-    "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
-    "HIC-YOLOv5: Improved YOLOv5 For Small Object Detection",
-    "TPH-YOLOv5: Improved YOLOv5 Based on Transformer Prediction Head",
-    "MonoIndoor++:Towards Better Practice of Self-Supervised Monocular Depth Estimation",
-]
-
 POLLUTION_PATTERNS = [
-    r"Term Entry", r"Core Concept", r"Input Classification",
-    r"Terminology Entry", r"Concept Entry", r"Term Assessment",
-    r"Term List", r"Term Validation", r"Input Evaluation",
-    r"Input Technical Keywords", r"Figure \d+", r"Table \d+:",
-    r"Supplemental Information",
+    r"Term\s*Entry",
+    r"Core\s*Concept",
+    r"Input\s*Classification",
+    r"Terminology\s*Entry",
+    r"Concept\s*Entry",
+    r"Term\s*Assessment",
+    r"Term\s*List",
+    r"Term\s*Validation",
+    r"Input\s*Evaluation",
+    r"Input\s*Technical\s*Keywords",
+    r"^Figure\s*\d+",
+    r"^Table\s*\d+",
+    r"Supplemental\s*Information",
 ]
 
+COMPILED_PATTERNS = [re.compile(p, re.IGNORECASE) for p in POLLUTION_PATTERNS]
 
-def validate_paper_authenticity(state: dict[str, Any]) -> dict[str, Any]:
-    """Validate quality_filter results against known pollution patterns."""
-    report: dict[str, Any] = {
-        "pollution_check": {"total": len(KNOWN_POLLUTION), "filtered": 0, "leaked": []},
-        "real_check": {"total": len(KNOWN_REAL), "kept": 0, "wrongly_dropped": []},
-        "verified_papers_check": {"total": 0, "non_paper_leaked": []},
-    }
 
-    filter_results = state.get("filter_results", {})
-    dropped_titles = {d.get("title", "") for d in filter_results.get("dropped_items", [])}
-    for title in KNOWN_POLLUTION:
-        if title in dropped_titles:
-            report["pollution_check"]["filtered"] += 1
+def _is_polluted(title: str) -> bool:
+    return any(pat.search(title) for pat in COMPILED_PATTERNS)
 
-    kept_titles = {p.get("title", "") for p in state.get("paper_candidates", [])}
-    for title in KNOWN_REAL:
-        if title in kept_titles:
-            report["real_check"]["kept"] += 1
 
-    verified = state.get("verified_papers", [])
-    report["verified_papers_check"]["total"] = len(verified)
+def validate(state: dict[str, Any]) -> dict[str, Any]:
+    """Validate that no hallucinated non-paper entries leaked into verified/weak papers.
+
+    Returns:
+        dict with keys: pass (bool), n_checked, polluted_titles, details
+    """
+    verified = state.get("verified_papers") or []
+    weak = state.get("weak_papers") or []
+    expanded = state.get("expanded_papers") or []
+
+    all_papers = []
     for p in verified:
-        title = p.get("title", "")
-        for pattern in POLLUTION_PATTERNS:
-            if re.search(pattern, title, re.IGNORECASE):
-                report["verified_papers_check"]["non_paper_leaked"].append(title)
-                break
+        all_papers.append(("verified", p))
+    for p in weak:
+        all_papers.append(("weak", p))
+    for p in expanded:
+        all_papers.append(("expanded", p))
 
-    return report
+    polluted = []
+    for source, p in all_papers:
+        title = p.get("title", "")
+        if _is_polluted(title):
+            polluted.append({"source": source, "title": title})
+
+    passed = len(polluted) == 0
+
+    return {
+        "pass": passed,
+        "n_checked": len(all_papers),
+        "n_polluted": len(polluted),
+        "polluted_titles": polluted,
+        "details": (
+            f"All {len(all_papers)} papers clean (0 pollution)"
+            if passed
+            else f"{len(polluted)} polluted entries found: {[p['title'] for p in polluted[:5]]}"
+        ),
+    }

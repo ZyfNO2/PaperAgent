@@ -1,4 +1,4 @@
-"""LangGraph node: json_graph_builder — formalise evidence_graph.
+﻿"""LangGraph node: json_graph_builder — formalise evidence_graph.
 
 Pure function (no LLM). Builds the Re1.1 front-end contract (SOP §5.8) from
 state: paper / repo / dataset / baseline / parallel / work-package nodes and
@@ -215,5 +215,5 @@ def json_graph_builder_node(state: ResearchState) -> dict[str, Any]:
     return {
         "evidence_graph": graph,
         "evidence_audit": {**audit, "graph_built": True},
-        "trace_events": list(state.get("trace_events") or []) + [trace],
+        "trace_events": [trace],
     }

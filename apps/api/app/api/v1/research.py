@@ -29,7 +29,7 @@ from fastapi.responses import StreamingResponse
 
 logger = logging.getLogger(__name__)
 
-OUT_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "tmp_re13_eval"
+OUT_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent.parent / "tmp_re13_eval"
 
 _RUN_STATUS: dict[str, dict[str, Any]] = {}
 _LOCK = threading.Lock()
@@ -261,39 +261,64 @@ async def case_stream(case_id: str):
             for t in new_traces:
                 node = t.get("node", "")
                 output_summary = t.get("output_summary", {})
+                input_summary = t.get("input_summary", {})
+                tool_calls = t.get("tool_calls", [])
 
-                if node == "quality_filter":
+                if node == "retrieve" or node == "paper_retriever":
+                    # Parse adapter results from tool_calls
+                    for tc in tool_calls:
+                        tool = tc.get("tool", "")
+                        n = tc.get("n", 0)
+                        if tool and n:
+                            yield _sse_event("adapter_result", {
+                                "adapter": tool,
+                                "count": n,
+                            })
+                    total_raw = sum(tc.get("n", 0) for tc in tool_calls if isinstance(tc.get("n"), int))
+                    yield _sse_event("search_completed", {"total_raw": total_raw})
+
+                elif node == "quality_filter":
                     yield _sse_event("filter_result", {
                         "kept": output_summary.get("kept", 0),
                         "dropped": output_summary.get("dropped", 0),
-                        "node": node,
+                        "pre_filter_keep": output_summary.get("pre_filter_keep", 0),
+                        "pre_filter_drop": output_summary.get("pre_filter_drop", 0),
+                        "llm_judged": output_summary.get("llm_judged", 0),
                     })
+
                 elif node == "verify":
-                    round_n = t.get("input_summary", {}).get("round", 1)
+                    round_n = input_summary.get("round", 1)
                     n_accept = output_summary.get("n_accept", 0)
-                    n_reject = output_summary.get("n_reject_or_weak", 0)
-                    if round_n == 1:
-                        yield _sse_event("verify_completed", {
-                            "accepted": n_accept,
-                            "rejected": n_reject,
-                            "round": 1,
-                        })
-                    else:
-                        yield _sse_event("verify_completed", {
-                            "accepted": n_accept,
-                            "rejected": n_reject,
-                            "round": 2,
-                        })
+                    n_weak = output_summary.get("n_weak_reject", output_summary.get("n_reject_or_weak", 0))
+                    n_reject = output_summary.get("n_reject", 0)
+                    yield _sse_event("verify_completed", {
+                        "accepted": n_accept,
+                        "weak_reject": n_weak,
+                        "rejected": n_reject,
+                        "round": round_n,
+                    })
+
                 elif node == "citation_expander":
+                    # Read state.json for seed details
+                    state_path = _case_dir(case_id) / "state.json"
+                    seeds = []
+                    if state_path.exists():
+                        try:
+                            st_tmp = json.loads(state_path.read_text(encoding="utf-8"))
+                            seeds = st_tmp.get("seed_papers") or []
+                        except Exception:
+                            pass
                     yield _sse_event("expansion_started", {
-                        "n_seeds": t.get("input_summary", {}).get("n_seeds", 0),
-                        "seed_titles": t.get("input_summary", {}).get("seed_titles", []),
+                        "n_seeds": len(seeds),
+                        "seed_titles": [s.get("title", "")[:80] for s in seeds],
+                        "seed_scores": [s.get("relevance_score", 0) for s in seeds],
                     })
                     yield _sse_event("expansion_completed", {
                         "total_expanded": output_summary.get("n_expanded", 0),
                         "n_surveys": output_summary.get("n_surveys", 0),
                         "n_repos": output_summary.get("n_repos", 0),
                     })
+
                 else:
                     yield _sse_event("node_complete", {
                         "node": node,
@@ -306,20 +331,27 @@ async def case_stream(case_id: str):
 
             # Check if done
             if status == "done":
-                # Send done event
+                # Send done event with summary stats
                 state_path = _case_dir(case_id) / "state.json"
                 elapsed = 0
+                done_data: dict[str, Any] = {
+                    "case_id": case_id,
+                    "total_elapsed_s": 0,
+                    "total_events": sent_events,
+                }
                 if state_path.exists():
                     try:
                         st = json.loads(state_path.read_text(encoding="utf-8"))
                         elapsed = st.get("elapsed_s", 0)
+                        done_data["total_elapsed_s"] = elapsed
+                        done_data["n_verified"] = len(st.get("verified_papers") or [])
+                        done_data["n_weak"] = len(st.get("weak_papers") or [])
+                        done_data["n_expanded"] = len(st.get("expanded_papers") or [])
+                        done_data["n_work_packages"] = len(st.get("work_packages") or [])
+                        done_data["n_baseline"] = len(st.get("baseline_candidates") or [])
                     except Exception:
                         pass
-                yield _sse_event("done", {
-                    "case_id": case_id,
-                    "total_elapsed_s": elapsed,
-                    "total_events": sent_events,
-                })
+                yield _sse_event("done", done_data)
                 return
 
             if status == "error":
@@ -368,3 +400,46 @@ def case_expanded(case_id: str) -> dict[str, Any]:
             if t.get("node") == "citation_expander"
         ],
     }
+
+
+# ---------------------------------------------------------------------------
+# Re1.4 analysis endpoints
+# ---------------------------------------------------------------------------
+
+def _load_state(case_id: str) -> dict[str, Any]:
+    p = _case_dir(case_id) / "state.json"
+    if not p.exists():
+        raise HTTPException(404, f"state not found for case {case_id!r}")
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+@router.get("/{case_id}/feasibility")
+def case_feasibility(case_id: str) -> dict[str, Any]:
+    return _load_state(case_id).get("feasibility_report", {})
+
+
+@router.get("/{case_id}/innovation")
+def case_innovation(case_id: str) -> dict[str, Any]:
+    st = _load_state(case_id)
+    return {"innovation_points": st.get("innovation_points", []),
+            "stitching_plan": st.get("stitching_plan", {})}
+
+
+@router.get("/{case_id}/sota")
+def case_sota(case_id: str) -> dict[str, Any]:
+    return _load_state(case_id).get("sota_comparison", {})
+
+
+@router.get("/{case_id}/narrative")
+def case_narrative(case_id: str) -> dict[str, Any]:
+    return _load_state(case_id).get("research_narratives", {})
+
+
+@router.get("/{case_id}/optimization")
+def case_optimization(case_id: str) -> dict[str, Any]:
+    return _load_state(case_id).get("optimization_directions", {})
+
+
+@router.get("/{case_id}/review")
+def case_review(case_id: str) -> dict[str, Any]:
+    return _load_state(case_id).get("review_report", {})

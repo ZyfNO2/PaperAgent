@@ -1,4 +1,4 @@
-"""LangGraph node A2 - search_planner_node.
+﻿"""LangGraph node A2 - search_planner_node.
 
 Produces `search_plan` defining broad / focused / repair rounds of tool
 calls. Idempotent when state already carries a non-empty search_plan AND no
@@ -178,12 +178,20 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
     for m in method[:2]:
         for o in obj[:1]:
             _add("openalex", _compact(f"{m} {o}"), "baseline method+object", "baseline papers", "n>=5")
+    # Crossref: combined method+object for broader academic coverage
+    if method and obj:
+        _add("crossref", _compact(f"{method[0]} {obj[0]}"), "crossref method+object", "published papers", "n>=5")
     for d in ds_terms[:2]:
         _add("openalex", _compact(f"{d} dataset benchmark"), "dataset", "dataset papers", "n>=3")
     for b in baseline[:1]:
         _add("openalex", _compact(f"{b} survey review"), "baseline", "survey or baseline papers", "n>=3")
     if method:
-        _add("arxiv", _compact(method[0]), "broad arxiv", "recent preprints", "n>=8")
+        # Compose a combined query: method + object + task for precision
+        combined_parts = method[:1] + obj[:1]
+        task_terms = [str(k).strip() for k in (atoms.get("task") or []) if k and not cjk.search(str(k))]
+        if task_terms:
+            combined_parts.append(task_terms[0])
+        _add("arxiv", _compact(" ".join(combined_parts)), "broad arxiv (method+object+task)", "recent preprints", "n>=8")
     if domain == "unknown" and baseline:
         _add("openalex", _compact(baseline[0]), "domain unknown baseline fallback", "any baseline papers", "n>=4")
     if domain == "unknown" and obj:
@@ -217,7 +225,7 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
             "none",
             [],
         )
-        return {"trace_events": list(state.get("trace_events") or []) + [trace]}
+        return {"trace_events": [trace]}
 
     skip_llm = __import__("os").environ.get("PAPERAGENT_SKIP_SEARCH_PLANNER", "true").lower() == "true"
     if skip_llm and atoms:
@@ -233,8 +241,8 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
         )
         return {
             "search_plan": plan,
-            "trace_events": list(state.get("trace_events") or []) + [trace],
-            "errors": list(state.get("errors") or []),
+            "trace_events": [trace],
+            "errors": [],
             "provider_profile": "local",
         }
 
@@ -291,7 +299,7 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
 
     return {
         "search_plan": plan,
-        "trace_events": list(state.get("trace_events") or []) + [trace],
-        "errors": list(state.get("errors") or []) + errors_out,
+        "trace_events": [trace],
+        "errors": errors_out,
         "provider_profile": "fast_json",
     }

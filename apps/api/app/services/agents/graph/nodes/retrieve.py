@@ -1,4 +1,4 @@
-"""LangGraph node: run the legacy retrieval-orchestrator as an adapter.
+﻿"""LangGraph node: run the legacy retrieval-orchestrator as an adapter.
 
 The node emits trace_events with legacy_adapter=true so downstream auditing
 knows the tool activity came from the legacy adapter, not the Re1.1 search plan.
@@ -208,7 +208,7 @@ def retrieve_node(state: ResearchState) -> dict[str, Any]:
     return {
         "raw_results": raw,
         "paper_candidates": paper_candidates,
-        "trace_events": list(state.get("trace_events") or []) + [trace],
-        "errors": list(state.get("errors") or []) + errors,
+        "trace_events": [trace],
+        "errors": errors,
         "provider_profile": "legacy_adapter",
     }

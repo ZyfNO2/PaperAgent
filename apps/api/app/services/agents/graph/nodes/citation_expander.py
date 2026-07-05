@@ -1,4 +1,4 @@
-"""LangGraph node: citation_expander — auto seed selection + citation network expansion.
+﻿"""LangGraph node: citation_expander — auto seed selection + citation network expansion.
 
 Selects top-N verified papers by relevance score as seeds, calls Semantic
 Scholar API for references+citations concurrently, identifies surveys/repos.
@@ -216,7 +216,7 @@ def citation_expander_node(state: ResearchState) -> dict[str, Any]:
             "surveys_found": [],
             "repos_found": [],
             "citation_expansion_done": True,
-            "trace_events": list(state.get("trace_events") or []) + [trace],
+            "trace_events": [trace],
         }
 
     # Run async expansion
@@ -291,5 +291,5 @@ def citation_expander_node(state: ResearchState) -> dict[str, Any]:
         "repos_found": repos,
         "citation_expansion_done": True,
         "paper_candidates": new_candidates,
-        "trace_events": list(state.get("trace_events") or []) + [trace],
+        "trace_events": [trace],
     }

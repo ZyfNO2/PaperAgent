@@ -64,14 +64,20 @@ def test_heuristic_filter_has_reasons():
 
 
 def test_quality_filter_node_with_llm_mock():
-    """Test quality_filter_node with mocked LLM returning correct judgments."""
+    """Test quality_filter_node with mocked LLM returning correct judgments.
+
+    With the pre-filter architecture:
+    - Index 0 (arxiv URL) → pre-filter keeps, LLM not called
+    - Index 1 (Term Entry, pattern match) → pre-filter drops
+    - Index 2 (Core Concept, pattern match) → pre-filter drops
+    - Index 3 (source=openalex) → pre-filter keeps (academic source)
+    - Index 4 (arxiv URL, title short but URL trusted) → pre-filter keeps
+    - Index 5 (arxiv URL) → pre-filter keeps
+    So LLM is not called at all — all candidates resolved by pre-filter.
+    """
+    # LLM mock is set but should NOT be called (all candidates resolved by pre-filter)
     llm_response = [
-        {"index": 0, "is_paper": True, "reason": "has research content"},
-        {"index": 1, "is_paper": False, "reason": "Term Entry, not a paper"},
-        {"index": 2, "is_paper": False, "reason": "Core Concept page"},
-        {"index": 3, "is_paper": False, "reason": "Reference directory entry"},
-        {"index": 4, "is_paper": False, "reason": "title too short"},
-        {"index": 5, "is_paper": True, "reason": "real paper from arxiv"},
+        {"index": 0, "is_paper": False, "reason": "should not be used"},
     ]
 
     with patch("apps.api.app.services.agents.graph.nodes.quality_filter._call_llm_batch",
@@ -82,8 +88,9 @@ def test_quality_filter_node_with_llm_mock():
     filter_results = result["filter_results"]
 
     assert filter_results["total"] == 6
-    assert filter_results["kept"] == 2  # indices 0 (normal paper) and 5 (arxiv edge case)
-    assert filter_results["dropped"] == 4
+    # Pre-filter keeps 0, 3, 4, 5 (arxiv URLs / openalex source), drops 1, 2 (patterns)
+    assert filter_results["kept"] == 4  # indices 0, 3, 4, 5
+    assert filter_results["dropped"] == 2  # indices 1, 2
 
     dropped_titles = [d["title"] for d in filter_results["dropped_items"]]
     assert "Deep Learning Core Term Entry" in dropped_titles
@@ -95,30 +102,36 @@ def test_quality_filter_node_with_llm_mock():
 
 
 def test_quality_filter_node_llm_failure_fallback():
-    """When LLM fails, heuristic fallback should work."""
+    """When LLM fails, heuristic fallback works for gray-area candidates.
+
+    In this test data, all candidates are resolved by pre-filter (trusted URLs
+    or pattern matches), so LLM is never called. This test verifies the node
+    handles the case correctly even with LLM failure.
+    """
     with patch("apps.api.app.services.agents.graph.nodes.quality_filter._call_llm_batch",
                return_value=None):
         result = quality_filter_node(_make_state(CANDIDATES))
 
     filter_results = result["filter_results"]
-    # Heuristic should drop Term Entry, Core Concept, short title
-    assert filter_results["dropped"] >= 3
+    # Pre-filter drops Term Entry and Core Concept
+    assert filter_results["dropped"] >= 2
     dropped_titles = [d["title"] for d in filter_results["dropped_items"]]
     assert "Deep Learning Core Term Entry" in dropped_titles
     assert "Core Concept: Convolutional Neural Networks" in dropped_titles
 
 
 def test_quality_filter_never_drops_all():
-    """Safety: quality_filter should never drop all candidates."""
+    """Safety: quality_filter should never drop all candidates.
+
+    Both candidates match non-paper patterns (Term Entry, Input Classification)
+    but the safety check keeps all when everything would be dropped.
+    """
     candidates = [
         {"title": "Question Answering Input Classification", "abstract": "", "url": "", "source": "openalex"},
         {"title": "Deep Learning Term Entry", "abstract": "", "url": "", "source": "openalex"},
     ]
     with patch("apps.api.app.services.agents.graph.nodes.quality_filter._call_llm_batch",
-               return_value=[
-                   {"index": 0, "is_paper": False, "reason": "non-paper"},
-                   {"index": 1, "is_paper": False, "reason": "non-paper"},
-               ]):
+               return_value=None):
         result = quality_filter_node(_make_state(candidates))
 
     # Should keep all as safety
@@ -132,9 +145,8 @@ def test_quality_filter_empty_candidates():
 
 
 def test_quality_filter_trace_recorded():
-    with patch("apps.api.app.services.agents.graph.nodes.quality_filter._call_llm_batch",
-               return_value=[{"index": 0, "is_paper": True, "reason": "ok"}]):
-        result = quality_filter_node(_make_state([CANDIDATES[0]]))
+    # Candidate 0 has arxiv URL → pre-filter keeps it, LLM not needed
+    result = quality_filter_node(_make_state([CANDIDATES[0]]))
 
     traces = result["trace_events"]
     assert len(traces) == 1

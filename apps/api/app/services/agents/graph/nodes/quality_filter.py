@@ -1,4 +1,4 @@
-"""LangGraph node: quality_filter — LLM-based paper authenticity filtering.
+﻿"""LangGraph node: quality_filter — LLM-based paper authenticity filtering.
 
 Sits between paper_retriever and verify. Uses LLM to judge whether each
 candidate is a real academic paper (not a glossary/concept/figure entry).
@@ -97,8 +97,59 @@ def _call_llm_batch(candidates: list[dict[str, Any]]) -> list[dict[str, Any]] | 
         return None
 
 
+def _pre_filter(candidates: list[dict[str, Any]]) -> list[tuple[int, bool, str]]:
+    """Deterministic pre-filter: trusted URLs → keep; non-paper patterns → drop.
+
+    Only candidates that don't match either category go to LLM.
+    """
+    trusted_url = re.compile(r"(arxiv\.org|doi\.org|openalex\.org|semanticscholar\.org|sem\.scholar\.org)", re.I)
+    results: list[tuple[int, bool, str]] = []
+    for i, c in enumerate(candidates):
+        title = (c.get("title") or c.get("name") or "").strip()
+        url = c.get("url") or ""
+        source = c.get("source") or ""
+        doi = c.get("doi") or ""
+
+        # Check non-paper patterns first
+        is_non_paper = False
+        for pat in _COMPILED_PATTERNS:
+            if pat.search(title):
+                results.append((i, False, f"matches non-paper pattern: {pat.pattern}"))
+                is_non_paper = True
+                break
+        if is_non_paper:
+            continue
+
+        # Trusted URL → definitely a paper (don't let LLM second-guess)
+        if url and trusted_url.search(url):
+            results.append((i, True, "has trusted academic URL (arxiv/doi/openalex/s2)"))
+            continue
+        # DOI present → definitely a paper
+        if doi:
+            results.append((i, True, "has DOI"))
+            continue
+        # Source is a known academic source
+        if source and source.lower() in ("arxiv", "openalex", "crossref", "semantic_scholar"):
+            results.append((i, True, f"from academic source: {source}"))
+            continue
+        # Title too short
+        if len(title) < 10:
+            results.append((i, False, "title too short (<10 chars)"))
+            continue
+
+        # Gray area — needs LLM judgement
+        results.append((i, None, "needs LLM judgement"))
+
+    return results
+
+
 def quality_filter_node(state: ResearchState) -> dict[str, Any]:
-    """Filter paper_candidates for real academic papers using LLM."""
+    """Filter paper_candidates for real academic papers.
+
+    Strategy: deterministic pre-filter first (trusted URL → keep, non-paper
+    pattern → drop), LLM only for gray-area candidates. This prevents the LLM
+    from misclassifying arxiv papers as GitHub repos (Re1.3 audit issue #1).
+    """
     t0 = time.time()
     candidates = list(state.get("paper_candidates") or [])
 
@@ -119,45 +170,64 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
         return {
             "paper_candidates": [],
             "filter_results": {"total": 0, "kept": 0, "dropped": 0, "dropped_items": []},
-            "trace_events": list(state.get("trace_events") or []) + [trace],
+            "trace_events": [trace],
         }
 
-    # Batch LLM calls
-    batches = [candidates[i:i + _BATCH_SIZE] for i in range(0, len(candidates), _BATCH_SIZE)]
-    llm_results: list[dict[str, Any]] = []
-    llm_failed = False
+    # Step 1: deterministic pre-filter
+    pre_results = _pre_filter(candidates)
+    gray_indices = [i for i, verdict, _ in pre_results if verdict is None]
+    n_pre_keep = sum(1 for _, v, _ in pre_results if v is True)
+    n_pre_drop = sum(1 for _, v, _ in pre_results if v is False)
+    trace["tool_calls"].append({
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": n_pre_keep,
+        "pre_drop": n_pre_drop,
+        "gray_area": len(gray_indices),
+    })
 
-    for batch in batches:
-        result = _call_llm_batch(batch)
-        if result is None:
-            llm_failed = True
-            break
-        llm_results.extend(result)
-        trace["tool_calls"].append({"tool": "re13_quality_filter.llm", "batch_size": len(batch)})
-
-    # Build index -> is_paper map
+    # Step 2: LLM only for gray-area candidates
     is_paper_map: dict[int, bool] = {}
     reason_map: dict[int, str] = {}
 
-    if llm_failed or not llm_results:
-        # Heuristic fallback
-        logger.warning("quality_filter using heuristic fallback (LLM unavailable)")
-        trace["tool_calls"].append({"tool": "quality_filter.heuristic_fallback"})
-        for idx, is_paper, reason in _heuristic_filter(candidates):
-            is_paper_map[idx] = is_paper
-            reason_map[idx] = reason
+    for i, verdict, reason in pre_results:
+        if verdict is not None:
+            is_paper_map[i] = verdict
+            reason_map[i] = reason
+
+    if gray_indices:
+        gray_candidates = [candidates[i] for i in gray_indices]
+        batches = [gray_candidates[j:j + _BATCH_SIZE]
+                   for j in range(0, len(gray_candidates), _BATCH_SIZE)]
+        llm_failed = False
+
+        for batch_idx, batch in enumerate(batches):
+            result = _call_llm_batch(batch)
+            if result is None:
+                llm_failed = True
+                break
+            for item in result:
+                idx_in_batch = item.get("index")
+                if isinstance(idx_in_batch, int) and 0 <= idx_in_batch < len(batch):
+                    global_idx = gray_indices[batch_idx * _BATCH_SIZE + idx_in_batch]
+                    is_paper_map[global_idx] = bool(item.get("is_paper", True))
+                    reason_map[global_idx] = item.get("reason", "LLM judged")
+            trace["tool_calls"].append({"tool": "re13_quality_filter.llm", "batch_size": len(batch)})
+
+        if llm_failed:
+            logger.warning("quality_filter LLM failed for gray-area — using heuristic fallback")
+            trace["tool_calls"].append({"tool": "quality_filter.heuristic_fallback"})
+            for idx, is_paper, reason in _heuristic_filter(gray_candidates):
+                global_idx = gray_indices[idx]
+                is_paper_map[global_idx] = is_paper
+                reason_map[global_idx] = reason
     else:
-        for item in llm_results:
-            idx = item.get("index")
-            if isinstance(idx, int) and 0 <= idx < len(candidates):
-                is_paper_map[idx] = bool(item.get("is_paper", True))
-                reason_map[idx] = item.get("reason", "")
+        trace["tool_calls"].append({"tool": "quality_filter.no_llm_needed", "reason": "all candidates resolved by pre-filter"})
 
     # Apply filter
     kept: list[dict[str, Any]] = []
     dropped: list[dict[str, Any]] = []
     for i, c in enumerate(candidates):
-        if is_paper_map.get(i, True):  # default keep if missing
+        if is_paper_map.get(i, True):
             kept.append(c)
         else:
             dropped.append({
@@ -173,9 +243,13 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
 
     trace["ended_at"] = _now_iso()
     trace["elapsed_s"] = round(time.time() - t0, 3)
-    trace["output_summary"] = {"kept": len(kept), "dropped": len(dropped)}
-    if llm_failed:
-        trace["errors"].append({"phase": "llm_call", "error": "LLMUnavailable", "action": "heuristic_fallback"})
+    trace["output_summary"] = {
+        "kept": len(kept),
+        "dropped": len(dropped),
+        "pre_filter_keep": n_pre_keep,
+        "pre_filter_drop": n_pre_drop,
+        "llm_judged": len(gray_indices),
+    }
 
     filter_results = {
         "total": len(candidates),
@@ -187,5 +261,5 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
     return {
         "paper_candidates": kept,
         "filter_results": filter_results,
-        "trace_events": list(state.get("trace_events") or []) + [trace],
+        "trace_events": [trace],
     }

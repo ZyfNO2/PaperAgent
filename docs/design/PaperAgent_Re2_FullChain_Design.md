@@ -2114,3 +2114,20 @@ intake
                                                                                   └→ human_gate
                                                                                        └→ final_recommendation
 ```
+
+## 附录 C: TODO / 未来增强
+
+### TODO-1: 无论文原文的平行论文优化分析
+
+**状态**: 待评估
+
+**描述**: 当前 `optimization_advisor` 节点的输入是 feasibility_report + evidence_gaps + narrative，依赖 baseline/parallel 论文的元数据（title, abstract, authors, venue）做优化方向推理。在没有论文全文（PDF 正文）的情况下，尝试仅从平行论文的摘要对比中提取优化信号：对比平行论文的方法差异、数据集差异、性能差异，推断当前题目可以借鉴或避坑的方向。
+
+**动机**: 平行论文（parallel class）本身就是"做了类似事情的人"，它们的摘要已经透露了方法选择、数据集选择、实验结果。即使没有原文，系统也能从多篇平行论文的摘要中归纳出"大家都在用 A 方法 + B 数据集，但没人试过 C 组合"这类优化建议。这比凭空生成优化方向有更强的证据支撑。
+
+**限制**: 无全文时无法获知实验细节（超参、消融配置、失败案例），优化建议只能停留在方法/数据集层面的粗粒度对比。摘要质量参差不齐，部分论文摘要信息量不足。只能作为参考信号，不能替代精读原文后的深度分析。
+
+**可能接入点**:
+- `nodes/optimization_advisor.py`: 新增 parallel paper diff 逻辑——从 parallel 论文摘要中提取 method/dataset/metric，对比当前题目的 work_package，输出"可借鉴"和"可差异化"清单
+- `prompts/optimization_advisor.py`: 在 prompt 中注入 parallel papers 摘要摘要表，要求 LLM 基于对比生成优化路径
+- `nodes/baseline_classifier.py`: 可选扩展——为 parallel 论文打 method_tag / dataset_tag 标签，供 optimization_advisor 直接引用

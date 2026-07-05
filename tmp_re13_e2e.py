@@ -40,7 +40,7 @@ for case_id, topic_zh in TOPICS:
     }
 
     try:
-        out = g.invoke(state_in, config={"configurable": {"thread_id": case_id}})
+        out = g.invoke(state_in, config={"configurable": {"thread_id": case_id}, "recursion_limit": 50})
         elapsed = round(time.time() - t0, 2)
         out["elapsed_s"] = elapsed
 

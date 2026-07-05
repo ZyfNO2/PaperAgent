@@ -1,4 +1,4 @@
-"""LangGraph node: dataset_repo_extractor — extract dataset + repo links per paper.
+﻿"""LangGraph node: dataset_repo_extractor — extract dataset + repo links per paper.
 
 Replaces content.dataset_repo_extractor_node (agent C wires it in via
 nodes/__init__). Same signature so a 1-line registry change picks it up.
@@ -234,6 +234,6 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
             "dataset_extractions_tried": tried,
             "dataset_extractions_ok": ok_count,
         },
-        "trace_events": list(state.get("trace_events") or []) + [trace],
-        "errors": list(state.get("errors") or []) + errors,
+        "trace_events": [trace],
+        "errors": errors,
     }
