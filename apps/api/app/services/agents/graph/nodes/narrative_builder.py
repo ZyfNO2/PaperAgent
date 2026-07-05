@@ -57,5 +57,7 @@ def narrative_builder_node(state: ResearchState) -> dict[str, Any]:
                   {"nick_model_name": result.get("nick_model_name", "")},
                   [{"tool": "narrative_builder.llm" if prov != "heuristic" else "heuristic"}],
                   prov, [])
+    current_count = state.get("narrative_revision_count", 0)
     return {"research_narratives": result,
+            "narrative_revision_count": current_count + 1,
             "trace_events": [trace]}

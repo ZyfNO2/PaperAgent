@@ -37,12 +37,13 @@ def optimization_advisor_node(state: ResearchState) -> dict[str, Any]:
     topic = state.get("topic") or ""
     feasibility = state.get("feasibility_report") or {}
     innovations = state.get("innovation_points") or []
-    n_baseline = len(state.get("baseline_candidates") or [])
+    baselines = state.get("baseline_candidates") or []
+    parallels = state.get("parallel_candidates") or []
 
     try:
         from apps.api.app.services import llm_router
         from apps.api.app.services.agents.prompts import optimization_advisor as P
-        built = P.build(topic, feasibility, len(innovations), n_baseline)
+        built = P.build(topic, feasibility, innovations, baselines, parallels)
         out = llm_router.call_json(built["user"], system=built["system"],
                                    profile="fast_json", max_tokens=2000,
                                    expected="dict", timeout=30)
@@ -58,5 +59,7 @@ def optimization_advisor_node(state: ResearchState) -> dict[str, Any]:
                   {"n_paths": len(result.get("optimization_paths", []))},
                   [{"tool": "optimization_advisor.llm" if prov != "heuristic" else "heuristic"}],
                   prov, [])
+    current_count = state.get("narrative_revision_count", 0)
     return {"optimization_directions": result,
+            "narrative_revision_count": current_count + 1,
             "trace_events": [trace]}

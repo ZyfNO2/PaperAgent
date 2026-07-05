@@ -1,13 +1,13 @@
-"""LangGraph graph builder for Re1.3.
+"""LangGraph graph builder for Re2.
 
-Wires 16 LangGraph nodes with conditional edges + targeted-repair loop +
-citation expansion loop.
+Wires 20 LangGraph nodes with conditional edges + targeted-repair loop +
+citation expansion loop + devils_advocate revision loop.
 
-Re1.3 changes:
-  - quality_filter inserted between paper_retriever and verify
-  - citation_expander inserted between quality_gate(continue) and dataset_repo
-  - verify supports second-round for expanded papers
-  - quality_gate supports second-round routing (citation_expansion_done)
+Re2 changes:
+  - conditional edge: feasibility_assessor → work_package / optimization_advisor
+  - conditional edge: devils_advocate → human_gate / narrative_builder / optimization_advisor
+  - narrative_revision_count to cap revision loops at MAX_NARRATIVE_REVISIONS
+  - duplicate add_edge calls cleaned up
 """
 from __future__ import annotations
 
@@ -22,6 +22,19 @@ from apps.api.app.services.agents.graph import nodes as graph_nodes
 from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
+
+NODE_TIMEOUTS = {
+    "topic_parser": 30,
+    "verify": 45,
+    "dataset_repo_extractor": 30,
+    "feasibility_assessor": 20,
+    "work_package": 30,
+    "innovation_extractor": 30,
+    "sota_matcher": 20,
+    "narrative_builder": 45,
+    "optimization_advisor": 20,
+    "devils_advocate": 30,
+}
 
 
 def build_graph(*, checkpointer: Any | None = None) -> Any:
@@ -63,14 +76,32 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     graph.add_edge("dataset_repo_extractor", "evidence_graph_builder")
     graph.add_edge("evidence_graph_builder", "baseline_classifier")
     graph.add_edge("baseline_classifier", "feasibility_assessor")  # Re1.4
-    graph.add_edge("feasibility_assessor", "work_package")          # Re1.4
-    graph.add_edge("work_package", "innovation_extractor")         # Re1.4
-    graph.add_edge("innovation_extractor", "sota_matcher")          # Re1.4
-    graph.add_edge("sota_matcher", "narrative_builder")             # Re1.4
+    # Re2: conditional edge — feasibility_assessor → work_package / optimization_advisor
+    graph.add_conditional_edges(
+        "feasibility_assessor",
+        _route_after_feasibility,
+        {
+            "work_package": "work_package",
+            "optimization_advisor": "optimization_advisor",
+        },
+    )
+    graph.add_edge("work_package", "innovation_extractor")         # Re2: parallel fan-out
+    graph.add_edge("work_package", "sota_matcher")                 # Re2: parallel fan-out
+    graph.add_edge("innovation_extractor", "narrative_builder")    # Re2: fan-in
+    graph.add_edge("sota_matcher", "narrative_builder")            # Re2: fan-in
     graph.add_edge("narrative_builder", "low_bar_review")
     graph.add_edge("low_bar_review", "optimization_advisor")        # Re1.4
     graph.add_edge("optimization_advisor", "devils_advocate")       # Re1.4
-    graph.add_edge("devils_advocate", "human_gate")                # Re1.4
+    # Re2: conditional edge — devils_advocate → human_gate / narrative_builder / optimization_advisor
+    graph.add_conditional_edges(
+        "devils_advocate",
+        _route_after_devils,
+        {
+            "human_gate": "human_gate",
+            "narrative_builder": "narrative_builder",
+            "optimization_advisor": "optimization_advisor",
+        },
+    )
     graph.add_edge("human_gate", "final_recommendation")
     graph.add_edge("final_recommendation", END)
 
@@ -84,8 +115,6 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
             "blocked": "final_recommendation",
         },
     )
-    graph.add_edge("human_gate", "final_recommendation")
-    graph.add_edge("final_recommendation", END)
 
     if checkpointer is None:
         if os.environ.get("LANGGRAPH_CHECKPOINTER", "memory").lower() == "memory":
@@ -166,6 +195,47 @@ def _route_after_review(state: ResearchState) -> str:
     if total_evidence < 4:
         return "repair"
     return "ready"
+
+
+def _route_after_feasibility(state: ResearchState) -> str:
+    """Route after feasibility assessment (Re2).
+
+    - not_recommended → optimization_advisor (skip work_package chain)
+    - feasible / risky → work_package (normal flow)
+    """
+    verdict = state.get("feasibility_report", {}).get("verdict", "risky")
+    if verdict == "not_recommended":
+        return "optimization_advisor"
+    return "work_package"
+
+
+MAX_NARRATIVE_REVISIONS = 2
+
+
+def _route_after_devils(state: ResearchState) -> str:
+    """Route after devil's advocate review (Re2).
+
+    - ACCEPT → human_gate
+    - MINOR_REVISION → narrative_builder (if revisions < MAX)
+    - MINOR_REVISION → human_gate (if revisions >= MAX, stop looping)
+    - BLOCK → optimization_advisor (if revisions < MAX)
+    - BLOCK → human_gate (if revisions >= MAX, stop looping)
+    """
+    verdict = state.get("review_report", {}).get("overall_verdict", "ACCEPT")
+    revisions = state.get("narrative_revision_count", 0)
+
+    if verdict == "ACCEPT":
+        return "human_gate"
+
+    if revisions >= MAX_NARRATIVE_REVISIONS:
+        return "human_gate"
+
+    if verdict == "MINOR_REVISION":
+        return "narrative_builder"
+    if verdict == "BLOCK":
+        return "optimization_advisor"
+
+    return "human_gate"
 
 
 def default_graph() -> Any:

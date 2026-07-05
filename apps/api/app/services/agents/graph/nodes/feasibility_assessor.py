@@ -33,15 +33,15 @@ def _heuristic(state):
 def feasibility_assessor_node(state: ResearchState) -> dict[str, Any]:
     t0 = time.time()
     topic = state.get("topic") or ""
-    n_baseline = len(state.get("baseline_candidates") or [])
-    n_parallel = len(state.get("parallel_candidates") or [])
+    baselines = state.get("baseline_candidates") or []
+    parallels = state.get("parallel_candidates") or []
     n_dataset = len(state.get("dataset_candidates") or [])
     n_repo = len(state.get("repo_candidates") or [])
 
     try:
         from apps.api.app.services import llm_router
         from apps.api.app.services.agents.prompts import feasibility_assessor as P
-        built = P.build(topic, n_baseline, n_parallel, n_dataset, n_repo)
+        built = P.build(topic, baselines, parallels, n_dataset, n_repo)
         out = llm_router.call_json(built["user"], system=built["system"],
                                    profile="fast_json", max_tokens=2000,
                                    expected="dict", timeout=30)
@@ -53,7 +53,7 @@ def feasibility_assessor_node(state: ResearchState) -> dict[str, Any]:
         prov = "heuristic"
 
     trace = _emit("feasibility_assessor", t0,
-                  {"n_baseline": n_baseline, "n_dataset": n_dataset, "n_repo": n_repo},
+                  {"n_baseline": len(baselines), "n_dataset": n_dataset, "n_repo": n_repo},
                   {"verdict": result.get("verdict", "unknown"), "score": result.get("score", 0)},
                   [{"tool": "feasibility_assessor.llm" if prov != "heuristic" else "heuristic"}],
                   prov, [])

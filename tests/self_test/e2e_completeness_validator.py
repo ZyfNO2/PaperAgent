@@ -18,21 +18,28 @@ EXPECTED_NODES = [
     "dataset_repo",
     "json_graph_builder",
     "evidence_auditor",
-    "work_package",
-    "low_bar_review",
+    "feasibility_assessor",
+    "optimization_advisor",
+    "devils_advocate",
     "human_gate",
     "final_recommendation",
-    "feasibility_assessor",
+]
+
+# Nodes that only appear when feasibility != not_recommended
+OPTIONAL_NODES = [
+    "work_package",
     "innovation_extractor",
     "sota_matcher",
     "narrative_builder",
-    "optimization_advisor",
-    "devils_advocate",
+    "low_bar_review",
 ]
 
 
 def validate(state: dict[str, Any]) -> dict[str, Any]:
     """Validate that the graph executed completely.
+
+    For not_recommended cases, optional nodes (work_package, innovation, sota,
+    narrative, low_bar_review) are intentionally skipped by the conditional edge.
 
     Returns:
         dict with keys: pass (bool), n_expected, n_found, missing_nodes,
@@ -41,21 +48,32 @@ def validate(state: dict[str, Any]) -> dict[str, Any]:
     traces = state.get("trace_events") or []
     found_nodes = {t.get("node", "") for t in traces}
 
-    missing = [n for n in EXPECTED_NODES if n not in found_nodes]
+    # Check if optional nodes should be present
+    feas_verdict = (state.get("feasibility_report") or {}).get("verdict", "")
+    if feas_verdict == "not_recommended":
+        # Optional nodes are expected to be missing
+        expected = EXPECTED_NODES
+        missing = [n for n in expected if n not in found_nodes]
+    else:
+        # All nodes should be present
+        expected = EXPECTED_NODES + OPTIONAL_NODES
+        missing = [n for n in expected if n not in found_nodes]
+
     has_final = bool(state.get("final_recommendation"))
     n_trace = len(traces)
 
-    passed = len(missing) == 0 and has_final and n_trace >= len(EXPECTED_NODES)
+    passed = len(missing) == 0 and has_final
 
     return {
         "pass": passed,
-        "n_expected": len(EXPECTED_NODES),
-        "n_found": len(found_nodes & set(EXPECTED_NODES)),
+        "n_expected": len(expected),
+        "n_found": len(found_nodes & set(expected)),
         "missing_nodes": missing,
         "has_final": has_final,
         "n_trace_events": n_trace,
+        "feas_verdict": feas_verdict,
         "details": (
-            f"All {len(EXPECTED_NODES)} expected nodes present, final_recommendation exists"
+            f"All {len(expected)} expected nodes present, final_recommendation exists"
             if passed
             else f"Missing nodes: {missing}, has_final={has_final}, n_trace={n_trace}"
         ),

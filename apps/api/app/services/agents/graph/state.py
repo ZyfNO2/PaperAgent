@@ -85,6 +85,9 @@ class ResearchState(TypedDict, total=False):
     optimization_directions: dict[str, Any]
     review_report: dict[str, Any]
 
+    # === Re2 new fields ===
+    narrative_revision_count: int  # devils_advocate回环计数器
+
     # --- Telemetry ---
     trace_events: Annotated[list[dict[str, Any]], operator.add]
     provider_profile: str
