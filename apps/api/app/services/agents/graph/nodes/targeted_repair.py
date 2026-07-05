@@ -1,4 +1,4 @@
-"""LangGraph node A3 — targeted_repair_node.
+﻿"""LangGraph node A3 — targeted_repair_node.
 
 Targets a SINGLE failure slice (baseline_gap / dataset_gap / repo_gap /
 paper_gap / metadata_mismatch / url_repair) and produces a new search_plan
@@ -145,7 +145,7 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
         return {
             "repair_exhausted": True,
             "evidence_audit": exhausted_audit,
-            "trace_events": list(state.get("trace_events") or []) + [trace],
+            "trace_events": [trace],
         }
 
     # Compute gaps
@@ -228,7 +228,7 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
     return {
         "search_plan": plan,
         "evidence_audit": new_audit,
-        "trace_events": list(state.get("trace_events") or []) + [trace],
-        "errors": list(state.get("errors") or []) + errors_out,
+        "trace_events": [trace],
+        "errors": errors_out,
         "provider_profile": "fast_json",
     }

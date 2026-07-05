@@ -1,13 +1,18 @@
-"""FastAPI entry point — Re1.3 agent edition.
-
-Re1.3 changes:
-  - Static file mount for apps/web (frontend)
-  - Updated title/version
-"""
+"""FastAPI entry point — Re1.4 agent edition."""
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
+
+# Add project root and apps/api to sys.path so both `apps.api.app.services...`
+# and `app.api.v1.research` imports work when uvicorn is started from any directory
+_PROJECT_ROOT = str(Path(__file__).resolve().parent.parent.parent.parent)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+_API_ROOT = str(Path(__file__).resolve().parent.parent)
+if _API_ROOT not in sys.path:
+    sys.path.insert(0, _API_ROOT)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

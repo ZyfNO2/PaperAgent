@@ -1,4 +1,4 @@
-"""LangGraph node A1 — topic_parser_node.
+﻿"""LangGraph node A1 — topic_parser_node.
 
 Parses the topic string into structured `topic_atoms`. Idempotent: if state
 already carries a non-empty topic_atoms we return {} (no-op).
@@ -180,7 +180,7 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
                       {"topic_len": len(topic)}, {"skipped": True,
                                                    "n_method": len(existing.get("method", []))},
                       [{"tool": "re11_parser.llm", "mode": "skipped"}], "none", [])
-        return {"trace_events": list(state.get("trace_events") or []) + [trace]}
+        return {"trace_events": [trace]}
 
     errors_out: list[dict[str, Any]] = []
     atoms: dict[str, Any] = dict(_EMPTY_ATOMS)
@@ -221,7 +221,7 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
 
     return {
         "topic_atoms": atoms,
-        "trace_events": list(state.get("trace_events") or []) + [trace],
-        "errors": list(state.get("errors") or []) + errors_out,
+        "trace_events": [trace],
+        "errors": errors_out,
         "provider_profile": "fast_json",
     }

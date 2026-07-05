@@ -9,7 +9,8 @@ History:
 """
 from __future__ import annotations
 
-from typing import Any, TypedDict
+import operator
+from typing import Annotated, Any, TypedDict
 
 
 class ResearchState(TypedDict, total=False):
@@ -33,6 +34,7 @@ class ResearchState(TypedDict, total=False):
     # --- Paper verification ---
     paper_candidates: list[dict[str, Any]]
     verified_papers: list[dict[str, Any]]
+    weak_papers: list[dict[str, Any]]  # Re1.3 audit fix: weak_reject separated from verified
 
     # --- Dataset / repo extraction (from verified papers first) ---
     dataset_candidates: list[dict[str, Any]]
@@ -74,7 +76,16 @@ class ResearchState(TypedDict, total=False):
     # Citation expansion done flag (prevents infinite loop)
     citation_expansion_done: bool
 
+    # === Re1.4 new fields ===
+    feasibility_report: dict[str, Any]
+    innovation_points: list[dict[str, Any]]
+    stitching_plan: dict[str, Any]
+    sota_comparison: dict[str, Any]
+    research_narrative: dict[str, Any]
+    optimization_directions: dict[str, Any]
+    review_report: dict[str, Any]
+
     # --- Telemetry ---
-    trace_events: list[dict[str, Any]]
+    trace_events: Annotated[list[dict[str, Any]], operator.add]
     provider_profile: str
-    errors: list[dict[str, Any]]
+    errors: Annotated[list[dict[str, Any]], operator.add]

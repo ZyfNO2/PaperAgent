@@ -1,4 +1,4 @@
-"""LangGraph node: evidence_auditor — classify verified papers.
+﻿"""LangGraph node: evidence_auditor — classify verified papers.
 
 Replaces content.evidence_auditor_node (agent C wires it in). Signature
 `baseline_classifier_node(state) -> dict` so a registry change picks it up.
@@ -77,7 +77,7 @@ def baseline_classifier_node(state: ResearchState) -> dict[str, Any]:
                 "noise_n": 0,
                 "no_papers": True,
             },
-            "trace_events": list(state.get("trace_events") or []) + [trace],
+            "trace_events": [trace],
         }
 
     atoms = state.get("topic_atoms") or {}
@@ -227,5 +227,5 @@ def baseline_classifier_node(state: ResearchState) -> dict[str, Any]:
             "dataset_paper_n": len(dataset_papers),
             "noise_n": len(noise),
         },
-        "trace_events": list(state.get("trace_events") or []) + [trace],
+        "trace_events": [trace],
     }

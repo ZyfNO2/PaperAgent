@@ -1,4 +1,4 @@
-"""LangGraph node: verify paper candidates against the topic.
+﻿"""LangGraph node: verify paper candidates against the topic.
 
 Uses the llm_router (fast_json profile) to apply re11_paper_verifier prompt;
 produces verified_papers with per-keyword breakdown and drops rejected entries
@@ -32,15 +32,11 @@ def _now_iso() -> str:
 
 
 def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Verify candidates against topic using parallel LLM calls.
+    """Verify candidates against topic using batched LLM calls.
 
-    Each candidate is sent as an independent parallel request via
-    ThreadPoolExecutor; this reduces wall-clock time from ~24×18s (sequential)
-    to ~20-30s (parallel, limited by slowest call plus fallback overhead).
-
-    Reasoner models (stepfun step-3.7-flash) put the JSON payload in
-    ``reasoning`` rather than ``content``; ``call_json`` handles 3-phase repair
-    internally, so this function only needs to drive parallelism + normalise.
+    Batches candidates (batch_size=8) and sends each batch as a single LLM
+    call, reducing wall-clock time from ~24×5s (sequential) to ~3×5s (3 batches
+    with DeepSeek, parallel via ThreadPoolExecutor).
     """
     import concurrent.futures
 
@@ -50,25 +46,29 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
     if not candidates:
         return []
 
-    max_workers = max(1, min(len(candidates), _env_int("VERIFIER_MAX_WORKERS", 2)))
+    batch_size = max(1, _env_int("VERIFIER_BATCH_SIZE", 8))
+    max_workers = max(1, min((len(candidates) + batch_size - 1) // batch_size,
+                             _env_int("VERIFIER_MAX_WORKERS", 4)))
     timeout_s = max(5, _env_int("VERIFIER_TIMEOUT_S", 120))
-
     max_attempts = max(1, _env_int("VERIFIER_MAX_ATTEMPTS", 2))
 
-    def _verify_one(candidate: dict[str, Any]) -> list[dict[str, Any]]:
-        """Verify a single candidate; returns list of normalised verdict dicts."""
+    # Build batch prompts
+    prompts = P.build_batch(topic, atoms, candidates, batch_size=batch_size)
+
+    def _verify_batch(batch_idx: int) -> list[dict[str, Any]]:
+        """Verify a batch of candidates; returns list of normalised verdict dicts."""
+        built = prompts[batch_idx]
         last_exc: BaseException | None = None
         for attempt in range(max_attempts):
             try:
-                built = P.build_one(topic, atoms, candidate)
                 out = llm_router.call_json(
                     built["user"],
                     system=built["system"],
                     profile="fast_json",
-                    max_tokens=1200,
+                    max_tokens=3000,
                     timeout=timeout_s,
-                    expected="dict",
-                    schema_hint='Top-level object with keys: title, verdict, hit_keywords, relation_to_topic, reason',
+                    expected="list",
+                    schema_hint='JSON array of objects: [{"title": str, "verdict": str, "hit_keywords": [str], "relation_to_topic": str, "reason": str}]',
                 )
                 verdicts = _normalise_verifier_output(out)
                 if not verdicts and attempt + 1 < max_attempts:
@@ -76,24 +76,22 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
                 return verdicts
             except BaseException as exc:
                 last_exc = exc
-                logger.debug("verifier attempt %s failed for %r: %s",
-                             attempt, candidate.get("title", "??"), type(exc).__name__)
+                logger.debug("verifier batch %s attempt %s failed: %s",
+                             batch_idx, attempt, type(exc).__name__)
         if last_exc is not None:
-            logger.warning("verifier final failure for %r: %s",
-                           candidate.get("title", "??"), type(last_exc).__name__)
+            logger.warning("verifier batch %s final failure: %s",
+                           batch_idx, type(last_exc).__name__)
         return []
 
     all_verdicts: list[dict[str, Any]] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(_verify_one, c): c for c in candidates}
+        futures = {executor.submit(_verify_batch, i): i for i in range(len(prompts))}
         for future in concurrent.futures.as_completed(futures):
             try:
                 verdicts = future.result()
                 all_verdicts.extend(verdicts)
             except BaseException as exc:
-                cand = futures[future]
-                logger.warning("verifier future raised for %r: %s",
-                               cand.get("title", "??"), exc)
+                logger.warning("verifier batch raised: %s", exc)
 
     return all_verdicts
 
@@ -126,7 +124,13 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
     # Re1.3: support second-round verify for expanded papers
     citation_done = state.get("citation_expansion_done", False)
     if citation_done:
-        candidates = list(state.get("expanded_papers") or [])
+        # After citation_expander: verify expanded_papers
+        # After repair loop (expanded_papers may be empty): fall back to paper_candidates
+        expanded = list(state.get("expanded_papers") or [])
+        if expanded:
+            candidates = expanded
+        else:
+            candidates = list(state.get("paper_candidates") or [])
     else:
         candidates = list(state.get("paper_candidates") or [])
 
@@ -160,6 +164,7 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
                 _candidate_by_title[t] = c
         # Map loose schema to normalized candidate.
         keep = []
+        weak = []
         rejected = []
         for v in verdicts:
             title = (v.get("title") or v.get("name") or "").strip()
@@ -190,12 +195,15 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
             }
             if verdict == "accept":
                 keep.append(item)
+            elif verdict == "weak_reject":
+                weak.append(item)
             else:
                 rejected.append(item)
         verified = keep
         trace["output_summary"] = {
             "n_accept": len(keep),
-            "n_reject_or_weak": len(rejected),
+            "n_weak_reject": len(weak),
+            "n_reject": len(rejected),
         }
     except BaseException as exc:
         # SOP §15 / 自查方案 §2: when verification fails we MUST NOT forward
@@ -229,18 +237,20 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
     if citation_done:
 
         existing_verified = list(state.get("verified_papers") or [])
+        existing_weak = list(state.get("weak_papers") or [])
 
         merged_verified = existing_verified + verified
+        merged_weak = existing_weak + weak
 
         return {
 
             "verified_papers": merged_verified,
-
+            "weak_papers": merged_weak,
             "paper_candidates": candidates,
 
-            "trace_events": list(state.get("trace_events") or []) + [trace],
+            "trace_events": [trace],
 
-            "errors": list(state.get("errors") or []) + errors,
+            "errors": errors,
 
             "provider_profile": "fast_json",
 
@@ -250,12 +260,12 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
     return {
 
         "verified_papers": verified,
-
+        "weak_papers": weak,
         "paper_candidates": candidates,
 
-        "trace_events": list(state.get("trace_events") or []) + [trace],
+        "trace_events": [trace],
 
-        "errors": list(state.get("errors") or []) + errors,
+        "errors": errors,
 
         "provider_profile": "fast_json",
 

@@ -48,8 +48,8 @@ _FIELDS_PAPER = ",".join([
     "paperId", "externalIds", "title", "abstract", "year", "venue",
     "publicationVenue", "citationCount", "referenceCount", "url",
 ])
-_FIELDS_CITATIONS = _FIELDS_PAPER + ",citations.paperId,citations.title,citations.year,citations.url,citations.externalIds"
-_FIELDS_REFERENCES = _FIELDS_PAPER + ",references.paperId,references.title,references.year,references.url,references.externalIds"
+_FIELDS_CITATIONS = _FIELDS_PAPER + ",citingPaper.paperId,citingPaper.title,citingPaper.year,citingPaper.url,citingPaper.externalIds"
+_FIELDS_REFERENCES = _FIELDS_PAPER + ",citedPaper.paperId,citedPaper.title,citedPaper.year,citedPaper.url,citedPaper.externalIds"
 
 
 def _headers() -> dict[str, str]:
@@ -146,7 +146,9 @@ def _extract_paper_id(paper_id: str | None, doi: str | None, arxiv_id: str | Non
     if paper_id:
         return paper_id
     if doi:
-        return f"DOI:{doi}"
+        # Strip URL prefix if present (e.g. "https://doi.org/10.xxx" → "10.xxx")
+        clean_doi = re.sub(r"^https?://(dx\.)?doi\.org/", "", doi.strip())
+        return f"DOI:{clean_doi}"
     if arxiv_id:
         m = re.search(r"(\d{4}\.\d{4,5}(v\d+)?)", arxiv_id)
         if m:

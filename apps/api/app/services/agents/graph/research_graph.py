@@ -59,11 +59,20 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     graph.add_edge("citation_expander", "verify")
     # verify → quality_gate is already defined above (same edge, verify checks round internally)
 
-    # Post-expansion linear spine
+    # Post-expansion linear spine (Re1.4: 6 analysis nodes inserted)
     graph.add_edge("dataset_repo_extractor", "evidence_graph_builder")
     graph.add_edge("evidence_graph_builder", "baseline_classifier")
-    graph.add_edge("baseline_classifier", "work_package")
-    graph.add_edge("work_package", "low_bar_review")
+    graph.add_edge("baseline_classifier", "feasibility_assessor")  # Re1.4
+    graph.add_edge("feasibility_assessor", "work_package")          # Re1.4
+    graph.add_edge("work_package", "innovation_extractor")         # Re1.4
+    graph.add_edge("innovation_extractor", "sota_matcher")          # Re1.4
+    graph.add_edge("sota_matcher", "narrative_builder")             # Re1.4
+    graph.add_edge("narrative_builder", "low_bar_review")
+    graph.add_edge("low_bar_review", "optimization_advisor")        # Re1.4
+    graph.add_edge("optimization_advisor", "devils_advocate")       # Re1.4
+    graph.add_edge("devils_advocate", "human_gate")                # Re1.4
+    graph.add_edge("human_gate", "final_recommendation")
+    graph.add_edge("final_recommendation", END)
 
     # Conditional routing out of low_bar_review.
     graph.add_conditional_edges(
@@ -71,7 +80,7 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
         _route_after_review,
         {
             "repair": "targeted_repair",
-            "ready": "human_gate",
+            "ready": "optimization_advisor",  # Re1.4: go to optimization, not human_gate
             "blocked": "final_recommendation",
         },
     )
@@ -129,16 +138,32 @@ def _route_after_quality_gate(state: ResearchState) -> str:
 
 
 def _route_after_review(state: ResearchState) -> str:
-    """Route after low-bar review (SOP §5.10)."""
+    """Route after low-bar review.
+
+    Honors low_bar_review.status:
+      - "pass" → ready (evidence is sufficient)
+      - "blocked" with repair_rounds >= max → blocked (give up gracefully)
+      - otherwise → repair if rounds remain, else blocked
+    """
     audit = state.get("evidence_audit", {})
     repair_rounds = audit.get("repair_rounds", 0)
     max_repair = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
+
+    # If low_bar_review passed, go to human_gate regardless of evidence count
+    review = state.get("low_bar_review") or {}
+    if review.get("status") == "pass":
+        return "ready"
+
     if repair_rounds >= max_repair:
         return "blocked"
-    if (len(state.get("baseline_candidates") or [])
-            + len(state.get("dataset_candidates") or [])
-            + len(state.get("repo_candidates") or [])
-            + len(state.get("work_packages") or [])) < 4:
+
+    total_evidence = (
+        len(state.get("baseline_candidates") or [])
+        + len(state.get("dataset_candidates") or [])
+        + len(state.get("repo_candidates") or [])
+        + len(state.get("work_packages") or [])
+    )
+    if total_evidence < 4:
         return "repair"
     return "ready"
 

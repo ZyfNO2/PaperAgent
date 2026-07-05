@@ -5,67 +5,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PaperAgent — 题目研究助手</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f5;color:#333;max-width:900px;margin:0 auto;padding:20px}
-h1{font-size:1.5em;margin-bottom:15px;color:#1a73e8}
-.input-box{display:flex;gap:10px;margin-bottom:20px}
-input[type=text]{flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px}
-button{padding:10px 20px;background:#1a73e8;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px}
-button:hover{background:#1557b0}
-button:disabled{background:#ccc;cursor:not-allowed}
-.section{background:#fff;border-radius:8px;padding:15px;margin-bottom:15px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-.section-title{font-size:1.1em;font-weight:600;margin-bottom:10px;color:#333;border-bottom:2px solid #e0e0e0;padding-bottom:5px}
-.adapter-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px}
-.adapter-row .icon{width:20px;text-align:center}
-.paper-card{background:#fafafa;border:1px solid #e0e0e0;border-radius:6px;padding:10px;margin:5px 0;font-size:13px}
-.paper-card .title{font-weight:600;color:#1a73e8}
-.paper-card .verdict{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;margin-left:5px}
-.verdict-accept{background:#e6f4ea;color:#137333}
-.verdict-reject{background:#fce8e6;color:#c5221f}
-.verdict-weak{background:#fef7e0;color:#b06000}
-.seed-item{padding:5px 0;font-size:13px;border-bottom:1px solid #eee}
-.expansion-item{padding:5px 0;font-size:13px;color:#555}
-.node-status{padding:3px 0;font-size:13px}
-.node-status .check{color:#137333}
-.final-report{background:#e8f0fe;border-radius:6px;padding:15px;font-size:13px;line-height:1.6}
-.error-msg{background:#fce8e6;color:#c5221f;padding:10px;border-radius:6px;margin:10px 0}
-.status-bar{text-align:center;padding:10px;font-size:13px;color:#666}
-.hidden{display:none}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;}
+body{background:#f5f5f5;color:#333;max-width:900px;margin:0 auto;padding:16px;}
+h1{font-size:20px;margin-bottom:12px;}
+input[type=text]{width:70%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:14px;}
+button{padding:8px 20px;background:#2563eb;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;}
+button:disabled{background:#999;}
+.section{margin-top:16px;background:#fff;border-radius:8px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.section.hidden{display:none;}
+.section-title{font-size:14px;font-weight:bold;color:#666;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:4px;}
+.status-bar{font-size:13px;color:#666;padding:4px;}
+.progress-bar{height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden;margin:4px 0;}
+.progress-fill{height:100%;background:#2563eb;transition:width .3s;width:0%;}
+.adapter-row{font-size:13px;padding:2px 0;}
+.adapter-row .check{color:green;}
+.node-status{font-size:13px;padding:2px 0;}
+.node-status .check{color:green;}
+.expansion-item{font-size:13px;padding:4px 0;border-bottom:1px solid #f0f0f0;}
+.paper-card{border:1px solid #e0e0e0;border-radius:6px;padding:8px;margin:4px 0;font-size:13px;}
+.paper-card.accept{border-left:3px solid green;}
+.paper-card.weak{border-left:3px solid orange;}
+.paper-card.reject{border-left:3px solid red;}
+.paper-card .verdict{font-weight:bold;font-size:12px;}
+.paper-card .meta{color:#888;font-size:12px;margin-top:2px;}
+.paper-card .reason{color:#555;font-size:12px;margin-top:2px;font-style:italic;}
+.tabs{display:flex;gap:8px;margin-bottom:8px;}
+.tab{padding:4px 12px;border-radius:4px;cursor:pointer;font-size:13px;background:#e0e0e0;}
+.tab.active{background:#2563eb;color:#fff;}
+.eg-group{margin-bottom:8px;}
+.eg-group-title{font-weight:bold;font-size:13px;color:#555;}
+.eg-item{font-size:12px;padding:1px 0 1px 12px;color:#666;}
+.wp-item{font-size:13px;padding:4px 0;border-bottom:1px solid #f0f0f0;}
+.final-report{font-size:13px;line-height:1.6;}
+select{padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.history-select{font-size:12px;}
 </style>
 </head>
 <body>
+
 <h1>PaperAgent — 题目研究助手</h1>
-<div class="input-box">
-  <input type="text" id="topic" placeholder="输入研究题目，如：基于YOLOv5的钢材表面缺陷检测研究">
-  <button id="startBtn" onclick="startResearch()">开始研究</button>
+
+<div class="top-bar">
+  <div>
+    <input type="text" id="topic" placeholder="输入研究题目...">
+    <button id="startBtn" onclick="startResearch()">开始研究</button>
+  </div>
+  <div class="history-select">
+    <select id="historySelect" onchange="viewCase(this.value)">
+      <option value="">— 历史 Case —</option>
+    </select>
+  </div>
 </div>
 
-<div id="statusBar" class="status-bar hidden"></div>
-<div id="errorBox" class="error-msg hidden"></div>
+<div id="statusBar" class="status-bar"></div>
+<div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
 
 <div id="searchSection" class="section hidden">
   <div class="section-title">搜索阶段</div>
   <div id="adapterResults"></div>
-</div>
-
-<div id="filterSection" class="section hidden">
-  <div class="section-title">质量过滤</div>
   <div id="filterResult"></div>
 </div>
 
-<div id="paperListSection" class="section hidden">
-  <div class="section-title">论文列表 (实时流入)</div>
-  <div id="paperList"></div>
+<div id="verifySection" class="section hidden">
+  <div class="section-title">验证结果</div>
+  <div id="verifyResults"></div>
 </div>
 
 <div id="expansionSection" class="section hidden">
-  <div class="section-title">引文扩展 (自动选种)</div>
+  <div class="section-title">引文扩展</div>
   <div id="expansionResults"></div>
 </div>
 
 <div id="analysisSection" class="section hidden">
   <div class="section-title">分析阶段</div>
+  <div id="analysisPanel" style="margin-bottom:8px;"></div>
   <div id="nodeResults"></div>
+</div>
+
+<div id="paperSection" class="section hidden">
+  <div class="section-title">论文列表</div>
+  <div class="tabs">
+    <div class="tab active" data-filter="all" onclick="switchTab('all')">全部</div>
+    <div class="tab" data-filter="accept" onclick="switchTab('accept')">Accept</div>
+    <div class="tab" data-filter="weak" onclick="switchTab('weak')">Weak</div>
+    <div class="tab" data-filter="reject" onclick="switchTab('reject')">Reject</div>
+  </div>
+  <div id="paperList"></div>
+</div>
+
+<div id="evidenceSection" class="section hidden">
+  <div class="section-title">证据图谱</div>
+  <div id="evidenceGraph"></div>
+</div>
+
+<div id="wpSection" class="section hidden">
+  <div class="section-title">工作包</div>
+  <div id="workPackages"></div>
 </div>
 
 <div id="finalSection" class="section hidden">
@@ -74,91 +110,100 @@ button:disabled{background:#ccc;cursor:not-allowed}
 </div>
 
 <script>
-function genCaseId(){return 're13-'+Date.now().toString(36);}
+var allPapers=[];
+var currentFilter='all';
+var TOTAL_NODES=23;
+
+function genCaseId(){return 're14-'+Date.now().toString(36);}
+function showSection(id){document.getElementById(id).classList.remove('hidden');}
+function setProgress(n){var pct=Math.min(100,Math.round(n/TOTAL_NODES*100));document.getElementById('progressFill').style.width=pct+'%';}
+
+function loadHistory(){
+  fetch('/api/v1/research/').then(function(r){return r.json();}).then(function(d){
+    var html='<option value="">— 历史 Case —</option>';
+    if(d.cases){for(var i=0;i<d.cases.length;i++){
+      var c=d.cases[i];
+      html+='<option value="'+c.case_id+'">'+c.case_id+' ('+c.status+')</option>';
+    }}
+    document.getElementById('historySelect').innerHTML=html;
+  }).catch(function(){});
+}
 
 function startResearch(){
   var topic=document.getElementById('topic').value.trim();
   if(!topic){alert('请输入题目');return;}
   var caseId=genCaseId();
   document.getElementById('startBtn').disabled=true;
-  document.getElementById('statusBar').className='status-bar';
   document.getElementById('statusBar').textContent='提交中...';
+  // Reset sections
+  ['searchSection','verifySection','expansionSection','analysisSection','paperSection','evidenceSection','wpSection','finalSection'].forEach(function(id){document.getElementById(id).classList.add('hidden');});
+  document.getElementById('adapterResults').innerHTML='';
+  document.getElementById('nodeResults').innerHTML='';
+  document.getElementById('paperList').innerHTML='';
+  document.getElementById('analysisPanel').innerHTML='';
+  setProgress(0);
 
-  fetch('/api/v1/research/',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({case_id:caseId,topic:topic})
-  }).then(function(r){return r.json();}).then(function(d){
+  fetch('/api/v1/research/',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({case_id:caseId,topic:topic})}).then(function(r){return r.json();}).then(function(){
     connectSSE(caseId);
-  }).catch(function(e){
-    showError('提交失败: '+e.message);
-    document.getElementById('startBtn').disabled=false;
   });
 }
 
 function connectSSE(caseId){
-  document.getElementById('statusBar').textContent='研究进行中...';
   var es=new EventSource('/api/v1/research/'+caseId+'/stream');
+  var nodeCount=0;
 
-  es.addEventListener('search_started',function(e){
-    showSection('searchSection');
-    document.getElementById('statusBar').textContent='搜索中...';
-  });
+  es.addEventListener('search_started',function(){document.getElementById('statusBar').textContent='搜索中...';});
 
   es.addEventListener('adapter_result',function(e){
     var d=JSON.parse(e.data);
     showSection('searchSection');
     var div=document.createElement('div');
     div.className='adapter-row';
-    div.innerHTML='<span class="icon">✅</span> '+d.adapter+' '+d.count+' 篇';
+    div.innerHTML='<span class="check">✅</span> '+d.adapter+' &nbsp;'+d.count+' 篇';
     document.getElementById('adapterResults').appendChild(div);
+    nodeCount++;setProgress(nodeCount);
   });
 
-  es.addEventListener('verify_result',function(e){
+  es.addEventListener('search_completed',function(e){
     var d=JSON.parse(e.data);
-    showSection('paperListSection');
-    var vc=d.verdict==='accept'?'verdict-accept':(d.verdict==='weak_reject'?'verdict-weak':'verdict-reject');
-    var div=document.createElement('div');
-    div.className='paper-card';
-    div.innerHTML='<span class="title">'+(d.title||'')+'</span>'+
-      '<span class="verdict '+vc+'">'+(d.verdict||'')+'</span>'+
-      '<br><small>hit: '+(d.hit_keywords||[]).join(', ')+'</small>';
-    document.getElementById('paperList').appendChild(div);
+    document.getElementById('adapterResults').innerHTML+='<div style="font-size:12px;color:#888">共 '+d.total_raw+' 篇原始结果</div>';
   });
 
   es.addEventListener('filter_result',function(e){
     var d=JSON.parse(e.data);
-    showSection('filterSection');
-    document.getElementById('filterResult').textContent=
-      '保留 '+d.kept+' 篇, 丢弃 '+d.dropped+' 篇 (词条/概念页)';
+    showSection('searchSection');
+    var html='✅ 质量过滤: 保留 '+d.kept+' 篇, 丢弃 '+d.dropped+' 篇';
+    if(d.pre_filter_keep!==undefined){html+='<br><span style="font-size:12px;color:#888">pre_filter: 直留 '+d.pre_filter_keep+', 丢弃 '+d.pre_filter_drop+', LLM 判断 '+d.llm_judged+'</span>';}
+    document.getElementById('filterResult').innerHTML=html;
   });
 
   es.addEventListener('verify_completed',function(e){
     var d=JSON.parse(e.data);
-    showSection('paperListSection');
-    if(d.round===1){
-      addPaperCard('第一轮验证完成: '+d.accepted+' 篇通过, '+d.rejected+' 篇拒绝');
-    }else{
-      addPaperCard('第二轮验证(扩展论文): '+d.accepted+' 篇通过, '+d.rejected+' 篇拒绝');
-    }
+    showSection('verifySection');
+    var html='✅ 第'+d.round+'轮验证: '+d.accepted+' accept, '+d.weak_reject+' weak_reject, '+d.rejected+' reject';
+    document.getElementById('verifyResults').innerHTML=html;
+    nodeCount++;setProgress(nodeCount);
   });
 
   es.addEventListener('expansion_started',function(e){
     var d=JSON.parse(e.data);
     showSection('expansionSection');
     var html='';
-    for(var i=0;i<d.seed_titles.length;i++){
-      html+='<div class="seed-item">种子'+(i+1)+': '+d.seed_titles[i]+'</div>';
+    if(d.seed_titles&&d.seed_titles.length>0){
+      for(var i=0;i<d.seed_titles.length;i++){
+        html+='<div class="expansion-item">🔗 种子'+(i+1)+': '+d.seed_titles[i];
+        if(d.seed_scores&&d.seed_scores[i]!==undefined){html+=' (score='+d.seed_scores[i]+')';}
+        html+='</div>';
+      }
     }
     document.getElementById('expansionResults').innerHTML=html;
   });
 
   es.addEventListener('expansion_completed',function(e){
     var d=JSON.parse(e.data);
-    var html=document.getElementById('expansionResults').innerHTML;
-    html+='<div class="expansion-item">扩展完成: '+d.total_expanded+' 篇新论文, '+
-          d.n_surveys+' 篇综述, '+d.n_repos+' 个repo</div>';
-    document.getElementById('expansionResults').innerHTML=html;
+    document.getElementById('expansionResults').innerHTML+='<div class="expansion-item">✅ 扩展完成: '+d.total_expanded+' 篇新论文, '+d.n_surveys+' 篇综述, '+d.n_repos+' 个 repo</div>';
+    nodeCount++;setProgress(nodeCount);
   });
 
   es.addEventListener('node_complete',function(e){
@@ -168,83 +213,167 @@ function connectSSE(caseId){
     div.className='node-status';
     div.innerHTML='<span class="check">✅</span> '+d.node+' ('+d.elapsed_s+'s)';
     document.getElementById('nodeResults').appendChild(div);
+    renderAnalysisNode(d.node,d.output);
+    nodeCount++;setProgress(nodeCount);
   });
 
   es.addEventListener('done',function(e){
     var d=JSON.parse(e.data);
     document.getElementById('statusBar').textContent='完成! 耗时 '+d.total_elapsed_s+'s';
-    showSection('finalSection');
-    document.getElementById('finalReport').innerHTML=
-      '<strong>研究完成</strong><br>总耗时: '+d.total_elapsed_s+'s<br>事件数: '+d.total_events;
+    setProgress(TOTAL_NODES);
     es.close();
     document.getElementById('startBtn').disabled=false;
-    // Fetch full state for paper list
-    fetchPapers(d.case_id||caseId);
+    fetchAndRenderAll(caseId);
   });
 
   es.addEventListener('error',function(e){
-    try{var d=JSON.parse(e.data);showError(d.message||'未知错误');}catch(err){
-      // EventSource auto-reconnect; only show error if connection closed
-    }
+    try{var d=JSON.parse(e.data);document.getElementById('statusBar').textContent='错误: '+d.message;}catch(err){}
   });
 
-  // Fallback polling if SSE fails
+  // Fallback polling
   setTimeout(function(){
     if(es.readyState===2){
-      pollStatus(caseId);
+      var poll=setInterval(function(){
+        fetch('/api/v1/research/'+caseId+'/status').then(function(r){return r.json();}).then(function(s){
+          if(s.status==='done'){clearInterval(poll);fetchAndRenderAll(caseId);}
+          if(s.status==='error'){clearInterval(poll);}
+        });
+      },2000);
     }
-  },5000);
-}
-
-function pollStatus(caseId){
-  var iv=setInterval(function(){
-    fetch('/api/v1/research/'+caseId+'/status').then(function(r){return r.json();}).then(function(s){
-      if(s.status==='done'||s.status==='error'){
-        clearInterval(iv);
-        document.getElementById('statusBar').textContent='完成 (轮询模式)';
-        document.getElementById('startBtn').disabled=false;
-        fetchPapers(caseId);
-      }
-    });
   },3000);
 }
 
-function fetchPapers(caseId){
+function renderAnalysisNode(node,output){
+  if(!output)return;
+  var panel=document.getElementById('analysisPanel');
+  if(node==='feasibility_assessor'){
+    var v=output.verdict||'unknown';var s=output.score||0;
+    var color={'feasible':'green','risky':'orange','not_recommended':'red'}[v]||'gray';
+    panel.innerHTML+='<div style="border-left:3px solid '+color+';padding:8px;margin:4px 0"><b>可行性: '+v+' ('+s+'分)</b><br>'+(output.reason||'')+'</div>';
+  }else if(node==='innovation_extractor'){
+    panel.innerHTML+='<div style="padding:8px;margin:4px 0"><b>创新点: '+(output.n_innovation||0)+' 个</b></div>';
+  }else if(node==='narrative_builder'){
+    panel.innerHTML+='<div style="padding:8px;margin:4px 0"><b>叙事: '+(output.nick_model_name||'')+'</b></div>';
+  }else if(node==='devils_advocate'){
+    panel.innerHTML+='<div style="padding:8px;margin:4px 0"><b>审查: '+(output.overall_verdict||'')+'</b></div>';
+  }
+}
+
+function fetchAndRenderAll(caseId){
   fetch('/api/v1/research/'+caseId+'/state').then(function(r){return r.json();}).then(function(st){
-    showSection('paperListSection');
-    var papers=st.verified_papers||[];
-    var html='';
-    for(var i=0;i<papers.length;i++){
-      var p=papers[i];
-      var vc=p.verdict==='accept'?'verdict-accept':(p.verdict==='weak_reject'?'verdict-weak':'verdict-reject');
-      var hits=(p.hit_keywords||[]).join(', ');
-      html+='<div class="paper-card">'+
-        '<span class="title">'+(p.title||'')+'</span>'+
-        '<span class="verdict '+vc+'">'+(p.verdict||'')+'</span>'+
-        '<br><small>hit: '+hits+'</small>'+
-        '<br><small>'+(p.reason||'')+'</small></div>';
-    }
-    document.getElementById('paperList').innerHTML=html||'<div class="paper-card">无论文</div>';
+    // Paper list
+    allPapers=[];
+    var vp=st.verified_papers||[];
+    var wp=st.weak_papers||[];
+    for(var i=0;i<vp.length;i++){allPapers.push(vp[i]);}
+    for(var i=0;i<wp.length;i++){allPapers.push(wp[i]);}
+    renderPapers();
+    // Evidence graph
+    renderEvidenceGraph(st);
+    // Work packages
+    renderWorkPackages(st.work_packages||[]);
+    // Final recommendation
+    renderFinal(st.final_recommendation||{},st);
   }).catch(function(){});
 }
 
-function showSection(id){
-  var el=document.getElementById(id);
-  if(el.className.indexOf('hidden')>=0) el.className=el.className.replace('hidden','');
+function renderPapers(){
+  showSection('paperSection');
+  var html='';
+  for(var i=0;i<allPapers.length;i++){
+    var p=allPapers[i];
+    var verdict=p.verdict||'unknown';
+    var cls=verdict==='accept'?'accept':(verdict==='weak_reject'?'weak':'reject');
+    if(currentFilter!=='all'&&currentFilter!==cls)continue;
+    var icon=verdict==='accept'?'✓':(verdict==='weak_reject'?'⚠':'✗');
+    var title=(p.title||'').substring(0,100);
+    var doi=p.doi||'';var rel=p.relation_to_topic||'';
+    var hits=(p.hit_keywords||[]).join(', ');
+    var reason=(p.reason||'').substring(0,150);
+    html+='<div class="paper-card '+cls+'">';
+    html+='<span class="verdict">'+icon+' '+verdict+'</span> &nbsp; '+title;
+    if(rel)html+='<div class="meta">relation: '+rel+'</div>';
+    if(doi)html+='<div class="meta">DOI: '+doi+'</div>';
+    if(hits)html+='<div class="meta">hit: '+hits+'</div>';
+    if(reason)html+='<div class="reason">'+reason+'</div>';
+    html+='</div>';
+  }
+  document.getElementById('paperList').innerHTML=html||'<div style="color:#888;font-size:13px">无论文</div>';
 }
 
-function showError(msg){
-  var eb=document.getElementById('errorBox');
-  eb.textContent=msg;
-  eb.className='error-msg';
+function switchTab(filter){
+  currentFilter=filter;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelector('.tab[data-filter="'+filter+'"]').classList.add('active');
+  renderPapers();
 }
 
-function addPaperCard(text){
-  var div=document.createElement('div');
-  div.className='paper-card';
-  div.textContent=text;
-  document.getElementById('paperList').appendChild(div);
+function renderEvidenceGraph(st){
+  showSection('evidenceSection');
+  var groups=[
+    {label:'Baseline',items:st.baseline_candidates||[]},
+    {label:'Parallel',items:st.parallel_candidates||[]},
+    {label:'Survey',items:(st.surveys||[]).concat(st.surveys_found||[])},
+    {label:'Dataset',items:st.dataset_candidates||[]},
+    {label:'Repo',items:(st.repo_candidates||[]).concat(st.repos_found||[])}
+  ];
+  var html='';
+  for(var g=0;g<groups.length;g++){
+    var items=groups[g].items;
+    html+='<div class="eg-group"><div class="eg-group-title">'+groups[g].label+' ('+items.length+')</div>';
+    for(var i=0;i<Math.min(items.length,10);i++){
+      var title=items[i].title||items[i].name||items[i].url||'';
+      html+='<div class="eg-item">'+(title.substring(0,80)||'')+'</div>';
+    }
+    if(items.length>10)html+='<div class="eg-item">... 还有 '+(items.length-10)+' 条</div>';
+    html+='</div>';
+  }
+  document.getElementById('evidenceGraph').innerHTML=html;
 }
+
+function renderWorkPackages(wps){
+  showSection('wpSection');
+  var html='';
+  for(var i=0;i<wps.length;i++){
+    var wp=wps[i];
+    var title=wp.title||wp.approach||wp.name||('工作包'+(i+1));
+    var desc=wp.description||wp.summary||'';
+    html+='<div class="wp-item"><b>'+(i+1)+'. '+title+'</b>';
+    if(desc)html+='<br><span style="color:#666">'+desc.substring(0,200)+'</span>';
+    html+='</div>';
+  }
+  document.getElementById('workPackages').innerHTML=html||'<div style="color:#888;font-size:13px">无工作包</div>';
+}
+
+function renderFinal(final,st){
+  showSection('finalSection');
+  var html='';
+  if(final.low_bar_status)html+='<b>状态: '+final.low_bar_status+'</b><br>';
+  if(final.summary)html+='<div style="margin-top:4px">'+final.summary+'</div>';
+  // Add review verdict if available
+  if(st.review_report&&st.review_report.overall_verdict){
+    html+='<div style="margin-top:8px"><b>审查结论: '+st.review_report.overall_verdict+'</b></div>';
+  }
+  // Add feasibility
+  if(st.feasibility_report&&st.feasibility_report.verdict){
+    html+='<div style="margin-top:4px"><b>可行性: '+st.feasibility_report.verdict+' ('+st.feasibility_report.score+'分)</b></div>';
+  }
+  // Add narrative
+  if(st.research_narratives&&st.research_narratives.nick_model_name){
+    html+='<div style="margin-top:4px"><b>模型名: '+st.research_narratives.nick_model_name+'</b></div>';
+  }
+  if(!html)html='<div style="color:#888">无最终推荐</div>';
+  document.getElementById('finalReport').innerHTML=html;
+}
+
+function viewCase(caseId){
+  if(!caseId)return;
+  fetchAndRenderAll(caseId);
+  document.getElementById('statusBar').textContent='查看历史: '+caseId;
+}
+
+// Init
+loadHistory();
 </script>
 </body>
 </html>
