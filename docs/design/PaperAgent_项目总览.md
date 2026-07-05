@@ -53,23 +53,23 @@ flowchart TD
     style topic_parser fill:#4caf50,color:#fff
     style search_planner fill:#4caf50,color:#fff
     style paper_retriever fill:#4caf50,color:#fff
-    quality_filter fill:#8bc34a,color:#fff
+    style quality_filter fill:#8bc34a,color:#fff
     style verify fill:#4caf50,color:#fff
     style quality_gate fill:#ff9800,color:#fff
     style targeted_repair fill:#4caf50,color:#fff
-    citation_expander fill:#8bc34a,color:#fff
-    verify2 fill:#8bc34a,color:#fff
+    style citation_expander fill:#8bc34a,color:#fff
+    style verify2 fill:#8bc34a,color:#fff
     style dataset_repo fill:#4caf50,color:#fff
     style evidence_graph fill:#4caf50,color:#fff
     style baseline_classifier fill:#4caf50,color:#fff
-    feasibility fill:#cddc39,color:#333
+    style feasibility fill:#cddc39,color:#333
     style work_package fill:#4caf50,color:#fff
-    innovation fill:#cddc39,color:#333
-    sota fill:#cddc39,color:#333
-    narrative fill:#cddc39,color:#333
+    style innovation fill:#cddc39,color:#333
+    style sota fill:#cddc39,color:#333
+    style narrative fill:#cddc39,color:#333
     style low_bar fill:#4caf50,color:#fff
-    optimization fill:#cddc39,color:#333
-    devils fill:#cddc39,color:#333
+    style optimization fill:#cddc39,color:#333
+    style devils fill:#cddc39,color:#333
     style human fill:#4caf50,color:#fff
     style final fill:#4caf50,color:#fff
 

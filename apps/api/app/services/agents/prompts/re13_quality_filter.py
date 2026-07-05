@@ -21,6 +21,8 @@ Judgement criteria:
 6. Abstract being pure definition/pure classification description/pure terminology explanation -> non-paper
 7. URL being encyclopedia/dictionary/teaching site -> non-paper
 
+IMPORTANT: Papers from arxiv.org, doi.org, openalex.org, or semanticscholar.org ARE real academic papers. A URL containing "arxiv.org" or "doi.org" strongly indicates a real paper. Do NOT mark arxiv papers as non-papers.
+
 Note: the above rules serve as judgement dimensions, NOT hardcoded filters. Use LLM understanding to comprehensively judge each candidate.
 
 Output JSON array, each element:

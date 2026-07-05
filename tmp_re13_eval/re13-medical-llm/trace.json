@@ -1,0 +1,241 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T16:09:47Z",
+    "input_summary": {
+      "topic": "基于大语言模型的医学问答可信度评估方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T16:09:47Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T16:09:49Z",
+    "input_summary": {
+      "topic_len": 21
+    },
+    "output_summary": {
+      "n_method": 0,
+      "n_object": 0,
+      "domain": "unknown"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [
+      {
+        "node": "topic_parser",
+        "error": "LLMUnavailable"
+      }
+    ],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T16:09:49Z",
+    "elapsed_s": 2.263
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T16:09:49Z",
+    "input_summary": {
+      "topic_len": 21,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T16:09:49Z",
+    "elapsed_s": 0.002
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T16:09:49Z",
+    "input_summary": {
+      "topic_len": 21,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 24,
+      "raw_tools": [
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T16:10:10Z",
+    "elapsed_s": 20.698
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T16:10:10Z",
+    "input_summary": {
+      "n_candidates": 24
+    },
+    "output_summary": {
+      "kept": 24,
+      "dropped": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.heuristic_fallback"
+      }
+    ],
+    "errors": [
+      {
+        "phase": "llm_call",
+        "error": "LLMUnavailable",
+        "action": "heuristic_fallback"
+      }
+    ],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T16:10:12Z",
+    "elapsed_s": 2.34
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T16:10:12Z",
+    "input_summary": {
+      "n_candidates": 24,
+      "topic_len": 21,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_reject_or_weak": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T16:11:14Z",
+    "elapsed_s": 61.394
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T16:11:14Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T16:11:14Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-05T16:11:16Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 0,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [
+      {
+        "node": "targeted_repair",
+        "error": "LLMUnavailable"
+      }
+    ],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T16:11:16Z",
+    "elapsed_s": 2.522
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T16:11:16Z",
+    "input_summary": {
+      "topic_len": 21,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 24,
+      "raw_tools": [
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T16:11:32Z",
+    "elapsed_s": 16.118
+  }
+]

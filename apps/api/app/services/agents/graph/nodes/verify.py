@@ -152,6 +152,12 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
 
     try:
         verdicts = _call_verifier(topic, atoms, candidates)
+        # Build title→candidate index to carry over identifiers (doi, paper_id, etc.)
+        _candidate_by_title: dict[str, dict[str, Any]] = {}
+        for c in candidates:
+            t = (c.get("title") or c.get("name") or "").strip().lower()
+            if t:
+                _candidate_by_title[t] = c
         # Map loose schema to normalized candidate.
         keep = []
         rejected = []
@@ -160,6 +166,8 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
             if not title:
                 continue
             verdict = (v.get("verdict") or "").lower()
+            # Carry over identifiers from the original candidate
+            orig = _candidate_by_title.get(title.lower(), {})
             item = {
                 "title": title,
                 "verdict": verdict,
@@ -171,6 +179,14 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
                 "url_missing": bool(v.get("url_missing")),
                 "needs_human_confirm": bool(v.get("needs_human_confirm")),
                 "reason": v.get("reason") or "",
+                # Re1.3: carry over identifiers for citation_expander
+                "doi": orig.get("doi") or v.get("doi"),
+                "url": orig.get("url") or v.get("url"),
+                "source": orig.get("source") or v.get("source"),
+                "paper_id": orig.get("paper_id") or v.get("paper_id"),
+                "arxiv_id": orig.get("arxiv_id") or v.get("arxiv_id"),
+                "citation_count": orig.get("citation_count") or v.get("citation_count") or 0,
+                "abstract": orig.get("abstract") or v.get("abstract") or "",
             }
             if verdict == "accept":
                 keep.append(item)
