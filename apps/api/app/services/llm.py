@@ -21,6 +21,8 @@ import json
 import logging
 import os
 import re
+import threading
+import time as _time
 from typing import Any
 
 from dotenv import load_dotenv
@@ -28,6 +30,34 @@ from dotenv import load_dotenv
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Lightweight client-side rate limiter
+# ---------------------------------------------------------------------------
+# StepFun caps free-tier accounts at 10 RPM.  Without client-side pacing the
+# parallel verifier (2 workers × 24 candidates) immediately trips 429.  The
+# limiter batches inter-call gaps so we stay safely under the cap.
+_limiter_lock = threading.Lock()
+_limiter_min_interval = 0.0  # computed from env on first use
+_limiter_last_call = 0.0
+
+
+def _rate_limit_pause() -> None:
+    """Block until the minimum inter-call interval has elapsed."""
+    global _limiter_min_interval, _limiter_last_call
+    rpm = int(_get_env("LLM_RPM_LIMIT", "0"))
+    if rpm <= 0:
+        return
+    with _limiter_lock:
+        if _limiter_min_interval == 0.0:
+            # aim for 80 % of the cap so transient bursts don't trip it
+            _limiter_min_interval = 60.0 / (rpm * 0.8)
+        now = _time.monotonic()
+        wait = _limiter_min_interval - (now - _limiter_last_call)
+        if wait > 0.0:
+            _time.sleep(wait)
+        _limiter_last_call = _time.monotonic()
 
 
 class LLMUnavailable(RuntimeError):
@@ -202,12 +232,13 @@ def _chat_openai_compat_once(
 
     max_retries = 3
     for attempt in range(max_retries):
+        _rate_limit_pause()
         try:
             r = httpx.post(url, headers=headers, json=body, timeout=timeout)
             if r.status_code == 429:
-                wait = 2 ** attempt
+                wait = 60.0 / max(int(_get_env("LLM_RPM_LIMIT", "10")), 1)
                 logger.warning("rate limited (429) on %s (attempt %d/%d); waiting %ds",
-                               model, attempt + 1, max_retries, wait)
+                               model, attempt + 1, max_retries, int(wait))
                 _time.sleep(wait)
                 continue
             if r.status_code >= 400:
@@ -272,6 +303,7 @@ def _chat_once_json_via_fallback(prompt, *, system, fallback_model, temperature,
                  "content": prompt + "\n\n[Reply with ONLY the strict JSON object.]"})
     max_retries = 3
     for attempt in range(max_retries):
+        _rate_limit_pause()
         try:
             r = httpx.post(
                 f"{base_url}/v1/chat/completions",
@@ -282,9 +314,9 @@ def _chat_once_json_via_fallback(prompt, *, system, fallback_model, temperature,
                 timeout=timeout,
             )
             if r.status_code == 429:
-                wait = 2 ** attempt
+                wait = 60.0 / max(int(_get_env("LLM_RPM_LIMIT", "10")), 1)
                 logger.warning("fallback model %s rate limited (429) attempt %d/%d; waiting %ds",
-                               fallback_model, attempt + 1, max_retries, wait)
+                               fallback_model, attempt + 1, max_retries, int(wait))
                 _time.sleep(wait)
                 continue
             r.raise_for_status()
@@ -363,16 +395,16 @@ def _chat_stepfun(
     directive — re-add only if cost reduction becomes necessary.
     """
     api_key = _get_env("STEPFUN_API_KEY")
-    base_url = _get_env("STEPFUN_BASE_URL",
-                        "https://api.stepfun.com").rstrip("/")
+    primary_base = _get_env("STEPFUN_BASE_URL", "https://api.stepfun.com/step_plan/v1").rstrip("/").removesuffix("/v1")
+    fallback_base = _get_env("STEPFUN_FALLBACK_BASE_URL", "https://api.stepfun.com").rstrip("/").removesuffix("/v1")
     model = _get_env("STEPFUN_MODEL", "step-3.7-flash")
     if not api_key:
         raise LLMUnavailable("STEPFUN_API_KEY 未设置")
 
-    # — attempt 1: normal call —
+    # — attempt 1: primary (step_plan) —
     raw = _chat_openai_compat_once(
         prompt, system=system, model=model, api_key=api_key,
-        base_url=base_url, temperature=temperature,
+        base_url=primary_base, temperature=temperature,
         max_tokens=max_tokens, timeout=timeout,
     )
     if raw and _contains_json_object(raw):
@@ -394,7 +426,7 @@ def _chat_stepfun(
     try:
         raw2 = _chat_openai_compat_once(
             prompt, system=reinforced, model=model, api_key=api_key,
-            base_url=base_url, temperature=temperature,
+            base_url=primary_base, temperature=temperature,
             max_tokens=max_tokens, timeout=timeout,
         )
         if raw2 and _contains_json_object(raw2):
@@ -402,7 +434,20 @@ def _chat_stepfun(
     except Exception as exc:
         logger.debug("stepfun reinforce attempt failed: %s", exc)
 
-    # — last resort: return raw (let caller decide) —
+    # — attempt 3: fallback base URL (standard endpoint) —
+    if fallback_base and fallback_base != primary_base:
+        try:
+            raw3 = _chat_openai_compat_once(
+                prompt, system=system, model=model, api_key=api_key,
+                base_url=fallback_base, temperature=temperature,
+                max_tokens=max_tokens, timeout=timeout,
+            )
+            if raw3 and _contains_json_object(raw3):
+                return raw3
+        except Exception as exc:
+            logger.debug("stepfun fallback base URL failed: %s", exc)
+
+    # — last resort: return raw —
     return raw
 
 

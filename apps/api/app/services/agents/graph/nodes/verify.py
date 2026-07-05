@@ -39,7 +39,7 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
     if not candidates:
         return []
 
-    max_workers = min(len(candidates), 4)
+    max_workers = min(len(candidates), 2)
 
     def _verify_one(candidate: dict[str, Any]) -> list[dict[str, Any]]:
         """Verify a single candidate; returns list of normalised verdict dicts."""

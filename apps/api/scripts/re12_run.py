@@ -42,6 +42,8 @@ os.environ.setdefault("HUMAN_GATE_ENABLED", "false")
 os.environ.setdefault("LANGGRAPH_CHECKPOINTER", "memory")
 os.environ.setdefault("PAPERAGENT_MAX_REPAIR_ROUNDS", "2")
 os.environ.setdefault("PAPERAGENT_SKIP_SEARCH_PLANNER", "true")
+os.environ.setdefault("LLM_RPM_LIMIT", "8")
+os.environ.setdefault("VERIFIER_MAX_WORKERS", "1")
 os.environ.setdefault("VOAPI_USAGE_POLICY", "premium_review_only")
 os.environ.setdefault("MINIMAX_DISABLED", "true")
 
@@ -54,21 +56,33 @@ from apps.api.app.services.agents.graph.state import ResearchState  # noqa: E402
 
 CASES = [
     {
-        "case_id": "re12-l3-steel-yolov5",
-        "title": "基于YOLOv5的钢铁表面缺陷检测研究",
-        "topic": "YOLOv5-based steel surface defect detection on hot-rolled strip using NEU-DET dataset",
+        "case_id": "re12-l5-road-crack",
+        "title": "基于深度学习的道路裂缝检测与分类研究",
+        "topic": "Deep learning-based road crack detection and classification using CNN",
         "topic_atoms": None,
     },
     {
-        "case_id": "re12-l3-semantic-slam",
-        "title": "基于深度学习的视觉SLAM语义地图的研究",
-        "topic": "Deep learning-based visual SLAM semantic mapping for indoor environments",
+        "case_id": "re12-l5-mono-recon",
+        "title": "基于单目视觉的室内场景三维重建关键技术研究",
+        "topic": "Monocular camera-based indoor 3D scene reconstruction with deep learning",
         "topic_atoms": None,
     },
     {
-        "case_id": "re12-l3-medical-llm",
-        "title": "基于大语言模型的医学问答可信度评估方法研究",
-        "topic": "LLM-based medical question-answer credibility and factuality estimation",
+        "case_id": "re12-l5-rag-qa",
+        "title": "基于检索增强生成的企业知识库问答系统研究",
+        "topic": "Retrieval-augmented generation for enterprise knowledge base question answering",
+        "topic_atoms": None,
+    },
+    {
+        "case_id": "re12-l5-steel-monitor",
+        "title": "基于压电传感器的钢结构健康监测与损伤识别研究",
+        "topic": "Piezoelectric sensor-based steel structural health monitoring and damage identification",
+        "topic_atoms": None,
+    },
+    {
+        "case_id": "re12-l5-uav-crop",
+        "title": "基于无人机遥感的农作物病虫害智能监测研究",
+        "topic": "UAV remote sensing for crop pest and disease detection using deep learning",
         "topic_atoms": None,
     },
 ]
