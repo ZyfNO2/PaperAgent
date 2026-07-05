@@ -55,6 +55,25 @@ class ResearchState(TypedDict, total=False):
     # --- Final recommendation ---
     final_recommendation: dict[str, Any]
 
+    # === Re1.3 new fields ===
+    # Quality filter results
+    filter_results: dict[str, Any]
+
+    # Seed papers (auto-selected by citation_expander)
+    seed_papers: list[dict[str, Any]]
+
+    # Expanded papers from citation expansion (pre-verify)
+    expanded_papers: list[dict[str, Any]]
+
+    # Surveys found during citation expansion
+    surveys_found: list[dict[str, Any]]
+
+    # Repos found during citation expansion
+    repos_found: list[dict[str, Any]]
+
+    # Citation expansion done flag (prevents infinite loop)
+    citation_expansion_done: bool
+
     # --- Telemetry ---
     trace_events: list[dict[str, Any]]
     provider_profile: str

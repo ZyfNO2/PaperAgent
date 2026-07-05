@@ -23,6 +23,8 @@ Decide if it helps a researcher on this topic:
 - weak_reject = some relevance but not directly usable (same method different domain, survey mentioning the topic, or only generic ML terms)
 - reject = unrelated
 
+IMPORTANT: verdict="accept" requires that the candidate is a REAL academic paper (has research content, not a glossary/concept/figure/table entry). If the candidate is NOT a real paper, verdict MUST be "reject" and relation_to_topic MUST be "none". The reason field must explain why it is/is not a real paper.
+
 Output exactly ONE JSON object:
 {{"title":"{candidates_title}","verdict":"<accept|weak_reject|reject>","hit_keywords":["<concrete overlapping terms from title/snippet>"],"relation_to_topic":"<baseline|parallel|survey|none>","reason":"<1 sentence>"}}"""
 
