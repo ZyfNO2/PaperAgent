@@ -13,6 +13,8 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1.research import router as research_v1_router
+
 app = FastAPI(
     title="TopicPilot-CN S66v agent",
     version="0.7.0",
@@ -26,6 +28,9 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+# Re1.2 research graph result endpoints
+app.include_router(research_v1_router, prefix="/api/v1/research", tags=["research-v1"])
 
 
 @app.get("/health", tags=["meta"])
