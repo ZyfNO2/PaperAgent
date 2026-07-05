@@ -105,6 +105,27 @@ function connectSSE(caseId){
     document.getElementById('statusBar').textContent='搜索中...';
   });
 
+  es.addEventListener('adapter_result',function(e){
+    var d=JSON.parse(e.data);
+    showSection('searchSection');
+    var div=document.createElement('div');
+    div.className='adapter-row';
+    div.innerHTML='<span class="icon">✅</span> '+d.adapter+' '+d.count+' 篇';
+    document.getElementById('adapterResults').appendChild(div);
+  });
+
+  es.addEventListener('verify_result',function(e){
+    var d=JSON.parse(e.data);
+    showSection('paperListSection');
+    var vc=d.verdict==='accept'?'verdict-accept':(d.verdict==='weak_reject'?'verdict-weak':'verdict-reject');
+    var div=document.createElement('div');
+    div.className='paper-card';
+    div.innerHTML='<span class="title">'+(d.title||'')+'</span>'+
+      '<span class="verdict '+vc+'">'+(d.verdict||'')+'</span>'+
+      '<br><small>hit: '+(d.hit_keywords||[]).join(', ')+'</small>';
+    document.getElementById('paperList').appendChild(div);
+  });
+
   es.addEventListener('filter_result',function(e){
     var d=JSON.parse(e.data);
     showSection('filterSection');
