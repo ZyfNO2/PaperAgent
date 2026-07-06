@@ -233,27 +233,42 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
 
 
     # Re1.3: merge verified_papers in second round
-
     if citation_done:
-
         existing_verified = list(state.get("verified_papers") or [])
         existing_weak = list(state.get("weak_papers") or [])
 
-        merged_verified = existing_verified + verified
-        merged_weak = existing_weak + weak
+        # Re2.2 fix: deduplicate by title before merging
+        seen_titles: set[str] = set()
+        for p in existing_verified + existing_weak:
+            t = (p.get("title") or "").strip().lower()
+            if t:
+                seen_titles.add(t)
+
+        deduped_verified = []
+        deduped_weak = []
+        for p in verified:
+            t = (p.get("title") or "").strip().lower()
+            if t and t in seen_titles:
+                continue  # skip duplicate
+            deduped_verified.append(p)
+            seen_titles.add(t)
+        for p in weak:
+            t = (p.get("title") or "").strip().lower()
+            if t and t in seen_titles:
+                continue
+            deduped_weak.append(p)
+            seen_titles.add(t)
+
+        merged_verified = existing_verified + deduped_verified
+        merged_weak = existing_weak + deduped_weak
 
         return {
-
             "verified_papers": merged_verified,
             "weak_papers": merged_weak,
             "paper_candidates": candidates,
-
             "trace_events": [trace],
-
             "errors": errors,
-
             "provider_profile": "fast_json",
-
         }
 
 

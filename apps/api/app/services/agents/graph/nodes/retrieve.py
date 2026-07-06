@@ -85,8 +85,18 @@ async def _run_direct_adapter_retrieval(topic: str, atoms: dict[str, Any]) -> di
     seen: set[str] = set()
     for tool, hits in raw.items():
         for h in hits:
-            title = (h.get("title") or h.get("full_name") or "").strip()
-            if not title or len(title) < 10:
+            title = (h.get("title") or h.get("full_name") or h.get("name") or "").strip()
+            # Re2.2 fix: GitHub hits have empty title — extract repo name from URL
+            if not title and tool == "github":
+                url = h.get("url") or h.get("html_url") or ""
+                if url:
+                    # Extract repo name from URL like https://api.github.com/repos/owner/repo
+                    parts = url.rstrip("/").split("/")
+                    if len(parts) >= 2:
+                        title = f"{parts[-2]}/{parts[-1]}"
+                    elif parts:
+                        title = parts[-1]
+            if not title or len(title) < 3:
                 continue
             key = __import__("re").sub(r"\s+", " ", title.lower())
             if key in seen:

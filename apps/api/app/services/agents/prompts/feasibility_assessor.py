@@ -21,9 +21,9 @@ Parallel论文({n_parallel}篇):
 数据集: {n_dataset}个, 代码仓库: {n_repo}个
 
 评估标准:
-- feasible (70-100分): baseline>=2 + 有数据集 + 有repo
-- risky (40-69分): baseline>=1 但数据集/repo不足
-- not_recommended (0-39分): 无baseline或题目过于宽泛
+- feasible (60-100分): baseline>=1 + 有数据集或repo，或有充足的parallel论文可参考
+- risky (35-59分): baseline>=1 但数据集/repo不足
+- not_recommended (0-34分): 无baseline或题目过于宽泛
 
 注意: 根据 baseline 论文的具体内容、repo 有无、数据集匹配度给不同的 score。
 同样数量的 baseline，有 repo 的比没 repo 的 score 高 10-20 分。

@@ -100,6 +100,38 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
     limit = max(0, min(8, limit))
     target_papers = papers[:limit]
 
+    # Re2.2 fix: extract repos from source=github papers directly (no LLM needed)
+    github_repos: list[dict[str, Any]] = []
+    non_github_papers: list[dict[str, Any]] = []
+    for p in target_papers:
+        source = (p.get("source") or "").lower()
+        title = (p.get("title") or p.get("name") or "").strip()
+        url = (p.get("url") or "").strip()
+        if source == "github" and (title or url):
+            repo_name = title or url
+            repo_url = url or f"https://github.com/{repo_name}"
+            rrec = {
+                "from_paper": title or "github_search",
+                "linked_paper_id": _slug_of(repo_name),
+                "kind": "repo",
+                "url": repo_url,
+                "mentioned_repo": repo_name,
+                "source": "github_search",
+                "availability": "url" if repo_url.startswith("http") else "named",
+                "status": "found",
+                "reproducibility_hint": "",
+                "risk": "",
+            }
+            k = repo_key(rrec)
+            if k and k not in repo_seen:
+                github_repos.append(rrec)
+                repo_seen.add(k)
+        else:
+            non_github_papers.append(p)
+
+    # LLM extraction for non-github papers
+    target_papers = non_github_papers
+
     def _extract_one(paper: dict[str, Any]) -> dict[str, Any]:
         """Extract datasets + repos from a single paper. Returns result dict."""
         title = (paper.get("title") or paper.get("name") or "").strip()
@@ -217,13 +249,14 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                 logger.warning("dataset_repo future failed: %s", exc)
 
     merged_ds = existing_ds + datasets
-    merged_repo = existing_repo + repos
+    merged_repo = existing_repo + github_repos + repos
 
     trace = _emit("dataset_repo", t0,
-                  {"n_papers": limit},
+                  {"n_papers": limit, "n_github_repos": len(github_repos)},
                   {"n_dataset": len(merged_ds), "n_repo": len(merged_repo)},
                   [{"tool": "re11_dataset_repo_extractor.llm", "attempts": tried,
-                    "profile": "fast_json"}],
+                    "profile": "fast_json"},
+                   {"tool": "github_direct_extract", "n_repos": len(github_repos)}],
                   "fast_json", errors)
 
     return {

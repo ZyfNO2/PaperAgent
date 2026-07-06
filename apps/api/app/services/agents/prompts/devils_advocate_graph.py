@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import Any
 import json as _json
 
-SYSTEM = ("你是论文开题审查员。5维评分。判断标准: BLOCK仅用于编造证据或baseline完全缺失。"
-          "创新点缺少实现细节是正常的，不应仅因此判BLOCK。只输出JSON。")
+SYSTEM = ("你是论文开题审查员。5维评分。判断标准: "
+          "有baseline+有创新点+有工作包→ACCEPT。创新点缺细节是正常的→MINOR_REVISION。"
+          "BLOCK仅用于编造证据或baseline完全缺失。只输出JSON。")
 
 USER_TEMPLATE = """题目: {topic}
 
@@ -28,9 +29,9 @@ USER_TEMPLATE = """题目: {topic}
 - D5写作质量: 叙事是否自洽，有无过度宣传
 
 verdict判定规则:
-- 有baseline>=2 + work_package>=1 -> ACCEPT 或 MINOR_REVISION
-- 有baseline>=1 但work_package=0 -> MINOR_REVISION
-- 有baseline + 创新点描述模糊 -> MINOR_REVISION (不是BLOCK)
+- 有baseline>=1 + 有创新点 + 有工作包 -> ACCEPT
+- 有baseline>=1 + 创新点描述模糊或工作包不完整 -> MINOR_REVISION
+- 有baseline>=1 但无创新点 -> MINOR_REVISION
 - 无baseline -> BLOCK
 - BLOCK仅用于: 创新点引用了不存在的论文/数据集/repo (编造证据)，或baseline完全缺失
 
