@@ -64,7 +64,7 @@ async def _run_direct_adapter_retrieval(topic: str, atoms: dict[str, Any]) -> di
     queries = [q for q in dict.fromkeys(queries).keys() if len(q) > 5][:6]
 
     raw: dict[str, list[dict[str, Any]]] = {}
-    tool_order = [tool for tool in ("arxiv", "openalex", "crossref", "github") if tool in REGISTRY]
+    tool_order = [tool for tool in ("arxiv", "openalex", "crossref", "github", "semantic_scholar") if tool in REGISTRY]
     if tool_order:
         semaphore = asyncio.Semaphore(min(4, len(tool_order)))
 
