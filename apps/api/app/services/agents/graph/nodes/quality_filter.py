@@ -27,8 +27,10 @@ _NON_PAPER_PATTERNS = [
     r"(?i)term\s*validation",
     r"(?i)input\s*evaluation",
     r"(?i)input\s*technical\s*keywords",
-    r"(?i)^figure\s*\d+",
-    r"(?i)^table\s*\d+",
+    r"(?i)^figure\s*\d+:?",   # "Figure 3:" or "Figure 3"
+    r"(?i)^table\s*\d+:?",    # "Table 2:" or "Table 2"
+    r"(?i)^fig\.?\s*\d+:?",   # "Fig. 3:" or "Fig 3"
+    r"(?i)^tab\.?\s*\d+:?",   # "Tab. 2:" or "Tab 2"
     r"(?i)^supplemental\s*information",
 ]
 _COMPILED_PATTERNS = [re.compile(p) for p in _NON_PAPER_PATTERNS]
