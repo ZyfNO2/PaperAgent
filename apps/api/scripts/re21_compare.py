@@ -5,9 +5,25 @@ from pathlib import Path
 
 def load_summary(eval_dir):
     """Load summary JSON or build from state files."""
-    sp = Path(eval_dir) / 'summary_deepseek.json'
-    if sp.exists():
-        return json.loads(sp.read_text(encoding='utf-8')).get('results', [])
+    def _normalize(r):
+        """Normalize field names across summary versions."""
+        return {
+            'case_id': r.get('case_id', ''),
+            'n_papers': r.get('n_papers') or r.get('n_verified') or 0,
+            'feasibility_verdict': r.get('feasibility_verdict', ''),
+            'feasibility_score': r.get('feasibility_score', 0),
+            'review_verdict': r.get('review_verdict', ''),
+            'has_final': r.get('has_final', False),
+        }
+
+    # Try subdir summary first, then parent dir summary
+    for d in [Path(eval_dir), Path(eval_dir).parent]:
+        sp = d / 'summary_deepseek.json'
+        if sp.exists():
+            results = [_normalize(r) for r in json.loads(sp.read_text(encoding='utf-8')).get('results', [])]
+            # Only use if review_verdict is non-empty for at least some cases
+            if any(r['review_verdict'] for r in results):
+                return results
     # Build from state files
     results = []
     for d in sorted(Path(eval_dir).iterdir()):
