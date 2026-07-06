@@ -10,7 +10,8 @@ from .github_search import github_search
 from .huggingface_search import huggingface_search
 from .crossref_search import crossref_search
 from .openalex_search import openalex_search
-from .optional_adapters import kaggle_search, semantic_scholar_search
+from .optional_adapters import kaggle_search
+from .semantic_scholar_search import semantic_scholar_search
 
 
 SourceFn = Callable[[list[str], int], Awaitable[list[dict]]]

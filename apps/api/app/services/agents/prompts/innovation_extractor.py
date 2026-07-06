@@ -20,8 +20,8 @@ Parallel论文(改进参考):
 4. 评估缝合难度
 
 输出JSON:
-{{"innovation_points":[{{"description":"具体创新描述","baseline_used":"baseline论文标题","stitched_modules":["模块A","模块B"],"stitching_plan":"具体步骤","estimated_difficulty":"低|中|高","evidence_ref":"论文标题"}}],
-"stitching_plan":{{"baseline_model":"模型名","module_b":"模块B来源","module_c":"模块C来源","stitching_steps":["1. 复现baseline","2. 提取模块B","3. 拼接测试"],"risk_notes":["具体风险"]}}}}
+{{"innovation_points":[{{"description":"具体创新描述","baseline_used":"baseline论文标题","stitched_modules":["模块A","模块B"],"stitching_plan":"2-3步具体操作步骤(不是抽象描述)","estimated_difficulty":"低|中|高","evidence_ref":"论文标题"}}],
+"stitching_plan":{{"baseline_model":"模型名","module_b":"模块B来源","module_c":"模块C来源","stitching_steps":["1. 复现baseline(具体环境)","2. 提取模块B(从哪篇论文)","3. 拼接测试(评估方式)"],"risk_notes":["具体风险"]}}}}
 
 [OUTPUT CONTRACT] Your ENTIRE final message must be exactly ONE valid JSON object — no prose, no fences."""
 

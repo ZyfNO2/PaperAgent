@@ -181,6 +181,8 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
     # Crossref: combined method+object for broader academic coverage
     if method and obj:
         _add("crossref", _compact(f"{method[0]} {obj[0]}"), "crossref method+object", "published papers", "n>=5")
+        # Re2.1: S2 as primary search source (high-citation papers)
+        _add("semantic_scholar", _compact(f"{method[0]} {obj[0]}"), "s2 method+object", "high-citation papers", "n>=5")
     for d in ds_terms[:2]:
         _add("openalex", _compact(f"{d} dataset benchmark"), "dataset", "dataset papers", "n>=3")
     for b in baseline[:1]:
