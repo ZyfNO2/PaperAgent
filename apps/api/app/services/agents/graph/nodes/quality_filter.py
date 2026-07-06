@@ -128,13 +128,24 @@ def _pre_filter(candidates: list[dict[str, Any]]) -> list[tuple[int, bool, str]]
         if doi:
             results.append((i, True, "has DOI"))
             continue
-        # Source is a known academic source
-        if source and source.lower() in ("arxiv", "openalex", "crossref", "semantic_scholar"):
+        # Source is a known academic source — but Crossref often returns books/course material
+        if source and source.lower() in ("arxiv", "openalex", "semantic_scholar"):
             results.append((i, True, f"from academic source: {source}"))
             continue
-        # Title too short
-        if len(title) < 10:
+        # Crossref: keep but flag for LLM check (often returns books, course material, irrelevant)
+        if source and source.lower() == "crossref":
+            results.append((i, None, "crossref — needs LLM relevance check"))
+            continue
+        # GitHub: keep as repo, not paper — will be extracted by dataset_repo_extractor
+        if source and source.lower() == "github":
+            results.append((i, True, "github source (repo)"))
+            continue
+        # Title too short (but allow github owner/repo format)
+        if len(title) < 10 and source != "github":
             results.append((i, False, "title too short (<10 chars)"))
+            continue
+        if len(title) < 3:
+            results.append((i, False, "title too short (<3 chars)"))
             continue
 
         # Gray area — needs LLM judgement
