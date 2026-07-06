@@ -105,7 +105,14 @@ def json_graph_builder_node(state: ResearchState) -> dict[str, Any]:
     for p in verified:
         title = (p.get("title") or p.get("name") or "").strip()
         role = p.get("relation_to_topic") or "unknown"
-        add_node(f"paper:<{_kebab(title)}>", "paper", title, role)
+        source = (p.get("source") or "").lower()
+        # Re2.2-fix: GitHub results are repos, not papers
+        ntype = "repo" if source == "github" else "paper"
+        if ntype == "repo":
+            owner_repo = _owner_repo(p.get("url") or title)
+            add_node(f"repo:<{owner_repo}>", "repo", title, role)
+        else:
+            add_node(f"paper:<{_kebab(title)}>", "paper", title, role)
 
     # Datasets
     for d in datasets:

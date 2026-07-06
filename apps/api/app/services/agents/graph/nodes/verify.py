@@ -166,6 +166,8 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
         keep = []
         weak = []
         rejected = []
+        keep_titles: set[str] = set()
+        keep_urls: set[str] = set()
         for v in verdicts:
             title = (v.get("title") or v.get("name") or "").strip()
             if not title:
@@ -193,6 +195,16 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
                 "citation_count": orig.get("citation_count") or v.get("citation_count") or 0,
                 "abstract": orig.get("abstract") or v.get("abstract") or "",
             }
+            # Re2.2-fix: deduplicate by title + URL in first round too
+            dedup_key = title.lower().strip()
+            url_key = (item.get("url") or "").lower().strip()
+            if dedup_key in keep_titles:
+                continue
+            if url_key and url_key in keep_urls:
+                continue
+            keep_titles.add(dedup_key)
+            if url_key:
+                keep_urls.add(url_key)
             if verdict == "accept":
                 keep.append(item)
             elif verdict == "weak_reject":

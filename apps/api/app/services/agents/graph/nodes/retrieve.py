@@ -108,16 +108,21 @@ async def _run_direct_adapter_retrieval(topic: str, atoms: dict[str, Any]) -> di
                 or h.get("full_text")
                 or ""
             )[:600]
+            url = (
+                h.get("url")
+                or h.get("html_url")
+                or h.get("abs_url")
+                or ""
+            )
+            # Re2.2-fix: convert GitHub API URLs to human-readable format
+            if tool == "github" and "api.github.com/repos/" in url:
+                path = url.split("api.github.com/repos/", 1)[-1].rstrip("/")
+                url = f"https://github.com/{path}"
             papers.append(
                 {
                     "title": title,
                     "abstract": abstract,
-                    "url": (
-                        h.get("url")
-                        or h.get("html_url")
-                        or h.get("abs_url")
-                        or ""
-                    ),
+                    "url": url,
                     "doi": h.get("doi") or h.get("DOI"),
                     "source": tool,
                     "hits": {tool: [h]},

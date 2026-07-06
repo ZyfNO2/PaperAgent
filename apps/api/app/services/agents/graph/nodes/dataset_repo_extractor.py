@@ -110,6 +110,10 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
         if source == "github" and (title or url):
             repo_name = title or url
             repo_url = url or f"https://github.com/{repo_name}"
+            # Re2.2-fix: convert GitHub API URLs to human-readable format
+            if "api.github.com/repos/" in repo_url:
+                path = repo_url.split("api.github.com/repos/", 1)[-1].rstrip("/")
+                repo_url = f"https://github.com/{path}"
             rrec = {
                 "from_paper": title or "github_search",
                 "linked_paper_id": _slug_of(repo_name),
@@ -247,6 +251,37 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                         repos.append(r)
             except BaseException as exc:
                 logger.warning("dataset_repo future failed: %s", exc)
+
+    # Re2.2-fix: heuristic dataset extraction from innovation_points stitching_plan
+    innovation_points = state.get("innovation_points") or []
+    known_dataset_names = [
+        "NEU-DET", "GC10-DET", "KITTI", "TUM RGB-D", "EuRoC", "Bonn",
+        "COCO", "Pascal VOC", "ImageNet", "CIFAR", "MNIST",
+        "Cityscapes", "nuScenes", "ScanNet", "DOTA", "ShapeNet",
+        "Completion3D", "ModelNet", "CARLA", "GTSDB", "TT100K",
+        "CrackTree", "DeepCrack", "Crack500", "PavementCrack",
+    ]
+    for inn in innovation_points:
+        plan_text = (inn.get("stitching_plan", "") + " " +
+                     inn.get("description", "")).lower()
+        for ds_name in known_dataset_names:
+            if ds_name.lower() in plan_text:
+                rec = {
+                    "from_paper": "innovation_plan",
+                    "linked_paper_id": _slug_of(ds_name),
+                    "kind": "dataset",
+                    "name": ds_name,
+                    "url": None,
+                    "source": "innovation_plan_heuristic",
+                    "availability": "named",
+                    "status": "found",
+                    "reproducibility_hint": "",
+                    "risk": "",
+                }
+                k = ds_key(rec)
+                if k and k not in ds_seen:
+                    ds_seen.add(k)
+                    datasets.append(rec)
 
     merged_ds = existing_ds + datasets
     merged_repo = existing_repo + github_repos + repos
