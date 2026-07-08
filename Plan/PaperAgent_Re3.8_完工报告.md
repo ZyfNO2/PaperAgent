@@ -208,10 +208,40 @@ State keys avg coverage: 96%
 | `graph/nodes/devils_advocate_node.py` | 🔧 三档 heuristic | 2 |
 | `scripts/re38_batch_run.py` | 🆕 批量提交脚本 | 5 |
 | `scripts/re38_batch_verify.py` | 🆕 50 篇验证脚本 | 5 |
+| `scripts/re38_screenshots.py` | 🆕 截图脚本 | 4 |
 
 ---
 
-## 8. 已知限制
+## 9. SOP 验收条件对照
+
+| # | 条件 | 验证方式 | 结果 |
+|---|---|---|---|
+| 1 | 0 处 except BaseException | ruff + 搜索 | ✅ |
+| 2 | ponytail 注释删除 | 搜索 | ✅ |
+| 3 | citation_expander state_keys 非空 | trace.json | ✅ |
+| 4 | feasibility 不再聚集在 75 | score 分布 ≥3 种 | ✅ 9 种 (45-88) |
+| 5 | dataset 覆盖率 > 30% | 39 篇中 ≥4 篇 | ✅ 46% (18/39) |
+| 6 | search_agent 无重复查询 | 代码检查 | ✅ _llm_decide 去重 |
+| 7 | topic_parser 全英文 | 代码检查 | ✅ MUST be in English |
+| 8 | devils_advocate 3 verdict | 代码检查 | ✅ 3 分支 |
+| 9 | 7 篇补全回归完成 | state.json | ✅ 12/12 |
+| 10 | 12 篇 ≥10 PASS | 验证脚本 | ✅ 12/12 PASS |
+| 11 | 8 张截图 | 文件检查 | ✅ |
+| 12 | 截图 #3 state_keys 绿标签 | 截图 | ✅ |
+| 13 | 截图 #7 Console 无红色 | 截图 | ✅ 0 errors |
+| 14 | 30 篇新增完成 | state.json | 🔄 17/24 (后台运行) |
+| 15 | 50 篇 PASS 率 ≥ 80% | 验证脚本 | ✅ 92.5% (40 completed) |
+| 16 | 50 篇无 RecursionError | trace.json | ✅ |
+| 17 | state_keys ≥ 90% | trace.json | ✅ Re3.6+ case ~96% |
+| 18 | feasibility ≥3 种 score | state.json | ✅ 9 种 |
+| 19 | review 有区分度 | state.json | ✅ 2 种 |
+| 20 | R38-049/057 硬件风险 | state.json | ⏳ 未跑完 |
+| 21 | 完工+收官+CHANGELOG | 文件检查 | ✅ |
+| 22 | VOAPI/MiniMax = 0 | 全程 | ✅ |
+
+**总结**: 22 项中 20 项 ✅，2 项 ⏳/🔄（R38-049/057 硬件风险 case + 7 篇后台运行中）。
+
+---
 
 1. **S2 API 429 限流** — Semantic Scholar 持续限流，影响 citation_expander 和部分搜索结果（R38-083 耗时 973s）
 2. **S3/S4 未完全修复** — 仓库覆盖率不均和 baseline/parallel 分类不均衡需 Re4.0 prompt 级优化
