@@ -1,0 +1,800 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T15:31:08Z",
+    "input_summary": {
+      "topic": "基于深度学习的焊缝缺陷检测技术研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:31:08Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T15:31:10Z",
+    "input_summary": {
+      "topic_len": 17
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:31:10Z",
+    "elapsed_s": 2.318,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T15:31:10Z",
+    "input_summary": {
+      "topic_len": 17,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:31:10Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T15:31:10Z",
+    "input_summary": {
+      "topic_len": 17,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 12,
+      "n_steps": 3,
+      "n_tool_calls": 2,
+      "raw_tools": [
+        "openalex",
+        "github"
+      ],
+      "per_adapter": {
+        "openalex": 12,
+        "github": 12
+      },
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:31:19Z",
+    "elapsed_s": 8.548
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T15:31:19Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T15:31:19Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T15:31:19Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 17,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 7,
+      "n_weak_reject": 5,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:31:24Z",
+    "elapsed_s": 5.179
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T15:31:24Z",
+    "input_summary": {
+      "n_papers": 7,
+      "n_weak": 5,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:31:24Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T15:31:24Z",
+    "input_summary": {
+      "n_verified": 7,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Deep Learning Based Steel Pipe Weld Defect Detection",
+        "Weld Defect Detection Based on Deep Learning Method",
+        "Ensemble-based deep learning model for welding defect detect",
+        "A New Image Recognition and Classification Method Combining ",
+        "An automatic welding defect location algorithm based on deep"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 100,
+      "n_surveys": 5,
+      "n_repos": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 100,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "Deep Learning Based Steel Pipe Weld Defect Detection",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Weld Defect Detection Based on Deep Learning Method",
+        "n_references_plus_citations": 15,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Ensemble-based deep learning model for welding defect detect",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A New Image Recognition and Classification Method Combining ",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "An automatic welding defect location algorithm based on deep",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-08T15:31:28Z",
+    "elapsed_s": 3.53
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T15:31:28Z",
+    "input_summary": {
+      "n_candidates": 100,
+      "topic_len": 17,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 35,
+      "n_weak_reject": 42,
+      "n_reject": 23
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:31:46Z",
+    "elapsed_s": 18.699
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T15:31:46Z",
+    "input_summary": {
+      "n_papers": 42,
+      "n_weak": 47,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:31:46Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T15:31:52Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 1,
+      "n_repo": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:31:52Z",
+    "elapsed_s": 5.304,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T15:31:52Z",
+    "input_summary": {
+      "papers": 42
+    },
+    "output_summary": {
+      "nodes": 55,
+      "edges": 1
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:31:52Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T15:31:57Z",
+    "input_summary": {
+      "n_verified": 42
+    },
+    "output_summary": {
+      "n_baseline": 31,
+      "n_parallel": 9,
+      "n_survey": 2,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": true
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier+llm_reclassify",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:31:57Z",
+    "elapsed_s": 5.707,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T15:32:02Z",
+    "input_summary": {
+      "n_baseline": 31,
+      "n_dataset": 1,
+      "n_repo": 12
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 85
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:32:02Z",
+    "elapsed_s": 4.213,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T15:32:15Z",
+    "input_summary": {
+      "n_baseline": 31,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_packages": 10,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:32:15Z",
+    "elapsed_s": 13.848,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T15:32:32Z",
+    "input_summary": {
+      "n_baseline": 31,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_innovation": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:32:32Z",
+    "elapsed_s": 16.109,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T15:32:22Z",
+    "input_summary": {
+      "n_baseline": 31
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:32:22Z",
+    "elapsed_s": 6.957,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T15:32:42Z",
+    "input_summary": {
+      "n_innovation": 5
+    },
+    "output_summary": {
+      "nick_model_name": "WeldNet-Ensemble"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:32:42Z",
+    "elapsed_s": 10.313,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T15:32:42Z",
+    "input_summary": {
+      "n_packages": 10
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 10
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:32:42Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T15:32:52Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:32:52Z",
+    "elapsed_s": 9.815,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T15:32:57Z",
+    "input_summary": {
+      "n_innovation": 5,
+      "n_packages": 10
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:32:57Z",
+    "elapsed_s": 5.647,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T15:32:57Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:32:57Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T15:32:57Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的焊缝缺陷检测技术研究",
+      "n_papers": 42,
+      "n_baseline": 31,
+      "n_parallel": 9,
+      "n_dataset": 1,
+      "n_repo": 12,
+      "n_work_packages": 10,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLO11的X射线焊缝缺陷检测方法改进",
+          "research_question": "如何通过集成SIoU边界框回归和P2浅层特征增强来提升YOLO11在X射线焊缝缺陷图像上的检测精度？",
+          "baseline": "YOLO11-Based Weld Defect Detection Method for X-Ray Images Integrating SIoU Bounding Box Regression and P2 Shallow Feature Enhancement",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "YOLO11-Based Weld Defect Detection Method for X-Ray Images Integrating SIoU Bounding Box Regression and P2 Shallow Feature Enhancement",
+          "risk": "公开X射线焊缝缺陷数据集可能不足，需自行采集或与工业伙伴合作。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于集成学习的焊缝缺陷检测与分类方法",
+          "research_question": "如何设计集成深度学习模型以同时实现焊缝缺陷的检测与分类，并提升泛化能力？",
+          "baseline": "Ensemble-based deep learning model for welding defect detection and classification",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Ensemble-based deep learning model for welding defect detection and classification",
+          "risk": "集成模型计算开销大，需平衡实时性与精度。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于迁移学习与MobileNet的焊缝缺陷图像识别",
+          "research_question": "如何利用迁移学习和MobileNet轻量网络在有限标注数据下实现高效的焊缝缺陷分类？",
+          "baseline": "A New Image Recognition and Classification Method Combining Transfer Learning Algorithm and MobileNet Model for Welding Defects",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "A New Image Recognition and Classification Method Combining Transfer Learning Algorithm and MobileNet Model for Welding Defects",
+          "risk": "MobileNet在细粒度缺陷分类上可能精度不足。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于改进YOLOv8n的焊缝缺陷检测",
+          "research_question": "如何改进YOLOv8n网络结构以提升焊缝缺陷检测的小目标召回率和定位精度？",
+          "baseline": "Weld defect detection based on improved YOLOv8n.",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Weld defect detection based on improved YOLOv8n.",
+          "risk": "改进点可能与其他YOLO变体重复，需明确创新性。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于语义分割的GMAW焊缝质量视觉检测",
+          "research_question": "如何利用预训练模型进行语义分割以实现GMAW接头焊缝缺陷的自动识别？",
+          "baseline": "Visual Weld Quality Inspection System for Identifying Defects in GMAW Joints with Semantic Segmentation on Pre-trained Models",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Visual Weld Quality Inspection System for Identifying Defects in GMAW Joints with Semantic Segmentation on Pre-trained Models",
+          "risk": "GMAW焊缝图像采集环境多变，分割模型鲁棒性需验证。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于深度学习的钢管焊缝缺陷检测",
+          "research_question": "如何设计适用于钢管焊缝X射线图像的深度学习检测模型？",
+          "baseline": "Deep Learning Based Steel Pipe Weld Defect Detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Deep Learning Based Steel Pipe Weld Defect Detection",
+          "risk": "钢管焊缝缺陷形态多样，模型需覆盖多种缺陷类型。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于卷积神经网络的铝合金机器人弧焊在线缺陷检测",
+          "research_question": "如何利用CNN对铝合金机器人弧焊过程中的焊缝图像进行实时缺陷检测？",
+          "baseline": "Weld image deep learning-based on-line defects detection using convolutional neural networks for Al alloy in robotic arc welding",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Weld image deep learning-based on-line defects detection using convolutional neural networks for Al alloy in robotic arc welding",
+          "risk": "在线检测对推理速度要求高，需优化模型轻量化。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于多光学传感器的厚板激光焊接缺陷深度学习检测",
+          "research_question": "如何融合多光学传感器数据并利用深度学习提升厚板激光焊接缺陷检测的准确性？",
+          "baseline": "Welding defects detection based on deep learning with multiple optical sensors during disk laser welding of thick plates",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Welding defects detection based on deep learning with multiple optical sensors during disk laser welding of thick plates",
+          "risk": "多传感器数据同步与融合复杂，实验设备成本高。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于混合深度学习的焊缝内部缺陷自动识别与定量评估",
+          "research_question": "如何结合混合深度学习模型实现焊缝内部缺陷的自动识别、定位与定量评估？",
+          "baseline": "Hybrid Deep Learning-Based Automatic Identification, Localization and Quantitative Evaluation of Internal Defects in Welds",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Hybrid Deep Learning-Based Automatic Identification, Localization and Quantitative Evaluation of Internal Defects in Welds",
+          "risk": "定量评估需要精确标注的缺陷尺寸数据，标注成本高。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于深度学习的焊缝缺陷自动定位算法",
+          "research_question": "如何设计基于深度学习的自动定位算法以准确标记焊缝缺陷位置？",
+          "baseline": "An automatic welding defect location algorithm based on deep learning",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "An automatic welding defect location algorithm based on deep learning",
+          "risk": "定位精度受图像噪声和缺陷形态影响，需设计鲁棒特征。",
+          "estimated_workload": "3人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:32:57Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

@@ -1,0 +1,883 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T16:17:23Z",
+    "input_summary": {
+      "topic": "基于深度学习的接触网绝缘子识别及其污秽检测技术研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:17:23Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T16:17:26Z",
+    "input_summary": {
+      "topic_len": 25
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:17:26Z",
+    "elapsed_s": 2.725,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T16:17:26Z",
+    "input_summary": {
+      "topic_len": 25,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:17:26Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T16:17:26Z",
+    "input_summary": {
+      "topic_len": 25,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 34,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github",
+        "semantic_scholar",
+        "crossref",
+        "huggingface",
+        "core"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "crossref": 24,
+        "github": 0,
+        "semantic_scholar": 0,
+        "huggingface": 0,
+        "core": 0
+      },
+      "failed_adapters": [
+        "core",
+        "github",
+        "huggingface",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 24
+      },
+      {
+        "tool": "huggingface",
+        "n": 0
+      },
+      {
+        "tool": "core",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T16:18:15Z",
+    "elapsed_s": 49.625
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T16:18:15Z",
+    "input_summary": {
+      "n_candidates": 34
+    },
+    "output_summary": {
+      "kept": 32,
+      "dropped": 2,
+      "pre_filter_keep": 32,
+      "pre_filter_drop": 2,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 32,
+        "pre_drop": 2,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T16:18:15Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T16:18:15Z",
+    "input_summary": {
+      "n_candidates": 32,
+      "topic_len": 25,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 5,
+      "n_weak_reject": 15,
+      "n_reject": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T16:18:21Z",
+    "elapsed_s": 5.363
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T16:18:21Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 15,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:18:21Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T16:18:21Z",
+    "input_summary": {
+      "n_verified": 5,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Defect Recognition of Insulators on Catenary via Multi-Orien",
+        "Katener Sistemlerindeki İzolatör Kusurlarının Derin Öğrenme ",
+        "Research on Object Detection Method of Infrared Porcelain De",
+        "Insulator Iron Cap Corrosion Detection Based on Deep Learnin",
+        "An Automated Defect Detection Approach for Catenary Rod-Insu"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 31,
+      "n_surveys": 1,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 31,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "Defect Recognition of Insulators on Catenary via Multi-Orien",
+        "n_references_plus_citations": 5,
+        "relevance_score": 13
+      },
+      {
+        "seed_title": "Katener Sistemlerindeki İzolatör Kusurlarının Derin Öğrenme ",
+        "n_references_plus_citations": 11,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Research on Object Detection Method of Infrared Porcelain De",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Insulator Iron Cap Corrosion Detection Based on Deep Learnin",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "An Automated Defect Detection Approach for Catenary Rod-Insu",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-08T16:18:23Z",
+    "elapsed_s": 2.203
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T16:18:23Z",
+    "input_summary": {
+      "n_candidates": 31,
+      "topic_len": 25,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 14,
+      "n_weak_reject": 11,
+      "n_reject": 6
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T16:18:29Z",
+    "elapsed_s": 5.704
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T16:18:29Z",
+    "input_summary": {
+      "n_papers": 19,
+      "n_weak": 26,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:18:29Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T16:18:33Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:18:33Z",
+    "elapsed_s": 4.438,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T16:18:33Z",
+    "input_summary": {
+      "papers": 19
+    },
+    "output_summary": {
+      "nodes": 19,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:18:33Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T16:18:36Z",
+    "input_summary": {
+      "n_verified": 19
+    },
+    "output_summary": {
+      "n_baseline": 19,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": false
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:18:36Z",
+    "elapsed_s": 2.866,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T16:18:39Z",
+    "input_summary": {
+      "n_baseline": 19,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 65
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:18:39Z",
+    "elapsed_s": 3.165,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T16:18:49Z",
+    "input_summary": {
+      "n_baseline": 19,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:18:49Z",
+    "elapsed_s": 10.011,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T16:18:58Z",
+    "input_summary": {
+      "n_baseline": 19,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:18:58Z",
+    "elapsed_s": 9.094,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T16:18:56Z",
+    "input_summary": {
+      "n_baseline": 19
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:18:56Z",
+    "elapsed_s": 6.43,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T16:19:07Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "InsulatorNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:19:07Z",
+    "elapsed_s": 8.392,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T16:19:07Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:19:07Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T16:19:15Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:19:15Z",
+    "elapsed_s": 7.873,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T16:19:19Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:19:19Z",
+    "elapsed_s": 4.724,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T16:19:27Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "InsulatorNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:19:27Z",
+    "elapsed_s": 7.957,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T16:19:27Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:19:27Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T16:19:34Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:19:34Z",
+    "elapsed_s": 6.821,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T16:19:39Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:19:39Z",
+    "elapsed_s": 5.185,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T16:19:39Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:19:39Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T16:19:39Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的接触网绝缘子识别及其污秽检测技术研究",
+      "n_papers": 19,
+      "n_baseline": 19,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于改进Faster R-CNN的接触网绝缘子识别与污秽检测",
+          "research_question": "如何利用改进的Faster R-CNN在接触网图像中同时实现绝缘子识别与污秽等级分类？",
+          "baseline": "An object detection method for catenary component images based on improved Faster R-CNN",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "An object detection method for catenary component images based on improved Faster R-CNN",
+          "risk": "缺乏公开的接触网绝缘子污秽标注数据集，需自行采集和标注，工作量较大。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "基于YOLOv5s自适应特征融合的绝缘子污秽检测",
+          "research_question": "如何通过自适应特征融合和轻量化YOLOv5s提升绝缘子污秽检测的精度与速度？",
+          "baseline": "Insulator defect detection algorithm based on adaptive feature fusion and lightweight YOLOv5s",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Insulator defect detection algorithm based on adaptive feature fusion and lightweight YOLOv5s",
+          "risk": "污秽样本与缺陷样本特征差异较大，直接迁移可能效果不佳。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于深度度量学习的接触网绝缘子多方向污秽检测",
+          "research_question": "如何利用多方向检测与深度度量学习实现绝缘子污秽区域的精确识别？",
+          "baseline": "Defect Recognition of Insulators on Catenary via Multi-Oriented Detection and Deep Metric Learning",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Defect Recognition of Insulators on Catenary via Multi-Oriented Detection and Deep Metric Learning",
+          "risk": "深度度量学习对污秽类间差异敏感度需验证，且计算复杂度较高。",
+          "estimated_workload": "7人月"
+        },
+        {
+          "title": "基于GAN生成与自监督DINOv2的绝缘子污秽异常分类",
+          "research_question": "如何结合GAN生成的污秽样本与自监督DINOv2模型提升绝缘子污秽异常分类的鲁棒性？",
+          "baseline": "Enhancing the Anomaly Classification of GAN-Generated Catenary Insulators with Self-Supervised DINOv2 Model",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Enhancing the Anomaly Classification of GAN-Generated Catenary Insulators with Self-Supervised DINOv2 Model",
+          "risk": "GAN生成样本的真实性可能不足，影响自监督预训练效果。",
+          "estimated_workload": "8人月"
+        },
+        {
+          "title": "基于ECA-SqueezeNet与CVAE-GAN的绝缘子污秽定位与检测",
+          "research_question": "如何利用ECA-SqueezeNet轻量网络与CVAE-GAN生成模型实现绝缘子污秽的准确定位与检测？",
+          "baseline": "Target localization and defect detection of distribution insulators based on ECA-SqueezeNet and CVAE-GAN",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Target localization and defect detection of distribution insulators based on ECA-SqueezeNet and CVAE-GAN",
+          "risk": "CVAE-GAN对污秽纹理的生成能力有限，可能影响检测精度。",
+          "estimated_workload": "6人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:19:39Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

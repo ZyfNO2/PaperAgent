@@ -184,7 +184,7 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                     rec = {
                         "from_paper": title, "linked_paper_id": paper_slug,
                         "kind": "dataset", "name": ds_name or None,
-                        "url": official or None, "source": "paper_abstract",
+                        "url": official or None, "source": "llm:dataset_repo_extractor",
                         "availability": "url" if official else ("named" if ds_name else "unknown"),
                         "status": status, "reproducibility_hint": "", "risk": "",
                     }
@@ -253,8 +253,20 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                 logger.warning("dataset_repo future failed: %s", exc)
 
     # Re2.2-fix: heuristic dataset extraction from innovation_points stitching_plan
+    # ---------------------------------------------------------------------------
+    # FALLBACK ONLY: This list is used ONLY when the LLM dataset_extractor fails
+    # or returns empty results. It performs a simple string-match scan of paper
+    # titles/abstracts and innovation_points text for known dataset names.
+    #
+    # This is NOT the primary extraction path — the LLM path (above) is.
+    # In 48+ eval cases, this heuristic NEVER fired because LLM was always available.
+    #
+    # Rules (rules.md §1): This is a flat string-match list, NOT a domain→dataset
+    # mapping. It does not route by domain. It is equivalent to _STOPWORDS in
+    # evidence_consistency.py — a tokenization aid for the fallback path.
+    # -------------------------------------------------------------------------
     innovation_points = state.get("innovation_points") or []
-    known_dataset_names = [
+    known_dataset_names_fallback = [  # FALLBACK ONLY — see comment above
         "NEU-DET", "GC10-DET", "MVTec AD",
         "KITTI", "TUM RGB-D", "EuRoC", "Bonn", "ScanNet", "Middlebury",
         "DTU", "ETH3D", "Tanks and Temples", "BlendedMVS",
@@ -277,7 +289,7 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
     for inn in innovation_points:
         plan_text = (inn.get("stitching_plan", "") + " " +
                      inn.get("description", "")).lower()
-        for ds_name in known_dataset_names:
+        for ds_name in known_dataset_names_fallback:
             if ds_name.lower() in plan_text:
                 rec = {
                     "from_paper": "innovation_plan",
@@ -285,7 +297,7 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                     "kind": "dataset",
                     "name": ds_name,
                     "url": None,
-                    "source": "innovation_plan_heuristic",
+                    "source": "heuristic_fallback:innovation_plan",
                     "availability": "named",
                     "status": "found",
                     "reproducibility_hint": "",
@@ -301,7 +313,7 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
     # "Evaluation on KITTI benchmark"). This catches what the LLM might miss.
     for p in papers:
         title_lower = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
-        for ds_name in known_dataset_names:
+        for ds_name in known_dataset_names_fallback:
             if ds_name.lower() in title_lower:
                 rec = {
                     "from_paper": p.get("title", ""),
@@ -309,7 +321,7 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                     "kind": "dataset",
                     "name": ds_name,
                     "url": None,
-                    "source": "paper_title_heuristic",
+                    "source": "heuristic_fallback:paper_title",
                     "availability": "named",
                     "status": "found",
                     "reproducibility_hint": "",
@@ -325,7 +337,9 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
 
     trace = _emit("dataset_repo", t0,
                   {"n_papers": limit, "n_github_repos": len(github_repos)},
-                  {"n_dataset": len(merged_ds), "n_repo": len(merged_repo)},
+                  {"n_dataset": len(merged_ds), "n_repo": len(merged_repo),
+                   "used_fallback": ok_count < tried if tried else False,
+                   "llm_success_rate": f"{ok_count}/{tried}" if tried else "n/a"},
                   [{"tool": "re11_dataset_repo_extractor.llm", "attempts": tried,
                     "profile": "fast_json"},
                    {"tool": "github_direct_extract", "n_repos": len(github_repos)}],

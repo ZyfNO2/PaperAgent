@@ -21,6 +21,7 @@ SearchSource = Literal[
     "core",
     "datacite",
     "crossref",
+    "pubmed",
     "manual_fallback",
 ]
 

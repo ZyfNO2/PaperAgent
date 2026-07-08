@@ -1,0 +1,750 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T15:16:45Z",
+    "input_summary": {
+      "topic": "基于深度学习的钢材表面缺陷检测算法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:16:45Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T15:16:47Z",
+    "input_summary": {
+      "topic_len": 19
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:16:47Z",
+    "elapsed_s": 2.235,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T15:16:47Z",
+    "input_summary": {
+      "topic_len": 19,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:16:47Z",
+    "elapsed_s": 0.008,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T15:16:47Z",
+    "input_summary": {
+      "topic_len": 19,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 12,
+      "n_steps": 3,
+      "n_tool_calls": 2,
+      "raw_tools": [
+        "openalex",
+        "github"
+      ],
+      "per_adapter": {
+        "openalex": 12,
+        "github": 12
+      },
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:17:01Z",
+    "elapsed_s": 14.061
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T15:17:01Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T15:17:01Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T15:17:01Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 19,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 8,
+      "n_weak_reject": 4,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:17:08Z",
+    "elapsed_s": 6.792
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T15:17:08Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 4,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:17:08Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T15:17:08Z",
+    "input_summary": {
+      "n_verified": 8,
+      "n_seeds": 5,
+      "seed_titles": [
+        "TLU-Net: A Deep Learning Approach for Automatic Steel Surfac",
+        "A deep learning model for steel surface defect detection",
+        "Dual attention deep learning network for automatic steel sur",
+        "An End-to-End Steel Surface Defect Detection Approach via Fu",
+        "Automatic Detection and Classification of Steel Surface Defe"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 97,
+      "n_surveys": 8,
+      "n_repos": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 97,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "TLU-Net: A Deep Learning Approach for Automatic Steel Surfac",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "A deep learning model for steel surface defect detection",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Dual attention deep learning network for automatic steel sur",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "An End-to-End Steel Surface Defect Detection Approach via Fu",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Automatic Detection and Classification of Steel Surface Defe",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-08T15:17:10Z",
+    "elapsed_s": 2.149
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T15:17:10Z",
+    "input_summary": {
+      "n_candidates": 97,
+      "topic_len": 19,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 30,
+      "n_weak_reject": 49,
+      "n_reject": 18
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:17:33Z",
+    "elapsed_s": 23.173
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T15:17:33Z",
+    "input_summary": {
+      "n_papers": 38,
+      "n_weak": 52,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:17:33Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T15:17:43Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 2,
+      "n_repo": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:17:43Z",
+    "elapsed_s": 9.763,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T15:17:43Z",
+    "input_summary": {
+      "papers": 38
+    },
+    "output_summary": {
+      "nodes": 52,
+      "edges": 2
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:17:43Z",
+    "elapsed_s": 0.002,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T15:17:48Z",
+    "input_summary": {
+      "n_verified": 38
+    },
+    "output_summary": {
+      "n_baseline": 35,
+      "n_parallel": 2,
+      "n_survey": 1,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": true
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier+llm_reclassify",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:17:48Z",
+    "elapsed_s": 5.257,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T15:17:53Z",
+    "input_summary": {
+      "n_baseline": 35,
+      "n_dataset": 2,
+      "n_repo": 12
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 88
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:17:53Z",
+    "elapsed_s": 4.39,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T15:18:01Z",
+    "input_summary": {
+      "n_baseline": 35,
+      "n_parallel": 2
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:18:01Z",
+    "elapsed_s": 8.193,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T15:18:13Z",
+    "input_summary": {
+      "n_baseline": 35,
+      "n_parallel": 2
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:18:13Z",
+    "elapsed_s": 12.053,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T15:18:09Z",
+    "input_summary": {
+      "n_baseline": 35
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:18:09Z",
+    "elapsed_s": 8.287,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T15:18:23Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "FuzzySteelNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:18:23Z",
+    "elapsed_s": 10.108,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T15:18:23Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:18:23Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T15:18:31Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:18:31Z",
+    "elapsed_s": 7.475,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T15:18:36Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:18:36Z",
+    "elapsed_s": 5.752,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T15:18:36Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:18:36Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T15:18:36Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的钢材表面缺陷检测算法研究",
+      "n_papers": 38,
+      "n_baseline": 35,
+      "n_parallel": 2,
+      "n_dataset": 2,
+      "n_repo": 12,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于改进YOLOv10的钢材表面缺陷检测算法研究",
+          "research_question": "如何通过改进YOLOv10的骨干网络或特征融合模块，提升钢材表面缺陷（如裂纹、夹杂等）的检测精度与速度？",
+          "baseline": "Steel surface defect detection algorithm based on improved YOLOv10",
+          "improved_module_source": null,
+          "data_source": "NEU-DET",
+          "experiment_metrics": "Steel surface defect detection algorithm based on improved YOLOv10",
+          "risk": "改进模块可能在小目标缺陷上泛化不足，需额外验证。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于边缘感知语义协作的钢材表面缺陷检测网络研究",
+          "research_question": "如何利用边缘感知语义协作机制与知识蒸馏，在保持检测精度的同时降低模型参数量？",
+          "baseline": "Robust steel surface defect detection with edge-aware-semantic collaboration and efficient distillation network",
+          "improved_module_source": null,
+          "data_source": "GC10-DET",
+          "experiment_metrics": "Robust steel surface defect detection with edge-aware-semantic collaboration and efficient distillation network",
+          "risk": "蒸馏过程可能丢失边缘细节，需设计合适的损失函数。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于可变形卷积与跨层融合的钢材表面微小缺陷检测研究",
+          "research_question": "如何结合可变形卷积与跨层融合策略，提升对不规则、微小钢材表面缺陷的检测能力？",
+          "baseline": "CSG-YOLO: a model for detecting minor and irregular steel surface defects based on deformable convolution and cross-layer fusion",
+          "improved_module_source": null,
+          "data_source": "NEU-DET",
+          "experiment_metrics": "CSG-YOLO: a model for detecting minor and irregular steel surface defects based on deformable convolution and cross-layer fusion",
+          "risk": "可变形卷积可能增加计算开销，需平衡速度与精度。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于多层级特征融合的端到端钢材表面缺陷检测方法研究",
+          "research_question": "如何通过融合多层级特征图，提升对尺度变化大的钢材表面缺陷的检测鲁棒性？",
+          "baseline": "An End-to-End Steel Surface Defect Detection Approach via Fusing Multiple Hierarchical Features",
+          "improved_module_source": null,
+          "data_source": "NEU-DET",
+          "experiment_metrics": "An End-to-End Steel Surface Defect Detection Approach via Fusing Multiple Hierarchical Features",
+          "risk": "多层级融合可能引入冗余信息，需设计有效的注意力机制。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于DCC-CenterNet的钢材表面缺陷快速检测方法研究",
+          "research_question": "如何利用DCC-CenterNet的轻量级结构实现钢材表面缺陷的实时检测，并保持高召回率？",
+          "baseline": "DCC-CenterNet: A rapid detection method for steel surface defects",
+          "improved_module_source": null,
+          "data_source": "GC10-DET",
+          "experiment_metrics": "DCC-CenterNet: A rapid detection method for steel surface defects",
+          "risk": "轻量模型可能对密集小缺陷检测能力不足。",
+          "estimated_workload": "2人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:18:36Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

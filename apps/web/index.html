@@ -991,6 +991,11 @@ function selectTimelineNode(idx) {
     ev.errors.forEach(function(err){ errHtml += '<div style="color:#dc2626;font-size:11px;">⚠ '+err+'</div>'; });
   }
   document.getElementById('tlDetailErrors').innerHTML = errHtml;
+  var fallbackHtml = '';
+  if (ev.output_summary && ev.output_summary.used_fallback) {
+    fallbackHtml = '<div style="color:#f59e0b;font-size:11px;margin-top:4px;">⚠ This node used heuristic fallback (LLM may have failed for some papers)</div>';
+  }
+  document.getElementById('tlDetailErrors').innerHTML = errHtml + fallbackHtml;
   var stateHtml = '';
   if (ev.state_keys && ev.state_keys.length > 0) {
     stateHtml = '<div class="io-label">状态变更</div>';

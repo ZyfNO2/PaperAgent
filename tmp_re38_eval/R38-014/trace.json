@@ -1,0 +1,917 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T15:35:22Z",
+    "input_summary": {
+      "topic": "基于生成对抗网络的织物缺陷检测算法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:35:22Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T15:35:24Z",
+    "input_summary": {
+      "topic_len": 19
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:35:24Z",
+    "elapsed_s": 2.109,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T15:35:24Z",
+    "input_summary": {
+      "topic_len": 19,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:35:24Z",
+    "elapsed_s": 0.005,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T15:35:24Z",
+    "input_summary": {
+      "topic_len": 19,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 48,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "arxiv",
+        "github",
+        "openalex",
+        "semantic_scholar",
+        "huggingface",
+        "crossref",
+        "core",
+        "datacite"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 12,
+        "crossref": 12,
+        "github": 0,
+        "semantic_scholar": 12,
+        "huggingface": 0,
+        "core": 0,
+        "datacite": 4
+      },
+      "failed_adapters": [
+        "core",
+        "github",
+        "huggingface"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "openalex",
+        "n": 12
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 12
+      },
+      {
+        "tool": "huggingface",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "core",
+        "n": 0
+      },
+      {
+        "tool": "datacite",
+        "n": 4
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:36:36Z",
+    "elapsed_s": 71.629
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T15:36:36Z",
+    "input_summary": {
+      "n_candidates": 48
+    },
+    "output_summary": {
+      "kept": 48,
+      "dropped": 0,
+      "pre_filter_keep": 48,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 48,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T15:36:36Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T15:36:36Z",
+    "input_summary": {
+      "n_candidates": 48,
+      "topic_len": 19,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 16,
+      "n_weak_reject": 10,
+      "n_reject": 13
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:36:47Z",
+    "elapsed_s": 11.015
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T15:36:47Z",
+    "input_summary": {
+      "n_papers": 16,
+      "n_weak": 10,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:36:47Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T15:36:47Z",
+    "input_summary": {
+      "n_verified": 16,
+      "n_seeds": 5,
+      "seed_titles": [
+        "DeepInspect: An AI-Powered Defect Detection for Manufacturin",
+        "FabricGAN: an enhanced generative adversarial network for da",
+        "A contrastive learning‐based attention generative adversaria",
+        "Masked contrastive generative adversarial network for defect",
+        "Image restoration fabric defect detection based on the dual "
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 37,
+      "n_surveys": 3,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 37,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "DeepInspect: An AI-Powered Defect Detection for Manufacturin",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "FabricGAN: an enhanced generative adversarial network for da",
+        "n_references_plus_citations": 15,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "A contrastive learning‐based attention generative adversaria",
+        "n_references_plus_citations": 12,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Masked contrastive generative adversarial network for defect",
+        "n_references_plus_citations": 6,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Image restoration fabric defect detection based on the dual ",
+        "n_references_plus_citations": 6,
+        "relevance_score": 11
+      }
+    ],
+    "ended_at": "2026-07-08T15:36:49Z",
+    "elapsed_s": 2.286
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T15:36:49Z",
+    "input_summary": {
+      "n_candidates": 37,
+      "topic_len": 19,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 10,
+      "n_weak_reject": 16,
+      "n_reject": 11
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T15:36:58Z",
+    "elapsed_s": 8.805
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T15:36:58Z",
+    "input_summary": {
+      "n_papers": 26,
+      "n_weak": 26,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:36:58Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T15:37:15Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:37:15Z",
+    "elapsed_s": 16.629,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T15:37:15Z",
+    "input_summary": {
+      "papers": 26
+    },
+    "output_summary": {
+      "nodes": 26,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:37:15Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T15:37:15Z",
+    "input_summary": {
+      "n_verified": 26
+    },
+    "output_summary": {
+      "n_baseline": 22,
+      "n_parallel": 3,
+      "n_survey": 1,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": false
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:37:15Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T15:37:20Z",
+    "input_summary": {
+      "n_baseline": 22,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 65
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:37:20Z",
+    "elapsed_s": 5.048,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T15:37:35Z",
+    "input_summary": {
+      "n_baseline": 22,
+      "n_parallel": 3
+    },
+    "output_summary": {
+      "n_packages": 8,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:37:35Z",
+    "elapsed_s": 15.521,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T15:37:51Z",
+    "input_summary": {
+      "n_baseline": 22,
+      "n_parallel": 3
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:37:51Z",
+    "elapsed_s": 15.567,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T15:37:44Z",
+    "input_summary": {
+      "n_baseline": 22
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:37:44Z",
+    "elapsed_s": 8.931,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T15:38:01Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Attn-CGAN-MultiDefectNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:38:01Z",
+    "elapsed_s": 10.602,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T15:38:01Z",
+    "input_summary": {
+      "n_packages": 8
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:38:01Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T15:38:12Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:38:12Z",
+    "elapsed_s": 10.555,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T15:38:19Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 8
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:38:19Z",
+    "elapsed_s": 6.661,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T15:38:29Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Attn-CGAN-MultiStage Fabric Defect Detector"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:38:29Z",
+    "elapsed_s": 10.792,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T15:38:29Z",
+    "input_summary": {
+      "n_packages": 8
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:38:29Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T15:38:41Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:38:41Z",
+    "elapsed_s": 11.145,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T15:38:47Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 8
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T15:38:47Z",
+    "elapsed_s": 6.11,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T15:38:47Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:38:47Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T15:38:47Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于生成对抗网络的织物缺陷检测算法研究",
+      "n_papers": 26,
+      "n_baseline": 22,
+      "n_parallel": 3,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 8,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于深度卷积生成对抗网络的无监督织物缺陷检测",
+          "research_question": "如何利用深度卷积生成对抗网络（DCGAN）在无监督条件下实现织物缺陷的准确检测？",
+          "baseline": "Unsupervised fabric defect detection based on a deep convolutional generative adversarial network",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Unsupervised fabric defect detection based on a deep convolutional generative adversarial network",
+          "risk": "无监督方法可能对微小或罕见缺陷的检测灵敏度不足，且生成图像质量影响检测性能。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于注意力特征融合生成对抗网络的色织织物缺陷检测",
+          "research_question": "如何通过注意力机制和特征融合改进生成对抗网络，以提升色织织物缺陷检测的精度？",
+          "baseline": "Attention-based Feature Fusion Generative Adversarial Network for yarn-dyed fabric defect detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Attention-based Feature Fusion Generative Adversarial Network for yarn-dyed fabric defect detection",
+          "risk": "注意力模块可能增加计算开销，且对复杂纹理的适应性需验证。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于条件图像翻译生成对抗网络的织物缺陷数据增强",
+          "research_question": "条件生成对抗网络（cGAN）在织物缺陷数据增强中的有效性如何，以及其对下游检测模型的影响？",
+          "baseline": "Conditional image-to-image translation generative adversarial network (cGAN) for fabric defect data augmentation",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Conditional image-to-image translation generative adversarial network (cGAN) for fabric defect data augmentation",
+          "risk": "生成缺陷的多样性和真实性可能不足，导致检测模型过拟合或泛化能力下降。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于多阶段生成对抗网络的织物缺陷检测",
+          "research_question": "多阶段生成对抗网络架构如何逐步细化缺陷检测结果，以提升检测鲁棒性？",
+          "baseline": "Multistage GAN for Fabric Defect Detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Multistage GAN for Fabric Defect Detection",
+          "risk": "多阶段训练复杂度高，可能引入累积误差，且实时性难以保证。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于对比学习注意力生成对抗网络的彩色图案织物缺陷检测",
+          "research_question": "对比学习与注意力机制结合如何增强生成对抗网络对彩色图案织物缺陷的检测能力？",
+          "baseline": "A contrastive learning‐based attention generative adversarial network for defect detection in colour‐patterned fabric",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "A contrastive learning‐based attention generative adversarial network for defect detection in colour‐patterned fabric",
+          "risk": "对比学习需要大量负样本，且注意力机制可能对图案变化敏感。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于掩码对比生成对抗网络的色织织物缺陷检测",
+          "research_question": "掩码机制与对比学习如何协同提升生成对抗网络对色织织物缺陷的检测性能？",
+          "baseline": "Masked contrastive generative adversarial network for defect detection of yarn-dyed fabric",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Masked contrastive generative adversarial network for defect detection of yarn-dyed fabric",
+          "risk": "掩码策略设计依赖先验知识，可能不适用于所有缺陷类型。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于双生成对抗网络补丁模型的图像修复织物缺陷检测",
+          "research_question": "双生成对抗网络补丁模型如何通过图像修复实现织物缺陷的精准定位？",
+          "baseline": "Image restoration fabric defect detection based on the dual generative adversarial network patch model",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Image restoration fabric defect detection based on the dual generative adversarial network patch model",
+          "risk": "补丁模型可能忽略全局上下文，且修复质量影响检测准确性。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于SA-Pix2pix网络与迁移学习的织物缺陷检测",
+          "research_question": "自注意力机制与Pix2pix结合，并借助迁移学习，能否提升织物缺陷检测的泛化能力？",
+          "baseline": "Fabric Defect Detection Method Using SA-Pix2pix Network and Transfer Learning",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Fabric Defect Detection Method Using SA-Pix2pix Network and Transfer Learning",
+          "risk": "迁移学习源域与目标域差异大时可能负迁移，且自注意力计算成本高。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T15:38:47Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]
