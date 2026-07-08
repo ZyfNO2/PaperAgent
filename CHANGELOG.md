@@ -5,6 +5,23 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added (Re3.8)
+- 50-paper extended regression: 12 R36 cases (12/12 PASS) + 30 R38 new cases (in progress)
+- scripts/re38_batch_run.py: batch runner for remaining R38 cases
+- scripts/re38_batch_verify.py: 50-paper verification script
+- Plan/PaperAgent_Re3.8_完工报告.md
+- Plan/PaperAgent_Re3.x_收官报告.md
+
+### Fixed (Re3.8)
+- 4 × except BaseException → except Exception (search_planner, targeted_repair, topic_parser, llm_router)
+- Deleted obsolete ponytail comment in research_agent.py
+- citation_expander state_keys verified non-empty (was only empty node in R36-003 trace)
+- S1: feasibility scoring precision — vague ranges replaced with exact score anchors (85-100/75-84/60-74/40-59/0-39)
+- S2: dataset_extractor abstract truncation 800→2000 + known_dataset_names expanded to 45+ across 10 domains
+- S5: topic_parser prompt now forces ALL keywords in English (MUST be in English directive)
+- S6: search_agent _llm_decide dedup check — duplicate tool+query triggers fallback
+- S7: devils_advocate heuristic 3-tier verdict (ACCEPT/MINOR_REVISION/BLOCK based on baseline count + feasibility)
+
 ### Fixed (Re3.7)
 - Removed _HEURISTIC_DOMAIN_KEYWORDS hardcoded domain map (rules.md §1)
 - Removed _CN_EN_MAP hardcoded CN→EN translation map (rules.md §1)

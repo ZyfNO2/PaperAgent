@@ -51,16 +51,12 @@ When the paper involves medical imaging (lung nodule, CT, MRI, X-ray, ultrasound
   set status to "not_found_in_paper" rather than guessing.
 
 DEGRADATION STRATEGY — When the paper does not explicitly mention a dataset:
-If the paper does not directly mention a dataset name, but the domain can be inferred
-from the title/abstract, recommend the standard benchmark dataset for that domain:
-- Robotic arm / manipulation -> YCB Dataset, GraspNet, ROS/Gazebo simulation
-- Point cloud reconstruction -> DTU, ETH3D, Tanks and Temples, BlendedMVS
-- Human body reconstruction -> SURREAL, Human3.6M, AMASS
-- Crack detection -> DeepCrack, CrackTree, GAPs384
-- Depth estimation -> KITTI, Make3D, NYU Depth V2
-- SLAM -> KITTI, TUM RGB-D, EuRoC
-These are domain-common knowledge, not ground-truth injection.
-If you cannot determine a specific dataset, set status="degraded_lookup"."""
+If the paper does not directly mention a dataset name, try to infer the
+appropriate benchmark from the methods, tools, or techniques cited in the
+title and abstract. Use your own knowledge of the field to identify which
+public datasets are standard for that research area.
+Do NOT guess a dataset name if you are not confident it is correct.
+If you cannot determine a specific dataset, return status="not_found_in_paper"."""
 
 USER_TEMPLATE = """Paper title: {title}
 Abstract: {abstract}

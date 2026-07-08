@@ -592,8 +592,30 @@ print(f"\nTOTAL: {n_pass} PASS, {n_fail} FAIL, {n_skip} SKIP out of {len(results
 4. **Phase 4 可以在 Phase 3 完成后随时执行**——需要 server 运行
 5. **Phase 5 串行提交**——避免 API 限流
 6. **50 篇 PASS 率 ≥ 80% 才算 Re3.x 收官**
-7. **VOAPI/MiniMax = 0**
-8. **所有 LLM 凭证从 .env 读取**
+7. **每个 Phase 完成后必须 commit**——避免大量改动堆积
+8. **VOAPI/MiniMax = 0**
+9. **所有 LLM 凭证从 .env 读取**
+
+### Commit 规范
+
+每个 Phase 完成后执行：
+
+```bash
+git add -A && git commit -m "fix(re3.8-phaseN): <phase简要描述>
+
+<phase内关键改动列表>
+
+Re3.8 Phase N/N"
+```
+
+| Phase | Commit message 示例 |
+|---|---|
+| 1 | `fix(re3.8-phase1): 4×BaseException→Exception + ponytail注释 + citation_expander state_keys` |
+| 2 | `fix(re3.8-phase2): feasibility评分精细化 + dataset_extractor扩大范围 + search防重复 + topic_parser强制英文 + devils_advocate heuristic` |
+| 3 | `feat(re3.8-phase3): 7篇补全回归完成 (R36-060/074/079/084/091/094/100)` |
+| 4 | `feat(re3.8-phase4): 8张时间线调试器截图` |
+| 5 | `feat(re3.8-phase5): 30篇扩展回归→50篇总量, PASS率X%` |
+| 6 | `docs(re3.8-phase6): Re3.x收官报告 + CHANGELOG更新` |
 
 ## 4. 交付物
 
