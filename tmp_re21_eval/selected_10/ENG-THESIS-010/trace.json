@@ -1,0 +1,529 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T03:39:26Z",
+    "input_summary": {
+      "topic": "基于深度学习的交通标志检测与识别方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:39:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T03:39:36Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:39:36Z",
+    "elapsed_s": 9.967
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T03:39:36Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:39:36Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T03:39:36Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 8,
+      "raw_tools": [
+        "arxiv"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T03:41:05Z",
+    "elapsed_s": 88.228
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T03:41:05Z",
+    "input_summary": {
+      "n_candidates": 8
+    },
+    "output_summary": {
+      "kept": 8,
+      "dropped": 0,
+      "pre_filter_keep": 8,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 8,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:41:05Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T03:41:05Z",
+    "input_summary": {
+      "n_candidates": 8,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 1,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:41:16Z",
+    "elapsed_s": 11.161
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T03:41:16Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 1,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:41:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T03:41:16Z",
+    "input_summary": {
+      "n_verified": 3,
+      "n_seeds": 0,
+      "seed_titles": []
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "reason": "no_seeds_with_ids"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "ended_at": "2026-07-06T03:41:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T03:41:16Z",
+    "input_summary": {
+      "n_candidates": 8,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 1,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:41:27Z",
+    "elapsed_s": 11.42
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T03:41:27Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 1,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:41:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T03:41:49Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 5,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:41:49Z",
+    "elapsed_s": 21.944
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T03:41:49Z",
+    "input_summary": {
+      "papers": 5
+    },
+    "output_summary": {
+      "nodes": 3,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:41:49Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T03:41:49Z",
+    "input_summary": {
+      "n_verified": 5
+    },
+    "output_summary": {
+      "n_baseline": 4,
+      "n_parallel": 1,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:41:49Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T03:41:59Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:41:59Z",
+    "elapsed_s": 9.586
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T03:42:13Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:42:13Z",
+    "elapsed_s": 14.023
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T03:42:31Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:42:31Z",
+    "elapsed_s": 18.026
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T03:42:27Z",
+    "input_summary": {
+      "n_baseline": 4
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:42:27Z",
+    "elapsed_s": 13.971
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T03:42:46Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "RobustTrafficNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:42:46Z",
+    "elapsed_s": 14.951
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T03:42:46Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:42:46Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T03:43:01Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:43:01Z",
+    "elapsed_s": 15.281
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T03:43:13Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:43:13Z",
+    "elapsed_s": 12.473
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T03:43:13Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:43:13Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T03:43:13Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的交通标志检测与识别方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于CNN的交通标志图像分类基线构建与评估",
+          "research_question": "在巴基斯坦交通标志数据集上，基于CNN的图像分类方法能否有效识别交通标志？",
+          "baseline": "Image Classification using CNN for Traffic Signs in Pakistan",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Image Classification using CNN for Traffic Signs in Pakistan",
+          "risk": "数据集规模较小，可能影响模型泛化能力；缺乏真实场景下的光照、遮挡等挑战。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "复杂环境下的交通标志识别鲁棒性研究",
+          "research_question": "在CURE-TSR数据集上，现有深度学习方法在挑战性环境（如模糊、低光照）下的识别性能如何？",
+          "baseline": "CURE-TSR: Challenging Unreal and Real Environments for Traffic Sign Recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "CURE-TSR: Challenging Unreal and Real Environments for Traffic Sign Recognition",
+          "risk": "环境干扰类型多样，单一模型可能难以全面适应；需设计针对性增强策略。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "对抗性交通标志对深度学习检测器的欺骗攻击分析",
+          "research_question": "DARTS方法生成的对抗性交通标志对现有检测与识别模型的影响程度如何？",
+          "baseline": "DARTS: Deceiving Autonomous Cars with Toxic Signs",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "DARTS: Deceiving Autonomous Cars with Toxic Signs",
+          "risk": "对抗性样本生成计算成本高；防御机制设计可能超出当前研究范围。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:43:13Z",
+    "elapsed_s": 0.0
+  }
+]

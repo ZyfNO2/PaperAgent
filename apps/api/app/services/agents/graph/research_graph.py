@@ -66,7 +66,8 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
             "END": END,
         },
     )
-    graph.add_edge("targeted_repair", "retrieve")            # loop back
+    # Re3.0: repair loop goes back to paper_retriever (now search_agent)
+    graph.add_edge("targeted_repair", "paper_retriever")     # loop back
 
     # Re1.3: citation_expander → verify (second round) → quality_gate (second round)
     graph.add_edge("citation_expander", "verify")
@@ -90,7 +91,7 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     graph.add_edge("innovation_extractor", "narrative_builder")    # Re2: fan-in
     graph.add_edge("sota_matcher", "narrative_builder")            # Re2: fan-in
     graph.add_edge("narrative_builder", "low_bar_review")
-    graph.add_edge("low_bar_review", "optimization_advisor")        # Re1.4
+    # low_bar_review uses conditional edge (below), no static edge
     graph.add_edge("optimization_advisor", "devils_advocate")       # Re1.4
     # Re2: conditional edge — devils_advocate → human_gate / narrative_builder / optimization_advisor
     graph.add_conditional_edges(
@@ -138,8 +139,14 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
 def _route_after_quality_gate(state: ResearchState) -> str:
     """Route after quality gate (Re1.3: adds citation_expander path).
 
+    Re2.3 Fix 5: 0 accept + ≥3 total candidates → repair (not promote weak)
+    Re2.4: sufficiency gate — n_papers < 3 + repair_rounds < max → repair
+
     First round (citation_expansion_done=False):
+      - 0 accept + ≥3 total → repair (Fix 5)
       - n_papers < 1 and repair_rounds < max → repair
+      - n_papers < 1 and repair_rounds >= max → blocked
+      - n_papers < 3 and repair_rounds < max → repair (sufficiency gate)
       - n_papers >= 1 → citation_expander (do expansion before continuing)
     
     Second round (citation_expansion_done=True):
@@ -147,16 +154,24 @@ def _route_after_quality_gate(state: ResearchState) -> str:
       - n_papers >= 1 → continue
     """
     n_papers = len(state.get("verified_papers") or [])
+    weak_n = len(state.get("weak_papers") or [])
+    n_total = n_papers + weak_n
     repair_rounds = state.get("evidence_audit", {}).get("repair_rounds", 0)
     max_repair = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
     citation_done = state.get("citation_expansion_done", False)
 
     if not citation_done:
         # First round
+        # Fix 5 (Re2.3): 0 accept + has candidates → repair
+        if n_papers == 0 and n_total >= 3 and repair_rounds < max_repair:
+            return "repair"
         if n_papers < 1 and repair_rounds < max_repair:
             return "repair"
         if n_papers < 1 and repair_rounds >= max_repair:
             return "blocked"
+        # Re2.4: sufficiency gate — not enough papers → repair
+        if n_papers < 3 and repair_rounds < max_repair:
+            return "repair"
         # Have enough papers → do citation expansion first
         return "citation_expander"
     else:
@@ -210,19 +225,21 @@ def _route_after_feasibility(state: ResearchState) -> str:
 
 
 MAX_NARRATIVE_REVISIONS = 2
+MAX_BLOCK_RETRIES = 1  # Re3.3: BLOCK 最多重试 1 次（共 2 次 BLOCK 判断）
 
 
 def _route_after_devils(state: ResearchState) -> str:
-    """Route after devil's advocate review (Re2).
+    """Route after devil's advocate review (Re2/Re3.3).
 
     - ACCEPT → human_gate
     - MINOR_REVISION → narrative_builder (if revisions < MAX)
     - MINOR_REVISION → human_gate (if revisions >= MAX, stop looping)
-    - BLOCK → optimization_advisor (if revisions < MAX AND there is evidence to improve)
-    - BLOCK → human_gate (if revisions >= MAX OR feasibility=not_recommended with no evidence)
+    - BLOCK → optimization_advisor (if block_count < MAX_BLOCK_RETRIES AND feasibility allows)
+    - BLOCK → human_gate (if block_count >= MAX_BLOCK_RETRIES OR feasibility=not_recommended)
     """
     verdict = state.get("review_report", {}).get("overall_verdict", "ACCEPT")
     revisions = state.get("narrative_revision_count", 0)
+    block_count = state.get("devils_advocate_block_count", 0)
     feas_verdict = state.get("feasibility_report", {}).get("verdict", "")
 
     if verdict == "ACCEPT":
@@ -238,7 +255,10 @@ def _route_after_devils(state: ResearchState) -> str:
     if verdict == "MINOR_REVISION":
         return "narrative_builder"
     if verdict == "BLOCK":
-        return "optimization_advisor"
+        # Re3.3: use independent block counter to prevent infinite loop
+        if block_count <= MAX_BLOCK_RETRIES:
+            return "optimization_advisor"
+        return "human_gate"
 
     return "human_gate"
 

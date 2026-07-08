@@ -31,24 +31,10 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def _emit(node: str, t0: float, ins: dict, out: dict,
-          tools: list, prov: str, errs: list) -> dict[str, Any]:
-    return {
-        "node": node,
-        "started_at": _now_iso(),
-        "input_summary": ins,
-        "output_summary": out,
-        "tool_calls": tools,
-        "errors": errs,
-        "provider": prov,
-        "ended_at": _now_iso(),
-        "elapsed_s": round(time.time() - t0, 3),
-    }
+
+from ._util import emit_trace as _emit
 
 
 def _slug_of(text: str) -> str:
@@ -145,7 +131,21 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
         try:
             from apps.api.app.services import llm_router
             from apps.api.app.services.agents.prompts import re11_dataset_repo_extractor as P
-            built = P.build(title, paper.get("abstract") or paper.get("snippet") or "")
+
+            # Re3.1: fetch arXiv fulltext if available for deeper extraction
+            fulltext = ""
+            arxiv_id = paper.get("arxiv_id")
+            if arxiv_id:
+                try:
+                    from apps.api.app.services.retrieval.arxiv_fulltext import fetch_arxiv_fulltext_sync
+                    fulltext = fetch_arxiv_fulltext_sync(arxiv_id)
+                    if fulltext:
+                        logger.debug("dataset_repo: got fulltext for %s (%d chars)", arxiv_id, len(fulltext))
+                except Exception as exc:
+                    logger.debug("dataset_repo: fulltext fetch failed for %s: %s", arxiv_id, type(exc).__name__)
+
+            abstract = paper.get("abstract") or paper.get("snippet") or ""
+            built = P.build(title, abstract, fulltext=fulltext)
             out = llm_router.call_json(
                 built["user"], system=built["system"], profile="fast_json",
                 max_tokens=700,
@@ -220,7 +220,7 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                 "datasets": ds_found,
                 "repos": repo_found,
             }
-        except BaseException as exc:
+        except Exception as exc:
             logger.debug("dataset_repo extraction failed for %r: %s",
                          title, type(exc).__name__)
             errors.append({"node": "dataset_repo", "for_paper": title,
@@ -249,18 +249,31 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                     if k and k not in repo_seen:
                         repo_seen.add(k)
                         repos.append(r)
-            except BaseException as exc:
+            except Exception as exc:
                 logger.warning("dataset_repo future failed: %s", exc)
 
     # Re2.2-fix: heuristic dataset extraction from innovation_points stitching_plan
     innovation_points = state.get("innovation_points") or []
     known_dataset_names = [
-        "NEU-DET", "GC10-DET", "KITTI", "TUM RGB-D", "EuRoC", "Bonn",
+        "NEU-DET", "GC10-DET", "MVTec AD",
+        "KITTI", "TUM RGB-D", "EuRoC", "Bonn", "ScanNet", "Middlebury",
+        "DTU", "ETH3D", "Tanks and Temples", "BlendedMVS",
         "COCO", "Pascal VOC", "ImageNet", "CIFAR", "MNIST",
-        "Cityscapes", "nuScenes", "ScanNet", "DOTA", "ShapeNet",
-        "Completion3D", "ModelNet", "CARLA", "GTSDB", "TT100K",
-        "CrackTree", "DeepCrack", "Crack500", "PavementCrack",
+        "Cityscapes", "nuScenes", "DOTA", "VisDrone", "UAVDT", "Waymo",
+        "DIOR", "AID", "NWPU-RESISC45", "xView",
+        "LIDC-IDRI", "MIMIC-CXR", "ChestX-ray14", "NIH ChestX-ray",
+        "BRATS", "ISIC", "TCIA", "PACS", "CheXpert", "LUNA16",
+        "YCB", "GraspNet", "DexNet", "EGAD",
+        "SURREAL", "Human3.6M", "AMASS", "SMPL",
+        "Make3D", "NYU Depth V2", "NYUv2", "DIODE",
+        "DeepCrack", "CrackTree", "GAPs384", "CRACK500", "SDNET2018",
+        "ShapeNet", "ModelNet", "PlantVillage",
+        "ADE20K", "VOC2012", "Synthia", "FlyingChairs", "Sintel",
+        "TartanAir", "Matterport3D", "ETH3D", "BDD100K",
+        "UAVStereo", "UAVDT", "Stanford2D3D",
     ]
+
+    # Heuristic extraction from innovation_points stitching_plan
     for inn in innovation_points:
         plan_text = (inn.get("stitching_plan", "") + " " +
                      inn.get("description", "")).lower()
@@ -283,6 +296,30 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                     ds_seen.add(k)
                     datasets.append(rec)
 
+    # Re3.1: heuristic dataset extraction from verified_papers titles
+    # Many papers mention datasets directly in their titles (e.g. "NEU-DET dataset",
+    # "Evaluation on KITTI benchmark"). This catches what the LLM might miss.
+    for p in papers:
+        title_lower = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
+        for ds_name in known_dataset_names:
+            if ds_name.lower() in title_lower:
+                rec = {
+                    "from_paper": p.get("title", ""),
+                    "linked_paper_id": _slug_of(p.get("title") or ds_name),
+                    "kind": "dataset",
+                    "name": ds_name,
+                    "url": None,
+                    "source": "paper_title_heuristic",
+                    "availability": "named",
+                    "status": "found",
+                    "reproducibility_hint": "",
+                    "risk": "",
+                }
+                k = ds_key(rec)
+                if k and k not in ds_seen:
+                    ds_seen.add(k)
+                    datasets.append(rec)
+
     merged_ds = existing_ds + datasets
     merged_repo = existing_repo + github_repos + repos
 
@@ -292,7 +329,9 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                   [{"tool": "re11_dataset_repo_extractor.llm", "attempts": tried,
                     "profile": "fast_json"},
                    {"tool": "github_direct_extract", "n_repos": len(github_repos)}],
-                  "fast_json", errors)
+                  "fast_json", errors,
+                  state_keys=["dataset_candidates", "repo_candidates",
+                              "evidence_audit", "trace_events", "errors"])
 
     return {
         "dataset_candidates": merged_ds,

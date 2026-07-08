@@ -1,0 +1,3016 @@
+{
+  "case_id": "ENG-THESIS-091",
+  "topic": "基于云计算的输电线路缺陷检测平台",
+  "user_constraints": {
+    "topic_zh": "基于云计算的输电线路缺陷检测平台"
+  },
+  "topic_atoms": {
+    "method": [
+      "cloud computing",
+      "defect detection"
+    ],
+    "object": [
+      "transmission line",
+      "defect"
+    ],
+    "task": [
+      "detection"
+    ],
+    "scenario": [
+      "power grid inspection"
+    ],
+    "domain": "energy_power",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "edge computing",
+      "embedded system"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "cloud computing transmission line",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "defect detection transmission line",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "cloud computing transmission line detection",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "arxiv": [
+      {
+        "title": "A study of the link between cosmic rays and clouds with a cloud chamber at the CERN PS",
+        "abstract": "Recent satellite data have revealed a surprising correlation between galactic cosmic ray (GCR) intensity and the fraction of the Earth covered by clouds. If this correlation were to be established by a causal mechanism, it could provide a crucial step in understanding the long-sought mechanism connecting solar and climate variability. The Earth's climate seems to be remarkably sensitive to solar activity, but variations of the Sun's electromagnetic radiation appear to be too small to account for the observed climate variability. However, since the GCR intensity is strongly modulated by the solar wind, a GCR-cloud link may provide a sufficient amplifying mechanism. Moreover if this connection were to be confirmed, it could have profound consequences for our understanding of the solar contributions to the current global warming. The CLOUD (Cosmics Leaving OUtdoor Droplets) project proposes to test experimentally the existence a link between cosmic rays and cloud formation, and to understand the microphysical mechanism. CLOUD plans to perform detailed laboratory measurements in a particle beam at CERN, where all the parameters can be precisely controlled and measured. The beam will pass through an expansion cloud chamber and a reactor chamber where the atmosphere is to be duplicated by moist air charged with selected aerosols and trace condensable vapours. An array of external detectors and mass spectrometers is used to analyse the physical and chemical characteristics of the aerosols and trace gases during beam exposure. Where beam effects are found, the experiment will seek to evaluate their significance in the atmosphere by incorporating them into aerosol and cloud models.",
+        "authors": [
+          "The Cloud Collaboration"
+        ],
+        "arxiv_id": "physics",
+        "url": "http://arxiv.org/abs/physics/0104048v1",
+        "published": "2001-04-16T19:12:19Z",
+        "year": 2001,
+        "source_query": "cloud computing"
+      },
+      {
+        "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+        "abstract": "Cloud Computing is a new trend emerging in IT environment with huge requirements of infrastructure and resources. Load Balancing is an important aspect of cloud computing environment. Efficient load balancing scheme ensures efficient resource utilization by provisioning of resources to cloud users on demand basis in pay as you say manner. Load Balancing may even support prioritizing users by applying appropriate scheduling criteria. This paper presents various load balancing schemes in different cloud environment based on requirements specified in Service Level Agreement (SLA).",
+        "authors": [
+          "Mayanka Katyal",
+          "Atul Mishra"
+        ],
+        "arxiv_id": "1403.6918v1",
+        "url": "http://arxiv.org/abs/1403.6918v1",
+        "published": "2014-03-27T05:07:28Z",
+        "year": 2014,
+        "source_query": "cloud computing"
+      },
+      {
+        "title": "Supporting Multi-Cloud in Serverless Computing",
+        "abstract": "Serverless computing is a widely adopted cloud execution model composed of Function-as-a-Service (FaaS) and Backend-as-a-Service (BaaS) offerings. The increased level of abstraction makes vendor lock-in inherent to serverless computing, raising more concerns than previous cloud paradigms. Multi-cloud serverless is a promising emerging approach against vendor lock-in, yet multiple challenges must be overcome to tap its potential. First, we need to be aware of both the performance and cost of each FaaS provider. Second, a multi-cloud architecture must be proposed before deploying a multi-cloud workflow. Domain-specific serverless offerings must then be integrated into the multi-cloud architecture to improve performance or save costs. Moreover, dealing with serverless offerings from multiple providers is challenging. Finally, we require workload portability support for serverless multi-cloud.\n  In this paper, we present a multi-cloud library for cross-serverless offerings. We develop the End Analysis System (EAS) to support comparison among public FaaS providers in terms of performance and cost. Moreover, we design proof-of-concept multi-cloud architectures with domain-specific serverless offerings to alleviate problems such as data gravity. Finally, we deploy workloads on these architectures to evaluate several public FaaS offerings.",
+        "authors": [
+          "Haidong Zhao",
+          "Zakaria Benomar",
+          "Tobias Pfandzelter",
+          "Nikolaos Georgantas"
+        ],
+        "arxiv_id": "2209.09367v4",
+        "url": "http://arxiv.org/abs/2209.09367v4",
+        "published": "2022-09-19T22:21:11Z",
+        "year": 2022,
+        "source_query": "cloud computing"
+      },
+      {
+        "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+        "abstract": "Small and Medium size Enterprises (SME) are considered as a backbone of many developing and developed economies of the world; they are the driving force to any major economy across the globe. Through Cloud Computing firms outsource their entire information technology (IT) process while concentrating more on their core business. It allows businesses to cut down heavy cost incurred over IT infrastructure without losing focus on customer needs. However, Cloud industry to an extent has struggled to grow among SMEs due to the reluctance and concerns expressed by them. Throughout the course of this study several interviews were conducted and the literature was reviewed to understand how cloud providers offer services and what challenges SMEs are facing. The study identified issues like cloud knowledge, interoperability, security and contractual concerns to be hindering SMEs adoption of cloud services. From the interviews common practices followed by cloud vendors and what concerns SMEs have were identified as a basis for a cloud framework which will bridge gaps between cloud vendors and SMEs. A stepwise framework for cloud adoption is formulated which identifies and provides recommendation to four most predominant challenges which are hurting cloud industry and taking SMEs away from cloud computing, as well as guide SMEs aiding in successful cloud adoption. Moreover, this framework streamlines the cloud adoption process for SMEs by removing ambiguity in regards to fundamentals associated with their organisation and cloud adoption process.",
+        "authors": [
+          "Nabeel Khan",
+          "Adil Al-Yasiri"
+        ],
+        "arxiv_id": "1601.01608v1",
+        "url": "http://arxiv.org/abs/1601.01608v1",
+        "published": "2016-01-07T17:21:41Z",
+        "year": 2016,
+        "source_query": "cloud computing"
+      },
+      {
+        "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+        "abstract": "Modern day continued demand for resource hungry services and applications in IT sector has led to development of Cloud computing. Cloud computing environment involves high cost infrastructure on one hand and need high scale computational resources on the other hand. These resources need to be provisioned (allocation and scheduling) to the end users in most efficient manner so that the tremendous capabilities of cloud are utilized effectively and efficiently. In this paper we discuss a selective algorithm for allocation of cloud resources to end-users on-demand basis. This algorithm is based on min-min and max-min algorithms. These are two conventional task scheduling algorithm. The selective algorithm uses certain heuristics to select between the two algorithms so that overall makespan of tasks on the machines is minimized. The tasks are scheduled on machines in either space shared or time shared manner. We evaluate our provisioning heuristics using a cloud simulator, called CloudSim. We also compared our approach to the statistics obtained when provisioning of resources was done in First-Cum-First- Serve(FCFS) manner. The experimental results show that overall makespan of tasks on given set of VMs minimizes significantly in different scenarios.",
+        "authors": [
+          "Mayanka Katyal",
+          "Atul Mishra"
+        ],
+        "arxiv_id": "1403.2914v1",
+        "url": "http://arxiv.org/abs/1403.2914v1",
+        "published": "2014-03-12T12:50:04Z",
+        "year": 2014,
+        "source_query": "cloud computing"
+      },
+      {
+        "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+        "abstract": "Different departments of a large organization often run dedicated cluster systems for different computing loads, like HPC (high performance computing) jobs or Web service applications. In this paper, we have designed and implemented a cloud management system software Phoenix Cloud to consolidate heterogeneous workloads from different departments affiliated to the same organization on the shared cluster system. We have also proposed cooperative resource provisioning and management policies for a large organization and its affiliated departments, running HPC jobs and Web service applications, to share the consolidated cluster system. The experiments show that in comparison with the case that each department operates its dedicated cluster system, Phoenix Cloud significantly decreases the scale of the required cluster system for a large organization, improves the benefit of the scientific computing department, and at the same time provisions enough resources to the other department running Web services with varying loads.",
+        "authors": [
+          "Jianfeng Zhan",
+          "Lei Wang",
+          "Bibo Tu",
+          "Yong Li",
+          "Peng Wang",
+          "Wei Zhou",
+          "Dan Meng"
+        ],
+        "arxiv_id": "0906.1346v6",
+        "url": "http://arxiv.org/abs/0906.1346v6",
+        "published": "2009-06-07T10:15:28Z",
+        "year": 2009,
+        "source_query": "cloud computing"
+      },
+      {
+        "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+        "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. It harnesses extensive datasets of annotated images to discern complex defect patterns. This integrated system seamlessly fits into production workflows, thereby boosting efficiency and elevating product quality. As a result, it reduces waste and operational costs, ultimately enhancing market competitiveness.",
+        "authors": [
+          "Arti Kumbhar",
+          "Amruta Chougule",
+          "Priya Lokhande",
+          "Saloni Navaghane",
+          "Aditi Burud",
+          "Saee Nimbalkar"
+        ],
+        "arxiv_id": "2311.03725v2",
+        "url": "http://arxiv.org/abs/2311.03725v2",
+        "published": "2023-11-07T04:59:43Z",
+        "year": 2023,
+        "source_query": "defect detection"
+      },
+      {
+        "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+        "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+        "authors": [
+          "Shervan Fekri-Ershad"
+        ],
+        "arxiv_id": "1906.11561v1",
+        "url": "http://arxiv.org/abs/1906.11561v1",
+        "published": "2019-06-27T11:36:29Z",
+        "year": 2019,
+        "source_query": "defect detection"
+      }
+    ],
+    "crossref": [
+      {
+        "title": "Cloud Computing",
+        "doi": "10.1016/b978-0-12-404627-6.00013-0",
+        "DOI": "10.1016/b978-0-12-404627-6.00013-0",
+        "authors": [],
+        "author": [],
+        "venue": "Cloud Computing",
+        "container-title": [
+          "Cloud Computing"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1016/b978-0-12-404627-6.00013-0",
+        "URL": "https://doi.org/10.1016/b978-0-12-404627-6.00013-0",
+        "year": 2013,
+        "publication_year": 2013,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Cloud Computing",
+        "doi": "10.1057/9781137273642.0008",
+        "DOI": "10.1057/9781137273642.0008",
+        "authors": [],
+        "author": [],
+        "venue": "Cloud Computing in Financial Services",
+        "container-title": [
+          "Cloud Computing in Financial Services"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1057/9781137273642.0008",
+        "URL": "https://doi.org/10.1057/9781137273642.0008",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Cloud Computing",
+        "doi": "10.1016/b978-0-12-404627-6.00014-2",
+        "DOI": "10.1016/b978-0-12-404627-6.00014-2",
+        "authors": [],
+        "author": [],
+        "venue": "Cloud Computing",
+        "container-title": [
+          "Cloud Computing"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1016/b978-0-12-404627-6.00014-2",
+        "URL": "https://doi.org/10.1016/b978-0-12-404627-6.00014-2",
+        "year": 2013,
+        "publication_year": 2013,
+        "citation_count": 1,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Cloud Computing Model",
+        "doi": "10.1017/9781316941386.005",
+        "DOI": "10.1017/9781316941386.005",
+        "authors": [],
+        "author": [],
+        "venue": "Cloud Computing",
+        "container-title": [
+          "Cloud Computing"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1017/9781316941386.005",
+        "URL": "https://doi.org/10.1017/9781316941386.005",
+        "year": 2017,
+        "publication_year": 2017,
+        "citation_count": 1,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Cloud Computing Services",
+        "doi": "10.1017/9781316941386.006",
+        "DOI": "10.1017/9781316941386.006",
+        "authors": [],
+        "author": [],
+        "venue": "Cloud Computing",
+        "container-title": [
+          "Cloud Computing"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1017/9781316941386.006",
+        "URL": "https://doi.org/10.1017/9781316941386.006",
+        "year": 2017,
+        "publication_year": 2017,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "IEEE Cloud Computing Call for Papers Connecting Fog and Cloud Computing",
+        "doi": "10.1109/mcc.2016.83",
+        "DOI": "10.1109/mcc.2016.83",
+        "authors": [],
+        "author": [],
+        "venue": "IEEE Cloud Computing",
+        "container-title": [
+          "IEEE Cloud Computing"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1109/mcc.2016.83",
+        "URL": "https://doi.org/10.1109/mcc.2016.83",
+        "year": 2016,
+        "publication_year": 2016,
+        "citation_count": 2,
+        "_crossref_type": "journal-article"
+      },
+      {
+        "title": "Cloud Computing Conference 2010",
+        "doi": "10.4016/15181.01",
+        "DOI": "10.4016/15181.01",
+        "authors": [
+          "Cloud Slam"
+        ],
+        "author": [
+          {
+            "given": "Cloud",
+            "family": "Slam",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "SciVee",
+        "container-title": [
+          "SciVee"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.4016/15181.01",
+        "URL": "https://doi.org/10.4016/15181.01",
+        "year": 2009,
+        "publication_year": 2009,
+        "citation_count": 0,
+        "_crossref_type": "dataset"
+      },
+      {
+        "title": "Cloud Computing Conference 2010",
+        "doi": "10.4016/15181.03",
+        "DOI": "10.4016/15181.03",
+        "authors": [
+          "Cloud Slam"
+        ],
+        "author": [
+          {
+            "given": "Cloud",
+            "family": "Slam",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "SciVee",
+        "container-title": [
+          "SciVee"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.4016/15181.03",
+        "URL": "https://doi.org/10.4016/15181.03",
+        "year": 2009,
+        "publication_year": 2009,
+        "citation_count": 0,
+        "_crossref_type": "dataset"
+      }
+    ],
+    "github": [
+      {
+        "id": 590158156,
+        "node_id": "R_kgDOIy0ZTA",
+        "name": "ubicloud",
+        "full_name": "ubicloud/ubicloud",
+        "private": false,
+        "owner": {
+          "login": "ubicloud",
+          "id": 121406468,
+          "node_id": "O_kgDOBzyEBA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/121406468?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/ubicloud",
+          "html_url": "https://github.com/ubicloud",
+          "followers_url": "https://api.github.com/users/ubicloud/followers",
+          "following_url": "https://api.github.com/users/ubicloud/following{/other_user}",
+          "gists_url": "https://api.github.com/users/ubicloud/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/ubicloud/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/ubicloud/subscriptions",
+          "organizations_url": "https://api.github.com/users/ubicloud/orgs",
+          "repos_url": "https://api.github.com/users/ubicloud/repos",
+          "events_url": "https://api.github.com/users/ubicloud/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/ubicloud/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/ubicloud/ubicloud",
+        "description": "Open source alternative to AWS. Elastic compute, block storage (non replicated), firewall and load balancer, managed Postgres, K8s, AI inference, and IAM services.",
+        "fork": false,
+        "url": "https://api.github.com/repos/ubicloud/ubicloud",
+        "forks_url": "https://api.github.com/repos/ubicloud/ubicloud/forks",
+        "keys_url": "https://api.github.com/repos/ubicloud/ubicloud/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/ubicloud/ubicloud/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/ubicloud/ubicloud/teams",
+        "hooks_url": "https://api.github.com/repos/ubicloud/ubicloud/hooks",
+        "issue_events_url": "https://api.github.com/repos/ubicloud/ubicloud/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/ubicloud/ubicloud/events",
+        "assignees_url": "https://api.github.com/repos/ubicloud/ubicloud/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/ubicloud/ubicloud/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/ubicloud/ubicloud/tags",
+        "blobs_url": "https://api.github.com/repos/ubicloud/ubicloud/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/ubicloud/ubicloud/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/ubicloud/ubicloud/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/ubicloud/ubicloud/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/ubicloud/ubicloud/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/ubicloud/ubicloud/languages",
+        "stargazers_url": "https://api.github.com/repos/ubicloud/ubicloud/stargazers",
+        "contributors_url": "https://api.github.com/repos/ubicloud/ubicloud/contributors",
+        "subscribers_url": "https://api.github.com/repos/ubicloud/ubicloud/subscribers",
+        "subscription_url": "https://api.github.com/repos/ubicloud/ubicloud/subscription",
+        "commits_url": "https://api.github.com/repos/ubicloud/ubicloud/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/ubicloud/ubicloud/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/ubicloud/ubicloud/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/ubicloud/ubicloud/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/ubicloud/ubicloud/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/ubicloud/ubicloud/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/ubicloud/ubicloud/merges",
+        "archive_url": "https://api.github.com/repos/ubicloud/ubicloud/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/ubicloud/ubicloud/downloads",
+        "issues_url": "https://api.github.com/repos/ubicloud/ubicloud/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/ubicloud/ubicloud/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/ubicloud/ubicloud/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/ubicloud/ubicloud/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/ubicloud/ubicloud/labels{/name}",
+        "releases_url": "https://api.github.com/repos/ubicloud/ubicloud/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/ubicloud/ubicloud/deployments",
+        "created_at": "2023-01-17T19:29:00Z",
+        "updated_at": "2026-07-06T08:03:50Z",
+        "pushed_at": "2026-07-03T23:56:11Z",
+        "git_url": "git://github.com/ubicloud/ubicloud.git",
+        "ssh_url": "git@github.com:ubicloud/ubicloud.git",
+        "clone_url": "https://github.com/ubicloud/ubicloud.git",
+        "svn_url": "https://github.com/ubicloud/ubicloud",
+        "homepage": "https://ubicloud.com",
+        "size": 23171,
+        "stargazers_count": 12136,
+        "watchers_count": 12136,
+        "language": "Ruby",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 568,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 110,
+        "license": {
+          "key": "agpl-3.0",
+          "name": "GNU Affero General Public License v3.0",
+          "spdx_id": "AGPL-3.0",
+          "url": "https://api.github.com/licenses/agpl-3.0",
+          "node_id": "MDc6TGljZW5zZTE="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "bare-metal",
+          "cloud",
+          "github-actions",
+          "hosting",
+          "kubernetes",
+          "linux",
+          "managed-cloud",
+          "open",
+          "opensource",
+          "portable",
+          "postgresql",
+          "ruby"
+        ],
+        "visibility": "public",
+        "forks": 568,
+        "open_issues": 110,
+        "watchers": 12136,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 12136
+      },
+      {
+        "id": 395140743,
+        "node_id": "MDEwOlJlcG9zaXRvcnkzOTUxNDA3NDM=",
+        "name": "skypilot",
+        "full_name": "skypilot-org/skypilot",
+        "private": false,
+        "owner": {
+          "login": "skypilot-org",
+          "id": 109387420,
+          "node_id": "O_kgDOBoUenA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/109387420?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/skypilot-org",
+          "html_url": "https://github.com/skypilot-org",
+          "followers_url": "https://api.github.com/users/skypilot-org/followers",
+          "following_url": "https://api.github.com/users/skypilot-org/following{/other_user}",
+          "gists_url": "https://api.github.com/users/skypilot-org/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/skypilot-org/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/skypilot-org/subscriptions",
+          "organizations_url": "https://api.github.com/users/skypilot-org/orgs",
+          "repos_url": "https://api.github.com/users/skypilot-org/repos",
+          "events_url": "https://api.github.com/users/skypilot-org/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/skypilot-org/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/skypilot-org/skypilot",
+        "description": "Run, manage, and scale AI workloads on any AI infrastructure. Use one system to access & manage all AI compute (Kubernetes, Slurm, 20+ clouds, on-prem).",
+        "fork": false,
+        "url": "https://api.github.com/repos/skypilot-org/skypilot",
+        "forks_url": "https://api.github.com/repos/skypilot-org/skypilot/forks",
+        "keys_url": "https://api.github.com/repos/skypilot-org/skypilot/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/skypilot-org/skypilot/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/skypilot-org/skypilot/teams",
+        "hooks_url": "https://api.github.com/repos/skypilot-org/skypilot/hooks",
+        "issue_events_url": "https://api.github.com/repos/skypilot-org/skypilot/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/skypilot-org/skypilot/events",
+        "assignees_url": "https://api.github.com/repos/skypilot-org/skypilot/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/skypilot-org/skypilot/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/skypilot-org/skypilot/tags",
+        "blobs_url": "https://api.github.com/repos/skypilot-org/skypilot/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/skypilot-org/skypilot/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/skypilot-org/skypilot/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/skypilot-org/skypilot/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/skypilot-org/skypilot/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/skypilot-org/skypilot/languages",
+        "stargazers_url": "https://api.github.com/repos/skypilot-org/skypilot/stargazers",
+        "contributors_url": "https://api.github.com/repos/skypilot-org/skypilot/contributors",
+        "subscribers_url": "https://api.github.com/repos/skypilot-org/skypilot/subscribers",
+        "subscription_url": "https://api.github.com/repos/skypilot-org/skypilot/subscription",
+        "commits_url": "https://api.github.com/repos/skypilot-org/skypilot/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/skypilot-org/skypilot/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/skypilot-org/skypilot/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/skypilot-org/skypilot/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/skypilot-org/skypilot/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/skypilot-org/skypilot/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/skypilot-org/skypilot/merges",
+        "archive_url": "https://api.github.com/repos/skypilot-org/skypilot/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/skypilot-org/skypilot/downloads",
+        "issues_url": "https://api.github.com/repos/skypilot-org/skypilot/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/skypilot-org/skypilot/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/skypilot-org/skypilot/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/skypilot-org/skypilot/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/skypilot-org/skypilot/labels{/name}",
+        "releases_url": "https://api.github.com/repos/skypilot-org/skypilot/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/skypilot-org/skypilot/deployments",
+        "created_at": "2021-08-11T23:32:15Z",
+        "updated_at": "2026-07-06T07:47:17Z",
+        "pushed_at": "2026-07-06T07:47:10Z",
+        "git_url": "git://github.com/skypilot-org/skypilot.git",
+        "ssh_url": "git@github.com:skypilot-org/skypilot.git",
+        "clone_url": "https://github.com/skypilot-org/skypilot.git",
+        "svn_url": "https://github.com/skypilot-org/skypilot",
+        "homepage": "https://docs.skypilot.co/",
+        "size": 254297,
+        "stargazers_count": 10259,
+        "watchers_count": 10259,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": false,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": true,
+        "has_discussions": true,
+        "forks_count": 1128,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 342,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "cloud-computing",
+          "cloud-management",
+          "cost-optimization",
+          "deep-learning",
+          "distributed-training",
+          "gpu",
+          "hyperparameter-tuning",
+          "job-queue",
+          "job-scheduler",
+          "llm-serving",
+          "llm-training",
+          "machine-learning",
+          "ml-infrastructure",
+          "ml-platform",
+          "mlops",
+          "multicloud",
+          "slurm",
+          "spot-instances",
+          "tpu"
+        ],
+        "visibility": "public",
+        "forks": 1128,
+        "open_issues": 342,
+        "watchers": 10259,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 10259
+      },
+      {
+        "id": 139306584,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxMzkzMDY1ODQ=",
+        "name": "CKAD-exercises",
+        "full_name": "dgkanatsios/CKAD-exercises",
+        "private": false,
+        "owner": {
+          "login": "dgkanatsios",
+          "id": 8256138,
+          "node_id": "MDQ6VXNlcjgyNTYxMzg=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/8256138?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/dgkanatsios",
+          "html_url": "https://github.com/dgkanatsios",
+          "followers_url": "https://api.github.com/users/dgkanatsios/followers",
+          "following_url": "https://api.github.com/users/dgkanatsios/following{/other_user}",
+          "gists_url": "https://api.github.com/users/dgkanatsios/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/dgkanatsios/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/dgkanatsios/subscriptions",
+          "organizations_url": "https://api.github.com/users/dgkanatsios/orgs",
+          "repos_url": "https://api.github.com/users/dgkanatsios/repos",
+          "events_url": "https://api.github.com/users/dgkanatsios/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/dgkanatsios/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/dgkanatsios/CKAD-exercises",
+        "description": "A set of exercises to prepare for Certified Kubernetes Application Developer exam by Cloud Native Computing Foundation",
+        "fork": false,
+        "url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises",
+        "forks_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/forks",
+        "keys_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/teams",
+        "hooks_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/hooks",
+        "issue_events_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/events",
+        "assignees_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/tags",
+        "blobs_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/languages",
+        "stargazers_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/stargazers",
+        "contributors_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/contributors",
+        "subscribers_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/subscribers",
+        "subscription_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/subscription",
+        "commits_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/merges",
+        "archive_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/downloads",
+        "issues_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/labels{/name}",
+        "releases_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/dgkanatsios/CKAD-exercises/deployments",
+        "created_at": "2018-07-01T06:47:48Z",
+        "updated_at": "2026-07-06T07:23:35Z",
+        "pushed_at": "2026-04-21T02:54:02Z",
+        "git_url": "git://github.com/dgkanatsios/CKAD-exercises.git",
+        "ssh_url": "git@github.com:dgkanatsios/CKAD-exercises.git",
+        "clone_url": "https://github.com/dgkanatsios/CKAD-exercises.git",
+        "svn_url": "https://github.com/dgkanatsios/CKAD-exercises",
+        "homepage": "",
+        "size": 253,
+        "stargazers_count": 10036,
+        "watchers_count": 10036,
+        "language": null,
+        "has_issues": true,
+        "has_projects": false,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 5881,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 57,
+        "license": {
+          "key": "mit",
+          "name": "MIT License",
+          "spdx_id": "MIT",
+          "url": "https://api.github.com/licenses/mit",
+          "node_id": "MDc6TGljZW5zZTEz"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "certification",
+          "ckad",
+          "ckad-exercises",
+          "kubernetes"
+        ],
+        "visibility": "public",
+        "forks": 5881,
+        "open_issues": 57,
+        "watchers": 10036,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 10036
+      },
+      {
+        "id": 9759448,
+        "node_id": "MDEwOlJlcG9zaXRvcnk5NzU5NDQ4",
+        "name": "cloudstack",
+        "full_name": "apache/cloudstack",
+        "private": false,
+        "owner": {
+          "login": "apache",
+          "id": 47359,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjQ3MzU5",
+          "avatar_url": "https://avatars.githubusercontent.com/u/47359?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/apache",
+          "html_url": "https://github.com/apache",
+          "followers_url": "https://api.github.com/users/apache/followers",
+          "following_url": "https://api.github.com/users/apache/following{/other_user}",
+          "gists_url": "https://api.github.com/users/apache/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/apache/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/apache/subscriptions",
+          "organizations_url": "https://api.github.com/users/apache/orgs",
+          "repos_url": "https://api.github.com/users/apache/repos",
+          "events_url": "https://api.github.com/users/apache/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/apache/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/apache/cloudstack",
+        "description": "Apache CloudStack is an opensource Infrastructure as a Service (IaaS) cloud computing platform",
+        "fork": false,
+        "url": "https://api.github.com/repos/apache/cloudstack",
+        "forks_url": "https://api.github.com/repos/apache/cloudstack/forks",
+        "keys_url": "https://api.github.com/repos/apache/cloudstack/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/apache/cloudstack/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/apache/cloudstack/teams",
+        "hooks_url": "https://api.github.com/repos/apache/cloudstack/hooks",
+        "issue_events_url": "https://api.github.com/repos/apache/cloudstack/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/apache/cloudstack/events",
+        "assignees_url": "https://api.github.com/repos/apache/cloudstack/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/apache/cloudstack/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/apache/cloudstack/tags",
+        "blobs_url": "https://api.github.com/repos/apache/cloudstack/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/apache/cloudstack/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/apache/cloudstack/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/apache/cloudstack/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/apache/cloudstack/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/apache/cloudstack/languages",
+        "stargazers_url": "https://api.github.com/repos/apache/cloudstack/stargazers",
+        "contributors_url": "https://api.github.com/repos/apache/cloudstack/contributors",
+        "subscribers_url": "https://api.github.com/repos/apache/cloudstack/subscribers",
+        "subscription_url": "https://api.github.com/repos/apache/cloudstack/subscription",
+        "commits_url": "https://api.github.com/repos/apache/cloudstack/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/apache/cloudstack/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/apache/cloudstack/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/apache/cloudstack/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/apache/cloudstack/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/apache/cloudstack/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/apache/cloudstack/merges",
+        "archive_url": "https://api.github.com/repos/apache/cloudstack/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/apache/cloudstack/downloads",
+        "issues_url": "https://api.github.com/repos/apache/cloudstack/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/apache/cloudstack/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/apache/cloudstack/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/apache/cloudstack/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/apache/cloudstack/labels{/name}",
+        "releases_url": "https://api.github.com/repos/apache/cloudstack/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/apache/cloudstack/deployments",
+        "created_at": "2013-04-29T22:27:12Z",
+        "updated_at": "2026-07-06T07:42:19Z",
+        "pushed_at": "2026-07-06T07:42:18Z",
+        "git_url": "git://github.com/apache/cloudstack.git",
+        "ssh_url": "git@github.com:apache/cloudstack.git",
+        "clone_url": "https://github.com/apache/cloudstack.git",
+        "svn_url": "https://github.com/apache/cloudstack",
+        "homepage": "https://cloudstack.apache.org/",
+        "size": 661719,
+        "stargazers_count": 2968,
+        "watchers_count": 2968,
+        "language": "Java",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_discussions": true,
+        "forks_count": 1340,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 813,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "cloud",
+          "cloudstack",
+          "iaas",
+          "infrastructure",
+          "java",
+          "kubernetes",
+          "kvm",
+          "libvirt",
+          "orchestration",
+          "python",
+          "virtual-machine",
+          "virtualization",
+          "vmware",
+          "vsphere",
+          "xcp-ng",
+          "xenserver"
+        ],
+        "visibility": "public",
+        "forks": 1340,
+        "open_issues": 813,
+        "watchers": 2968,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 2968
+      },
+      {
+        "id": 481325890,
+        "node_id": "R_kgDOHLBzQg",
+        "name": "awesome-cloudnative-trainings",
+        "full_name": "joseadanof/awesome-cloudnative-trainings",
+        "private": false,
+        "owner": {
+          "login": "joseadanof",
+          "id": 4730383,
+          "node_id": "MDQ6VXNlcjQ3MzAzODM=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/4730383?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/joseadanof",
+          "html_url": "https://github.com/joseadanof",
+          "followers_url": "https://api.github.com/users/joseadanof/followers",
+          "following_url": "https://api.github.com/users/joseadanof/following{/other_user}",
+          "gists_url": "https://api.github.com/users/joseadanof/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/joseadanof/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/joseadanof/subscriptions",
+          "organizations_url": "https://api.github.com/users/joseadanof/orgs",
+          "repos_url": "https://api.github.com/users/joseadanof/repos",
+          "events_url": "https://api.github.com/users/joseadanof/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/joseadanof/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/joseadanof/awesome-cloudnative-trainings",
+        "description": "Awesome Trainings from Cloud Native Computing Foundation Projects and Kubernetes related software",
+        "fork": false,
+        "url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings",
+        "forks_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/forks",
+        "keys_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/teams",
+        "hooks_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/hooks",
+        "issue_events_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/events",
+        "assignees_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/tags",
+        "blobs_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/languages",
+        "stargazers_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/stargazers",
+        "contributors_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/contributors",
+        "subscribers_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/subscribers",
+        "subscription_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/subscription",
+        "commits_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/merges",
+        "archive_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/downloads",
+        "issues_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/labels{/name}",
+        "releases_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/joseadanof/awesome-cloudnative-trainings/deployments",
+        "created_at": "2022-04-13T18:14:16Z",
+        "updated_at": "2026-07-06T03:28:38Z",
+        "pushed_at": "2025-02-23T18:28:52Z",
+        "git_url": "git://github.com/joseadanof/awesome-cloudnative-trainings.git",
+        "ssh_url": "git@github.com:joseadanof/awesome-cloudnative-trainings.git",
+        "clone_url": "https://github.com/joseadanof/awesome-cloudnative-trainings.git",
+        "svn_url": "https://github.com/joseadanof/awesome-cloudnative-trainings",
+        "homepage": "",
+        "size": 39,
+        "stargazers_count": 2373,
+        "watchers_count": 2373,
+        "language": null,
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 765,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 7,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "cloud-native",
+          "cncf",
+          "containers",
+          "continuous-learning",
+          "devops",
+          "devsecops",
+          "istio",
+          "k8s",
+          "kubernetes",
+          "linux-foundation",
+          "service-mesh"
+        ],
+        "visibility": "public",
+        "forks": 765,
+        "open_issues": 7,
+        "watchers": 2373,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 2373
+      },
+      {
+        "id": 304403692,
+        "node_id": "MDEwOlJlcG9zaXRvcnkzMDQ0MDM2OTI=",
+        "name": "wasmCloud",
+        "full_name": "wasmCloud/wasmCloud",
+        "private": false,
+        "owner": {
+          "login": "wasmCloud",
+          "id": 52050279,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjUyMDUwMjc5",
+          "avatar_url": "https://avatars.githubusercontent.com/u/52050279?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/wasmCloud",
+          "html_url": "https://github.com/wasmCloud",
+          "followers_url": "https://api.github.com/users/wasmCloud/followers",
+          "following_url": "https://api.github.com/users/wasmCloud/following{/other_user}",
+          "gists_url": "https://api.github.com/users/wasmCloud/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/wasmCloud/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/wasmCloud/subscriptions",
+          "organizations_url": "https://api.github.com/users/wasmCloud/orgs",
+          "repos_url": "https://api.github.com/users/wasmCloud/repos",
+          "events_url": "https://api.github.com/users/wasmCloud/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/wasmCloud/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/wasmCloud/wasmCloud",
+        "description": "wasmCloud is an open source Cloud Native Computing Foundation (CNCF) project that enables teams to build, manage, and scale polyglot apps across any cloud, K8s, or edge.",
+        "fork": false,
+        "url": "https://api.github.com/repos/wasmCloud/wasmCloud",
+        "forks_url": "https://api.github.com/repos/wasmCloud/wasmCloud/forks",
+        "keys_url": "https://api.github.com/repos/wasmCloud/wasmCloud/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/wasmCloud/wasmCloud/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/wasmCloud/wasmCloud/teams",
+        "hooks_url": "https://api.github.com/repos/wasmCloud/wasmCloud/hooks",
+        "issue_events_url": "https://api.github.com/repos/wasmCloud/wasmCloud/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/wasmCloud/wasmCloud/events",
+        "assignees_url": "https://api.github.com/repos/wasmCloud/wasmCloud/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/wasmCloud/wasmCloud/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/wasmCloud/wasmCloud/tags",
+        "blobs_url": "https://api.github.com/repos/wasmCloud/wasmCloud/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/wasmCloud/wasmCloud/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/wasmCloud/wasmCloud/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/wasmCloud/wasmCloud/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/wasmCloud/wasmCloud/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/wasmCloud/wasmCloud/languages",
+        "stargazers_url": "https://api.github.com/repos/wasmCloud/wasmCloud/stargazers",
+        "contributors_url": "https://api.github.com/repos/wasmCloud/wasmCloud/contributors",
+        "subscribers_url": "https://api.github.com/repos/wasmCloud/wasmCloud/subscribers",
+        "subscription_url": "https://api.github.com/repos/wasmCloud/wasmCloud/subscription",
+        "commits_url": "https://api.github.com/repos/wasmCloud/wasmCloud/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/wasmCloud/wasmCloud/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/wasmCloud/wasmCloud/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/wasmCloud/wasmCloud/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/wasmCloud/wasmCloud/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/wasmCloud/wasmCloud/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/wasmCloud/wasmCloud/merges",
+        "archive_url": "https://api.github.com/repos/wasmCloud/wasmCloud/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/wasmCloud/wasmCloud/downloads",
+        "issues_url": "https://api.github.com/repos/wasmCloud/wasmCloud/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/wasmCloud/wasmCloud/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/wasmCloud/wasmCloud/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/wasmCloud/wasmCloud/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/wasmCloud/wasmCloud/labels{/name}",
+        "releases_url": "https://api.github.com/repos/wasmCloud/wasmCloud/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/wasmCloud/wasmCloud/deployments",
+        "created_at": "2020-10-15T17:41:17Z",
+        "updated_at": "2026-07-04T13:45:53Z",
+        "pushed_at": "2026-07-03T23:28:27Z",
+        "git_url": "git://github.com/wasmCloud/wasmCloud.git",
+        "ssh_url": "git@github.com:wasmCloud/wasmCloud.git",
+        "clone_url": "https://github.com/wasmCloud/wasmCloud.git",
+        "svn_url": "https://github.com/wasmCloud/wasmCloud",
+        "homepage": "https://wasmcloud.com",
+        "size": 112739,
+        "stargazers_count": 2363,
+        "watchers_count": 2363,
+        "language": "Rust",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_discussions": true,
+        "forks_count": 247,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 40,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": true,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "cloud-native",
+          "distributed",
+          "edge",
+          "kubernetes",
+          "nats",
+          "platform",
+          "wasm-native",
+          "webassembly"
+        ],
+        "visibility": "public",
+        "forks": 247,
+        "open_issues": 40,
+        "watchers": 2363,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 2363
+      },
+      {
+        "id": 187078631,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxODcwNzg2MzE=",
+        "name": "shellhub",
+        "full_name": "shellhub-io/shellhub",
+        "private": false,
+        "owner": {
+          "login": "shellhub-io",
+          "id": 52789761,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjUyNzg5NzYx",
+          "avatar_url": "https://avatars.githubusercontent.com/u/52789761?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/shellhub-io",
+          "html_url": "https://github.com/shellhub-io",
+          "followers_url": "https://api.github.com/users/shellhub-io/followers",
+          "following_url": "https://api.github.com/users/shellhub-io/following{/other_user}",
+          "gists_url": "https://api.github.com/users/shellhub-io/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/shellhub-io/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/shellhub-io/subscriptions",
+          "organizations_url": "https://api.github.com/users/shellhub-io/orgs",
+          "repos_url": "https://api.github.com/users/shellhub-io/repos",
+          "events_url": "https://api.github.com/users/shellhub-io/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/shellhub-io/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/shellhub-io/shellhub",
+        "description": ":computer: Get seamless remote access to any Linux device. Centralized SSH for the edge and cloud computing",
+        "fork": false,
+        "url": "https://api.github.com/repos/shellhub-io/shellhub",
+        "forks_url": "https://api.github.com/repos/shellhub-io/shellhub/forks",
+        "keys_url": "https://api.github.com/repos/shellhub-io/shellhub/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/shellhub-io/shellhub/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/shellhub-io/shellhub/teams",
+        "hooks_url": "https://api.github.com/repos/shellhub-io/shellhub/hooks",
+        "issue_events_url": "https://api.github.com/repos/shellhub-io/shellhub/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/shellhub-io/shellhub/events",
+        "assignees_url": "https://api.github.com/repos/shellhub-io/shellhub/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/shellhub-io/shellhub/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/shellhub-io/shellhub/tags",
+        "blobs_url": "https://api.github.com/repos/shellhub-io/shellhub/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/shellhub-io/shellhub/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/shellhub-io/shellhub/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/shellhub-io/shellhub/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/shellhub-io/shellhub/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/shellhub-io/shellhub/languages",
+        "stargazers_url": "https://api.github.com/repos/shellhub-io/shellhub/stargazers",
+        "contributors_url": "https://api.github.com/repos/shellhub-io/shellhub/contributors",
+        "subscribers_url": "https://api.github.com/repos/shellhub-io/shellhub/subscribers",
+        "subscription_url": "https://api.github.com/repos/shellhub-io/shellhub/subscription",
+        "commits_url": "https://api.github.com/repos/shellhub-io/shellhub/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/shellhub-io/shellhub/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/shellhub-io/shellhub/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/shellhub-io/shellhub/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/shellhub-io/shellhub/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/shellhub-io/shellhub/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/shellhub-io/shellhub/merges",
+        "archive_url": "https://api.github.com/repos/shellhub-io/shellhub/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/shellhub-io/shellhub/downloads",
+        "issues_url": "https://api.github.com/repos/shellhub-io/shellhub/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/shellhub-io/shellhub/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/shellhub-io/shellhub/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/shellhub-io/shellhub/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/shellhub-io/shellhub/labels{/name}",
+        "releases_url": "https://api.github.com/repos/shellhub-io/shellhub/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/shellhub-io/shellhub/deployments",
+        "created_at": "2019-05-16T18:10:35Z",
+        "updated_at": "2026-07-06T06:01:24Z",
+        "pushed_at": "2026-07-03T21:23:26Z",
+        "git_url": "git://github.com/shellhub-io/shellhub.git",
+        "ssh_url": "git@github.com:shellhub-io/shellhub.git",
+        "clone_url": "https://github.com/shellhub-io/shellhub.git",
+        "svn_url": "https://github.com/shellhub-io/shellhub",
+        "homepage": "https://shellhub.io",
+        "size": 112957,
+        "stargazers_count": 2040,
+        "watchers_count": 2040,
+        "language": "TypeScript",
+        "has_issues": true,
+        "has_projects": false,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 184,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 22,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "cloud-computing",
+          "embedded",
+          "golang",
+          "hacktoberfest",
+          "iot",
+          "linux",
+          "raspberry-pi",
+          "shellhub",
+          "ssh",
+          "ssh-tunnel"
+        ],
+        "visibility": "public",
+        "forks": 184,
+        "open_issues": 22,
+        "watchers": 2040,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 2040
+      },
+      {
+        "id": 31214867,
+        "node_id": "MDEwOlJlcG9zaXRvcnkzMTIxNDg2Nw==",
+        "name": "microcks",
+        "full_name": "microcks/microcks",
+        "private": false,
+        "owner": {
+          "login": "microcks",
+          "id": 11051048,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjExMDUxMDQ4",
+          "avatar_url": "https://avatars.githubusercontent.com/u/11051048?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/microcks",
+          "html_url": "https://github.com/microcks",
+          "followers_url": "https://api.github.com/users/microcks/followers",
+          "following_url": "https://api.github.com/users/microcks/following{/other_user}",
+          "gists_url": "https://api.github.com/users/microcks/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/microcks/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/microcks/subscriptions",
+          "organizations_url": "https://api.github.com/users/microcks/orgs",
+          "repos_url": "https://api.github.com/users/microcks/repos",
+          "events_url": "https://api.github.com/users/microcks/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/microcks/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/microcks/microcks",
+        "description": "The open source, cloud native tool for API Mocking and Testing. Microcks is a Cloud Native Computing Foundation incubating project 🚀",
+        "fork": false,
+        "url": "https://api.github.com/repos/microcks/microcks",
+        "forks_url": "https://api.github.com/repos/microcks/microcks/forks",
+        "keys_url": "https://api.github.com/repos/microcks/microcks/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/microcks/microcks/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/microcks/microcks/teams",
+        "hooks_url": "https://api.github.com/repos/microcks/microcks/hooks",
+        "issue_events_url": "https://api.github.com/repos/microcks/microcks/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/microcks/microcks/events",
+        "assignees_url": "https://api.github.com/repos/microcks/microcks/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/microcks/microcks/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/microcks/microcks/tags",
+        "blobs_url": "https://api.github.com/repos/microcks/microcks/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/microcks/microcks/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/microcks/microcks/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/microcks/microcks/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/microcks/microcks/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/microcks/microcks/languages",
+        "stargazers_url": "https://api.github.com/repos/microcks/microcks/stargazers",
+        "contributors_url": "https://api.github.com/repos/microcks/microcks/contributors",
+        "subscribers_url": "https://api.github.com/repos/microcks/microcks/subscribers",
+        "subscription_url": "https://api.github.com/repos/microcks/microcks/subscription",
+        "commits_url": "https://api.github.com/repos/microcks/microcks/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/microcks/microcks/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/microcks/microcks/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/microcks/microcks/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/microcks/microcks/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/microcks/microcks/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/microcks/microcks/merges",
+        "archive_url": "https://api.github.com/repos/microcks/microcks/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/microcks/microcks/downloads",
+        "issues_url": "https://api.github.com/repos/microcks/microcks/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/microcks/microcks/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/microcks/microcks/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/microcks/microcks/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/microcks/microcks/labels{/name}",
+        "releases_url": "https://api.github.com/repos/microcks/microcks/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/microcks/microcks/deployments",
+        "created_at": "2015-02-23T15:46:09Z",
+        "updated_at": "2026-07-05T19:22:19Z",
+        "pushed_at": "2026-07-05T19:22:22Z",
+        "git_url": "git://github.com/microcks/microcks.git",
+        "ssh_url": "git@github.com:microcks/microcks.git",
+        "clone_url": "https://github.com/microcks/microcks.git",
+        "svn_url": "https://github.com/microcks/microcks",
+        "homepage": "https://microcks.io",
+        "size": 9038,
+        "stargazers_count": 1975,
+        "watchers_count": 1975,
+        "language": "Java",
+        "has_issues": true,
+        "has_projects": false,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 344,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 60,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": true,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "api",
+          "api-testing",
+          "asyncapi",
+          "asyncapi-specification",
+          "cncf",
+          "cncf-project",
+          "event-driven",
+          "graphql",
+          "kubernetes",
+          "mock",
+          "mock-server",
+          "mocking",
+          "openapi",
+          "openapi-tooling",
+          "openapi3",
+          "openapi31",
+          "postman-collection",
+          "swagger",
+          "swagger2",
+          "testing"
+        ],
+        "visibility": "public",
+        "forks": 344,
+        "open_issues": 60,
+        "watchers": 1975,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 1975
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<a-comparative-study-of-load-balancing-algorithms-in-cloud-computing-environment>",
+        "type": "paper",
+        "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<supporting-multi-cloud-in-serverless-computing>",
+        "type": "paper",
+        "title": "Supporting Multi-Cloud in Serverless Computing",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<framework-for-cloud-computing-adoption-a-road-map-for-smes-to-cloud-migration>",
+        "type": "paper",
+        "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<application-of-selective-algorithm-for-effective-resource-provisioning-in-cloud-computing-environment>",
+        "type": "paper",
+        "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<phoenix-cloud-consolidating-different-computing-loads-on-shared-cluster-system-for-large-organization>",
+        "type": "paper",
+        "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<deepinspect-an-ai-powered-defect-detection-for-manufacturing-industries>",
+        "type": "paper",
+        "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<a-new-benchmark-dataset-for-texture-image-analysis-and-surface-defect-detection>",
+        "type": "paper",
+        "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+        "role": "parallel"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "A study of the link between cosmic rays and clouds with a cloud chamber at the CERN PS",
+      "abstract": "Recent satellite data have revealed a surprising correlation between galactic cosmic ray (GCR) intensity and the fraction of the Earth covered by clouds. If this correlation were to be established by a causal mechanism, it could provide a crucial step in understanding the long-sought mechanism connecting solar and climate variability. The Earth's climate seems to be remarkably sensitive to solar activity, but variations of the Sun's electromagnetic radiation appear to be too small to account for the observed climate variability. However, since the GCR intensity is strongly modulated by the sol",
+      "url": "http://arxiv.org/abs/physics/0104048v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "A study of the link between cosmic rays and clouds with a cloud chamber at the CERN PS",
+            "abstract": "Recent satellite data have revealed a surprising correlation between galactic cosmic ray (GCR) intensity and the fraction of the Earth covered by clouds. If this correlation were to be established by a causal mechanism, it could provide a crucial step in understanding the long-sought mechanism connecting solar and climate variability. The Earth's climate seems to be remarkably sensitive to solar activity, but variations of the Sun's electromagnetic radiation appear to be too small to account for the observed climate variability. However, since the GCR intensity is strongly modulated by the solar wind, a GCR-cloud link may provide a sufficient amplifying mechanism. Moreover if this connection were to be confirmed, it could have profound consequences for our understanding of the solar contributions to the current global warming. The CLOUD (Cosmics Leaving OUtdoor Droplets) project proposes to test experimentally the existence a link between cosmic rays and cloud formation, and to understand the microphysical mechanism. CLOUD plans to perform detailed laboratory measurements in a particle beam at CERN, where all the parameters can be precisely controlled and measured. The beam will pass through an expansion cloud chamber and a reactor chamber where the atmosphere is to be duplicated by moist air charged with selected aerosols and trace condensable vapours. An array of external detectors and mass spectrometers is used to analyse the physical and chemical characteristics of the aerosols and trace gases during beam exposure. Where beam effects are found, the experiment will seek to evaluate their significance in the atmosphere by incorporating them into aerosol and cloud models.",
+            "authors": [
+              "The Cloud Collaboration"
+            ],
+            "arxiv_id": "physics",
+            "url": "http://arxiv.org/abs/physics/0104048v1",
+            "published": "2001-04-16T19:12:19Z",
+            "year": 2001,
+            "source_query": "cloud computing"
+          }
+        ]
+      }
+    },
+    {
+      "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+      "abstract": "Cloud Computing is a new trend emerging in IT environment with huge requirements of infrastructure and resources. Load Balancing is an important aspect of cloud computing environment. Efficient load balancing scheme ensures efficient resource utilization by provisioning of resources to cloud users on demand basis in pay as you say manner. Load Balancing may even support prioritizing users by applying appropriate scheduling criteria. This paper presents various load balancing schemes in different cloud environment based on requirements specified in Service Level Agreement (SLA).",
+      "url": "http://arxiv.org/abs/1403.6918v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+            "abstract": "Cloud Computing is a new trend emerging in IT environment with huge requirements of infrastructure and resources. Load Balancing is an important aspect of cloud computing environment. Efficient load balancing scheme ensures efficient resource utilization by provisioning of resources to cloud users on demand basis in pay as you say manner. Load Balancing may even support prioritizing users by applying appropriate scheduling criteria. This paper presents various load balancing schemes in different cloud environment based on requirements specified in Service Level Agreement (SLA).",
+            "authors": [
+              "Mayanka Katyal",
+              "Atul Mishra"
+            ],
+            "arxiv_id": "1403.6918v1",
+            "url": "http://arxiv.org/abs/1403.6918v1",
+            "published": "2014-03-27T05:07:28Z",
+            "year": 2014,
+            "source_query": "cloud computing"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Supporting Multi-Cloud in Serverless Computing",
+      "abstract": "Serverless computing is a widely adopted cloud execution model composed of Function-as-a-Service (FaaS) and Backend-as-a-Service (BaaS) offerings. The increased level of abstraction makes vendor lock-in inherent to serverless computing, raising more concerns than previous cloud paradigms. Multi-cloud serverless is a promising emerging approach against vendor lock-in, yet multiple challenges must be overcome to tap its potential. First, we need to be aware of both the performance and cost of each FaaS provider. Second, a multi-cloud architecture must be proposed before deploying a multi-cloud w",
+      "url": "http://arxiv.org/abs/2209.09367v4",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Supporting Multi-Cloud in Serverless Computing",
+            "abstract": "Serverless computing is a widely adopted cloud execution model composed of Function-as-a-Service (FaaS) and Backend-as-a-Service (BaaS) offerings. The increased level of abstraction makes vendor lock-in inherent to serverless computing, raising more concerns than previous cloud paradigms. Multi-cloud serverless is a promising emerging approach against vendor lock-in, yet multiple challenges must be overcome to tap its potential. First, we need to be aware of both the performance and cost of each FaaS provider. Second, a multi-cloud architecture must be proposed before deploying a multi-cloud workflow. Domain-specific serverless offerings must then be integrated into the multi-cloud architecture to improve performance or save costs. Moreover, dealing with serverless offerings from multiple providers is challenging. Finally, we require workload portability support for serverless multi-cloud.\n  In this paper, we present a multi-cloud library for cross-serverless offerings. We develop the End Analysis System (EAS) to support comparison among public FaaS providers in terms of performance and cost. Moreover, we design proof-of-concept multi-cloud architectures with domain-specific serverless offerings to alleviate problems such as data gravity. Finally, we deploy workloads on these architectures to evaluate several public FaaS offerings.",
+            "authors": [
+              "Haidong Zhao",
+              "Zakaria Benomar",
+              "Tobias Pfandzelter",
+              "Nikolaos Georgantas"
+            ],
+            "arxiv_id": "2209.09367v4",
+            "url": "http://arxiv.org/abs/2209.09367v4",
+            "published": "2022-09-19T22:21:11Z",
+            "year": 2022,
+            "source_query": "cloud computing"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+      "abstract": "Small and Medium size Enterprises (SME) are considered as a backbone of many developing and developed economies of the world; they are the driving force to any major economy across the globe. Through Cloud Computing firms outsource their entire information technology (IT) process while concentrating more on their core business. It allows businesses to cut down heavy cost incurred over IT infrastructure without losing focus on customer needs. However, Cloud industry to an extent has struggled to grow among SMEs due to the reluctance and concerns expressed by them. Throughout the course of this ",
+      "url": "http://arxiv.org/abs/1601.01608v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+            "abstract": "Small and Medium size Enterprises (SME) are considered as a backbone of many developing and developed economies of the world; they are the driving force to any major economy across the globe. Through Cloud Computing firms outsource their entire information technology (IT) process while concentrating more on their core business. It allows businesses to cut down heavy cost incurred over IT infrastructure without losing focus on customer needs. However, Cloud industry to an extent has struggled to grow among SMEs due to the reluctance and concerns expressed by them. Throughout the course of this study several interviews were conducted and the literature was reviewed to understand how cloud providers offer services and what challenges SMEs are facing. The study identified issues like cloud knowledge, interoperability, security and contractual concerns to be hindering SMEs adoption of cloud services. From the interviews common practices followed by cloud vendors and what concerns SMEs have were identified as a basis for a cloud framework which will bridge gaps between cloud vendors and SMEs. A stepwise framework for cloud adoption is formulated which identifies and provides recommendation to four most predominant challenges which are hurting cloud industry and taking SMEs away from cloud computing, as well as guide SMEs aiding in successful cloud adoption. Moreover, this framework streamlines the cloud adoption process for SMEs by removing ambiguity in regards to fundamentals associated with their organisation and cloud adoption process.",
+            "authors": [
+              "Nabeel Khan",
+              "Adil Al-Yasiri"
+            ],
+            "arxiv_id": "1601.01608v1",
+            "url": "http://arxiv.org/abs/1601.01608v1",
+            "published": "2016-01-07T17:21:41Z",
+            "year": 2016,
+            "source_query": "cloud computing"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+      "abstract": "Modern day continued demand for resource hungry services and applications in IT sector has led to development of Cloud computing. Cloud computing environment involves high cost infrastructure on one hand and need high scale computational resources on the other hand. These resources need to be provisioned (allocation and scheduling) to the end users in most efficient manner so that the tremendous capabilities of cloud are utilized effectively and efficiently. In this paper we discuss a selective algorithm for allocation of cloud resources to end-users on-demand basis. This algorithm is based on",
+      "url": "http://arxiv.org/abs/1403.2914v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+            "abstract": "Modern day continued demand for resource hungry services and applications in IT sector has led to development of Cloud computing. Cloud computing environment involves high cost infrastructure on one hand and need high scale computational resources on the other hand. These resources need to be provisioned (allocation and scheduling) to the end users in most efficient manner so that the tremendous capabilities of cloud are utilized effectively and efficiently. In this paper we discuss a selective algorithm for allocation of cloud resources to end-users on-demand basis. This algorithm is based on min-min and max-min algorithms. These are two conventional task scheduling algorithm. The selective algorithm uses certain heuristics to select between the two algorithms so that overall makespan of tasks on the machines is minimized. The tasks are scheduled on machines in either space shared or time shared manner. We evaluate our provisioning heuristics using a cloud simulator, called CloudSim. We also compared our approach to the statistics obtained when provisioning of resources was done in First-Cum-First- Serve(FCFS) manner. The experimental results show that overall makespan of tasks on given set of VMs minimizes significantly in different scenarios.",
+            "authors": [
+              "Mayanka Katyal",
+              "Atul Mishra"
+            ],
+            "arxiv_id": "1403.2914v1",
+            "url": "http://arxiv.org/abs/1403.2914v1",
+            "published": "2014-03-12T12:50:04Z",
+            "year": 2014,
+            "source_query": "cloud computing"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+      "abstract": "Different departments of a large organization often run dedicated cluster systems for different computing loads, like HPC (high performance computing) jobs or Web service applications. In this paper, we have designed and implemented a cloud management system software Phoenix Cloud to consolidate heterogeneous workloads from different departments affiliated to the same organization on the shared cluster system. We have also proposed cooperative resource provisioning and management policies for a large organization and its affiliated departments, running HPC jobs and Web service applications, to",
+      "url": "http://arxiv.org/abs/0906.1346v6",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+            "abstract": "Different departments of a large organization often run dedicated cluster systems for different computing loads, like HPC (high performance computing) jobs or Web service applications. In this paper, we have designed and implemented a cloud management system software Phoenix Cloud to consolidate heterogeneous workloads from different departments affiliated to the same organization on the shared cluster system. We have also proposed cooperative resource provisioning and management policies for a large organization and its affiliated departments, running HPC jobs and Web service applications, to share the consolidated cluster system. The experiments show that in comparison with the case that each department operates its dedicated cluster system, Phoenix Cloud significantly decreases the scale of the required cluster system for a large organization, improves the benefit of the scientific computing department, and at the same time provisions enough resources to the other department running Web services with varying loads.",
+            "authors": [
+              "Jianfeng Zhan",
+              "Lei Wang",
+              "Bibo Tu",
+              "Yong Li",
+              "Peng Wang",
+              "Wei Zhou",
+              "Dan Meng"
+            ],
+            "arxiv_id": "0906.1346v6",
+            "url": "http://arxiv.org/abs/0906.1346v6",
+            "published": "2009-06-07T10:15:28Z",
+            "year": 2009,
+            "source_query": "cloud computing"
+          }
+        ]
+      }
+    },
+    {
+      "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+      "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. I",
+      "url": "http://arxiv.org/abs/2311.03725v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+            "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. It harnesses extensive datasets of annotated images to discern complex defect patterns. This integrated system seamlessly fits into production workflows, thereby boosting efficiency and elevating product quality. As a result, it reduces waste and operational costs, ultimately enhancing market competitiveness.",
+            "authors": [
+              "Arti Kumbhar",
+              "Amruta Chougule",
+              "Priya Lokhande",
+              "Saloni Navaghane",
+              "Aditi Burud",
+              "Saee Nimbalkar"
+            ],
+            "arxiv_id": "2311.03725v2",
+            "url": "http://arxiv.org/abs/2311.03725v2",
+            "published": "2023-11-07T04:59:43Z",
+            "year": 2023,
+            "source_query": "defect detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+      "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to",
+      "url": "http://arxiv.org/abs/1906.11561v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+            "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+            "authors": [
+              "Shervan Fekri-Ershad"
+            ],
+            "arxiv_id": "1906.11561v1",
+            "url": "http://arxiv.org/abs/1906.11561v1",
+            "published": "2019-06-27T11:36:29Z",
+            "year": 2019,
+            "source_query": "defect detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Cloud Computing",
+      "abstract": "",
+      "url": "https://doi.org/10.1016/b978-0-12-404627-6.00013-0",
+      "doi": "10.1016/b978-0-12-404627-6.00013-0",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "Cloud Computing",
+            "doi": "10.1016/b978-0-12-404627-6.00013-0",
+            "DOI": "10.1016/b978-0-12-404627-6.00013-0",
+            "authors": [],
+            "author": [],
+            "venue": "Cloud Computing",
+            "container-title": [
+              "Cloud Computing"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.1016/b978-0-12-404627-6.00013-0",
+            "URL": "https://doi.org/10.1016/b978-0-12-404627-6.00013-0",
+            "year": 2013,
+            "publication_year": 2013,
+            "citation_count": 0,
+            "_crossref_type": "book-chapter"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Cloud Computing Model",
+      "abstract": "",
+      "url": "https://doi.org/10.1017/9781316941386.005",
+      "doi": "10.1017/9781316941386.005",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "Cloud Computing Model",
+            "doi": "10.1017/9781316941386.005",
+            "DOI": "10.1017/9781316941386.005",
+            "authors": [],
+            "author": [],
+            "venue": "Cloud Computing",
+            "container-title": [
+              "Cloud Computing"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.1017/9781316941386.005",
+            "URL": "https://doi.org/10.1017/9781316941386.005",
+            "year": 2017,
+            "publication_year": 2017,
+            "citation_count": 1,
+            "_crossref_type": "book-chapter"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Cloud Computing Services",
+      "abstract": "",
+      "url": "https://doi.org/10.1017/9781316941386.006",
+      "doi": "10.1017/9781316941386.006",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "Cloud Computing Services",
+            "doi": "10.1017/9781316941386.006",
+            "DOI": "10.1017/9781316941386.006",
+            "authors": [],
+            "author": [],
+            "venue": "Cloud Computing",
+            "container-title": [
+              "Cloud Computing"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.1017/9781316941386.006",
+            "URL": "https://doi.org/10.1017/9781316941386.006",
+            "year": 2017,
+            "publication_year": 2017,
+            "citation_count": 0,
+            "_crossref_type": "book-chapter"
+          }
+        ]
+      }
+    },
+    {
+      "title": "IEEE Cloud Computing Call for Papers Connecting Fog and Cloud Computing",
+      "abstract": "",
+      "url": "https://doi.org/10.1109/mcc.2016.83",
+      "doi": "10.1109/mcc.2016.83",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "IEEE Cloud Computing Call for Papers Connecting Fog and Cloud Computing",
+            "doi": "10.1109/mcc.2016.83",
+            "DOI": "10.1109/mcc.2016.83",
+            "authors": [],
+            "author": [],
+            "venue": "IEEE Cloud Computing",
+            "container-title": [
+              "IEEE Cloud Computing"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.1109/mcc.2016.83",
+            "URL": "https://doi.org/10.1109/mcc.2016.83",
+            "year": 2016,
+            "publication_year": 2016,
+            "citation_count": 2,
+            "_crossref_type": "journal-article"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Cloud Computing Conference 2010",
+      "abstract": "",
+      "url": "https://doi.org/10.4016/15181.01",
+      "doi": "10.4016/15181.01",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "Cloud Computing Conference 2010",
+            "doi": "10.4016/15181.01",
+            "DOI": "10.4016/15181.01",
+            "authors": [
+              "Cloud Slam"
+            ],
+            "author": [
+              {
+                "given": "Cloud",
+                "family": "Slam",
+                "sequence": "first",
+                "affiliation": [],
+                "role": [
+                  {
+                    "role": "author",
+                    "vocabulary": "crossref"
+                  }
+                ]
+              }
+            ],
+            "venue": "SciVee",
+            "container-title": [
+              "SciVee"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.4016/15181.01",
+            "URL": "https://doi.org/10.4016/15181.01",
+            "year": 2009,
+            "publication_year": 2009,
+            "citation_count": 0,
+            "_crossref_type": "dataset"
+          }
+        ]
+      }
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on cloud computing load balancing, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1403.6918v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Cloud Computing is a new trend emerging in IT environment with huge requirements of infrastructure and resources. Load Balancing is an important aspect of cloud computing environment. Efficient load balancing scheme ensures efficient resource utilization by provisioning of resources to cloud users on demand basis in pay as you say manner. Load Balancing may even support prioritizing users by applying appropriate scheduling criteria. This paper presents various load balancing schemes in different cloud environment based on requirements specified in Service Level Agreement (SLA)."
+    },
+    {
+      "title": "Supporting Multi-Cloud in Serverless Computing",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses serverless cloud computing, but no connection to defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2209.09367v4",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Serverless computing is a widely adopted cloud execution model composed of Function-as-a-Service (FaaS) and Backend-as-a-Service (BaaS) offerings. The increased level of abstraction makes vendor lock-in inherent to serverless computing, raising more concerns than previous cloud paradigms. Multi-cloud serverless is a promising emerging approach against vendor lock-in, yet multiple challenges must be overcome to tap its potential. First, we need to be aware of both the performance and cost of each FaaS provider. Second, a multi-cloud architecture must be proposed before deploying a multi-cloud w"
+    },
+    {
+      "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers cloud migration for SMEs, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1601.01608v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Small and Medium size Enterprises (SME) are considered as a backbone of many developing and developed economies of the world; they are the driving force to any major economy across the globe. Through Cloud Computing firms outsource their entire information technology (IT) process while concentrating more on their core business. It allows businesses to cut down heavy cost incurred over IT infrastructure without losing focus on customer needs. However, Cloud industry to an extent has struggled to grow among SMEs due to the reluctance and concerns expressed by them. Throughout the course of this "
+    },
+    {
+      "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses cloud resource provisioning, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1403.2914v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Modern day continued demand for resource hungry services and applications in IT sector has led to development of Cloud computing. Cloud computing environment involves high cost infrastructure on one hand and need high scale computational resources on the other hand. These resources need to be provisioned (allocation and scheduling) to the end users in most efficient manner so that the tremendous capabilities of cloud are utilized effectively and efficiently. In this paper we discuss a selective algorithm for allocation of cloud resources to end-users on-demand basis. This algorithm is based on"
+    },
+    {
+      "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on cloud cluster systems, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/0906.1346v6",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Different departments of a large organization often run dedicated cluster systems for different computing loads, like HPC (high performance computing) jobs or Web service applications. In this paper, we have designed and implemented a cloud management system software Phoenix Cloud to consolidate heterogeneous workloads from different departments affiliated to the same organization on the shared cluster system. We have also proposed cooperative resource provisioning and management policies for a large organization and its affiliated departments, running HPC jobs and Web service applications, to"
+    },
+    {
+      "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "defect detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses AI for defect detection but in manufacturing, not transmission lines or cloud computing.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2311.03725v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. I"
+    },
+    {
+      "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "defect detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a dataset for surface defect detection but not specific to transmission lines or cloud computing.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1906.11561v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to"
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "Cloud Computing",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "none",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Only mentions cloud computing without any connection to transmission line defect detection.",
+      "doi": "10.1016/b978-0-12-404627-6.00013-0",
+      "url": "https://doi.org/10.1016/b978-0-12-404627-6.00013-0",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Cloud Computing Model",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "none",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Generic cloud computing model with no relevance to defect detection or transmission lines.",
+      "doi": "10.1017/9781316941386.005",
+      "url": "https://doi.org/10.1017/9781316941386.005",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Cloud Computing Services",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "none",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses cloud services but lacks any link to transmission line defect detection.",
+      "doi": "10.1017/9781316941386.006",
+      "url": "https://doi.org/10.1017/9781316941386.006",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "IEEE Cloud Computing Call for Papers Connecting Fog and Cloud Computing",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "none",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "A call for papers on fog and cloud computing, not directly addressing defect detection or transmission lines.",
+      "doi": "10.1109/mcc.2016.83",
+      "url": "https://doi.org/10.1109/mcc.2016.83",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on cloud computing load balancing, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1403.6918v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Cloud Computing is a new trend emerging in IT environment with huge requirements of infrastructure and resources. Load Balancing is an important aspect of cloud computing environment. Efficient load balancing scheme ensures efficient resource utilization by provisioning of resources to cloud users on demand basis in pay as you say manner. Load Balancing may even support prioritizing users by applying appropriate scheduling criteria. This paper presents various load balancing schemes in different cloud environment based on requirements specified in Service Level Agreement (SLA)."
+    },
+    {
+      "title": "Supporting Multi-Cloud in Serverless Computing",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses serverless multi-cloud, unrelated to defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2209.09367v4",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Serverless computing is a widely adopted cloud execution model composed of Function-as-a-Service (FaaS) and Backend-as-a-Service (BaaS) offerings. The increased level of abstraction makes vendor lock-in inherent to serverless computing, raising more concerns than previous cloud paradigms. Multi-cloud serverless is a promising emerging approach against vendor lock-in, yet multiple challenges must be overcome to tap its potential. First, we need to be aware of both the performance and cost of each FaaS provider. Second, a multi-cloud architecture must be proposed before deploying a multi-cloud w"
+    },
+    {
+      "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers cloud migration for SMEs, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1601.01608v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Small and Medium size Enterprises (SME) are considered as a backbone of many developing and developed economies of the world; they are the driving force to any major economy across the globe. Through Cloud Computing firms outsource their entire information technology (IT) process while concentrating more on their core business. It allows businesses to cut down heavy cost incurred over IT infrastructure without losing focus on customer needs. However, Cloud industry to an extent has struggled to grow among SMEs due to the reluctance and concerns expressed by them. Throughout the course of this "
+    },
+    {
+      "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on resource provisioning in cloud, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1403.2914v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Modern day continued demand for resource hungry services and applications in IT sector has led to development of Cloud computing. Cloud computing environment involves high cost infrastructure on one hand and need high scale computational resources on the other hand. These resources need to be provisioned (allocation and scheduling) to the end users in most efficient manner so that the tremendous capabilities of cloud are utilized effectively and efficiently. In this paper we discuss a selective algorithm for allocation of cloud resources to end-users on-demand basis. This algorithm is based on"
+    },
+    {
+      "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses cloud cluster consolidation, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/0906.1346v6",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Different departments of a large organization often run dedicated cluster systems for different computing loads, like HPC (high performance computing) jobs or Web service applications. In this paper, we have designed and implemented a cloud management system software Phoenix Cloud to consolidate heterogeneous workloads from different departments affiliated to the same organization on the shared cluster system. We have also proposed cooperative resource provisioning and management policies for a large organization and its affiliated departments, running HPC jobs and Web service applications, to"
+    },
+    {
+      "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "defect detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses AI for defect detection in manufacturing, not cloud computing or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2311.03725v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. I"
+    },
+    {
+      "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "defect detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on surface defect detection datasets, not cloud computing or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1906.11561v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to"
+    }
+  ],
+  "dataset_candidates": [],
+  "repo_candidates": [],
+  "baseline_candidates": [],
+  "parallel_candidates": [
+    {
+      "title": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on cloud computing load balancing, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1403.6918v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Cloud Computing is a new trend emerging in IT environment with huge requirements of infrastructure and resources. Load Balancing is an important aspect of cloud computing environment. Efficient load balancing scheme ensures efficient resource utilization by provisioning of resources to cloud users on demand basis in pay as you say manner. Load Balancing may even support prioritizing users by applying appropriate scheduling criteria. This paper presents various load balancing schemes in different cloud environment based on requirements specified in Service Level Agreement (SLA).",
+      "role": "parallel",
+      "why_relevant": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment addresses the same method+object spectrum via a different specific approach (matched: ['cloud computing'], unmatched: ['defect detection', 'transmission line', 'defect', 'detection']).",
+      "matched_topic_axes": [
+        "cloud computing"
+      ],
+      "unmatched_topic_axes": [
+        "defect detection",
+        "transmission line",
+        "defect",
+        "detection"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Supporting Multi-Cloud in Serverless Computing",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses serverless cloud computing, but no connection to defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2209.09367v4",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Serverless computing is a widely adopted cloud execution model composed of Function-as-a-Service (FaaS) and Backend-as-a-Service (BaaS) offerings. The increased level of abstraction makes vendor lock-in inherent to serverless computing, raising more concerns than previous cloud paradigms. Multi-cloud serverless is a promising emerging approach against vendor lock-in, yet multiple challenges must be overcome to tap its potential. First, we need to be aware of both the performance and cost of each FaaS provider. Second, a multi-cloud architecture must be proposed before deploying a multi-cloud w",
+      "role": "parallel",
+      "why_relevant": "Supporting Multi-Cloud in Serverless Computing addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['cloud computing', 'defect detection', 'transmission line', 'defect', 'detection']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "cloud computing",
+        "defect detection",
+        "transmission line",
+        "defect",
+        "detection"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Framework for cloud computing adoption: A road map for Smes to cloud migration",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers cloud migration for SMEs, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1601.01608v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Small and Medium size Enterprises (SME) are considered as a backbone of many developing and developed economies of the world; they are the driving force to any major economy across the globe. Through Cloud Computing firms outsource their entire information technology (IT) process while concentrating more on their core business. It allows businesses to cut down heavy cost incurred over IT infrastructure without losing focus on customer needs. However, Cloud industry to an extent has struggled to grow among SMEs due to the reluctance and concerns expressed by them. Throughout the course of this ",
+      "role": "parallel",
+      "why_relevant": "Framework for cloud computing adoption: A road map for Smes to cloud migration addresses the same method+object spectrum via a different specific approach (matched: ['cloud computing'], unmatched: ['defect detection', 'transmission line', 'defect', 'detection']).",
+      "matched_topic_axes": [
+        "cloud computing"
+      ],
+      "unmatched_topic_axes": [
+        "defect detection",
+        "transmission line",
+        "defect",
+        "detection"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses cloud resource provisioning, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1403.2914v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Modern day continued demand for resource hungry services and applications in IT sector has led to development of Cloud computing. Cloud computing environment involves high cost infrastructure on one hand and need high scale computational resources on the other hand. These resources need to be provisioned (allocation and scheduling) to the end users in most efficient manner so that the tremendous capabilities of cloud are utilized effectively and efficiently. In this paper we discuss a selective algorithm for allocation of cloud resources to end-users on-demand basis. This algorithm is based on",
+      "role": "parallel",
+      "why_relevant": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment addresses the same method+object spectrum via a different specific approach (matched: ['cloud computing'], unmatched: ['defect detection', 'transmission line', 'defect', 'detection']).",
+      "matched_topic_axes": [
+        "cloud computing"
+      ],
+      "unmatched_topic_axes": [
+        "defect detection",
+        "transmission line",
+        "defect",
+        "detection"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "cloud computing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on cloud cluster systems, not defect detection or transmission lines.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/0906.1346v6",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Different departments of a large organization often run dedicated cluster systems for different computing loads, like HPC (high performance computing) jobs or Web service applications. In this paper, we have designed and implemented a cloud management system software Phoenix Cloud to consolidate heterogeneous workloads from different departments affiliated to the same organization on the shared cluster system. We have also proposed cooperative resource provisioning and management policies for a large organization and its affiliated departments, running HPC jobs and Web service applications, to",
+      "role": "parallel",
+      "why_relevant": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['cloud computing', 'defect detection', 'transmission line', 'defect', 'detection']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "cloud computing",
+        "defect detection",
+        "transmission line",
+        "defect",
+        "detection"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "defect detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses AI for defect detection but in manufacturing, not transmission lines or cloud computing.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2311.03725v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Utilizing Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and Generative Adversarial Networks (GANs), our system introduces an innovative approach to defect detection in manufacturing. This technology excels in precisely identifying faults by extracting intricate details from product photographs, utilizing RNNs to detect evolving errors and generating synthetic defect data to bolster the model's robustness and adaptability across various defect scenarios. The project leverages a deep learning framework to automate real-time flaw detection in the manufacturing process. I",
+      "role": "parallel",
+      "why_relevant": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries addresses the same method+object spectrum via a different specific approach (matched: ['defect detection', 'defect', 'detection'], unmatched: ['cloud computing', 'transmission line']).",
+      "matched_topic_axes": [
+        "defect detection",
+        "defect",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "cloud computing",
+        "transmission line"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "defect detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a dataset for surface defect detection but not specific to transmission lines or cloud computing.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1906.11561v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to",
+      "role": "parallel",
+      "why_relevant": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection addresses the same method+object spectrum via a different specific approach (matched: ['defect detection', 'defect', 'detection'], unmatched: ['cloud computing', 'transmission line']).",
+      "matched_topic_axes": [
+        "defect detection",
+        "defect",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "cloud computing",
+        "transmission line"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 7,
+      "n_weak": 11,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "dataset_extractions_tried": 7,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 0,
+    "parallel_n": 7,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于云计算的输电线路缺陷检测平台",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 0,
+    "low_bar_status": null,
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": []
+  },
+  "filter_results": {
+    "total": 21,
+    "kept": 13,
+    "dropped": 8,
+    "dropped_items": [
+      {
+        "title": "ubicloud/ubicloud",
+        "reason": "This is a GitHub repository for an open-source cloud platform, not an academic paper with research content, authors, or publication venue."
+      },
+      {
+        "title": "skypilot-org/skypilot",
+        "reason": "This is a GitHub repository for an open-source tool to manage AI workloads, not an academic paper with research content, authors, or publication venue."
+      },
+      {
+        "title": "dgkanatsios/CKAD-exercises",
+        "reason": "This is a GitHub repository containing exercises for a certification exam, not an academic paper with research content, authors, or publication venue."
+      },
+      {
+        "title": "apache/cloudstack",
+        "reason": "This is a GitHub repository for an open-source cloud computing platform, not an academic paper with research content, authors, or publication venue."
+      },
+      {
+        "title": "joseadanof/awesome-cloudnative-trainings",
+        "reason": "This is a GitHub repository listing training resources, not an academic paper with research content, authors, or publication venue."
+      },
+      {
+        "title": "wasmCloud/wasmCloud",
+        "reason": "This is a GitHub repository for an open-source CNCF project, not an academic paper with research content, authors, or publication venue."
+      },
+      {
+        "title": "shellhub-io/shellhub",
+        "reason": "This is a GitHub repository for a remote access tool, not an academic paper with research content, authors, or publication venue."
+      },
+      {
+        "title": "microcks/microcks",
+        "reason": "This is a GitHub repository for an open-source API mocking tool, not an academic paper with research content, authors, or publication venue."
+      }
+    ]
+  },
+  "seed_papers": [],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "not_recommended",
+    "score": 15,
+    "reason": "无baseline论文，7篇Parallel论文均为通用云计算主题（如负载均衡、Serverless、迁移），与输电线路缺陷检测无直接关联；无数据集和代码仓库，题目宽泛，无法支撑毕业。",
+    "100_plus_formula": {
+      "baseline_weight": 0,
+      "module_weights": [],
+      "estimated_total": 0,
+      "assessment": "不足"
+    },
+    "degradation_paths": [
+      "寻找至少2篇输电线路缺陷检测的baseline论文",
+      "构建或获取相关数据集（如绝缘子、导线缺陷图像）",
+      "开发代码仓库并验证平台可行性"
+    ]
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "基于负载均衡与资源优化提升缺陷检测平台性能",
+        "expected_gain": "提高平台处理输电线路图像数据的效率，降低延迟，增强可扩展性",
+        "difficulty": "中",
+        "action_items": [
+          "研究并实现适用于图像处理任务的负载均衡算法",
+          "设计资源动态调配机制，优化GPU/CPU资源分配",
+          "在云环境下测试不同负载均衡策略对缺陷检测吞吐量的影响"
+        ],
+        "ref_parallel": "A Comparative Study of Load Balancing Algorithms in Cloud Computing Environment"
+      },
+      {
+        "direction": "利用多云/无服务器架构降低平台锁定风险并提升弹性",
+        "expected_gain": "避免单一云供应商依赖，提高平台容错性和成本效益",
+        "difficulty": "高",
+        "action_items": [
+          "设计支持多云部署的缺陷检测服务架构",
+          "采用无服务器函数处理图像预处理和轻量级检测任务",
+          "实现跨云数据同步与任务调度机制"
+        ],
+        "ref_parallel": "Supporting Multi-Cloud in Serverless Computing"
+      },
+      {
+        "direction": "借鉴中小企业云迁移框架，优化平台部署与运维流程",
+        "expected_gain": "简化平台在电力企业的落地过程，降低迁移成本",
+        "difficulty": "低",
+        "action_items": [
+          "制定输电线路缺陷检测平台的云迁移路线图",
+          "开发自动化部署脚本和配置管理工具",
+          "提供面向电力企业的云服务适配方案"
+        ],
+        "ref_parallel": "Framework for cloud computing adoption: A road map for Smes to cloud migration"
+      },
+      {
+        "direction": "应用选择性资源预配算法，提升缺陷检测任务响应速度",
+        "expected_gain": "减少任务排队时间，提高实时检测能力",
+        "difficulty": "中",
+        "action_items": [
+          "分析缺陷检测任务的计算特征和资源需求模式",
+          "设计基于历史数据的资源预配策略",
+          "实现资源预配与任务调度联动模块"
+        ],
+        "ref_parallel": "Application of Selective Algorithm for Effective Resource Provisioning in Cloud Computing Environment"
+      },
+      {
+        "direction": "融合异构负载管理技术，统一处理缺陷检测与常规业务",
+        "expected_gain": "提高集群资源利用率，降低运维复杂度",
+        "difficulty": "高",
+        "action_items": [
+          "设计支持HPC与Web服务混合部署的云管理平台",
+          "实现缺陷检测任务与常规业务的任务优先级调度",
+          "评估共享集群对检测实时性的影响"
+        ],
+        "ref_parallel": "Phoenix Cloud: Consolidating Different Computing Loads on Shared Cluster System for Large Organization"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "退化为基于传统单机或边缘计算的输电线路缺陷检测系统",
+        "trade_off": "失去云计算的弹性扩展和集中管理优势，但降低网络依赖和云成本",
+        "survival_rate": "高"
+      },
+      {
+        "path": "退化为仅关注缺陷检测算法本身，忽略云平台特性",
+        "trade_off": "创新点减少，但可专注于算法精度提升，降低系统集成风险",
+        "survival_rate": "极高"
+      },
+      {
+        "path": "退化为纯综述或对比研究，不涉及实际平台构建",
+        "trade_off": "实验工作量大幅减少，但论文深度和实用性下降",
+        "survival_rate": "中"
+      }
+    ],
+    "risk_mitigation": [
+      "尽早确定云平台选型，避免后期迁移成本过高",
+      "采用模块化设计，使缺陷检测算法与云基础设施解耦",
+      "准备离线测试环境，降低对实时云资源的依赖",
+      "定期与电力行业专家沟通，确保需求理解准确",
+      "预留充足时间进行云环境下的性能调优和故障排查"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "无创新点，未发现真实研究gap，题目宽泛且无具体问题定义。"
+      },
+      {
+        "dimension": "D2",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "baseline完全缺失，无任何对比方法。"
+      },
+      {
+        "dimension": "D3",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "baseline=0，parallel论文与主题无关，无数据集和代码，证据严重不足。"
+      },
+      {
+        "dimension": "D4",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "未定义三个问题，无工作包，论证完全缺失。"
+      },
+      {
+        "dimension": "D5",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "叙事为空，无自洽内容，存在过度宣传嫌疑（题目与内容脱节）。"
+      }
+    ],
+    "overall_verdict": "BLOCK",
+    "fabrication_alerts": [
+      "无创新点，但parallel论文与主题无关，可能误导审稿人"
+    ],
+    "risks_identified": [
+      "baseline完全缺失，无法支撑毕业",
+      "无数据集和代码，无法复现",
+      "题目宽泛，缺乏聚焦"
+    ]
+  },
+  "narrative_revision_count": 1,
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T08:13:36Z",
+      "input_summary": {
+        "topic": "基于云计算的输电线路缺陷检测平台"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:13:36Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T08:13:40Z",
+      "input_summary": {
+        "topic_len": 16
+      },
+      "output_summary": {
+        "n_method": 2,
+        "n_object": 2,
+        "domain": "energy_power"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:13:40Z",
+      "elapsed_s": 4.258
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T08:13:40Z",
+      "input_summary": {
+        "topic_len": 16,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:13:40Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T08:13:40Z",
+      "input_summary": {
+        "topic_len": 16,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 21,
+        "raw_tools": [
+          "arxiv",
+          "crossref",
+          "github"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        },
+        {
+          "tool": "crossref",
+          "n": 8
+        },
+        {
+          "tool": "github",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T08:14:33Z",
+      "elapsed_s": 52.9
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T08:14:33Z",
+      "input_summary": {
+        "n_candidates": 21
+      },
+      "output_summary": {
+        "kept": 13,
+        "dropped": 8,
+        "pre_filter_keep": 13,
+        "pre_filter_drop": 0,
+        "llm_judged": 8
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 13,
+          "pre_drop": 0,
+          "gray_area": 8
+        },
+        {
+          "tool": "re13_quality_filter.llm",
+          "batch_size": 8
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:14:39Z",
+      "elapsed_s": 5.895
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T08:14:39Z",
+      "input_summary": {
+        "n_candidates": 13,
+        "topic_len": 16,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 11,
+        "n_reject": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:14:46Z",
+      "elapsed_s": 6.495
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T08:14:46Z",
+      "input_summary": {
+        "n_papers": 7,
+        "n_weak": 11,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:14:46Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T08:14:46Z",
+      "input_summary": {
+        "n_verified": 7,
+        "n_seeds": 0,
+        "seed_titles": []
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "reason": "no_seeds_with_ids"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "ended_at": "2026-07-06T08:14:46Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T08:14:46Z",
+      "input_summary": {
+        "n_candidates": 13,
+        "topic_len": 16,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 11,
+        "n_reject": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:14:52Z",
+      "elapsed_s": 6.769
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T08:14:52Z",
+      "input_summary": {
+        "n_papers": 7,
+        "n_weak": 11,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:14:52Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T08:15:01Z",
+      "input_summary": {
+        "n_papers": 8
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 7,
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:15:01Z",
+      "elapsed_s": 9.061
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T08:15:01Z",
+      "input_summary": {
+        "papers": 7
+      },
+      "output_summary": {
+        "nodes": 7,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:15:01Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T08:15:01Z",
+      "input_summary": {
+        "n_verified": 7
+      },
+      "output_summary": {
+        "n_baseline": 0,
+        "n_parallel": 7,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:15:01Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T08:15:06Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "output_summary": {
+        "verdict": "not_recommended",
+        "score": 15
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:15:06Z",
+      "elapsed_s": 4.803
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T08:15:18Z",
+      "input_summary": {
+        "feasibility": "not_recommended"
+      },
+      "output_summary": {
+        "n_paths": 5
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:15:18Z",
+      "elapsed_s": 12.265
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T08:15:24Z",
+      "input_summary": {
+        "n_innovation": 0,
+        "n_packages": 0
+      },
+      "output_summary": {
+        "overall_verdict": "BLOCK"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:15:24Z",
+      "elapsed_s": 6.002
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T08:15:24Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:15:24Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T08:15:24Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于云计算的输电线路缺陷检测平台",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "low_bar_status": null,
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:15:24Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

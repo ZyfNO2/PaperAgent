@@ -1,9 +1,7 @@
 """Loop 3: SSE Stream endpoint test — verify endpoint structure and helpers."""
 from __future__ import annotations
 
-import json
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from pathlib import Path
 import tempfile
 

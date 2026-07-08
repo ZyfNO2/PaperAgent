@@ -1,0 +1,667 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T11:10:12Z",
+    "input_summary": {
+      "topic": "面向自动驾驶中多模态融合感知算法的攻击和防御"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:10:12Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T11:10:15Z",
+    "input_summary": {
+      "topic_len": 22
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "robotics_control"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:10:15Z",
+    "elapsed_s": 2.775
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T11:10:15Z",
+    "input_summary": {
+      "topic_len": 22,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:10:15Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T11:10:15Z",
+    "input_summary": {
+      "topic_len": 22,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "openalex",
+        "github",
+        "arxiv",
+        "semantic_scholar"
+      ],
+      "per_adapter": {
+        "arxiv": 36,
+        "openalex": 25,
+        "github": 0,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "github",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 25
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 36
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T11:10:53Z",
+    "elapsed_s": 38.296
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T11:10:53Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 31,
+      "dropped": 0,
+      "pre_filter_keep": 31,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 31,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:10:53Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T11:10:53Z",
+    "input_summary": {
+      "n_candidates": 31,
+      "topic_len": 22,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 17,
+      "n_reject": 10
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:10:59Z",
+    "elapsed_s": 5.598
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T11:10:59Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 17,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:10:59Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T11:10:59Z",
+    "input_summary": {
+      "n_verified": 3,
+      "n_seeds": 2,
+      "seed_titles": [
+        "Adversarial Attacks on Camera-LiDAR Models for 3D Car Detect",
+        "Adversarial Attack on Radar-based Environment Perception Sys"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 2,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Adversarial Attacks on Camera-LiDAR Models for 3D Car Detect",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Adversarial Attack on Radar-based Environment Perception Sys",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      }
+    ],
+    "ended_at": "2026-07-08T11:10:59Z",
+    "elapsed_s": 0.65
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T11:10:59Z",
+    "input_summary": {
+      "n_candidates": 3,
+      "topic_len": 22,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 1,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:04Z",
+    "elapsed_s": 4.937
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T11:11:04Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 17,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:11:04Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T11:11:09Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 3,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:09Z",
+    "elapsed_s": 5.299
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T11:11:09Z",
+    "input_summary": {
+      "papers": 3
+    },
+    "output_summary": {
+      "nodes": 3,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:11:09Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T11:11:09Z",
+    "input_summary": {
+      "n_verified": 3
+    },
+    "output_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:11:09Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T11:11:13Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:13Z",
+    "elapsed_s": 3.321
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T11:11:21Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:21Z",
+    "elapsed_s": 8.268
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T11:11:35Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:35Z",
+    "elapsed_s": 14.074
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T11:11:33Z",
+    "input_summary": {
+      "n_baseline": 3
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:33Z",
+    "elapsed_s": 11.805
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T11:11:42Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "TriFusionGuard"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:42Z",
+    "elapsed_s": 7.384
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T11:11:42Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:11:42Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T11:11:49Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:49Z",
+    "elapsed_s": 6.591
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T11:11:54Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:11:54Z",
+    "elapsed_s": 4.95
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T11:12:02Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "UniAttackFusion"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:02Z",
+    "elapsed_s": 8.338
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T11:12:02Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:02Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T11:12:11Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:11Z",
+    "elapsed_s": 8.406
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T11:12:17Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:17Z",
+    "elapsed_s": 6.01
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T11:12:17Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:17Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T11:12:17Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "面向自动驾驶中多模态融合感知算法的攻击和防御",
+      "n_papers": 3,
+      "n_baseline": 3,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "针对多模态融合3D目标检测模型的对抗点云攻击方法研究",
+          "research_question": "如何利用对抗点云攻击多模态融合的3D目标检测模型，并评估其有效性？",
+          "baseline": "Generating Adversarial Point Clouds on Multi-modal Fusion Based 3D Object Detection Model",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Generating Adversarial Point Clouds on Multi-modal Fusion Based 3D Object Detection Model",
+          "risk": "攻击方法可能对特定融合架构有效，但泛化性不足；缺乏公开数据集可能影响实验复现。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "针对Camera-LiDAR融合模型的对抗攻击研究",
+          "research_question": "在自动驾驶场景下，如何设计针对Camera-LiDAR多模态融合模型的对抗攻击，并分析其鲁棒性？",
+          "baseline": "Adversarial Attacks on Camera-LiDAR Models for 3D Car Detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Adversarial Attacks on Camera-LiDAR Models for 3D Car Detection",
+          "risk": "攻击可能依赖特定传感器配置，迁移性需进一步验证；缺乏标准评测指标。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "针对雷达感知系统的对抗攻击方法研究",
+          "research_question": "如何对基于雷达的环境感知系统实施有效对抗攻击，并探讨其对多模态融合的影响？",
+          "baseline": "Adversarial Attack on Radar-based Environment Perception Systems",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Adversarial Attack on Radar-based Environment Perception Systems",
+          "risk": "雷达数据特性与视觉/激光雷达不同，攻击方法可能难以直接迁移；缺乏多模态融合场景下的评估。",
+          "estimated_workload": "2人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:17Z",
+    "elapsed_s": 0.0
+  }
+]

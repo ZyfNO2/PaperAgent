@@ -1,0 +1,625 @@
+{
+  "case_id": "V-MED-32b",
+  "topic": "?????????????????????",
+  "user_constraints": {
+    "topic_zh": ""
+  },
+  "topic_atoms": {
+    "method": [
+      "?????????????????????"
+    ],
+    "object": [],
+    "task": [],
+    "scenario": [],
+    "domain": "unknown",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": []
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "arxiv",
+        "query": "crop disease detection deep learning",
+        "why": "The prior query '?????????????????????' returned zero results. This query broadens the search by replacing the specific method 'YOLO' with the general technique 'deep learning' and replaces 'recognition' with 'detection', which is a common synonym in agricultural computer vision literature.",
+        "expected_evidence": "At least one paper on crop disease detection using deep learning methods, providing a baseline or dataset reference.",
+        "stop_condition": "If fewer than 3 results are returned, stop and report gap as unfilled."
+      }
+    ],
+    "rounds": [
+      "repair"
+    ],
+    "negative_feedback": "The prior round's query was too narrow or used a tool that returned zero results. This repair query broadens the search terms and switches to arxiv to find relevant baseline papers or datasets on crop disease detection with deep learning.",
+    "strategy": "broaden"
+  },
+  "raw_results": {},
+  "paper_candidates": [],
+  "verified_papers": [],
+  "weak_papers": [],
+  "repo_candidates": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 2,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "repair_rounds": 2,
+    "last_repair_type": "paper_gap_repair"
+  },
+  "final_recommendation": {
+    "topic": "?????????????????????",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 0,
+    "low_bar_status": null,
+    "human_gate_status": null,
+    "notes": [
+      "human gate: None"
+    ],
+    "research_basis": []
+  },
+  "filter_results": {
+    "total": 0,
+    "kept": 0,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "search_steps": [
+    {
+      "step": 0,
+      "type": "skip",
+      "tool": "arxiv",
+      "query": "crop disease detection deep learning",
+      "reason": "adapter arxiv skipped (failed)"
+    },
+    {
+      "step": 1,
+      "type": "skip",
+      "tool": "arxiv",
+      "query": "crop disease detection deep learning",
+      "reason": "adapter arxiv skipped (failed)"
+    },
+    {
+      "step": 2,
+      "type": "skip",
+      "tool": "arxiv",
+      "query": "crop disease detection deep learning",
+      "reason": "adapter arxiv skipped (failed)"
+    },
+    {
+      "step": 3,
+      "type": "skip",
+      "tool": "arxiv",
+      "query": "crop disease detection deep learning",
+      "reason": "adapter arxiv skipped (failed)"
+    },
+    {
+      "step": 4,
+      "type": "skip",
+      "tool": "arxiv",
+      "query": "crop disease detection deep learning",
+      "reason": "adapter arxiv skipped (failed)"
+    },
+    {
+      "step": 5,
+      "type": "skip",
+      "tool": "arxiv",
+      "query": "crop disease detection deep learning",
+      "reason": "adapter arxiv skipped (failed)"
+    },
+    {
+      "step": 6,
+      "type": "skip",
+      "tool": "arxiv",
+      "query": "crop disease detection deep learning",
+      "reason": "adapter arxiv skipped (failed)"
+    },
+    {
+      "step": 7,
+      "type": "skip",
+      "tool": "arxiv",
+      "query": "crop disease detection deep learning",
+      "reason": "adapter arxiv skipped (failed)"
+    }
+  ],
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-07T10:21:15Z",
+      "input_summary": {
+        "topic": "?????????????????????"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-07T10:21:15Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-07T10:21:19Z",
+      "input_summary": {
+        "topic_len": 21
+      },
+      "output_summary": {
+        "n_method": 1,
+        "n_object": 0,
+        "domain": "unknown"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:21:19Z",
+      "elapsed_s": 3.151
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-07T10:21:19Z",
+      "input_summary": {
+        "topic_len": 21,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 1,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-07T10:21:19Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-07T10:21:19Z",
+      "input_summary": {
+        "topic_len": 21,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "n_repo_candidates": 0,
+        "n_steps": 7,
+        "n_tool_calls": 6,
+        "raw_tools": [
+          "arxiv",
+          "openalex",
+          "crossref",
+          "semantic_scholar",
+          "core",
+          "github"
+        ],
+        "per_adapter": {
+          "arxiv": 0,
+          "openalex": 0,
+          "crossref": 0,
+          "github": 0,
+          "semantic_scholar": 0,
+          "core": 0
+        },
+        "failed_adapters": [
+          "arxiv",
+          "core",
+          "crossref",
+          "github",
+          "openalex",
+          "semantic_scholar"
+        ],
+        "skipped_adapters": [],
+        "repair_rounds": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 0
+        },
+        {
+          "tool": "openalex",
+          "n": 0
+        },
+        {
+          "tool": "crossref",
+          "n": 0
+        },
+        {
+          "tool": "semantic_scholar",
+          "n": 0
+        },
+        {
+          "tool": "core",
+          "n": 0
+        },
+        {
+          "tool": "github",
+          "n": 0
+        }
+      ],
+      "errors": [],
+      "provider": "react_search",
+      "ended_at": "2026-07-07T10:22:02Z",
+      "elapsed_s": 43.532
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-07T10:22:02Z",
+      "input_summary": {
+        "n_candidates": 0
+      },
+      "output_summary": {
+        "kept": 0,
+        "dropped": 0
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:22:02Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-07T10:22:02Z",
+      "input_summary": {
+        "n_candidates": 0,
+        "topic_len": 21,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 0,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:22:02Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-07T10:22:02Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "repair"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-07T10:22:02Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "targeted_repair",
+      "started_at": "2026-07-07T10:22:08Z",
+      "input_summary": {
+        "current_round": 0,
+        "repair_type": "paper_gap_repair"
+      },
+      "output_summary": {
+        "n_queries": 1,
+        "rounds": [
+          "repair"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re12_repair.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:22:08Z",
+      "elapsed_s": 5.348
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-07T10:22:08Z",
+      "input_summary": {
+        "topic_len": 21,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "n_repo_candidates": 0,
+        "n_steps": 8,
+        "n_tool_calls": 0,
+        "raw_tools": [],
+        "per_adapter": {},
+        "failed_adapters": [
+          "arxiv",
+          "core",
+          "crossref",
+          "github",
+          "openalex",
+          "semantic_scholar"
+        ],
+        "skipped_adapters": [
+          "arxiv",
+          "openalex",
+          "github",
+          "crossref",
+          "semantic_scholar",
+          "core"
+        ],
+        "repair_rounds": 1
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "react_search",
+      "ended_at": "2026-07-07T10:22:35Z",
+      "elapsed_s": 27.499
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-07T10:22:35Z",
+      "input_summary": {
+        "n_candidates": 0
+      },
+      "output_summary": {
+        "kept": 0,
+        "dropped": 0
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:22:35Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-07T10:22:35Z",
+      "input_summary": {
+        "n_candidates": 0,
+        "topic_len": 21,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 0,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:22:35Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-07T10:22:35Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 1,
+        "weak_promoted": false,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "repair"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-07T10:22:35Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "targeted_repair",
+      "started_at": "2026-07-07T10:22:40Z",
+      "input_summary": {
+        "current_round": 1,
+        "repair_type": "paper_gap_repair"
+      },
+      "output_summary": {
+        "n_queries": 1,
+        "rounds": [
+          "repair"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re12_repair.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:22:40Z",
+      "elapsed_s": 5.189
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-07T10:22:40Z",
+      "input_summary": {
+        "topic_len": 21,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "n_repo_candidates": 0,
+        "n_steps": 8,
+        "n_tool_calls": 0,
+        "raw_tools": [],
+        "per_adapter": {},
+        "failed_adapters": [
+          "arxiv",
+          "core",
+          "crossref",
+          "github",
+          "openalex",
+          "semantic_scholar"
+        ],
+        "skipped_adapters": [
+          "arxiv",
+          "openalex",
+          "github",
+          "crossref",
+          "semantic_scholar",
+          "core"
+        ],
+        "repair_rounds": 2
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "react_search",
+      "ended_at": "2026-07-07T10:23:08Z",
+      "elapsed_s": 27.857
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-07T10:23:08Z",
+      "input_summary": {
+        "n_candidates": 0
+      },
+      "output_summary": {
+        "kept": 0,
+        "dropped": 0
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:23:08Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-07T10:23:08Z",
+      "input_summary": {
+        "n_candidates": 0,
+        "topic_len": 21,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 0,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-07T10:23:08Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-07T10:23:08Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 2,
+        "weak_promoted": false,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-07T10:23:08Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-07T10:23:08Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "?????????????????????",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "low_bar_status": null,
+        "human_gate_status": null,
+        "notes": [
+          "human gate: None"
+        ],
+        "research_basis": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-07T10:23:08Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": [],
+  "elapsed_s": 113.34
+}

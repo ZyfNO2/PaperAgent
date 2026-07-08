@@ -214,7 +214,7 @@ def main():
     n_cand = _emit_candidate_csv(re05_index)
     print(f"Wrote {n_case} rows to {CASE_CSV.name}  (case-level, {len(CASE_COLUMNS)} cols)")
     print(f"Wrote {n_cand} rows to {CAND_CSV.name}  (candidate-level, {len(CAND_COLUMNS)} cols)")
-    print(f"  encoding: utf-8-sig (Excel-friendly)")
+    print("  encoding: utf-8-sig (Excel-friendly)")
     return 0
 
 

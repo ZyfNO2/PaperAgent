@@ -1,39 +1,35 @@
-"""检索适配器入口 + 注册表."""
+"""Search adapter registry.
+
+Each adapter has signature:
+    async def (queries: list[str], top_k: int, *, client) -> list[dict]
+"""
 
 from __future__ import annotations
 
-from typing import Any, Awaitable, Callable
+from typing import Awaitable, Callable
 
 from ....schemas_retrieval import SearchSource
 from .arxiv_search import arxiv_search
+from .core_search import core_search
+from .crossref_search import crossref_search
+from .datacite_search import datacite_search
 from .github_search import github_search
 from .huggingface_search import huggingface_search
-from .crossref_search import crossref_search
 from .openalex_search import openalex_search
-from .optional_adapters import kaggle_search
 from .semantic_scholar_search import semantic_scholar_search
 
 
-SourceFn = Callable[[list[str], int], Awaitable[list[dict]]]
-
-
-def _make_runner(fn: SourceFn) -> SourceFn:
-    """适配器统一签名 ``async def (queries, top_k, *, client) -> list[dict]``."""
-
-    async def runner(queries: list[str], top_k: int, *, client: Any | None = None) -> list[dict]:
-        return await fn(queries, top_k, client=client)
-
-    return runner
-
+SourceFn = Callable[..., Awaitable[list[dict]]]
 
 REGISTRY: dict[SearchSource, SourceFn] = {
-    "openalex": _make_runner(openalex_search),
-    "crossref": _make_runner(crossref_search),
-    "arxiv": _make_runner(arxiv_search),
-    "github": _make_runner(github_search),
-    "huggingface": _make_runner(huggingface_search),
-    "semantic_scholar": _make_runner(semantic_scholar_search),
-    "kaggle": _make_runner(kaggle_search),
+    "openalex": openalex_search,
+    "crossref": crossref_search,
+    "arxiv": arxiv_search,
+    "github": github_search,
+    "huggingface": huggingface_search,
+    "semantic_scholar": semantic_scholar_search,
+    "core": core_search,
+    "datacite": datacite_search,
 }
 
 

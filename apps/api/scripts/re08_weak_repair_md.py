@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import glob
 from pathlib import Path
 
 RE08 = Path("G:/PaperAgent/tmp_re04_eval/balanced40_re08")

@@ -1,18 +1,12 @@
 ﻿"""optimization_advisor — Re1.4 MVP node."""
-import time, logging
+import time
+import logging
 from typing import Any
 from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
 
-def _now_iso():
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-
-def _emit(node, t0, ins, out, tools, prov, errs):
-    return {"node": node, "started_at": _now_iso(), "input_summary": ins,
-            "output_summary": out, "tool_calls": tools, "errors": errs,
-            "provider": prov, "ended_at": _now_iso(), "elapsed_s": round(time.time()-t0, 3)}
+from ._util import emit_trace as _emit
 
 def _heuristic(state):
     feas = state.get("feasibility_report", {})
@@ -58,8 +52,9 @@ def optimization_advisor_node(state: ResearchState) -> dict[str, Any]:
                   {"feasibility": feasibility.get("verdict", "unknown")},
                   {"n_paths": len(result.get("optimization_paths", []))},
                   [{"tool": "optimization_advisor.llm" if prov != "heuristic" else "heuristic"}],
-                  prov, [])
-    current_count = state.get("narrative_revision_count", 0)
+                  prov, [],
+                  state_keys=["optimization_directions", "trace_events"])
+    # Re3.0 Fix 2.2: do NOT increment narrative_revision_count here;
+    # only narrative_builder increments it to avoid double counting.
     return {"optimization_directions": result,
-            "narrative_revision_count": current_count + 1,
             "trace_events": [trace]}

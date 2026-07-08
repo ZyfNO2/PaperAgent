@@ -1,0 +1,604 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T14:28:00Z",
+    "input_summary": {
+      "topic": "基于大语言模型的医学问答可信度评估方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:28:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T14:28:03Z",
+    "input_summary": {
+      "topic_len": 21
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "nlp_llm"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:28:03Z",
+    "elapsed_s": 3.23
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T14:28:03Z",
+    "input_summary": {
+      "topic_len": 21,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:28:03Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T14:28:03Z",
+    "input_summary": {
+      "topic_len": 21,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 36,
+      "raw_tools": [
+        "arxiv",
+        "crossref",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 12,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T14:29:17Z",
+    "elapsed_s": 73.74
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T14:29:17Z",
+    "input_summary": {
+      "n_candidates": 36
+    },
+    "output_summary": {
+      "kept": 36,
+      "dropped": 0,
+      "pre_filter_keep": 36,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 36,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:29:17Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T14:29:17Z",
+    "input_summary": {
+      "n_candidates": 36,
+      "topic_len": 21,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 18,
+      "n_reject": 17
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:29:32Z",
+    "elapsed_s": 14.508
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T14:29:32Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 18,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:29:32Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T14:29:32Z",
+    "input_summary": {
+      "n_verified": 11,
+      "n_seeds": 4,
+      "seed_titles": [
+        "LUNA: A Model-Based Universal Analysis Framework for Large L",
+        "vitals: Large Language Model Evaluation",
+        "Large language model–based chatbots",
+        "A Bayesian-Latent Model of Large Language Model Sycophancy"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 4,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "LUNA: A Model-Based Universal Analysis Framework for Large L",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "vitals: Large Language Model Evaluation",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Large language model–based chatbots",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A Bayesian-Latent Model of Large Language Model Sycophancy",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T14:30:01Z",
+    "elapsed_s": 29.825
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T14:30:01Z",
+    "input_summary": {
+      "n_candidates": 11,
+      "topic_len": 21,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 5,
+      "n_reject": 6
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:30:08Z",
+    "elapsed_s": 6.694
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T14:30:08Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:30:08Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T14:30:16Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 1
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 7,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:30:16Z",
+    "elapsed_s": 8.125
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T14:30:16Z",
+    "input_summary": {
+      "papers": 11
+    },
+    "output_summary": {
+      "nodes": 11,
+      "edges": 1
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:30:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T14:30:16Z",
+    "input_summary": {
+      "n_verified": 11
+    },
+    "output_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:30:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T14:30:21Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_dataset": 0,
+      "n_repo": 1
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:30:21Z",
+    "elapsed_s": 5.089
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T14:30:32Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_packages": 4,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:30:32Z",
+    "elapsed_s": 10.68
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T14:30:44Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:30:44Z",
+    "elapsed_s": 12.198
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T14:30:40Z",
+    "input_summary": {
+      "n_baseline": 1
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:30:40Z",
+    "elapsed_s": 8.299
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T14:30:56Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "TrustMH-Eval"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:30:56Z",
+    "elapsed_s": 11.349
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T14:30:56Z",
+    "input_summary": {
+      "n_packages": 4
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:30:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T14:31:04Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "heuristic"
+      }
+    ],
+    "errors": [],
+    "provider": "heuristic",
+    "ended_at": "2026-07-06T14:31:04Z",
+    "elapsed_s": 8.852
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T14:31:13Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 4
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "heuristic"
+      }
+    ],
+    "errors": [],
+    "provider": "heuristic",
+    "ended_at": "2026-07-06T14:31:13Z",
+    "elapsed_s": 8.433
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T14:31:13Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:31:13Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T14:31:13Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于大语言模型的医学问答可信度评估方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 4,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于TrustMH-Bench的医学问答可信度评估基准构建",
+          "research_question": "如何利用TrustMH-Bench的评估框架，针对医学问答场景设计可信度评估指标？",
+          "baseline": "TrustMH-Bench: A Comprehensive Benchmark for Evaluating the Trustworthiness of Large Language Models in Mental Health",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "TrustMH-Bench: A Comprehensive Benchmark for Evaluating the Trustworthiness of Large Language Models in Mental Health",
+          "risk": "医学问答领域与心理健康领域存在差异，直接迁移可能导致评估维度不匹配。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于LUNA框架的医学问答可信度分析",
+          "research_question": "LUNA通用分析框架如何适配医学问答场景，以评估LLM的可信度？",
+          "baseline": "LUNA: A Model-Based Universal Analysis Framework for Large Language Models_supp1-3411928.pdf",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "LUNA: A Model-Based Universal Analysis Framework for Large Language Models_supp1-3411928.pdf",
+          "risk": "LUNA框架未针对医学领域优化，可能需要大量领域适配工作。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于FFT的医学问答事实性与毒性评估",
+          "research_question": "FFT评估方法中的事实性和毒性维度能否有效应用于医学问答可信度评估？",
+          "baseline": "FFT: Towards Harmlessness Evaluation and Analysis for LLMs with Factuality, Fairness, Toxicity",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "FFT: Towards Harmlessness Evaluation and Analysis for LLMs with Factuality, Fairness, Toxicity",
+          "risk": "医学问答对事实性要求极高，FFT的毒性评估可能不直接覆盖医学错误信息。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于AraTrust的跨语言医学问答可信度评估",
+          "research_question": "AraTrust的阿拉伯语可信度评估方法能否迁移到中文医学问答场景？",
+          "baseline": "AraTrust: An Evaluation of Trustworthiness for LLMs in Arabic",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "AraTrust: An Evaluation of Trustworthiness for LLMs in Arabic",
+          "risk": "语言和文化差异可能导致评估标准不适用。",
+          "estimated_workload": "2人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:31:13Z",
+    "elapsed_s": 0.0
+  }
+]

@@ -19,18 +19,13 @@ from typing import Any
 from apps.api.app.services.agents.graph.state import ResearchState
 from apps.api.app.services.agents.prompts import re11_planner as P
 from apps.api.app.services.llm_router import LLMUnavailable, call_json
+from ._util import now_iso as _now_iso
 
 logger = logging.getLogger(__name__)
 
 
-_TOOLS = frozenset({"arxiv", "openalex", "crossref", "web", "github"})
+_TOOLS = frozenset({"arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite"})
 _ROUNDS = frozenset({"broad", "focused", "repair", "seed_expansion"})
-
-
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
 def _emit(
@@ -41,6 +36,7 @@ def _emit(
     tools: list[dict],
     prov: str,
     errs: list[dict],
+    state_keys: list[str] | None = None,
 ) -> dict[str, Any]:
     return {
         "node": node,
@@ -52,6 +48,7 @@ def _emit(
         "provider": prov,
         "ended_at": _now_iso(),
         "elapsed_s": round(time.time() - t0, 3),
+        "state_keys": state_keys or [],
     }
 
 
@@ -115,10 +112,11 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
 
     cjk = _re.compile(r"[\u4e00-\u9fff]")
     lowered_topic = (topic or "").lower()
-    method = [str(k).strip() for k in (atoms.get("method") or []) if k and not cjk.search(str(k))]
-    obj = [str(k).strip() for k in (atoms.get("object") or []) if k and not cjk.search(str(k))]
-    ds_terms = [str(k).strip() for k in (atoms.get("dataset_terms") or []) if k and not cjk.search(str(k))]
-    baseline = [str(k).strip() for k in (atoms.get("baseline_terms") or []) if k and not cjk.search(str(k))]
+    # Keep CJK terms but also extract English keywords for search
+    method = [str(k).strip() for k in (atoms.get("method") or []) if k]
+    obj = [str(k).strip() for k in (atoms.get("object") or []) if k]
+    ds_terms = [str(k).strip() for k in (atoms.get("dataset_terms") or []) if k]
+    baseline = [str(k).strip() for k in (atoms.get("baseline_terms") or []) if k]
     domain = str(atoms.get("domain") or "unknown").strip().lower()
 
     queries: list[dict[str, str]] = []
@@ -126,7 +124,7 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
 
     def _add(tool: str, query: str, why: str, ev: str, stop: str) -> None:
         q = query.strip()
-        if not q or q.lower() in seen or len(q) < 5:
+        if not q or q.lower() in seen or len(q) < 2:
             return
         seen.add(q.lower())
         queries.append(
@@ -199,8 +197,17 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
     if domain == "unknown" and obj:
         _add("openalex", _compact(obj[0]), "domain unknown object fallback", "object-specific papers", "n>=4")
     if not queries:
-        head = (topic or "deep learning").split()[0]
-        _add("openalex", head, "fallback topic head", "any relevant papers", "n>=5")
+        # Re3.0 Fix 1.5: no "deep learning" fallback; use topic text directly
+        # For Chinese topics with no atoms, extract English keywords from topic
+        en_terms = _re.findall(r'[A-Za-z][A-Za-z0-9\-]{1,}', topic or "")
+        en_terms = [t for t in en_terms if t.lower() not in
+                    ("based", "on", "via", "using", "for", "the", "and", "of", "research", "study")]
+        if en_terms:
+            query = " ".join(en_terms[:3])
+            _add("arxiv", query, "topic English keywords", "any relevant papers", "n>=5")
+        elif topic:
+            # Use topic text directly (may be Chinese, but adapters can handle it)
+            _add("arxiv", topic[:100], "fallback topic text", "any relevant papers", "n>=5")
 
     return {
         "queries": queries[:10],
@@ -226,6 +233,7 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
             [{"tool": "re11_planner.llm", "mode": "skipped"}],
             "none",
             [],
+            state_keys=["trace_events"],
         )
         return {"trace_events": [trace]}
 
@@ -240,6 +248,8 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
             [{"tool": "search_planner.template"}],
             "local",
             [],
+            state_keys=["search_plan", "trace_events", "errors",
+                        "provider_profile"],
         )
         return {
             "search_plan": plan,
@@ -284,7 +294,7 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
                 "rounds": _normalize_rounds(raw.get("rounds")),
                 "negative_feedback": _as_str(raw.get("negative_feedback")),
             }
-    except BaseException as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001
         kind = "LLMUnavailable" if isinstance(exc, LLMUnavailable) else type(exc).__name__
         logger.warning("search_planner_node LLM call failed (%s); using empty plan", kind)
         errors_out.append({"node": "search_planner", "error": kind})
@@ -297,6 +307,8 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
         [{"tool": "re11_planner.llm", "attempts": tries}],
         "fast_json",
         errors_out,
+        state_keys=["search_plan", "trace_events", "errors",
+                    "provider_profile"],
     )
 
     return {

@@ -284,7 +284,7 @@ def main() -> int:
     print(f"Wrote {n_case} rows to {CASE_CSV.name}  (case-level, {len(CASE_COLUMNS)} cols)")
     print(f"Wrote {n_cand} rows to {CAND_CSV.name}  "
           f"(candidate-level, {len(CAND_COLUMNS)} cols)")
-    print(f"  encoding: utf-8-sig (Excel-friendly)")
+    print("  encoding: utf-8-sig (Excel-friendly)")
     print(f"  re05 candidate index: {len(re05_index)} unique ids")
     return 0
 

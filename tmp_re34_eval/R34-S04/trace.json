@@ -1,0 +1,627 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T12:03:33Z",
+    "input_summary": {
+      "topic": "基于三维点云重建的混凝土结构裂缝定位与追踪"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:03:33Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T12:03:36Z",
+    "input_summary": {
+      "topic_len": 21
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 2,
+      "domain": "civil_infra"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:03:36Z",
+    "elapsed_s": 2.937
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T12:03:36Z",
+    "input_summary": {
+      "topic_len": 21,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:03:36Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T12:03:36Z",
+    "input_summary": {
+      "topic_len": 21,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 26,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github",
+        "semantic_scholar",
+        "crossref",
+        "huggingface",
+        "core"
+      ],
+      "per_adapter": {
+        "arxiv": 20,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 0,
+        "semantic_scholar": 0,
+        "huggingface": 0,
+        "core": 7
+      },
+      "failed_adapters": [
+        "github",
+        "huggingface",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 20
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "huggingface",
+        "n": 0
+      },
+      {
+        "tool": "core",
+        "n": 7
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T12:04:33Z",
+    "elapsed_s": 57.44
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T12:04:33Z",
+    "input_summary": {
+      "n_candidates": 26
+    },
+    "output_summary": {
+      "kept": 26,
+      "dropped": 0,
+      "pre_filter_keep": 22,
+      "pre_filter_drop": 0,
+      "llm_judged": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 22,
+        "pre_drop": 0,
+        "gray_area": 4
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 4
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:04:37Z",
+    "elapsed_s": 3.598
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T12:04:37Z",
+    "input_summary": {
+      "n_candidates": 26,
+      "topic_len": 21,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 13,
+      "n_reject": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:04:44Z",
+    "elapsed_s": 7.196
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T12:04:44Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 13,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:04:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T12:04:44Z",
+    "input_summary": {
+      "n_verified": 10,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Concrete Crack Assessment Using Digital Image Processing and",
+        "A Systematic Approach for Cross-source Point Cloud Registrat",
+        "Depth-First Search Based 3D Point Cloud Coordinate Reconstru",
+        "ShapeAdv: Generating Shape-Aware Adversarial 3D Point Clouds",
+        "$PC^2$: Projection-Conditioned Point Cloud Diffusion for Sin"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 15,
+      "n_surveys": 1,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 15,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Concrete Crack Assessment Using Digital Image Processing and",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "A Systematic Approach for Cross-source Point Cloud Registrat",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "Depth-First Search Based 3D Point Cloud Coordinate Reconstru",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "ShapeAdv: Generating Shape-Aware Adversarial 3D Point Clouds",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "$PC^2$: Projection-Conditioned Point Cloud Diffusion for Sin",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      }
+    ],
+    "ended_at": "2026-07-08T12:04:45Z",
+    "elapsed_s": 0.818
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T12:04:45Z",
+    "input_summary": {
+      "n_candidates": 15,
+      "topic_len": 21,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 5,
+      "n_weak_reject": 5,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:04:52Z",
+    "elapsed_s": 6.655
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T12:04:52Z",
+    "input_summary": {
+      "n_papers": 15,
+      "n_weak": 5,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:04:52Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T12:07:50Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:07:50Z",
+    "elapsed_s": 178.252
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T12:07:50Z",
+    "input_summary": {
+      "papers": 15
+    },
+    "output_summary": {
+      "nodes": 15,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:07:50Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T12:07:50Z",
+    "input_summary": {
+      "n_verified": 15
+    },
+    "output_summary": {
+      "n_baseline": 6,
+      "n_parallel": 9,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:07:50Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T12:07:53Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:07:53Z",
+    "elapsed_s": 3.308
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T12:07:59Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:07:59Z",
+    "elapsed_s": 5.657
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T12:08:07Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:08:07Z",
+    "elapsed_s": 8.439
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T12:08:05Z",
+    "input_summary": {
+      "n_baseline": 6
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:08:05Z",
+    "elapsed_s": 6.525
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T12:08:17Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CrackTrack3D"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:08:17Z",
+    "elapsed_s": 9.67
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T12:08:17Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:08:17Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T12:08:26Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:08:26Z",
+    "elapsed_s": 8.652
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T12:08:31Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:08:31Z",
+    "elapsed_s": 5.799
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T12:08:31Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:08:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T12:08:31Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于三维点云重建的混凝土结构裂缝定位与追踪",
+      "n_papers": 15,
+      "n_baseline": 6,
+      "n_parallel": 9,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于多视角图像的三维点云重建与混凝土裂缝定位方法",
+          "research_question": "如何利用多视角图像重建的三维点云实现混凝土结构表面裂缝的精确空间定位？",
+          "baseline": "Fast vision-based 3D reconstruction and damage detection of building structures based on visual geometry grounded transformer",
+          "improved_module_source": "Lightweight panoramic reconstruction and precise defect localization of bridge undersides based on multi-view pose registration",
+          "data_source": null,
+          "experiment_metrics": "Quantification of Structural Defects Using Pixel Level Spatial Information from Photogrammetry",
+          "risk": "点云重建精度受光照和纹理影响，裂缝在点云中可能因稀疏性导致漏检。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "融合点云与图像的混凝土裂缝追踪算法",
+          "research_question": "如何融合三维点云与二维图像信息实现混凝土裂缝的连续追踪与形态演化分析？",
+          "baseline": "Fatigue crack detection and localization in steel box girder using point cloud and image fusion machine vision",
+          "improved_module_source": "Bridge Structural Condition Assessment using 3D Imaging",
+          "data_source": null,
+          "experiment_metrics": "Quantification of Structural Defects Using Pixel Level Spatial Information from Photogrammetry",
+          "risk": "多模态数据配准误差可能累积，影响追踪精度。",
+          "estimated_workload": "8人月"
+        },
+        {
+          "title": "基于深度学习的点云裂缝检测与三维重建联合优化",
+          "research_question": "如何通过深度学习模型同时优化三维点云重建质量与裂缝检测性能？",
+          "baseline": "Deep Learning-Based Crack Detection and 3D Reconstruction for Cost-Effective Structural Health Monitoring",
+          "improved_module_source": "3D Surface Reconstruction from Point-and-Line Cloud",
+          "data_source": null,
+          "experiment_metrics": "Quantification of Structural Defects Using Pixel Level Spatial Information from Photogrammetry",
+          "risk": "联合优化可能导致模型训练复杂度高，且需要大量标注数据。",
+          "estimated_workload": "10人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:08:31Z",
+    "elapsed_s": 0.0
+  }
+]

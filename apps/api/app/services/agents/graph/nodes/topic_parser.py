@@ -49,24 +49,10 @@ _EMPTY_ATOMS: dict[str, Any] = {
 }
 
 
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def _emit(node: str, t0: float, ins: dict, out: dict,
-          tools: list[dict], prov: str, errs: list[dict]) -> dict[str, Any]:
-    return {
-        "node": node,
-        "started_at": _now_iso(),
-        "input_summary": ins,
-        "output_summary": out,
-        "tool_calls": tools,
-        "errors": errs,
-        "provider": prov,
-        "ended_at": _now_iso(),
-        "elapsed_s": round(time.time() - t0, 3),
-    }
+
+from ._util import emit_trace as _emit
 
 
 def _as_str_list(v: Any) -> list[str]:
@@ -165,6 +151,53 @@ def _enforce_literal_topic_guards(topic: str, atoms: dict[str, Any]) -> dict[str
     return out
 
 
+def _heuristic_parse(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
+    """Extract keywords from Chinese/English topic when LLM returns empty atoms.
+
+    Splits Chinese topics on common delimiters (基于、的、研究、方法) and
+    extracts technical English terms from mixed-language topics.
+    """
+    out = dict(atoms)
+    text = (topic or "").strip()
+    if not text:
+        return out
+
+    # Check for medical/LLM keywords to set domain
+    lowered = text.lower()
+    if any(kw in text for kw in ("医学", "医疗", "临床", "病历")) or "medical" in lowered:
+        out["domain"] = "medical_ai"
+        out.setdefault("scenario", []).append("medical AI")
+    if any(kw in text for kw in ("大语言模型", "LLM", "GPT", "语言模型")):
+        out["domain"] = "nlp_llm" if out["domain"] == "unknown" else out["domain"]
+        out["method"] = list(out.get("method") or [])
+        if not any("large language model" in str(m).lower() for m in out["method"]):
+            out["method"].append("large language model")
+
+    # Extract English technical terms (sequences of ASCII letters, >=2 chars)
+    en_terms = re.findall(r'[A-Za-z][A-Za-z0-9\-]{1,}', text)
+    for term in en_terms:
+        tl = term.lower()
+        if tl in ("based", "on", "via", "using", "for", "the", "and", "of", "research", "study", "method"):
+            continue
+        if tl not in [str(m).lower() for m in (out.get("method") or [])]:
+            out["method"] = list(out.get("method") or []) + [term]
+
+    # Extract Chinese technical keywords by splitting on common delimiters
+    # e.g. "基于大语言模型的医学问答可信度评估方法研究"
+    # → ["大语言模型", "医学问答", "可信度", "评估", "方法"]
+    parts = re.split(r'[基于的了吗呢在以及和与和和]', text)
+    parts = [p.strip() for p in parts if p.strip() and len(p.strip()) >= 2]
+
+    # If we still have no method, extract the main technical phrase
+    if not out.get("method") and parts:
+        # Use the longest part as a fallback method keyword
+        longest = max(parts, key=len) if parts else ""
+        if longest and len(longest) >= 2:
+            out["method"] = [longest]
+
+    return out
+
+
 def topic_parser_node(state: ResearchState) -> dict[str, Any]:
     """Parse topic -> topic_atoms. Skips LLM call if atoms already present."""
     topic = state.get("topic") or ""
@@ -179,7 +212,8 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
         trace = _emit("topic_parser", t0,
                       {"topic_len": len(topic)}, {"skipped": True,
                                                    "n_method": len(existing.get("method", []))},
-                      [{"tool": "re11_parser.llm", "mode": "skipped"}], "none", [])
+                      [{"tool": "re11_parser.llm", "mode": "skipped"}], "none", [],
+                      state_keys=["trace_events"])
         return {"trace_events": [trace]}
 
     errors_out: list[dict[str, Any]] = []
@@ -206,10 +240,33 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
             topic,
             _normalize(raw if isinstance(raw, dict) else {}),
         )
-    except BaseException as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001
         kind = "LLMUnavailable" if isinstance(exc, LLMUnavailable) else type(exc).__name__
         logger.warning("topic_parser_node LLM call failed (%s); using empty atoms", kind)
         errors_out.append({"node": "topic_parser", "error": kind})
+
+    # Heuristic fallback: if LLM returned empty or garbage atoms, extract keywords from topic
+    # "Garbage" = method contains CJK characters (valid method keywords should be English)
+    #   or method is the raw topic verbatim, or method list is empty
+    _all_lists_empty = (
+        not atoms.get("method") and not atoms.get("object") and not atoms.get("task")
+    )
+    _has_cjk = any(
+        any('\u4e00' <= ch <= '\u9fff' for ch in str(m))
+        for m in (atoms.get("method") or [])
+    )
+    _method_is_garbage = bool(atoms.get("method")) and (
+        _has_cjk
+        or any(str(m).strip() == topic.strip() or len(str(m).strip()) > 30
+               for m in atoms.get("method") or [])
+    )
+    logger.info("topic_parser heuristic check: all_empty=%s, has_cjk=%s, is_garbage=%s, method=%s",
+                _all_lists_empty, _has_cjk, _method_is_garbage, atoms.get("method"))
+    if _all_lists_empty or _method_is_garbage:
+        atoms = _heuristic_parse(topic, dict(_EMPTY_ATOMS))
+        if atoms.get("method") or atoms.get("object") or atoms.get("task"):
+            logger.info("topic_parser: heuristic fallback extracted atoms from topic (LLM returned %s)",
+                        "garbage" if _method_is_garbage else "empty")
 
     trace = _emit("topic_parser", t0,
                   {"topic_len": len(topic)},
@@ -217,7 +274,9 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
                    "n_object": len(atoms.get("object", [])),
                    "domain": atoms.get("domain")},
                   [{"tool": "re11_parser.llm", "attempts": tries}],
-                  "fast_json", errors_out)
+                  "fast_json", errors_out,
+                  state_keys=["topic_atoms", "trace_events", "errors",
+                              "provider_profile"])
 
     return {
         "topic_atoms": atoms,

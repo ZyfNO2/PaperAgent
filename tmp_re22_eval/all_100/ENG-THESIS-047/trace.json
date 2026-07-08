@@ -1,0 +1,600 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:35:00Z",
+    "input_summary": {
+      "topic": "基于深度学习无人驾驶交通安全标志检测与识别研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:35:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:35:04Z",
+    "input_summary": {
+      "topic_len": 23
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:35:04Z",
+    "elapsed_s": 4.413
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:35:04Z",
+    "input_summary": {
+      "topic_len": 23,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:35:04Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:35:04Z",
+    "input_summary": {
+      "topic_len": 23,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 39,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github",
+        "semantic_scholar"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:35:55Z",
+    "elapsed_s": 50.461
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:35:55Z",
+    "input_summary": {
+      "n_candidates": 39
+    },
+    "output_summary": {
+      "kept": 31,
+      "dropped": 8,
+      "pre_filter_keep": 31,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 31,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:36:00Z",
+    "elapsed_s": 5.177
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:36:00Z",
+    "input_summary": {
+      "n_candidates": 31,
+      "topic_len": 23,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 7,
+      "n_weak_reject": 12,
+      "n_reject": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:36:08Z",
+    "elapsed_s": 8.071
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:36:08Z",
+    "input_summary": {
+      "n_papers": 7,
+      "n_weak": 12,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:36:08Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:36:08Z",
+    "input_summary": {
+      "n_verified": 7,
+      "n_seeds": 5,
+      "seed_titles": [
+        "YOLO-BS: a traffic sign detection algorithm based on YOLOv8",
+        "TSD-YOLO: Small traffic sign detection based on improved YOL",
+        "A novel lightweight real-time traffic sign detection method ",
+        "CR-YOLOv8: Multiscale Object Detection in Traffic Sign Image",
+        "A Robust Real-Time Anchor-Free Traffic Sign Detector With On"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 110,
+      "n_surveys": 6,
+      "n_repos": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 110,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "YOLO-BS: a traffic sign detection algorithm based on YOLOv8",
+        "n_references_plus_citations": 30,
+        "relevance_score": 13
+      },
+      {
+        "seed_title": "TSD-YOLO: Small traffic sign detection based on improved YOL",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "A novel lightweight real-time traffic sign detection method ",
+        "n_references_plus_citations": 15,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "CR-YOLOv8: Multiscale Object Detection in Traffic Sign Image",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "A Robust Real-Time Anchor-Free Traffic Sign Detector With On",
+        "n_references_plus_citations": 15,
+        "relevance_score": 11
+      }
+    ],
+    "ended_at": "2026-07-06T06:36:44Z",
+    "elapsed_s": 35.851
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:36:44Z",
+    "input_summary": {
+      "n_candidates": 110,
+      "topic_len": 23,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 50,
+      "n_weak_reject": 36,
+      "n_reject": 24
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:37:13Z",
+    "elapsed_s": 29.16
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:37:13Z",
+    "input_summary": {
+      "n_papers": 57,
+      "n_weak": 48,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:37:13Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:37:22Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:37:22Z",
+    "elapsed_s": 9.701
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:37:22Z",
+    "input_summary": {
+      "papers": 57
+    },
+    "output_summary": {
+      "nodes": 57,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:37:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:37:22Z",
+    "input_summary": {
+      "n_verified": 57
+    },
+    "output_summary": {
+      "n_baseline": 55,
+      "n_parallel": 0,
+      "n_survey": 2,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:37:22Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:37:27Z",
+    "input_summary": {
+      "n_baseline": 55,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 65
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:37:27Z",
+    "elapsed_s": 4.889
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T06:37:40Z",
+    "input_summary": {
+      "n_baseline": 55,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 4,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:37:40Z",
+    "elapsed_s": 12.135
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T06:37:58Z",
+    "input_summary": {
+      "n_baseline": 55,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:37:58Z",
+    "elapsed_s": 18.014
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T06:37:48Z",
+    "input_summary": {
+      "n_baseline": 55
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:37:48Z",
+    "elapsed_s": 8.482
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T06:38:08Z",
+    "input_summary": {
+      "n_innovation": 5
+    },
+    "output_summary": {
+      "nick_model_name": "DCN-YOLO-SE"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:38:08Z",
+    "elapsed_s": 10.608
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T06:38:08Z",
+    "input_summary": {
+      "n_packages": 4
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:38:08Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:38:18Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:38:18Z",
+    "elapsed_s": 10.131
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:38:26Z",
+    "input_summary": {
+      "n_innovation": 5,
+      "n_packages": 4
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:38:26Z",
+    "elapsed_s": 7.261
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:38:26Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:38:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:38:26Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习无人驾驶交通安全标志检测与识别研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 4,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLOv8的交通标志检测算法改进与验证",
+          "research_question": "如何通过改进YOLOv8网络结构（如引入注意力机制、多尺度特征融合）提升复杂场景下交通标志的检测精度与速度？",
+          "baseline": "YOLO-BS: a traffic sign detection algorithm based on YOLOv8",
+          "improved_module_source": "Improved Traffic Sign Detection with ECA Attention and Augmentation",
+          "data_source": null,
+          "experiment_metrics": "YOLO-BS: a traffic sign detection algorithm based on YOLOv8",
+          "risk": "改进模块与基线模型融合后可能引入额外计算开销，影响实时性；公开数据集未在证据中明确，需自行收集或标注。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "轻量化交通标志识别模型在嵌入式设备上的部署",
+          "research_question": "如何在保持高识别准确率的前提下，设计轻量化CNN模型并部署于低算力嵌入式设备？",
+          "baseline": "A novel lightweight real-time traffic sign detection method based on an embedded device and YOLOv8",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "A novel lightweight real-time traffic sign detection method based on an embedded device and YOLOv8",
+          "risk": "嵌入式设备算力限制可能导致模型精度下降；证据中未提供具体数据集，需自行获取。",
+          "estimated_workload": "2.5人月"
+        },
+        {
+          "title": "小尺寸交通标志的鲁棒检测与识别方法研究",
+          "research_question": "针对远距离或小尺寸交通标志，如何通过多尺度特征增强和注意力机制提升检测召回率？",
+          "baseline": "TSD-YOLO: Small traffic sign detection based on improved YOLO v8",
+          "improved_module_source": "An adaptive multi-scale lightweight network for long-distance small traffic sign detection",
+          "data_source": null,
+          "experiment_metrics": "TSD-YOLO: Small traffic sign detection based on improved YOLO v8",
+          "risk": "小目标检测易受背景干扰，改进模块可能过拟合特定场景；缺乏公开数据集验证。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于无锚框检测器的交通标志实时识别系统",
+          "research_question": "无锚框检测器（如FCOS）在交通标志识别任务中能否在保持实时性的同时达到与锚框方法相当的精度？",
+          "baseline": "A Robust Real-Time Anchor-Free Traffic Sign Detector With One-Level Feature",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "A Robust Real-Time Anchor-Free Traffic Sign Detector With One-Level Feature",
+          "risk": "无锚框方法在密集小目标场景下可能漏检；证据中未提供数据集，需自行构建。",
+          "estimated_workload": "2.5人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:38:26Z",
+    "elapsed_s": 0.0
+  }
+]

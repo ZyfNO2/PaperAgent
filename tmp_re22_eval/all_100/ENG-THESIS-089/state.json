@@ -1,0 +1,1421 @@
+{
+  "case_id": "ENG-THESIS-089",
+  "topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+  "user_constraints": {
+    "topic_zh": "基于深度学习和双目立体视觉的道路路面损伤检测研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "deep learning",
+      "binocular stereo vision"
+    ],
+    "object": [
+      "road pavement damage"
+    ],
+    "task": [
+      "detection"
+    ],
+    "scenario": [
+      "road inspection"
+    ],
+    "domain": "vision_3d",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "monocular vision",
+      "lidar",
+      "infrastructure other than road"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "deep learning road pavement damage",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "binocular stereo vision road pavement damage",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "deep learning road pavement damage detection",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "arxiv": [
+      {
+        "title": "Electronics for the STEREO experiment",
+        "abstract": "The STEREO experiment, aiming to probe short baseline neutrino oscillations by precisely measuring reactor anti-neutrino spectrum, is currently under installation. It is located at short distance from the compact research reactor core of the Institut Laue-Langevin, Grenoble, France. Dedicated electronics, hosted in a single $μ$TCA crate, were designed for this experiment. In this article, the electronics requirements, architecture and the performances achieved are described. It is shown how intrinsic Pulse Shape Discrimination properties of the liquid scintillator are preserved and how custom adaptable logic is used to improve the muon veto efficiency.",
+        "authors": [
+          "V. Hélaine",
+          "STEREO collaboration"
+        ],
+        "arxiv_id": "1610.00003v1",
+        "url": "http://arxiv.org/abs/1610.00003v1",
+        "published": "2016-09-30T05:21:16Z",
+        "year": 2016,
+        "source_query": "binocular stereo vision"
+      },
+      {
+        "title": "On the Synergies between Machine Learning and Binocular Stereo for Depth Estimation from Images: a Survey",
+        "abstract": "Stereo matching is one of the longest-standing problems in computer vision with close to 40 years of studies and research. Throughout the years the paradigm has shifted from local, pixel-level decision to various forms of discrete and continuous optimization to data-driven, learning-based methods. Recently, the rise of machine learning and the rapid proliferation of deep learning enhanced stereo matching with new exciting trends and applications unthinkable until a few years ago. Interestingly, the relationship between these two worlds is two-way. While machine, and especially deep, learning advanced the state-of-the-art in stereo matching, stereo itself enabled new ground-breaking methodologies such as self-supervised monocular depth estimation based on deep networks. In this paper, we review recent research in the field of learning-based depth estimation from single and binocular images highlighting the synergies, the successes achieved so far and the open challenges the community is going to face in the immediate future.",
+        "authors": [
+          "Matteo Poggi",
+          "Fabio Tosi",
+          "Konstantinos Batsos",
+          "Philippos Mordohai",
+          "Stefano Mattoccia"
+        ],
+        "arxiv_id": "2004.08566v2",
+        "url": "http://arxiv.org/abs/2004.08566v2",
+        "published": "2020-04-18T09:14:08Z",
+        "year": 2020,
+        "source_query": "binocular stereo vision"
+      },
+      {
+        "title": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+        "abstract": "Stereo matching is a key technique for metric depth estimation in computer vision and robotics. Real-world challenges like occlusion and non-texture hinder accurate disparity estimation from binocular matching cues. Recently, monocular relative depth estimation has shown remarkable generalization using vision foundation models. Thus, to facilitate robust stereo matching with monocular depth cues, we incorporate a robust monocular relative depth model into the recurrent stereo-matching framework, building a new framework for depth foundation model-based stereo-matching, DEFOM-Stereo. In the feature extraction stage, we construct the combined context and matching feature encoder by integrating features from conventional CNNs and DEFOM. In the update stage, we use the depth predicted by DEFOM to initialize the recurrent disparity and introduce a scale update module to refine the disparity at the correct scale. DEFOM-Stereo is verified to have much stronger zero-shot generalization compared with SOTA methods. Moreover, DEFOM-Stereo achieves top performance on the KITTI 2012, KITTI 2015, Middlebury, and ETH3D benchmarks, ranking $1^{st}$ on many metrics. In the joint evaluation under the robust vision challenge, our model simultaneously outperforms previous models on the individual benchmarks, further demonstrating its outstanding capabilities.",
+        "authors": [
+          "Hualie Jiang",
+          "Zhiqiang Lou",
+          "Laiyan Ding",
+          "Rui Xu",
+          "Minglang Tan",
+          "Wenjie Jiang",
+          "Rui Huang"
+        ],
+        "arxiv_id": "2501.09466v3",
+        "url": "http://arxiv.org/abs/2501.09466v3",
+        "published": "2025-01-16T10:59:29Z",
+        "year": 2025,
+        "source_query": "binocular stereo vision"
+      },
+      {
+        "title": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors",
+        "abstract": "We introduce MonSter++, a geometric foundation model for multi-view depth estimation, unifying rectified stereo matching and unrectified multi-view stereo. Both tasks fundamentally recover metric depth from correspondence search and consequently face the same dilemma: struggling to handle ill-posed regions with limited matching cues. To address this, we propose MonSter++, a novel method that integrates monocular depth priors into multi-view depth estimation, effectively combining the complementary strengths of single-view and multi-view cues. MonSter++ fuses monocular depth and multi-view depth into a dual-branched architecture. Confidence-based guidance adaptively selects reliable multi-view cues to correct scale ambiguity in monocular depth. The refined monocular predictions, in turn, effectively guide multi-view estimation in ill-posed regions. This iterative mutual enhancement enables MonSter++ to evolve coarse object-level monocular priors into fine-grained, pixel-level geometry, fully unlocking the potential of multi-view depth estimation. MonSter++ achieves new state-of-the-art on both stereo matching and multi-view stereo. By effectively incorporating monocular priors through our cascaded search and multi-scale depth fusion strategy, our real-time variant RT-MonSter++ also outperforms previous real-time methods by a large margin. As shown in Fig.1, MonSter++ achieves significant improvements over previous methods across eight benchmarks from three tasks -- stereo matching, real-time stereo matching, and multi-view stereo, demonstrating the strong generality of our framework. Besides high accuracy, MonSter++ also demonstrates superior zero-shot generalization capability. We will release both the large and the real-time models to facilitate their use by the open-source community.",
+        "authors": [
+          "Junda Cheng",
+          "Wenjing Liao",
+          "Zhipeng Cai",
+          "Longliang Liu",
+          "Gangwei Xu",
+          "Xianqi Wang",
+          "Yuzhou Wang",
+          "Zikang Yuan",
+          "Yong Deng",
+          "Jinliang Zang",
+          "Yangyang Shi",
+          "Jinhui Tang",
+          "Xin Yang"
+        ],
+        "arxiv_id": "2501.08643v2",
+        "url": "http://arxiv.org/abs/2501.08643v2",
+        "published": "2025-01-15T08:11:24Z",
+        "year": 2025,
+        "source_query": "binocular stereo vision"
+      },
+      {
+        "title": "A Survey on Deep Stereo Matching in the Twenties",
+        "abstract": "Stereo matching is close to hitting a half-century of history, yet witnessed a rapid evolution in the last decade thanks to deep learning. While previous surveys in the late 2010s covered the first stage of this revolution, the last five years of research brought further ground-breaking advancements to the field. This paper aims to fill this gap in a two-fold manner: first, we offer an in-depth examination of the latest developments in deep stereo matching, focusing on the pioneering architectural designs and groundbreaking paradigms that have redefined the field in the 2020s; second, we present a thorough analysis of the critical challenges that have emerged alongside these advances, providing a comprehensive taxonomy of these issues and exploring the state-of-the-art techniques proposed to address them. By reviewing both the architectural innovations and the key challenges, we offer a holistic view of deep stereo matching and highlight the specific areas that require further investigation. To accompany this survey, we maintain a regularly updated project page that catalogs papers on deep stereo matching in our Awesome-Deep-Stereo-Matching (https://github.com/fabiotosi92/Awesome-Deep-Stereo-Matching) repository.",
+        "authors": [
+          "Fabio Tosi",
+          "Luca Bartolomei",
+          "Matteo Poggi"
+        ],
+        "arxiv_id": "2407.07816v1",
+        "url": "http://arxiv.org/abs/2407.07816v1",
+        "published": "2024-07-10T16:40:44Z",
+        "year": 2024,
+        "source_query": "binocular stereo vision"
+      },
+      {
+        "title": "Transformer-based stereo-aware 3D object detection from binocular images",
+        "abstract": "Transformers have shown promising progress in various visual object detection tasks, including monocular 2D/3D detection and surround-view 3D detection. More importantly, the attention mechanism in the Transformer model and the 3D information extraction in binocular stereo are both similarity-based. However, directly applying existing Transformer-based detectors to binocular stereo 3D object detection leads to slow convergence and significant precision drops. We argue that a key cause of that defect is that existing Transformers ignore the binocular-stereo-specific image correspondence information. In this paper, we explore the model design of Transformers in binocular 3D object detection, focusing particularly on extracting and encoding task-specific image correspondence information. To achieve this goal, we present TS3D, a Transformer-based Stereo-aware 3D object detector. In the TS3D, a Disparity-Aware Positional Encoding (DAPE) module is proposed to embed the image correspondence information into stereo features. The correspondence is encoded as normalized sub-pixel-level disparity and is used in conjunction with sinusoidal 2D positional encoding to provide the 3D location information of the scene. To enrich multi-scale stereo features, we propose a Stereo Preserving Feature Pyramid Network (SPFPN). The SPFPN is designed to preserve the correspondence information while fusing intra-scale and aggregating cross-scale stereo features. Our proposed TS3D achieves a 41.29% Moderate Car detection average precision on the KITTI test set and takes 88 ms to detect objects from each binocular image pair. It is competitive with advanced counterparts in terms of both precision and inference speed.",
+        "authors": [
+          "Hanqing Sun",
+          "Yanwei Pang",
+          "Jiale Cao",
+          "Jin Xie",
+          "Xuelong Li"
+        ],
+        "arxiv_id": "2304.11906v4",
+        "url": "http://arxiv.org/abs/2304.11906v4",
+        "published": "2023-04-24T08:29:45Z",
+        "year": 2023,
+        "source_query": "binocular stereo vision"
+      },
+      {
+        "title": "Improved Sterile Neutrino Constraints from the STEREO Experiment with 179 Days of Reactor-On Data",
+        "abstract": "The STEREO experiment is a very short baseline reactor antineutrino experiment. It is designed to test the hypothesis of light sterile neutrinos being the cause of a deficit of the observed antineutrino interaction rate at short baselines with respect to the predicted rate, known as the reactor antineutrino anomaly. The STEREO experiment measures the antineutrino energy spectrum in six identical detector cells covering baselines between 9 and 11 m from the compact core of the ILL research reactor. In this article, results from 179 days of reactor turned on and 235 days of reactor turned off are reported at a high degree of detail. The current results include improvements in the modelling of detector optical properties and the gamma-cascade after neutron captures by gadolinium, the treatment of backgrounds, and the statistical method of the oscillation analysis. Using a direct comparison between antineutrino spectra of all cells, largely independent of any flux prediction, we find the data compatible with the null oscillation hypothesis. The best-fit point of the reactor antineutrino anomaly is rejected at more than 99.9% C.L.",
+        "authors": [
+          "STEREO Collaboration",
+          "H. Almazán",
+          "L. Bernard",
+          "A. Blanchet",
+          "A. Bonhomme",
+          "C. Buck",
+          "P. del Amo Sanchez",
+          "I. El Atmani",
+          "J. Haser",
+          "F. Kandzia",
+          "S. Kox",
+          "L. Labit",
+          "J. Lamblin",
+          "A. Letourneau",
+          "D. Lhuillier",
+          "M. Licciardi",
+          "M. Lindner",
+          "T. Materna",
+          "A. Minotti",
+          "H. Pessard",
+          "J. -S. Réal",
+          "C. Roca",
+          "R. Rogly",
+          "T. Salagnac",
+          "V. Savu",
+          "S. Schoppmann",
+          "V. Sergeyeva",
+          "T. Soldner",
+          "A. Stutz",
+          "M. Vialat"
+        ],
+        "arxiv_id": "1912.06582v2",
+        "url": "http://arxiv.org/abs/1912.06582v2",
+        "published": "2019-12-13T16:08:47Z",
+        "year": 2019,
+        "source_query": "binocular stereo vision"
+      },
+      {
+        "title": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022",
+        "abstract": "Stereo-matching is a fundamental problem in computer vision. Despite recent progress by deep learning, improving the robustness is ineluctable when deploying stereo-matching models to real-world applications. Different from the common practices, i.e., developing an elaborate model to achieve robustness, we argue that collecting multiple available datasets for training is a cheaper way to increase generalization ability. Specifically, this report presents an improved RaftStereo trained with a mixed dataset of seven public datasets for the robust vision challenge (denoted as iRaftStereo_RVC). When evaluated on the training sets of Middlebury, KITTI-2015, and ETH3D, the model outperforms its counterparts trained with only one dataset, such as the popular Sceneflow. After fine-tuning the pre-trained model on the three datasets of the challenge, it ranks at 2nd place on the stereo leaderboard, demonstrating the benefits of mixed dataset pre-training.",
+        "authors": [
+          "Hualie Jiang",
+          "Rui Xu",
+          "Wenjie Jiang"
+        ],
+        "arxiv_id": "2210.12785v1",
+        "url": "http://arxiv.org/abs/2210.12785v1",
+        "published": "2022-10-23T17:01:34Z",
+        "year": 2022,
+        "source_query": "binocular stereo vision"
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<defom-stereo-depth-foundation-model-based-stereo-matching>",
+        "type": "paper",
+        "title": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<monster-unified-stereo-matching-multi-view-stereo-and-real-time-stereo-with-monodepth-priors>",
+        "type": "paper",
+        "title": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<transformer-based-stereo-aware-3d-object-detection-from-binocular-images>",
+        "type": "paper",
+        "title": "Transformer-based stereo-aware 3D object detection from binocular images",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<an-improved-raftstereo-trained-with-a-mixed-dataset-for-the-robust-vision-challenge-2022>",
+        "type": "paper",
+        "title": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022",
+        "role": "parallel"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Electronics for the STEREO experiment",
+      "abstract": "The STEREO experiment, aiming to probe short baseline neutrino oscillations by precisely measuring reactor anti-neutrino spectrum, is currently under installation. It is located at short distance from the compact research reactor core of the Institut Laue-Langevin, Grenoble, France. Dedicated electronics, hosted in a single $μ$TCA crate, were designed for this experiment. In this article, the electronics requirements, architecture and the performances achieved are described. It is shown how intrinsic Pulse Shape Discrimination properties of the liquid scintillator are preserved and how custom ",
+      "url": "http://arxiv.org/abs/1610.00003v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Electronics for the STEREO experiment",
+            "abstract": "The STEREO experiment, aiming to probe short baseline neutrino oscillations by precisely measuring reactor anti-neutrino spectrum, is currently under installation. It is located at short distance from the compact research reactor core of the Institut Laue-Langevin, Grenoble, France. Dedicated electronics, hosted in a single $μ$TCA crate, were designed for this experiment. In this article, the electronics requirements, architecture and the performances achieved are described. It is shown how intrinsic Pulse Shape Discrimination properties of the liquid scintillator are preserved and how custom adaptable logic is used to improve the muon veto efficiency.",
+            "authors": [
+              "V. Hélaine",
+              "STEREO collaboration"
+            ],
+            "arxiv_id": "1610.00003v1",
+            "url": "http://arxiv.org/abs/1610.00003v1",
+            "published": "2016-09-30T05:21:16Z",
+            "year": 2016,
+            "source_query": "binocular stereo vision"
+          }
+        ]
+      }
+    },
+    {
+      "title": "On the Synergies between Machine Learning and Binocular Stereo for Depth Estimation from Images: a Survey",
+      "abstract": "Stereo matching is one of the longest-standing problems in computer vision with close to 40 years of studies and research. Throughout the years the paradigm has shifted from local, pixel-level decision to various forms of discrete and continuous optimization to data-driven, learning-based methods. Recently, the rise of machine learning and the rapid proliferation of deep learning enhanced stereo matching with new exciting trends and applications unthinkable until a few years ago. Interestingly, the relationship between these two worlds is two-way. While machine, and especially deep, learning a",
+      "url": "http://arxiv.org/abs/2004.08566v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "On the Synergies between Machine Learning and Binocular Stereo for Depth Estimation from Images: a Survey",
+            "abstract": "Stereo matching is one of the longest-standing problems in computer vision with close to 40 years of studies and research. Throughout the years the paradigm has shifted from local, pixel-level decision to various forms of discrete and continuous optimization to data-driven, learning-based methods. Recently, the rise of machine learning and the rapid proliferation of deep learning enhanced stereo matching with new exciting trends and applications unthinkable until a few years ago. Interestingly, the relationship between these two worlds is two-way. While machine, and especially deep, learning advanced the state-of-the-art in stereo matching, stereo itself enabled new ground-breaking methodologies such as self-supervised monocular depth estimation based on deep networks. In this paper, we review recent research in the field of learning-based depth estimation from single and binocular images highlighting the synergies, the successes achieved so far and the open challenges the community is going to face in the immediate future.",
+            "authors": [
+              "Matteo Poggi",
+              "Fabio Tosi",
+              "Konstantinos Batsos",
+              "Philippos Mordohai",
+              "Stefano Mattoccia"
+            ],
+            "arxiv_id": "2004.08566v2",
+            "url": "http://arxiv.org/abs/2004.08566v2",
+            "published": "2020-04-18T09:14:08Z",
+            "year": 2020,
+            "source_query": "binocular stereo vision"
+          }
+        ]
+      }
+    },
+    {
+      "title": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+      "abstract": "Stereo matching is a key technique for metric depth estimation in computer vision and robotics. Real-world challenges like occlusion and non-texture hinder accurate disparity estimation from binocular matching cues. Recently, monocular relative depth estimation has shown remarkable generalization using vision foundation models. Thus, to facilitate robust stereo matching with monocular depth cues, we incorporate a robust monocular relative depth model into the recurrent stereo-matching framework, building a new framework for depth foundation model-based stereo-matching, DEFOM-Stereo. In the fea",
+      "url": "http://arxiv.org/abs/2501.09466v3",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+            "abstract": "Stereo matching is a key technique for metric depth estimation in computer vision and robotics. Real-world challenges like occlusion and non-texture hinder accurate disparity estimation from binocular matching cues. Recently, monocular relative depth estimation has shown remarkable generalization using vision foundation models. Thus, to facilitate robust stereo matching with monocular depth cues, we incorporate a robust monocular relative depth model into the recurrent stereo-matching framework, building a new framework for depth foundation model-based stereo-matching, DEFOM-Stereo. In the feature extraction stage, we construct the combined context and matching feature encoder by integrating features from conventional CNNs and DEFOM. In the update stage, we use the depth predicted by DEFOM to initialize the recurrent disparity and introduce a scale update module to refine the disparity at the correct scale. DEFOM-Stereo is verified to have much stronger zero-shot generalization compared with SOTA methods. Moreover, DEFOM-Stereo achieves top performance on the KITTI 2012, KITTI 2015, Middlebury, and ETH3D benchmarks, ranking $1^{st}$ on many metrics. In the joint evaluation under the robust vision challenge, our model simultaneously outperforms previous models on the individual benchmarks, further demonstrating its outstanding capabilities.",
+            "authors": [
+              "Hualie Jiang",
+              "Zhiqiang Lou",
+              "Laiyan Ding",
+              "Rui Xu",
+              "Minglang Tan",
+              "Wenjie Jiang",
+              "Rui Huang"
+            ],
+            "arxiv_id": "2501.09466v3",
+            "url": "http://arxiv.org/abs/2501.09466v3",
+            "published": "2025-01-16T10:59:29Z",
+            "year": 2025,
+            "source_query": "binocular stereo vision"
+          }
+        ]
+      }
+    },
+    {
+      "title": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors",
+      "abstract": "We introduce MonSter++, a geometric foundation model for multi-view depth estimation, unifying rectified stereo matching and unrectified multi-view stereo. Both tasks fundamentally recover metric depth from correspondence search and consequently face the same dilemma: struggling to handle ill-posed regions with limited matching cues. To address this, we propose MonSter++, a novel method that integrates monocular depth priors into multi-view depth estimation, effectively combining the complementary strengths of single-view and multi-view cues. MonSter++ fuses monocular depth and multi-view dept",
+      "url": "http://arxiv.org/abs/2501.08643v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors",
+            "abstract": "We introduce MonSter++, a geometric foundation model for multi-view depth estimation, unifying rectified stereo matching and unrectified multi-view stereo. Both tasks fundamentally recover metric depth from correspondence search and consequently face the same dilemma: struggling to handle ill-posed regions with limited matching cues. To address this, we propose MonSter++, a novel method that integrates monocular depth priors into multi-view depth estimation, effectively combining the complementary strengths of single-view and multi-view cues. MonSter++ fuses monocular depth and multi-view depth into a dual-branched architecture. Confidence-based guidance adaptively selects reliable multi-view cues to correct scale ambiguity in monocular depth. The refined monocular predictions, in turn, effectively guide multi-view estimation in ill-posed regions. This iterative mutual enhancement enables MonSter++ to evolve coarse object-level monocular priors into fine-grained, pixel-level geometry, fully unlocking the potential of multi-view depth estimation. MonSter++ achieves new state-of-the-art on both stereo matching and multi-view stereo. By effectively incorporating monocular priors through our cascaded search and multi-scale depth fusion strategy, our real-time variant RT-MonSter++ also outperforms previous real-time methods by a large margin. As shown in Fig.1, MonSter++ achieves significant improvements over previous methods across eight benchmarks from three tasks -- stereo matching, real-time stereo matching, and multi-view stereo, demonstrating the strong generality of our framework. Besides high accuracy, MonSter++ also demonstrates superior zero-shot generalization capability. We will release both the large and the real-time models to facilitate their use by the open-source community.",
+            "authors": [
+              "Junda Cheng",
+              "Wenjing Liao",
+              "Zhipeng Cai",
+              "Longliang Liu",
+              "Gangwei Xu",
+              "Xianqi Wang",
+              "Yuzhou Wang",
+              "Zikang Yuan",
+              "Yong Deng",
+              "Jinliang Zang",
+              "Yangyang Shi",
+              "Jinhui Tang",
+              "Xin Yang"
+            ],
+            "arxiv_id": "2501.08643v2",
+            "url": "http://arxiv.org/abs/2501.08643v2",
+            "published": "2025-01-15T08:11:24Z",
+            "year": 2025,
+            "source_query": "binocular stereo vision"
+          }
+        ]
+      }
+    },
+    {
+      "title": "A Survey on Deep Stereo Matching in the Twenties",
+      "abstract": "Stereo matching is close to hitting a half-century of history, yet witnessed a rapid evolution in the last decade thanks to deep learning. While previous surveys in the late 2010s covered the first stage of this revolution, the last five years of research brought further ground-breaking advancements to the field. This paper aims to fill this gap in a two-fold manner: first, we offer an in-depth examination of the latest developments in deep stereo matching, focusing on the pioneering architectural designs and groundbreaking paradigms that have redefined the field in the 2020s; second, we prese",
+      "url": "http://arxiv.org/abs/2407.07816v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "A Survey on Deep Stereo Matching in the Twenties",
+            "abstract": "Stereo matching is close to hitting a half-century of history, yet witnessed a rapid evolution in the last decade thanks to deep learning. While previous surveys in the late 2010s covered the first stage of this revolution, the last five years of research brought further ground-breaking advancements to the field. This paper aims to fill this gap in a two-fold manner: first, we offer an in-depth examination of the latest developments in deep stereo matching, focusing on the pioneering architectural designs and groundbreaking paradigms that have redefined the field in the 2020s; second, we present a thorough analysis of the critical challenges that have emerged alongside these advances, providing a comprehensive taxonomy of these issues and exploring the state-of-the-art techniques proposed to address them. By reviewing both the architectural innovations and the key challenges, we offer a holistic view of deep stereo matching and highlight the specific areas that require further investigation. To accompany this survey, we maintain a regularly updated project page that catalogs papers on deep stereo matching in our Awesome-Deep-Stereo-Matching (https://github.com/fabiotosi92/Awesome-Deep-Stereo-Matching) repository.",
+            "authors": [
+              "Fabio Tosi",
+              "Luca Bartolomei",
+              "Matteo Poggi"
+            ],
+            "arxiv_id": "2407.07816v1",
+            "url": "http://arxiv.org/abs/2407.07816v1",
+            "published": "2024-07-10T16:40:44Z",
+            "year": 2024,
+            "source_query": "binocular stereo vision"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Transformer-based stereo-aware 3D object detection from binocular images",
+      "abstract": "Transformers have shown promising progress in various visual object detection tasks, including monocular 2D/3D detection and surround-view 3D detection. More importantly, the attention mechanism in the Transformer model and the 3D information extraction in binocular stereo are both similarity-based. However, directly applying existing Transformer-based detectors to binocular stereo 3D object detection leads to slow convergence and significant precision drops. We argue that a key cause of that defect is that existing Transformers ignore the binocular-stereo-specific image correspondence informa",
+      "url": "http://arxiv.org/abs/2304.11906v4",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Transformer-based stereo-aware 3D object detection from binocular images",
+            "abstract": "Transformers have shown promising progress in various visual object detection tasks, including monocular 2D/3D detection and surround-view 3D detection. More importantly, the attention mechanism in the Transformer model and the 3D information extraction in binocular stereo are both similarity-based. However, directly applying existing Transformer-based detectors to binocular stereo 3D object detection leads to slow convergence and significant precision drops. We argue that a key cause of that defect is that existing Transformers ignore the binocular-stereo-specific image correspondence information. In this paper, we explore the model design of Transformers in binocular 3D object detection, focusing particularly on extracting and encoding task-specific image correspondence information. To achieve this goal, we present TS3D, a Transformer-based Stereo-aware 3D object detector. In the TS3D, a Disparity-Aware Positional Encoding (DAPE) module is proposed to embed the image correspondence information into stereo features. The correspondence is encoded as normalized sub-pixel-level disparity and is used in conjunction with sinusoidal 2D positional encoding to provide the 3D location information of the scene. To enrich multi-scale stereo features, we propose a Stereo Preserving Feature Pyramid Network (SPFPN). The SPFPN is designed to preserve the correspondence information while fusing intra-scale and aggregating cross-scale stereo features. Our proposed TS3D achieves a 41.29% Moderate Car detection average precision on the KITTI test set and takes 88 ms to detect objects from each binocular image pair. It is competitive with advanced counterparts in terms of both precision and inference speed.",
+            "authors": [
+              "Hanqing Sun",
+              "Yanwei Pang",
+              "Jiale Cao",
+              "Jin Xie",
+              "Xuelong Li"
+            ],
+            "arxiv_id": "2304.11906v4",
+            "url": "http://arxiv.org/abs/2304.11906v4",
+            "published": "2023-04-24T08:29:45Z",
+            "year": 2023,
+            "source_query": "binocular stereo vision"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Improved Sterile Neutrino Constraints from the STEREO Experiment with 179 Days of Reactor-On Data",
+      "abstract": "The STEREO experiment is a very short baseline reactor antineutrino experiment. It is designed to test the hypothesis of light sterile neutrinos being the cause of a deficit of the observed antineutrino interaction rate at short baselines with respect to the predicted rate, known as the reactor antineutrino anomaly. The STEREO experiment measures the antineutrino energy spectrum in six identical detector cells covering baselines between 9 and 11 m from the compact core of the ILL research reactor. In this article, results from 179 days of reactor turned on and 235 days of reactor turned off ar",
+      "url": "http://arxiv.org/abs/1912.06582v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Improved Sterile Neutrino Constraints from the STEREO Experiment with 179 Days of Reactor-On Data",
+            "abstract": "The STEREO experiment is a very short baseline reactor antineutrino experiment. It is designed to test the hypothesis of light sterile neutrinos being the cause of a deficit of the observed antineutrino interaction rate at short baselines with respect to the predicted rate, known as the reactor antineutrino anomaly. The STEREO experiment measures the antineutrino energy spectrum in six identical detector cells covering baselines between 9 and 11 m from the compact core of the ILL research reactor. In this article, results from 179 days of reactor turned on and 235 days of reactor turned off are reported at a high degree of detail. The current results include improvements in the modelling of detector optical properties and the gamma-cascade after neutron captures by gadolinium, the treatment of backgrounds, and the statistical method of the oscillation analysis. Using a direct comparison between antineutrino spectra of all cells, largely independent of any flux prediction, we find the data compatible with the null oscillation hypothesis. The best-fit point of the reactor antineutrino anomaly is rejected at more than 99.9% C.L.",
+            "authors": [
+              "STEREO Collaboration",
+              "H. Almazán",
+              "L. Bernard",
+              "A. Blanchet",
+              "A. Bonhomme",
+              "C. Buck",
+              "P. del Amo Sanchez",
+              "I. El Atmani",
+              "J. Haser",
+              "F. Kandzia",
+              "S. Kox",
+              "L. Labit",
+              "J. Lamblin",
+              "A. Letourneau",
+              "D. Lhuillier",
+              "M. Licciardi",
+              "M. Lindner",
+              "T. Materna",
+              "A. Minotti",
+              "H. Pessard",
+              "J. -S. Réal",
+              "C. Roca",
+              "R. Rogly",
+              "T. Salagnac",
+              "V. Savu",
+              "S. Schoppmann",
+              "V. Sergeyeva",
+              "T. Soldner",
+              "A. Stutz",
+              "M. Vialat"
+            ],
+            "arxiv_id": "1912.06582v2",
+            "url": "http://arxiv.org/abs/1912.06582v2",
+            "published": "2019-12-13T16:08:47Z",
+            "year": 2019,
+            "source_query": "binocular stereo vision"
+          }
+        ]
+      }
+    },
+    {
+      "title": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022",
+      "abstract": "Stereo-matching is a fundamental problem in computer vision. Despite recent progress by deep learning, improving the robustness is ineluctable when deploying stereo-matching models to real-world applications. Different from the common practices, i.e., developing an elaborate model to achieve robustness, we argue that collecting multiple available datasets for training is a cheaper way to increase generalization ability. Specifically, this report presents an improved RaftStereo trained with a mixed dataset of seven public datasets for the robust vision challenge (denoted as iRaftStereo_RVC). Wh",
+      "url": "http://arxiv.org/abs/2210.12785v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022",
+            "abstract": "Stereo-matching is a fundamental problem in computer vision. Despite recent progress by deep learning, improving the robustness is ineluctable when deploying stereo-matching models to real-world applications. Different from the common practices, i.e., developing an elaborate model to achieve robustness, we argue that collecting multiple available datasets for training is a cheaper way to increase generalization ability. Specifically, this report presents an improved RaftStereo trained with a mixed dataset of seven public datasets for the robust vision challenge (denoted as iRaftStereo_RVC). When evaluated on the training sets of Middlebury, KITTI-2015, and ETH3D, the model outperforms its counterparts trained with only one dataset, such as the popular Sceneflow. After fine-tuning the pre-trained model on the three datasets of the challenge, it ranks at 2nd place on the stereo leaderboard, demonstrating the benefits of mixed dataset pre-training.",
+            "authors": [
+              "Hualie Jiang",
+              "Rui Xu",
+              "Wenjie Jiang"
+            ],
+            "arxiv_id": "2210.12785v1",
+            "url": "http://arxiv.org/abs/2210.12785v1",
+            "published": "2022-10-23T17:01:34Z",
+            "year": 2022,
+            "source_query": "binocular stereo vision"
+          }
+        ]
+      }
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "stereo matching",
+        "binocular"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on stereo matching for depth estimation, not road pavement damage detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.09466v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Stereo matching is a key technique for metric depth estimation in computer vision and robotics. Real-world challenges like occlusion and non-texture hinder accurate disparity estimation from binocular matching cues. Recently, monocular relative depth estimation has shown remarkable generalization using vision foundation models. Thus, to facilitate robust stereo matching with monocular depth cues, we incorporate a robust monocular relative depth model into the recurrent stereo-matching framework, building a new framework for depth foundation model-based stereo-matching, DEFOM-Stereo. In the fea"
+    },
+    {
+      "title": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "stereo matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses stereo matching but not applied to road pavement damage detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.08643v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We introduce MonSter++, a geometric foundation model for multi-view depth estimation, unifying rectified stereo matching and unrectified multi-view stereo. Both tasks fundamentally recover metric depth from correspondence search and consequently face the same dilemma: struggling to handle ill-posed regions with limited matching cues. To address this, we propose MonSter++, a novel method that integrates monocular depth priors into multi-view depth estimation, effectively combining the complementary strengths of single-view and multi-view cues. MonSter++ fuses monocular depth and multi-view dept"
+    },
+    {
+      "title": "Transformer-based stereo-aware 3D object detection from binocular images",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "binocular",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses binocular images for 3D object detection, not road pavement damage.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2304.11906v4",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Transformers have shown promising progress in various visual object detection tasks, including monocular 2D/3D detection and surround-view 3D detection. More importantly, the attention mechanism in the Transformer model and the 3D information extraction in binocular stereo are both similarity-based. However, directly applying existing Transformer-based detectors to binocular stereo 3D object detection leads to slow convergence and significant precision drops. We argue that a key cause of that defect is that existing Transformers ignore the binocular-stereo-specific image correspondence informa"
+    },
+    {
+      "title": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning",
+        "stereo matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Improves stereo matching but not applied to road pavement damage detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2210.12785v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Stereo-matching is a fundamental problem in computer vision. Despite recent progress by deep learning, improving the robustness is ineluctable when deploying stereo-matching models to real-world applications. Different from the common practices, i.e., developing an elaborate model to achieve robustness, we argue that collecting multiple available datasets for training is a cheaper way to increase generalization ability. Specifically, this report presents an improved RaftStereo trained with a mixed dataset of seven public datasets for the robust vision challenge (denoted as iRaftStereo_RVC). Wh"
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "On the Synergies between Machine Learning and Binocular Stereo for Depth Estimation from Images: a Survey",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "machine learning",
+        "binocular stereo"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Survey on depth estimation, not specific to road pavement damage detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2004.08566v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Stereo matching is one of the longest-standing problems in computer vision with close to 40 years of studies and research. Throughout the years the paradigm has shifted from local, pixel-level decision to various forms of discrete and continuous optimization to data-driven, learning-based methods. Recently, the rise of machine learning and the rapid proliferation of deep learning enhanced stereo matching with new exciting trends and applications unthinkable until a few years ago. Interestingly, the relationship between these two worlds is two-way. While machine, and especially deep, learning a"
+    },
+    {
+      "title": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "stereo matching",
+        "binocular"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on stereo matching for depth estimation, not road pavement damage detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.09466v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Stereo matching is a key technique for metric depth estimation in computer vision and robotics. Real-world challenges like occlusion and non-texture hinder accurate disparity estimation from binocular matching cues. Recently, monocular relative depth estimation has shown remarkable generalization using vision foundation models. Thus, to facilitate robust stereo matching with monocular depth cues, we incorporate a robust monocular relative depth model into the recurrent stereo-matching framework, building a new framework for depth foundation model-based stereo-matching, DEFOM-Stereo. In the fea"
+    },
+    {
+      "title": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "stereo matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "General stereo matching method, not applied to road pavement damage.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.08643v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We introduce MonSter++, a geometric foundation model for multi-view depth estimation, unifying rectified stereo matching and unrectified multi-view stereo. Both tasks fundamentally recover metric depth from correspondence search and consequently face the same dilemma: struggling to handle ill-posed regions with limited matching cues. To address this, we propose MonSter++, a novel method that integrates monocular depth priors into multi-view depth estimation, effectively combining the complementary strengths of single-view and multi-view cues. MonSter++ fuses monocular depth and multi-view dept"
+    },
+    {
+      "title": "A Survey on Deep Stereo Matching in the Twenties",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning",
+        "stereo matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Survey on deep stereo matching, not specific to road pavement damage.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2407.07816v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Stereo matching is close to hitting a half-century of history, yet witnessed a rapid evolution in the last decade thanks to deep learning. While previous surveys in the late 2010s covered the first stage of this revolution, the last five years of research brought further ground-breaking advancements to the field. This paper aims to fill this gap in a two-fold manner: first, we offer an in-depth examination of the latest developments in deep stereo matching, focusing on the pioneering architectural designs and groundbreaking paradigms that have redefined the field in the 2020s; second, we prese"
+    },
+    {
+      "title": "Transformer-based stereo-aware 3D object detection from binocular images",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "binocular",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on 3D object detection, not road pavement damage.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2304.11906v4",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Transformers have shown promising progress in various visual object detection tasks, including monocular 2D/3D detection and surround-view 3D detection. More importantly, the attention mechanism in the Transformer model and the 3D information extraction in binocular stereo are both similarity-based. However, directly applying existing Transformer-based detectors to binocular stereo 3D object detection leads to slow convergence and significant precision drops. We argue that a key cause of that defect is that existing Transformers ignore the binocular-stereo-specific image correspondence informa"
+    },
+    {
+      "title": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning",
+        "stereo matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Improves stereo matching robustness, but not applied to road pavement damage.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2210.12785v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Stereo-matching is a fundamental problem in computer vision. Despite recent progress by deep learning, improving the robustness is ineluctable when deploying stereo-matching models to real-world applications. Different from the common practices, i.e., developing an elaborate model to achieve robustness, we argue that collecting multiple available datasets for training is a cheaper way to increase generalization ability. Specifically, this report presents an improved RaftStereo trained with a mixed dataset of seven public datasets for the robust vision challenge (denoted as iRaftStereo_RVC). Wh"
+    }
+  ],
+  "dataset_candidates": [],
+  "repo_candidates": [],
+  "baseline_candidates": [],
+  "parallel_candidates": [
+    {
+      "title": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "stereo matching",
+        "binocular"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on stereo matching for depth estimation, not road pavement damage detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.09466v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Stereo matching is a key technique for metric depth estimation in computer vision and robotics. Real-world challenges like occlusion and non-texture hinder accurate disparity estimation from binocular matching cues. Recently, monocular relative depth estimation has shown remarkable generalization using vision foundation models. Thus, to facilitate robust stereo matching with monocular depth cues, we incorporate a robust monocular relative depth model into the recurrent stereo-matching framework, building a new framework for depth foundation model-based stereo-matching, DEFOM-Stereo. In the fea",
+      "role": "parallel",
+      "why_relevant": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['deep learning', 'binocular stereo vision', 'road pavement damage', 'detection']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "deep learning",
+        "binocular stereo vision",
+        "road pavement damage",
+        "detection"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "stereo matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses stereo matching but not applied to road pavement damage detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.08643v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We introduce MonSter++, a geometric foundation model for multi-view depth estimation, unifying rectified stereo matching and unrectified multi-view stereo. Both tasks fundamentally recover metric depth from correspondence search and consequently face the same dilemma: struggling to handle ill-posed regions with limited matching cues. To address this, we propose MonSter++, a novel method that integrates monocular depth priors into multi-view depth estimation, effectively combining the complementary strengths of single-view and multi-view cues. MonSter++ fuses monocular depth and multi-view dept",
+      "role": "parallel",
+      "why_relevant": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['deep learning', 'binocular stereo vision', 'road pavement damage', 'detection']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "deep learning",
+        "binocular stereo vision",
+        "road pavement damage",
+        "detection"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Transformer-based stereo-aware 3D object detection from binocular images",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "binocular",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses binocular images for 3D object detection, not road pavement damage.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2304.11906v4",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Transformers have shown promising progress in various visual object detection tasks, including monocular 2D/3D detection and surround-view 3D detection. More importantly, the attention mechanism in the Transformer model and the 3D information extraction in binocular stereo are both similarity-based. However, directly applying existing Transformer-based detectors to binocular stereo 3D object detection leads to slow convergence and significant precision drops. We argue that a key cause of that defect is that existing Transformers ignore the binocular-stereo-specific image correspondence informa",
+      "role": "parallel",
+      "why_relevant": "Transformer-based stereo-aware 3D object detection from binocular images addresses the same method+object spectrum via a different specific approach (matched: ['detection'], unmatched: ['deep learning', 'binocular stereo vision', 'road pavement damage']).",
+      "matched_topic_axes": [
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "deep learning",
+        "binocular stereo vision",
+        "road pavement damage"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning",
+        "stereo matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Improves stereo matching but not applied to road pavement damage detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2210.12785v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Stereo-matching is a fundamental problem in computer vision. Despite recent progress by deep learning, improving the robustness is ineluctable when deploying stereo-matching models to real-world applications. Different from the common practices, i.e., developing an elaborate model to achieve robustness, we argue that collecting multiple available datasets for training is a cheaper way to increase generalization ability. Specifically, this report presents an improved RaftStereo trained with a mixed dataset of seven public datasets for the robust vision challenge (denoted as iRaftStereo_RVC). Wh",
+      "role": "parallel",
+      "why_relevant": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022 addresses the same method+object spectrum via a different specific approach (matched: ['deep learning'], unmatched: ['binocular stereo vision', 'road pavement damage', 'detection']).",
+      "matched_topic_axes": [
+        "deep learning"
+      ],
+      "unmatched_topic_axes": [
+        "binocular stereo vision",
+        "road pavement damage",
+        "detection"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 4,
+      "n_weak": 6,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "dataset_extractions_tried": 4,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 0,
+    "parallel_n": 4,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 0,
+    "low_bar_status": null,
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": []
+  },
+  "filter_results": {
+    "total": 8,
+    "kept": 8,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "seed_papers": [],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "not_recommended",
+    "score": 20,
+    "reason": "无baseline论文，无数据集和代码仓库，仅4篇parallel论文（如DEFOM-Stereo、MonSter++）提供方法参考，但缺乏核心支撑，风险极高。",
+    "100_plus_formula": {
+      "baseline_weight": 0,
+      "module_weights": [],
+      "estimated_total": 0,
+      "assessment": "不足"
+    },
+    "degradation_paths": [
+      "寻找并复现至少2篇baseline论文（如双目立体匹配+路面损伤检测相关）",
+      "构建或获取公开路面损伤数据集（如CRACK500、DeepCrack）",
+      "开发代码仓库并验证模型性能"
+    ]
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "引入单目深度先验辅助立体匹配，提升低纹理区域鲁棒性",
+        "expected_gain": "改善路面低纹理区域（如均匀沥青）的视差估计精度，提升损伤检测召回率",
+        "difficulty": "中",
+        "action_items": [
+          "参考MonSter++方法，在立体匹配网络中加入单目深度估计分支作为先验",
+          "设计融合模块将单目深度特征与立体匹配代价体结合",
+          "在公开道路数据集（如KITTI）上验证效果"
+        ],
+        "ref_parallel": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors"
+      },
+      {
+        "direction": "利用Transformer注意力机制增强立体特征交互，提升小目标损伤检测",
+        "expected_gain": "提高细小裂缝、坑槽等小目标损伤的匹配精度和检测能力",
+        "difficulty": "高",
+        "action_items": [
+          "参考Transformer-based stereo-aware 3D object detection方法，设计立体Transformer模块",
+          "在左右视图特征间引入交叉注意力，增强对应点匹配",
+          "在路面损伤数据集上微调预训练模型"
+        ],
+        "ref_parallel": "Transformer-based stereo-aware 3D object detection from binocular images"
+      },
+      {
+        "direction": "构建混合训练数据集提升模型泛化性，应对不同路面环境",
+        "expected_gain": "增强模型在多种光照、天气、路面材质下的鲁棒性，减少域偏移",
+        "difficulty": "低",
+        "action_items": [
+          "参考An Improved RaftStereo方法，收集多个公开道路立体数据集（如KITTI、Cityscapes、ApolloScape）",
+          "混合训练并加入数据增强（亮度、对比度、噪声）",
+          "在真实路面损伤场景中测试泛化能力"
+        ],
+        "ref_parallel": "An Improved RaftStereo Trained with A Mixed Dataset for the Robust Vision Challenge 2022"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "退化为基于单目深度估计的路面损伤检测",
+        "trade_off": "失去双目立体视觉的精确深度信息，损伤尺寸和位置估计精度下降，但降低硬件成本和计算复杂度",
+        "survival_rate": "高"
+      },
+      {
+        "path": "退化为传统图像处理+机器学习方法（如SVM+手工特征）",
+        "trade_off": "大幅降低检测精度和自动化程度，依赖人工特征设计，但可快速实现且无需大量标注数据",
+        "survival_rate": "中"
+      }
+    ],
+    "risk_mitigation": [
+      "优先使用公开道路立体数据集（如KITTI、Cityscapes）进行预训练，缓解数据不足风险",
+      "采用迁移学习策略，先在通用立体匹配任务上预训练，再在路面损伤小数据集上微调",
+      "设计模块化网络结构，便于后续替换或升级组件（如匹配模块、检测头）",
+      "定期在验证集上评估模型，若性能不达标及时切换至退化路线"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "创新点完全缺失，未发现任何研究gap或具体贡献，属于硬凑题目。"
+      },
+      {
+        "dimension": "D2",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "无baseline论文，方法学基础完全缺失。"
+      },
+      {
+        "dimension": "D3",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "baseline=0，parallel=4，dataset=0，不满足PASS条件，且baseline完全缺失。"
+      },
+      {
+        "dimension": "D4",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "未定义三个问题，无工作包，论证链条完全断裂。"
+      },
+      {
+        "dimension": "D5",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "叙事为空，无自洽性可言。"
+      }
+    ],
+    "overall_verdict": "BLOCK",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "无baseline论文，无法建立方法学基础",
+      "无数据集和代码仓库，实验不可复现",
+      "创新点完全缺失，研究无原创性",
+      "论证结构不完整，无法支撑研究可行性"
+    ]
+  },
+  "narrative_revision_count": 1,
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T08:10:35Z",
+      "input_summary": {
+        "topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:10:35Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T08:10:39Z",
+      "input_summary": {
+        "topic_len": 24
+      },
+      "output_summary": {
+        "n_method": 2,
+        "n_object": 1,
+        "domain": "vision_3d"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:10:39Z",
+      "elapsed_s": 4.394
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T08:10:39Z",
+      "input_summary": {
+        "topic_len": 24,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:10:39Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T08:10:39Z",
+      "input_summary": {
+        "topic_len": 24,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 8,
+        "raw_tools": [
+          "arxiv"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T08:11:12Z",
+      "elapsed_s": 33.007
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T08:11:12Z",
+      "input_summary": {
+        "n_candidates": 8
+      },
+      "output_summary": {
+        "kept": 8,
+        "dropped": 0,
+        "pre_filter_keep": 8,
+        "pre_filter_drop": 0,
+        "llm_judged": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 8,
+          "pre_drop": 0,
+          "gray_area": 0
+        },
+        {
+          "tool": "quality_filter.no_llm_needed",
+          "reason": "all candidates resolved by pre-filter"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:11:12Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T08:11:12Z",
+      "input_summary": {
+        "n_candidates": 8,
+        "topic_len": 24,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 6,
+        "n_reject": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:11:19Z",
+      "elapsed_s": 6.765
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T08:11:19Z",
+      "input_summary": {
+        "n_papers": 4,
+        "n_weak": 6,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:11:19Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T08:11:19Z",
+      "input_summary": {
+        "n_verified": 4,
+        "n_seeds": 0,
+        "seed_titles": []
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "reason": "no_seeds_with_ids"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "ended_at": "2026-07-06T08:11:19Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T08:11:19Z",
+      "input_summary": {
+        "n_candidates": 8,
+        "topic_len": 24,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 6,
+        "n_reject": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:11:25Z",
+      "elapsed_s": 6.669
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T08:11:25Z",
+      "input_summary": {
+        "n_papers": 4,
+        "n_weak": 6,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:11:25Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T08:11:31Z",
+      "input_summary": {
+        "n_papers": 8
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 4,
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:11:31Z",
+      "elapsed_s": 5.172
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T08:11:31Z",
+      "input_summary": {
+        "papers": 4
+      },
+      "output_summary": {
+        "nodes": 4,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:11:31Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T08:11:31Z",
+      "input_summary": {
+        "n_verified": 4
+      },
+      "output_summary": {
+        "n_baseline": 0,
+        "n_parallel": 4,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:11:31Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T08:11:36Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "output_summary": {
+        "verdict": "not_recommended",
+        "score": 20
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:11:36Z",
+      "elapsed_s": 5.516
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T08:11:48Z",
+      "input_summary": {
+        "feasibility": "not_recommended"
+      },
+      "output_summary": {
+        "n_paths": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:11:48Z",
+      "elapsed_s": 11.671
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T08:11:54Z",
+      "input_summary": {
+        "n_innovation": 0,
+        "n_packages": 0
+      },
+      "output_summary": {
+        "overall_verdict": "BLOCK"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:11:54Z",
+      "elapsed_s": 6.462
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T08:11:54Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:11:54Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T08:11:54Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于深度学习和双目立体视觉的道路路面损伤检测研究",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "low_bar_status": null,
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:11:54Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

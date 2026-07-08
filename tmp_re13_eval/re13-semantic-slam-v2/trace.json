@@ -1,0 +1,462 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T17:51:22Z",
+    "input_summary": {
+      "topic": "基于深度学习的视觉SLAM语义地图的研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T17:51:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T17:51:27Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T17:51:27Z",
+    "elapsed_s": 4.98
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T17:51:27Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T17:51:27Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T17:51:27Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T17:51:48Z",
+    "elapsed_s": 21.282
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T17:51:48Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 23,
+      "dropped": 8,
+      "pre_filter_keep": 23,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 23,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T17:51:55Z",
+    "elapsed_s": 6.899
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T17:51:55Z",
+    "input_summary": {
+      "n_candidates": 23,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 10,
+      "n_reject": 13
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T17:52:04Z",
+    "elapsed_s": 8.753
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T17:52:04Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 10,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T17:52:04Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-05T17:52:04Z",
+    "input_summary": {
+      "n_verified": 10,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Deep Learning in Action",
+        "New Measures for Deep Learning",
+        "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "Introduction to Deep Learning",
+        "Deep Residual Learning for Image Recognition"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 32,
+      "n_surveys": 0,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 32,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Deep Learning in Action",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "New Measures for Deep Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "n_references_plus_citations": 2,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Introduction to Deep Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Deep Residual Learning for Image Recognition",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-05T17:52:51Z",
+    "elapsed_s": 46.836
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T17:52:51Z",
+    "input_summary": {
+      "n_candidates": 32,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 10,
+      "n_reject": 22
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T17:53:00Z",
+    "elapsed_s": 9.224
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T17:53:00Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 10,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T17:53:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T17:53:11Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T17:53:11Z",
+    "elapsed_s": 11.288
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T17:53:11Z",
+    "input_summary": {
+      "papers": 10
+    },
+    "output_summary": {
+      "nodes": 10,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T17:53:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T17:53:11Z",
+    "input_summary": {
+      "n_verified": 10
+    },
+    "output_summary": {
+      "n_baseline": 0,
+      "n_parallel": 8,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T17:53:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T17:53:24Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T17:53:24Z",
+    "elapsed_s": 12.891
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T17:53:24Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T17:53:24Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-05T17:53:34Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T17:53:34Z",
+    "elapsed_s": 9.423
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T17:53:34Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T17:53:48Z",
+    "elapsed_s": 14.433
+  }
+]

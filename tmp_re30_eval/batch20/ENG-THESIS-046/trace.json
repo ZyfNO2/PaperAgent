@@ -1,0 +1,692 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T20:39:10Z",
+    "input_summary": {
+      "topic": "基于视觉的机械臂的目标检测和避障路径规划研究与应用"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:39:10Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T20:39:15Z",
+    "input_summary": {
+      "topic_len": 25
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "robotics_control"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:39:15Z",
+    "elapsed_s": 4.492
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T20:39:15Z",
+    "input_summary": {
+      "topic_len": 25,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:39:15Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T20:39:15Z",
+    "input_summary": {
+      "topic_len": 25,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 41,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "semantic_scholar",
+        "github",
+        "crossref"
+      ],
+      "per_adapter": {
+        "arxiv": 36,
+        "openalex": 0,
+        "crossref": 24,
+        "github": 0,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 36
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 24
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T20:40:41Z",
+    "elapsed_s": 86.097
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T20:40:41Z",
+    "input_summary": {
+      "n_candidates": 41
+    },
+    "output_summary": {
+      "kept": 41,
+      "dropped": 0,
+      "pre_filter_keep": 41,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 41,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:40:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:40:41Z",
+    "input_summary": {
+      "n_candidates": 41,
+      "topic_len": 25,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 10,
+      "n_weak_reject": 16,
+      "n_reject": 15
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:40:57Z",
+    "elapsed_s": 16.428
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:40:57Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 16,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:40:57Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T20:40:57Z",
+    "input_summary": {
+      "n_verified": 10,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Robotic arm obstacle avoidance path planning based on improv",
+        "Obstacle Avoidance of Robotic Arm in Path Planning Based on ",
+        "Obstacle Avoidance Planning Algorithm for Robotic Arm Motion",
+        "Vision-based obstacle avoidance robotic arm path planning ba",
+        "Obstacle avoidance path planning of 6-DOF robotic arm based "
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 41,
+      "n_surveys": 3,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 41,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Robotic arm obstacle avoidance path planning based on improv",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Obstacle Avoidance of Robotic Arm in Path Planning Based on ",
+        "n_references_plus_citations": 1,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Obstacle Avoidance Planning Algorithm for Robotic Arm Motion",
+        "n_references_plus_citations": 5,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Vision-based obstacle avoidance robotic arm path planning ba",
+        "n_references_plus_citations": 21,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Obstacle avoidance path planning of 6-DOF robotic arm based ",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T20:41:03Z",
+    "elapsed_s": 5.411
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:41:03Z",
+    "input_summary": {
+      "n_candidates": 41,
+      "topic_len": 25,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 7,
+      "n_weak_reject": 25,
+      "n_reject": 9
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:41:20Z",
+    "elapsed_s": 17.563
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:41:20Z",
+    "input_summary": {
+      "n_papers": 17,
+      "n_weak": 41,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:41:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T20:41:31Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:41:31Z",
+    "elapsed_s": 10.833
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T20:41:31Z",
+    "input_summary": {
+      "papers": 17
+    },
+    "output_summary": {
+      "nodes": 17,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:41:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T20:41:31Z",
+    "input_summary": {
+      "n_verified": 17
+    },
+    "output_summary": {
+      "n_baseline": 16,
+      "n_parallel": 0,
+      "n_survey": 1,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:41:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T20:41:36Z",
+    "input_summary": {
+      "n_baseline": 16,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:41:36Z",
+    "elapsed_s": 5.404
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T20:41:45Z",
+    "input_summary": {
+      "n_baseline": 16,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:41:45Z",
+    "elapsed_s": 8.908
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T20:41:57Z",
+    "input_summary": {
+      "n_baseline": 16,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:41:57Z",
+    "elapsed_s": 11.527
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T20:41:54Z",
+    "input_summary": {
+      "n_baseline": 16
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:41:54Z",
+    "elapsed_s": 9.07
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T20:42:08Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Fuzzy-PPO-RRT-MSC"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:42:08Z",
+    "elapsed_s": 11.095
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T20:42:08Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:42:08Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T20:42:20Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:42:20Z",
+    "elapsed_s": 11.781
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T20:42:28Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:42:28Z",
+    "elapsed_s": 8.368
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T20:42:43Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Fuzzy-PPO-RRT-MSC机械臂路径规划模型"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:42:43Z",
+    "elapsed_s": 14.789
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T20:42:43Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:42:43Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T20:42:53Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:42:53Z",
+    "elapsed_s": 9.923
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T20:43:00Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:43:00Z",
+    "elapsed_s": 7.094
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T20:43:00Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:43:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T20:43:00Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于视觉的机械臂的目标检测和避障路径规划研究与应用",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "视觉引导的机械臂目标检测与改进RRT避障路径规划",
+          "research_question": "如何将视觉目标检测与改进的RRT路径规划算法结合，实现机械臂在动态环境中的实时避障？",
+          "baseline": "An improved RRT-based path planning approach with dynamic cone angle guidance for robotic manipulator obstacle avoidance",
+          "improved_module_source": "An improved RRT-based path planning approach with dynamic cone angle guidance for robotic manipulator obstacle avoidance",
+          "data_source": null,
+          "experiment_metrics": "An improved RRT-based path planning approach with dynamic cone angle guidance for robotic manipulator obstacle avoidance",
+          "risk": "视觉检测模块与路径规划模块的实时融合可能存在延迟，影响避障效果；缺乏公开数据集验证视觉检测性能。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于视觉的机械臂避障路径规划：改进A*与人工势场法融合",
+          "research_question": "在视觉感知环境下，改进A*算法与人工势场法融合能否提升机械臂避障路径规划的平滑性和安全性？",
+          "baseline": "Obstacle avoidance path planning of 6-DOF robotic arm based on improved A* algorithm and artificial potential field method",
+          "improved_module_source": "Obstacle avoidance path planning of 6-DOF robotic arm based on improved A* algorithm and artificial potential field method",
+          "data_source": null,
+          "experiment_metrics": "Obstacle avoidance path planning of 6-DOF robotic arm based on improved A* algorithm and artificial potential field method",
+          "risk": "人工势场法易陷入局部极小值，视觉检测误差可能导致路径规划失败。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于多级PPO框架的视觉避障机械臂路径规划",
+          "research_question": "多级PPO框架在视觉输入下能否有效处理机械臂避障路径规划中的高维状态空间和动态障碍物？",
+          "baseline": "Vision-based obstacle avoidance robotic arm path planning based on a multi-level PPO framework",
+          "improved_module_source": "Vision-based obstacle avoidance robotic arm path planning based on a multi-level PPO framework",
+          "data_source": null,
+          "experiment_metrics": "Vision-based obstacle avoidance robotic arm path planning based on a multi-level PPO framework",
+          "risk": "强化学习训练收敛慢，视觉特征提取可能增加训练复杂度；缺乏公开基准环境。",
+          "estimated_workload": "5人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:43:00Z",
+    "elapsed_s": 0.001
+  }
+]

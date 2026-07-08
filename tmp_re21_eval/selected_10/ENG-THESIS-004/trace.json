@@ -1,0 +1,567 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T03:35:25Z",
+    "input_summary": {
+      "topic": "基于YOLOv4的目标检测与测距方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:35:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T03:35:33Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:35:33Z",
+    "elapsed_s": 8.606
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T03:35:33Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:35:33Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T03:35:33Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T03:36:29Z",
+    "elapsed_s": 55.333
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T03:36:29Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 16,
+      "dropped": 15,
+      "pre_filter_keep": 16,
+      "pre_filter_drop": 7,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 16,
+        "pre_drop": 7,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:36:39Z",
+    "elapsed_s": 10.341
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T03:36:39Z",
+    "input_summary": {
+      "n_candidates": 16,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 5,
+      "n_weak_reject": 10,
+      "n_reject": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:36:52Z",
+    "elapsed_s": 13.025
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T03:36:52Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 10,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:36:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T03:36:52Z",
+    "input_summary": {
+      "n_verified": 5,
+      "n_seeds": 2,
+      "seed_titles": [
+        "YOLOv4-5D: An Effective and Efficient Object Detector for Au",
+        "YOLOv4: Optimal Speed and Accuracy of Object Detection"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 29,
+      "n_surveys": 3,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 2,
+        "n_expanded": 29,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "YOLOv4-5D: An Effective and Efficient Object Detector for Au",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T03:37:30Z",
+    "elapsed_s": 37.637
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T03:37:30Z",
+    "input_summary": {
+      "n_candidates": 29,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 12,
+      "n_reject": 15
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:37:46Z",
+    "elapsed_s": 16.47
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T03:37:46Z",
+    "input_summary": {
+      "n_papers": 7,
+      "n_weak": 22,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:37:46Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T03:38:11Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 7,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:38:11Z",
+    "elapsed_s": 24.58
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T03:38:11Z",
+    "input_summary": {
+      "papers": 7
+    },
+    "output_summary": {
+      "nodes": 7,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:38:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T03:38:11Z",
+    "input_summary": {
+      "n_verified": 7
+    },
+    "output_summary": {
+      "n_baseline": 6,
+      "n_parallel": 1,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:38:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T03:38:20Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:38:20Z",
+    "elapsed_s": 9.456
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T03:38:35Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:38:35Z",
+    "elapsed_s": 14.894
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T03:38:53Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:38:53Z",
+    "elapsed_s": 17.508
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T03:38:50Z",
+    "input_summary": {
+      "n_baseline": 6
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:38:50Z",
+    "elapsed_s": 14.706
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T03:39:04Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "TinyDepth-YOLO"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:39:04Z",
+    "elapsed_s": 11.051
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T03:39:04Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:39:04Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T03:39:14Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:39:14Z",
+    "elapsed_s": 10.746
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T03:39:26Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:39:26Z",
+    "elapsed_s": 11.713
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T03:39:26Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:39:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T03:39:26Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于YOLOv4的目标检测与测距方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLOv4的2D目标检测与单目测距融合方法研究",
+          "research_question": "如何将YOLOv4目标检测结果与单目视觉几何模型结合，实现车辆前方目标的实时距离估计？",
+          "baseline": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+          "improved_module_source": "YOLOv4-5D: An Effective and Efficient Object Detector for Autonomous Driving",
+          "data_source": null,
+          "experiment_metrics": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+          "risk": "单目测距依赖已知目标尺寸或地面假设，实际场景中目标尺寸变化大，测距精度可能受限。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "面向交通场景的YOLOv4-tiny轻量化检测与测距系统",
+          "research_question": "在嵌入式平台上，YOLOv4-tiny能否在保持实时性的同时，通过改进网络结构提升小目标检测精度并支持测距？",
+          "baseline": "Real-time object detection method based on improved YOLOv4-tiny",
+          "improved_module_source": "Advances in You Only Look Once (YOLO) algorithms for lane and object detection in autonomous vehicles",
+          "data_source": null,
+          "experiment_metrics": "Real-time object detection method based on improved YOLOv4-tiny",
+          "risk": "轻量化模型精度与测距准确性之间的权衡，可能无法同时满足高精度检测与测距需求。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于Scaled-YOLOv4的多尺度目标检测与测距方法",
+          "research_question": "Scaled-YOLOv4的不同尺度版本（如YOLOv4-CSP）在检测不同距离目标时的性能差异如何？如何利用多尺度特征提升测距鲁棒性？",
+          "baseline": "Scaled-YOLOv4: Scaling Cross Stage Partial Network",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Scaled-YOLOv4: Scaling Cross Stage Partial Network",
+          "risk": "多尺度模型参数量大，实时性可能下降；测距模块与检测网络的联合优化缺乏公开基准。",
+          "estimated_workload": "5人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:39:26Z",
+    "elapsed_s": 0.0
+  }
+]

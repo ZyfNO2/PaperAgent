@@ -1,0 +1,635 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T21:04:36Z",
+    "input_summary": {
+      "topic": "基于深度学习的无监督三维点云配准算法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:04:36Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T21:04:40Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:04:40Z",
+    "elapsed_s": 4.05
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T21:04:40Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:04:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T21:04:40Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 28,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T21:04:53Z",
+    "elapsed_s": 13.295
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T21:04:53Z",
+    "input_summary": {
+      "n_candidates": 28
+    },
+    "output_summary": {
+      "kept": 20,
+      "dropped": 8,
+      "pre_filter_keep": 20,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 20,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:04:58Z",
+    "elapsed_s": 5.465
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T21:04:58Z",
+    "input_summary": {
+      "n_candidates": 20,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 11,
+      "n_reject": 9
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:05:05Z",
+    "elapsed_s": 7.115
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T21:05:05Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 11,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:05:05Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-05T21:05:05Z",
+    "input_summary": {
+      "n_verified": 8,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Momentum Contrast for Unsupervised Visual Representation Lea",
+        "Unsupervised Learning of Depth and Ego-Motion from Video",
+        "Unsupervised Learning of Visual Representations by Solving J",
+        "Deep Clustering for Unsupervised Learning of Visual Features",
+        "Unsupervised Representation Learning with Deep Convolutional"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 117,
+      "n_surveys": 2,
+      "n_repos": 13
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 117,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Momentum Contrast for Unsupervised Visual Representation Lea",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Unsupervised Learning of Depth and Ego-Motion from Video",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Unsupervised Learning of Visual Representations by Solving J",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Deep Clustering for Unsupervised Learning of Visual Features",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Unsupervised Representation Learning with Deep Convolutional",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-05T21:05:37Z",
+    "elapsed_s": 31.619
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T21:05:37Z",
+    "input_summary": {
+      "n_candidates": 117,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 33,
+      "n_reject": 84
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:06:05Z",
+    "elapsed_s": 28.066
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T21:06:05Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 33,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:06:05Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T21:06:15Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:06:15Z",
+    "elapsed_s": 10.334
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T21:06:15Z",
+    "input_summary": {
+      "papers": 8
+    },
+    "output_summary": {
+      "nodes": 8,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:06:15Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T21:06:15Z",
+    "input_summary": {
+      "n_verified": 8
+    },
+    "output_summary": {
+      "n_baseline": 0,
+      "n_parallel": 8,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:06:15Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-05T21:06:20Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:06:20Z",
+    "elapsed_s": 4.055
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T21:06:37Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_packages": 8,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:06:37Z",
+    "elapsed_s": 17.283
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-05T21:06:49Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:06:49Z",
+    "elapsed_s": 12.687
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-05T21:06:55Z",
+    "input_summary": {
+      "n_baseline": 0
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:06:55Z",
+    "elapsed_s": 5.675
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-05T21:07:05Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "ContraPuzzleGAN-Reg"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:07:05Z",
+    "elapsed_s": 10.026
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T21:07:05Z",
+    "input_summary": {
+      "n_packages": 8
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:07:05Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-05T21:07:17Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:07:17Z",
+    "elapsed_s": 11.767
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-05T21:07:25Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 8
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:07:25Z",
+    "elapsed_s": 8.034
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-05T21:07:25Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:07:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-05T21:07:25Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的无监督三维点云配准算法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 8,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于对比学习的无监督点云配准特征提取",
+          "research_question": "如何利用对比学习范式从无标注三维点云中学习旋转平移不变的特征表示，以提升配准精度？",
+          "baseline": "Momentum Contrast for Unsupervised Visual Representation Learning",
+          "improved_module_source": "Momentum Contrast for Unsupervised Visual Representation Learning",
+          "data_source": null,
+          "experiment_metrics": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "risk": "对比学习在点云上的正负样本构造策略可能不直接适用，需要大量调参。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "基于自监督几何约束的点云配准网络",
+          "research_question": "能否利用点云自身的几何一致性（如深度、运动）设计自监督损失，替代人工标注实现配准？",
+          "baseline": "Unsupervised Learning of Depth and Ego-Motion from Video",
+          "improved_module_source": "Unsupervised Learning of Depth and Ego-Motion from Video",
+          "data_source": null,
+          "experiment_metrics": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "risk": "几何约束在点云稀疏或噪声大时可能不稳定，需要设计鲁棒损失函数。",
+          "estimated_workload": "8人月"
+        },
+        {
+          "title": "基于拼图任务的无监督点云局部特征学习",
+          "research_question": "如何将图像领域的拼图预训练任务迁移到三维点云，以学习局部几何结构用于配准？",
+          "baseline": "Unsupervised Learning of Visual Representations by Solving Jigsaw Puzzles",
+          "improved_module_source": "Unsupervised Learning of Visual Representations by Solving Jigsaw Puzzles",
+          "data_source": null,
+          "experiment_metrics": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "risk": "点云的无序性和不规则性使得拼图任务的定义和实现复杂。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于深度聚类的无监督点云配准框架",
+          "research_question": "能否通过深度聚类自动发现点云中的语义结构，并利用聚类一致性引导配准？",
+          "baseline": "Deep Clustering for Unsupervised Learning of Visual Features",
+          "improved_module_source": "Deep Clustering for Unsupervised Learning of Visual Features",
+          "data_source": null,
+          "experiment_metrics": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "risk": "聚类结果可能不稳定，且与配准目标之间的关联需要精心设计。",
+          "estimated_workload": "7人月"
+        },
+        {
+          "title": "基于生成对抗网络的无监督点云配准数据增强",
+          "research_question": "如何利用生成对抗网络生成多样化的点云变换样本，以增强无监督配准模型的泛化能力？",
+          "baseline": "Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks",
+          "improved_module_source": "Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks",
+          "data_source": null,
+          "experiment_metrics": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "risk": "GAN训练不稳定，生成的点云质量可能影响配准性能。",
+          "estimated_workload": "9人月"
+        },
+        {
+          "title": "基于L-统计量鲁棒损失的无监督点云配准",
+          "research_question": "如何利用L-统计量设计对噪声和离群点鲁棒的无监督损失函数，提升配准的稳定性？",
+          "baseline": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "improved_module_source": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "data_source": null,
+          "experiment_metrics": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "risk": "L-统计量的计算复杂度较高，可能影响训练效率。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "基于置换对称性的无监督点云配准模型",
+          "research_question": "如何利用点云的置换对称性设计无监督学习目标，使模型对点序不敏感并提升配准精度？",
+          "baseline": "Minimal model of permutation symmetry in unsupervised learning",
+          "improved_module_source": "Minimal model of permutation symmetry in unsupervised learning",
+          "data_source": null,
+          "experiment_metrics": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "risk": "置换对称性在点云配准中的具体实现形式尚不明确，需要探索。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于平坦潜流形的无监督点云配准表示学习",
+          "research_question": "如何通过VAE学习平坦的潜流形，使得点云变换在潜空间中线性可分，从而简化配准？",
+          "baseline": "Learning Flat Latent Manifolds with VAEs",
+          "improved_module_source": "Learning Flat Latent Manifolds with VAEs",
+          "data_source": null,
+          "experiment_metrics": "Robust Unsupervised Learning via L-Statistic Minimization",
+          "risk": "平坦流形假设可能过于严格，实际点云数据分布复杂。",
+          "estimated_workload": "7人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:07:25Z",
+    "elapsed_s": 0.0
+  }
+]

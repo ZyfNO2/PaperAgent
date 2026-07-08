@@ -1,0 +1,865 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T14:22:11Z",
+    "input_summary": {
+      "topic": "基于视觉的无人机识别与跟踪技术研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:22:11Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T14:22:13Z",
+    "input_summary": {
+      "topic_len": 17
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:22:13Z",
+    "elapsed_s": 2.22,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T14:22:13Z",
+    "input_summary": {
+      "topic_len": 17,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:22:13Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T14:22:13Z",
+    "input_summary": {
+      "topic_len": 17,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 41,
+      "n_repo_candidates": 2,
+      "n_steps": 8,
+      "n_tool_calls": 7,
+      "raw_tools": [
+        "openalex",
+        "github",
+        "arxiv",
+        "semantic_scholar",
+        "crossref",
+        "huggingface"
+      ],
+      "per_adapter": {
+        "arxiv": 24,
+        "openalex": 12,
+        "crossref": 12,
+        "github": 2,
+        "semantic_scholar": 0,
+        "huggingface": 0
+      },
+      "failed_adapters": [
+        "huggingface",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 2
+      },
+      {
+        "tool": "arxiv",
+        "n": 24
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "huggingface",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:22:48Z",
+    "elapsed_s": 35.773
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T14:22:48Z",
+    "input_summary": {
+      "n_candidates": 41
+    },
+    "output_summary": {
+      "kept": 41,
+      "dropped": 0,
+      "pre_filter_keep": 41,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 41,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T14:22:48Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T14:22:48Z",
+    "input_summary": {
+      "n_candidates": 41,
+      "topic_len": 17,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 15,
+      "n_weak_reject": 14,
+      "n_reject": 10
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:22:59Z",
+    "elapsed_s": 10.19
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T14:22:59Z",
+    "input_summary": {
+      "n_papers": 15,
+      "n_weak": 14,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 2,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:22:59Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T14:22:59Z",
+    "input_summary": {
+      "n_verified": 15,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Unmanned Aerial Vehicle Visual Detection and Tracking using ",
+        "Implementation of an Onboard Visual Tracking System with Sma",
+        "Towards Robust Visual Tracking for Unmanned Aerial Vehicle w",
+        "Image Guided Visual Tracking Control System for Unmanned Mul",
+        "Visual tracking and control of Unmanned Aerial Vehicle"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 21,
+      "n_surveys": 2,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 21,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Unmanned Aerial Vehicle Visual Detection and Tracking using ",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Implementation of an Onboard Visual Tracking System with Sma",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Towards Robust Visual Tracking for Unmanned Aerial Vehicle w",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Image Guided Visual Tracking Control System for Unmanned Mul",
+        "n_references_plus_citations": 18,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Visual tracking and control of Unmanned Aerial Vehicle",
+        "n_references_plus_citations": 3,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-08T14:23:00Z",
+    "elapsed_s": 1.553
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T14:23:00Z",
+    "input_summary": {
+      "n_candidates": 21,
+      "topic_len": 17,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 11,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:23:05Z",
+    "elapsed_s": 4.904
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T14:23:05Z",
+    "input_summary": {
+      "n_papers": 18,
+      "n_weak": 25,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 2,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:23:05Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T14:24:21Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:24:21Z",
+    "elapsed_s": 76.244,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T14:24:21Z",
+    "input_summary": {
+      "papers": 18
+    },
+    "output_summary": {
+      "nodes": 20,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:24:21Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T14:24:24Z",
+    "input_summary": {
+      "n_verified": 18
+    },
+    "output_summary": {
+      "n_baseline": 17,
+      "n_parallel": 1,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": true
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier+llm_reclassify",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:24:24Z",
+    "elapsed_s": 3.097,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T14:24:28Z",
+    "input_summary": {
+      "n_baseline": 17,
+      "n_dataset": 0,
+      "n_repo": 2
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:24:28Z",
+    "elapsed_s": 3.683,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T14:24:40Z",
+    "input_summary": {
+      "n_baseline": 17,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:24:40Z",
+    "elapsed_s": 11.548,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T14:24:50Z",
+    "input_summary": {
+      "n_baseline": 17,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:24:50Z",
+    "elapsed_s": 9.991,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T14:24:48Z",
+    "input_summary": {
+      "n_baseline": 17
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:24:48Z",
+    "elapsed_s": 8.044,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T14:24:59Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "MultiSpecTriTrack"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:24:59Z",
+    "elapsed_s": 8.812,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T14:24:59Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:24:59Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T14:25:06Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:25:06Z",
+    "elapsed_s": 7.218,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T14:25:11Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:25:11Z",
+    "elapsed_s": 4.867,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T14:25:19Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "MultiSpec-TriTrack"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:25:19Z",
+    "elapsed_s": 8.612,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T14:25:19Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:25:19Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T14:25:27Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:25:27Z",
+    "elapsed_s": 7.867,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T14:25:32Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:25:32Z",
+    "elapsed_s": 5.057,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T14:25:32Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:25:32Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T14:25:32Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于视觉的无人机识别与跟踪技术研究",
+      "n_papers": 18,
+      "n_baseline": 17,
+      "n_parallel": 1,
+      "n_dataset": 0,
+      "n_repo": 2,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于深度学习的无人机视觉检测与跟踪基准性能评估",
+          "research_question": "在无人机对无人机（air-to-air）视觉检测与跟踪任务中，当前主流深度学习模型（如YOLO系列、Siamese网络）在微型无人机目标上的检测精度与跟踪鲁棒性如何？",
+          "baseline": "Unmanned Aerial Vehicle Visual Detection and Tracking using Deep Neural Networks: A Performance Benchmark",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Unmanned Aerial Vehicle Visual Detection and Tracking using Deep Neural Networks: A Performance Benchmark",
+          "risk": "公开的无人机航拍数据集可能缺乏微型无人机或远距离小目标标注，需自行采集或标注。",
+          "estimated_workload": "3人月（包括模型复现、数据集整理、评估实验）"
+        },
+        {
+          "title": "基于注意力机制的无人机视觉跟踪滤波器改进",
+          "research_question": "在无人机视觉跟踪中，引入三重注意力机制的相关滤波器能否在遮挡、光照变化和快速运动场景下提升跟踪精度与速度？",
+          "baseline": "Towards Robust Visual Tracking for Unmanned Aerial Vehicle with Tri-Attentional Correlation Filters",
+          "improved_module_source": "Towards Robust Visual Tracking for Unmanned Aerial Vehicle with Tri-Attentional Correlation Filters",
+          "data_source": null,
+          "experiment_metrics": "Towards Robust Visual Tracking for Unmanned Aerial Vehicle with Tri-Attentional Correlation Filters",
+          "risk": "注意力模块可能增加计算开销，在嵌入式无人机平台上实时性可能不足。",
+          "estimated_workload": "4人月（算法改进、消融实验、嵌入式平台移植测试）"
+        },
+        {
+          "title": "基于视觉伺服控制的无人机目标跟踪系统",
+          "research_question": "如何将视觉检测与跟踪结果与无人机飞行控制（视觉伺服）结合，实现固定翼或多旋翼无人机对移动目标的自主跟踪？",
+          "baseline": "Visual tracking and control of Unmanned Aerial Vehicle",
+          "improved_module_source": "Image Guided Visual Tracking Control System for Unmanned Multirotor Aerial Vehicle with Uncertainty",
+          "data_source": null,
+          "experiment_metrics": "Visual tracking and control of Unmanned Aerial Vehicle",
+          "risk": "视觉伺服控制对延迟敏感，检测跟踪模块的帧率波动可能导致控制不稳定。",
+          "estimated_workload": "5人月（系统集成、仿真环境搭建、实飞实验）"
+        },
+        {
+          "title": "微型无人机空中视觉检测的深度学习实验评估",
+          "research_question": "针对微型无人机（Micro-UAV）的空中视觉检测任务，不同深度学习架构（如Faster R-CNN、SSD、YOLOv5）在检测距离、目标尺度变化下的性能差异如何？",
+          "baseline": "Air-to-Air Visual Detection of Micro-UAVs: An Experimental Evaluation of Deep Learning",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Air-to-Air Visual Detection of Micro-UAVs: An Experimental Evaluation of Deep Learning",
+          "risk": "微型无人机目标小、背景复杂，现有模型可能漏检率高，需针对性优化。",
+          "estimated_workload": "3人月（模型训练、测试集构建、性能对比）"
+        },
+        {
+          "title": "基于视觉的微型无人机距离估计与跟踪方法",
+          "research_question": "如何利用单目视觉从检测到的微型无人机图像中估计其距离，并融合到跟踪框架中以提高跟踪稳定性？",
+          "baseline": "Vision-Based Detection and Distance Estimation of Micro Unmanned Aerial Vehicles",
+          "improved_module_source": "Vision-Based Detection and Distance Estimation of Micro Unmanned Aerial Vehicles",
+          "data_source": null,
+          "experiment_metrics": "Vision-Based Detection and Distance Estimation of Micro Unmanned Aerial Vehicles",
+          "risk": "单目距离估计精度受目标尺寸先验和相机标定影响，误差可能较大。",
+          "estimated_workload": "4人月（距离估计算法实现、跟踪融合、实地测试）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:25:32Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

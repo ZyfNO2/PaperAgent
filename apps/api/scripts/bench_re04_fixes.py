@@ -24,10 +24,8 @@ Run:
 """
 from __future__ import annotations
 
-import importlib
 import io
 import json
-import math
 import os
 import re
 import sys
@@ -159,7 +157,7 @@ def _shadow_old_build_query_matrix_baseline(raw_topic: str, topic_atoms: dict) -
     """
     method = list(topic_atoms.get("method_terms") or [])
     task = list(topic_atoms.get("task_terms") or [])
-    fb_atom = (topic_atoms.get("query_atoms_en") or [raw_topic])[0] or raw_topic
+    (topic_atoms.get("query_atoms_en") or [raw_topic])[0] or raw_topic
 
     def _join(*parts):
         return " ".join((p or "").strip() for p in parts if (p or "").strip())
@@ -1201,11 +1199,11 @@ def main() -> int:
     lines.append("---")
     lines.append("")
     if total_fail == 0:
-        lines.append(f"## Summary")
+        lines.append("## Summary")
         lines.append("")
         lines.append(f"All 7 fixes verified. {total_pass} tests passed, 0 mismatches with SOP expectations.")
     else:
-        lines.append(f"## Summary")
+        lines.append("## Summary")
         lines.append("")
         lines.append(f"All 7 fixes verified. {total_pass} tests passed, {total_fail} mismatches with SOP expectations.")
 

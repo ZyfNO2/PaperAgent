@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
 
 from app.services.retrieval.adapters.semantic_scholar_search import (
     _extract_paper_id,

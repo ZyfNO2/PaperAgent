@@ -5,18 +5,13 @@ Covers the regression cases R1-R5 from
 """
 from __future__ import annotations
 
-import pytest
 
 from app.services.agents.eval import compute_resource_status
 from app.services.agents.evidence_consistency import (
     audit_candidate,
-    audit_synthesis,
-    ConsistencyResult,
 )
 from app.services.agents.evidence_roles import (
     classify_dataset_role,
-    classify_baseline_role,
-    classify_parallel_role,
 )
 
 
@@ -84,7 +79,6 @@ def test_r2_agnostic_lane_detection_passes_consistency_audit():
     assert res.consistency_status in {"aligned", "proxy"}, res
     assert res.consistency_status != "metadata_mismatch"
     # The whole module must not contain a `_is_strong_noise` reference.
-    from app.services.agents.eval import compute_resource_status
     import app.services.agents.eval as eval_mod
     assert not hasattr(eval_mod, "_is_strong_noise"), (
         "Re06 SOP §4 Task A: production code must not retain _is_strong_noise"

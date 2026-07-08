@@ -1,0 +1,2436 @@
+{
+  "case_id": "ENG-THESIS-094",
+  "topic": "基于SCADA数据的风机叶片结冰诊断研究",
+  "user_constraints": {
+    "topic_zh": "基于SCADA数据的风机叶片结冰诊断研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "SCADA data analysis",
+      "feature extraction",
+      "pattern recognition",
+      "machine learning"
+    ],
+    "object": [
+      "wind turbine blade",
+      "icing"
+    ],
+    "task": [
+      "diagnosis",
+      "detection",
+      "classification"
+    ],
+    "scenario": [
+      "wind farm",
+      "wind turbine operation"
+    ],
+    "domain": "signal_timeseries",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "de-icing",
+      "ice prevention",
+      "structural health monitoring"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "SCADA data analysis wind turbine blade",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "feature extraction wind turbine blade",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "SCADA data analysis wind turbine blade diagnosis",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "arxiv": [
+      {
+        "title": "Data Encoding for Byzantine-Resilient Distributed Optimization",
+        "abstract": "We study distributed optimization in the presence of Byzantine adversaries, where both data and computation are distributed among $m$ worker machines, $t$ of which may be corrupt. The compromised nodes may collaboratively and arbitrarily deviate from their pre-specified programs, and a designated (master) node iteratively computes the model/parameter vector for generalized linear models. In this work, we primarily focus on two iterative algorithms: Proximal Gradient Descent (PGD) and Coordinate Descent (CD). Gradient descent (GD) is a special case of these algorithms. PGD is typically used in the data-parallel setting, where data is partitioned across different samples, whereas, CD is used in the model-parallelism setting, where data is partitioned across the parameter space.\n  In this paper, we propose a method based on data encoding and error correction over real numbers to combat adversarial attacks. We can tolerate up to $t\\leq \\lfloor\\frac{m-1}{2}\\rfloor$ corrupt worker nodes, which is information-theoretically optimal. We give deterministic guarantees, and our method does not assume any probability distribution on the data. We develop a {\\em sparse} encoding scheme which enables computationally efficient data encoding and decoding. We demonstrate a trade-off between the corruption threshold and the resource requirements (storage, computational, and communication complexity). As an example, for $t\\leq\\frac{m}{3}$, our scheme incurs only a {\\em constant} overhead on these resources, over that required by the plain distributed PGD/CD algorithms which provide no adversarial protection. To the best of our knowledge, ours is the first paper that makes CD secure against adversarial attacks.\n  Our encoding scheme extends efficiently to the data streaming model and for stochastic gradient descent (SGD). We also give experimental results to show the efficacy of our proposed schemes.",
+        "authors": [
+          "Deepesh Data",
+          "Linqi Song",
+          "Suhas Diggavi"
+        ],
+        "arxiv_id": "1907.02664v2",
+        "url": "http://arxiv.org/abs/1907.02664v2",
+        "published": "2019-07-05T03:31:43Z",
+        "year": 2019,
+        "source_query": "SCADA data analysis"
+      },
+      {
+        "title": "Byzantine-Resilient SGD in High Dimensions on Heterogeneous Data",
+        "abstract": "We study distributed stochastic gradient descent (SGD) in the master-worker architecture under Byzantine attacks. We consider the heterogeneous data model, where different workers may have different local datasets, and we do not make any probabilistic assumptions on data generation. At the core of our algorithm, we use the polynomial-time outlier-filtering procedure for robust mean estimation proposed by Steinhardt et al. (ITCS 2018) to filter-out corrupt gradients. In order to be able to apply their filtering procedure in our {\\em heterogeneous} data setting where workers compute {\\em stochastic} gradients, we derive a new matrix concentration result, which may be of independent interest.\n  We provide convergence analyses for smooth strongly-convex and non-convex objectives. We derive our results under the bounded variance assumption on local stochastic gradients and a {\\em deterministic} condition on datasets, namely, gradient dissimilarity; and for both these quantities, we provide concrete bounds in the statistical heterogeneous data model. We give a trade-off between the mini-batch size for stochastic gradients and the approximation error. Our algorithm can tolerate up to $\\frac{1}{4}$ fraction Byzantine workers. It can find approximate optimal parameters in the strongly-convex setting exponentially fast and reach to an approximate stationary point in the non-convex setting with a linear speed, thus, matching the convergence rates of vanilla SGD in the Byzantine-free setting.\n  We also propose and analyze a Byzantine-resilient SGD algorithm with gradient compression, where workers send $k$ random coordinates of their gradients. Under mild conditions, we show a $\\frac{d}{k}$-factor saving in communication bits as well as decoding complexity over our compression-free algorithm without affecting its convergence rate (order-wise) and the approximation error.",
+        "authors": [
+          "Deepesh Data",
+          "Suhas Diggavi"
+        ],
+        "arxiv_id": "2005.07866v1",
+        "url": "http://arxiv.org/abs/2005.07866v1",
+        "published": "2020-05-16T04:15:27Z",
+        "year": 2020,
+        "source_query": "SCADA data analysis"
+      },
+      {
+        "title": "Investigating SCADA Failures in Interdependent Critical Infrastructure Systems",
+        "abstract": "This paper is based on the initial ideas of a PhD proposal which will investigate SCADA failures in physical infrastructure systems. The results will be used to develop a new notation to help risk assessment using dependable computing concepts. SCADA systems are widely used within critical infrastructures to perform system controls and deliver services to linked and dependent systems. Failures in SCADA systems will be investigated to help us understand and prevent cascading failures in future.",
+        "authors": [
+          "Razgar Ebrahimy"
+        ],
+        "arxiv_id": "1404.7565v2",
+        "url": "http://arxiv.org/abs/1404.7565v2",
+        "published": "2014-04-30T00:52:03Z",
+        "year": 2014,
+        "source_query": "SCADA data analysis"
+      },
+      {
+        "title": "Constraints on dark energy from H II starburst galaxy apparent magnitude versus redshift data",
+        "abstract": "In this paper we use H II starburst galaxy apparent magnitude versus redshift data from Siegel et al. (2005) to constrain dark energy cosmological model parameters. These constraints are generally consistent with those derived using other data sets, but are not as restrictive as the tightest currently available constraints.",
+        "authors": [
+          "Data Mania",
+          "Bharat Ratra"
+        ],
+        "arxiv_id": "1110.5626v1",
+        "url": "http://arxiv.org/abs/1110.5626v1",
+        "published": "2011-10-25T19:44:22Z",
+        "year": 2011,
+        "source_query": "SCADA data analysis"
+      },
+      {
+        "title": "TerraGen: A Unified Multi-Task Layout Generation Framework for Remote Sensing Data Augmentation",
+        "abstract": "Remote sensing vision tasks require extensive labeled data across multiple, interconnected domains. However, current generative data augmentation frameworks are task-isolated, i.e., each vision task requires training an independent generative model, and ignores the modeling of geographical information and spatial constraints. To address these issues, we propose \\textbf{TerraGen}, a unified layout-to-image generation framework that enables flexible, spatially controllable synthesis of remote sensing imagery for various high-level vision tasks, e.g., detection, segmentation, and extraction. Specifically, TerraGen introduces a geographic-spatial layout encoder that unifies bounding box and segmentation mask inputs, combined with a multi-scale injection scheme and mask-weighted loss to explicitly encode spatial constraints, from global structures to fine details. Also, we construct the first large-scale multi-task remote sensing layout generation dataset containing 45k images and establish a standardized evaluation protocol for this task. Experimental results show that our TerraGen can achieve the best generation image quality across diverse tasks. Additionally, TerraGen can be used as a universal data-augmentation generator, enhancing downstream task performance significantly and demonstrating robust cross-task generalisation in both full-data and few-shot scenarios.",
+        "authors": [
+          "Datao Tang",
+          "Hao Wang",
+          "Yudeng Xin",
+          "Hui Qiao",
+          "Dongsheng Jiang",
+          "Yin Li",
+          "Zhiheng Yu",
+          "Xiangyong Cao"
+        ],
+        "arxiv_id": "2510.21391v1",
+        "url": "http://arxiv.org/abs/2510.21391v1",
+        "published": "2025-10-24T12:29:12Z",
+        "year": 2025,
+        "source_query": "SCADA data analysis"
+      },
+      {
+        "title": "How Many Genes Are Needed for a Discriminant Microarray Data Analysis ?",
+        "abstract": "The analysis of the leukemia data from Whitehead/MIT group is a discriminant analysis (also called a supervised learning). Among thousands of genes whose expression levels are measured, not all are needed for discriminant analysis: a gene may either not contribute to the separation of two types of tissues/cancers, or it may be redundant because it is highly correlated with other genes. There are two theoretical frameworks in which variable selection (or gene selection in our case) can be addressed. The first is model selection, and the second is model averaging. We have carried out model selection using Akaike information criterion and Bayesian information criterion with logistic regression (discrimination, prediction, or classification) to determine the number of genes that provide the best model. These model selection criteria set upper limits of 22-25 and 12-13 genes for this data set with 38 samples, and the best model consists of only one (no.4847, zyxin) or two genes. We have also carried out model averaging over the best single-gene logistic predictors using three different weights: maximized likelihood, prediction rate on training set, and equal weight. We have observed that the performance of most of these weighted predictors on the testing set is gradually reduced as more genes are included, but a clear cutoff that separates good and bad prediction performance is not found.",
+        "authors": [
+          "Wentian Li",
+          "Yaning Yang"
+        ],
+        "arxiv_id": "physics",
+        "url": "http://arxiv.org/abs/physics/0104029v1",
+        "published": "2001-04-06T01:38:36Z",
+        "year": 2001,
+        "source_query": "SCADA data analysis"
+      },
+      {
+        "title": "AeroGen: Enhancing Remote Sensing Object Detection with Diffusion-Driven Data Generation",
+        "abstract": "Remote sensing image object detection (RSIOD) aims to identify and locate specific objects within satellite or aerial imagery. However, there is a scarcity of labeled data in current RSIOD datasets, which significantly limits the performance of current detection algorithms. Although existing techniques, e.g., data augmentation and semi-supervised learning, can mitigate this scarcity issue to some extent, they are heavily dependent on high-quality labeled data and perform worse in rare object classes. To address this issue, this paper proposes a layout-controllable diffusion generative model (i.e. AeroGen) tailored for RSIOD. To our knowledge, AeroGen is the first model to simultaneously support horizontal and rotated bounding box condition generation, thus enabling the generation of high-quality synthetic images that meet specific layout and object category requirements. Additionally, we propose an end-to-end data augmentation framework that integrates a diversity-conditioned generator and a filtering mechanism to enhance both the diversity and quality of generated data. Experimental results demonstrate that the synthetic data produced by our method are of high quality and diversity. Furthermore, the synthetic RSIOD data can significantly improve the detection performance of existing RSIOD models, i.e., the mAP metrics on DIOR, DIOR-R, and HRSC datasets are improved by 3.7%, 4.3%, and 2.43%, respectively. The code is available at https://github.com/Sonettoo/AeroGen.",
+        "authors": [
+          "Datao Tang",
+          "Xiangyong Cao",
+          "Xuan Wu",
+          "Jialin Li",
+          "Jing Yao",
+          "Xueru Bai",
+          "Dongsheng Jiang",
+          "Yin Li",
+          "Deyu Meng"
+        ],
+        "arxiv_id": "2411.15497v3",
+        "url": "http://arxiv.org/abs/2411.15497v3",
+        "published": "2024-11-23T09:04:33Z",
+        "year": 2024,
+        "source_query": "SCADA data analysis"
+      },
+      {
+        "title": "A 20 Gbps Data Transmitting ASIC with PAM4 for Particle Physics Experiments",
+        "abstract": "We present the design principle and test results of a data transmitting ASIC, GBS20, for particle physics experiments. The goal of GBS20 will be an ASIC that employs two serializers each from the 10.24 Gbps lpGBT SerDes, sharing the PLL also from lpGBT. A PAM4 encoder plus a VCSEL driver will be implemented in the same die to use the same clock system, eliminating the need of CDRs in the PAM4 encoder. This way the transmitter module, GBT20, developed using the GBS20 ASIC, will have the exact lpGBT data interface and transmission protocol, with an output up to 20.48 Gbps over one fiber. With PAM4 embedded FPGAs at the receiving end, GBT20 will halve the fibers needed in a system and better use the input bandwidth of the FPGA. A prototype, GBS20v0 is fabricated using a commercial 65 nm CMOS technology. This prototype has two serializers and a PAM4 encoder sharing the lpGBT PLL, but no user data input. An internal PRBS generator provides data to the serializers. GBS20v0 is tested barely up to 20.48 Gbps. With lessons learned from this prototype, we are designing the second prototype, GBS20v1, that will have 16 user data input channels each at 1.28 Gbps. We present the design concept of the GBS20 ASIC and the GBT20 module, the preliminary test results, and lessons learned from GBS20v0 and the design of GBS20v1 which will be not only a test chip but also a user chip with 16 input data channels.",
+        "authors": [
+          "Li Zhang",
+          "Datao Gong",
+          "Suen Hou",
+          "Guanming Huang",
+          "Xing Huang",
+          "Chonghan Liu",
+          "Tiankuan Liu",
+          "Hanhan Sun",
+          "Quan Sun",
+          "Xiangming Sun",
+          "Wei Zhang",
+          "Jingbo Ye"
+        ],
+        "arxiv_id": "2010.16064v1",
+        "url": "http://arxiv.org/abs/2010.16064v1",
+        "published": "2020-10-30T04:24:49Z",
+        "year": 2020,
+        "source_query": "SCADA data analysis"
+      }
+    ],
+    "crossref": [
+      {
+        "title": "PR-214-05502-R01 Application of Fatigue Analysis Procedures Using Pipeline SCADA Data",
+        "doi": "10.55274/r0011248",
+        "DOI": "10.55274/r0011248",
+        "authors": [
+          "Carrol"
+        ],
+        "author": [
+          {
+            "family": "Carrol",
+            "sequence": "first",
+            "affiliation": [
+              {
+                "name": "BMT Fleet Technology Limited"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": "<jats:p>Fatigue life prediction for in-service pipelines can vary considerably, with one of the prime sources of variability being the pipeline operating pressure data typically captured and archived using a Supervisor Control and Data Acquisition (SCADA) system. SCADA systems may operate differently from one system to another and the records can be significantly different on the basis of the operational parameter sampling technique. Operating pressure data is a key input into integrity analysis for pipelines containing defects. BMT Fleet has collected close to 200 pressure data sets and has been investigating the sensitivity of fatigue life predictions for a number of pipeline operators for weld defects, dents, wrinkles, etc. on an individual basis. A strong understanding of the variability of the results has been obtained, but not formally presented in a comprehensive guidance document.The goal of the present investigation is to determine the impact of various precedures used to collect SCADA data on the resulting fatigue life predictions for defects. Based upon the analysis conducted, recommendations will be provided to outline techniques that should be applied to collecting SCADA data and for the subsequent use in integrity analysis processes. Procedures will be discussed to ensure that fatigue assessments based upon SCADA data are acceptably accurate, reliable and reproducible.</jats:p>",
+        "url": "https://doi.org/10.55274/r0011248",
+        "URL": "https://doi.org/10.55274/r0011248",
+        "year": 2007,
+        "publication_year": 2007,
+        "citation_count": 0,
+        "_crossref_type": "report"
+      },
+      {
+        "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+        "doi": "10.1002/we.70073/v2/review2",
+        "DOI": "10.1002/we.70073/v2/review2",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1002/we.70073/v2/review2",
+        "URL": "https://doi.org/10.1002/we.70073/v2/review2",
+        "year": 2025,
+        "publication_year": 2025,
+        "citation_count": 0,
+        "_crossref_type": "peer-review"
+      },
+      {
+        "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+        "doi": "10.1002/we.70073/v1/review1",
+        "DOI": "10.1002/we.70073/v1/review1",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1002/we.70073/v1/review1",
+        "URL": "https://doi.org/10.1002/we.70073/v1/review1",
+        "year": 2025,
+        "publication_year": 2025,
+        "citation_count": 0,
+        "_crossref_type": "peer-review"
+      },
+      {
+        "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+        "doi": "10.1002/we.70073/v2/review1",
+        "DOI": "10.1002/we.70073/v2/review1",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1002/we.70073/v2/review1",
+        "URL": "https://doi.org/10.1002/we.70073/v2/review1",
+        "year": 2025,
+        "publication_year": 2025,
+        "citation_count": 0,
+        "_crossref_type": "peer-review"
+      },
+      {
+        "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+        "doi": "10.1002/we.70073/v1/review2",
+        "DOI": "10.1002/we.70073/v1/review2",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1002/we.70073/v1/review2",
+        "URL": "https://doi.org/10.1002/we.70073/v1/review2",
+        "year": 2025,
+        "publication_year": 2025,
+        "citation_count": 0,
+        "_crossref_type": "peer-review"
+      },
+      {
+        "title": "Decision letter for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+        "doi": "10.1002/we.70073/v2/decision1",
+        "DOI": "10.1002/we.70073/v2/decision1",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1002/we.70073/v2/decision1",
+        "URL": "https://doi.org/10.1002/we.70073/v2/decision1",
+        "year": 2025,
+        "publication_year": 2025,
+        "citation_count": 0,
+        "_crossref_type": "peer-review"
+      },
+      {
+        "title": "Decision letter for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+        "doi": "10.1002/we.70073/v1/decision1",
+        "DOI": "10.1002/we.70073/v1/decision1",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1002/we.70073/v1/decision1",
+        "URL": "https://doi.org/10.1002/we.70073/v1/decision1",
+        "year": 2025,
+        "publication_year": 2025,
+        "citation_count": 0,
+        "_crossref_type": "peer-review"
+      },
+      {
+        "title": "SCADA Economics",
+        "doi": "10.1002/9781394438402.ch15",
+        "DOI": "10.1002/9781394438402.ch15",
+        "authors": [],
+        "author": [],
+        "venue": "SCADA",
+        "container-title": [
+          "SCADA"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1002/9781394438402.ch15",
+        "URL": "https://doi.org/10.1002/9781394438402.ch15",
+        "year": 2026,
+        "publication_year": 2026,
+        "citation_count": 0,
+        "_crossref_type": "other"
+      }
+    ],
+    "github": [
+      {
+        "id": 47986278,
+        "node_id": "MDEwOlJlcG9zaXRvcnk0Nzk4NjI3OA==",
+        "name": "GRASSMARLIN",
+        "full_name": "nsacyber/GRASSMARLIN",
+        "private": false,
+        "owner": {
+          "login": "nsacyber",
+          "id": 6088344,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjYwODgzNDQ=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/6088344?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/nsacyber",
+          "html_url": "https://github.com/nsacyber",
+          "followers_url": "https://api.github.com/users/nsacyber/followers",
+          "following_url": "https://api.github.com/users/nsacyber/following{/other_user}",
+          "gists_url": "https://api.github.com/users/nsacyber/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/nsacyber/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/nsacyber/subscriptions",
+          "organizations_url": "https://api.github.com/users/nsacyber/orgs",
+          "repos_url": "https://api.github.com/users/nsacyber/repos",
+          "events_url": "https://api.github.com/users/nsacyber/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/nsacyber/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/nsacyber/GRASSMARLIN",
+        "description": "Provides situational awareness of Industrial Control Systems (ICS) and Supervisory Control and Data Acquisition (SCADA) networks in support of network security assessments. #nsacyber",
+        "fork": false,
+        "url": "https://api.github.com/repos/nsacyber/GRASSMARLIN",
+        "forks_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/forks",
+        "keys_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/teams",
+        "hooks_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/hooks",
+        "issue_events_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/events",
+        "assignees_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/tags",
+        "blobs_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/languages",
+        "stargazers_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/stargazers",
+        "contributors_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/contributors",
+        "subscribers_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/subscribers",
+        "subscription_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/subscription",
+        "commits_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/merges",
+        "archive_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/downloads",
+        "issues_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/labels{/name}",
+        "releases_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/nsacyber/GRASSMARLIN/deployments",
+        "created_at": "2015-12-14T16:15:24Z",
+        "updated_at": "2026-07-05T23:21:47Z",
+        "pushed_at": "2020-02-24T16:24:07Z",
+        "git_url": "git://github.com/nsacyber/GRASSMARLIN.git",
+        "ssh_url": "git@github.com:nsacyber/GRASSMARLIN.git",
+        "clone_url": "https://github.com/nsacyber/GRASSMARLIN.git",
+        "svn_url": "https://github.com/nsacyber/GRASSMARLIN",
+        "homepage": "",
+        "size": 34984,
+        "stargazers_count": 1059,
+        "watchers_count": 1059,
+        "language": "Java",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 319,
+        "mirror_url": null,
+        "archived": true,
+        "disabled": false,
+        "open_issues_count": 24,
+        "license": {
+          "key": "other",
+          "name": "Other",
+          "spdx_id": "NOASSERTION",
+          "url": null,
+          "node_id": "MDc6TGljZW5zZTA="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "analysis",
+          "control-systems",
+          "ics",
+          "ics-scada",
+          "monitor",
+          "monitoring",
+          "network",
+          "networking",
+          "scada",
+          "scada-security",
+          "visualization"
+        ],
+        "visibility": "public",
+        "forks": 319,
+        "open_issues": 24,
+        "watchers": 1059,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 1059
+      },
+      {
+        "id": 1062671986,
+        "node_id": "R_kgDOP1cWcg",
+        "name": "korelate",
+        "full_name": "slalaure/korelate",
+        "private": false,
+        "owner": {
+          "login": "slalaure",
+          "id": 5296388,
+          "node_id": "MDQ6VXNlcjUyOTYzODg=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/5296388?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/slalaure",
+          "html_url": "https://github.com/slalaure",
+          "followers_url": "https://api.github.com/users/slalaure/followers",
+          "following_url": "https://api.github.com/users/slalaure/following{/other_user}",
+          "gists_url": "https://api.github.com/users/slalaure/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/slalaure/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/slalaure/subscriptions",
+          "organizations_url": "https://api.github.com/users/slalaure/orgs",
+          "repos_url": "https://api.github.com/users/slalaure/repos",
+          "events_url": "https://api.github.com/users/slalaure/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/slalaure/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/slalaure/korelate",
+        "description": "The open-source, AI-powered Unified Namespace (UNS) Operations Center. Visualize MQTT topic trees, build dynamic SVG HMIs, transform data via ETL, and leverage an embedded Autonomous AI Agent for alerting and historical time-series analysis.",
+        "fork": false,
+        "url": "https://api.github.com/repos/slalaure/korelate",
+        "forks_url": "https://api.github.com/repos/slalaure/korelate/forks",
+        "keys_url": "https://api.github.com/repos/slalaure/korelate/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/slalaure/korelate/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/slalaure/korelate/teams",
+        "hooks_url": "https://api.github.com/repos/slalaure/korelate/hooks",
+        "issue_events_url": "https://api.github.com/repos/slalaure/korelate/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/slalaure/korelate/events",
+        "assignees_url": "https://api.github.com/repos/slalaure/korelate/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/slalaure/korelate/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/slalaure/korelate/tags",
+        "blobs_url": "https://api.github.com/repos/slalaure/korelate/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/slalaure/korelate/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/slalaure/korelate/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/slalaure/korelate/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/slalaure/korelate/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/slalaure/korelate/languages",
+        "stargazers_url": "https://api.github.com/repos/slalaure/korelate/stargazers",
+        "contributors_url": "https://api.github.com/repos/slalaure/korelate/contributors",
+        "subscribers_url": "https://api.github.com/repos/slalaure/korelate/subscribers",
+        "subscription_url": "https://api.github.com/repos/slalaure/korelate/subscription",
+        "commits_url": "https://api.github.com/repos/slalaure/korelate/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/slalaure/korelate/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/slalaure/korelate/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/slalaure/korelate/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/slalaure/korelate/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/slalaure/korelate/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/slalaure/korelate/merges",
+        "archive_url": "https://api.github.com/repos/slalaure/korelate/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/slalaure/korelate/downloads",
+        "issues_url": "https://api.github.com/repos/slalaure/korelate/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/slalaure/korelate/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/slalaure/korelate/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/slalaure/korelate/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/slalaure/korelate/labels{/name}",
+        "releases_url": "https://api.github.com/repos/slalaure/korelate/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/slalaure/korelate/deployments",
+        "created_at": "2025-09-23T15:06:52Z",
+        "updated_at": "2026-07-01T04:41:17Z",
+        "pushed_at": "2026-05-27T16:08:19Z",
+        "git_url": "git://github.com/slalaure/korelate.git",
+        "ssh_url": "git@github.com:slalaure/korelate.git",
+        "clone_url": "https://github.com/slalaure/korelate.git",
+        "svn_url": "https://github.com/slalaure/korelate",
+        "homepage": "https://www.mqttunsviewer.com",
+        "size": 13982,
+        "stargazers_count": 24,
+        "watchers_count": 24,
+        "language": "JavaScript",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 6,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "ai-agent",
+          "alerting",
+          "duckdb",
+          "etl",
+          "iiot",
+          "llm",
+          "mcp",
+          "mqtt",
+          "scada",
+          "sparkplug-b",
+          "timescaledb",
+          "unified-namespace",
+          "uns"
+        ],
+        "visibility": "public",
+        "forks": 6,
+        "open_issues": 0,
+        "watchers": 24,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 24
+      },
+      {
+        "id": 1050133036,
+        "node_id": "R_kgDOPpfCLA",
+        "name": "Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool",
+        "full_name": "Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool",
+        "private": false,
+        "owner": {
+          "login": "Iankulani",
+          "id": 161088906,
+          "node_id": "U_kgDOCZoFig",
+          "avatar_url": "https://avatars.githubusercontent.com/u/161088906?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/Iankulani",
+          "html_url": "https://github.com/Iankulani",
+          "followers_url": "https://api.github.com/users/Iankulani/followers",
+          "following_url": "https://api.github.com/users/Iankulani/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Iankulani/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/Iankulani/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Iankulani/subscriptions",
+          "organizations_url": "https://api.github.com/users/Iankulani/orgs",
+          "repos_url": "https://api.github.com/users/Iankulani/repos",
+          "events_url": "https://api.github.com/users/Iankulani/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/Iankulani/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool",
+        "description": "Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool is an advanced cybersecurity solution designed to provide real-time monitoring, detection, and analysis of threats targeting SCADA (Supervisory Control and Data Acquisition) and industrial control systems.",
+        "fork": false,
+        "url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool",
+        "forks_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/forks",
+        "keys_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/teams",
+        "hooks_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/hooks",
+        "issue_events_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/events",
+        "assignees_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/tags",
+        "blobs_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/languages",
+        "stargazers_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/stargazers",
+        "contributors_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/contributors",
+        "subscribers_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/subscribers",
+        "subscription_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/subscription",
+        "commits_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/merges",
+        "archive_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/downloads",
+        "issues_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/labels{/name}",
+        "releases_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool/deployments",
+        "created_at": "2025-09-04T02:04:29Z",
+        "updated_at": "2025-11-22T13:27:37Z",
+        "pushed_at": "2025-11-22T13:27:34Z",
+        "git_url": "git://github.com/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool.git",
+        "ssh_url": "git@github.com:Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool.git",
+        "clone_url": "https://github.com/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool.git",
+        "svn_url": "https://github.com/Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool",
+        "homepage": null,
+        "size": 18,
+        "stargazers_count": 8,
+        "watchers_count": 8,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 1,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 1,
+        "open_issues": 0,
+        "watchers": 8,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 8
+      },
+      {
+        "id": 987629955,
+        "node_id": "R_kgDOOt4Jgw",
+        "name": "SCADA_data_MFD",
+        "full_name": "JingYuan93/SCADA_data_MFD",
+        "private": false,
+        "owner": {
+          "login": "JingYuan93",
+          "id": 161852033,
+          "node_id": "U_kgDOCaWqgQ",
+          "avatar_url": "https://avatars.githubusercontent.com/u/161852033?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/JingYuan93",
+          "html_url": "https://github.com/JingYuan93",
+          "followers_url": "https://api.github.com/users/JingYuan93/followers",
+          "following_url": "https://api.github.com/users/JingYuan93/following{/other_user}",
+          "gists_url": "https://api.github.com/users/JingYuan93/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/JingYuan93/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/JingYuan93/subscriptions",
+          "organizations_url": "https://api.github.com/users/JingYuan93/orgs",
+          "repos_url": "https://api.github.com/users/JingYuan93/repos",
+          "events_url": "https://api.github.com/users/JingYuan93/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/JingYuan93/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/JingYuan93/SCADA_data_MFD",
+        "description": "Implementation code and SCADA data for the paper \"Graph-Structured SCADA Data Guided Fault Detection with Propagation Analysis in Wind Turbines\"",
+        "fork": false,
+        "url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD",
+        "forks_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/forks",
+        "keys_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/teams",
+        "hooks_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/hooks",
+        "issue_events_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/events",
+        "assignees_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/tags",
+        "blobs_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/languages",
+        "stargazers_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/stargazers",
+        "contributors_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/contributors",
+        "subscribers_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/subscribers",
+        "subscription_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/subscription",
+        "commits_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/merges",
+        "archive_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/downloads",
+        "issues_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/labels{/name}",
+        "releases_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD/deployments",
+        "created_at": "2025-05-21T11:02:12Z",
+        "updated_at": "2026-06-01T11:44:21Z",
+        "pushed_at": "2025-06-16T06:57:11Z",
+        "git_url": "git://github.com/JingYuan93/SCADA_data_MFD.git",
+        "ssh_url": "git@github.com:JingYuan93/SCADA_data_MFD.git",
+        "clone_url": "https://github.com/JingYuan93/SCADA_data_MFD.git",
+        "svn_url": "https://github.com/JingYuan93/SCADA_data_MFD",
+        "homepage": "",
+        "size": 23996,
+        "stargazers_count": 6,
+        "watchers_count": 6,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 6,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 6
+      },
+      {
+        "id": 963829726,
+        "node_id": "R_kgDOOXLf3g",
+        "name": "oscillation-analysis-with-scada-data",
+        "full_name": "rte-france/oscillation-analysis-with-scada-data",
+        "private": false,
+        "owner": {
+          "login": "rte-france",
+          "id": 19531752,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjE5NTMxNzUy",
+          "avatar_url": "https://avatars.githubusercontent.com/u/19531752?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/rte-france",
+          "html_url": "https://github.com/rte-france",
+          "followers_url": "https://api.github.com/users/rte-france/followers",
+          "following_url": "https://api.github.com/users/rte-france/following{/other_user}",
+          "gists_url": "https://api.github.com/users/rte-france/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/rte-france/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/rte-france/subscriptions",
+          "organizations_url": "https://api.github.com/users/rte-france/orgs",
+          "repos_url": "https://api.github.com/users/rte-france/repos",
+          "events_url": "https://api.github.com/users/rte-france/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/rte-france/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/rte-france/oscillation-analysis-with-scada-data",
+        "description": "Python implementation of a method to locate the source of forced oscillations in a power system.",
+        "fork": false,
+        "url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data",
+        "forks_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/forks",
+        "keys_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/teams",
+        "hooks_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/hooks",
+        "issue_events_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/events",
+        "assignees_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/tags",
+        "blobs_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/languages",
+        "stargazers_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/stargazers",
+        "contributors_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/contributors",
+        "subscribers_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/subscribers",
+        "subscription_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/subscription",
+        "commits_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/merges",
+        "archive_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/downloads",
+        "issues_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/labels{/name}",
+        "releases_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/rte-france/oscillation-analysis-with-scada-data/deployments",
+        "created_at": "2025-04-10T09:17:43Z",
+        "updated_at": "2026-07-02T09:20:19Z",
+        "pushed_at": "2026-07-02T09:20:15Z",
+        "git_url": "git://github.com/rte-france/oscillation-analysis-with-scada-data.git",
+        "ssh_url": "git@github.com:rte-france/oscillation-analysis-with-scada-data.git",
+        "clone_url": "https://github.com/rte-france/oscillation-analysis-with-scada-data.git",
+        "svn_url": "https://github.com/rte-france/oscillation-analysis-with-scada-data",
+        "homepage": "",
+        "size": 2163,
+        "stargazers_count": 5,
+        "watchers_count": 5,
+        "language": "HTML",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": {
+          "key": "mpl-2.0",
+          "name": "Mozilla Public License 2.0",
+          "spdx_id": "MPL-2.0",
+          "url": "https://api.github.com/licenses/mpl-2.0",
+          "node_id": "MDc6TGljZW5zZTE0"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 5,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 5
+      },
+      {
+        "id": 1037805865,
+        "node_id": "R_kgDOPdupKQ",
+        "name": "Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy",
+        "full_name": "KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy",
+        "private": false,
+        "owner": {
+          "login": "KishoreB25",
+          "id": 185352140,
+          "node_id": "U_kgDOCww_zA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/185352140?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/KishoreB25",
+          "html_url": "https://github.com/KishoreB25",
+          "followers_url": "https://api.github.com/users/KishoreB25/followers",
+          "following_url": "https://api.github.com/users/KishoreB25/following{/other_user}",
+          "gists_url": "https://api.github.com/users/KishoreB25/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/KishoreB25/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/KishoreB25/subscriptions",
+          "organizations_url": "https://api.github.com/users/KishoreB25/orgs",
+          "repos_url": "https://api.github.com/users/KishoreB25/repos",
+          "events_url": "https://api.github.com/users/KishoreB25/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/KishoreB25/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy",
+        "description": "This study introduces a comprehensive AI-driven framework for short-term wind power forecasting using SCADA data, combining robust preprocessing, anomaly detection, and a comparative analysis of ML & DL models including XGBoost, LightGBM, Transformers, and Temporal Fusion Transformer.",
+        "fork": false,
+        "url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy",
+        "forks_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/forks",
+        "keys_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/teams",
+        "hooks_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/hooks",
+        "issue_events_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/events",
+        "assignees_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/tags",
+        "blobs_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/languages",
+        "stargazers_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/stargazers",
+        "contributors_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/contributors",
+        "subscribers_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/subscribers",
+        "subscription_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/subscription",
+        "commits_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/merges",
+        "archive_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/downloads",
+        "issues_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/labels{/name}",
+        "releases_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy/deployments",
+        "created_at": "2025-08-14T06:36:42Z",
+        "updated_at": "2026-07-03T18:19:43Z",
+        "pushed_at": "2025-08-14T17:38:03Z",
+        "git_url": "git://github.com/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy.git",
+        "ssh_url": "git@github.com:KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy.git",
+        "clone_url": "https://github.com/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy.git",
+        "svn_url": "https://github.com/KishoreB25/Advancing-short-term-wind-power-forecasting-by-AI-driven-models-for-improved-accuracy",
+        "homepage": "",
+        "size": 15329,
+        "stargazers_count": 5,
+        "watchers_count": 5,
+        "language": "Jupyter Notebook",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 3,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": {
+          "key": "mit",
+          "name": "MIT License",
+          "spdx_id": "MIT",
+          "url": "https://api.github.com/licenses/mit",
+          "node_id": "MDc6TGljZW5zZTEz"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "anomaly-detection",
+          "artificial-intelligence",
+          "deep-learning",
+          "jupyter-notebooks",
+          "machine-learning-models",
+          "matlab",
+          "pinn",
+          "powersystems",
+          "scada",
+          "transformer-models"
+        ],
+        "visibility": "public",
+        "forks": 3,
+        "open_issues": 0,
+        "watchers": 5,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 5
+      },
+      {
+        "id": 1141242635,
+        "node_id": "R_kgDORAX7Cw",
+        "name": "offshore-wind-optimization",
+        "full_name": "magueci/offshore-wind-optimization",
+        "private": false,
+        "owner": {
+          "login": "magueci",
+          "id": 256980277,
+          "node_id": "U_kgDOD1E1NQ",
+          "avatar_url": "https://avatars.githubusercontent.com/u/256980277?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/magueci",
+          "html_url": "https://github.com/magueci",
+          "followers_url": "https://api.github.com/users/magueci/followers",
+          "following_url": "https://api.github.com/users/magueci/following{/other_user}",
+          "gists_url": "https://api.github.com/users/magueci/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/magueci/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/magueci/subscriptions",
+          "organizations_url": "https://api.github.com/users/magueci/orgs",
+          "repos_url": "https://api.github.com/users/magueci/repos",
+          "events_url": "https://api.github.com/users/magueci/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/magueci/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/magueci/offshore-wind-optimization",
+        "description": "Digital Twin optimization tool for offshore wind turbines - SCADA data analysis & setpoint optimization (Python, SciPy, ML)",
+        "fork": false,
+        "url": "https://api.github.com/repos/magueci/offshore-wind-optimization",
+        "forks_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/forks",
+        "keys_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/teams",
+        "hooks_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/hooks",
+        "issue_events_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/events",
+        "assignees_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/tags",
+        "blobs_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/languages",
+        "stargazers_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/stargazers",
+        "contributors_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/contributors",
+        "subscribers_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/subscribers",
+        "subscription_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/subscription",
+        "commits_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/merges",
+        "archive_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/downloads",
+        "issues_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/labels{/name}",
+        "releases_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/magueci/offshore-wind-optimization/deployments",
+        "created_at": "2026-01-24T14:13:50Z",
+        "updated_at": "2026-06-16T08:23:56Z",
+        "pushed_at": "2026-06-16T08:23:50Z",
+        "git_url": "git://github.com/magueci/offshore-wind-optimization.git",
+        "ssh_url": "git@github.com:magueci/offshore-wind-optimization.git",
+        "clone_url": "https://github.com/magueci/offshore-wind-optimization.git",
+        "svn_url": "https://github.com/magueci/offshore-wind-optimization",
+        "homepage": "",
+        "size": 29,
+        "stargazers_count": 4,
+        "watchers_count": 4,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": {
+          "key": "mit",
+          "name": "MIT License",
+          "spdx_id": "MIT",
+          "url": "https://api.github.com/licenses/mit",
+          "node_id": "MDc6TGljZW5zZTEz"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "digital-twin",
+          "machine-learning",
+          "optimization",
+          "python",
+          "renewable-energy",
+          "scada",
+          "scipy",
+          "wind-energy",
+          "wind-turbine"
+        ],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 4,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 4
+      },
+      {
+        "id": 1206307254,
+        "node_id": "R_kgDOR-bJtg",
+        "name": "RSAR-Arch",
+        "full_name": "Irrsi/RSAR-Arch",
+        "private": false,
+        "owner": {
+          "login": "Irrsi",
+          "id": 280954141,
+          "node_id": "U_kgDOEL8FHQ",
+          "avatar_url": "https://avatars.githubusercontent.com/u/280954141?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/Irrsi",
+          "html_url": "https://github.com/Irrsi",
+          "followers_url": "https://api.github.com/users/Irrsi/followers",
+          "following_url": "https://api.github.com/users/Irrsi/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Irrsi/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/Irrsi/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Irrsi/subscriptions",
+          "organizations_url": "https://api.github.com/users/Irrsi/orgs",
+          "repos_url": "https://api.github.com/users/Irrsi/repos",
+          "events_url": "https://api.github.com/users/Irrsi/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/Irrsi/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/Irrsi/RSAR-Arch",
+        "description": "A very deep analysis of a Russian SCADA system(fully redacted IP's and any sensetive data)",
+        "fork": false,
+        "url": "https://api.github.com/repos/Irrsi/RSAR-Arch",
+        "forks_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/forks",
+        "keys_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/teams",
+        "hooks_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/hooks",
+        "issue_events_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/events",
+        "assignees_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/tags",
+        "blobs_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/languages",
+        "stargazers_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/stargazers",
+        "contributors_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/contributors",
+        "subscribers_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/subscribers",
+        "subscription_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/subscription",
+        "commits_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/merges",
+        "archive_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/downloads",
+        "issues_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/labels{/name}",
+        "releases_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/Irrsi/RSAR-Arch/deployments",
+        "created_at": "2026-04-09T19:34:02Z",
+        "updated_at": "2026-05-29T22:10:00Z",
+        "pushed_at": "2026-05-29T22:09:56Z",
+        "git_url": "git://github.com/Irrsi/RSAR-Arch.git",
+        "ssh_url": "git@github.com:Irrsi/RSAR-Arch.git",
+        "clone_url": "https://github.com/Irrsi/RSAR-Arch.git",
+        "svn_url": "https://github.com/Irrsi/RSAR-Arch",
+        "homepage": "",
+        "size": 392,
+        "stargazers_count": 3,
+        "watchers_count": 3,
+        "language": "C",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": {
+          "key": "other",
+          "name": "Other",
+          "spdx_id": "NOASSERTION",
+          "url": null,
+          "node_id": "MDc6TGljZW5zZTA="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 3,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 3
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<review-for-analysis-of-failures-downtimes-and-reliability-of-wind-turbines-from-scada-data>",
+        "type": "paper",
+        "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<decision-letter-for-analysis-of-failures-downtimes-and-reliability-of-wind-turbines-from-scada-data>",
+        "type": "paper",
+        "title": "Decision letter for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<jingyuan93-scada-data-mfd>",
+        "type": "paper",
+        "title": "JingYuan93/SCADA_data_MFD",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<investigating-scada-failures-in-interdependent-critical-infrastructure-systems>",
+        "type": "paper",
+        "title": "Investigating SCADA Failures in Interdependent Critical Infrastructure Systems",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<how-many-genes-are-needed-for-a-discriminant-microarray-data-analysis>",
+        "type": "paper",
+        "title": "How Many Genes Are Needed for a Discriminant Microarray Data Analysis ?",
+        "role": "parallel"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers wind turbine failures and reliability from SCADA data but not specifically blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/review2",
+      "url": "https://doi.org/10.1002/we.70073/v2/review2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Decision letter for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Same content as the review, not directly addressing blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/decision1",
+      "url": "https://doi.org/10.1002/we.70073/v2/decision1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "JingYuan93/SCADA_data_MFD",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine",
+        "fault detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides code and data for fault detection in wind turbines but not specifically for blade icing diagnosis.",
+      "doi": null,
+      "url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Implementation code and SCADA data for the paper \"Graph-Structured SCADA Data Guided Fault Detection with Propagation Analysis in Wind Turbines\""
+    },
+    {
+      "title": "Investigating SCADA Failures in Interdependent Critical Infrastructure Systems",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Mentions SCADA but focuses on infrastructure failures and risk assessment, not blade icing diagnosis.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1404.7565v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "This paper is based on the initial ideas of a PhD proposal which will investigate SCADA failures in physical infrastructure systems. The results will be used to develop a new notation to help risk assessment using dependable computing concepts. SCADA systems are widely used within critical infrastructures to perform system controls and deliver services to linked and dependent systems. Failures in SCADA systems will be investigated to help us understand and prevent cascading failures in future."
+    },
+    {
+      "title": "How Many Genes Are Needed for a Discriminant Microarray Data Analysis ?",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "discriminant analysis",
+        "supervised learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses machine learning for gene expression analysis, but domain is bioinformatics, not wind turbine icing.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/physics/0104029v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The analysis of the leukemia data from Whitehead/MIT group is a discriminant analysis (also called a supervised learning). Among thousands of genes whose expression levels are measured, not all are needed for discriminant analysis: a gene may either not contribute to the separation of two types of tissues/cancers, or it may be redundant because it is highly correlated with other genes. There are two theoretical frameworks in which variable selection (or gene selection in our case) can be addressed. The first is model selection, and the second is model averaging. We have carried out model selec"
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers wind turbine failures and reliability from SCADA data but not specifically blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/review2",
+      "url": "https://doi.org/10.1002/we.70073/v2/review2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Decision letter for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Same content as the review, not directly addressing blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/decision1",
+      "url": "https://doi.org/10.1002/we.70073/v2/decision1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "JingYuan93/SCADA_data_MFD",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine",
+        "fault detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides code and data for fault detection in wind turbines but not specifically for blade icing diagnosis.",
+      "doi": null,
+      "url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Implementation code and SCADA data for the paper \"Graph-Structured SCADA Data Guided Fault Detection with Propagation Analysis in Wind Turbines\""
+    },
+    {
+      "title": "Investigating SCADA Failures in Interdependent Critical Infrastructure Systems",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Mentions SCADA but focuses on infrastructure failures and risk assessment, not blade icing diagnosis.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1404.7565v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "This paper is based on the initial ideas of a PhD proposal which will investigate SCADA failures in physical infrastructure systems. The results will be used to develop a new notation to help risk assessment using dependable computing concepts. SCADA systems are widely used within critical infrastructures to perform system controls and deliver services to linked and dependent systems. Failures in SCADA systems will be investigated to help us understand and prevent cascading failures in future."
+    },
+    {
+      "title": "How Many Genes Are Needed for a Discriminant Microarray Data Analysis ?",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "discriminant analysis",
+        "supervised learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses machine learning for gene expression analysis, but domain is bioinformatics, not wind turbine icing.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/physics/0104029v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The analysis of the leukemia data from Whitehead/MIT group is a discriminant analysis (also called a supervised learning). Among thousands of genes whose expression levels are measured, not all are needed for discriminant analysis: a gene may either not contribute to the separation of two types of tissues/cancers, or it may be redundant because it is highly correlated with other genes. There are two theoretical frameworks in which variable selection (or gene selection in our case) can be addressed. The first is model selection, and the second is model averaging. We have carried out model selec"
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on failure and reliability analysis rather than blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/review2",
+      "url": "https://doi.org/10.1002/we.70073/v2/review2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "JingYuan93/SCADA_data_MFD",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "fault detection",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses fault detection in wind turbines but not specifically blade icing.",
+      "doi": null,
+      "url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Implementation code and SCADA data for the paper \"Graph-Structured SCADA Data Guided Fault Detection with Propagation Analysis in Wind Turbines\""
+    }
+  ],
+  "dataset_candidates": [],
+  "repo_candidates": [],
+  "baseline_candidates": [],
+  "parallel_candidates": [
+    {
+      "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers wind turbine failures and reliability from SCADA data but not specifically blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/review2",
+      "url": "https://doi.org/10.1002/we.70073/v2/review2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "parallel",
+      "why_relevant": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\" addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['scada data analysis', 'feature extraction', 'pattern recognition', 'machine learning', 'wind turbine blade', 'icing', 'diagnosis', 'detection', 'classification']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "scada data analysis",
+        "feature extraction",
+        "pattern recognition",
+        "machine learning",
+        "wind turbine blade",
+        "icing",
+        "diagnosis",
+        "detection",
+        "classification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Decision letter for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Same content as the review, not directly addressing blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/decision1",
+      "url": "https://doi.org/10.1002/we.70073/v2/decision1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "parallel",
+      "why_relevant": "Decision letter for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\" addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['scada data analysis', 'feature extraction', 'pattern recognition', 'machine learning', 'wind turbine blade', 'icing', 'diagnosis', 'detection', 'classification']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "scada data analysis",
+        "feature extraction",
+        "pattern recognition",
+        "machine learning",
+        "wind turbine blade",
+        "icing",
+        "diagnosis",
+        "detection",
+        "classification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "JingYuan93/SCADA_data_MFD",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine",
+        "fault detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides code and data for fault detection in wind turbines but not specifically for blade icing diagnosis.",
+      "doi": null,
+      "url": "https://api.github.com/repos/JingYuan93/SCADA_data_MFD",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Implementation code and SCADA data for the paper \"Graph-Structured SCADA Data Guided Fault Detection with Propagation Analysis in Wind Turbines\"",
+      "role": "parallel",
+      "why_relevant": "JingYuan93/SCADA_data_MFD addresses the same method+object spectrum via a different specific approach (matched: ['detection'], unmatched: ['scada data analysis', 'feature extraction', 'pattern recognition', 'machine learning', 'wind turbine blade', 'icing', 'diagnosis', 'classification']).",
+      "matched_topic_axes": [
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "scada data analysis",
+        "feature extraction",
+        "pattern recognition",
+        "machine learning",
+        "wind turbine blade",
+        "icing",
+        "diagnosis",
+        "classification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Investigating SCADA Failures in Interdependent Critical Infrastructure Systems",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Mentions SCADA but focuses on infrastructure failures and risk assessment, not blade icing diagnosis.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1404.7565v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "This paper is based on the initial ideas of a PhD proposal which will investigate SCADA failures in physical infrastructure systems. The results will be used to develop a new notation to help risk assessment using dependable computing concepts. SCADA systems are widely used within critical infrastructures to perform system controls and deliver services to linked and dependent systems. Failures in SCADA systems will be investigated to help us understand and prevent cascading failures in future.",
+      "role": "parallel",
+      "why_relevant": "Investigating SCADA Failures in Interdependent Critical Infrastructure Systems addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['scada data analysis', 'feature extraction', 'pattern recognition', 'machine learning', 'wind turbine blade', 'icing', 'diagnosis', 'detection', 'classification']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "scada data analysis",
+        "feature extraction",
+        "pattern recognition",
+        "machine learning",
+        "wind turbine blade",
+        "icing",
+        "diagnosis",
+        "detection",
+        "classification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "How Many Genes Are Needed for a Discriminant Microarray Data Analysis ?",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "discriminant analysis",
+        "supervised learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses machine learning for gene expression analysis, but domain is bioinformatics, not wind turbine icing.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/physics/0104029v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The analysis of the leukemia data from Whitehead/MIT group is a discriminant analysis (also called a supervised learning). Among thousands of genes whose expression levels are measured, not all are needed for discriminant analysis: a gene may either not contribute to the separation of two types of tissues/cancers, or it may be redundant because it is highly correlated with other genes. There are two theoretical frameworks in which variable selection (or gene selection in our case) can be addressed. The first is model selection, and the second is model averaging. We have carried out model selec",
+      "role": "parallel",
+      "why_relevant": "How Many Genes Are Needed for a Discriminant Microarray Data Analysis ? addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['scada data analysis', 'feature extraction', 'pattern recognition', 'machine learning', 'wind turbine blade', 'icing', 'diagnosis', 'detection', 'classification']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "scada data analysis",
+        "feature extraction",
+        "pattern recognition",
+        "machine learning",
+        "wind turbine blade",
+        "icing",
+        "diagnosis",
+        "detection",
+        "classification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 5,
+      "n_weak": 2,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "dataset_extractions_tried": 5,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 0,
+    "parallel_n": 5,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于SCADA数据的风机叶片结冰诊断研究",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 0,
+    "low_bar_status": null,
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": []
+  },
+  "filter_results": {
+    "total": 20,
+    "kept": 14,
+    "dropped": 6,
+    "dropped_items": [
+      {
+        "title": "nsacyber/GRASSMARLIN",
+        "reason": "This is a GitHub repository for a cybersecurity tool, not an academic paper. It lacks research content, authors/institution, and publication venue."
+      },
+      {
+        "title": "slalaure/korelate",
+        "reason": "This is a GitHub repository for an open-source software tool, not an academic paper. It lacks research content, authors/institution, and publication venue."
+      },
+      {
+        "title": "Iankulani/Accurate-Cyber-Defense-SCADA-Threat-Monitoring-and-Surveillance-Tool",
+        "reason": "This is a GitHub repository for a cybersecurity tool, not an academic paper. It lacks research content, authors/institution, and publication venue."
+      },
+      {
+        "title": "rte-france/oscillation-analysis-with-scada-data",
+        "reason": "This is a GitHub repository for a Python implementation of a method, not an academic paper. It lacks research content, authors/institution, and publication venue."
+      },
+      {
+        "title": "magueci/offshore-wind-optimization",
+        "reason": "This is a GitHub repository for a digital twin optimization tool, not an academic paper. It lacks research content, authors/institution, and publication venue."
+      },
+      {
+        "title": "Irrsi/RSAR-Arch",
+        "reason": "This is a GitHub repository for an analysis of a Russian SCADA system, not an academic paper. It lacks research content, authors/institution, and publication venue."
+      }
+    ]
+  },
+  "seed_papers": [
+    {
+      "title": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers wind turbine failures and reliability from SCADA data but not specifically blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/review2",
+      "url": "https://doi.org/10.1002/we.70073/v2/review2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=5",
+      "relevance_score": 5
+    },
+    {
+      "title": "Decision letter for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\"",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SCADA data",
+        "wind turbine"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Same content as the review, not directly addressing blade icing diagnosis.",
+      "doi": "10.1002/we.70073/v2/decision1",
+      "url": "https://doi.org/10.1002/we.70073/v2/decision1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=5",
+      "relevance_score": 5
+    }
+  ],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "not_recommended",
+    "score": 15,
+    "reason": "无baseline论文，5篇Parallel论文中无直接相关叶片结冰诊断内容，无数据集和代码仓库，题目宽泛，证据严重不足。",
+    "100_plus_formula": {
+      "baseline_weight": 0,
+      "module_weights": [],
+      "estimated_total": 0,
+      "assessment": "不足"
+    },
+    "degradation_paths": [
+      "寻找至少2篇叶片结冰诊断的baseline论文",
+      "获取SCADA叶片结冰数据集",
+      "建立代码仓库并复现基线方法"
+    ]
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "引入图结构SCADA数据与故障传播分析",
+        "expected_gain": "提升诊断准确率，利用图神经网络捕捉叶片结冰的传播模式，增加创新点",
+        "difficulty": "中",
+        "action_items": [
+          "参考JingYuan93/SCADA_data_MFD的图结构数据处理方法",
+          "构建叶片结冰传播图模型，结合时序SCADA数据",
+          "设计图神经网络诊断框架"
+        ],
+        "ref_parallel": "JingYuan93/SCADA_data_MFD"
+      },
+      {
+        "direction": "结合故障停机与可靠性分析进行特征工程",
+        "expected_gain": "从SCADA故障数据中提取结冰相关特征，提升模型鲁棒性",
+        "difficulty": "低",
+        "action_items": [
+          "分析Review论文中风机故障停机模式",
+          "提取与结冰相关的SCADA参数（如温度、功率曲线偏差）",
+          "构建多特征融合诊断模型"
+        ],
+        "ref_parallel": "Review for \"Analysis of Failures, Downtimes and Reliability of Wind Turbines From SCADA Data\""
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "退化为基于传统机器学习的SCADA结冰分类任务",
+        "trade_off": "创新性降低，但可行性提高，可快速实现保毕业",
+        "survival_rate": "高"
+      },
+      {
+        "path": "退化为仅使用公开SCADA数据集的结冰检测复现",
+        "trade_off": "无新方法贡献，但数据易获取，风险极低",
+        "survival_rate": "极高"
+      }
+    ],
+    "risk_mitigation": [
+      "提前获取真实风机SCADA结冰数据或使用公开数据集（如JingYuan93的MFD数据）",
+      "设计多组对比实验，确保基线模型性能可复现",
+      "与导师确认结冰诊断的实际工业需求，避免方向偏离",
+      "准备退化方案（如传统机器学习）作为备选，确保论文完整性"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "无创新点，未发现真实的研究gap，题目宽泛且无具体问题定义。"
+      },
+      {
+        "dimension": "D2",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "无baseline论文，方法学基础完全缺失。"
+      },
+      {
+        "dimension": "D3",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "无baseline、无parallel论文、无数据集，证据严重不足。"
+      },
+      {
+        "dimension": "D4",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "未定义三个问题，无工作包，论证链条完全断裂。"
+      },
+      {
+        "dimension": "D5",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "叙事为空，写作质量极差，无自洽性。"
+      }
+    ],
+    "overall_verdict": "BLOCK",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "baseline完全缺失",
+      "无创新点",
+      "无数据集和代码仓库",
+      "题目过于宽泛，缺乏聚焦"
+    ]
+  },
+  "narrative_revision_count": 1,
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T08:19:10Z",
+      "input_summary": {
+        "topic": "基于SCADA数据的风机叶片结冰诊断研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:19:10Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T08:19:15Z",
+      "input_summary": {
+        "topic_len": 20
+      },
+      "output_summary": {
+        "n_method": 4,
+        "n_object": 2,
+        "domain": "signal_timeseries"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:19:15Z",
+      "elapsed_s": 5.014
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T08:19:15Z",
+      "input_summary": {
+        "topic_len": 20,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:19:15Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T08:19:15Z",
+      "input_summary": {
+        "topic_len": 20,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 20,
+        "raw_tools": [
+          "arxiv",
+          "crossref",
+          "github"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        },
+        {
+          "tool": "crossref",
+          "n": 8
+        },
+        {
+          "tool": "github",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T08:20:05Z",
+      "elapsed_s": 50.171
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T08:20:05Z",
+      "input_summary": {
+        "n_candidates": 20
+      },
+      "output_summary": {
+        "kept": 14,
+        "dropped": 6,
+        "pre_filter_keep": 12,
+        "pre_filter_drop": 0,
+        "llm_judged": 8
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 12,
+          "pre_drop": 0,
+          "gray_area": 8
+        },
+        {
+          "tool": "re13_quality_filter.llm",
+          "batch_size": 8
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:20:11Z",
+      "elapsed_s": 5.941
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T08:20:11Z",
+      "input_summary": {
+        "n_candidates": 14,
+        "topic_len": 20,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 5,
+        "n_reject": 9
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:20:17Z",
+      "elapsed_s": 6.739
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T08:20:17Z",
+      "input_summary": {
+        "n_papers": 5,
+        "n_weak": 5,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:20:17Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T08:20:17Z",
+      "input_summary": {
+        "n_verified": 5,
+        "n_seeds": 2,
+        "seed_titles": [
+          "Review for \"Analysis of Failures, Downtimes and Reliability ",
+          "Decision letter for \"Analysis of Failures, Downtimes and Rel"
+        ]
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "n_surveys": 0,
+        "n_repos": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "semantic_scholar.citations+references",
+          "n_seeds": 2,
+          "n_expanded": 0,
+          "concurrent": true
+        }
+      ],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "per_seed": [
+        {
+          "seed_title": "Review for \"Analysis of Failures, Downtimes and Reliability ",
+          "n_references_plus_citations": 0,
+          "relevance_score": 5
+        },
+        {
+          "seed_title": "Decision letter for \"Analysis of Failures, Downtimes and Rel",
+          "n_references_plus_citations": 0,
+          "relevance_score": 5
+        }
+      ],
+      "ended_at": "2026-07-06T08:20:32Z",
+      "elapsed_s": 14.422
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T08:20:32Z",
+      "input_summary": {
+        "n_candidates": 5,
+        "topic_len": 20,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 2,
+        "n_reject": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:20:38Z",
+      "elapsed_s": 5.672
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T08:20:38Z",
+      "input_summary": {
+        "n_papers": 5,
+        "n_weak": 2,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:20:38Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T08:20:46Z",
+      "input_summary": {
+        "n_papers": 8
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 5,
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:20:46Z",
+      "elapsed_s": 8.442
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T08:20:46Z",
+      "input_summary": {
+        "papers": 5
+      },
+      "output_summary": {
+        "nodes": 5,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:20:46Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T08:20:46Z",
+      "input_summary": {
+        "n_verified": 5
+      },
+      "output_summary": {
+        "n_baseline": 0,
+        "n_parallel": 5,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:20:46Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T08:20:50Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "output_summary": {
+        "verdict": "not_recommended",
+        "score": 15
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:20:50Z",
+      "elapsed_s": 4.296
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T08:20:59Z",
+      "input_summary": {
+        "feasibility": "not_recommended"
+      },
+      "output_summary": {
+        "n_paths": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:20:59Z",
+      "elapsed_s": 8.687
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T08:21:05Z",
+      "input_summary": {
+        "n_innovation": 0,
+        "n_packages": 0
+      },
+      "output_summary": {
+        "overall_verdict": "BLOCK"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:21:05Z",
+      "elapsed_s": 6.196
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T08:21:05Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:21:05Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T08:21:05Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于SCADA数据的风机叶片结冰诊断研究",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "low_bar_status": null,
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:21:05Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

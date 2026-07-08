@@ -1,0 +1,750 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T14:48:16Z",
+    "input_summary": {
+      "topic": "基于U-Net卷积网络的地质岩层裂缝检测方法"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:48:16Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T14:48:18Z",
+    "input_summary": {
+      "topic_len": 22
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:48:18Z",
+    "elapsed_s": 2.217,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T14:48:18Z",
+    "input_summary": {
+      "topic_len": 22,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:48:18Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T14:48:18Z",
+    "input_summary": {
+      "topic_len": 22,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 42,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github",
+        "semantic_scholar",
+        "crossref",
+        "core"
+      ],
+      "per_adapter": {
+        "arxiv": 24,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 0,
+        "semantic_scholar": 12,
+        "core": 0
+      },
+      "failed_adapters": [
+        "core",
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 24
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 12
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "core",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:49:01Z",
+    "elapsed_s": 42.649
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T14:49:01Z",
+    "input_summary": {
+      "n_candidates": 42
+    },
+    "output_summary": {
+      "kept": 42,
+      "dropped": 0,
+      "pre_filter_keep": 42,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 42,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T14:49:01Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T14:49:01Z",
+    "input_summary": {
+      "n_candidates": 42,
+      "topic_len": 22,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 7,
+      "n_weak_reject": 13,
+      "n_reject": 22
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:49:11Z",
+    "elapsed_s": 10.71
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T14:49:11Z",
+    "input_summary": {
+      "n_papers": 7,
+      "n_weak": 13,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:49:11Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T14:49:11Z",
+    "input_summary": {
+      "n_verified": 7,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Fracture Detection and Segmentation From Electrical Image Lo",
+        "Fracture Structure Detection Based on U-Net With Angle Domai",
+        "Fracture recognition with U-net and pixel-based automatic fr",
+        "Dscu-Net: A Deep Learning Framework for Fracture Detection i",
+        "Application of an Improved U-Net Neural Network on Fracture "
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 14,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 14,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Fracture Detection and Segmentation From Electrical Image Lo",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Fracture Structure Detection Based on U-Net With Angle Domai",
+        "n_references_plus_citations": 1,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Fracture recognition with U-net and pixel-based automatic fr",
+        "n_references_plus_citations": 7,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Dscu-Net: A Deep Learning Framework for Fracture Detection i",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Application of an Improved U-Net Neural Network on Fracture ",
+        "n_references_plus_citations": 7,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-08T14:49:13Z",
+    "elapsed_s": 1.655
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T14:49:13Z",
+    "input_summary": {
+      "n_candidates": 14,
+      "topic_len": 22,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 5,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:49:18Z",
+    "elapsed_s": 5.345
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T14:49:18Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 18,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:49:18Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T14:49:23Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:49:23Z",
+    "elapsed_s": 4.735,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T14:49:23Z",
+    "input_summary": {
+      "papers": 9
+    },
+    "output_summary": {
+      "nodes": 9,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:49:23Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T14:49:23Z",
+    "input_summary": {
+      "n_verified": 9
+    },
+    "output_summary": {
+      "n_baseline": 8,
+      "n_parallel": 1,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": false
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:49:23Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T14:49:27Z",
+    "input_summary": {
+      "n_baseline": 8,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:49:27Z",
+    "elapsed_s": 3.961,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T14:49:36Z",
+    "input_summary": {
+      "n_baseline": 8,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:49:36Z",
+    "elapsed_s": 8.935,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T14:49:49Z",
+    "input_summary": {
+      "n_baseline": 8,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:49:49Z",
+    "elapsed_s": 12.75,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T14:49:44Z",
+    "input_summary": {
+      "n_baseline": 8
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:49:44Z",
+    "elapsed_s": 7.485,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T14:50:00Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CFEM-U-Net"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:50:00Z",
+    "elapsed_s": 10.838,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T14:50:00Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:50:00Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T14:50:09Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:50:09Z",
+    "elapsed_s": 9.522,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T14:50:14Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:50:14Z",
+    "elapsed_s": 4.663,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T14:50:14Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:50:14Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T14:50:14Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于U-Net卷积网络的地质岩层裂缝检测方法",
+      "n_papers": 9,
+      "n_baseline": 8,
+      "n_parallel": 1,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于U-Net的岩层裂缝分割与检测方法研究",
+          "research_question": "如何利用U-Net卷积网络从地质露头图像中准确分割裂缝边缘，并评估其与YOLOv7-U-Net等基线方法的性能差异？",
+          "baseline": "Fracture Detection and Segmentation From Electrical Image Logs Using YOLOv7-U-Net",
+          "improved_module_source": "CFEM-Net: Cross-Scale Feature Enhancement and Edge-Aware Learning for Geological Fracture Segmentation",
+          "data_source": null,
+          "experiment_metrics": "GeoCrack: A High-Resolution Dataset For Segmentation of Fracture Edges in Geological Outcrops",
+          "risk": "数据集未在证据中明确指定，可能需自行收集或使用公开地质图像；CFEM-Net的改进模块需适配U-Net基础架构。",
+          "estimated_workload": "中等（约3-4个月，包括数据预处理、模型实现、对比实验）"
+        },
+        {
+          "title": "基于改进U-Net的裂缝结构检测与角度域散射成像融合",
+          "research_question": "如何将角度域裂缝散射成像信息融入U-Net网络，提升裂缝结构检测的精度？",
+          "baseline": "Fracture Structure Detection Based on U-Net With Angle Domain Fracture Scattering Imaging",
+          "improved_module_source": "MS-Unet: A Multi-Scale Feature Fusion U-Net for 3D Seismic Fault Detection",
+          "data_source": null,
+          "experiment_metrics": "Fracture recognition with U-net and pixel-based automatic fracture detection",
+          "risk": "角度域成像数据获取困难；多尺度特征融合可能增加计算复杂度。",
+          "estimated_workload": "高（约5-6个月，需处理3D地震数据或合成角度域数据）"
+        },
+        {
+          "title": "轻量化U-Net在煤矿裂缝CT图像分割中的应用",
+          "research_question": "如何设计轻量级U-Net模型（如LightECA-UNet）在资源受限场景下实现煤矿裂缝CT图像的高效分割？",
+          "baseline": "LightECA-UNet: a lightweight model for segmentation of coal fracture CT images",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Dscu-Net: A Deep Learning Framework for Fracture Detection in Underground Roadway Imagery",
+          "risk": "CT图像数据集未在证据中明确；轻量化可能牺牲分割精度。",
+          "estimated_workload": "中等（约3-4个月，需收集或模拟CT图像数据）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:50:14Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

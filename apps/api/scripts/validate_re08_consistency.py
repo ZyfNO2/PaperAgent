@@ -97,7 +97,7 @@ def validate(
     md_path: Path,
     report_path: Path | None = None,
 ) -> int:
-    print(f"=== Cross-validate Re08 reports (4-way) ===")
+    print("=== Cross-validate Re08 reports (4-way) ===")
     print(f"  summary: {summary_path}")
     print(f"  csv:     {csv_path}")
     print(f"  md:      {md_path}")

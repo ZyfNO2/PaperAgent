@@ -1,0 +1,3868 @@
+{
+  "case_id": "ENG-THESIS-085",
+  "topic": "高速公路沥青面裂缝检测识别算法的研究",
+  "user_constraints": {
+    "topic_zh": "高速公路沥青面裂缝检测识别算法的研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "crack detection",
+      "image segmentation",
+      "deep learning"
+    ],
+    "object": [
+      "asphalt pavement crack"
+    ],
+    "task": [
+      "detection",
+      "recognition"
+    ],
+    "scenario": [
+      "highway pavement inspection"
+    ],
+    "domain": "civil_infra",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "bridge crack",
+      "concrete crack",
+      "building crack"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "crack detection asphalt pavement crack",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "image segmentation asphalt pavement crack",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "crack detection asphalt pavement crack detection",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "arxiv": [
+      {
+        "title": "An interface crack in 1d piezoelectric quasicrystal under antiplane mechanical loading and electric field",
+        "abstract": "The present study provides the consideration of a mode III interface crack in one-dimentional (1D) piezoelectric quasicrystal under antiplane phonon and phason loading and inplane electric field. Due to complex function approach all required electromechanical parameters are presented through vector-functions analytic in the whole complex plane except the crack region. The cases of electrically impermeable (insulated) and electrically limited permeable conditions on the crack faces are considered. In the first case a vector Hilbert problem in the complex plane is formulated and solved exactly and in the second one the quadratic equation with respect to the electric flux through the crack region is obtained additionally. Its solution permits to find phonon and phason stresses, displacement jumps (sliding) and also electric characteristics along the material interface. Analytical formulas are also obtained for the corresponding stress intensity factors related to each field. The numerical computations for three selected variants of the loading conditions was conducted and the resulting field distributions are visualised on the crack continuation beyond the crack and also inside of the crack region.",
+        "authors": [
+          "Mohammed Altoumaimi",
+          "V. V. Loboda"
+        ],
+        "arxiv_id": "2512.17981v1",
+        "url": "http://arxiv.org/abs/2512.17981v1",
+        "published": "2025-12-19T13:39:04Z",
+        "year": 2025,
+        "source_query": "crack detection"
+      },
+      {
+        "title": "How we can control the crack to propagate along the specified path feasibly?",
+        "abstract": "A controllable crack propagation (CCP) strategy is suggested. It is well known that crack always leads the failure by crossing the critical domain in engineering structure. Therefore, the CCP method is proposed to control the crack to propagate along the specified path, which is away from the critical domain. To complete this strategy, two optimization methods are engaged. Firstly, a back propagation neural network (BPNN) assisted particle swarm optimization (PSO) is suggested. In this method, to improve the efficiency of CCP, the BPNN is used to build the metamodel instead of the forward evaluation. Secondly, the popular PSO is used. Considering the optimization iteration is a time consuming process, an efficient reanalysis based extended finite element methods (X-FEM) is used to substitute the complete X-FEM solver to calculate the crack propagation path. Moreover, an adaptive subdomain partition strategy is suggested to improve the fitting accuracy between real crack and specified paths. Several typical numerical examples demonstrate that both optimization methods can carry out the CCP. The selection of them should be determined by the tradeoff between efficiency and accuracy.",
+        "authors": [
+          "Zhenxing Cheng",
+          "Hu Wang"
+        ],
+        "arxiv_id": "1710.10748v2",
+        "url": "http://arxiv.org/abs/1710.10748v2",
+        "published": "2017-10-30T02:55:46Z",
+        "year": 2017,
+        "source_query": "crack detection"
+      },
+      {
+        "title": "Detecting Botnets Through Log Correlation",
+        "abstract": "Botnets, which consist of thousands of compromised machines, can cause significant threats to other systems by launching Distributed Denial of Service (SSoS) attacks, keylogging, and backdoors. In response to these threats, new effective techniques are needed to detect the presence of botnets. In this paper, we have used an interception technique to monitor Windows Application Programming Interface (API) functions calls made by communication applications and store these calls with their arguments in log files. Our algorithm detects botnets based on monitoring abnormal activity by correlating the changes in log file sizes from different hosts.",
+        "authors": [
+          "Yousof Al-Hammadi",
+          "Uwe Aickelin"
+        ],
+        "arxiv_id": "1001.2665v1",
+        "url": "http://arxiv.org/abs/1001.2665v1",
+        "published": "2010-01-15T11:35:17Z",
+        "year": 2010,
+        "source_query": "crack detection"
+      },
+      {
+        "title": "Coarse-to-fine crack cue for robust crack detection",
+        "abstract": "Crack detection is an important task in computer vision. Despite impressive in-dataset performance, deep learning-based methods still struggle in generalizing to unseen domains. The thin structure property of cracks is usually overlooked by previous methods. In this work, we introduce CrackCue, a novel method for robust crack detection based on coarse-to-fine crack cue generation. The core concept lies on leveraging the thin structure property to generate a robust crack cue, guiding the crack detection. Specifically, we first employ a simple max-pooling and upsampling operation on the crack image. This results in a coarse crack-free background, based on which a fine crack-free background can be obtained via a reconstruction network. The difference between the original image and fine crack-free background provides a fine crack cue. This fine cue embeds robust crack prior information which is unaffected by complex backgrounds, shadow, and varied lighting. As a plug-and-play method, we incorporate the proposed CrackCue into three advanced crack detection networks. Extensive experimental results demonstrate that the proposed CrackCue significantly improves the generalization ability and robustness of the baseline methods. The source code will be publicly available.",
+        "authors": [
+          "Zelong Liu",
+          "Yuliang Gu",
+          "Zhichao Sun",
+          "Huachao Zhu",
+          "Xin Xiao",
+          "Bo Du",
+          "Laurent Najman",
+          "Yongchao Xu"
+        ],
+        "arxiv_id": "2507.16851v1",
+        "url": "http://arxiv.org/abs/2507.16851v1",
+        "published": "2025-07-21T08:36:05Z",
+        "year": 2025,
+        "source_query": "crack detection"
+      },
+      {
+        "title": "Stress-triggered atomic explosion of trapped hydrogen initiates crack nucleation",
+        "abstract": "Hydrogen embrittlement (HE) has persisted for more than a century as one of the most intractable problems in materials science. The prevailing view1 that diffusive H governs embrittlement has fostered the widespread assumption that H trapping at crystal defects mitigates HE. Here we overturn this conventional paradigm. Using plasma/ion irradiation of tungsten, we decouple -- for the first time -- H-induced crack nucleation from subsequent cavity propagation, and reveal nucleation as a two-stage mechanochemical fracture instability enabled by trapped H in the absence of diffusive H. In the first stage, H accumulation to a critical occupancy at dislocation cores acts as a chemical fuse, collapsing the local cohesive strength to a threshold at which infinitesimal external loads can trigger atomic decohesion. This bond rupture instantaneously enables the second stage: confined recombination of atomic hydrogen into molecular form. The abrupt release of chemical energy within an atomically restricted volume generates a transient inflation pressure that drives a dynamic, brittle jump to an internal macroscopic cavity. By separating mechanical decohesion triggering from energetic crack driving, our results provide a deterministic framework for the onset of H-induced crack nucleation under low-stress conditions. Furthermore, we place experimentally the classical H-enhanced decohesion model on an atomistic foundation and elevate it from phenomenology to prediction. Finally, by shifting the focus from experimentally elusive diffusive H to directly measurable trapped H, this work reframes HE as a deterministic, quantifiable instability, establishing a new paradigm for understanding and mitigating H-induced failure in high-strength metals.",
+        "authors": [
+          "Liang Gao",
+          "Thomas Schwarz-Selinger",
+          "Martin Balden",
+          "Cong Li",
+          "Peter Manz",
+          "Wolfgang Jacob",
+          "Rudolf Neu",
+          "Christian Linsmeier",
+          "GuangHong Lu"
+        ],
+        "arxiv_id": "2606.03298v2",
+        "url": "http://arxiv.org/abs/2606.03298v2",
+        "published": "2026-06-02T08:12:49Z",
+        "year": 2026,
+        "source_query": "crack detection"
+      },
+      {
+        "title": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+        "abstract": "With the advent of self-driving cars and autonomous robots, it is imperative to detect road impairments like cracks and potholes and to perform necessary evading maneuvers to ensure fluid journey for on-board passengers or equipment. We propose a fully autonomous robust real-time road crack and pothole detection algorithm which can be deployed on any GPU based conventional processing boards with an associated camera. The approach is based on a deep neural net architecture which detects cracks and potholes using texture and spatial features. We also propose pre-processing methods which ensure real-time performance. The novelty of the approach lies in using texture- based features to differentiate between crack surfaces and sound roads. The approach performs well in large viewpoint changes, background noise, shadows, and occlusion. The efficacy of the system is shown on standard road crack datasets.",
+        "authors": [
+          "Sukhad Anand",
+          "Saksham Gupta",
+          "Vaibhav Darbari",
+          "Shivam Kohli"
+        ],
+        "arxiv_id": "1810.05107v1",
+        "url": "http://arxiv.org/abs/1810.05107v1",
+        "published": "2018-09-09T18:46:27Z",
+        "year": 2018,
+        "source_query": "crack detection"
+      },
+      {
+        "title": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+        "abstract": "Crack detection plays a key role in automated pavement inspection. Although a large number of algorithms have been developed in recent years to further boost performance, there are still remaining challenges in practice, due to the complexity of pavement images. To further accelerate the development and identify the remaining challenges, this paper conducts a comparison study to evaluate the performance of the state of the art crack detection algorithms quantitatively and objectively. A more comprehensive annotated pavement crack dataset (NHA12D) that contains images with different viewpoints and pavements types is proposed. In the comparison study, crack detection algorithms were trained equally on the largest public crack dataset collected and evaluated on the proposed dataset (NHA12D). Overall, the U-Net model with VGG-16 as backbone has the best all-around performance, but models generally fail to distinguish cracks from concrete joints, leading to a high false-positive rate. It also found that detecting cracks from concrete pavement images still has huge room for improvement. Dataset for concrete pavement images is also missing in the literature. Future directions in this area include filling the gap for concrete pavement images and using domain adaptation techniques to enhance the detection results on unseen datasets.",
+        "authors": [
+          "Zhening Huang",
+          "Weiwei Chen",
+          "Abir Al-Tabbaa",
+          "Ioannis Brilakis"
+        ],
+        "arxiv_id": "2205.01198v1",
+        "url": "http://arxiv.org/abs/2205.01198v1",
+        "published": "2022-05-02T20:22:50Z",
+        "year": 2022,
+        "source_query": "crack detection"
+      },
+      {
+        "title": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+        "abstract": "Pavement crack detection is a critical task for insuring road safety. Manual crack detection is extremely time-consuming. Therefore, an automatic road crack detection method is required to boost this progress. However, it remains a challenging task due to the intensity inhomogeneity of cracks and complexity of the background, e.g., the low contrast with surrounding pavements and possible shadows with similar intensity. Inspired by recent advances of deep learning in computer vision, we propose a novel network architecture, named Feature Pyramid and Hierarchical Boosting Network (FPHBN), for pavement crack detection. The proposed network integrates semantic information to low-level features for crack detection in a feature pyramid way. And, it balances the contribution of both easy and hard samples to loss by nested sample reweighting in a hierarchical way. To demonstrate the superiority and generality of the proposed method, we evaluate the proposed method on five crack datasets and compare it with state-of-the-art crack detection, edge detection, semantic segmentation methods. Extensive experiments show that the proposed method outperforms these state-of-the-art methods in terms of accuracy and generality.",
+        "authors": [
+          "Fan Yang",
+          "Lei Zhang",
+          "Sijia Yu",
+          "Danil Prokhorov",
+          "Xue Mei",
+          "Haibin Ling"
+        ],
+        "arxiv_id": "1901.06340v2",
+        "url": "http://arxiv.org/abs/1901.06340v2",
+        "published": "2019-01-18T16:58:59Z",
+        "year": 2019,
+        "source_query": "crack detection"
+      }
+    ],
+    "crossref": [
+      {
+        "title": "Pit and Crack Detection Summary Report Crack Detection",
+        "doi": "10.2172/1504667",
+        "DOI": "10.2172/1504667",
+        "authors": [
+          "James Wendelberger"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0000-0002-7534-9130",
+            "authenticated-orcid": false,
+            "given": "James",
+            "family": "Wendelberger",
+            "sequence": "first",
+            "affiliation": [
+              {
+                "name": "Los Alamos National Lab. (LANL), Los Alamos, NM (United States)"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.2172/1504667",
+        "URL": "https://doi.org/10.2172/1504667",
+        "year": 2019,
+        "publication_year": 2019,
+        "citation_count": 0,
+        "_crossref_type": "report"
+      },
+      {
+        "title": "Crack Detection with Generative Adversarial Learning",
+        "doi": "10.1201/9781003252948-4",
+        "DOI": "10.1201/9781003252948-4",
+        "authors": [
+          "Kaige Zhang",
+          "Heng-Da Cheng"
+        ],
+        "author": [
+          {
+            "given": "Kaige",
+            "family": "Zhang",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Heng-Da",
+            "family": "Cheng",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Deep Learning for Crack-Like Object Detection",
+        "container-title": [
+          "Deep Learning for Crack-Like Object Detection"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1201/9781003252948-4",
+        "URL": "https://doi.org/10.1201/9781003252948-4",
+        "year": 2023,
+        "publication_year": 2023,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Crack Detection with Deep Classification Network",
+        "doi": "10.1201/9781003252948-2",
+        "DOI": "10.1201/9781003252948-2",
+        "authors": [
+          "Kaige Zhang",
+          "Heng-Da Cheng"
+        ],
+        "author": [
+          {
+            "given": "Kaige",
+            "family": "Zhang",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Heng-Da",
+            "family": "Cheng",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Deep Learning for Crack-Like Object Detection",
+        "container-title": [
+          "Deep Learning for Crack-Like Object Detection"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1201/9781003252948-2",
+        "URL": "https://doi.org/10.1201/9781003252948-2",
+        "year": 2023,
+        "publication_year": 2023,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Crack Detection with Fully Convolutional Network",
+        "doi": "10.1201/9781003252948-3",
+        "DOI": "10.1201/9781003252948-3",
+        "authors": [
+          "Kaige Zhang",
+          "Heng-Da Cheng"
+        ],
+        "author": [
+          {
+            "given": "Kaige",
+            "family": "Zhang",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Heng-Da",
+            "family": "Cheng",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Deep Learning for Crack-Like Object Detection",
+        "container-title": [
+          "Deep Learning for Crack-Like Object Detection"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1201/9781003252948-3",
+        "URL": "https://doi.org/10.1201/9781003252948-3",
+        "year": 2023,
+        "publication_year": 2023,
+        "citation_count": 1,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Self-Supervised Structure Learning for Crack Detection",
+        "doi": "10.1201/9781003252948-5",
+        "DOI": "10.1201/9781003252948-5",
+        "authors": [
+          "Kaige Zhang",
+          "Heng-Da Cheng"
+        ],
+        "author": [
+          {
+            "given": "Kaige",
+            "family": "Zhang",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Heng-Da",
+            "family": "Cheng",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Deep Learning for Crack-Like Object Detection",
+        "container-title": [
+          "Deep Learning for Crack-Like Object Detection"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1201/9781003252948-5",
+        "URL": "https://doi.org/10.1201/9781003252948-5",
+        "year": 2023,
+        "publication_year": 2023,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "",
+        "doi": "10.1117/12.2286789.5763085374001",
+        "DOI": "10.1117/12.2286789.5763085374001",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1117/12.2286789.5763085374001",
+        "URL": "https://doi.org/10.1117/12.2286789.5763085374001",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      },
+      {
+        "title": "Pipe crack detection in civil structures",
+        "doi": "10.46569/20.500.12680/sx61dt48m",
+        "DOI": "10.46569/20.500.12680/sx61dt48m",
+        "authors": [
+          "Kim Esteban Ricardo"
+        ],
+        "author": [
+          {
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Kim",
+            "family": "Esteban Ricardo",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.46569/20.500.12680/sx61dt48m",
+        "URL": "https://doi.org/10.46569/20.500.12680/sx61dt48m",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "dissertation"
+      },
+      {
+        "title": "Practice for Crack Detection Using Vibroacoustic Thermography",
+        "doi": "10.1520/e3045-21",
+        "DOI": "10.1520/e3045-21",
+        "authors": [
+          "E07 Committee"
+        ],
+        "author": [
+          {
+            "name": "E07 Committee",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1520/e3045-21",
+        "URL": "https://doi.org/10.1520/e3045-21",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 1,
+        "_crossref_type": "standard"
+      }
+    ],
+    "github": [
+      {
+        "id": 163411755,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxNjM0MTE3NTU=",
+        "name": "pavement-crack-detection",
+        "full_name": "fyangneil/pavement-crack-detection",
+        "private": false,
+        "owner": {
+          "login": "fyangneil",
+          "id": 46222158,
+          "node_id": "MDQ6VXNlcjQ2MjIyMTU4",
+          "avatar_url": "https://avatars.githubusercontent.com/u/46222158?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/fyangneil",
+          "html_url": "https://github.com/fyangneil",
+          "followers_url": "https://api.github.com/users/fyangneil/followers",
+          "following_url": "https://api.github.com/users/fyangneil/following{/other_user}",
+          "gists_url": "https://api.github.com/users/fyangneil/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/fyangneil/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/fyangneil/subscriptions",
+          "organizations_url": "https://api.github.com/users/fyangneil/orgs",
+          "repos_url": "https://api.github.com/users/fyangneil/repos",
+          "events_url": "https://api.github.com/users/fyangneil/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/fyangneil/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/fyangneil/pavement-crack-detection",
+        "description": null,
+        "fork": false,
+        "url": "https://api.github.com/repos/fyangneil/pavement-crack-detection",
+        "forks_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/forks",
+        "keys_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/teams",
+        "hooks_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/hooks",
+        "issue_events_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/events",
+        "assignees_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/tags",
+        "blobs_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/languages",
+        "stargazers_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/stargazers",
+        "contributors_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/contributors",
+        "subscribers_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/subscribers",
+        "subscription_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/subscription",
+        "commits_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/merges",
+        "archive_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/downloads",
+        "issues_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/labels{/name}",
+        "releases_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/fyangneil/pavement-crack-detection/deployments",
+        "created_at": "2018-12-28T13:08:19Z",
+        "updated_at": "2026-07-03T14:40:43Z",
+        "pushed_at": "2025-02-22T13:54:13Z",
+        "git_url": "git://github.com/fyangneil/pavement-crack-detection.git",
+        "ssh_url": "git@github.com:fyangneil/pavement-crack-detection.git",
+        "clone_url": "https://github.com/fyangneil/pavement-crack-detection.git",
+        "svn_url": "https://github.com/fyangneil/pavement-crack-detection",
+        "homepage": null,
+        "size": 12070,
+        "stargazers_count": 415,
+        "watchers_count": 415,
+        "language": "C++",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 81,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 28,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "crack-detection"
+        ],
+        "visibility": "public",
+        "forks": 81,
+        "open_issues": 28,
+        "watchers": 415,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 415
+      },
+      {
+        "id": 239925364,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyMzk5MjUzNjQ=",
+        "name": "DeepCrack",
+        "full_name": "qinnzou/DeepCrack",
+        "private": false,
+        "owner": {
+          "login": "qinnzou",
+          "id": 19511350,
+          "node_id": "MDQ6VXNlcjE5NTExMzUw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/19511350?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/qinnzou",
+          "html_url": "https://github.com/qinnzou",
+          "followers_url": "https://api.github.com/users/qinnzou/followers",
+          "following_url": "https://api.github.com/users/qinnzou/following{/other_user}",
+          "gists_url": "https://api.github.com/users/qinnzou/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/qinnzou/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/qinnzou/subscriptions",
+          "organizations_url": "https://api.github.com/users/qinnzou/orgs",
+          "repos_url": "https://api.github.com/users/qinnzou/repos",
+          "events_url": "https://api.github.com/users/qinnzou/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/qinnzou/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/qinnzou/DeepCrack",
+        "description": "DeepCrack: Learning Hierarchical Convolutional Features for Crack Detection",
+        "fork": false,
+        "url": "https://api.github.com/repos/qinnzou/DeepCrack",
+        "forks_url": "https://api.github.com/repos/qinnzou/DeepCrack/forks",
+        "keys_url": "https://api.github.com/repos/qinnzou/DeepCrack/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/qinnzou/DeepCrack/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/qinnzou/DeepCrack/teams",
+        "hooks_url": "https://api.github.com/repos/qinnzou/DeepCrack/hooks",
+        "issue_events_url": "https://api.github.com/repos/qinnzou/DeepCrack/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/qinnzou/DeepCrack/events",
+        "assignees_url": "https://api.github.com/repos/qinnzou/DeepCrack/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/qinnzou/DeepCrack/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/qinnzou/DeepCrack/tags",
+        "blobs_url": "https://api.github.com/repos/qinnzou/DeepCrack/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/qinnzou/DeepCrack/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/qinnzou/DeepCrack/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/qinnzou/DeepCrack/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/qinnzou/DeepCrack/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/qinnzou/DeepCrack/languages",
+        "stargazers_url": "https://api.github.com/repos/qinnzou/DeepCrack/stargazers",
+        "contributors_url": "https://api.github.com/repos/qinnzou/DeepCrack/contributors",
+        "subscribers_url": "https://api.github.com/repos/qinnzou/DeepCrack/subscribers",
+        "subscription_url": "https://api.github.com/repos/qinnzou/DeepCrack/subscription",
+        "commits_url": "https://api.github.com/repos/qinnzou/DeepCrack/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/qinnzou/DeepCrack/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/qinnzou/DeepCrack/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/qinnzou/DeepCrack/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/qinnzou/DeepCrack/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/qinnzou/DeepCrack/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/qinnzou/DeepCrack/merges",
+        "archive_url": "https://api.github.com/repos/qinnzou/DeepCrack/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/qinnzou/DeepCrack/downloads",
+        "issues_url": "https://api.github.com/repos/qinnzou/DeepCrack/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/qinnzou/DeepCrack/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/qinnzou/DeepCrack/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/qinnzou/DeepCrack/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/qinnzou/DeepCrack/labels{/name}",
+        "releases_url": "https://api.github.com/repos/qinnzou/DeepCrack/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/qinnzou/DeepCrack/deployments",
+        "created_at": "2020-02-12T04:17:32Z",
+        "updated_at": "2026-07-02T04:20:52Z",
+        "pushed_at": "2023-10-29T09:27:58Z",
+        "git_url": "git://github.com/qinnzou/DeepCrack.git",
+        "ssh_url": "git@github.com:qinnzou/DeepCrack.git",
+        "clone_url": "https://github.com/qinnzou/DeepCrack.git",
+        "svn_url": "https://github.com/qinnzou/DeepCrack",
+        "homepage": "",
+        "size": 5587,
+        "stargazers_count": 363,
+        "watchers_count": 363,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 77,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 10,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "cnn",
+          "convolutional-neural-network",
+          "crack-detection",
+          "deep-learning",
+          "deepcrack",
+          "pavement-crack-detection",
+          "pavement-images"
+        ],
+        "visibility": "public",
+        "forks": 77,
+        "open_issues": 10,
+        "watchers": 363,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 363
+      },
+      {
+        "id": 282580868,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyODI1ODA4Njg=",
+        "name": "ch3r0",
+        "full_name": "tnt-wolve/ch3r0",
+        "private": false,
+        "owner": {
+          "login": "tnt-wolve",
+          "id": 3271093,
+          "node_id": "MDQ6VXNlcjMyNzEwOTM=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/3271093?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/tnt-wolve",
+          "html_url": "https://github.com/tnt-wolve",
+          "followers_url": "https://api.github.com/users/tnt-wolve/followers",
+          "following_url": "https://api.github.com/users/tnt-wolve/following{/other_user}",
+          "gists_url": "https://api.github.com/users/tnt-wolve/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/tnt-wolve/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/tnt-wolve/subscriptions",
+          "organizations_url": "https://api.github.com/users/tnt-wolve/orgs",
+          "repos_url": "https://api.github.com/users/tnt-wolve/repos",
+          "events_url": "https://api.github.com/users/tnt-wolve/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/tnt-wolve/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/tnt-wolve/ch3r0",
+        "description": "Hackingtool Menu 🧰 AnonSurf Information Gathering Password Attack Wireless Attack SQL Injection Tools Phishing Attack Web Attack Tool Post exploitation Forensic Tools Payload Creator Router Exploit Wifi Jamming XSS Attack Tool Reverse Engineering SocialMedia Finder DDos Attack Tools Steganography Tools IDN Homograph Attack Hash Cracking Tools SocialMedia Attack Android Hack RAT Tools Web Crawling Payload Injector Update System AnonSurf Anonmously Surf Multitor Information Gathering Nmap Dracnmap Port Scanning Host To IP Xerosploit Infoga - Email OSINT ReconSpider RED HAWK (All In One Scanning) ReconDog Striker SecretFinder Port Scanner Breacher Password Attack Cupp WordlistCreator Goblin WordGenerator Credential reuse attacks Wordlist (Contain 1.4 Billion Pass) Wireless Attack WiFi-Pumpkin pixiewps Bluetooth Honeypot GUI Framework Fluxion Wifiphisher Wifite EvilTwin SQL Injection Tools sqlmap tool NoSqlMap Damn Small SQLi Scanner Explo Blisqy - Exploit Time-based blind-SQL injection Leviathan - Wide Range Mass Audit Toolkit SQLScan SocialMedia Attack Instagram Attack AllinOne SocialMedia Attack Facebook Attack Application Checker Android Attack Keydroid MySMS Lockphish (Grab target LOCK PIN) DroidCam (Capture Image) EvilApp (Hijack Session) Phishing Attack Setoolkit SocialFish HiddenEye Evilginx2 Shellphish BlackEye I-See-You(Get Location using phishing attack) SayCheese (Grab target's Webcam Shots) QR Code Jacking Web Attack SlowLoris Skipfish SubDomain Finder CheckURL Blazy Sub-Domain TakeOver Post Explotation Vegile - Ghost In The Shell Chrome Keylogger Forensic Tool Bulk_extractor Disk Clone and ISO Image Aquire AutoSpy Toolsley Wireshark Payload Generator The FatRat* Brutal Stitch MSFvenom Payload Creator Venom Shellcode Generator Spycam Mob-Droid Exploit Framework RouterSploit WebSploit Commix Web2Attack Fastssh SocialMedia Finder Find SocialMedia By Facial Recognation System Find SocialMedia By UserName Sherlock SocialScan Steganography SteganoHide StegnoCracker Whitespace Ddos Attack tool SlowLoris SYN Flood DDoS Weapon UFOnet GoldenEye XSS Attack tool DalFox(Finder of XSS) XSS Payload Generator Advanced XSS Detection Suite Extended XSS Searcher and Finder XSS-Freak XSpear XSSCon XanXSS IDN Homograph EvilURL Email Verifier KnockMail Hash Cracking Tool Hash Buster",
+        "fork": false,
+        "url": "https://api.github.com/repos/tnt-wolve/ch3r0",
+        "forks_url": "https://api.github.com/repos/tnt-wolve/ch3r0/forks",
+        "keys_url": "https://api.github.com/repos/tnt-wolve/ch3r0/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/tnt-wolve/ch3r0/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/tnt-wolve/ch3r0/teams",
+        "hooks_url": "https://api.github.com/repos/tnt-wolve/ch3r0/hooks",
+        "issue_events_url": "https://api.github.com/repos/tnt-wolve/ch3r0/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/tnt-wolve/ch3r0/events",
+        "assignees_url": "https://api.github.com/repos/tnt-wolve/ch3r0/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/tnt-wolve/ch3r0/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/tnt-wolve/ch3r0/tags",
+        "blobs_url": "https://api.github.com/repos/tnt-wolve/ch3r0/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/tnt-wolve/ch3r0/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/tnt-wolve/ch3r0/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/tnt-wolve/ch3r0/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/tnt-wolve/ch3r0/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/tnt-wolve/ch3r0/languages",
+        "stargazers_url": "https://api.github.com/repos/tnt-wolve/ch3r0/stargazers",
+        "contributors_url": "https://api.github.com/repos/tnt-wolve/ch3r0/contributors",
+        "subscribers_url": "https://api.github.com/repos/tnt-wolve/ch3r0/subscribers",
+        "subscription_url": "https://api.github.com/repos/tnt-wolve/ch3r0/subscription",
+        "commits_url": "https://api.github.com/repos/tnt-wolve/ch3r0/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/tnt-wolve/ch3r0/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/tnt-wolve/ch3r0/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/tnt-wolve/ch3r0/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/tnt-wolve/ch3r0/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/tnt-wolve/ch3r0/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/tnt-wolve/ch3r0/merges",
+        "archive_url": "https://api.github.com/repos/tnt-wolve/ch3r0/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/tnt-wolve/ch3r0/downloads",
+        "issues_url": "https://api.github.com/repos/tnt-wolve/ch3r0/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/tnt-wolve/ch3r0/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/tnt-wolve/ch3r0/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/tnt-wolve/ch3r0/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/tnt-wolve/ch3r0/labels{/name}",
+        "releases_url": "https://api.github.com/repos/tnt-wolve/ch3r0/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/tnt-wolve/ch3r0/deployments",
+        "created_at": "2020-07-26T05:13:23Z",
+        "updated_at": "2026-07-03T14:47:16Z",
+        "pushed_at": "2020-07-25T14:08:02Z",
+        "git_url": "git://github.com/tnt-wolve/ch3r0.git",
+        "ssh_url": "git@github.com:tnt-wolve/ch3r0.git",
+        "clone_url": "https://github.com/tnt-wolve/ch3r0.git",
+        "svn_url": "https://github.com/tnt-wolve/ch3r0",
+        "homepage": null,
+        "size": 34,
+        "stargazers_count": 325,
+        "watchers_count": 325,
+        "language": null,
+        "has_issues": false,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 48,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": {
+          "key": "mit",
+          "name": "MIT License",
+          "spdx_id": "MIT",
+          "url": "https://api.github.com/licenses/mit",
+          "node_id": "MDc6TGljZW5zZTEz"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 48,
+        "open_issues": 0,
+        "watchers": 325,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 325
+      },
+      {
+        "id": 208411348,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyMDg0MTEzNDg=",
+        "name": "Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection",
+        "full_name": "KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection",
+        "private": false,
+        "owner": {
+          "login": "KangchengLiu",
+          "id": 37166840,
+          "node_id": "MDQ6VXNlcjM3MTY2ODQw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/37166840?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/KangchengLiu",
+          "html_url": "https://github.com/KangchengLiu",
+          "followers_url": "https://api.github.com/users/KangchengLiu/followers",
+          "following_url": "https://api.github.com/users/KangchengLiu/following{/other_user}",
+          "gists_url": "https://api.github.com/users/KangchengLiu/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/KangchengLiu/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/KangchengLiu/subscriptions",
+          "organizations_url": "https://api.github.com/users/KangchengLiu/orgs",
+          "repos_url": "https://api.github.com/users/KangchengLiu/repos",
+          "events_url": "https://api.github.com/users/KangchengLiu/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/KangchengLiu/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection",
+        "description": ":fire: :muscle: Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection",
+        "fork": false,
+        "url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection",
+        "forks_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/forks",
+        "keys_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/teams",
+        "hooks_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/hooks",
+        "issue_events_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/events",
+        "assignees_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/tags",
+        "blobs_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/languages",
+        "stargazers_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/stargazers",
+        "contributors_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/contributors",
+        "subscribers_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/subscribers",
+        "subscription_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/subscription",
+        "commits_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/merges",
+        "archive_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/downloads",
+        "issues_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/labels{/name}",
+        "releases_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection/deployments",
+        "created_at": "2019-09-14T08:26:25Z",
+        "updated_at": "2026-07-01T17:18:04Z",
+        "pushed_at": "2023-02-17T05:46:00Z",
+        "git_url": "git://github.com/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection.git",
+        "ssh_url": "git@github.com:KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection.git",
+        "clone_url": "https://github.com/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection.git",
+        "svn_url": "https://github.com/KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection",
+        "homepage": "",
+        "size": 66531,
+        "stargazers_count": 268,
+        "watchers_count": 268,
+        "language": "Python",
+        "has_issues": false,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 33,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 2,
+        "license": {
+          "key": "mit",
+          "name": "MIT License",
+          "spdx_id": "MIT",
+          "url": "https://api.github.com/licenses/mit",
+          "node_id": "MDc6TGljZW5zZTEz"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "robotic-process-automation"
+        ],
+        "visibility": "public",
+        "forks": 33,
+        "open_issues": 2,
+        "watchers": 268,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 268
+      },
+      {
+        "id": 343749239,
+        "node_id": "MDEwOlJlcG9zaXRvcnkzNDM3NDkyMzk=",
+        "name": "crack_detection_CNN_masonry",
+        "full_name": "dimitrisdais/crack_detection_CNN_masonry",
+        "private": false,
+        "owner": {
+          "login": "dimitrisdais",
+          "id": 23134440,
+          "node_id": "MDQ6VXNlcjIzMTM0NDQw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/23134440?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/dimitrisdais",
+          "html_url": "https://github.com/dimitrisdais",
+          "followers_url": "https://api.github.com/users/dimitrisdais/followers",
+          "following_url": "https://api.github.com/users/dimitrisdais/following{/other_user}",
+          "gists_url": "https://api.github.com/users/dimitrisdais/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/dimitrisdais/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/dimitrisdais/subscriptions",
+          "organizations_url": "https://api.github.com/users/dimitrisdais/orgs",
+          "repos_url": "https://api.github.com/users/dimitrisdais/repos",
+          "events_url": "https://api.github.com/users/dimitrisdais/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/dimitrisdais/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/dimitrisdais/crack_detection_CNN_masonry",
+        "description": "This GitHub Repository was produced to share material relevant to the Journal paper \"Automatic crack classification and segmentation on masonry surfaces using convolutional neural networks and transfer learning\" by D. Dais, İ. E. Bal, E. Smyrou, and V. Sarhosis published in \"Automation in Construction\".",
+        "fork": false,
+        "url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry",
+        "forks_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/forks",
+        "keys_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/teams",
+        "hooks_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/hooks",
+        "issue_events_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/events",
+        "assignees_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/tags",
+        "blobs_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/languages",
+        "stargazers_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/stargazers",
+        "contributors_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/contributors",
+        "subscribers_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/subscribers",
+        "subscription_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/subscription",
+        "commits_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/merges",
+        "archive_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/downloads",
+        "issues_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/labels{/name}",
+        "releases_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry/deployments",
+        "created_at": "2021-03-02T11:22:49Z",
+        "updated_at": "2026-06-10T08:08:15Z",
+        "pushed_at": "2024-12-02T22:55:41Z",
+        "git_url": "git://github.com/dimitrisdais/crack_detection_CNN_masonry.git",
+        "ssh_url": "git@github.com:dimitrisdais/crack_detection_CNN_masonry.git",
+        "clone_url": "https://github.com/dimitrisdais/crack_detection_CNN_masonry.git",
+        "svn_url": "https://github.com/dimitrisdais/crack_detection_CNN_masonry",
+        "homepage": "",
+        "size": 78554,
+        "stargazers_count": 199,
+        "watchers_count": 199,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 66,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 9,
+        "license": {
+          "key": "gpl-3.0",
+          "name": "GNU General Public License v3.0",
+          "spdx_id": "GPL-3.0",
+          "url": "https://api.github.com/licenses/gpl-3.0",
+          "node_id": "MDc6TGljZW5zZTk="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 66,
+        "open_issues": 9,
+        "watchers": 199,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 199
+      },
+      {
+        "id": 225586457,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyMjU1ODY0NTc=",
+        "name": "starbucks-botdetection-cracked",
+        "full_name": "sonya75/starbucks-botdetection-cracked",
+        "private": false,
+        "owner": {
+          "login": "sonya75",
+          "id": 22623429,
+          "node_id": "MDQ6VXNlcjIyNjIzNDI5",
+          "avatar_url": "https://avatars.githubusercontent.com/u/22623429?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/sonya75",
+          "html_url": "https://github.com/sonya75",
+          "followers_url": "https://api.github.com/users/sonya75/followers",
+          "following_url": "https://api.github.com/users/sonya75/following{/other_user}",
+          "gists_url": "https://api.github.com/users/sonya75/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/sonya75/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/sonya75/subscriptions",
+          "organizations_url": "https://api.github.com/users/sonya75/orgs",
+          "repos_url": "https://api.github.com/users/sonya75/repos",
+          "events_url": "https://api.github.com/users/sonya75/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/sonya75/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/sonya75/starbucks-botdetection-cracked",
+        "description": "Starbucks uses Shape Security for bot detection. This script is to pass that bot detection for any website using Shape Security, like Starbucks or Chipotle for example",
+        "fork": false,
+        "url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked",
+        "forks_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/forks",
+        "keys_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/teams",
+        "hooks_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/hooks",
+        "issue_events_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/events",
+        "assignees_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/tags",
+        "blobs_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/languages",
+        "stargazers_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/stargazers",
+        "contributors_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/contributors",
+        "subscribers_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/subscribers",
+        "subscription_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/subscription",
+        "commits_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/merges",
+        "archive_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/downloads",
+        "issues_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/labels{/name}",
+        "releases_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/sonya75/starbucks-botdetection-cracked/deployments",
+        "created_at": "2019-12-03T09:56:11Z",
+        "updated_at": "2026-06-16T15:12:39Z",
+        "pushed_at": "2019-12-06T12:25:03Z",
+        "git_url": "git://github.com/sonya75/starbucks-botdetection-cracked.git",
+        "ssh_url": "git@github.com:sonya75/starbucks-botdetection-cracked.git",
+        "clone_url": "https://github.com/sonya75/starbucks-botdetection-cracked.git",
+        "svn_url": "https://github.com/sonya75/starbucks-botdetection-cracked",
+        "homepage": null,
+        "size": 77,
+        "stargazers_count": 166,
+        "watchers_count": 166,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 42,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 7,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 42,
+        "open_issues": 7,
+        "watchers": 166,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 166
+      },
+      {
+        "id": 175921112,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxNzU5MjExMTI=",
+        "name": "surface-crack-detection",
+        "full_name": "arthurflor23/surface-crack-detection",
+        "private": false,
+        "owner": {
+          "login": "arthurflor23",
+          "id": 11759042,
+          "node_id": "MDQ6VXNlcjExNzU5MDQy",
+          "avatar_url": "https://avatars.githubusercontent.com/u/11759042?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/arthurflor23",
+          "html_url": "https://github.com/arthurflor23",
+          "followers_url": "https://api.github.com/users/arthurflor23/followers",
+          "following_url": "https://api.github.com/users/arthurflor23/following{/other_user}",
+          "gists_url": "https://api.github.com/users/arthurflor23/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/arthurflor23/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/arthurflor23/subscriptions",
+          "organizations_url": "https://api.github.com/users/arthurflor23/orgs",
+          "repos_url": "https://api.github.com/users/arthurflor23/repos",
+          "events_url": "https://api.github.com/users/arthurflor23/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/arthurflor23/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/arthurflor23/surface-crack-detection",
+        "description": "Deep Learning Model for Crack Detection and Segmentation",
+        "fork": false,
+        "url": "https://api.github.com/repos/arthurflor23/surface-crack-detection",
+        "forks_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/forks",
+        "keys_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/teams",
+        "hooks_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/hooks",
+        "issue_events_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/events",
+        "assignees_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/tags",
+        "blobs_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/languages",
+        "stargazers_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/stargazers",
+        "contributors_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/contributors",
+        "subscribers_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/subscribers",
+        "subscription_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/subscription",
+        "commits_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/merges",
+        "archive_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/downloads",
+        "issues_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/labels{/name}",
+        "releases_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/arthurflor23/surface-crack-detection/deployments",
+        "created_at": "2019-03-16T03:23:08Z",
+        "updated_at": "2026-01-31T17:07:02Z",
+        "pushed_at": "2024-06-21T13:53:18Z",
+        "git_url": "git://github.com/arthurflor23/surface-crack-detection.git",
+        "ssh_url": "git@github.com:arthurflor23/surface-crack-detection.git",
+        "clone_url": "https://github.com/arthurflor23/surface-crack-detection.git",
+        "svn_url": "https://github.com/arthurflor23/surface-crack-detection",
+        "homepage": "https://medium.com/@arthurflor23/surface-crack-detection-92fb27bf0f18",
+        "size": 233107,
+        "stargazers_count": 162,
+        "watchers_count": 162,
+        "language": "Python",
+        "has_issues": false,
+        "has_projects": false,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 64,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 1,
+        "license": {
+          "key": "mit",
+          "name": "MIT License",
+          "spdx_id": "MIT",
+          "url": "https://api.github.com/licenses/mit",
+          "node_id": "MDc6TGljZW5zZTEz"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 64,
+        "open_issues": 1,
+        "watchers": 162,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 162
+      },
+      {
+        "id": 260732149,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyNjA3MzIxNDk=",
+        "name": "crack-detection-opencv",
+        "full_name": "shomnathsomu/crack-detection-opencv",
+        "private": false,
+        "owner": {
+          "login": "shomnathsomu",
+          "id": 16065681,
+          "node_id": "MDQ6VXNlcjE2MDY1Njgx",
+          "avatar_url": "https://avatars.githubusercontent.com/u/16065681?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/shomnathsomu",
+          "html_url": "https://github.com/shomnathsomu",
+          "followers_url": "https://api.github.com/users/shomnathsomu/followers",
+          "following_url": "https://api.github.com/users/shomnathsomu/following{/other_user}",
+          "gists_url": "https://api.github.com/users/shomnathsomu/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/shomnathsomu/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/shomnathsomu/subscriptions",
+          "organizations_url": "https://api.github.com/users/shomnathsomu/orgs",
+          "repos_url": "https://api.github.com/users/shomnathsomu/repos",
+          "events_url": "https://api.github.com/users/shomnathsomu/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/shomnathsomu/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/shomnathsomu/crack-detection-opencv",
+        "description": "Crack Detection On Highway Or Pavement Using OpenCV",
+        "fork": false,
+        "url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv",
+        "forks_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/forks",
+        "keys_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/teams",
+        "hooks_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/hooks",
+        "issue_events_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/events",
+        "assignees_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/tags",
+        "blobs_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/languages",
+        "stargazers_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/stargazers",
+        "contributors_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/contributors",
+        "subscribers_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/subscribers",
+        "subscription_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/subscription",
+        "commits_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/merges",
+        "archive_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/downloads",
+        "issues_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/labels{/name}",
+        "releases_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/shomnathsomu/crack-detection-opencv/deployments",
+        "created_at": "2020-05-02T16:49:11Z",
+        "updated_at": "2026-06-15T03:44:14Z",
+        "pushed_at": "2024-08-30T23:46:22Z",
+        "git_url": "git://github.com/shomnathsomu/crack-detection-opencv.git",
+        "ssh_url": "git@github.com:shomnathsomu/crack-detection-opencv.git",
+        "clone_url": "https://github.com/shomnathsomu/crack-detection-opencv.git",
+        "svn_url": "https://github.com/shomnathsomu/crack-detection-opencv",
+        "homepage": "",
+        "size": 13015,
+        "stargazers_count": 161,
+        "watchers_count": 161,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 43,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 2,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "concrete",
+          "crack-detection",
+          "highway",
+          "opencv-python",
+          "pavement",
+          "road",
+          "underground"
+        ],
+        "visibility": "public",
+        "forks": 43,
+        "open_issues": 2,
+        "watchers": 161,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 161
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<crack-detection-with-generative-adversarial-learning>",
+        "type": "paper",
+        "title": "Crack Detection with Generative Adversarial Learning",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<crack-detection-with-deep-classification-network>",
+        "type": "paper",
+        "title": "Crack Detection with Deep Classification Network",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<crack-detection-with-fully-convolutional-network>",
+        "type": "paper",
+        "title": "Crack Detection with Fully Convolutional Network",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<self-supervised-structure-learning-for-crack-detection>",
+        "type": "paper",
+        "title": "Self-Supervised Structure Learning for Crack Detection",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<qinnzou-deepcrack>",
+        "type": "paper",
+        "title": "qinnzou/DeepCrack",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<coarse-to-fine-crack-cue-for-robust-crack-detection>",
+        "type": "paper",
+        "title": "Coarse-to-fine crack cue for robust crack detection",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<crack-pot-autonomous-road-crack-and-pothole-detection>",
+        "type": "paper",
+        "title": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<nha12d-a-new-pavement-crack-dataset-and-a-comparison-study-of-crack-detection-algorithms>",
+        "type": "paper",
+        "title": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<feature-pyramid-and-hierarchical-boosting-network-for-pavement-crack-detection>",
+        "type": "paper",
+        "title": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+        "role": "baseline"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Crack Detection with Generative Adversarial Learning",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly applies deep learning (GAN) to crack detection, relevant as a comparative method.",
+      "doi": "10.1201/9781003252948-4",
+      "url": "https://doi.org/10.1201/9781003252948-4",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Crack Detection with Deep Classification Network",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses deep classification network for crack detection, directly relevant to the topic.",
+      "doi": "10.1201/9781003252948-2",
+      "url": "https://doi.org/10.1201/9781003252948-2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Crack Detection with Fully Convolutional Network",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "image segmentation"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Employs fully convolutional network for crack detection, aligning with deep learning and segmentation methods.",
+      "doi": "10.1201/9781003252948-3",
+      "url": "https://doi.org/10.1201/9781003252948-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Self-Supervised Structure Learning for Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Applies self-supervised deep learning to crack detection, relevant as a methodological baseline.",
+      "doi": "10.1201/9781003252948-5",
+      "url": "https://doi.org/10.1201/9781003252948-5",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "qinnzou/DeepCrack",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "image segmentation"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "DeepCrack uses hierarchical convolutional features for crack detection, directly relevant as a deep learning baseline.",
+      "doi": null,
+      "url": "https://api.github.com/repos/qinnzou/DeepCrack",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "DeepCrack: Learning Hierarchical Convolutional Features for Crack Detection"
+    },
+    {
+      "title": "Coarse-to-fine crack cue for robust crack detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses crack detection using deep learning, relevant to the topic's methods.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2507.16851v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection is an important task in computer vision. Despite impressive in-dataset performance, deep learning-based methods still struggle in generalizing to unseen domains. The thin structure property of cracks is usually overlooked by previous methods. In this work, we introduce CrackCue, a novel method for robust crack detection based on coarse-to-fine crack cue generation. The core concept lies on leveraging the thin structure property to generate a robust crack cue, guiding the crack detection. Specifically, we first employ a simple max-pooling and upsampling operation on the crack im"
+    },
+    {
+      "title": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on autonomous road crack detection, directly matching object and task.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1810.05107v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "With the advent of self-driving cars and autonomous robots, it is imperative to detect road impairments like cracks and potholes and to perform necessary evading maneuvers to ensure fluid journey for on-board passengers or equipment. We propose a fully autonomous robust real-time road crack and pothole detection algorithm which can be deployed on any GPU based conventional processing boards with an associated camera. The approach is based on a deep neural net architecture which detects cracks and potholes using texture and spatial features. We also propose pre-processing methods which ensure r"
+    },
+    {
+      "title": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a pavement crack dataset and compares detection algorithms, directly relevant.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2205.01198v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection plays a key role in automated pavement inspection. Although a large number of algorithms have been developed in recent years to further boost performance, there are still remaining challenges in practice, due to the complexity of pavement images. To further accelerate the development and identify the remaining challenges, this paper conducts a comparison study to evaluate the performance of the state of the art crack detection algorithms quantitatively and objectively. A more comprehensive annotated pavement crack dataset (NHA12D) that contains images with different viewpoints "
+    },
+    {
+      "title": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Proposes a deep learning method for pavement crack detection, matching object and task.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1901.06340v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Pavement crack detection is a critical task for insuring road safety. Manual crack detection is extremely time-consuming. Therefore, an automatic road crack detection method is required to boost this progress. However, it remains a challenging task due to the intensity inhomogeneity of cracks and complexity of the background, e.g., the low contrast with surrounding pavements and possible shadows with similar intensity. Inspired by recent advances of deep learning in computer vision, we propose a novel network architecture, named Feature Pyramid and Hierarchical Boosting Network (FPHBN), for pa"
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "Crack Detection with Generative Adversarial Learning",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly applies deep learning (GAN) to crack detection, relevant as a comparative method.",
+      "doi": "10.1201/9781003252948-4",
+      "url": "https://doi.org/10.1201/9781003252948-4",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Crack Detection with Deep Classification Network",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses deep classification network for crack detection, directly relevant to the topic.",
+      "doi": "10.1201/9781003252948-2",
+      "url": "https://doi.org/10.1201/9781003252948-2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Crack Detection with Fully Convolutional Network",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "image segmentation"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Employs fully convolutional network for crack detection, aligning with deep learning and segmentation methods.",
+      "doi": "10.1201/9781003252948-3",
+      "url": "https://doi.org/10.1201/9781003252948-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Self-Supervised Structure Learning for Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Applies self-supervised deep learning to crack detection, relevant as a methodological baseline.",
+      "doi": "10.1201/9781003252948-5",
+      "url": "https://doi.org/10.1201/9781003252948-5",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "qinnzou/DeepCrack",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "image segmentation"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "DeepCrack uses hierarchical convolutional features for crack detection, directly relevant as a deep learning baseline.",
+      "doi": null,
+      "url": "https://api.github.com/repos/qinnzou/DeepCrack",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "DeepCrack: Learning Hierarchical Convolutional Features for Crack Detection"
+    },
+    {
+      "title": "Coarse-to-fine crack cue for robust crack detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses crack detection using deep learning, relevant to the topic's methods.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2507.16851v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection is an important task in computer vision. Despite impressive in-dataset performance, deep learning-based methods still struggle in generalizing to unseen domains. The thin structure property of cracks is usually overlooked by previous methods. In this work, we introduce CrackCue, a novel method for robust crack detection based on coarse-to-fine crack cue generation. The core concept lies on leveraging the thin structure property to generate a robust crack cue, guiding the crack detection. Specifically, we first employ a simple max-pooling and upsampling operation on the crack im"
+    },
+    {
+      "title": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on autonomous road crack detection, directly matching object and task.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1810.05107v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "With the advent of self-driving cars and autonomous robots, it is imperative to detect road impairments like cracks and potholes and to perform necessary evading maneuvers to ensure fluid journey for on-board passengers or equipment. We propose a fully autonomous robust real-time road crack and pothole detection algorithm which can be deployed on any GPU based conventional processing boards with an associated camera. The approach is based on a deep neural net architecture which detects cracks and potholes using texture and spatial features. We also propose pre-processing methods which ensure r"
+    },
+    {
+      "title": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a pavement crack dataset and compares detection algorithms, directly relevant.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2205.01198v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection plays a key role in automated pavement inspection. Although a large number of algorithms have been developed in recent years to further boost performance, there are still remaining challenges in practice, due to the complexity of pavement images. To further accelerate the development and identify the remaining challenges, this paper conducts a comparison study to evaluate the performance of the state of the art crack detection algorithms quantitatively and objectively. A more comprehensive annotated pavement crack dataset (NHA12D) that contains images with different viewpoints "
+    },
+    {
+      "title": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Proposes a deep learning method for pavement crack detection, matching object and task.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1901.06340v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Pavement crack detection is a critical task for insuring road safety. Manual crack detection is extremely time-consuming. Therefore, an automatic road crack detection method is required to boost this progress. However, it remains a challenging task due to the intensity inhomogeneity of cracks and complexity of the background, e.g., the low contrast with surrounding pavements and possible shadows with similar intensity. Inspired by recent advances of deep learning in computer vision, we propose a novel network architecture, named Feature Pyramid and Hierarchical Boosting Network (FPHBN), for pa"
+    },
+    {
+      "title": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "asphalt pavement crack"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses asphalt pavement crack detection using deep learning, a core method in the topic.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1901.06340v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Pavement crack detection is a critical task for insuring road safety. Manual crack detection is extremely time-consuming. Therefore, an automatic road crack detection method is required to boost this progress. However, it remains a challenging task due to the intensity inhomogeneity of cracks and complexity of the background, e.g., the low contrast with surrounding pavements and possible shadows with similar intensity. Inspired by recent advances of deep learning in computer vision, we propose a novel network architecture, named Feature Pyramid and Hierarchical Boosting Network (FPHBN), for pa"
+    },
+    {
+      "title": "qinnzou/DeepCrack",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly relevant as a deep learning baseline for crack detection, applicable to asphalt pavement.",
+      "doi": null,
+      "url": "https://api.github.com/repos/qinnzou/DeepCrack",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "DeepCrack: Learning Hierarchical Convolutional Features for Crack Detection"
+    },
+    {
+      "title": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses road crack detection on asphalt pavement, relevant to highway surfaces.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1810.05107v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "With the advent of self-driving cars and autonomous robots, it is imperative to detect road impairments like cracks and potholes and to perform necessary evading maneuvers to ensure fluid journey for on-board passengers or equipment. We propose a fully autonomous robust real-time road crack and pothole detection algorithm which can be deployed on any GPU based conventional processing boards with an associated camera. The approach is based on a deep neural net architecture which detects cracks and potholes using texture and spatial features. We also propose pre-processing methods which ensure r"
+    },
+    {
+      "title": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement",
+        "dataset"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a pavement crack dataset and comparison of detection algorithms, directly useful for this topic.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2205.01198v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection plays a key role in automated pavement inspection. Although a large number of algorithms have been developed in recent years to further boost performance, there are still remaining challenges in practice, due to the complexity of pavement images. To further accelerate the development and identify the remaining challenges, this paper conducts a comparison study to evaluate the performance of the state of the art crack detection algorithms quantitatively and objectively. A more comprehensive annotated pavement crack dataset (NHA12D) that contains images with different viewpoints "
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "dimitrisdais/crack_detection_CNN_masonry",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses deep learning for crack detection and segmentation but on masonry surfaces, not asphalt pavement.",
+      "doi": null,
+      "url": "https://api.github.com/repos/dimitrisdais/crack_detection_CNN_masonry",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "This GitHub Repository was produced to share material relevant to the Journal paper \"Automatic crack classification and segmentation on masonry surfaces using convolutional neural networks and transfer learning\" by D. Dais, İ. E. Bal, E. Smyrou, and V. Sarhosis published in \"Automation in Construction\"."
+    },
+    {
+      "title": "arthurflor23/surface-crack-detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Applies deep learning to crack detection and segmentation but on generic surfaces, not specifically asphalt pavement.",
+      "doi": null,
+      "url": "https://api.github.com/repos/arthurflor23/surface-crack-detection",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Deep Learning Model for Crack Detection and Segmentation"
+    },
+    {
+      "title": "Pit and Crack Detection Summary Report Crack Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Title mentions crack detection but lacks specifics on asphalt pavement or deep learning methods.",
+      "doi": "10.2172/1504667",
+      "url": "https://doi.org/10.2172/1504667",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Pipe crack detection in civil structures",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on pipe cracks rather than asphalt pavement, same task but different object domain.",
+      "doi": "10.46569/20.500.12680/sx61dt48m",
+      "url": "https://doi.org/10.46569/20.500.12680/sx61dt48m",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Crack Detection with Generative Adversarial Learning",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses GANs for crack detection but not specifically on asphalt pavement or highway surfaces.",
+      "doi": "10.1201/9781003252948-4",
+      "url": "https://doi.org/10.1201/9781003252948-4",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Crack Detection with Deep Classification Network",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Deep classification network for crack detection but domain not specified as asphalt pavement.",
+      "doi": "10.1201/9781003252948-2",
+      "url": "https://doi.org/10.1201/9781003252948-2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Crack Detection with Fully Convolutional Network",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses FCN for crack detection but lacks focus on asphalt pavement or highway surfaces.",
+      "doi": "10.1201/9781003252948-3",
+      "url": "https://doi.org/10.1201/9781003252948-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Self-Supervised Structure Learning for Crack Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Self-supervised learning for crack detection but not specific to asphalt pavement.",
+      "doi": "10.1201/9781003252948-5",
+      "url": "https://doi.org/10.1201/9781003252948-5",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Coarse-to-fine crack cue for robust crack detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "crack detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Robust crack detection method but not specifically targeting asphalt pavement or highway surfaces.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2507.16851v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection is an important task in computer vision. Despite impressive in-dataset performance, deep learning-based methods still struggle in generalizing to unseen domains. The thin structure property of cracks is usually overlooked by previous methods. In this work, we introduce CrackCue, a novel method for robust crack detection based on coarse-to-fine crack cue generation. The core concept lies on leveraging the thin structure property to generate a robust crack cue, guiding the crack detection. Specifically, we first employ a simple max-pooling and upsampling operation on the crack im"
+    }
+  ],
+  "dataset_candidates": [],
+  "repo_candidates": [],
+  "baseline_candidates": [
+    {
+      "title": "Crack Detection with Generative Adversarial Learning",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly applies deep learning (GAN) to crack detection, relevant as a comparative method.",
+      "doi": "10.1201/9781003252948-4",
+      "url": "https://doi.org/10.1201/9781003252948-4",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "Crack Detection with Generative Adversarial Learning is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Crack Detection with Deep Classification Network",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses deep classification network for crack detection, directly relevant to the topic.",
+      "doi": "10.1201/9781003252948-2",
+      "url": "https://doi.org/10.1201/9781003252948-2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "Crack Detection with Deep Classification Network is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Crack Detection with Fully Convolutional Network",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "image segmentation"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Employs fully convolutional network for crack detection, aligning with deep learning and segmentation methods.",
+      "doi": "10.1201/9781003252948-3",
+      "url": "https://doi.org/10.1201/9781003252948-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "Crack Detection with Fully Convolutional Network is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Self-Supervised Structure Learning for Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Applies self-supervised deep learning to crack detection, relevant as a methodological baseline.",
+      "doi": "10.1201/9781003252948-5",
+      "url": "https://doi.org/10.1201/9781003252948-5",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "Self-Supervised Structure Learning for Crack Detection is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "qinnzou/DeepCrack",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "image segmentation"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "DeepCrack uses hierarchical convolutional features for crack detection, directly relevant as a deep learning baseline.",
+      "doi": null,
+      "url": "https://api.github.com/repos/qinnzou/DeepCrack",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "DeepCrack: Learning Hierarchical Convolutional Features for Crack Detection",
+      "role": "baseline",
+      "why_relevant": "qinnzou/DeepCrack is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Coarse-to-fine crack cue for robust crack detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses crack detection using deep learning, relevant to the topic's methods.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2507.16851v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection is an important task in computer vision. Despite impressive in-dataset performance, deep learning-based methods still struggle in generalizing to unseen domains. The thin structure property of cracks is usually overlooked by previous methods. In this work, we introduce CrackCue, a novel method for robust crack detection based on coarse-to-fine crack cue generation. The core concept lies on leveraging the thin structure property to generate a robust crack cue, guiding the crack detection. Specifically, we first employ a simple max-pooling and upsampling operation on the crack im",
+      "role": "baseline",
+      "why_relevant": "Coarse-to-fine crack cue for robust crack detection is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'deep learning', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "deep learning",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on autonomous road crack detection, directly matching object and task.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1810.05107v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "With the advent of self-driving cars and autonomous robots, it is imperative to detect road impairments like cracks and potholes and to perform necessary evading maneuvers to ensure fluid journey for on-board passengers or equipment. We propose a fully autonomous robust real-time road crack and pothole detection algorithm which can be deployed on any GPU based conventional processing boards with an associated camera. The approach is based on a deep neural net architecture which detects cracks and potholes using texture and spatial features. We also propose pre-processing methods which ensure r",
+      "role": "baseline",
+      "why_relevant": "Crack-pot: Autonomous Road Crack and Pothole Detection is explicitly cited as the starting reproducer/method for the topic (matched axes: ['detection']).",
+      "matched_topic_axes": [
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "crack detection",
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a pavement crack dataset and compares detection algorithms, directly relevant.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2205.01198v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection plays a key role in automated pavement inspection. Although a large number of algorithms have been developed in recent years to further boost performance, there are still remaining challenges in practice, due to the complexity of pavement images. To further accelerate the development and identify the remaining challenges, this paper conducts a comparison study to evaluate the performance of the state of the art crack detection algorithms quantitatively and objectively. A more comprehensive annotated pavement crack dataset (NHA12D) that contains images with different viewpoints ",
+      "role": "baseline",
+      "why_relevant": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement crack",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Proposes a deep learning method for pavement crack detection, matching object and task.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1901.06340v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Pavement crack detection is a critical task for insuring road safety. Manual crack detection is extremely time-consuming. Therefore, an automatic road crack detection method is required to boost this progress. However, it remains a challenging task due to the intensity inhomogeneity of cracks and complexity of the background, e.g., the low contrast with surrounding pavements and possible shadows with similar intensity. Inspired by recent advances of deep learning in computer vision, we propose a novel network architecture, named Feature Pyramid and Hierarchical Boosting Network (FPHBN), for pa",
+      "role": "baseline",
+      "why_relevant": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'deep learning', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "deep learning",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "asphalt pavement crack"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses asphalt pavement crack detection using deep learning, a core method in the topic.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1901.06340v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Pavement crack detection is a critical task for insuring road safety. Manual crack detection is extremely time-consuming. Therefore, an automatic road crack detection method is required to boost this progress. However, it remains a challenging task due to the intensity inhomogeneity of cracks and complexity of the background, e.g., the low contrast with surrounding pavements and possible shadows with similar intensity. Inspired by recent advances of deep learning in computer vision, we propose a novel network architecture, named Feature Pyramid and Hierarchical Boosting Network (FPHBN), for pa",
+      "role": "baseline",
+      "why_relevant": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'deep learning', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "deep learning",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "qinnzou/DeepCrack",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly relevant as a deep learning baseline for crack detection, applicable to asphalt pavement.",
+      "doi": null,
+      "url": "https://api.github.com/repos/qinnzou/DeepCrack",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "DeepCrack: Learning Hierarchical Convolutional Features for Crack Detection",
+      "role": "baseline",
+      "why_relevant": "qinnzou/DeepCrack is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses road crack detection on asphalt pavement, relevant to highway surfaces.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1810.05107v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "With the advent of self-driving cars and autonomous robots, it is imperative to detect road impairments like cracks and potholes and to perform necessary evading maneuvers to ensure fluid journey for on-board passengers or equipment. We propose a fully autonomous robust real-time road crack and pothole detection algorithm which can be deployed on any GPU based conventional processing boards with an associated camera. The approach is based on a deep neural net architecture which detects cracks and potholes using texture and spatial features. We also propose pre-processing methods which ensure r",
+      "role": "baseline",
+      "why_relevant": "Crack-pot: Autonomous Road Crack and Pothole Detection is explicitly cited as the starting reproducer/method for the topic (matched axes: ['detection']).",
+      "matched_topic_axes": [
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "crack detection",
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "asphalt pavement",
+        "dataset"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a pavement crack dataset and comparison of detection algorithms, directly useful for this topic.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2205.01198v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection plays a key role in automated pavement inspection. Although a large number of algorithms have been developed in recent years to further boost performance, there are still remaining challenges in practice, due to the complexity of pavement images. To further accelerate the development and identify the remaining challenges, this paper conducts a comparison study to evaluate the performance of the state of the art crack detection algorithms quantitatively and objectively. A more comprehensive annotated pavement crack dataset (NHA12D) that contains images with different viewpoints ",
+      "role": "baseline",
+      "why_relevant": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms is explicitly cited as the starting reproducer/method for the topic (matched axes: ['crack detection', 'detection']).",
+      "matched_topic_axes": [
+        "crack detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "image segmentation",
+        "deep learning",
+        "asphalt pavement crack",
+        "recognition"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "parallel_candidates": [],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 13,
+      "n_weak": 9,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "dataset_extractions_tried": 8,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 13,
+    "parallel_n": 0,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0,
+    "evidence_gap": [
+      {
+        "missing": "缺乏专门针对高速公路沥青面裂缝的公开数据集，现有数据集（如NHA12D）可能不满足场景特异性。",
+        "tool_calls": [
+          {
+            "tool_name": "dataset_search",
+            "query": "highway asphalt pavement crack dataset",
+            "expected_evidence": "至少一个包含高速公路沥青面裂缝图像及标注的公开数据集"
+          }
+        ]
+      },
+      {
+        "missing": "缺乏与高速公路沥青面裂缝检测相关的并行工作（parallels），无法对比最新进展。",
+        "tool_calls": [
+          {
+            "tool_name": "paper_search",
+            "query": "highway asphalt crack detection deep learning 2023 2024",
+            "expected_evidence": "至少2篇2023-2024年发表的高速公路沥青面裂缝检测论文"
+          }
+        ]
+      },
+      {
+        "missing": "所有基线均未提供明确的实验指标定义（如F1-score、IoU等），需补充指标来源。",
+        "tool_calls": [
+          {
+            "tool_name": "paper_detail",
+            "query": "Crack Detection with Generative Adversarial Learning evaluation metrics",
+            "expected_evidence": "该论文中使用的具体评价指标（如准确率、召回率、F1-score等）"
+          }
+        ]
+      }
+    ]
+  },
+  "work_packages": [
+    {
+      "title": "基于生成对抗网络的高速公路沥青面裂缝检测算法研究",
+      "research_question": "如何利用生成对抗网络提升高速公路沥青面裂缝检测的精度与鲁棒性？",
+      "baseline": "Crack Detection with Generative Adversarial Learning",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Crack Detection with Generative Adversarial Learning",
+      "risk": "生成对抗网络训练不稳定，且缺乏公开的高速公路沥青面专用数据集，可能影响泛化能力。",
+      "estimated_workload": "6人月"
+    },
+    {
+      "title": "基于深度分类网络的高速公路沥青面裂缝检测算法研究",
+      "research_question": "深度分类网络在高速公路沥青面裂缝检测中如何实现高效且准确的分类？",
+      "baseline": "Crack Detection with Deep Classification Network",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Crack Detection with Deep Classification Network",
+      "risk": "分类网络对裂缝形态多样性敏感，可能在小裂缝或复杂背景下误检。",
+      "estimated_workload": "4人月"
+    },
+    {
+      "title": "基于全卷积网络的高速公路沥青面裂缝分割算法研究",
+      "research_question": "全卷积网络如何实现高速公路沥青面裂缝的像素级分割？",
+      "baseline": "Crack Detection with Fully Convolutional Network",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Crack Detection with Fully Convolutional Network",
+      "risk": "全卷积网络对裂缝边缘细节的分割精度可能不足，需要后处理优化。",
+      "estimated_workload": "5人月"
+    },
+    {
+      "title": "基于自监督结构学习的高速公路沥青面裂缝检测算法研究",
+      "research_question": "自监督结构学习能否在无标注数据条件下提升裂缝检测性能？",
+      "baseline": "Self-Supervised Structure Learning for Crack Detection",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Self-Supervised Structure Learning for Crack Detection",
+      "risk": "自监督学习依赖数据内在结构，高速公路沥青面裂缝特征可能不足以支撑有效学习。",
+      "estimated_workload": "5人月"
+    },
+    {
+      "title": "基于DeepCrack的高速公路沥青面裂缝检测算法研究",
+      "research_question": "DeepCrack网络结构在高速公路沥青面裂缝检测中的适用性与改进方向？",
+      "baseline": "qinnzou/DeepCrack",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "qinnzou/DeepCrack",
+      "risk": "DeepCrack原为混凝土裂缝设计，迁移至沥青面需调整网络参数。",
+      "estimated_workload": "4人月"
+    },
+    {
+      "title": "基于粗到细裂缝线索的高速公路沥青面裂缝检测算法研究",
+      "research_question": "粗到细裂缝线索策略如何提升高速公路沥青面裂缝检测的召回率？",
+      "baseline": "Coarse-to-fine crack cue for robust crack detection",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Coarse-to-fine crack cue for robust crack detection",
+      "risk": "粗到细策略可能增加计算开销，实时性需验证。",
+      "estimated_workload": "5人月"
+    },
+    {
+      "title": "基于Crack-pot的高速公路沥青面裂缝与坑槽检测算法研究",
+      "research_question": "Crack-pot算法在高速公路沥青面裂缝与坑槽联合检测中的性能如何？",
+      "baseline": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+      "risk": "坑槽与裂缝形态差异大，统一模型可能降低裂缝检测精度。",
+      "estimated_workload": "6人月"
+    },
+    {
+      "title": "基于NHA12D数据集的高速公路沥青面裂缝检测算法比较研究",
+      "research_question": "在NHA12D数据集上，不同裂缝检测算法对高速公路沥青面的适用性如何？",
+      "baseline": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+      "improved_module_source": null,
+      "data_source": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+      "experiment_metrics": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+      "risk": "NHA12D数据集可能不专门针对高速公路沥青面，需验证领域匹配度。",
+      "estimated_workload": "4人月"
+    },
+    {
+      "title": "基于特征金字塔与层次提升网络的高速公路沥青面裂缝检测算法研究",
+      "research_question": "特征金字塔与层次提升网络如何增强多尺度裂缝的检测能力？",
+      "baseline": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+      "risk": "网络复杂度高，训练资源需求大。",
+      "estimated_workload": "6人月"
+    }
+  ],
+  "low_bar_review": {
+    "status": "pass",
+    "issues": [],
+    "n_packages_reviewed": 9,
+    "n_packages_after_review": 9
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "高速公路沥青面裂缝检测识别算法的研究",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 9,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "基于生成对抗网络的高速公路沥青面裂缝检测算法研究",
+        "research_question": "如何利用生成对抗网络提升高速公路沥青面裂缝检测的精度与鲁棒性？",
+        "baseline": "Crack Detection with Generative Adversarial Learning",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Crack Detection with Generative Adversarial Learning",
+        "risk": "生成对抗网络训练不稳定，且缺乏公开的高速公路沥青面专用数据集，可能影响泛化能力。",
+        "estimated_workload": "6人月"
+      },
+      {
+        "title": "基于深度分类网络的高速公路沥青面裂缝检测算法研究",
+        "research_question": "深度分类网络在高速公路沥青面裂缝检测中如何实现高效且准确的分类？",
+        "baseline": "Crack Detection with Deep Classification Network",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Crack Detection with Deep Classification Network",
+        "risk": "分类网络对裂缝形态多样性敏感，可能在小裂缝或复杂背景下误检。",
+        "estimated_workload": "4人月"
+      },
+      {
+        "title": "基于全卷积网络的高速公路沥青面裂缝分割算法研究",
+        "research_question": "全卷积网络如何实现高速公路沥青面裂缝的像素级分割？",
+        "baseline": "Crack Detection with Fully Convolutional Network",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Crack Detection with Fully Convolutional Network",
+        "risk": "全卷积网络对裂缝边缘细节的分割精度可能不足，需要后处理优化。",
+        "estimated_workload": "5人月"
+      },
+      {
+        "title": "基于自监督结构学习的高速公路沥青面裂缝检测算法研究",
+        "research_question": "自监督结构学习能否在无标注数据条件下提升裂缝检测性能？",
+        "baseline": "Self-Supervised Structure Learning for Crack Detection",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Self-Supervised Structure Learning for Crack Detection",
+        "risk": "自监督学习依赖数据内在结构，高速公路沥青面裂缝特征可能不足以支撑有效学习。",
+        "estimated_workload": "5人月"
+      },
+      {
+        "title": "基于DeepCrack的高速公路沥青面裂缝检测算法研究",
+        "research_question": "DeepCrack网络结构在高速公路沥青面裂缝检测中的适用性与改进方向？",
+        "baseline": "qinnzou/DeepCrack",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "qinnzou/DeepCrack",
+        "risk": "DeepCrack原为混凝土裂缝设计，迁移至沥青面需调整网络参数。",
+        "estimated_workload": "4人月"
+      },
+      {
+        "title": "基于粗到细裂缝线索的高速公路沥青面裂缝检测算法研究",
+        "research_question": "粗到细裂缝线索策略如何提升高速公路沥青面裂缝检测的召回率？",
+        "baseline": "Coarse-to-fine crack cue for robust crack detection",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Coarse-to-fine crack cue for robust crack detection",
+        "risk": "粗到细策略可能增加计算开销，实时性需验证。",
+        "estimated_workload": "5人月"
+      },
+      {
+        "title": "基于Crack-pot的高速公路沥青面裂缝与坑槽检测算法研究",
+        "research_question": "Crack-pot算法在高速公路沥青面裂缝与坑槽联合检测中的性能如何？",
+        "baseline": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+        "risk": "坑槽与裂缝形态差异大，统一模型可能降低裂缝检测精度。",
+        "estimated_workload": "6人月"
+      },
+      {
+        "title": "基于NHA12D数据集的高速公路沥青面裂缝检测算法比较研究",
+        "research_question": "在NHA12D数据集上，不同裂缝检测算法对高速公路沥青面的适用性如何？",
+        "baseline": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+        "improved_module_source": null,
+        "data_source": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+        "experiment_metrics": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+        "risk": "NHA12D数据集可能不专门针对高速公路沥青面，需验证领域匹配度。",
+        "estimated_workload": "4人月"
+      },
+      {
+        "title": "基于特征金字塔与层次提升网络的高速公路沥青面裂缝检测算法研究",
+        "research_question": "特征金字塔与层次提升网络如何增强多尺度裂缝的检测能力？",
+        "baseline": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+        "risk": "网络复杂度高，训练资源需求大。",
+        "estimated_workload": "6人月"
+      }
+    ]
+  },
+  "filter_results": {
+    "total": 23,
+    "kept": 18,
+    "dropped": 5,
+    "dropped_items": [
+      {
+        "title": "fyangneil/pavement-crack-detection",
+        "reason": "GitHub repository with no abstract or research content; appears to be a code repository for crack detection without evidence of a formal paper."
+      },
+      {
+        "title": "tnt-wolve/ch3r0",
+        "reason": "Abstract describes a hacking tool menu with no research content; clearly a software tool repository."
+      },
+      {
+        "title": "KangchengLiu/Crack-Detection-and-Segmentation-Dataset-for-UAV-Inspection",
+        "reason": "Abstract is a brief description of a dataset repository with emojis; lacks research content or formal paper structure."
+      },
+      {
+        "title": "sonya75/starbucks-botdetection-cracked",
+        "reason": "Abstract describes a bot detection bypass script with no research content; a software tool."
+      },
+      {
+        "title": "shomnathsomu/crack-detection-opencv",
+        "reason": "Abstract is a brief description of a crack detection project using OpenCV; no evidence of a formal paper or research content."
+      }
+    ]
+  },
+  "seed_papers": [
+    {
+      "title": "Crack Detection with Fully Convolutional Network",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning",
+        "image segmentation"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Employs fully convolutional network for crack detection, aligning with deep learning and segmentation methods.",
+      "doi": "10.1201/9781003252948-3",
+      "url": "https://doi.org/10.1201/9781003252948-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=11",
+      "relevance_score": 11
+    },
+    {
+      "title": "Crack Detection with Generative Adversarial Learning",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly applies deep learning (GAN) to crack detection, relevant as a comparative method.",
+      "doi": "10.1201/9781003252948-4",
+      "url": "https://doi.org/10.1201/9781003252948-4",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=9",
+      "relevance_score": 9
+    },
+    {
+      "title": "Crack Detection with Deep Classification Network",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses deep classification network for crack detection, directly relevant to the topic.",
+      "doi": "10.1201/9781003252948-2",
+      "url": "https://doi.org/10.1201/9781003252948-2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=9",
+      "relevance_score": 9
+    },
+    {
+      "title": "Self-Supervised Structure Learning for Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "crack detection",
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Applies self-supervised deep learning to crack detection, relevant as a methodological baseline.",
+      "doi": "10.1201/9781003252948-5",
+      "url": "https://doi.org/10.1201/9781003252948-5",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=9",
+      "relevance_score": 9
+    }
+  ],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "risky",
+    "score": 55,
+    "reason": "有5篇baseline论文且均含repo，但无数据集和代码仓库，需自行收集数据并实现算法，风险较高。",
+    "100_plus_formula": {
+      "baseline_weight": 5,
+      "module_weights": [],
+      "estimated_total": 0,
+      "assessment": "勉强"
+    },
+    "degradation_paths": [
+      "无公开数据集，需自行采集或标注，耗时且可能影响模型泛化性",
+      "无代码仓库，需从零实现或复现，增加开发难度",
+      "若数据量不足或质量差，可能导致检测精度不达标"
+    ]
+  },
+  "innovation_points": [
+    {
+      "description": "结合DeepCrack的层次化卷积特征与自监督结构学习，提升裂缝检测的精度和鲁棒性",
+      "baseline_used": "Self-Supervised Structure Learning for Crack Detection",
+      "stitched_modules": [
+        "层次化卷积特征提取模块（来自DeepCrack）",
+        "自监督结构学习模块（来自Self-Supervised Structure Learning）"
+      ],
+      "stitching_plan": "1. 复现Self-Supervised Structure Learning模型，保留其自监督预训练和结构学习分支；2. 将DeepCrack中的多尺度特征融合层（如跳跃连接和侧输出）替换原模型的特征提取部分；3. 在公开裂缝数据集（如Crack500）上联合训练，评估mIoU和F1-score。",
+      "estimated_difficulty": "中",
+      "evidence_ref": "Self-Supervised Structure Learning for Crack Detection; qinnzou/DeepCrack"
+    },
+    {
+      "description": "将生成对抗学习（GAN）与全卷积网络（FCN）结合，增强裂缝检测的细节生成能力",
+      "baseline_used": "Crack Detection with Generative Adversarial Learning",
+      "stitched_modules": [
+        "生成对抗网络模块（来自Crack Detection with Generative Adversarial Learning）",
+        "全卷积网络分割模块（来自Crack Detection with Fully Convolutional Network）"
+      ],
+      "stitching_plan": "1. 复现FCN作为分割主干，输出裂缝概率图；2. 将GAN的判别器接入FCN输出，设计对抗损失函数（如LSGAN）；3. 在CrackForest数据集上训练，比较有无对抗训练的像素精度。",
+      "estimated_difficulty": "高",
+      "evidence_ref": "Crack Detection with Generative Adversarial Learning; Crack Detection with Fully Convolutional Network"
+    },
+    {
+      "description": "融合深度分类网络与DeepCrack的层次特征，实现裂缝区域快速定位与精细分割",
+      "baseline_used": "Crack Detection with Deep Classification Network",
+      "stitched_modules": [
+        "深度分类网络模块（来自Crack Detection with Deep Classification Network）",
+        "层次化卷积特征模块（来自DeepCrack）"
+      ],
+      "stitching_plan": "1. 复现Deep Classification Network作为裂缝存在性分类器；2. 将DeepCrack的编码器特征图作为分类器的输入，替换原分类网络的前几层；3. 在AigleRN数据集上测试分类准确率，并可视化特征图。",
+      "estimated_difficulty": "低",
+      "evidence_ref": "Crack Detection with Deep Classification Network; qinnzou/DeepCrack"
+    }
+  ],
+  "stitching_plan": {
+    "baseline_model": "Self-Supervised Structure Learning for Crack Detection",
+    "module_b": "层次化卷积特征提取模块（来自qinnzou/DeepCrack）",
+    "module_c": "自监督结构学习模块（来自Self-Supervised Structure Learning）",
+    "stitching_steps": [
+      "1. 复现baseline：在PyTorch 1.10环境下，使用Crack500数据集训练Self-Supervised Structure Learning模型，保存预训练权重。",
+      "2. 提取模块B：从DeepCrack的GitHub仓库（qinnzou/DeepCrack）中提取多尺度特征融合层代码（包括侧输出和跳跃连接），封装为可插入模块。",
+      "3. 拼接测试：将模块B替换baseline的特征提取部分，保留自监督学习分支，在Crack500上重新训练，使用mIoU和F1-score评估，并与原始baseline对比。"
+    ],
+    "risk_notes": [
+      "模块B与baseline的特征维度可能不匹配，需调整通道数或添加适配层。",
+      "自监督预训练与层次化特征的联合训练可能导致收敛变慢，需调整学习率。",
+      "DeepCrack的代码依赖特定版本（如OpenCV），需确保环境兼容。"
+    ]
+  },
+  "sota_comparison": {
+    "comparison_papers": [
+      {
+        "title": "DeepCrack: Learning Hierarchical Convolutional Features for Crack Detection",
+        "year": "2019",
+        "reason": "经典深度学习裂缝检测方法，层次化特征提取，适合作为SOTA对比基线"
+      },
+      {
+        "title": "Crack Detection with Fully Convolutional Network",
+        "year": "2018",
+        "reason": "全卷积网络端到端分割，与语义分割任务直接相关，验证像素级精度"
+      },
+      {
+        "title": "Self-Supervised Structure Learning for Crack Detection",
+        "year": "2021",
+        "reason": "自监督方法，无需大量标注，体现最新无监督趋势，对比鲁棒性"
+      }
+    ],
+    "metrics_to_compare": [
+      "Precision",
+      "Recall",
+      "F1-score",
+      "IoU",
+      "Accuracy",
+      "Inference Time (ms)"
+    ],
+    "ablation_suggestions": [
+      {
+        "name": "移除注意力模块",
+        "purpose": "验证注意力机制对裂缝边缘细节的增强效果",
+        "expected_drop": "F1-score下降3-5%"
+      },
+      {
+        "name": "替换主干网络为轻量级网络",
+        "purpose": "验证特征提取深度对高速公路沥青面裂缝检测的影响",
+        "expected_drop": "IoU下降2-4%，但推理速度提升20%"
+      },
+      {
+        "name": "去除数据增强中的随机遮挡",
+        "purpose": "验证遮挡增强对裂缝断裂区域识别的贡献",
+        "expected_drop": "Recall下降2-3%"
+      }
+    ],
+    "experiment_checklist": [
+      "数据集划分：训练/验证/测试集比例7:1.5:1.5，确保无重叠",
+      "数据预处理：统一图像尺寸、归一化、标注格式转换",
+      "基线复现：使用官方代码或论文参数，确保公平对比",
+      "消融实验：每次仅改变一个模块，固定随机种子",
+      "指标计算：使用相同阈值（如0.5）计算Precision/Recall/F1",
+      "推理速度：在相同硬件（GPU型号）上测量平均推理时间",
+      "结果可视化：输出预测掩码与真实掩码对比图",
+      "统计显著性：对多次运行结果计算均值与标准差"
+    ]
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "引入生成对抗网络进行数据增强与半监督学习",
+        "expected_gain": "提升模型对罕见裂缝类型的泛化能力，缓解标注数据不足问题",
+        "difficulty": "中",
+        "action_items": [
+          "收集高速公路沥青面裂缝原始图像，使用GAN生成多样化的裂缝样本",
+          "设计半监督训练框架，利用少量标注数据与大量未标注数据联合训练",
+          "对比不同GAN架构（如CycleGAN、StyleGAN）对裂缝细节的保真度"
+        ],
+        "ref_parallel": "Crack Detection with Generative Adversarial Learning"
+      },
+      {
+        "direction": "融合多尺度特征与注意力机制改进全卷积网络",
+        "expected_gain": "提高对细小裂缝和复杂背景的检测精度，减少误检",
+        "difficulty": "中",
+        "action_items": [
+          "在DeepCrack的层次化特征基础上引入通道注意力或空间注意力模块",
+          "设计多尺度特征融合模块（如FPN、ASPP）以捕获不同粗细裂缝",
+          "在公开裂缝数据集（如CFD、CrackForest）上验证改进效果"
+        ],
+        "ref_parallel": "qinnzou/DeepCrack"
+      },
+      {
+        "direction": "采用自监督预训练策略提升特征学习能力",
+        "expected_gain": "利用大量无标签高速公路图像预训练，提升下游裂缝检测性能",
+        "difficulty": "高",
+        "action_items": [
+          "设计对比学习或掩码自编码任务，在高速公路场景图像上预训练骨干网络",
+          "微调预训练模型至裂缝检测任务，评估迁移效果",
+          "与随机初始化模型进行对比实验"
+        ],
+        "ref_parallel": "Self-Supervised Structure Learning for Crack Detection"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "简化模型为基于分类网络的裂缝检测（仅判断有无裂缝）",
+        "trade_off": "丧失像素级定位能力，无法满足裂缝几何测量需求",
+        "survival_rate": "高"
+      },
+      {
+        "path": "退化为传统图像处理方法（边缘检测+形态学操作）",
+        "trade_off": "对光照、噪声敏感，泛化能力差，精度大幅下降",
+        "survival_rate": "中"
+      },
+      {
+        "path": "仅使用单一尺度特征的全卷积网络，不进行多尺度融合",
+        "trade_off": "对细小裂缝漏检率升高，但模型复杂度降低",
+        "survival_rate": "高"
+      }
+    ],
+    "risk_mitigation": [
+      "优先使用公开裂缝数据集（如DeepCrack数据集）进行方法验证，降低数据收集风险",
+      "设计模块化实验，逐步增加创新点，确保每个改进都有消融实验支撑",
+      "若生成对抗网络训练不稳定，可退化为传统数据增强（旋转、裁剪、弹性变形）",
+      "定期与导师沟通阶段性结果，确保研究方向符合毕业要求"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 5,
+        "verdict": "WARN",
+        "reason": "创新点描述为结合现有方法（DeepCrack、GAN、FCN），但未明确指出现有方法的共同缺陷或具体gap，存在硬凑嫌疑。"
+      },
+      {
+        "dimension": "D2",
+        "score": 6,
+        "verdict": "WARN",
+        "reason": "baseline选择合理，但创新点1和3均引用DeepCrack，存在重复依赖，且未说明为何选择这些baseline而非其他。"
+      },
+      {
+        "dimension": "D3",
+        "score": 4,
+        "verdict": "WARN",
+        "reason": "baseline论文有5篇且含repo，但无数据集和代码仓库，需自行收集数据并实现算法，证据充分性不足。"
+      },
+      {
+        "dimension": "D4",
+        "score": 3,
+        "verdict": "WARN",
+        "reason": "三个工作包标题与创新点对应模糊，且叙事中未定义三个具体问题，无法判断模块是否解决问题。"
+      },
+      {
+        "dimension": "D5",
+        "score": 4,
+        "verdict": "WARN",
+        "reason": "叙事部分缺失，工作包描述为空，整体自洽性差，存在过度宣传风险。"
+      }
+    ],
+    "overall_verdict": "MINOR_REVISION",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "无数据集和代码仓库，需自行收集数据并实现算法，实施风险高",
+      "创新点描述缺乏具体实现细节，可能难以落地",
+      "叙事部分缺失，论证连贯性不足"
+    ]
+  },
+  "narrative_revision_count": 2,
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T08:01:57Z",
+      "input_summary": {
+        "topic": "高速公路沥青面裂缝检测识别算法的研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:01:57Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T08:02:01Z",
+      "input_summary": {
+        "topic_len": 18
+      },
+      "output_summary": {
+        "n_method": 3,
+        "n_object": 1,
+        "domain": "civil_infra"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:02:01Z",
+      "elapsed_s": 4.121
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T08:02:01Z",
+      "input_summary": {
+        "topic_len": 18,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:02:01Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T08:02:01Z",
+      "input_summary": {
+        "topic_len": 18,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 23,
+        "raw_tools": [
+          "arxiv",
+          "crossref",
+          "github"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        },
+        {
+          "tool": "crossref",
+          "n": 8
+        },
+        {
+          "tool": "github",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T08:02:50Z",
+      "elapsed_s": 48.978
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T08:02:50Z",
+      "input_summary": {
+        "n_candidates": 23
+      },
+      "output_summary": {
+        "kept": 18,
+        "dropped": 5,
+        "pre_filter_keep": 15,
+        "pre_filter_drop": 0,
+        "llm_judged": 8
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 15,
+          "pre_drop": 0,
+          "gray_area": 8
+        },
+        {
+          "tool": "re13_quality_filter.llm",
+          "batch_size": 8
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:02:56Z",
+      "elapsed_s": 6.158
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T08:02:56Z",
+      "input_summary": {
+        "n_candidates": 18,
+        "topic_len": 18,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 9,
+        "n_weak_reject": 4,
+        "n_reject": 5
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:03:03Z",
+      "elapsed_s": 7.698
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T08:03:03Z",
+      "input_summary": {
+        "n_papers": 9,
+        "n_weak": 4,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:03:03Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T08:03:03Z",
+      "input_summary": {
+        "n_verified": 9,
+        "n_seeds": 4,
+        "seed_titles": [
+          "Crack Detection with Fully Convolutional Network",
+          "Crack Detection with Generative Adversarial Learning",
+          "Crack Detection with Deep Classification Network",
+          "Self-Supervised Structure Learning for Crack Detection"
+        ]
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "n_surveys": 0,
+        "n_repos": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "semantic_scholar.citations+references",
+          "n_seeds": 4,
+          "n_expanded": 0,
+          "concurrent": true
+        }
+      ],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "per_seed": [
+        {
+          "seed_title": "Crack Detection with Fully Convolutional Network",
+          "n_references_plus_citations": 0,
+          "relevance_score": 11
+        },
+        {
+          "seed_title": "Crack Detection with Generative Adversarial Learning",
+          "n_references_plus_citations": 0,
+          "relevance_score": 9
+        },
+        {
+          "seed_title": "Crack Detection with Deep Classification Network",
+          "n_references_plus_citations": 0,
+          "relevance_score": 9
+        },
+        {
+          "seed_title": "Self-Supervised Structure Learning for Crack Detection",
+          "n_references_plus_citations": 0,
+          "relevance_score": 9
+        }
+      ],
+      "ended_at": "2026-07-06T08:03:31Z",
+      "elapsed_s": 27.017
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T08:03:31Z",
+      "input_summary": {
+        "n_candidates": 9,
+        "topic_len": 18,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 4,
+        "n_weak_reject": 5,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:03:38Z",
+      "elapsed_s": 7.292
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T08:03:38Z",
+      "input_summary": {
+        "n_papers": 13,
+        "n_weak": 9,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:03:38Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T08:03:48Z",
+      "input_summary": {
+        "n_papers": 8
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 8,
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:03:48Z",
+      "elapsed_s": 10.174
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T08:03:48Z",
+      "input_summary": {
+        "papers": 13
+      },
+      "output_summary": {
+        "nodes": 9,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:03:48Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T08:03:48Z",
+      "input_summary": {
+        "n_verified": 13
+      },
+      "output_summary": {
+        "n_baseline": 13,
+        "n_parallel": 0,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:03:48Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T08:03:54Z",
+      "input_summary": {
+        "n_baseline": 13,
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "output_summary": {
+        "verdict": "risky",
+        "score": 55
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:03:54Z",
+      "elapsed_s": 5.753
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-06T08:04:10Z",
+      "input_summary": {
+        "n_baseline": 13,
+        "n_parallel": 0
+      },
+      "output_summary": {
+        "n_packages": 9,
+        "n_gap": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:04:10Z",
+      "elapsed_s": 16.206
+    },
+    {
+      "node": "innovation_extractor",
+      "started_at": "2026-07-06T08:04:24Z",
+      "input_summary": {
+        "n_baseline": 13,
+        "n_parallel": 0
+      },
+      "output_summary": {
+        "n_innovation": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "innovation_extractor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:04:24Z",
+      "elapsed_s": 13.869
+    },
+    {
+      "node": "sota_matcher",
+      "started_at": "2026-07-06T08:04:20Z",
+      "input_summary": {
+        "n_baseline": 13
+      },
+      "output_summary": {
+        "n_comparison": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "sota_matcher.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:04:20Z",
+      "elapsed_s": 10.065
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-06T08:04:35Z",
+      "input_summary": {
+        "n_innovation": 3
+      },
+      "output_summary": {
+        "nick_model_name": "CrackFusionNet"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:04:35Z",
+      "elapsed_s": 11.471
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-06T08:04:35Z",
+      "input_summary": {
+        "n_packages": 9
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 9
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:04:35Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T08:04:45Z",
+      "input_summary": {
+        "feasibility": "risky"
+      },
+      "output_summary": {
+        "n_paths": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:04:45Z",
+      "elapsed_s": 9.485
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T08:04:52Z",
+      "input_summary": {
+        "n_innovation": 3,
+        "n_packages": 9
+      },
+      "output_summary": {
+        "overall_verdict": "MINOR_REVISION"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T08:04:52Z",
+      "elapsed_s": 7.275
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T08:04:52Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:04:52Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T08:04:52Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "高速公路沥青面裂缝检测识别算法的研究",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 9,
+        "low_bar_status": "pass",
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": [
+          {
+            "title": "基于生成对抗网络的高速公路沥青面裂缝检测算法研究",
+            "research_question": "如何利用生成对抗网络提升高速公路沥青面裂缝检测的精度与鲁棒性？",
+            "baseline": "Crack Detection with Generative Adversarial Learning",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Crack Detection with Generative Adversarial Learning",
+            "risk": "生成对抗网络训练不稳定，且缺乏公开的高速公路沥青面专用数据集，可能影响泛化能力。",
+            "estimated_workload": "6人月"
+          },
+          {
+            "title": "基于深度分类网络的高速公路沥青面裂缝检测算法研究",
+            "research_question": "深度分类网络在高速公路沥青面裂缝检测中如何实现高效且准确的分类？",
+            "baseline": "Crack Detection with Deep Classification Network",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Crack Detection with Deep Classification Network",
+            "risk": "分类网络对裂缝形态多样性敏感，可能在小裂缝或复杂背景下误检。",
+            "estimated_workload": "4人月"
+          },
+          {
+            "title": "基于全卷积网络的高速公路沥青面裂缝分割算法研究",
+            "research_question": "全卷积网络如何实现高速公路沥青面裂缝的像素级分割？",
+            "baseline": "Crack Detection with Fully Convolutional Network",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Crack Detection with Fully Convolutional Network",
+            "risk": "全卷积网络对裂缝边缘细节的分割精度可能不足，需要后处理优化。",
+            "estimated_workload": "5人月"
+          },
+          {
+            "title": "基于自监督结构学习的高速公路沥青面裂缝检测算法研究",
+            "research_question": "自监督结构学习能否在无标注数据条件下提升裂缝检测性能？",
+            "baseline": "Self-Supervised Structure Learning for Crack Detection",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Self-Supervised Structure Learning for Crack Detection",
+            "risk": "自监督学习依赖数据内在结构，高速公路沥青面裂缝特征可能不足以支撑有效学习。",
+            "estimated_workload": "5人月"
+          },
+          {
+            "title": "基于DeepCrack的高速公路沥青面裂缝检测算法研究",
+            "research_question": "DeepCrack网络结构在高速公路沥青面裂缝检测中的适用性与改进方向？",
+            "baseline": "qinnzou/DeepCrack",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "qinnzou/DeepCrack",
+            "risk": "DeepCrack原为混凝土裂缝设计，迁移至沥青面需调整网络参数。",
+            "estimated_workload": "4人月"
+          },
+          {
+            "title": "基于粗到细裂缝线索的高速公路沥青面裂缝检测算法研究",
+            "research_question": "粗到细裂缝线索策略如何提升高速公路沥青面裂缝检测的召回率？",
+            "baseline": "Coarse-to-fine crack cue for robust crack detection",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Coarse-to-fine crack cue for robust crack detection",
+            "risk": "粗到细策略可能增加计算开销，实时性需验证。",
+            "estimated_workload": "5人月"
+          },
+          {
+            "title": "基于Crack-pot的高速公路沥青面裂缝与坑槽检测算法研究",
+            "research_question": "Crack-pot算法在高速公路沥青面裂缝与坑槽联合检测中的性能如何？",
+            "baseline": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+            "risk": "坑槽与裂缝形态差异大，统一模型可能降低裂缝检测精度。",
+            "estimated_workload": "6人月"
+          },
+          {
+            "title": "基于NHA12D数据集的高速公路沥青面裂缝检测算法比较研究",
+            "research_question": "在NHA12D数据集上，不同裂缝检测算法对高速公路沥青面的适用性如何？",
+            "baseline": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+            "improved_module_source": null,
+            "data_source": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+            "experiment_metrics": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+            "risk": "NHA12D数据集可能不专门针对高速公路沥青面，需验证领域匹配度。",
+            "estimated_workload": "4人月"
+          },
+          {
+            "title": "基于特征金字塔与层次提升网络的高速公路沥青面裂缝检测算法研究",
+            "research_question": "特征金字塔与层次提升网络如何增强多尺度裂缝的检测能力？",
+            "baseline": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+            "risk": "网络复杂度高，训练资源需求大。",
+            "estimated_workload": "6人月"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T08:04:52Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

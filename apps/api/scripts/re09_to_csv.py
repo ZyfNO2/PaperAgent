@@ -91,7 +91,7 @@ def _emit_candidate_csv():
     summary_path = RE09_DIR / "summary.json"
     if not summary_path.exists(): return 0
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
-    per_case_index = {c["case_id"]: c for c in (summary.get("per_case") or [])}
+    {c["case_id"]: c for c in (summary.get("per_case") or [])}
     for batch_dir in sorted(RE09_DIR.iterdir()):
         if not batch_dir.is_dir(): continue
         for case_path in sorted(batch_dir.glob("ENG-THESIS-*.json")):
@@ -151,7 +151,7 @@ def main():
     n_cand = _emit_candidate_csv()
     print(f"Wrote {n_case} rows to {CASE_CSV.name}  (case-level, {len(CASE_COLUMNS)} cols)")
     print(f"Wrote {n_cand} rows to {CAND_CSV.name}  (candidate-level, {len(CAND_COLUMNS)} cols)")
-    print(f"  encoding: utf-8-sig (Excel-friendly)")
+    print("  encoding: utf-8-sig (Excel-friendly)")
     return 0
 if __name__ == "__main__":
     sys.exit(main())

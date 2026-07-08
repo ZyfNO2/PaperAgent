@@ -1,0 +1,698 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T11:12:03Z",
+    "input_summary": {
+      "topic": "海上风机叶片缺陷检测及分类"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:03Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T11:12:06Z",
+    "input_summary": {
+      "topic_len": 13
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "energy_power"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:06Z",
+    "elapsed_s": 2.891
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T11:12:06Z",
+    "input_summary": {
+      "topic_len": 13,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:06Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T11:12:06Z",
+    "input_summary": {
+      "topic_len": 13,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 12,
+      "n_steps": 4,
+      "n_tool_calls": 3,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "github": 12
+      },
+      "failed_adapters": [
+        "openalex"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T11:12:30Z",
+    "elapsed_s": 24.225
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T11:12:30Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T11:12:30Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 13,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 5,
+      "n_weak_reject": 2,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:36Z",
+    "elapsed_s": 5.514
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T11:12:36Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 2,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:36Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T11:12:36Z",
+    "input_summary": {
+      "n_verified": 5,
+      "n_seeds": 5,
+      "seed_titles": [
+        "WaveletAE: A Wavelet-enhanced Autoencoder for Wind Turbine B",
+        "A Novel Approach for Defect Detection of Wind Turbine Blade ",
+        "Wind Turbine Blade Surface Damage Detection based on Aerial ",
+        "Prototype-based Heterogeneous Federated Learning for Blade I",
+        "Semi-Supervised Surface Anomaly Detection of Composite Wind "
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "WaveletAE: A Wavelet-enhanced Autoencoder for Wind Turbine B",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A Novel Approach for Defect Detection of Wind Turbine Blade ",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Wind Turbine Blade Surface Damage Detection based on Aerial ",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Prototype-based Heterogeneous Federated Learning for Blade I",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "Semi-Supervised Surface Anomaly Detection of Composite Wind ",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      }
+    ],
+    "ended_at": "2026-07-08T11:12:37Z",
+    "elapsed_s": 1.028
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T11:12:37Z",
+    "input_summary": {
+      "n_candidates": 5,
+      "topic_len": 13,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 2,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:42Z",
+    "elapsed_s": 4.503
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T11:12:42Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 2,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:42Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T11:12:56Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 5,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:56Z",
+    "elapsed_s": 14.096
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T11:12:56Z",
+    "input_summary": {
+      "papers": 5
+    },
+    "output_summary": {
+      "nodes": 17,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T11:12:56Z",
+    "input_summary": {
+      "n_verified": 5
+    },
+    "output_summary": {
+      "n_baseline": 5,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:12:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T11:12:59Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_dataset": 0,
+      "n_repo": 12
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:12:59Z",
+    "elapsed_s": 3.653
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T11:13:09Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:13:09Z",
+    "elapsed_s": 9.554
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T11:13:18Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:13:18Z",
+    "elapsed_s": 9.487
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T11:13:16Z",
+    "input_summary": {
+      "n_baseline": 5
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:13:16Z",
+    "elapsed_s": 7.144
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T11:13:27Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "WaveletVR-FedDetect"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:13:27Z",
+    "elapsed_s": 8.18
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T11:13:27Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:13:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T11:13:34Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:13:34Z",
+    "elapsed_s": 7.803
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T11:13:40Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:13:40Z",
+    "elapsed_s": 5.734
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T11:13:48Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "WaveVR-PFLDetector"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:13:48Z",
+    "elapsed_s": 7.954
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T11:13:48Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:13:48Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T11:13:56Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:13:56Z",
+    "elapsed_s": 7.646
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T11:14:02Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:14:02Z",
+    "elapsed_s": 6.054
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T11:14:02Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:14:02Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T11:14:02Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "海上风机叶片缺陷检测及分类",
+      "n_papers": 5,
+      "n_baseline": 5,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLO系列模型的海上风机叶片缺陷检测与分类",
+          "research_question": "如何利用YOLO系列模型（如YOLOv8、YOLOv11）对海上风机叶片进行高效的缺陷检测与分类？",
+          "baseline": "Wind Turbine Blade Surface Damage Detection based on Aerial Imagery and VGG16-RCNN Framework",
+          "improved_module_source": "memari-majid/Wind-Turbine-Blade-Defect-Detection-with-YOLO-Models",
+          "data_source": null,
+          "experiment_metrics": "Wind Turbine Blade Surface Damage Detection based on Aerial Imagery and VGG16-RCNN Framework",
+          "risk": "海上环境复杂，无人机采集图像质量受光照、海雾等影响，可能降低检测精度。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于半监督深度学习的海上风机叶片表面异常检测",
+          "research_question": "在标注数据有限的情况下，如何利用半监督深度学习方法实现海上风机叶片表面缺陷的准确检测？",
+          "baseline": "Semi-Supervised Surface Anomaly Detection of Composite Wind Turbine Blades From Drone Imagery",
+          "improved_module_source": "yuuStella/Wind-Turbine-Blade-Defect-Detection-with-a-Semi-supervised-Deep-Learning-Framework",
+          "data_source": null,
+          "experiment_metrics": "Semi-Supervised Surface Anomaly Detection of Composite Wind Turbine Blades From Drone Imagery",
+          "risk": "半监督方法对未标注数据的质量敏感，海上场景下噪声可能影响伪标签生成。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于小波增强自编码器的海上风机叶片结冰检测",
+          "research_question": "如何利用小波变换增强自编码器，提升海上风机叶片结冰缺陷的检测性能？",
+          "baseline": "WaveletAE: A Wavelet-enhanced Autoencoder for Wind Turbine Blade Icing Detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "WaveletAE: A Wavelet-enhanced Autoencoder for Wind Turbine Blade Icing Detection",
+          "risk": "小波变换参数选择依赖经验，海上环境数据分布变化可能导致模型泛化能力下降。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于原型异构联邦学习的海上风机叶片结冰检测（类别不平衡）",
+          "research_question": "在数据类别不平衡且分布异构的条件下，如何利用原型异构联邦学习实现海上风机叶片结冰检测？",
+          "baseline": "Prototype-based Heterogeneous Federated Learning for Blade Icing Detection in Wind Turbines with Class Imbalanced Data",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Prototype-based Heterogeneous Federated Learning for Blade Icing Detection in Wind Turbines with Class Imbalanced Data",
+          "risk": "联邦学习通信开销大，海上风机节点可能因网络不稳定导致训练中断。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于虚拟现实与深度学习的海上风机叶片缺陷检测",
+          "research_question": "如何结合虚拟现实技术增强深度学习模型对海上风机叶片缺陷的检测能力？",
+          "baseline": "A Novel Approach for Defect Detection of Wind Turbine Blade Using Virtual Reality and Deep Learning",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "A Novel Approach for Defect Detection of Wind Turbine Blade Using Virtual Reality and Deep Learning",
+          "risk": "虚拟现实生成数据与真实海上场景存在域差异，可能影响模型迁移效果。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:14:02Z",
+    "elapsed_s": 0.0
+  }
+]

@@ -243,7 +243,7 @@ def main() -> int:
             "domain_route": "",
             "re10_status": status,
             "stop_reason": status,
-            "evidence_status": est,
+            "evidence_status": "",
             "adapter_attempt_n": ev["adapter_attempt_n"],
             "adapter_success_n": ev["adapter_success_n"],
             "adapter_error_n": ev["adapter_error_n"],

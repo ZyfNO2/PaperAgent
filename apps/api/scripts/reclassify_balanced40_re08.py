@@ -41,7 +41,6 @@ from app.services.agents.eval import (  # noqa: E402
 )
 from app.services.agents.gap_repair_planner import (  # noqa: E402
     build_repair_plan,
-    rule_repair_plan,
 )
 from app.services.agents.candidate_verifier import (  # noqa: E402
     verify_bucket,

@@ -168,7 +168,7 @@ def _regression_cases(re08: dict, re09: dict) -> list[str]:
 def validate(re10_dir: Path, re08_summary: Path, re09_summary: Path,
              allow_no_llm: bool = False,
              skip_baseline_gates: bool = False) -> int:
-    print(f"=== Re10 FIX reflection-search validator (hard-fail) ===")
+    print("=== Re10 FIX reflection-search validator (hard-fail) ===")
     print(f"  re10_dir:    {re10_dir}")
     print(f"  re08_sum:    {re08_summary}")
     print(f"  re09_sum:    {re09_summary}")
@@ -283,7 +283,7 @@ def validate(re10_dir: Path, re08_summary: Path, re09_summary: Path,
 
     # H7: Re08 seeds preserved (skip if re08 summary empty / not Balanced40)
     if skip_baseline_gates:
-        print(f"  SKIP  H7 Re08 seeds preserved (skip_baseline_gates=True)")
+        print("  SKIP  H7 Re08 seeds preserved (skip_baseline_gates=True)")
     else:
         re08_seeds = set()
         for c in (re08.get("per_case") or []):
@@ -291,7 +291,7 @@ def validate(re10_dir: Path, re08_summary: Path, re09_summary: Path,
             if n > 0:
                 re08_seeds.add(c["case_id"])
         if not re08_seeds:
-            print(f"  SKIP  H7 Re08 seeds preserved (no re08 data — typical-case mode)")
+            print("  SKIP  H7 Re08 seeds preserved (no re08 data — typical-case mode)")
         else:
             missing_seeds: list[str] = []
             for cid in re08_seeds:
@@ -314,11 +314,11 @@ def validate(re10_dir: Path, re08_summary: Path, re09_summary: Path,
 
     # H8: Re09 regression improvement (skip if no re09 data)
     if skip_baseline_gates:
-        print(f"  SKIP  H8 Re09 regression cases (skip_baseline_gates=True)")
+        print("  SKIP  H8 Re09 regression cases (skip_baseline_gates=True)")
     else:
         regression = _regression_cases(re08, re09)
         if not regression:
-            print(f"  SKIP  H8 Re09 regression cases (no re08/re09 baseline)")
+            print("  SKIP  H8 Re09 regression cases (no re08/re09 baseline)")
         else:
             still_failing: list[str] = []
             for cid in regression:

@@ -17,16 +17,10 @@ Covers:
 """
 from __future__ import annotations
 
-import asyncio
-import json
-import sys
-from pathlib import Path
-from typing import Any
 
-import pytest
 
 from app.services.agents.query_matrix import build_query_matrix
-from app.services.agents.seed_relevance import evaluate_seed, filter_seeds
+from app.services.agents.seed_relevance import evaluate_seed
 from app.services.agents.result_expander import (
     _is_chinese_dominated,
     expand_from_round1,
@@ -215,7 +209,7 @@ def _fake_chat_factory(reviews_per_call: list[list[dict]]):
 def test_chinese_chunk_uses_re04_prompt():
     """audit_candidates should call the LLM with RE04_EVIDENCE_REVIEW_SYSTEM
     when the chunk is Chinese-dominant (Re04-fix SOP §4.B)."""
-    from app.services.agents.prompts import RE04_EVIDENCE_REVIEW_SYSTEM, EVIDENCE_REVIEW_SYSTEM
+    from app.services.agents.prompts import RE04_EVIDENCE_REVIEW_SYSTEM
     candidates = [
         {"candidate_id": f"c-{i}", "title": "基于YOLOv5模型的遥感影像飞机目标检测",
          "evidence_type": "paper", "role_hint": "reference", "year": 2024,

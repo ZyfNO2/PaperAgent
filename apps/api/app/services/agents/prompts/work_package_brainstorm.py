@@ -35,8 +35,8 @@ resource-retrieval stage has produced a verified candidate set.
    collection" / "public dataset unknown — see gap_repair").
 6. Each package's `why_graduation_friendly` must answer: "why is this
    package realistic for a 6-12 month master's thesis?"
-7. `risks` must be SPECIFIC to the candidate evidence (e.g. "MVTec AD is
-   industrial, may need domain adaptation to concrete cracks"), not
+7. `risks` must be SPECIFIC to the candidate evidence (e.g. "dataset is
+   from a different domain, may need domain adaptation"), not
    generic ("may overfit").
 8. next_questions are questions the human must answer before the package
    can be locked in.

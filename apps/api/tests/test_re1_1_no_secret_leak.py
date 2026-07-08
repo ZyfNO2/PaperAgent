@@ -38,6 +38,7 @@ def _scan_file(path: str) -> list[str]:
             markers = ("placeholder", "PLACEHOLDER", "your_", "YOUR_",
                        "test", "TEST", "sk-test", "REDACTED",
                        "xxxx", "<REDACTED>")
+            value = m.group(2)
             if any(marker in value for marker in markers):
                 continue
             finds.append(f"hardcoded-key:{m.start()}")

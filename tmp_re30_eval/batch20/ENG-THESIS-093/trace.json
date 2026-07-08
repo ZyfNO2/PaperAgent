@@ -1,0 +1,926 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T20:56:25Z",
+    "input_summary": {
+      "topic": "基于深度学习的接触网绝缘子表面缺陷图像式检测方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:56:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T20:56:30Z",
+    "input_summary": {
+      "topic_len": 26
+    },
+    "output_summary": {
+      "n_method": 4,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:56:30Z",
+    "elapsed_s": 4.317
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T20:56:30Z",
+    "input_summary": {
+      "topic_len": 26,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:56:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T20:56:30Z",
+    "input_summary": {
+      "topic_len": 26,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 6,
+      "n_steps": 4,
+      "n_tool_calls": 3,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "github": 6
+      },
+      "failed_adapters": [
+        "openalex"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 6
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T20:57:05Z",
+    "elapsed_s": 35.239
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T20:57:05Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:57:05Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:57:05Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 26,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 5,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:57:12Z",
+    "elapsed_s": 6.834
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:57:12Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 5,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 6,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": true
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:57:12Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-06T20:57:18Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:57:18Z",
+    "elapsed_s": 6.463
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T20:57:18Z",
+    "input_summary": {
+      "topic_len": 26,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 6,
+      "n_steps": 3,
+      "n_tool_calls": 2,
+      "raw_tools": [
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "github": 6
+      },
+      "failed_adapters": [
+        "openalex"
+      ],
+      "skipped_adapters": [
+        "openalex"
+      ],
+      "repair_rounds": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 6
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T20:57:32Z",
+    "elapsed_s": 13.909
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T20:57:32Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:57:32Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:57:32Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 26,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 4,
+      "n_reject": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:57:40Z",
+    "elapsed_s": 7.664
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:57:40Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 4,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 6,
+      "n_work_packages": 0,
+      "repair_rounds": 1,
+      "weak_promoted": false,
+      "zero_accept_repair": true
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:57:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-06T20:57:46Z",
+    "input_summary": {
+      "current_round": 1,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:57:46Z",
+    "elapsed_s": 6.468
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T20:57:46Z",
+    "input_summary": {
+      "topic_len": 26,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 11,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 2,
+      "raw_tools": [
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 11,
+        "github": 0
+      },
+      "failed_adapters": [
+        "github",
+        "openalex"
+      ],
+      "skipped_adapters": [
+        "openalex"
+      ],
+      "repair_rounds": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 11
+      },
+      {
+        "tool": "github",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T20:58:32Z",
+    "elapsed_s": 45.764
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T20:58:32Z",
+    "input_summary": {
+      "n_candidates": 11
+    },
+    "output_summary": {
+      "kept": 11,
+      "dropped": 0,
+      "pre_filter_keep": 11,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 11,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:58:32Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:58:32Z",
+    "input_summary": {
+      "n_candidates": 11,
+      "topic_len": 26,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 5,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:58:45Z",
+    "elapsed_s": 12.366
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:58:45Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_weak": 5,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 2,
+      "weak_promoted": true,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:58:45Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T20:58:45Z",
+    "input_summary": {
+      "n_verified": 6,
+      "n_seeds": 0,
+      "seed_titles": []
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "reason": "no_seeds_with_ids"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "ended_at": "2026-07-06T20:58:45Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:58:45Z",
+    "input_summary": {
+      "n_candidates": 11,
+      "topic_len": 26,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 5,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:58:53Z",
+    "elapsed_s": 8.65
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:58:53Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 2,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:58:53Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T20:59:02Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 6,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:59:02Z",
+    "elapsed_s": 9.18
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T20:59:02Z",
+    "input_summary": {
+      "papers": 6
+    },
+    "output_summary": {
+      "nodes": 6,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:59:02Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T20:59:02Z",
+    "input_summary": {
+      "n_verified": 6
+    },
+    "output_summary": {
+      "n_baseline": 1,
+      "n_parallel": 5,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:59:02Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T20:59:07Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:59:07Z",
+    "elapsed_s": 5.02
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T20:59:18Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_packages": 2,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:59:18Z",
+    "elapsed_s": 10.697
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T20:59:38Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_innovation": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:59:38Z",
+    "elapsed_s": 19.443
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T20:59:28Z",
+    "input_summary": {
+      "n_baseline": 1
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:59:28Z",
+    "elapsed_s": 9.508
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T20:59:55Z",
+    "input_summary": {
+      "n_innovation": 5
+    },
+    "output_summary": {
+      "nick_model_name": "Event-Texture-YOLO (ET-YOLO)"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:59:55Z",
+    "elapsed_s": 17.7
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T20:59:55Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:59:55Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T21:00:10Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:00:10Z",
+    "elapsed_s": 14.522
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T21:00:16Z",
+    "input_summary": {
+      "n_innovation": 5,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:00:16Z",
+    "elapsed_s": 6.516
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T21:00:28Z",
+    "input_summary": {
+      "n_innovation": 5
+    },
+    "output_summary": {
+      "nick_model_name": "Event-Texture-YOLO (ET-YOLO)"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:00:28Z",
+    "elapsed_s": 11.812
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T21:00:28Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:00:28Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T21:00:40Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:00:40Z",
+    "elapsed_s": 11.995
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T21:00:50Z",
+    "input_summary": {
+      "n_innovation": 5,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:00:50Z",
+    "elapsed_s": 10.274
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T21:00:50Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:00:50Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T21:00:50Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的接触网绝缘子表面缺陷图像式检测方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 2,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于改进YOLOv7的接触网绝缘子表面缺陷检测方法研究",
+          "research_question": "如何通过改进YOLOv7模型提升接触网绝缘子表面缺陷的检测精度与速度？",
+          "baseline": "Improved YOLOv7 model for insulator defect detection",
+          "improved_module_source": "Event-based Civil Infrastructure Visual Defect Detection: ev-CIVIL Dataset and Benchmark",
+          "data_source": null,
+          "experiment_metrics": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+          "risk": "缺乏公开的接触网绝缘子表面缺陷数据集，可能需自行采集或合成数据；改进模块与基线模型的兼容性需验证。",
+          "estimated_workload": "高（约4-6个月）：包括模型改进、训练调优、对比实验及消融分析。"
+        },
+        {
+          "title": "基于迁移学习的接触网绝缘子表面缺陷分类方法研究",
+          "research_question": "如何利用迁移学习在有限标注数据下实现接触网绝缘子表面缺陷的高效分类？",
+          "baseline": "TransferD2: Automated Defect Detection Approach in Smart Manufacturing using Transfer Learning Techniques",
+          "improved_module_source": "Developing a Resource-Constraint EdgeAI model for Surface Defect Detection",
+          "data_source": null,
+          "experiment_metrics": "DeepInspect: An AI-Powered Defect Detection for Manufacturing Industries",
+          "risk": "源域与目标域（接触网绝缘子）差异较大时迁移效果可能不佳；边缘部署的实时性要求可能增加模型压缩难度。",
+          "estimated_workload": "中（约3-4个月）：包括预训练模型选择、微调策略设计及边缘端优化。"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:00:50Z",
+    "elapsed_s": 0.0
+  }
+]

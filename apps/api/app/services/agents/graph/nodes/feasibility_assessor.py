@@ -1,18 +1,12 @@
 ﻿"""feasibility_assessor — Re1.4 MVP node."""
-import time, logging
+import time
+import logging
 from typing import Any
 from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
 
-def _now_iso():
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-
-def _emit(node, t0, ins, out, tools, prov, errs):
-    return {"node": node, "started_at": _now_iso(), "input_summary": ins,
-            "output_summary": out, "tool_calls": tools, "errors": errs,
-            "provider": prov, "ended_at": _now_iso(), "elapsed_s": round(time.time()-t0, 3)}
+from ._util import emit_trace as _emit
 
 def _heuristic(state):
     nb = len(state.get("baseline_candidates") or [])
@@ -42,7 +36,12 @@ def feasibility_assessor_node(state: ResearchState) -> dict[str, Any]:
         from apps.api.app.services import llm_router
         from apps.api.app.services.agents.prompts import feasibility_assessor as P
         built = P.build(topic, baselines, parallels, n_dataset, n_repo)
-        out = llm_router.call_json(built["user"], system=built["system"],
+        # Re3.5: pass domain hint to prompt context
+        domain = (state.get("topic_atoms") or {}).get("domain", "")
+        user_with_domain = built["user"]
+        if domain and domain != "unknown":
+            user_with_domain += f"\n\n[领域提示] domain={domain}，请务必评估该领域的特定风险。"
+        out = llm_router.call_json(user_with_domain, system=built["system"],
                                    profile="fast_json", max_tokens=2000,
                                    expected="dict", timeout=30)
         result = out if isinstance(out, dict) else _heuristic(state)
@@ -56,6 +55,7 @@ def feasibility_assessor_node(state: ResearchState) -> dict[str, Any]:
                   {"n_baseline": len(baselines), "n_dataset": n_dataset, "n_repo": n_repo},
                   {"verdict": result.get("verdict", "unknown"), "score": result.get("score", 0)},
                   [{"tool": "feasibility_assessor.llm" if prov != "heuristic" else "heuristic"}],
-                  prov, [])
+                  prov, [],
+                  state_keys=["feasibility_report", "trace_events"])
     return {"feasibility_report": result,
             "trace_events": [trace]}

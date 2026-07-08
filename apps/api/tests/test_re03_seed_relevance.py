@@ -1,6 +1,5 @@
 """Re03 SOP §6.1: seed_relevance gate tests (SOP §1.3 noise regression case)."""
 
-import pytest
 
 from app.services.agents.seed_relevance import evaluate_seed, filter_seeds
 

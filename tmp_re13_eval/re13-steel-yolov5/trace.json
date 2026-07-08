@@ -1,7 +1,7 @@
 [
   {
     "node": "intake",
-    "started_at": "2026-07-05T15:45:55Z",
+    "started_at": "2026-07-05T16:53:00Z",
     "input_summary": {
       "topic": "基于YOLOv5的钢材表面缺陷检测研究"
     },
@@ -11,12 +11,12 @@
     "tool_calls": [],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:45:55Z",
+    "ended_at": "2026-07-05T16:53:00Z",
     "elapsed_s": 0.0
   },
   {
     "node": "topic_parser",
-    "started_at": "2026-07-05T15:46:17Z",
+    "started_at": "2026-07-05T16:53:05Z",
     "input_summary": {
       "topic_len": 19
     },
@@ -33,12 +33,12 @@
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T15:46:17Z",
-    "elapsed_s": 22.137
+    "ended_at": "2026-07-05T16:53:05Z",
+    "elapsed_s": 5.057
   },
   {
     "node": "search_planner",
-    "started_at": "2026-07-05T15:46:17Z",
+    "started_at": "2026-07-05T16:53:05Z",
     "input_summary": {
       "topic_len": 19,
       "mode": "template"
@@ -57,12 +57,12 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:46:17Z",
+    "ended_at": "2026-07-05T16:53:05Z",
     "elapsed_s": 0.001
   },
   {
     "node": "retrieve",
-    "started_at": "2026-07-05T15:46:17Z",
+    "started_at": "2026-07-05T16:53:05Z",
     "input_summary": {
       "topic_len": 19,
       "has_atoms": true,
@@ -70,11 +70,10 @@
       "legacy_adapter": true
     },
     "output_summary": {
-      "n_paper_candidates": 31,
+      "n_paper_candidates": 23,
       "raw_tools": [
         "arxiv",
         "openalex",
-        "crossref",
         "github"
       ]
     },
@@ -88,34 +87,26 @@
         "n": 8
       },
       {
-        "tool": "crossref",
-        "n": 8
-      },
-      {
         "tool": "github",
         "n": 8
       }
     ],
     "errors": [],
     "provider": "legacy_adapter",
-    "ended_at": "2026-07-05T15:46:31Z",
-    "elapsed_s": 13.382
+    "ended_at": "2026-07-05T16:53:24Z",
+    "elapsed_s": 19.071
   },
   {
     "node": "quality_filter",
-    "started_at": "2026-07-05T15:46:31Z",
+    "started_at": "2026-07-05T16:53:24Z",
     "input_summary": {
-      "n_candidates": 31
+      "n_candidates": 23
     },
     "output_summary": {
-      "kept": 23,
+      "kept": 15,
       "dropped": 8
     },
     "tool_calls": [
-      {
-        "tool": "re13_quality_filter.llm",
-        "batch_size": 8
-      },
       {
         "tool": "re13_quality_filter.llm",
         "batch_size": 8
@@ -131,20 +122,20 @@
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T15:47:32Z",
-    "elapsed_s": 60.945
+    "ended_at": "2026-07-05T16:53:42Z",
+    "elapsed_s": 18.061
   },
   {
     "node": "verify",
-    "started_at": "2026-07-05T15:47:32Z",
+    "started_at": "2026-07-05T16:53:42Z",
     "input_summary": {
-      "n_candidates": 23,
+      "n_candidates": 15,
       "topic_len": 19,
       "round": 1
     },
     "output_summary": {
-      "n_accept": 6,
-      "n_reject_or_weak": 17
+      "n_accept": 5,
+      "n_reject_or_weak": 10
     },
     "tool_calls": [
       {
@@ -154,14 +145,14 @@
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T15:52:42Z",
-    "elapsed_s": 310.015
+    "ended_at": "2026-07-05T16:54:48Z",
+    "elapsed_s": 66.05
   },
   {
     "node": "quality_gate",
-    "started_at": "2026-07-05T15:52:42Z",
+    "started_at": "2026-07-05T16:54:48Z",
     "input_summary": {
-      "n_papers": 6,
+      "n_papers": 5,
       "n_quarantined": 0,
       "n_baseline": 0,
       "n_dataset": 0,
@@ -177,38 +168,79 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:52:42Z",
+    "ended_at": "2026-07-05T16:54:48Z",
     "elapsed_s": 0.0
   },
   {
     "node": "citation_expander",
-    "started_at": "2026-07-05T15:52:42Z",
+    "started_at": "2026-07-05T16:54:48Z",
     "input_summary": {
-      "n_verified": 6,
-      "n_seeds": 0,
-      "seed_titles": []
+      "n_verified": 5,
+      "n_seeds": 5,
+      "seed_titles": [
+        "A Real-Time Detection Algorithm for Kiwifruit Defects Based ",
+        "Safety Helmet Detection Based on YOLOv5",
+        "A lightweight vehicles detection network model based on YOLO",
+        "A Real-Time Apple Targets Detection Method for Picking Robot",
+        "YOLOv5-Tassel: Detecting Tassels in RGB UAV Imagery With Imp"
+      ]
     },
     "output_summary": {
-      "n_expanded": 0,
-      "reason": "no_seeds_with_ids"
+      "n_expanded": 118,
+      "n_surveys": 8,
+      "n_repos": 10
     },
-    "tool_calls": [],
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 118,
+        "concurrent": true
+      }
+    ],
     "errors": [],
     "provider": "semantic_scholar",
-    "ended_at": "2026-07-05T15:52:42Z",
-    "elapsed_s": 0.0
+    "per_seed": [
+      {
+        "seed_title": "A Real-Time Detection Algorithm for Kiwifruit Defects Based ",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Safety Helmet Detection Based on YOLOv5",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A lightweight vehicles detection network model based on YOLO",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A Real-Time Apple Targets Detection Method for Picking Robot",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "YOLOv5-Tassel: Detecting Tassels in RGB UAV Imagery With Imp",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-05T16:55:32Z",
+    "elapsed_s": 43.732
   },
   {
     "node": "verify",
-    "started_at": "2026-07-05T15:52:42Z",
+    "started_at": "2026-07-05T16:55:32Z",
     "input_summary": {
-      "n_candidates": 0,
+      "n_candidates": 118,
       "topic_len": 19,
       "round": 2
     },
     "output_summary": {
-      "n_accept": 0,
-      "n_reject_or_weak": 0
+      "n_accept": 74,
+      "n_reject_or_weak": 44
     },
     "tool_calls": [
       {
@@ -218,14 +250,14 @@
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T15:52:42Z",
-    "elapsed_s": 0.0
+    "ended_at": "2026-07-05T17:04:11Z",
+    "elapsed_s": 518.96
   },
   {
     "node": "quality_gate",
-    "started_at": "2026-07-05T15:52:42Z",
+    "started_at": "2026-07-05T17:04:11Z",
     "input_summary": {
-      "n_papers": 6,
+      "n_papers": 79,
       "n_quarantined": 0,
       "n_baseline": 0,
       "n_dataset": 0,
@@ -241,12 +273,12 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:52:42Z",
+    "ended_at": "2026-07-05T17:04:11Z",
     "elapsed_s": 0.0
   },
   {
     "node": "dataset_repo",
-    "started_at": "2026-07-05T15:53:54Z",
+    "started_at": "2026-07-05T17:04:21Z",
     "input_summary": {
       "n_papers": 8
     },
@@ -257,23 +289,23 @@
     "tool_calls": [
       {
         "tool": "re11_dataset_repo_extractor.llm",
-        "attempts": 6,
+        "attempts": 8,
         "profile": "fast_json"
       }
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T15:53:54Z",
-    "elapsed_s": 72.617
+    "ended_at": "2026-07-05T17:04:21Z",
+    "elapsed_s": 10.468
   },
   {
     "node": "json_graph_builder",
-    "started_at": "2026-07-05T15:53:54Z",
+    "started_at": "2026-07-05T17:04:21Z",
     "input_summary": {
-      "papers": 6
+      "papers": 79
     },
     "output_summary": {
-      "nodes": 6,
+      "nodes": 79,
       "edges": 0
     },
     "tool_calls": [
@@ -281,21 +313,21 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:53:54Z",
-    "elapsed_s": 0.001
+    "ended_at": "2026-07-05T17:04:21Z",
+    "elapsed_s": 0.0
   },
   {
     "node": "evidence_auditor",
-    "started_at": "2026-07-05T15:53:54Z",
+    "started_at": "2026-07-05T17:04:21Z",
     "input_summary": {
-      "n_verified": 6
+      "n_verified": 79
     },
     "output_summary": {
-      "n_baseline": 4,
-      "n_parallel": 2,
-      "n_survey": 0,
+      "n_baseline": 2,
+      "n_parallel": 54,
+      "n_survey": 6,
       "n_dataset_paper": 0,
-      "n_noise": 0
+      "n_noise": 17
     },
     "tool_calls": [
       {
@@ -305,19 +337,19 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:53:54Z",
-    "elapsed_s": 0.0
+    "ended_at": "2026-07-05T17:04:21Z",
+    "elapsed_s": 0.001
   },
   {
     "node": "work_package",
-    "started_at": "2026-07-05T15:55:09Z",
+    "started_at": "2026-07-05T17:04:31Z",
     "input_summary": {
-      "n_baseline": 4,
-      "n_parallel": 2
+      "n_baseline": 2,
+      "n_parallel": 54
     },
     "output_summary": {
-      "n_packages": 0,
-      "n_gap": 0
+      "n_packages": 3,
+      "n_gap": 3
     },
     "tool_calls": [
       {
@@ -327,18 +359,18 @@
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T15:55:09Z",
-    "elapsed_s": 74.419
+    "ended_at": "2026-07-05T17:04:31Z",
+    "elapsed_s": 10.007
   },
   {
     "node": "low_bar_review",
-    "started_at": "2026-07-05T15:55:09Z",
+    "started_at": "2026-07-05T17:04:31Z",
     "input_summary": {
-      "n_packages": 0
+      "n_packages": 3
     },
     "output_summary": {
-      "status": "blocked",
-      "n_remaining": 0
+      "status": "pass",
+      "n_remaining": 3
     },
     "tool_calls": [
       {
@@ -347,12 +379,12 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:55:09Z",
+    "ended_at": "2026-07-05T17:04:31Z",
     "elapsed_s": 0.0
   },
   {
     "node": "human_gate",
-    "started_at": "2026-07-05T15:55:09Z",
+    "started_at": "2026-07-05T17:04:31Z",
     "input_summary": {
       "enabled": false
     },
@@ -362,12 +394,12 @@
     "tool_calls": [],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:55:09Z",
+    "ended_at": "2026-07-05T17:04:31Z",
     "elapsed_s": 0.0
   },
   {
     "node": "final_recommendation",
-    "started_at": "2026-07-05T15:55:09Z",
+    "started_at": "2026-07-05T17:04:31Z",
     "input_summary": {},
     "output_summary": {
       "topic": "基于YOLOv5的钢材表面缺陷检测研究",
@@ -376,18 +408,47 @@
       "n_parallel": 0,
       "n_dataset": 0,
       "n_repo": 0,
-      "n_work_packages": 0,
-      "low_bar_status": "blocked",
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
       "human_gate_status": "pass_through",
-      "notes": [
-        "low-bar review blocked the proposal"
-      ],
-      "research_basis": []
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLOv5的钢材表面缺陷检测模型构建与评估",
+          "research_question": "如何利用YOLOv5实现钢材表面缺陷的实时检测，并验证其在制造场景中的有效性？",
+          "baseline": "YOLOv3: An Incremental Improvement",
+          "improved_module_source": "YOLOv5-Tassel: Detecting Tassels in RGB UAV Imagery With Improved YOLOv5 Based on Transfer Learning",
+          "data_source": null,
+          "experiment_metrics": "Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression",
+          "risk": "缺乏公开的钢材表面缺陷数据集，需自行采集或标注，可能影响实验复现性。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于YOLOv5的钢材表面缺陷检测轻量化改进",
+          "research_question": "如何借鉴CSPNet和轻量化网络设计，在保持检测精度的前提下减少YOLOv5模型参数量，以适应钢材产线实时性要求？",
+          "baseline": "YOLOv3: An Incremental Improvement",
+          "improved_module_source": "CSPNet: A New Backbone that can Enhance Learning Capability of CNN",
+          "data_source": null,
+          "experiment_metrics": "Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression",
+          "risk": "轻量化可能导致小缺陷漏检，需平衡速度与精度。",
+          "estimated_workload": "2.5人月"
+        },
+        {
+          "title": "基于YOLOv5的钢材表面缺陷检测多尺度特征融合优化",
+          "research_question": "如何利用特征金字塔网络（FPN）增强YOLOv5对多尺度钢材缺陷的检测能力？",
+          "baseline": "YOLOv3: An Incremental Improvement",
+          "improved_module_source": "Feature Pyramid Networks for Object Detection",
+          "data_source": null,
+          "experiment_metrics": "Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression",
+          "risk": "FPN增加计算开销，可能影响实时性。",
+          "estimated_workload": "2人月"
+        }
+      ]
     },
     "tool_calls": [],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:55:09Z",
+    "ended_at": "2026-07-05T17:04:31Z",
     "elapsed_s": 0.0
   }
 ]

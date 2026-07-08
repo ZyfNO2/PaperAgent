@@ -27,7 +27,7 @@ async def github_search(
         "User-Agent": "PaperAgent/1.0",
     }
     results: list[dict] = []
-    qs = queries[:1] if queries else []
+    qs = queries[:3] if queries else []
     for q in qs:
         url = f"{GITHUB_API}?q={q}&per_page={top_k}&sort=stars&order=desc"
         try:

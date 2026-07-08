@@ -1,0 +1,637 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T20:18:52Z",
+    "input_summary": {
+      "topic": "基于深度学习的交通标志检测与识别研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:18:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T20:19:01Z",
+    "input_summary": {
+      "topic_len": 18
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:19:01Z",
+    "elapsed_s": 8.815
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T20:19:01Z",
+    "input_summary": {
+      "topic_len": 18,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:19:01Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T20:19:01Z",
+    "input_summary": {
+      "topic_len": 18,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 12,
+      "n_steps": 4,
+      "n_tool_calls": 3,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "github": 12
+      },
+      "failed_adapters": [
+        "openalex"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T20:20:00Z",
+    "elapsed_s": 58.598
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T20:20:00Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:20:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:20:00Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 18,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 2,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:20:07Z",
+    "elapsed_s": 7.296
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:20:07Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 2,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:20:07Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T20:20:07Z",
+    "input_summary": {
+      "n_verified": 3,
+      "n_seeds": 0,
+      "seed_titles": []
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "reason": "no_seeds_with_ids"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "ended_at": "2026-07-06T20:20:07Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:20:07Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 18,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 2,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:20:14Z",
+    "elapsed_s": 6.983
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:20:14Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 2,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:20:14Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T20:20:20Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 3,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:20:20Z",
+    "elapsed_s": 5.607
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T20:20:20Z",
+    "input_summary": {
+      "papers": 3
+    },
+    "output_summary": {
+      "nodes": 15,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:20:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T20:20:20Z",
+    "input_summary": {
+      "n_verified": 3
+    },
+    "output_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:20:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T20:20:25Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_dataset": 0,
+      "n_repo": 12
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 85
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:20:25Z",
+    "elapsed_s": 5.492
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T20:20:36Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:20:36Z",
+    "elapsed_s": 10.761
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T20:20:49Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:20:49Z",
+    "elapsed_s": 13.196
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T20:20:48Z",
+    "input_summary": {
+      "n_baseline": 3
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:20:48Z",
+    "elapsed_s": 11.864
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T20:21:06Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "CapsMulti-SignNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:21:06Z",
+    "elapsed_s": 16.716
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T20:21:06Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:21:06Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T20:21:21Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:21:21Z",
+    "elapsed_s": 14.958
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T20:21:33Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:21:33Z",
+    "elapsed_s": 12.573
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T20:21:55Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "CapsTSR-Net"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:21:55Z",
+    "elapsed_s": 21.164
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T20:21:55Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:21:55Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T20:22:05Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:22:05Z",
+    "elapsed_s": 10.795
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T20:22:20Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:22:20Z",
+    "elapsed_s": 14.278
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T20:22:20Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:22:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T20:22:20Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的交通标志检测与识别研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于CURE-TSR数据集的交通标志识别鲁棒性评估",
+          "research_question": "在CURE-TSR数据集定义的多种真实与合成退化条件下，现有深度学习交通标志识别模型的性能如何变化？",
+          "baseline": "CURE-TSR: Challenging Unreal and Real Environments for Traffic Sign Recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "CURE-TSR: Challenging Unreal and Real Environments for Traffic Sign Recognition",
+          "risk": "CURE-TSR数据集的具体下载链接和标注格式在证据中未提供，可能需额外获取。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于胶囊网络的交通标志检测模型复现与改进",
+          "research_question": "胶囊网络架构在交通标志检测任务上相比传统CNN（如YOLO）能否取得更高的检测精度和旋转鲁棒性？",
+          "baseline": "Novel Deep Learning Model for Traffic Sign Detection Using Capsule Networks",
+          "improved_module_source": "Novel Deep Learning Model for Traffic Sign Detection Using Capsule Networks",
+          "data_source": null,
+          "experiment_metrics": "Novel Deep Learning Model for Traffic Sign Detection Using Capsule Networks",
+          "risk": "胶囊网络训练计算量大，且原论文可能未公开完整代码或超参数。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "大规模交通标志检测与识别基准方法复现",
+          "research_question": "在公开大规模交通标志数据集上，基于深度学习的检测与识别联合框架（如Faster R-CNN、SSD）的基准性能如何？",
+          "baseline": "Deep Learning for Large-Scale Traffic-Sign Detection and Recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Deep Learning for Large-Scale Traffic-Sign Detection and Recognition",
+          "risk": "证据中未明确该论文使用的具体数据集名称，可能需从论文原文中查找。",
+          "estimated_workload": "2人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:22:20Z",
+    "elapsed_s": 0.0
+  }
+]

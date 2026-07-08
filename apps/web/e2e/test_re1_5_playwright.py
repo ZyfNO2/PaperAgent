@@ -11,11 +11,12 @@
     python -m pytest apps/web/e2e/test_re1_5_playwright.py -s --tb=short
 """
 import os
-import asyncio
 from pathlib import Path
 
 import pytest
 from playwright.async_api import async_playwright
+
+pytestmark = pytest.mark.skip(reason="legacy UI — see test_re2_4_frontend.py for current UI tests")
 
 BASE_URL = "http://127.0.0.1:18182"
 SCREENSHOT_DIR = Path("tmp_re15_screenshots")

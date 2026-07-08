@@ -1,0 +1,917 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T14:44:35Z",
+    "input_summary": {
+      "topic": "基于结构光的隧道裂缝检测技术研究与实现"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:44:35Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T14:44:37Z",
+    "input_summary": {
+      "topic_len": 19
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 2,
+      "domain": "civil_infra"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:44:37Z",
+    "elapsed_s": 2.155,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T14:44:37Z",
+    "input_summary": {
+      "topic_len": 19,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:44:37Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T14:44:37Z",
+    "input_summary": {
+      "topic_len": 19,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 25,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github",
+        "semantic_scholar",
+        "crossref",
+        "huggingface"
+      ],
+      "per_adapter": {
+        "arxiv": 36,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 0,
+        "semantic_scholar": 0,
+        "huggingface": 0
+      },
+      "failed_adapters": [
+        "github",
+        "huggingface",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 36
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "huggingface",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:45:20Z",
+    "elapsed_s": 43.353
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T14:45:20Z",
+    "input_summary": {
+      "n_candidates": 25
+    },
+    "output_summary": {
+      "kept": 24,
+      "dropped": 1,
+      "pre_filter_keep": 24,
+      "pre_filter_drop": 1,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 24,
+        "pre_drop": 1,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T14:45:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T14:45:20Z",
+    "input_summary": {
+      "n_candidates": 24,
+      "topic_len": 19,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 8,
+      "n_reject": 15
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:45:25Z",
+    "elapsed_s": 5.179
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T14:45:25Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 8,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:45:25Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T14:45:25Z",
+    "input_summary": {
+      "n_verified": 9,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Concrete crack detection and quantification using deep learn",
+        "CDSNet: Crack detection and segmentation network for tunnel",
+        "Research on tunnel crack detection method based on multimoda",
+        "Effective small crack detection based on tunnel crack charac",
+        "Tunnel Crack Detection Method Based on Improved CenterNet"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 47,
+      "n_surveys": 3,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 47,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Concrete crack detection and quantification using deep learn",
+        "n_references_plus_citations": 15,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "CDSNet: Crack detection and segmentation network for tunnel",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Research on tunnel crack detection method based on multimoda",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Effective small crack detection based on tunnel crack charac",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Tunnel Crack Detection Method Based on Improved CenterNet",
+        "n_references_plus_citations": 2,
+        "relevance_score": 11
+      }
+    ],
+    "ended_at": "2026-07-08T14:45:27Z",
+    "elapsed_s": 1.97
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T14:45:27Z",
+    "input_summary": {
+      "n_candidates": 47,
+      "topic_len": 19,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 33,
+      "n_reject": 13
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T14:45:38Z",
+    "elapsed_s": 10.209
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T14:45:38Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 33,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:45:38Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T14:46:49Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:46:49Z",
+    "elapsed_s": 71.639,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T14:46:49Z",
+    "input_summary": {
+      "papers": 10
+    },
+    "output_summary": {
+      "nodes": 10,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:46:49Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T14:46:49Z",
+    "input_summary": {
+      "n_verified": 10
+    },
+    "output_summary": {
+      "n_baseline": 2,
+      "n_parallel": 8,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": false
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:46:49Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T14:46:53Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:46:53Z",
+    "elapsed_s": 3.71,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T14:47:08Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_packages": 10,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:47:08Z",
+    "elapsed_s": 15.355,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T14:47:19Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:47:19Z",
+    "elapsed_s": 10.596,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T14:47:15Z",
+    "input_summary": {
+      "n_baseline": 2
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:47:15Z",
+    "elapsed_s": 7.059,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T14:47:28Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CrackNet-Tunnel"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:47:28Z",
+    "elapsed_s": 9.415,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T14:47:28Z",
+    "input_summary": {
+      "n_packages": 10
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 10
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:47:28Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T14:47:36Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:47:36Z",
+    "elapsed_s": 7.805,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T14:47:41Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 10
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:47:41Z",
+    "elapsed_s": 5.342,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T14:47:50Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CrackCueNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:47:50Z",
+    "elapsed_s": 8.957,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T14:47:50Z",
+    "input_summary": {
+      "n_packages": 10
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 10
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:47:50Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T14:48:00Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:48:00Z",
+    "elapsed_s": 9.232,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T14:48:06Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 10
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T14:48:06Z",
+    "elapsed_s": 6.263,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T14:48:06Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:48:06Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T14:48:06Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于结构光的隧道裂缝检测技术研究与实现",
+      "n_papers": 10,
+      "n_baseline": 2,
+      "n_parallel": 8,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 10,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于结构光的隧道裂缝检测与量化方法研究",
+          "research_question": "如何利用深度学习与结构光技术实现隧道裂缝的精确检测与量化？",
+          "baseline": "Concrete crack detection and quantification using deep learning and structured light",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Concrete crack detection and quantification using deep learning and structured light",
+          "risk": "结构光在隧道复杂光照和粉尘环境下可能产生噪声，影响检测精度。",
+          "estimated_workload": "高（需搭建结构光采集系统、训练深度学习模型、进行实地验证）"
+        },
+        {
+          "title": "基于改进YOLOX与UNETR++的隧道裂缝识别定位与分割方法研究",
+          "research_question": "如何结合改进的YOLOX目标检测网络与UNETR++分割网络实现隧道裂缝的识别、定位与分割？",
+          "baseline": "Research on Tunnel Crack Identification Localization and Segmentation Method Based on Improved YOLOX and UNETR++",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Research on Tunnel Crack Identification Localization and Segmentation Method Based on Improved YOLOX and UNETR++",
+          "risk": "改进网络可能增加计算复杂度，影响实时性；需大量标注数据。",
+          "estimated_workload": "高（需实现网络改进、训练与调优、性能对比）"
+        },
+        {
+          "title": "基于粗到细裂缝线索的鲁棒裂缝检测方法研究",
+          "research_question": "如何利用粗到细的裂缝线索策略提升隧道裂缝检测的鲁棒性？",
+          "baseline": "Coarse-to-fine crack cue for robust crack detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Coarse-to-fine crack cue for robust crack detection",
+          "risk": "粗到细策略可能引入额外计算开销，且对细小裂缝的检测效果需验证。",
+          "estimated_workload": "中（需实现多尺度线索提取与融合）"
+        },
+        {
+          "title": "基于CDSNet的隧道裂缝检测与分割网络研究",
+          "research_question": "如何设计CDSNet实现隧道裂缝的端到端检测与分割？",
+          "baseline": "CDSNet: Crack detection and segmentation network for tunnel",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "CDSNet: Crack detection and segmentation network for tunnel",
+          "risk": "网络结构复杂，训练收敛困难；需大量标注数据。",
+          "estimated_workload": "高（需复现CDSNet、训练与调优）"
+        },
+        {
+          "title": "基于多模态识别的隧道裂缝检测方法研究",
+          "research_question": "如何融合多模态信息（如结构光与可见光）提升隧道裂缝检测性能？",
+          "baseline": "Research on tunnel crack detection method based on multimodal recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Research on tunnel crack detection method based on multimodal recognition",
+          "risk": "多模态数据对齐与融合策略设计困难，且采集成本高。",
+          "estimated_workload": "高（需设计多模态融合架构、采集多模态数据）"
+        },
+        {
+          "title": "基于改进CenterNet的隧道裂缝检测方法研究",
+          "research_question": "如何改进CenterNet网络以适应隧道裂缝的检测任务？",
+          "baseline": "Tunnel Crack Detection Method Based on Improved CenterNet",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Tunnel Crack Detection Method Based on Improved CenterNet",
+          "risk": "改进点可能不适用于所有裂缝类型，泛化性需验证。",
+          "estimated_workload": "中（需实现CenterNet改进、训练与评估）"
+        },
+        {
+          "title": "基于结构光的漫反射海底喷口检测方法在隧道裂缝检测中的迁移研究",
+          "research_question": "如何将结构光用于漫反射海底喷口检测的方法迁移至隧道裂缝检测？",
+          "baseline": "Detection of Diffuse Seafloor Venting Using Structured Light Imaging",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Detection of Diffuse Seafloor Venting Using Structured Light Imaging",
+          "risk": "海底与隧道环境差异大，迁移效果不确定。",
+          "estimated_workload": "中（需分析环境差异、调整算法参数）"
+        },
+        {
+          "title": "基于结构光的视障人士绊倒危险检测方法在隧道裂缝检测中的适应性研究",
+          "research_question": "如何将结构光用于检测视障人士绊倒危险的方法应用于隧道裂缝检测？",
+          "baseline": "Structured light detection and delineation of tripping hazards for people with impaired vision",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Structured light detection and delineation of tripping hazards for people with impaired vision",
+          "risk": "应用场景差异大，需重新设计特征与阈值。",
+          "estimated_workload": "中（需进行算法适配与实验验证）"
+        },
+        {
+          "title": "基于深度学习和视觉解释的隧道裂缝自动分类与分割方法研究",
+          "research_question": "如何结合深度学习与视觉解释技术实现隧道裂缝的自动分类与可解释分割？",
+          "baseline": "Automatic Classification and Segmentation of Tunnel Cracks Based on Deep Learning and Visual Explanations",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Automatic Classification and Segmentation of Tunnel Cracks Based on Deep Learning and Visual Explanations",
+          "risk": "视觉解释模块可能增加计算负担，且解释质量需评估。",
+          "estimated_workload": "高（需实现分类、分割与解释模块）"
+        },
+        {
+          "title": "基于锚点自由卷积神经网络的小裂缝检测方法研究",
+          "research_question": "如何利用锚点自由卷积神经网络针对隧道小裂缝进行有效检测？",
+          "baseline": "Effective small crack detection based on tunnel crack characteristics and an anchor-free convolutional neural network",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Effective small crack detection based on tunnel crack characteristics and an anchor-free convolutional neural network",
+          "risk": "小裂缝特征弱，检测难度大，可能漏检。",
+          "estimated_workload": "中（需设计锚点自由网络、训练与评估）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T14:48:06Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

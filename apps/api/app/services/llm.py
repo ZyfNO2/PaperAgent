@@ -163,6 +163,44 @@ def _coerce_text_payload(value: Any) -> str:
 # MiniMax backend
 # ---------------------------------------------------------------------------
 
+def _collect_stream(response: Any) -> str:
+    """Collect text from an SSE-streamed anthropic-compatible response.
+
+    MiniMax (anthropic-compatible) streams ``content_block_delta`` events
+    whose ``delta.text`` fragments must be concatenated to produce the full
+    answer.  Falls back to non-SSE JSON parsing if the body is a single
+    JSON object (useful for mocked responses in tests).
+    """
+    text_parts: list[str] = []
+    try:
+        for line in response.iter_lines():
+            if not line:
+                continue
+            s = line.strip()
+            if s.startswith("data: "):
+                s = s[6:]
+            try:
+                evt = json.loads(s)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if evt.get("type") == "content_block_delta":
+                delta = evt.get("delta") or {}
+                if delta.get("type") == "text_delta":
+                    text_parts.append(delta.get("text", ""))
+            elif evt.get("type") == "message_stop":
+                break
+    except (AttributeError, RuntimeError):
+        # iter_lines not available — try treating as a plain JSON response
+        try:
+            data = response.json()
+            for block in data.get("content", []):
+                if block.get("type") == "text":
+                    text_parts.append(block.get("text", ""))
+        except Exception:
+            pass
+    return "".join(text_parts).strip()
+
+
 def _chat_minimax(
     prompt: str,
     *,

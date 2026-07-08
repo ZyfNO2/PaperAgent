@@ -52,7 +52,7 @@ async def crossref_search(
     }
     results: list[dict] = []
 
-    qs = [q for q in (queries or []) if q and q.strip()][:1]
+    qs = [q for q in (queries or []) if q and q.strip()][:3]
     for q in qs:
         # Re05 §5.3: cache hit short-circuits the network call.
         cached = _cache.get("crossref", q)

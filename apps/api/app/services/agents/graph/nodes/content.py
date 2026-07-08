@@ -12,6 +12,7 @@ import time
 from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
+from ._util import emit_trace as _emit
 
 logger = logging.getLogger(__name__)
 
@@ -26,32 +27,11 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-
-
-def _emit(node: str, t0: float, ins: dict, out: dict,
-          tools: list[dict], prov: str, errs: list[dict]) -> dict[str, Any]:
-    return {
-        "node": node,
-        "started_at": _now_iso(),
-        "input_summary": ins,
-        "output_summary": out,
-        "tool_calls": tools,
-        "errors": errs,
-        "provider": prov,
-        "ended_at": _now_iso(),
-        "elapsed_s": round(time.time() - t0, 3),
-    }
-
-
 # ---------------------------------------------------------------------------
 # Dataset / repo extraction from verified papers (Re1.1 §9 applies)
 # ---------------------------------------------------------------------------
 
 def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
-    topic = state.get("topic") or ""
     papers = state.get("verified_papers") or []
     t0 = time.time()
     datasets: list[dict[str, Any]] = []
@@ -90,7 +70,7 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
                                   "status": status})
             else:
                 datasets.append({"from_paper": title, "status": status})
-        except BaseException as exc:
+        except Exception as exc:
             logger.debug("dataset_repo lookup failed for %r: %s", title, type(exc).__name__)
             errors.append({"node": "dataset_repo", "for_paper": title,
                            "error": type(exc).__name__})
@@ -98,7 +78,9 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
     trace = _emit("dataset_repo", t0,
                   {"n_papers": len(papers)}, {"n_dataset": len(datasets), "n_repo": len(repos)},
                   [{"tool": "re11_dataset_repo_extractor.llm", "attempts": tried}],
-                  "fast_json", errors)
+                  "fast_json", errors,
+                  state_keys=["dataset_candidates", "repo_candidates",
+                              "trace_events", "errors"])
     return {
         "dataset_candidates": datasets,
         "repo_candidates": repos,
@@ -139,7 +121,9 @@ def evidence_auditor_node(state: ResearchState) -> dict[str, Any]:
                   {"n_baseline": len(baselines), "n_parallel": len(parallels),
                    "n_survey": len(surveys)},
                   [{"tool": "re11.classifier", "mode": "rule_based"}],
-                  "local", [])
+                  "local", [],
+                  state_keys=["baseline_candidates", "parallel_candidates",
+                              "evidence_audit", "trace_events"])
     return {
         "baseline_candidates": baselines,
         "parallel_candidates": parallels,
@@ -198,7 +182,7 @@ def work_package_node(state: ResearchState) -> dict[str, Any]:
             gap = out.get("evidence_gap") or []
             if not isinstance(packages, list):
                 packages = []
-        except BaseException as exc:
+        except Exception as exc:
             logger.exception("work_package llm call failed")
             errors_out.append({"node": "work_package", "error": type(exc).__name__})
             gap.append({"missing": "llm_unavailable", "tool_calls": []})
@@ -207,7 +191,9 @@ def work_package_node(state: ResearchState) -> dict[str, Any]:
                   {"n_baseline": len(baselines), "n_parallel": len(parallels)},
                   {"n_packages": len(packages), "n_gap": len(gap)},
                   [{"tool": "re11_work_package.llm", "profile": "fast_json"}],
-                  "fast_json", errors_out)
+                  "fast_json", errors_out,
+                  state_keys=["work_packages", "evidence_audit",
+                              "trace_events", "errors"])
     return {
         "work_packages": packages,
         "evidence_audit": {
@@ -296,7 +282,8 @@ def low_bar_review_node(state: ResearchState) -> dict[str, Any]:
                   {"n_packages": len(packages)},
                   {"status": review["status"], "n_remaining": len(kept)},
                   [{"tool": "low_bar.rule_based"}],
-                  "local", [])
+                  "local", [],
+                  state_keys=["low_bar_review", "work_packages", "trace_events"])
     return {"low_bar_review": review,
             "work_packages": kept,
             "trace_events": [trace]}
@@ -327,7 +314,8 @@ def human_gate_node(state: ResearchState) -> dict[str, Any]:
 
     trace = _emit("human_gate", t0, {"enabled": enabled},
                   {"status": gate["status"]}, [],
-                  "local", [])
+                  "local", [],
+                  state_keys=["human_gate", "trace_events"])
     return {"human_gate": gate,
             "trace_events": [trace]}
 
@@ -339,23 +327,22 @@ def human_gate_node(state: ResearchState) -> dict[str, Any]:
 def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
     review = state.get("low_bar_review") or {}
     packages = state.get("work_packages") or []
-    audit = state.get("evidence_audit") or {}
     gate = state.get("human_gate") or {}
     t0 = time.time()
 
     notes: list[str] = []
     if review.get("status") == "blocked":
-        notes.append("low-bar review blocked the proposal");
+        notes.append("low-bar review blocked the proposal")
     if gate.get("status") not in ("pass_through", "pass_through_no_runtime"):
-        notes.append(f"human gate: {gate.get('status')}");
+        notes.append(f"human gate: {gate.get('status')}")
 
     recommendation = {
         "topic": state.get("topic"),
-        "n_papers": audit.get("n_total_papers", 0),
-        "n_baseline": audit.get("n_baseline", 0),
-        "n_parallel": audit.get("n_parallel", 0),
-        "n_dataset": audit.get("n_dataset_candidates_n", 0),
-        "n_repo": audit.get("n_repo_candidates_n", 0),
+        "n_papers": len(state.get("verified_papers") or []),
+        "n_baseline": len(state.get("baseline_candidates") or []),
+        "n_parallel": len(state.get("parallel_candidates") or []),
+        "n_dataset": len(state.get("dataset_candidates") or []),
+        "n_repo": len(state.get("repo_candidates") or []),
         "n_work_packages": len(packages),
         "low_bar_status": review.get("status"),
         "human_gate_status": gate.get("status"),
@@ -363,6 +350,7 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
         "research_basis": packages,
     }
     trace = _emit("final_recommendation", t0, {}, recommendation,
-                  [], "local", [])
+                  [], "local", [],
+                  state_keys=["final_recommendation", "trace_events"])
     return {"final_recommendation": recommendation,
             "trace_events": [trace]}

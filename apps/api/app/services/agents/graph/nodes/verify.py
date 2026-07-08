@@ -6,8 +6,10 @@ into trace for auditability.
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
+import re
 import time
 from typing import Any
 
@@ -26,9 +28,7 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+from ._util import now_iso as _now_iso
 
 
 def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -58,7 +58,7 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
     def _verify_batch(batch_idx: int) -> list[dict[str, Any]]:
         """Verify a batch of candidates; returns list of normalised verdict dicts."""
         built = prompts[batch_idx]
-        last_exc: BaseException | None = None
+        last_exc: Exception | None = None
         for attempt in range(max_attempts):
             try:
                 out = llm_router.call_json(
@@ -74,7 +74,7 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
                 if not verdicts and attempt + 1 < max_attempts:
                     continue
                 return verdicts
-            except BaseException as exc:
+            except Exception as exc:
                 last_exc = exc
                 logger.debug("verifier batch %s attempt %s failed: %s",
                              batch_idx, attempt, type(exc).__name__)
@@ -90,7 +90,7 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
             try:
                 verdicts = future.result()
                 all_verdicts.extend(verdicts)
-            except BaseException as exc:
+            except Exception as exc:
                 logger.warning("verifier batch raised: %s", exc)
 
     return all_verdicts
@@ -150,6 +150,8 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
         "tool_calls": [{"tool": "re11_paper_verifier.llm", "profile": "fast_json"}],
         "errors": [],
         "provider": "fast_json",
+        "state_keys": ["verified_papers", "weak_papers", "paper_candidates",
+                        "trace_events", "errors", "provider_profile"],
     }
     errors: list[dict[str, Any]] = []
     verified: list[dict[str, Any]] = []
@@ -217,7 +219,7 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
             "n_weak_reject": len(weak),
             "n_reject": len(rejected),
         }
-    except BaseException as exc:
+    except Exception as exc:
         # SOP §15 / 自查方案 §2: when verification fails we MUST NOT forward
         # raw candidates as verified. Return an empty verified list so the
         # quarantine path (the rejection list) carries the titles forward.

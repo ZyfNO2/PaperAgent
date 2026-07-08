@@ -1,0 +1,581 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T12:22:18Z",
+    "input_summary": {
+      "topic": "深度先验引导的无监督立体匹配与视差置信度估计"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:22:18Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T12:22:20Z",
+    "input_summary": {
+      "topic_len": 22
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 0,
+      "domain": "unknown"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:22:20Z",
+    "elapsed_s": 2.007
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T12:22:20Z",
+    "input_summary": {
+      "topic_len": 22,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:22:20Z",
+    "elapsed_s": 0.002
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T12:22:20Z",
+    "input_summary": {
+      "topic_len": 22,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 11,
+      "n_steps": 4,
+      "n_tool_calls": 3,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 0,
+        "openalex": 12,
+        "github": 11
+      },
+      "failed_adapters": [
+        "arxiv"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 0
+      },
+      {
+        "tool": "openalex",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 11
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T12:22:36Z",
+    "elapsed_s": 15.398
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T12:22:36Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:22:36Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T12:22:36Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 22,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 7,
+      "n_weak_reject": 4,
+      "n_reject": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:22:41Z",
+    "elapsed_s": 5.612
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T12:22:41Z",
+    "input_summary": {
+      "n_papers": 7,
+      "n_weak": 4,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 11,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:22:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T12:22:41Z",
+    "input_summary": {
+      "n_verified": 7,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Unsupervised Learning of Stereo Matching",
+        "Unsupervised Stereo Matching Using Confidential Corresponden",
+        "Co-Teaching: an Ark to Unsupervised Stereo Matching",
+        "Multi-directional broad learning system for the unsupervised",
+        "Unsupervised Stereo Matching with Occlusion-Aware Loss"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 72,
+      "n_surveys": 2,
+      "n_repos": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 72,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Unsupervised Learning of Stereo Matching",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Unsupervised Stereo Matching Using Confidential Corresponden",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Co-Teaching: an Ark to Unsupervised Stereo Matching",
+        "n_references_plus_citations": 19,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Multi-directional broad learning system for the unsupervised",
+        "n_references_plus_citations": 10,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Unsupervised Stereo Matching with Occlusion-Aware Loss",
+        "n_references_plus_citations": 5,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-08T12:22:43Z",
+    "elapsed_s": 1.732
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T12:22:43Z",
+    "input_summary": {
+      "n_candidates": 72,
+      "topic_len": 22,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 11,
+      "n_weak_reject": 39,
+      "n_reject": 22
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:23:02Z",
+    "elapsed_s": 18.9
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T12:23:02Z",
+    "input_summary": {
+      "n_papers": 18,
+      "n_weak": 43,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 11,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:23:02Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T12:23:10Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 1,
+      "n_repo": 11
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:23:10Z",
+    "elapsed_s": 8.466
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T12:23:10Z",
+    "input_summary": {
+      "papers": 18
+    },
+    "output_summary": {
+      "nodes": 30,
+      "edges": 1
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:23:10Z",
+    "elapsed_s": 0.002
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T12:23:14Z",
+    "input_summary": {
+      "n_verified": 18
+    },
+    "output_summary": {
+      "n_baseline": 12,
+      "n_parallel": 6,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": true
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier+llm_reclassify",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:23:14Z",
+    "elapsed_s": 4.011
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T12:23:19Z",
+    "input_summary": {
+      "n_baseline": 12,
+      "n_dataset": 1,
+      "n_repo": 11
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:23:19Z",
+    "elapsed_s": 4.493
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T12:23:24Z",
+    "input_summary": {
+      "n_baseline": 12,
+      "n_parallel": 6
+    },
+    "output_summary": {
+      "n_packages": 1,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:23:24Z",
+    "elapsed_s": 4.796
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T12:23:36Z",
+    "input_summary": {
+      "n_baseline": 12,
+      "n_parallel": 6
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:23:36Z",
+    "elapsed_s": 11.952
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T12:23:31Z",
+    "input_summary": {
+      "n_baseline": 12
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:23:31Z",
+    "elapsed_s": 7.662
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T12:23:44Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "DeepPriorStereo"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:23:44Z",
+    "elapsed_s": 8.093
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T12:23:44Z",
+    "input_summary": {
+      "n_packages": 1
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:23:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T12:23:54Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:23:54Z",
+    "elapsed_s": 9.945
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T12:24:00Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 1
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:24:00Z",
+    "elapsed_s": 5.919
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T12:24:00Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:24:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T12:24:00Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "深度先验引导的无监督立体匹配与视差置信度估计",
+      "n_papers": 18,
+      "n_baseline": 12,
+      "n_parallel": 6,
+      "n_dataset": 1,
+      "n_repo": 11,
+      "n_work_packages": 1,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "深度先验引导的无监督立体匹配与视差置信度估计",
+          "research_question": "如何利用深度先验引导无监督立体匹配网络，同时估计视差置信度，以提升遮挡区域和弱纹理区域的匹配精度？",
+          "baseline": "Integrating Disparity Confidence Estimation Into Relative Depth Prior-Guided Unsupervised Stereo Matching",
+          "improved_module_source": "Geometry-based Occlusion-Aware Unsupervised Stereo Matching for Autonomous Driving",
+          "data_source": "KITTI",
+          "experiment_metrics": "Integrating Disparity Confidence Estimation Into Relative Depth Prior-Guided Unsupervised Stereo Matching",
+          "risk": "深度先验的获取质量可能受限于无监督场景，且置信度估计与匹配网络联合训练时可能收敛不稳定。",
+          "estimated_workload": "高（约6-8人月，含模型设计、消融实验、KITTI评估）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:24:00Z",
+    "elapsed_s": 0.0
+  }
+]

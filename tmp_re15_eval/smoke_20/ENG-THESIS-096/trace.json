@@ -1,0 +1,604 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T21:42:02Z",
+    "input_summary": {
+      "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:42:02Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T21:42:07Z",
+    "input_summary": {
+      "topic_len": 24
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 2,
+      "domain": "energy_power"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:42:07Z",
+    "elapsed_s": 4.521
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T21:42:07Z",
+    "input_summary": {
+      "topic_len": 24,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 4,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:42:07Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T21:42:07Z",
+    "input_summary": {
+      "topic_len": 24,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 16,
+      "raw_tools": [
+        "arxiv",
+        "crossref"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T21:42:52Z",
+    "elapsed_s": 45.898
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T21:42:52Z",
+    "input_summary": {
+      "n_candidates": 16
+    },
+    "output_summary": {
+      "kept": 16,
+      "dropped": 0,
+      "pre_filter_keep": 16,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 16,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:42:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T21:42:52Z",
+    "input_summary": {
+      "n_candidates": 16,
+      "topic_len": 24,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 1,
+      "n_reject": 14
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:42:59Z",
+    "elapsed_s": 6.928
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T21:42:59Z",
+    "input_summary": {
+      "n_papers": 2,
+      "n_weak": 1,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:42:59Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-05T21:42:59Z",
+    "input_summary": {
+      "n_verified": 2,
+      "n_seeds": 2,
+      "seed_titles": [
+        "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Elec",
+        "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF E"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 2,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Elec",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF E",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      }
+    ],
+    "ended_at": "2026-07-05T21:43:13Z",
+    "elapsed_s": 13.72
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T21:43:13Z",
+    "input_summary": {
+      "n_candidates": 2,
+      "topic_len": 24,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 1,
+      "n_reject": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:43:18Z",
+    "elapsed_s": 4.825
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T21:43:18Z",
+    "input_summary": {
+      "n_papers": 2,
+      "n_weak": 1,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:43:18Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T21:43:22Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 2,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:43:22Z",
+    "elapsed_s": 4.257
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T21:43:22Z",
+    "input_summary": {
+      "papers": 2
+    },
+    "output_summary": {
+      "nodes": 2,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:43:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T21:43:22Z",
+    "input_summary": {
+      "n_verified": 2
+    },
+    "output_summary": {
+      "n_baseline": 1,
+      "n_parallel": 1,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:43:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-05T21:43:27Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 35
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:43:27Z",
+    "elapsed_s": 4.367
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T21:43:36Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_packages": 2,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:43:36Z",
+    "elapsed_s": 9.294
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-05T21:43:46Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_innovation": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:43:46Z",
+    "elapsed_s": 10.448
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-05T21:43:53Z",
+    "input_summary": {
+      "n_baseline": 1
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:43:53Z",
+    "elapsed_s": 6.948
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-05T21:44:02Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "Graphene-MXene Aerogel Electrothermal Ice-Phobic System (GMAEIS)"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:44:02Z",
+    "elapsed_s": 9.083
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T21:44:02Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "blocked",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:44:02Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-05T21:44:12Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:44:12Z",
+    "elapsed_s": 9.492
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-05T21:44:11Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "dataset_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:44:11Z",
+    "elapsed_s": 8.812
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-05T21:44:21Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:44:21Z",
+    "elapsed_s": 8.742
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T21:44:12Z",
+    "input_summary": {
+      "topic_len": 24,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 16,
+      "raw_tools": [
+        "arxiv",
+        "crossref"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T21:44:58Z",
+    "elapsed_s": 45.708
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-05T21:44:58Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:44:58Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-05T21:44:58Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 2,
+      "low_bar_status": "blocked",
+      "human_gate_status": "pass_through",
+      "notes": [
+        "low-bar review blocked the proposal"
+      ],
+      "research_basis": [
+        {
+          "title": "石墨烯薄膜电热除冰系统的热传递特性研究",
+          "research_question": "如何基于石墨烯薄膜的电热效应优化风机叶片除冰过程中的热传递特性，以提高除冰效率？",
+          "baseline": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+          "risk": "缺乏石墨烯薄膜在风机叶片上的实际应用数据，热传递模型可能不准确。",
+          "estimated_workload": "3个月"
+        },
+        {
+          "title": "基于石墨烯薄膜电热效应的防冰系统设计与验证",
+          "research_question": "石墨烯薄膜电热系统在风机叶片防冰场景中，与常规电阻加热相比，能否实现更低的能耗和更快的响应？",
+          "baseline": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+          "improved_module_source": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+          "data_source": null,
+          "experiment_metrics": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+          "risk": "石墨烯薄膜的长期稳定性和与叶片材料的兼容性未在证据中验证。",
+          "estimated_workload": "4个月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:44:58Z",
+    "elapsed_s": 0.0
+  }
+]

@@ -1,0 +1,616 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T11:56:59Z",
+    "input_summary": {
+      "topic": "无人机ZED立体匹配网络训练与评测研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:56:59Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T11:57:01Z",
+    "input_summary": {
+      "topic_len": 19
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 2,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:57:01Z",
+    "elapsed_s": 2.137
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T11:57:01Z",
+    "input_summary": {
+      "topic_len": 19,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:57:01Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T11:57:01Z",
+    "input_summary": {
+      "topic_len": 19,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 24,
+      "n_repo_candidates": 3,
+      "n_steps": 7,
+      "n_tool_calls": 6,
+      "raw_tools": [
+        "openalex",
+        "github",
+        "arxiv",
+        "semantic_scholar"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 12,
+        "github": 5,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 5
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T11:57:26Z",
+    "elapsed_s": 24.412
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T11:57:26Z",
+    "input_summary": {
+      "n_candidates": 24
+    },
+    "output_summary": {
+      "kept": 24,
+      "dropped": 0,
+      "pre_filter_keep": 24,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 24,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:57:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T11:57:26Z",
+    "input_summary": {
+      "n_candidates": 24,
+      "topic_len": 19,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 15,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:57:31Z",
+    "elapsed_s": 5.218
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T11:57:31Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 15,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 3,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:57:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T11:57:31Z",
+    "input_summary": {
+      "n_verified": 11,
+      "n_seeds": 5,
+      "seed_titles": [
+        "UAVStereo: A Multiple Resolution Dataset for Stereo Matching",
+        "Development and Evaluation of a UAV-Photogrammetry System fo",
+        "DENSE MULTIPLE STEREO MATCHING OF HIGHLY OVERLAPPING UAV IMA",
+        "Real-Time Dense Stereo Embedded in a UAV for Road Inspection",
+        "Multi-View Stereo Matching Based on Self-Adaptive Patch and "
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 115,
+      "n_surveys": 11,
+      "n_repos": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 115,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "UAVStereo: A Multiple Resolution Dataset for Stereo Matching",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Development and Evaluation of a UAV-Photogrammetry System fo",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "DENSE MULTIPLE STEREO MATCHING OF HIGHLY OVERLAPPING UAV IMA",
+        "n_references_plus_citations": 27,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Real-Time Dense Stereo Embedded in a UAV for Road Inspection",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Multi-View Stereo Matching Based on Self-Adaptive Patch and ",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-08T11:57:32Z",
+    "elapsed_s": 1.464
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T11:57:32Z",
+    "input_summary": {
+      "n_candidates": 115,
+      "topic_len": 19,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 55,
+      "n_reject": 57
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:57:53Z",
+    "elapsed_s": 21.017
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T11:57:53Z",
+    "input_summary": {
+      "n_papers": 14,
+      "n_weak": 55,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 3,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:57:53Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T11:59:42Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 2,
+      "n_repo": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:59:42Z",
+    "elapsed_s": 108.2
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T11:59:42Z",
+    "input_summary": {
+      "papers": 14
+    },
+    "output_summary": {
+      "nodes": 19,
+      "edges": 2
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:59:42Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T11:59:42Z",
+    "input_summary": {
+      "n_verified": 14
+    },
+    "output_summary": {
+      "n_baseline": 4,
+      "n_parallel": 10,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:59:42Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T11:59:45Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_dataset": 2,
+      "n_repo": 3
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 85
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:59:45Z",
+    "elapsed_s": 3.339
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T11:59:54Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_packages": 4,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:59:54Z",
+    "elapsed_s": 9.462
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T12:00:08Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:00:08Z",
+    "elapsed_s": 13.937
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T12:00:03Z",
+    "input_summary": {
+      "n_baseline": 4
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:00:03Z",
+    "elapsed_s": 8.954
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T12:00:20Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "UAVStereo-Enhanced"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:00:20Z",
+    "elapsed_s": 11.63
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T12:00:20Z",
+    "input_summary": {
+      "n_packages": 4
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:00:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T12:00:33Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:00:33Z",
+    "elapsed_s": 12.518
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T12:00:39Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 4
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:00:39Z",
+    "elapsed_s": 6.51
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T12:00:39Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:00:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T12:00:39Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "无人机ZED立体匹配网络训练与评测研究",
+      "n_papers": 14,
+      "n_baseline": 4,
+      "n_parallel": 10,
+      "n_dataset": 2,
+      "n_repo": 3,
+      "n_work_packages": 4,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于UAVStereo数据集的ZED立体匹配网络训练与评测",
+          "research_question": "在UAVStereo数据集上训练和评测ZED相机立体匹配网络，能否达到与现有UAV场景方法相当的性能？",
+          "baseline": "UAVStereo: A Multiple Resolution Dataset for Stereo Matching in UAV Scenarios",
+          "improved_module_source": null,
+          "data_source": "UAVStereo: A Multiple Resolution Dataset for Stereo Matching in UAV Scenarios",
+          "experiment_metrics": "UAVStereo: A Multiple Resolution Dataset for Stereo Matching in UAV Scenarios",
+          "risk": "UAVStereo数据集可能未包含ZED相机拍摄的样本，导致域适应问题；且该数据集主要面向多分辨率，ZED固定分辨率可能不匹配。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于KITTI数据集的ZED立体匹配网络迁移学习与评测",
+          "research_question": "利用KITTI数据集预训练的立体匹配网络，迁移至ZED相机采集的无人机场景，能否通过微调提升性能？",
+          "baseline": "Efficient Deep Learning for Stereo Matching",
+          "improved_module_source": "MonSter++: Unified Stereo Matching, Multi-view Stereo, and Real-time Stereo with Monodepth Priors",
+          "data_source": "KITTI",
+          "experiment_metrics": "KITTI",
+          "risk": "KITTI为车载场景，与无人机视角差异大，迁移效果可能有限；ZED相机基线较短，深度范围不同。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于DEFOM-Stereo的ZED无人机立体匹配深度估计评测",
+          "research_question": "将DEFOM-Stereo（深度基础模型）应用于ZED相机拍摄的无人机影像，能否在无需额外训练的情况下获得优于传统方法的深度估计？",
+          "baseline": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "DEFOM-Stereo: Depth Foundation Model Based Stereo Matching",
+          "risk": "DEFOM-Stereo可能针对通用场景设计，无人机低空视角下的纹理稀疏区域（如草地、水面）可能导致匹配失败；缺乏无人机专用测试集。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于TW-SMNet的ZED立体匹配网络训练与评测",
+          "research_question": "TW-SMNet（Tele-Wide立体匹配网络）在ZED相机双焦距设置下，能否通过多任务学习提升无人机场景的匹配精度？",
+          "baseline": "TW-SMNet: Deep Multitask Learning of Tele-Wide Stereo Matching",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "TW-SMNet: Deep Multitask Learning of Tele-Wide Stereo Matching",
+          "risk": "ZED相机为固定基线双摄，不具备Tele-Wide变焦能力，网络结构可能不匹配；需自行采集或合成Tele-Wide数据。",
+          "estimated_workload": "5人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:00:39Z",
+    "elapsed_s": 0.0
+  }
+]

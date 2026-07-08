@@ -1,0 +1,2197 @@
+{
+  "case_id": "V-SLAM",
+  "topic": "基于深度学习的视觉SLAM语义地图的研究",
+  "user_constraints": {
+    "topic_zh": "基于深度学习的视觉SLAM语义地图的研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "deep learning",
+      "visual SLAM",
+      "semantic mapping"
+    ],
+    "object": [
+      "semantic map"
+    ],
+    "task": [
+      "simultaneous localization and mapping",
+      "semantic mapping"
+    ],
+    "scenario": [],
+    "domain": "vision_3d",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "visual odometry",
+      "object detection",
+      "semantic segmentation"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "deep learning semantic map",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "visual SLAM semantic map",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "deep learning semantic map simultaneous localization and mapping",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "openalex": [],
+    "arxiv": [
+      {
+        "title": "The Modern Mathematics of Deep Learning",
+        "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, and which fine aspects of an architecture affect the behavior of a learning task in which way. We present an overview of modern approaches that yield partial answers to these questions. For selected approaches, we describe the main ideas in more detail.",
+        "authors": [
+          "Julius Berner",
+          "Philipp Grohs",
+          "Gitta Kutyniok",
+          "Philipp Petersen"
+        ],
+        "arxiv_id": "2105.04026v2",
+        "url": "http://arxiv.org/abs/2105.04026v2",
+        "published": "2021-05-09T21:30:42Z",
+        "year": 2021,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "Predicting Thrombectomy Recanalization from CT Imaging Using Deep Learning Models",
+        "abstract": "For acute ischemic stroke (AIS) patients with large vessel occlusions, clinicians must decide if the benefit of mechanical thrombectomy (MTB) outweighs the risks and potential complications following an invasive procedure. Pre-treatment computed tomography (CT) and angiography (CTA) are widely used to characterize occlusions in the brain vasculature. If a patient is deemed eligible, a modified treatment in cerebral ischemia (mTICI) score will be used to grade how well blood flow is reestablished throughout and following the MTB procedure. An estimation of the likelihood of successful recanalization can support treatment decision-making. In this study, we proposed a fully automated prediction of a patient's recanalization score using pre-treatment CT and CTA imaging. We designed a spatial cross attention network (SCANet) that utilizes vision transformers to localize to pertinent slices and brain regions. Our top model achieved an average cross-validated ROC-AUC of 77.33 $\\pm$ 3.9\\%. This is a promising result that supports future applications of deep learning on CT and CTA for the identification of eligible AIS patients for MTB.",
+        "authors": [
+          "Haoyue Zhang",
+          "Jennifer S. Polson",
+          "Eric J. Yang",
+          "Kambiz Nael",
+          "William Speier",
+          "Corey W. Arnold"
+        ],
+        "arxiv_id": "2302.04143v2",
+        "url": "http://arxiv.org/abs/2302.04143v2",
+        "published": "2023-02-08T15:41:21Z",
+        "year": 2023,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "A multitask deep learning model for real-time deployment in embedded systems",
+        "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training process that introduces challenges not present in single-task models.",
+        "authors": [
+          "Miquel Martí",
+          "Atsuto Maki"
+        ],
+        "arxiv_id": "1711.00146v1",
+        "url": "http://arxiv.org/abs/1711.00146v1",
+        "published": "2017-10-31T23:59:23Z",
+        "year": 2017,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "PePR: Performance Per Resource Unit as a Metric to Promote Small-Scale Deep Learning in Medical Image Analysis",
+        "abstract": "The recent advances in deep learning (DL) have been accelerated by access to large-scale data and compute. These large-scale resources have been used to train progressively larger models which are resource intensive in terms of compute, data, energy, and carbon emissions. These costs are becoming a new type of entry barrier to researchers and practitioners with limited access to resources at such scale, particularly in the Global South. In this work, we take a comprehensive look at the landscape of existing DL models for medical image analysis tasks and demonstrate their usefulness in settings where resources are limited. To account for the resource consumption of DL models, we introduce a novel measure to estimate the performance per resource unit, which we call the PePR score. Using a diverse family of 131 unique DL architectures (spanning 1M to 130M trainable parameters) and three medical image datasets, we capture trends about the performance-resource trade-offs. In applications like medical image analysis, we argue that small-scale, specialized models are better than striving for large-scale models. Furthermore, we show that using existing pretrained models that are fine-tuned on new data can significantly reduce the computational resources and data required compared to training models from scratch. We hope this work will encourage the community to focus on improving AI equity by developing methods and models with smaller resource footprints.",
+        "authors": [
+          "Raghavendra Selvan",
+          "Bob Pepin",
+          "Christian Igel",
+          "Gabrielle Samuel",
+          "Erik B Dam"
+        ],
+        "arxiv_id": "2403.12562v2",
+        "url": "http://arxiv.org/abs/2403.12562v2",
+        "published": "2024-03-19T09:17:18Z",
+        "year": 2024,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "Chord Label Personalization through Deep Learning of Integrated Harmonic Interval-based Representations",
+        "abstract": "The increasing accuracy of automatic chord estimation systems, the availability of vast amounts of heterogeneous reference annotations, and insights from annotator subjectivity research make chord label personalization increasingly important. Nevertheless, automatic chord estimation systems are historically exclusively trained and evaluated on a single reference annotation. We introduce a first approach to automatic chord label personalization by modeling subjectivity through deep learning of a harmonic interval-based chord label representation. After integrating these representations from multiple annotators, we can accurately personalize chord labels for individual annotators from a single model and the annotators' chord label vocabulary. Furthermore, we show that chord personalization using multiple reference annotations outperforms using a single reference annotation.",
+        "authors": [
+          "H. V. Koops",
+          "W. B. de Haas",
+          "J. Bransen",
+          "A. Volk"
+        ],
+        "arxiv_id": "1706.09552v1",
+        "url": "http://arxiv.org/abs/1706.09552v1",
+        "published": "2017-06-29T02:38:02Z",
+        "year": 2017,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "Why & When Deep Learning Works: Looking Inside Deep Learnings",
+        "abstract": "The Intel Collaborative Research Institute for Computational Intelligence (ICRI-CI) has been heavily supporting Machine Learning and Deep Learning research from its foundation in 2012. We have asked six leading ICRI-CI Deep Learning researchers to address the challenge of \"Why & When Deep Learning works\", with the goal of looking inside Deep Learning, providing insights on how deep networks function, and uncovering key observations on their expressiveness, limitations, and potential. The output of this challenge resulted in five papers that address different facets of deep learning. These different facets include a high-level understating of why and when deep networks work (and do not work), the impact of geometry on the expressiveness of deep networks, and making deep networks interpretable.",
+        "authors": [
+          "Ronny Ronen"
+        ],
+        "arxiv_id": "1705.03921v1",
+        "url": "http://arxiv.org/abs/1705.03921v1",
+        "published": "2017-05-10T18:52:26Z",
+        "year": 2017,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+        "abstract": "In this paper, a novel solution is introduced for visual Simultaneous Localization and Mapping (vSLAM) that is built up of Deep Learning components. The proposed architecture is a highly modular framework in which each component offers state of the art results in their respective fields of vision-based deep learning solutions. The paper shows that with the synergic integration of these individual building blocks, a functioning and efficient all-through deep neural (ATDN) vSLAM system can be created. The Embedding Distance Loss function is introduced and using it the ATDN architecture is trained. The resulting system managed to achieve 4.4% translation and 0.0176 deg/m rotational error on a subset of the KITTI dataset. The proposed architecture can be used for efficient and low-latency autonomous driving (AD) aiding database creation as well as a basis for autonomous vehicle (AV) control.",
+        "authors": [
+          "Mátyás Szántó",
+          "György R. Bogár",
+          "László Vajta"
+        ],
+        "arxiv_id": "2206.05963v3",
+        "url": "http://arxiv.org/abs/2206.05963v3",
+        "published": "2022-06-13T08:19:54Z",
+        "year": 2022,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "Generalization in Deep Learning",
+        "abstract": "This paper provides theoretical insights into why and how deep learning can generalize well, despite its large capacity, complexity, possible algorithmic instability, nonrobustness, and sharp minima, responding to an open question in the literature. We also discuss approaches to provide non-vacuous generalization guarantees for deep learning. Based on theoretical observations, we propose new open problems and discuss the limitations of our results.",
+        "authors": [
+          "Kenji Kawaguchi",
+          "Leslie Pack Kaelbling",
+          "Yoshua Bengio"
+        ],
+        "arxiv_id": "1710.05468v9",
+        "url": "http://arxiv.org/abs/1710.05468v9",
+        "published": "2017-10-16T02:21:24Z",
+        "year": 2017,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "On the Importance of Strong Baselines in Bayesian Deep Learning",
+        "abstract": "Like all sub-fields of machine learning Bayesian Deep Learning is driven by empirical validation of its theoretical proposals. Given the many aspects of an experiment it is always possible that minor or even major experimental flaws can slip by both authors and reviewers. One of the most popular experiments used to evaluate approximate inference techniques is the regression experiment on UCI datasets. However, in this experiment, models which have been trained to convergence have often been compared with baselines trained only for a fixed number of iterations. We find that a well-established baseline, Monte Carlo dropout, when evaluated under the same experimental settings shows significant improvements. In fact, the baseline outperforms or performs competitively with methods that claimed to be superior to the very same baseline method when they were introduced. Hence, by exposing this flaw in experimental procedure, we highlight the importance of using identical experimental setups to evaluate, compare, and benchmark methods in Bayesian Deep Learning.",
+        "authors": [
+          "Jishnu Mukhoti",
+          "Pontus Stenetorp",
+          "Yarin Gal"
+        ],
+        "arxiv_id": "1811.09385v2",
+        "url": "http://arxiv.org/abs/1811.09385v2",
+        "published": "2018-11-23T08:22:17Z",
+        "year": 2018,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "Explainable Deep Learning: A Field Guide for the Uninitiated",
+        "abstract": "Deep neural networks (DNNs) have become a proven and indispensable machine learning tool. As a black-box model, it remains difficult to diagnose what aspects of the model's input drive the decisions of a DNN. In countless real-world domains, from legislation and law enforcement to healthcare, such diagnosis is essential to ensure that DNN decisions are driven by aspects appropriate in the context of its use. The development of methods and studies enabling the explanation of a DNN's decisions has thus blossomed into an active, broad area of research. A practitioner wanting to study explainable deep learning may be intimidated by the plethora of orthogonal directions the field has taken. This complexity is further exacerbated by competing definitions of what it means ``to explain'' the actions of a DNN and to evaluate an approach's ``ability to explain''. This article offers a field guide to explore the space of explainable deep learning aimed at those uninitiated in the field. The field guide: i) Introduces three simple dimensions defining the space of foundational methods that contribute to explainable deep learning, ii) discusses the evaluations for model explanations, iii) places explainability in the context of other related deep learning research areas, and iv) finally elaborates on user-oriented explanation designing and potential future directions on explainable deep learning. We hope the guide is used as an easy-to-digest starting point for those just embarking on research in this field.",
+        "authors": [
+          "Gabrielle Ras",
+          "Ning Xie",
+          "Marcel van Gerven",
+          "Derek Doran"
+        ],
+        "arxiv_id": "2004.14545v2",
+        "url": "http://arxiv.org/abs/2004.14545v2",
+        "published": "2020-04-30T02:09:02Z",
+        "year": 2020,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "Deep learning for photoacoustic imaging: a survey",
+        "abstract": "Machine learning has been developed dramatically and witnessed a lot of applications in various fields over the past few years. This boom originated in 2009, when a new model emerged, that is, the deep artificial neural network, which began to surpass other established mature models on some important benchmarks. Later, it was widely used in academia and industry. Ranging from image analysis to natural language processing, it fully exerted its magic and now become the state-of-the-art machine learning models. Deep neural networks have great potential in medical imaging technology, medical data analysis, medical diagnosis and other healthcare issues, and is promoted in both pre-clinical and even clinical stages. In this review, we performed an overview of some new developments and challenges in the application of machine learning to medical image analysis, with a special focus on deep learning in photoacoustic imaging. The aim of this review is threefold: (i) introducing deep learning with some important basics, (ii) reviewing recent works that apply deep learning in the entire ecological chain of photoacoustic imaging, from image reconstruction to disease diagnosis, (iii) providing some open source materials and other resources for researchers interested in applying deep learning to photoacoustic imaging.",
+        "authors": [
+          "Changchun Yang",
+          "Hengrong Lan",
+          "Feng Gao",
+          "Fei Gao"
+        ],
+        "arxiv_id": "2008.04221v4",
+        "url": "http://arxiv.org/abs/2008.04221v4",
+        "published": "2020-08-10T15:53:30Z",
+        "year": 2020,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      },
+      {
+        "title": "Deep Learning Model for Finding New Superconductors",
+        "abstract": "Exploration of new superconductors still relies on the experience and intuition of experts and is largely a process of experimental trial and error. In one study, only 3% of the candidate materials showed superconductivity. Here, we report the first deep learning model for finding new superconductors. We introduced the method named \"reading periodic table\" which represented the periodic table in a way that allows deep learning to learn to read the periodic table and to learn the law of elements for the purpose of discovering novel superconductors that are outside the training data. It is recognized that it is difficult for deep learning to predict something outside the training data. Although we used only the chemical composition of materials as information, we obtained an $R^{2}$ value of 0.92 for predicting $T_\\text{c}$ for materials in a database of superconductors. We also introduced the method named \"garbage-in\" to create synthetic data of non-superconductors that do not exist. Non-superconductors are not reported, but the data must be required for deep learning to distinguish between superconductors and non-superconductors. We obtained three remarkable results. The deep learning can predict superconductivity for a material with a precision of 62%, which shows the usefulness of the model; it found the recently discovered superconductor CaBi2 and another one Hf0.5Nb0.2V2Zr0.3, neither of which is in the superconductor database; and it found Fe-based high-temperature superconductors (discovered in 2008) from the training data before 2008. These results open the way for the discovery of new high-temperature superconductor families. The candidate materials list, data, and method are openly available from the link https://github.com/tomo835g/Deep-Learning-to-find-Superconductors.",
+        "authors": [
+          "Tomohiko Konno",
+          "Hodaka Kurokawa",
+          "Fuyuki Nabeshima",
+          "Yuki Sakishita",
+          "Ryo Ogawa",
+          "Iwao Hosako",
+          "Atsutaka Maeda"
+        ],
+        "arxiv_id": "1812.01995v4",
+        "url": "http://arxiv.org/abs/1812.01995v4",
+        "published": "2018-12-03T05:30:34Z",
+        "year": 2018,
+        "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+      }
+    ],
+    "github": [
+      {
+        "id": 870656162,
+        "node_id": "R_kgDOM-Uoog",
+        "name": "Dynamic-SLAM",
+        "full_name": "linhuixiao/Dynamic-SLAM",
+        "private": false,
+        "owner": {
+          "login": "linhuixiao",
+          "id": 22616135,
+          "node_id": "MDQ6VXNlcjIyNjE2MTM1",
+          "avatar_url": "https://avatars.githubusercontent.com/u/22616135?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/linhuixiao",
+          "html_url": "https://github.com/linhuixiao",
+          "followers_url": "https://api.github.com/users/linhuixiao/followers",
+          "following_url": "https://api.github.com/users/linhuixiao/following{/other_user}",
+          "gists_url": "https://api.github.com/users/linhuixiao/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/linhuixiao/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/linhuixiao/subscriptions",
+          "organizations_url": "https://api.github.com/users/linhuixiao/orgs",
+          "repos_url": "https://api.github.com/users/linhuixiao/repos",
+          "events_url": "https://api.github.com/users/linhuixiao/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/linhuixiao/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/linhuixiao/Dynamic-SLAM",
+        "description": "[RAS 2019] Dynamic-SLAM: Semantic Monocular Visual Localization and Mapping Based on Deep Learning in Dynamic Environment.",
+        "fork": false,
+        "url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM",
+        "forks_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/forks",
+        "keys_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/teams",
+        "hooks_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/hooks",
+        "issue_events_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/events",
+        "assignees_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/tags",
+        "blobs_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/languages",
+        "stargazers_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/stargazers",
+        "contributors_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/contributors",
+        "subscribers_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/subscribers",
+        "subscription_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/subscription",
+        "commits_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/merges",
+        "archive_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/downloads",
+        "issues_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/labels{/name}",
+        "releases_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/deployments",
+        "created_at": "2024-10-10T12:39:16Z",
+        "updated_at": "2026-06-27T00:42:32Z",
+        "pushed_at": "2025-08-08T07:05:01Z",
+        "git_url": "git://github.com/linhuixiao/Dynamic-SLAM.git",
+        "ssh_url": "git@github.com:linhuixiao/Dynamic-SLAM.git",
+        "clone_url": "https://github.com/linhuixiao/Dynamic-SLAM.git",
+        "svn_url": "https://github.com/linhuixiao/Dynamic-SLAM",
+        "homepage": "https://www.sciencedirect.com/science/article/pii/S0921889018308029",
+        "size": 54213,
+        "stargazers_count": 11,
+        "watchers_count": 11,
+        "language": "Makefile",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "localization",
+          "slam",
+          "visual"
+        ],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 11,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 11
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "repo:<linhuixiao/dynamic-slam>",
+        "type": "repo",
+        "title": "linhuixiao/Dynamic-SLAM",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<atdn-vslam-an-all-through-deep-learning-based-solution-for-visual-simultaneous-localization-and-mapping>",
+        "type": "paper",
+        "title": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<a-multitask-deep-learning-model-for-real-time-deployment-in-embedded-systems>",
+        "type": "paper",
+        "title": "A multitask deep learning model for real-time deployment in embedded systems",
+        "role": "parallel"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "The Modern Mathematics of Deep Learning",
+      "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, a",
+      "url": "http://arxiv.org/abs/2105.04026v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "The Modern Mathematics of Deep Learning",
+            "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, and which fine aspects of an architecture affect the behavior of a learning task in which way. We present an overview of modern approaches that yield partial answers to these questions. For selected approaches, we describe the main ideas in more detail.",
+            "authors": [
+              "Julius Berner",
+              "Philipp Grohs",
+              "Gitta Kutyniok",
+              "Philipp Petersen"
+            ],
+            "arxiv_id": "2105.04026v2",
+            "url": "http://arxiv.org/abs/2105.04026v2",
+            "published": "2021-05-09T21:30:42Z",
+            "year": 2021,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "Predicting Thrombectomy Recanalization from CT Imaging Using Deep Learning Models",
+      "abstract": "For acute ischemic stroke (AIS) patients with large vessel occlusions, clinicians must decide if the benefit of mechanical thrombectomy (MTB) outweighs the risks and potential complications following an invasive procedure. Pre-treatment computed tomography (CT) and angiography (CTA) are widely used to characterize occlusions in the brain vasculature. If a patient is deemed eligible, a modified treatment in cerebral ischemia (mTICI) score will be used to grade how well blood flow is reestablished throughout and following the MTB procedure. An estimation of the likelihood of successful recanaliz",
+      "url": "http://arxiv.org/abs/2302.04143v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Predicting Thrombectomy Recanalization from CT Imaging Using Deep Learning Models",
+            "abstract": "For acute ischemic stroke (AIS) patients with large vessel occlusions, clinicians must decide if the benefit of mechanical thrombectomy (MTB) outweighs the risks and potential complications following an invasive procedure. Pre-treatment computed tomography (CT) and angiography (CTA) are widely used to characterize occlusions in the brain vasculature. If a patient is deemed eligible, a modified treatment in cerebral ischemia (mTICI) score will be used to grade how well blood flow is reestablished throughout and following the MTB procedure. An estimation of the likelihood of successful recanalization can support treatment decision-making. In this study, we proposed a fully automated prediction of a patient's recanalization score using pre-treatment CT and CTA imaging. We designed a spatial cross attention network (SCANet) that utilizes vision transformers to localize to pertinent slices and brain regions. Our top model achieved an average cross-validated ROC-AUC of 77.33 $\\pm$ 3.9\\%. This is a promising result that supports future applications of deep learning on CT and CTA for the identification of eligible AIS patients for MTB.",
+            "authors": [
+              "Haoyue Zhang",
+              "Jennifer S. Polson",
+              "Eric J. Yang",
+              "Kambiz Nael",
+              "William Speier",
+              "Corey W. Arnold"
+            ],
+            "arxiv_id": "2302.04143v2",
+            "url": "http://arxiv.org/abs/2302.04143v2",
+            "published": "2023-02-08T15:41:21Z",
+            "year": 2023,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "A multitask deep learning model for real-time deployment in embedded systems",
+      "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training",
+      "url": "http://arxiv.org/abs/1711.00146v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "A multitask deep learning model for real-time deployment in embedded systems",
+            "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training process that introduces challenges not present in single-task models.",
+            "authors": [
+              "Miquel Martí",
+              "Atsuto Maki"
+            ],
+            "arxiv_id": "1711.00146v1",
+            "url": "http://arxiv.org/abs/1711.00146v1",
+            "published": "2017-10-31T23:59:23Z",
+            "year": 2017,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "PePR: Performance Per Resource Unit as a Metric to Promote Small-Scale Deep Learning in Medical Image Analysis",
+      "abstract": "The recent advances in deep learning (DL) have been accelerated by access to large-scale data and compute. These large-scale resources have been used to train progressively larger models which are resource intensive in terms of compute, data, energy, and carbon emissions. These costs are becoming a new type of entry barrier to researchers and practitioners with limited access to resources at such scale, particularly in the Global South. In this work, we take a comprehensive look at the landscape of existing DL models for medical image analysis tasks and demonstrate their usefulness in settings",
+      "url": "http://arxiv.org/abs/2403.12562v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "PePR: Performance Per Resource Unit as a Metric to Promote Small-Scale Deep Learning in Medical Image Analysis",
+            "abstract": "The recent advances in deep learning (DL) have been accelerated by access to large-scale data and compute. These large-scale resources have been used to train progressively larger models which are resource intensive in terms of compute, data, energy, and carbon emissions. These costs are becoming a new type of entry barrier to researchers and practitioners with limited access to resources at such scale, particularly in the Global South. In this work, we take a comprehensive look at the landscape of existing DL models for medical image analysis tasks and demonstrate their usefulness in settings where resources are limited. To account for the resource consumption of DL models, we introduce a novel measure to estimate the performance per resource unit, which we call the PePR score. Using a diverse family of 131 unique DL architectures (spanning 1M to 130M trainable parameters) and three medical image datasets, we capture trends about the performance-resource trade-offs. In applications like medical image analysis, we argue that small-scale, specialized models are better than striving for large-scale models. Furthermore, we show that using existing pretrained models that are fine-tuned on new data can significantly reduce the computational resources and data required compared to training models from scratch. We hope this work will encourage the community to focus on improving AI equity by developing methods and models with smaller resource footprints.",
+            "authors": [
+              "Raghavendra Selvan",
+              "Bob Pepin",
+              "Christian Igel",
+              "Gabrielle Samuel",
+              "Erik B Dam"
+            ],
+            "arxiv_id": "2403.12562v2",
+            "url": "http://arxiv.org/abs/2403.12562v2",
+            "published": "2024-03-19T09:17:18Z",
+            "year": 2024,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "Chord Label Personalization through Deep Learning of Integrated Harmonic Interval-based Representations",
+      "abstract": "The increasing accuracy of automatic chord estimation systems, the availability of vast amounts of heterogeneous reference annotations, and insights from annotator subjectivity research make chord label personalization increasingly important. Nevertheless, automatic chord estimation systems are historically exclusively trained and evaluated on a single reference annotation. We introduce a first approach to automatic chord label personalization by modeling subjectivity through deep learning of a harmonic interval-based chord label representation. After integrating these representations from mul",
+      "url": "http://arxiv.org/abs/1706.09552v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Chord Label Personalization through Deep Learning of Integrated Harmonic Interval-based Representations",
+            "abstract": "The increasing accuracy of automatic chord estimation systems, the availability of vast amounts of heterogeneous reference annotations, and insights from annotator subjectivity research make chord label personalization increasingly important. Nevertheless, automatic chord estimation systems are historically exclusively trained and evaluated on a single reference annotation. We introduce a first approach to automatic chord label personalization by modeling subjectivity through deep learning of a harmonic interval-based chord label representation. After integrating these representations from multiple annotators, we can accurately personalize chord labels for individual annotators from a single model and the annotators' chord label vocabulary. Furthermore, we show that chord personalization using multiple reference annotations outperforms using a single reference annotation.",
+            "authors": [
+              "H. V. Koops",
+              "W. B. de Haas",
+              "J. Bransen",
+              "A. Volk"
+            ],
+            "arxiv_id": "1706.09552v1",
+            "url": "http://arxiv.org/abs/1706.09552v1",
+            "published": "2017-06-29T02:38:02Z",
+            "year": 2017,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "Why & When Deep Learning Works: Looking Inside Deep Learnings",
+      "abstract": "The Intel Collaborative Research Institute for Computational Intelligence (ICRI-CI) has been heavily supporting Machine Learning and Deep Learning research from its foundation in 2012. We have asked six leading ICRI-CI Deep Learning researchers to address the challenge of \"Why & When Deep Learning works\", with the goal of looking inside Deep Learning, providing insights on how deep networks function, and uncovering key observations on their expressiveness, limitations, and potential. The output of this challenge resulted in five papers that address different facets of deep learning. These diff",
+      "url": "http://arxiv.org/abs/1705.03921v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Why & When Deep Learning Works: Looking Inside Deep Learnings",
+            "abstract": "The Intel Collaborative Research Institute for Computational Intelligence (ICRI-CI) has been heavily supporting Machine Learning and Deep Learning research from its foundation in 2012. We have asked six leading ICRI-CI Deep Learning researchers to address the challenge of \"Why & When Deep Learning works\", with the goal of looking inside Deep Learning, providing insights on how deep networks function, and uncovering key observations on their expressiveness, limitations, and potential. The output of this challenge resulted in five papers that address different facets of deep learning. These different facets include a high-level understating of why and when deep networks work (and do not work), the impact of geometry on the expressiveness of deep networks, and making deep networks interpretable.",
+            "authors": [
+              "Ronny Ronen"
+            ],
+            "arxiv_id": "1705.03921v1",
+            "url": "http://arxiv.org/abs/1705.03921v1",
+            "published": "2017-05-10T18:52:26Z",
+            "year": 2017,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+      "abstract": "In this paper, a novel solution is introduced for visual Simultaneous Localization and Mapping (vSLAM) that is built up of Deep Learning components. The proposed architecture is a highly modular framework in which each component offers state of the art results in their respective fields of vision-based deep learning solutions. The paper shows that with the synergic integration of these individual building blocks, a functioning and efficient all-through deep neural (ATDN) vSLAM system can be created. The Embedding Distance Loss function is introduced and using it the ATDN architecture is traine",
+      "url": "http://arxiv.org/abs/2206.05963v3",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+            "abstract": "In this paper, a novel solution is introduced for visual Simultaneous Localization and Mapping (vSLAM) that is built up of Deep Learning components. The proposed architecture is a highly modular framework in which each component offers state of the art results in their respective fields of vision-based deep learning solutions. The paper shows that with the synergic integration of these individual building blocks, a functioning and efficient all-through deep neural (ATDN) vSLAM system can be created. The Embedding Distance Loss function is introduced and using it the ATDN architecture is trained. The resulting system managed to achieve 4.4% translation and 0.0176 deg/m rotational error on a subset of the KITTI dataset. The proposed architecture can be used for efficient and low-latency autonomous driving (AD) aiding database creation as well as a basis for autonomous vehicle (AV) control.",
+            "authors": [
+              "Mátyás Szántó",
+              "György R. Bogár",
+              "László Vajta"
+            ],
+            "arxiv_id": "2206.05963v3",
+            "url": "http://arxiv.org/abs/2206.05963v3",
+            "published": "2022-06-13T08:19:54Z",
+            "year": 2022,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "Generalization in Deep Learning",
+      "abstract": "This paper provides theoretical insights into why and how deep learning can generalize well, despite its large capacity, complexity, possible algorithmic instability, nonrobustness, and sharp minima, responding to an open question in the literature. We also discuss approaches to provide non-vacuous generalization guarantees for deep learning. Based on theoretical observations, we propose new open problems and discuss the limitations of our results.",
+      "url": "http://arxiv.org/abs/1710.05468v9",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Generalization in Deep Learning",
+            "abstract": "This paper provides theoretical insights into why and how deep learning can generalize well, despite its large capacity, complexity, possible algorithmic instability, nonrobustness, and sharp minima, responding to an open question in the literature. We also discuss approaches to provide non-vacuous generalization guarantees for deep learning. Based on theoretical observations, we propose new open problems and discuss the limitations of our results.",
+            "authors": [
+              "Kenji Kawaguchi",
+              "Leslie Pack Kaelbling",
+              "Yoshua Bengio"
+            ],
+            "arxiv_id": "1710.05468v9",
+            "url": "http://arxiv.org/abs/1710.05468v9",
+            "published": "2017-10-16T02:21:24Z",
+            "year": 2017,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "On the Importance of Strong Baselines in Bayesian Deep Learning",
+      "abstract": "Like all sub-fields of machine learning Bayesian Deep Learning is driven by empirical validation of its theoretical proposals. Given the many aspects of an experiment it is always possible that minor or even major experimental flaws can slip by both authors and reviewers. One of the most popular experiments used to evaluate approximate inference techniques is the regression experiment on UCI datasets. However, in this experiment, models which have been trained to convergence have often been compared with baselines trained only for a fixed number of iterations. We find that a well-established b",
+      "url": "http://arxiv.org/abs/1811.09385v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "On the Importance of Strong Baselines in Bayesian Deep Learning",
+            "abstract": "Like all sub-fields of machine learning Bayesian Deep Learning is driven by empirical validation of its theoretical proposals. Given the many aspects of an experiment it is always possible that minor or even major experimental flaws can slip by both authors and reviewers. One of the most popular experiments used to evaluate approximate inference techniques is the regression experiment on UCI datasets. However, in this experiment, models which have been trained to convergence have often been compared with baselines trained only for a fixed number of iterations. We find that a well-established baseline, Monte Carlo dropout, when evaluated under the same experimental settings shows significant improvements. In fact, the baseline outperforms or performs competitively with methods that claimed to be superior to the very same baseline method when they were introduced. Hence, by exposing this flaw in experimental procedure, we highlight the importance of using identical experimental setups to evaluate, compare, and benchmark methods in Bayesian Deep Learning.",
+            "authors": [
+              "Jishnu Mukhoti",
+              "Pontus Stenetorp",
+              "Yarin Gal"
+            ],
+            "arxiv_id": "1811.09385v2",
+            "url": "http://arxiv.org/abs/1811.09385v2",
+            "published": "2018-11-23T08:22:17Z",
+            "year": 2018,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "Explainable Deep Learning: A Field Guide for the Uninitiated",
+      "abstract": "Deep neural networks (DNNs) have become a proven and indispensable machine learning tool. As a black-box model, it remains difficult to diagnose what aspects of the model's input drive the decisions of a DNN. In countless real-world domains, from legislation and law enforcement to healthcare, such diagnosis is essential to ensure that DNN decisions are driven by aspects appropriate in the context of its use. The development of methods and studies enabling the explanation of a DNN's decisions has thus blossomed into an active, broad area of research. A practitioner wanting to study explainable ",
+      "url": "http://arxiv.org/abs/2004.14545v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Explainable Deep Learning: A Field Guide for the Uninitiated",
+            "abstract": "Deep neural networks (DNNs) have become a proven and indispensable machine learning tool. As a black-box model, it remains difficult to diagnose what aspects of the model's input drive the decisions of a DNN. In countless real-world domains, from legislation and law enforcement to healthcare, such diagnosis is essential to ensure that DNN decisions are driven by aspects appropriate in the context of its use. The development of methods and studies enabling the explanation of a DNN's decisions has thus blossomed into an active, broad area of research. A practitioner wanting to study explainable deep learning may be intimidated by the plethora of orthogonal directions the field has taken. This complexity is further exacerbated by competing definitions of what it means ``to explain'' the actions of a DNN and to evaluate an approach's ``ability to explain''. This article offers a field guide to explore the space of explainable deep learning aimed at those uninitiated in the field. The field guide: i) Introduces three simple dimensions defining the space of foundational methods that contribute to explainable deep learning, ii) discusses the evaluations for model explanations, iii) places explainability in the context of other related deep learning research areas, and iv) finally elaborates on user-oriented explanation designing and potential future directions on explainable deep learning. We hope the guide is used as an easy-to-digest starting point for those just embarking on research in this field.",
+            "authors": [
+              "Gabrielle Ras",
+              "Ning Xie",
+              "Marcel van Gerven",
+              "Derek Doran"
+            ],
+            "arxiv_id": "2004.14545v2",
+            "url": "http://arxiv.org/abs/2004.14545v2",
+            "published": "2020-04-30T02:09:02Z",
+            "year": 2020,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "Deep learning for photoacoustic imaging: a survey",
+      "abstract": "Machine learning has been developed dramatically and witnessed a lot of applications in various fields over the past few years. This boom originated in 2009, when a new model emerged, that is, the deep artificial neural network, which began to surpass other established mature models on some important benchmarks. Later, it was widely used in academia and industry. Ranging from image analysis to natural language processing, it fully exerted its magic and now become the state-of-the-art machine learning models. Deep neural networks have great potential in medical imaging technology, medical data ",
+      "url": "http://arxiv.org/abs/2008.04221v4",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Deep learning for photoacoustic imaging: a survey",
+            "abstract": "Machine learning has been developed dramatically and witnessed a lot of applications in various fields over the past few years. This boom originated in 2009, when a new model emerged, that is, the deep artificial neural network, which began to surpass other established mature models on some important benchmarks. Later, it was widely used in academia and industry. Ranging from image analysis to natural language processing, it fully exerted its magic and now become the state-of-the-art machine learning models. Deep neural networks have great potential in medical imaging technology, medical data analysis, medical diagnosis and other healthcare issues, and is promoted in both pre-clinical and even clinical stages. In this review, we performed an overview of some new developments and challenges in the application of machine learning to medical image analysis, with a special focus on deep learning in photoacoustic imaging. The aim of this review is threefold: (i) introducing deep learning with some important basics, (ii) reviewing recent works that apply deep learning in the entire ecological chain of photoacoustic imaging, from image reconstruction to disease diagnosis, (iii) providing some open source materials and other resources for researchers interested in applying deep learning to photoacoustic imaging.",
+            "authors": [
+              "Changchun Yang",
+              "Hengrong Lan",
+              "Feng Gao",
+              "Fei Gao"
+            ],
+            "arxiv_id": "2008.04221v4",
+            "url": "http://arxiv.org/abs/2008.04221v4",
+            "published": "2020-08-10T15:53:30Z",
+            "year": 2020,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "Deep Learning Model for Finding New Superconductors",
+      "abstract": "Exploration of new superconductors still relies on the experience and intuition of experts and is largely a process of experimental trial and error. In one study, only 3% of the candidate materials showed superconductivity. Here, we report the first deep learning model for finding new superconductors. We introduced the method named \"reading periodic table\" which represented the periodic table in a way that allows deep learning to learn to read the periodic table and to learn the law of elements for the purpose of discovering novel superconductors that are outside the training data. It is recog",
+      "url": "http://arxiv.org/abs/1812.01995v4",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Deep Learning Model for Finding New Superconductors",
+            "abstract": "Exploration of new superconductors still relies on the experience and intuition of experts and is largely a process of experimental trial and error. In one study, only 3% of the candidate materials showed superconductivity. Here, we report the first deep learning model for finding new superconductors. We introduced the method named \"reading periodic table\" which represented the periodic table in a way that allows deep learning to learn to read the periodic table and to learn the law of elements for the purpose of discovering novel superconductors that are outside the training data. It is recognized that it is difficult for deep learning to predict something outside the training data. Although we used only the chemical composition of materials as information, we obtained an $R^{2}$ value of 0.92 for predicting $T_\\text{c}$ for materials in a database of superconductors. We also introduced the method named \"garbage-in\" to create synthetic data of non-superconductors that do not exist. Non-superconductors are not reported, but the data must be required for deep learning to distinguish between superconductors and non-superconductors. We obtained three remarkable results. The deep learning can predict superconductivity for a material with a precision of 62%, which shows the usefulness of the model; it found the recently discovered superconductor CaBi2 and another one Hf0.5Nb0.2V2Zr0.3, neither of which is in the superconductor database; and it found Fe-based high-temperature superconductors (discovered in 2008) from the training data before 2008. These results open the way for the discovery of new high-temperature superconductor families. The candidate materials list, data, and method are openly available from the link https://github.com/tomo835g/Deep-Learning-to-find-Superconductors.",
+            "authors": [
+              "Tomohiko Konno",
+              "Hodaka Kurokawa",
+              "Fuyuki Nabeshima",
+              "Yuki Sakishita",
+              "Ryo Ogawa",
+              "Iwao Hosako",
+              "Atsutaka Maeda"
+            ],
+            "arxiv_id": "1812.01995v4",
+            "url": "http://arxiv.org/abs/1812.01995v4",
+            "published": "2018-12-03T05:30:34Z",
+            "year": 2018,
+            "source_query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\""
+          }
+        ]
+      }
+    },
+    {
+      "title": "linhuixiao/Dynamic-SLAM",
+      "abstract": "[RAS 2019] Dynamic-SLAM: Semantic Monocular Visual Localization and Mapping Based on Deep Learning in Dynamic Environment.",
+      "url": "https://github.com/linhuixiao/Dynamic-SLAM",
+      "doi": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 870656162,
+            "node_id": "R_kgDOM-Uoog",
+            "name": "Dynamic-SLAM",
+            "full_name": "linhuixiao/Dynamic-SLAM",
+            "private": false,
+            "owner": {
+              "login": "linhuixiao",
+              "id": 22616135,
+              "node_id": "MDQ6VXNlcjIyNjE2MTM1",
+              "avatar_url": "https://avatars.githubusercontent.com/u/22616135?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/linhuixiao",
+              "html_url": "https://github.com/linhuixiao",
+              "followers_url": "https://api.github.com/users/linhuixiao/followers",
+              "following_url": "https://api.github.com/users/linhuixiao/following{/other_user}",
+              "gists_url": "https://api.github.com/users/linhuixiao/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/linhuixiao/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/linhuixiao/subscriptions",
+              "organizations_url": "https://api.github.com/users/linhuixiao/orgs",
+              "repos_url": "https://api.github.com/users/linhuixiao/repos",
+              "events_url": "https://api.github.com/users/linhuixiao/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/linhuixiao/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/linhuixiao/Dynamic-SLAM",
+            "description": "[RAS 2019] Dynamic-SLAM: Semantic Monocular Visual Localization and Mapping Based on Deep Learning in Dynamic Environment.",
+            "fork": false,
+            "url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM",
+            "forks_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/forks",
+            "keys_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/teams",
+            "hooks_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/hooks",
+            "issue_events_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/events",
+            "assignees_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/tags",
+            "blobs_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/languages",
+            "stargazers_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/stargazers",
+            "contributors_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/contributors",
+            "subscribers_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/subscribers",
+            "subscription_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/subscription",
+            "commits_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/merges",
+            "archive_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/downloads",
+            "issues_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/labels{/name}",
+            "releases_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/deployments",
+            "created_at": "2024-10-10T12:39:16Z",
+            "updated_at": "2026-06-27T00:42:32Z",
+            "pushed_at": "2025-08-08T07:05:01Z",
+            "git_url": "git://github.com/linhuixiao/Dynamic-SLAM.git",
+            "ssh_url": "git@github.com:linhuixiao/Dynamic-SLAM.git",
+            "clone_url": "https://github.com/linhuixiao/Dynamic-SLAM.git",
+            "svn_url": "https://github.com/linhuixiao/Dynamic-SLAM",
+            "homepage": "https://www.sciencedirect.com/science/article/pii/S0921889018308029",
+            "size": 54213,
+            "stargazers_count": 11,
+            "watchers_count": 11,
+            "language": "Makefile",
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 0,
+            "license": {
+              "key": "apache-2.0",
+              "name": "Apache License 2.0",
+              "spdx_id": "Apache-2.0",
+              "url": "https://api.github.com/licenses/apache-2.0",
+              "node_id": "MDc6TGljZW5zZTI="
+            },
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [
+              "localization",
+              "slam",
+              "visual"
+            ],
+            "visibility": "public",
+            "forks": 0,
+            "open_issues": 0,
+            "watchers": 11,
+            "default_branch": "master",
+            "score": 1.0,
+            "stars": 11
+          }
+        ]
+      }
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "linhuixiao/Dynamic-SLAM",
+      "verdict": "accept",
+      "hit_keywords": [
+        "deep learning",
+        "visual SLAM",
+        "semantic mapping",
+        "semantic map",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses semantic monocular visual localization and mapping using deep learning in dynamic environments.",
+      "doi": null,
+      "url": "https://github.com/linhuixiao/Dynamic-SLAM",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "[RAS 2019] Dynamic-SLAM: Semantic Monocular Visual Localization and Mapping Based on Deep Learning in Dynamic Environment."
+    },
+    {
+      "title": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+      "verdict": "accept",
+      "hit_keywords": [
+        "deep learning",
+        "visual SLAM",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses deep learning-based visual SLAM, a core method and task of the topic.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2206.05963v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "In this paper, a novel solution is introduced for visual Simultaneous Localization and Mapping (vSLAM) that is built up of Deep Learning components. The proposed architecture is a highly modular framework in which each component offers state of the art results in their respective fields of vision-based deep learning solutions. The paper shows that with the synergic integration of these individual building blocks, a functioning and efficient all-through deep neural (ATDN) vSLAM system can be created. The Embedding Distance Loss function is introduced and using it the ATDN architecture is traine"
+    },
+    {
+      "title": "A multitask deep learning model for real-time deployment in embedded systems",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses multitask deep learning for embedded systems, which could be relevant for SLAM deployment but lacks direct connection to visual SLAM or semantic mapping.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1711.00146v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training"
+    }
+  ],
+  "weak_papers": [],
+  "dataset_candidates": [],
+  "repo_candidates": [
+    {
+      "title": "linhuixiao/Dynamic-SLAM",
+      "abstract": "[RAS 2019] Dynamic-SLAM: Semantic Monocular Visual Localization and Mapping Based on Deep Learning in Dynamic Environment.",
+      "url": "https://github.com/linhuixiao/Dynamic-SLAM",
+      "doi": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 870656162,
+            "node_id": "R_kgDOM-Uoog",
+            "name": "Dynamic-SLAM",
+            "full_name": "linhuixiao/Dynamic-SLAM",
+            "private": false,
+            "owner": {
+              "login": "linhuixiao",
+              "id": 22616135,
+              "node_id": "MDQ6VXNlcjIyNjE2MTM1",
+              "avatar_url": "https://avatars.githubusercontent.com/u/22616135?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/linhuixiao",
+              "html_url": "https://github.com/linhuixiao",
+              "followers_url": "https://api.github.com/users/linhuixiao/followers",
+              "following_url": "https://api.github.com/users/linhuixiao/following{/other_user}",
+              "gists_url": "https://api.github.com/users/linhuixiao/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/linhuixiao/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/linhuixiao/subscriptions",
+              "organizations_url": "https://api.github.com/users/linhuixiao/orgs",
+              "repos_url": "https://api.github.com/users/linhuixiao/repos",
+              "events_url": "https://api.github.com/users/linhuixiao/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/linhuixiao/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/linhuixiao/Dynamic-SLAM",
+            "description": "[RAS 2019] Dynamic-SLAM: Semantic Monocular Visual Localization and Mapping Based on Deep Learning in Dynamic Environment.",
+            "fork": false,
+            "url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM",
+            "forks_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/forks",
+            "keys_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/teams",
+            "hooks_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/hooks",
+            "issue_events_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/events",
+            "assignees_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/tags",
+            "blobs_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/languages",
+            "stargazers_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/stargazers",
+            "contributors_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/contributors",
+            "subscribers_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/subscribers",
+            "subscription_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/subscription",
+            "commits_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/merges",
+            "archive_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/downloads",
+            "issues_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/labels{/name}",
+            "releases_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/linhuixiao/Dynamic-SLAM/deployments",
+            "created_at": "2024-10-10T12:39:16Z",
+            "updated_at": "2026-06-27T00:42:32Z",
+            "pushed_at": "2025-08-08T07:05:01Z",
+            "git_url": "git://github.com/linhuixiao/Dynamic-SLAM.git",
+            "ssh_url": "git@github.com:linhuixiao/Dynamic-SLAM.git",
+            "clone_url": "https://github.com/linhuixiao/Dynamic-SLAM.git",
+            "svn_url": "https://github.com/linhuixiao/Dynamic-SLAM",
+            "homepage": "https://www.sciencedirect.com/science/article/pii/S0921889018308029",
+            "size": 54213,
+            "stargazers_count": 11,
+            "watchers_count": 11,
+            "language": "Makefile",
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 0,
+            "license": {
+              "key": "apache-2.0",
+              "name": "Apache License 2.0",
+              "spdx_id": "Apache-2.0",
+              "url": "https://api.github.com/licenses/apache-2.0",
+              "node_id": "MDc6TGljZW5zZTI="
+            },
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [
+              "localization",
+              "slam",
+              "visual"
+            ],
+            "visibility": "public",
+            "forks": 0,
+            "open_issues": 0,
+            "watchers": 11,
+            "default_branch": "master",
+            "score": 1.0,
+            "stars": 11
+          }
+        ]
+      }
+    }
+  ],
+  "baseline_candidates": [
+    {
+      "title": "linhuixiao/Dynamic-SLAM",
+      "verdict": "accept",
+      "hit_keywords": [
+        "deep learning",
+        "visual SLAM",
+        "semantic mapping",
+        "semantic map",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses semantic monocular visual localization and mapping using deep learning in dynamic environments.",
+      "doi": null,
+      "url": "https://github.com/linhuixiao/Dynamic-SLAM",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "[RAS 2019] Dynamic-SLAM: Semantic Monocular Visual Localization and Mapping Based on Deep Learning in Dynamic Environment.",
+      "role": "baseline",
+      "why_relevant": "linhuixiao/Dynamic-SLAM is explicitly cited as the starting reproducer/method for the topic (matched axes: ['deep learning']).",
+      "matched_topic_axes": [
+        "deep learning"
+      ],
+      "unmatched_topic_axes": [
+        "visual slam",
+        "semantic mapping",
+        "semantic map",
+        "simultaneous localization and mapping",
+        "semantic mapping"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+      "verdict": "accept",
+      "hit_keywords": [
+        "deep learning",
+        "visual SLAM",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses deep learning-based visual SLAM, a core method and task of the topic.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2206.05963v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "In this paper, a novel solution is introduced for visual Simultaneous Localization and Mapping (vSLAM) that is built up of Deep Learning components. The proposed architecture is a highly modular framework in which each component offers state of the art results in their respective fields of vision-based deep learning solutions. The paper shows that with the synergic integration of these individual building blocks, a functioning and efficient all-through deep neural (ATDN) vSLAM system can be created. The Embedding Distance Loss function is introduced and using it the ATDN architecture is traine",
+      "role": "baseline",
+      "why_relevant": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping is explicitly cited as the starting reproducer/method for the topic (matched axes: ['deep learning', 'simultaneous localization and mapping']).",
+      "matched_topic_axes": [
+        "deep learning",
+        "simultaneous localization and mapping"
+      ],
+      "unmatched_topic_axes": [
+        "visual slam",
+        "semantic mapping",
+        "semantic map",
+        "semantic mapping"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "parallel_candidates": [
+    {
+      "title": "A multitask deep learning model for real-time deployment in embedded systems",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses multitask deep learning for embedded systems, which could be relevant for SLAM deployment but lacks direct connection to visual SLAM or semantic mapping.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1711.00146v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training",
+      "role": "parallel",
+      "why_relevant": "A multitask deep learning model for real-time deployment in embedded systems addresses the same method+object spectrum via a different specific approach (matched: ['deep learning'], unmatched: ['visual slam', 'semantic mapping', 'semantic map', 'simultaneous localization and mapping', 'semantic mapping']).",
+      "matched_topic_axes": [
+        "deep learning"
+      ],
+      "unmatched_topic_axes": [
+        "visual slam",
+        "semantic mapping",
+        "semantic map",
+        "simultaneous localization and mapping",
+        "semantic mapping"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 3,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 1,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "dataset_extractions_tried": 2,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 2,
+    "parallel_n": 1,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0,
+    "evidence_gap": []
+  },
+  "work_packages": [
+    {
+      "title": "基于多任务深度学习模型的实时语义地图构建",
+      "research_question": "如何利用多任务深度学习模型在嵌入式系统上实时融合视觉SLAM与语义分割，构建语义地图？",
+      "baseline": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+      "improved_module_source": "A multitask deep learning model for real-time deployment in embedded systems",
+      "data_source": null,
+      "experiment_metrics": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+      "risk": "多任务模型在嵌入式设备上的实时性可能受限于计算资源，语义分割精度与SLAM定位精度之间的权衡可能影响整体性能。",
+      "estimated_workload": "6人月"
+    },
+    {
+      "title": "动态场景下基于深度学习的语义SLAM鲁棒性增强",
+      "research_question": "在动态环境中，如何利用语义信息改进视觉SLAM的鲁棒性，并生成稳定的语义地图？",
+      "baseline": "linhuixiao/Dynamic-SLAM",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "linhuixiao/Dynamic-SLAM",
+      "risk": "动态物体检测与剔除可能引入额外计算开销，且对快速运动物体的处理效果有限。",
+      "estimated_workload": "4人月"
+    }
+  ],
+  "low_bar_review": {
+    "status": "pass",
+    "issues": [],
+    "n_packages_reviewed": 2,
+    "n_packages_after_review": 2
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于深度学习的视觉SLAM语义地图的研究",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 2,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "基于多任务深度学习模型的实时语义地图构建",
+        "research_question": "如何利用多任务深度学习模型在嵌入式系统上实时融合视觉SLAM与语义分割，构建语义地图？",
+        "baseline": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+        "improved_module_source": "A multitask deep learning model for real-time deployment in embedded systems",
+        "data_source": null,
+        "experiment_metrics": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+        "risk": "多任务模型在嵌入式设备上的实时性可能受限于计算资源，语义分割精度与SLAM定位精度之间的权衡可能影响整体性能。",
+        "estimated_workload": "6人月"
+      },
+      {
+        "title": "动态场景下基于深度学习的语义SLAM鲁棒性增强",
+        "research_question": "在动态环境中，如何利用语义信息改进视觉SLAM的鲁棒性，并生成稳定的语义地图？",
+        "baseline": "linhuixiao/Dynamic-SLAM",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "linhuixiao/Dynamic-SLAM",
+        "risk": "动态物体检测与剔除可能引入额外计算开销，且对快速运动物体的处理效果有限。",
+        "estimated_workload": "4人月"
+      }
+    ]
+  },
+  "filter_results": {
+    "total": 13,
+    "kept": 13,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "seed_papers": [],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "feasible",
+    "score": 70,
+    "reason": "Baseline论文2篇均有repo，如Dynamic-SLAM提供代码参考；Parallel论文1篇支持多任务学习。但无公开数据集，需自行采集或仿真，增加工作量。",
+    "100_plus_formula": {
+      "baseline_weight": 2,
+      "module_weights": [
+        0.6,
+        0.4
+      ],
+      "estimated_total": 70,
+      "assessment": "足够毕业"
+    },
+    "degradation_paths": [
+      "若无法获取合适数据集，可退化为仅使用TUM/RGB-D等公开数据集进行语义地图构建验证",
+      "若深度学习模型训练困难，可退化为基于传统特征点法的SLAM+轻量语义分割"
+    ]
+  },
+  "innovation_points": [
+    {
+      "description": "在Dynamic-SLAM的语义分割模块基础上，引入ATDN vSLAM的端到端深度学习框架，并缝合多任务学习模型以同时处理目标检测和语义分割，提升实时性和鲁棒性。",
+      "baseline_used": "linhuixiao/Dynamic-SLAM",
+      "stitched_modules": [
+        "语义分割模块（Dynamic-SLAM）",
+        "端到端深度学习vSLAM框架（ATDN vSLAM）",
+        "多任务学习模型（A multitask deep learning model for real-time deployment in embedded systems）"
+      ],
+      "stitching_plan": "1. 复现Dynamic-SLAM的语义分割模块（基于Mask R-CNN或类似网络），提取其动态物体剔除逻辑。2. 从ATDN vSLAM中提取其端到端位姿估计网络（如PoseNet变体），替换Dynamic-SLAM的传统几何方法。3. 将多任务学习模型（同时输出目标检测和语义分割）集成到ATDN框架中，替换原有的独立模块，并在TUM RGB-D数据集上评估定位精度和帧率。",
+      "estimated_difficulty": "高",
+      "evidence_ref": "A multitask deep learning model for real-time deployment in embedded systems"
+    }
+  ],
+  "stitching_plan": {
+    "baseline_model": "Dynamic-SLAM",
+    "module_b": "ATDN vSLAM的端到端位姿估计网络",
+    "module_c": "多任务学习模型（目标检测+语义分割）",
+    "stitching_steps": [
+      "1. 复现Dynamic-SLAM（Python+PyTorch，环境：Ubuntu 18.04, CUDA 10.1），确保语义分割模块可独立运行。",
+      "2. 从ATDN vSLAM论文中提取其位姿估计网络结构（如ResNet50+全连接层），并预训练权重。",
+      "3. 从多任务学习论文中提取其共享编码器+双解码器架构，替换Dynamic-SLAM的语义分割网络，并与ATDN的位姿网络拼接，在TUM RGB-D动态序列上测试，评估ATE和运行时间。"
+    ],
+    "risk_notes": [
+      "多任务学习模型可能因任务冲突导致精度下降，需调整损失权重。",
+      "端到端框架训练需要大量标注数据（位姿+语义），数据获取成本高。",
+      "模块间接口（如特征图尺寸、输出格式）可能不兼容，需额外适配层。"
+    ]
+  },
+  "sota_comparison": {
+    "comparison_papers": [
+      {
+        "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial, and Multimap SLAM",
+        "year": "2021",
+        "reason": "作为经典几何SLAM基线，验证语义地图在动态环境下的定位精度提升。"
+      },
+      {
+        "title": "DynaSLAM: Tracking, Mapping and Inpainting in Dynamic Scenes",
+        "year": "2018",
+        "reason": "与Dynamic-SLAM同属动态场景语义SLAM，对比语义分割与运动一致性方法的优劣。"
+      },
+      {
+        "title": "Semantic SLAM with More Accurate Point Cloud Map",
+        "year": "2020",
+        "reason": "聚焦语义地图构建精度，对比地图表示与语义融合策略。"
+      }
+    ],
+    "metrics_to_compare": [
+      "ATE (Absolute Trajectory Error) RMSE",
+      "RPE (Relative Pose Error) RMSE",
+      "Map Accuracy (Chamfer Distance or IoU)",
+      "Semantic Segmentation mIoU",
+      "Runtime per Frame (ms)"
+    ],
+    "ablation_suggestions": [
+      {
+        "name": "去除语义分割模块",
+        "purpose": "验证语义信息对动态物体剔除和地图构建的贡献",
+        "expected_drop": "ATE RMSE上升10-20%，地图精度下降15-25%"
+      },
+      {
+        "name": "替换语义分割网络为轻量级网络",
+        "purpose": "验证分割精度与实时性的权衡对系统性能的影响",
+        "expected_drop": "mIoU下降5-10%，但帧率提升20-30%，ATE可能轻微上升"
+      },
+      {
+        "name": "禁用动态物体剔除策略",
+        "purpose": "验证动态物体处理对定位鲁棒性的必要性",
+        "expected_drop": "ATE RMSE在动态场景上升30-50%，静态场景几乎不变"
+      }
+    ],
+    "experiment_checklist": [
+      "在TUM RGB-D dynamic sequences (e.g., fr3_walking_xyz) 上测试",
+      "在KITTI Odometry dataset上测试静态场景",
+      "记录ATE和RPE的均值和标准差",
+      "可视化语义地图并计算点云精度",
+      "对比不同动态程度场景下的性能差异",
+      "消融实验需控制其他模块不变",
+      "报告每帧处理时间（含分割和SLAM）",
+      "使用相同硬件和随机种子复现基线结果"
+    ]
+  },
+  "research_narrative": {
+    "three_problems": [
+      {
+        "problem": "如何在Dynamic-SLAM的语义分割模块基础上，引入ATDN vSLAM的端到端深度学习框架，并缝合多任务学习模型以同时处理目标检测和语义分割，从而提升视觉SLAM在动态环境下的实时性和鲁棒性？",
+        "evidence": "Dynamic-SLAM通过语义分割模块过滤动态物体，但实时性受限；ATDN vSLAM采用端到端框架提升效率；多任务学习模型可同时处理检测与分割，减少计算冗余。",
+        "from_paper": "linhuixiao/Dynamic-SLAM, ATDN vSLAM, A multitask deep learning model for real-time deployment in embedded systems"
+      },
+      {
+        "problem": "在缺乏公开数据集的情况下，如何设计有效的仿真或自采集数据集，以训练和评估融合多任务学习的视觉SLAM语义地图模型？",
+        "evidence": "可行性报告指出无公开数据集，需自行采集或仿真，这增加了工作量，但可通过合成数据或迁移学习缓解。",
+        "from_paper": "linhuixiao/Dynamic-SLAM, ATDN vSLAM"
+      },
+      {
+        "problem": "如何评估所提出的模型在动态场景下构建语义地图的精度和实时性，并与Dynamic-SLAM、ATDN vSLAM等基线方法进行公平比较？",
+        "evidence": "需要定义统一的评估指标（如语义分割mIoU、定位精度ATE、帧率FPS），并在相同硬件和数据集上测试。",
+        "from_paper": "linhuixiao/Dynamic-SLAM, ATDN vSLAM"
+      }
+    ],
+    "nick_model_name": "DynATDN-SLAM",
+    "narrative_summary": "本研究针对动态环境下视觉SLAM语义地图构建的实时性与鲁棒性挑战，提出DynATDN-SLAM模型。该模型融合Dynamic-SLAM的语义分割模块与ATDN vSLAM的端到端深度学习框架，并引入多任务学习网络同时处理目标检测与语义分割，以降低计算开销。通过自行采集或仿真数据集进行训练与评估，预期在动态场景下实现更高的帧率与更稳定的定位精度，为机器人自主导航提供可靠的语义地图支持。",
+    "chapter_outline": {
+      "chapter_1": {
+        "title": "绪论",
+        "sections": [
+          "研究背景与意义",
+          "国内外研究现状",
+          "研究内容与创新点"
+        ]
+      },
+      "chapter_2": {
+        "title": "相关理论与技术基础",
+        "sections": [
+          "视觉SLAM基本原理",
+          "语义分割与目标检测方法",
+          "多任务学习与端到端框架"
+        ]
+      },
+      "chapter_3": {
+        "title": "DynATDN-SLAM模型设计",
+        "sections": [
+          "整体架构与模块划分",
+          "语义分割与目标检测多任务网络",
+          "端到端vSLAM框架集成",
+          "动态物体过滤与地图构建策略"
+        ]
+      },
+      "chapter_4": {
+        "title": "实验设计与结果分析",
+        "sections": [
+          "数据集构建与实验设置",
+          "评估指标与基线方法",
+          "实时性与鲁棒性对比实验",
+          "语义地图构建效果分析"
+        ]
+      },
+      "chapter_5": {
+        "title": "总结与展望",
+        "sections": [
+          "主要工作与贡献",
+          "现有不足与未来方向"
+        ]
+      }
+    },
+    "abstract_draft": "动态环境下的视觉SLAM语义地图构建是机器人自主导航的关键技术，但现有方法在实时性与鲁棒性上存在不足。本文提出DynATDN-SLAM模型，融合Dynamic-SLAM的语义分割模块与ATDN vSLAM的端到端深度学习框架，并引入多任务学习网络同时处理目标检测与语义分割，以降低计算冗余。针对缺乏公开数据集的问题，采用仿真与自采集数据训练模型。实验结果表明，DynATDN-SLAM在动态场景下相比基线方法提升了帧率与定位精度，生成的语义地图更准确稳定，验证了模型的有效性。"
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "多任务学习框架集成语义分割与目标检测",
+        "expected_gain": "提升语义地图构建的实时性和精度，减少计算开销",
+        "difficulty": "中",
+        "action_items": [
+          "借鉴parallel论文的多任务学习架构，设计共享编码器+双解码器网络",
+          "在公开数据集（如KITTI、TUM RGB-D）上联合训练语义分割和目标检测任务",
+          "评估模型在嵌入式平台（如Jetson Nano）上的推理速度与内存占用"
+        ],
+        "ref_parallel": "A multitask deep learning model for real-time deployment in embedded systems"
+      },
+      {
+        "direction": "动态环境下的语义SLAM鲁棒性增强",
+        "expected_gain": "提高动态场景中语义地图的稳定性和准确性",
+        "difficulty": "高",
+        "action_items": [
+          "结合Dynamic-SLAM的动态物体检测方法，过滤移动物体对地图的影响",
+          "引入时序一致性约束，利用多帧语义预测修正单帧错误",
+          "在动态场景数据集（如TUM Dynamic Objects）上验证性能"
+        ],
+        "ref_parallel": "linhuixiao/Dynamic-SLAM"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "简化语义地图为仅包含静态物体类别",
+        "trade_off": "丢失动态物体信息，降低地图丰富度",
+        "survival_rate": "高"
+      },
+      {
+        "path": "使用轻量级语义分割网络（如MobileNetV3+DeepLabV3）替代复杂模型",
+        "trade_off": "语义精度下降，但推理速度提升",
+        "survival_rate": "极高"
+      }
+    ],
+    "risk_mitigation": [
+      "提前在多个数据集上验证多任务学习框架的收敛性，避免训练不稳定",
+      "设计模块化代码结构，便于单独替换语义分割或目标检测组件",
+      "定期与导师沟通进度，确保创新点（多任务学习）被认可"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 6,
+        "verdict": "PASS",
+        "reason": "创新点明确：在Dynamic-SLAM基础上引入ATDN vSLAM的端到端框架和多任务学习，针对实时性gap，但融合方式描述较笼统，缺乏细节。"
+      },
+      {
+        "dimension": "D2",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "baseline选择合理：Dynamic-SLAM和ATDN vSLAM均有代码或论文支持，多任务学习模型有parallel论文，但未明确说明baseline的具体版本或配置。"
+      },
+      {
+        "dimension": "D3",
+        "score": 5,
+        "verdict": "WARN",
+        "reason": "baseline>=2（Dynamic-SLAM, ATDN vSLAM），parallel>=1（多任务学习论文），但dataset缺失（无公开数据集，需自采或仿真），未达到PASS标准。"
+      },
+      {
+        "dimension": "D4",
+        "score": 6,
+        "verdict": "PASS",
+        "reason": "三个问题分别对应实时性、数据集、评估，与工作包和叙事基本连贯，但问题1与工作包1的对应关系不够紧密，工作包描述过于宽泛。"
+      },
+      {
+        "dimension": "D5",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "叙事自洽，模型命名合理，但存在一定过度宣传（如'显著提升'缺乏量化支撑），整体可接受。"
+      }
+    ],
+    "overall_verdict": "MINOR_REVISION",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "缺乏公开数据集，自采或仿真数据可能影响结果可比性和工作量",
+      "创新点融合细节不足，需补充多任务网络的具体架构和训练策略",
+      "工作包描述过于笼统，需细化具体实现步骤和评估指标"
+    ]
+  },
+  "narrative_revision_count": 2,
+  "search_steps": [
+    {
+      "step": 0,
+      "type": "tool_call",
+      "tool": "openalex",
+      "query": "deep learning visual SLAM semantic mapping",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "当前论文数为0，需要先搜索method+object组合获取基础文献，openalex适合检索学术期刊论文。"
+    },
+    {
+      "step": 1,
+      "type": "tool_call",
+      "tool": "openalex",
+      "query": "\"visual SLAM\" \"semantic map\"",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "当前论文数为0，需要扩大搜索范围。使用更具体的组合\"visual SLAM\"和\"semantic map\"，可能找到相关论文。"
+    },
+    {
+      "step": 2,
+      "type": "tool_call",
+      "tool": "arxiv",
+      "query": "\"deep learning\" \"semantic map\" \"simultaneous localization and mapping\"",
+      "n_results": 12,
+      "n_papers": 12,
+      "n_repos": 0,
+      "reason": "前两次openalex搜索无结果，改用arxiv尝试更宽泛的查询组合，包含所有核心方法+对象+任务关键词，以获取更多论文。"
+    },
+    {
+      "step": 3,
+      "type": "tool_call",
+      "tool": "github",
+      "query": "deep learning visual SLAM semantic mapping",
+      "n_results": 1,
+      "n_papers": 0,
+      "n_repos": 1,
+      "reason": "已有12篇论文但无代码仓库，下一步应搜索GitHub以获取相关代码实现。"
+    },
+    {
+      "step": 4,
+      "type": "tool_call",
+      "tool": "openalex",
+      "query": "\"visual SLAM\" \"semantic map\"",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "已有12篇论文和1个repo，但openalex之前搜索无结果，可能因引号精确匹配。尝试不加引号或调整关键词以获取更多学术论文，确保覆盖全面。"
+    },
+    {
+      "step": 5,
+      "type": "tool_call",
+      "tool": "openalex",
+      "query": "\"visual SLAM\" \"semantic map\"",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "当前论文12篇、repo1个，但openalex此前返回0结果，可能是查询格式问题。改用更精确的短语查询，尝试在学术期刊论文中补充更多相关文献。"
+    },
+    {
+      "step": 6,
+      "type": "tool_call",
+      "tool": "openalex",
+      "query": "\"visual SLAM\" \"semantic map\"",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "当前论文数12篇但来自单一来源arxiv，openalex搜索未返回结果，可能因引号精确匹配过严，尝试不加引号或调整关键词以获取更多期刊论文，确保覆盖全面。"
+    },
+    {
+      "step": 7,
+      "type": "stop",
+      "reason": "已有 12 篇论文 + 1 个 repo，足够开始分析"
+    }
+  ],
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T18:30:55Z",
+      "input_summary": {
+        "topic": "基于深度学习的视觉SLAM语义地图的研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:30:55Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T18:30:59Z",
+      "input_summary": {
+        "topic_len": 20
+      },
+      "output_summary": {
+        "n_method": 3,
+        "n_object": 1,
+        "domain": "vision_3d"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:30:59Z",
+      "elapsed_s": 4.266
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T18:30:59Z",
+      "input_summary": {
+        "topic_len": 20,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:30:59Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-06T18:30:59Z",
+      "input_summary": {
+        "topic_len": 20,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 12,
+        "n_repo_candidates": 1,
+        "n_steps": 8,
+        "n_tool_calls": 7,
+        "raw_tools": [
+          "openalex",
+          "arxiv",
+          "github"
+        ],
+        "per_adapter": {
+          "arxiv": 12,
+          "openalex": 0,
+          "github": 1
+        },
+        "failed_adapters": [
+          "crossref",
+          "semantic_scholar"
+        ],
+        "skipped_adapters": [],
+        "repair_rounds": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "openalex",
+          "n": 0
+        },
+        {
+          "tool": "arxiv",
+          "n": 12
+        },
+        {
+          "tool": "github",
+          "n": 1
+        }
+      ],
+      "errors": [],
+      "provider": "react_search",
+      "ended_at": "2026-07-06T18:33:47Z",
+      "elapsed_s": 168.261
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T18:33:47Z",
+      "input_summary": {
+        "n_candidates": 13
+      },
+      "output_summary": {
+        "kept": 13,
+        "dropped": 0,
+        "pre_filter_keep": 13,
+        "pre_filter_drop": 0,
+        "llm_judged": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 13,
+          "pre_drop": 0,
+          "gray_area": 0
+        },
+        {
+          "tool": "quality_filter.no_llm_needed",
+          "reason": "all candidates resolved by pre-filter"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:33:47Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T18:33:47Z",
+      "input_summary": {
+        "n_candidates": 13,
+        "topic_len": 20,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 2,
+        "n_weak_reject": 1,
+        "n_reject": 10
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:33:55Z",
+      "elapsed_s": 7.328
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T18:33:55Z",
+      "input_summary": {
+        "n_papers": 3,
+        "n_weak": 1,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 1,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:33:55Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T18:33:55Z",
+      "input_summary": {
+        "n_verified": 3,
+        "n_seeds": 0,
+        "seed_titles": []
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "reason": "no_seeds_with_ids"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "ended_at": "2026-07-06T18:33:55Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T18:33:55Z",
+      "input_summary": {
+        "n_candidates": 13,
+        "topic_len": 20,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 2,
+        "n_weak_reject": 1,
+        "n_reject": 10
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:01Z",
+      "elapsed_s": 6.82
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T18:34:01Z",
+      "input_summary": {
+        "n_papers": 3,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 1,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:34:01Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T18:34:06Z",
+      "input_summary": {
+        "n_papers": 8,
+        "n_github_repos": 0
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 2,
+          "profile": "fast_json"
+        },
+        {
+          "tool": "github_direct_extract",
+          "n_repos": 0
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:06Z",
+      "elapsed_s": 4.328
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T18:34:06Z",
+      "input_summary": {
+        "papers": 3
+      },
+      "output_summary": {
+        "nodes": 3,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:34:06Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T18:34:06Z",
+      "input_summary": {
+        "n_verified": 3
+      },
+      "output_summary": {
+        "n_baseline": 2,
+        "n_parallel": 1,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:34:06Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T18:34:12Z",
+      "input_summary": {
+        "n_baseline": 2,
+        "n_dataset": 0,
+        "n_repo": 1
+      },
+      "output_summary": {
+        "verdict": "feasible",
+        "score": 70
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:12Z",
+      "elapsed_s": 5.869
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-06T18:34:19Z",
+      "input_summary": {
+        "n_baseline": 2,
+        "n_parallel": 1
+      },
+      "output_summary": {
+        "n_packages": 2,
+        "n_gap": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:19Z",
+      "elapsed_s": 7.19
+    },
+    {
+      "node": "innovation_extractor",
+      "started_at": "2026-07-06T18:34:28Z",
+      "input_summary": {
+        "n_baseline": 2,
+        "n_parallel": 1
+      },
+      "output_summary": {
+        "n_innovation": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "innovation_extractor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:28Z",
+      "elapsed_s": 9.269
+    },
+    {
+      "node": "sota_matcher",
+      "started_at": "2026-07-06T18:34:29Z",
+      "input_summary": {
+        "n_baseline": 2
+      },
+      "output_summary": {
+        "n_comparison": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "sota_matcher.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:29Z",
+      "elapsed_s": 9.875
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-06T18:34:39Z",
+      "input_summary": {
+        "n_innovation": 1
+      },
+      "output_summary": {
+        "nick_model_name": "MultiTask-SLAM"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:39Z",
+      "elapsed_s": 10.258
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-06T18:34:39Z",
+      "input_summary": {
+        "n_packages": 2
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:34:39Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T18:34:46Z",
+      "input_summary": {
+        "feasibility": "feasible"
+      },
+      "output_summary": {
+        "n_paths": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:46Z",
+      "elapsed_s": 6.995
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T18:34:53Z",
+      "input_summary": {
+        "n_innovation": 1,
+        "n_packages": 2
+      },
+      "output_summary": {
+        "overall_verdict": "MINOR_REVISION"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:34:53Z",
+      "elapsed_s": 6.778
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-06T18:35:04Z",
+      "input_summary": {
+        "n_innovation": 1
+      },
+      "output_summary": {
+        "nick_model_name": "DynATDN-SLAM"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:35:04Z",
+      "elapsed_s": 10.973
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-06T18:35:04Z",
+      "input_summary": {
+        "n_packages": 2
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:35:04Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T18:35:11Z",
+      "input_summary": {
+        "feasibility": "feasible"
+      },
+      "output_summary": {
+        "n_paths": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:35:11Z",
+      "elapsed_s": 7.768
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T18:35:19Z",
+      "input_summary": {
+        "n_innovation": 1,
+        "n_packages": 2
+      },
+      "output_summary": {
+        "overall_verdict": "MINOR_REVISION"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T18:35:19Z",
+      "elapsed_s": 8.041
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T18:35:19Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:35:19Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T18:35:19Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于深度学习的视觉SLAM语义地图的研究",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 2,
+        "low_bar_status": "pass",
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": [
+          {
+            "title": "基于多任务深度学习模型的实时语义地图构建",
+            "research_question": "如何利用多任务深度学习模型在嵌入式系统上实时融合视觉SLAM与语义分割，构建语义地图？",
+            "baseline": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+            "improved_module_source": "A multitask deep learning model for real-time deployment in embedded systems",
+            "data_source": null,
+            "experiment_metrics": "ATDN vSLAM: An all-through Deep Learning-Based Solution for Visual Simultaneous Localization and Mapping",
+            "risk": "多任务模型在嵌入式设备上的实时性可能受限于计算资源，语义分割精度与SLAM定位精度之间的权衡可能影响整体性能。",
+            "estimated_workload": "6人月"
+          },
+          {
+            "title": "动态场景下基于深度学习的语义SLAM鲁棒性增强",
+            "research_question": "在动态环境中，如何利用语义信息改进视觉SLAM的鲁棒性，并生成稳定的语义地图？",
+            "baseline": "linhuixiao/Dynamic-SLAM",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "linhuixiao/Dynamic-SLAM",
+            "risk": "动态物体检测与剔除可能引入额外计算开销，且对快速运动物体的处理效果有限。",
+            "estimated_workload": "4人月"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T18:35:19Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

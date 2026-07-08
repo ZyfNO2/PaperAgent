@@ -1,0 +1,585 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:18:27Z",
+    "input_summary": {
+      "topic": "基于深度学习的无人机图像目标检测算法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:18:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:18:31Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:18:31Z",
+    "elapsed_s": 4.176
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:18:31Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:18:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:18:31Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:18:58Z",
+    "elapsed_s": 26.794
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:18:58Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 23,
+      "dropped": 8,
+      "pre_filter_keep": 23,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 23,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:19:03Z",
+    "elapsed_s": 5.213
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:19:03Z",
+    "input_summary": {
+      "n_candidates": 23,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 11,
+      "n_reject": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:19:11Z",
+    "elapsed_s": 7.289
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:19:11Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 11,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:19:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:19:11Z",
+    "input_summary": {
+      "n_verified": 8,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Deep Residual Learning for Image Recognition",
+        "Xception: Deep Learning with Depthwise Separable Convolution",
+        "Deep Learning in Action",
+        "New Measures for Deep Learning",
+        "Computer Vision, Deep Learning, Deep Reinforcement Learning"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 56,
+      "n_surveys": 0,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 56,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Deep Residual Learning for Image Recognition",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Xception: Deep Learning with Depthwise Separable Convolution",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Deep Learning in Action",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "New Measures for Deep Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "n_references_plus_citations": 2,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T06:19:45Z",
+    "elapsed_s": 34.661
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:19:45Z",
+    "input_summary": {
+      "n_candidates": 56,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 5,
+      "n_weak_reject": 28,
+      "n_reject": 23
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:20:00Z",
+    "elapsed_s": 14.712
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:20:00Z",
+    "input_summary": {
+      "n_papers": 13,
+      "n_weak": 28,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:20:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:20:10Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:20:10Z",
+    "elapsed_s": 9.771
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:20:10Z",
+    "input_summary": {
+      "papers": 13
+    },
+    "output_summary": {
+      "nodes": 13,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:20:10Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:20:10Z",
+    "input_summary": {
+      "n_verified": 13
+    },
+    "output_summary": {
+      "n_baseline": 6,
+      "n_parallel": 7,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:20:10Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:20:14Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:20:14Z",
+    "elapsed_s": 4.528
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T06:20:25Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 7
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:20:25Z",
+    "elapsed_s": 11.135
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T06:20:40Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 7
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:20:40Z",
+    "elapsed_s": 14.858
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T06:20:34Z",
+    "input_summary": {
+      "n_baseline": 6
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:20:34Z",
+    "elapsed_s": 8.628
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T06:20:51Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "MultiResNet-FRCNN"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:20:51Z",
+    "elapsed_s": 10.854
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T06:20:51Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:20:51Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:21:02Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:21:02Z",
+    "elapsed_s": 10.822
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:21:10Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:21:10Z",
+    "elapsed_s": 8.511
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:21:10Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:21:10Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:21:10Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的无人机图像目标检测算法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于Faster R-CNN的无人机图像目标检测优化",
+          "research_question": "如何利用Faster R-CNN框架提升无人机航拍图像中多尺度目标的检测精度？",
+          "baseline": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+          "improved_module_source": "Deep Residual Learning for Image Recognition",
+          "data_source": null,
+          "experiment_metrics": "Object Detection Networks on Convolutional Feature Maps",
+          "risk": "无人机图像中目标尺度变化大，ResNet作为骨干网络可能增加计算开销，需平衡精度与速度。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "轻量化无人机目标检测：基于MobileNets的实时检测",
+          "research_question": "MobileNets作为轻量级骨干网络能否在无人机嵌入式平台上实现实时目标检测且保持较高精度？",
+          "baseline": "MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Object Detection Networks on Convolutional Feature Maps",
+          "risk": "轻量化网络可能牺牲检测精度，尤其在密集小目标场景下。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "多区域与语义分割辅助的无人机图像目标检测",
+          "research_question": "引入多区域和语义分割先验信息能否改善无人机图像中遮挡和背景杂乱目标的检测效果？",
+          "baseline": "Object Detection via a Multi-region and Semantic Segmentation-Aware CNN Model",
+          "improved_module_source": "Deep Residual Learning for Image Recognition",
+          "data_source": null,
+          "experiment_metrics": "Object Detection Networks on Convolutional Feature Maps",
+          "risk": "多区域和分割分支增加模型复杂度，训练收敛慢且对标注要求高。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:21:10Z",
+    "elapsed_s": 0.0
+  }
+]

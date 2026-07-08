@@ -1,0 +1,620 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T18:15:21Z",
+    "input_summary": {
+      "topic": "基于yolo的农作物识别"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:15:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T18:15:26Z",
+    "input_summary": {
+      "topic_len": 12
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:15:26Z",
+    "elapsed_s": 4.643
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T18:15:26Z",
+    "input_summary": {
+      "topic_len": 12,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:15:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T18:15:26Z",
+    "input_summary": {
+      "topic_len": 12,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 36,
+      "raw_tools": [
+        "arxiv",
+        "crossref",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 12,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T18:15:51Z",
+    "elapsed_s": 25.346
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T18:15:51Z",
+    "input_summary": {
+      "n_candidates": 36
+    },
+    "output_summary": {
+      "kept": 36,
+      "dropped": 0,
+      "pre_filter_keep": 36,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 36,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:15:51Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T18:15:51Z",
+    "input_summary": {
+      "n_candidates": 36,
+      "topic_len": 12,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 17,
+      "n_weak_reject": 12,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:16:05Z",
+    "elapsed_s": 13.581
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T18:16:05Z",
+    "input_summary": {
+      "n_papers": 17,
+      "n_weak": 12,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:16:05Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T18:16:05Z",
+    "input_summary": {
+      "n_verified": 17,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Advancing precision agriculture with computer vision: A comp",
+        "Yolo-Drone: Detection Paddy Crop Infected Using Object Detec",
+        "YOLO-Based Crop Object Detection and Counting System",
+        "A YOLO-Based Crop Pests Detection Mobile Application for Sma",
+        "Crop Analyzer Using Deep Learning and Yolo"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 34,
+      "n_surveys": 3,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 34,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Advancing precision agriculture with computer vision: A comp",
+        "n_references_plus_citations": 15,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Yolo-Drone: Detection Paddy Crop Infected Using Object Detec",
+        "n_references_plus_citations": 1,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "YOLO-Based Crop Object Detection and Counting System",
+        "n_references_plus_citations": 1,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A YOLO-Based Crop Pests Detection Mobile Application for Sma",
+        "n_references_plus_citations": 16,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Crop Analyzer Using Deep Learning and Yolo",
+        "n_references_plus_citations": 1,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T18:16:08Z",
+    "elapsed_s": 3.111
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T18:16:08Z",
+    "input_summary": {
+      "n_candidates": 34,
+      "topic_len": 12,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 7,
+      "n_weak_reject": 13,
+      "n_reject": 14
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:16:21Z",
+    "elapsed_s": 12.519
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T18:16:21Z",
+    "input_summary": {
+      "n_papers": 24,
+      "n_weak": 25,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:16:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T18:16:31Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:16:31Z",
+    "elapsed_s": 10.558
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T18:16:31Z",
+    "input_summary": {
+      "papers": 24
+    },
+    "output_summary": {
+      "nodes": 24,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:16:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T18:16:31Z",
+    "input_summary": {
+      "n_verified": 24
+    },
+    "output_summary": {
+      "n_baseline": 24,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:16:31Z",
+    "elapsed_s": 0.002
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T18:16:36Z",
+    "input_summary": {
+      "n_baseline": 24,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:16:36Z",
+    "elapsed_s": 5.23
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T18:16:51Z",
+    "input_summary": {
+      "n_baseline": 24,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:16:51Z",
+    "elapsed_s": 14.843
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T18:17:06Z",
+    "input_summary": {
+      "n_baseline": 24,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:17:06Z",
+    "elapsed_s": 14.385
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T18:17:02Z",
+    "input_summary": {
+      "n_baseline": 24
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:17:02Z",
+    "elapsed_s": 10.264
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T18:17:20Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "AgriYOLO-MultiNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:17:20Z",
+    "elapsed_s": 14.015
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T18:17:20Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:17:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T18:17:32Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:17:32Z",
+    "elapsed_s": 12.454
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T18:17:39Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T18:17:39Z",
+    "elapsed_s": 6.892
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T18:17:39Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:17:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T18:17:39Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于yolo的农作物识别",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLO的农作物与杂草识别精度对比研究",
+          "research_question": "在农业场景中，YOLO系列模型（如YOLOv5、YOLOv8等）在农作物与杂草识别任务上的精度差异如何？",
+          "baseline": "Advancing precision agriculture with computer vision: A comparative study of YOLO models for weed and crop recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Advancing precision agriculture with computer vision: A comparative study of YOLO models for weed and crop recognition",
+          "risk": "缺乏公开数据集，可能需自行采集或标注，影响实验可复现性。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于YOLO的农作物病虫害检测与计数系统",
+          "research_question": "如何利用YOLO算法实现对农作物病虫害的实时检测与计数，并评估其在实际农田环境中的性能？",
+          "baseline": "YOLO-Based Crop Object Detection and Counting System",
+          "improved_module_source": "Yolo-Drone: Detection Paddy Crop Infected Using Object Detection Algorithm Yolo and Drone Image",
+          "data_source": null,
+          "experiment_metrics": "YOLO-Based Crop Object Detection and Counting System",
+          "risk": "无人机图像质量受天气、光照影响大，可能降低检测鲁棒性。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于YOLO的农作物害虫检测移动应用开发",
+          "research_question": "如何将YOLO模型部署到移动端，实现农作物害虫的实时检测，并保证在资源受限设备上的推理速度与精度？",
+          "baseline": "A YOLO-Based Crop Pests Detection Mobile Application for Smart Farming",
+          "improved_module_source": "Insect-Yolo: A New Method on Crop Insect Detection",
+          "data_source": null,
+          "experiment_metrics": "A YOLO-Based Crop Pests Detection Mobile Application for Smart Farming",
+          "risk": "移动端算力有限，模型轻量化可能导致精度下降。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于YOLO的水稻叶片病害智能识别",
+          "research_question": "YOLOv5-EFFICIENT模型在水稻叶片病害识别任务上的表现如何？能否通过改进特征提取模块提升检测精度？",
+          "baseline": "Intelligent identification of rice leaf disease based on YOLO V5-EFFICIENT",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Intelligent identification of rice leaf disease based on YOLO V5-EFFICIENT",
+          "risk": "病害样本多样性不足，模型泛化能力可能受限。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于YOLO的农作物生长测量与智能农业应用",
+          "research_question": "如何利用YOLO模型从农田图像中自动测量农作物生长指标（如高度、覆盖度），并集成到移动应用中辅助农业管理？",
+          "baseline": "Implementation of YOLO-based Crop Growth Measurement Mobile Application for Smart Agriculture",
+          "improved_module_source": "Crop Analyzer Using Deep Learning and Yolo",
+          "data_source": null,
+          "experiment_metrics": "Implementation of YOLO-based Crop Growth Measurement Mobile Application for Smart Agriculture",
+          "risk": "生长测量需要精确的几何标定，图像视角变化可能导致测量误差。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T18:17:39Z",
+    "elapsed_s": 0.0
+  }
+]

@@ -1,0 +1,692 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T21:09:44Z",
+    "input_summary": {
+      "topic": "基于改进YOLOv4模型的快速目标检测与测距算法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:09:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T21:09:49Z",
+    "input_summary": {
+      "topic_len": 26
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:09:49Z",
+    "elapsed_s": 4.849
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T21:09:49Z",
+    "input_summary": {
+      "topic_len": 26,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 4,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:09:49Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T21:09:49Z",
+    "input_summary": {
+      "topic_len": 26,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 34,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github",
+        "semantic_scholar",
+        "crossref"
+      ],
+      "per_adapter": {
+        "arxiv": 36,
+        "openalex": 0,
+        "crossref": 24,
+        "github": 0,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 36
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 24
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T21:11:23Z",
+    "elapsed_s": 93.961
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T21:11:23Z",
+    "input_summary": {
+      "n_candidates": 34
+    },
+    "output_summary": {
+      "kept": 30,
+      "dropped": 4,
+      "pre_filter_keep": 30,
+      "pre_filter_drop": 4,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 30,
+        "pre_drop": 4,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:11:23Z",
+    "elapsed_s": 0.002
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T21:11:23Z",
+    "input_summary": {
+      "n_candidates": 30,
+      "topic_len": 26,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 9,
+      "n_weak_reject": 15,
+      "n_reject": 6
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:11:31Z",
+    "elapsed_s": 7.957
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T21:11:31Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 15,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:11:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T21:11:31Z",
+    "input_summary": {
+      "n_verified": 9,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Target detection based on improved Yolov4-Tiny algorithm",
+        "A UAV Target Detection Algorithm Based on YOLOv4-Tiny and Im",
+        "Real-time Target Detection System in Scenic Landscape Based ",
+        "UAV Target Detection and Path Planning Based on Improved YOL",
+        "An Improved YOLOv4 Target Detection Algorithm Combined with "
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 8,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 8,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Target detection based on improved Yolov4-Tiny algorithm",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A UAV Target Detection Algorithm Based on YOLOv4-Tiny and Im",
+        "n_references_plus_citations": 5,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Real-time Target Detection System in Scenic Landscape Based ",
+        "n_references_plus_citations": 2,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "UAV Target Detection and Path Planning Based on Improved YOL",
+        "n_references_plus_citations": 1,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "An Improved YOLOv4 Target Detection Algorithm Combined with ",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T21:11:34Z",
+    "elapsed_s": 2.944
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T21:11:34Z",
+    "input_summary": {
+      "n_candidates": 8,
+      "topic_len": 26,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 3,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:11:42Z",
+    "elapsed_s": 7.533
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T21:11:42Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 18,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:11:42Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T21:11:53Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:11:53Z",
+    "elapsed_s": 10.951
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T21:11:53Z",
+    "input_summary": {
+      "papers": 9
+    },
+    "output_summary": {
+      "nodes": 9,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:11:53Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T21:11:53Z",
+    "input_summary": {
+      "n_verified": 9
+    },
+    "output_summary": {
+      "n_baseline": 8,
+      "n_parallel": 1,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:11:53Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T21:11:58Z",
+    "input_summary": {
+      "n_baseline": 8,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 50
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:11:58Z",
+    "elapsed_s": 5.155
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T21:12:09Z",
+    "input_summary": {
+      "n_baseline": 8,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:12:09Z",
+    "elapsed_s": 11.504
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T21:12:21Z",
+    "input_summary": {
+      "n_baseline": 8,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:12:21Z",
+    "elapsed_s": 11.208
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T21:12:18Z",
+    "input_summary": {
+      "n_baseline": 8
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:12:18Z",
+    "elapsed_s": 8.57
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T21:12:31Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "YOLO-DWBF-APF"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:12:31Z",
+    "elapsed_s": 10.63
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T21:12:31Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:12:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T21:12:40Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:12:40Z",
+    "elapsed_s": 9.104
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T21:12:47Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:12:47Z",
+    "elapsed_s": 6.996
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T21:12:58Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "YOLO-DWBF-APF"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:12:58Z",
+    "elapsed_s": 10.3
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T21:12:58Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:12:58Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T21:13:09Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:13:09Z",
+    "elapsed_s": 11.813
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T21:13:17Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:13:17Z",
+    "elapsed_s": 7.124
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T21:13:17Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:13:17Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T21:13:17Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于改进YOLOv4模型的快速目标检测与测距算法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于改进YOLOv4与单目视觉的快速目标检测与测距算法研究",
+          "research_question": "如何结合改进YOLOv4目标检测算法与单目视觉测距方法，在保证检测速度的同时实现高精度测距？",
+          "baseline": "Scaled-YOLOv4: Scaling Cross Stage Partial Network",
+          "improved_module_source": "An Improved YOLOv4 Target Detection Algorithm Combined with DCA",
+          "data_source": null,
+          "experiment_metrics": "Real-time object detection method based on improved YOLOv4-tiny",
+          "risk": "测距模块的精度高度依赖相机标定与目标尺寸先验，实际场景中目标尺寸未知可能导致测距误差较大。",
+          "estimated_workload": "高（需实现改进YOLOv4检测网络、集成测距模块、设计联合训练与评估流程）"
+        },
+        {
+          "title": "基于改进YOLOv4-Tiny的轻量化目标检测与测距系统",
+          "research_question": "在资源受限的嵌入式平台上，如何利用改进YOLOv4-Tiny实现快速目标检测并融合测距功能？",
+          "baseline": "Target detection based on improved Yolov4-Tiny algorithm",
+          "improved_module_source": "A UAV Target Detection Algorithm Based on YOLOv4-Tiny and Improved WBF",
+          "data_source": null,
+          "experiment_metrics": "Real-time object detection method based on improved YOLOv4-tiny",
+          "risk": "轻量化网络可能降低检测精度，进而影响测距的准确性；测距算法需适配低算力平台。",
+          "estimated_workload": "中（主要工作为网络剪枝/量化、测距算法轻量化、嵌入式部署与测试）"
+        },
+        {
+          "title": "基于改进YOLOv4与深度估计的端到端目标检测与测距",
+          "research_question": "能否通过改进YOLOv4网络同时输出目标边界框与深度信息，实现端到端的检测与测距？",
+          "baseline": "An Improved Target Detection General Framework Based on Yolov4",
+          "improved_module_source": "Underwater Target Detection Based on Improved YOLOv4",
+          "data_source": null,
+          "experiment_metrics": "Real-time object detection method based on improved YOLOv4-tiny",
+          "risk": "端到端深度估计需要大量带深度标签的数据集，当前证据中未提供相关数据集，训练数据获取困难。",
+          "estimated_workload": "高（需设计多任务网络结构、收集/合成深度标注数据、联合训练与调优）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:13:17Z",
+    "elapsed_s": 0.0
+  }
+]

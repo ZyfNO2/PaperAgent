@@ -314,7 +314,7 @@ def _emit_trace_index() -> int:
         for r in (trace.get("rounds") or []):
             ri = r.get("round", 0)
             ag = r.get("agent", "")
-            obs = r.get("observations") or {}
+            r.get("observations") or {}
             new = r.get("new_candidates_n", 0)
             acc = r.get("accepted_candidates_n", 0)
             ref = (r.get("reflection") or {}).get("next_round_focus") or []

@@ -1,0 +1,605 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:30:44Z",
+    "input_summary": {
+      "topic": "人群中危险动作综合分析研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:30:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:30:48Z",
+    "input_summary": {
+      "topic_len": 13
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:30:48Z",
+    "elapsed_s": 4.361
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:30:48Z",
+    "input_summary": {
+      "topic_len": 13,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:30:48Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:30:48Z",
+    "input_summary": {
+      "topic_len": 13,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 30,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:31:20Z",
+    "elapsed_s": 31.514
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:31:20Z",
+    "input_summary": {
+      "n_candidates": 30
+    },
+    "output_summary": {
+      "kept": 22,
+      "dropped": 8,
+      "pre_filter_keep": 22,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 22,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:31:26Z",
+    "elapsed_s": 6.398
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:31:26Z",
+    "input_summary": {
+      "n_candidates": 22,
+      "topic_len": 13,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 19,
+      "n_reject": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:31:34Z",
+    "elapsed_s": 7.356
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:31:34Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 19,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:31:34Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:31:34Z",
+    "input_summary": {
+      "n_verified": 10,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Spatial Temporal Graph Convolutional Networks for Skeleton-B",
+        "Extracting Action Hierarchies from Action Labels and their U",
+        "ReadingAct RGB-D action dataset and human action recognition",
+        "Viewpoint Independent Action Recognition",
+        "Improving Human Action Recognition by Non-action Classificat"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 83,
+      "n_surveys": 4,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 83,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Spatial Temporal Graph Convolutional Networks for Skeleton-B",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Extracting Action Hierarchies from Action Labels and their U",
+        "n_references_plus_citations": 5,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "ReadingAct RGB-D action dataset and human action recognition",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Viewpoint Independent Action Recognition",
+        "n_references_plus_citations": 5,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Improving Human Action Recognition by Non-action Classificat",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T06:32:08Z",
+    "elapsed_s": 33.999
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:32:08Z",
+    "input_summary": {
+      "n_candidates": 83,
+      "topic_len": 13,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 6,
+      "n_weak_reject": 54,
+      "n_reject": 23
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:32:30Z",
+    "elapsed_s": 21.99
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:32:30Z",
+    "input_summary": {
+      "n_papers": 16,
+      "n_weak": 54,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:32:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:32:39Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:32:39Z",
+    "elapsed_s": 9.297
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:32:39Z",
+    "input_summary": {
+      "papers": 16
+    },
+    "output_summary": {
+      "nodes": 16,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:32:39Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:32:39Z",
+    "input_summary": {
+      "n_verified": 16
+    },
+    "output_summary": {
+      "n_baseline": 6,
+      "n_parallel": 10,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:32:39Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:32:44Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:32:44Z",
+    "elapsed_s": 5.398
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T06:32:58Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:32:58Z",
+    "elapsed_s": 13.134
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T06:33:11Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:33:11Z",
+    "elapsed_s": 13.416
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T06:33:06Z",
+    "input_summary": {
+      "n_baseline": 6
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:33:06Z",
+    "elapsed_s": 8.949
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T06:33:21Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "DangerNet-PAF"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:33:21Z",
+    "elapsed_s": 10.254
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T06:33:21Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:33:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:33:32Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:33:32Z",
+    "elapsed_s": 10.848
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:33:39Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:33:39Z",
+    "elapsed_s": 6.567
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:33:39Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:33:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:33:39Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "人群中危险动作综合分析研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于Part Affinity Fields的多人姿态估计与危险动作识别",
+          "research_question": "如何利用Realtime Multi-person 2D Pose Estimation Using Part Affinity Fields提取的多人骨架信息，结合Spatial Temporal Graph Convolutional Networks进行人群中危险动作的实时识别？",
+          "baseline": "Realtime Multi-person 2D Pose Estimation Using Part Affinity Fields",
+          "improved_module_source": "Spatial Temporal Graph Convolutional Networks for Skeleton-Based Action Recognition",
+          "data_source": null,
+          "experiment_metrics": "Action Recognition in Videos with Spatio-Temporal Fusion 3D Convolutional Neural Networks",
+          "risk": "人群遮挡严重时，Part Affinity Fields的骨架提取精度可能下降，影响后续动作识别效果。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于双流卷积网络与时间片段网络的危险动作时空融合分析",
+          "research_question": "如何融合Two-Stream Convolutional Networks for Action Recognition in Videos的空间流与时间流特征，并利用Temporal Segment Networks的长时建模能力，提升人群中危险动作的检测准确率？",
+          "baseline": "Two-Stream Convolutional Networks for Action Recognition in Videos",
+          "improved_module_source": "Temporal Segment Networks: Towards Good Practices for Deep Action Recognition",
+          "data_source": null,
+          "experiment_metrics": "Action Recognition in Videos with Spatio-Temporal Fusion 3D Convolutional Neural Networks",
+          "risk": "双流网络计算量大，实时性可能不足；人群场景下背景噪声干扰大。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于改进轨迹与动作层次结构的危险行为早期识别",
+          "research_question": "如何利用Action Recognition with Improved Trajectories提取的密集轨迹特征，结合Extracting Action Hierarchies from Action Labels and their Use in Deep Action Recognition中的层次化动作标签，实现人群中危险动作的早期预警？",
+          "baseline": "Action Recognition with Improved Trajectories",
+          "improved_module_source": "Extracting Action Hierarchies from Action Labels and their Use in Deep Action Recognition",
+          "data_source": null,
+          "experiment_metrics": "Progressive Knowledge Distillation For Early Action Recognition",
+          "risk": "改进轨迹方法对光照变化敏感，人群密集时轨迹跟踪易丢失。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于视觉语言大模型与语义标记的可解释危险动作识别",
+          "research_question": "如何利用Leveraging Vision-Language Large Models for Interpretable Video Action Recognition with Semantic Tokenization的语义标记方法，对人群中危险动作进行可解释性分析？",
+          "baseline": "Leveraging Vision-Language Large Models for Interpretable Video Action Recognition with Semantic Tokenization",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Action Recognition in Videos with Spatio-Temporal Fusion 3D Convolutional Neural Networks",
+          "risk": "大模型推理速度慢，难以满足实时监控需求；对罕见危险动作的泛化能力未知。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "基于双向ConvLSTM与渐进式知识蒸馏的早期危险动作识别",
+          "research_question": "如何结合Bi-directional ConvLSTM networks for early recognition of human activities and action prediction的时序建模能力与Progressive Knowledge Distillation For Early Action Recognition的蒸馏策略，在低延迟下识别人群中的危险动作？",
+          "baseline": "Bi-directional ConvLSTM networks for early recognition of human activities and action prediction",
+          "improved_module_source": "Progressive Knowledge Distillation For Early Action Recognition",
+          "data_source": null,
+          "experiment_metrics": "Action Recognition in Videos with Spatio-Temporal Fusion 3D Convolutional Neural Networks",
+          "risk": "早期识别可能因信息不足导致误报率高；蒸馏过程需要大量标注数据。",
+          "estimated_workload": "5人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:33:39Z",
+    "elapsed_s": 0.0
+  }
+]

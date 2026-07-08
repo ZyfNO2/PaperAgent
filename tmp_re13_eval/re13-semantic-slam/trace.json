@@ -1,7 +1,7 @@
 [
   {
     "node": "intake",
-    "started_at": "2026-07-05T15:55:09Z",
+    "started_at": "2026-07-05T16:53:00Z",
     "input_summary": {
       "topic": "基于深度学习的视觉SLAM语义地图的研究"
     },
@@ -11,19 +11,19 @@
     "tool_calls": [],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:55:09Z",
+    "ended_at": "2026-07-05T16:53:00Z",
     "elapsed_s": 0.0
   },
   {
     "node": "topic_parser",
-    "started_at": "2026-07-05T15:56:07Z",
+    "started_at": "2026-07-05T16:53:05Z",
     "input_summary": {
       "topic_len": 20
     },
     "output_summary": {
-      "n_method": 1,
+      "n_method": 3,
       "n_object": 1,
-      "domain": "unknown"
+      "domain": "vision_3d"
     },
     "tool_calls": [
       {
@@ -33,18 +33,18 @@
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T15:56:07Z",
-    "elapsed_s": 58.275
+    "ended_at": "2026-07-05T16:53:05Z",
+    "elapsed_s": 5.449
   },
   {
     "node": "search_planner",
-    "started_at": "2026-07-05T15:56:07Z",
+    "started_at": "2026-07-05T16:53:05Z",
     "input_summary": {
       "topic_len": 20,
       "mode": "template"
     },
     "output_summary": {
-      "n_queries": 4,
+      "n_queries": 3,
       "rounds": [
         "broad",
         "focused"
@@ -57,12 +57,12 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T15:56:07Z",
-    "elapsed_s": 0.0
+    "ended_at": "2026-07-05T16:53:05Z",
+    "elapsed_s": 0.002
   },
   {
     "node": "retrieve",
-    "started_at": "2026-07-05T15:56:07Z",
+    "started_at": "2026-07-05T16:53:05Z",
     "input_summary": {
       "topic_len": 20,
       "has_atoms": true,
@@ -70,11 +70,12 @@
       "legacy_adapter": true
     },
     "output_summary": {
-      "n_paper_candidates": 24,
+      "n_paper_candidates": 31,
       "raw_tools": [
         "arxiv",
         "openalex",
-        "crossref"
+        "crossref",
+        "github"
       ]
     },
     "tool_calls": [
@@ -89,22 +90,26 @@
       {
         "tool": "crossref",
         "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
       }
     ],
     "errors": [],
     "provider": "legacy_adapter",
-    "ended_at": "2026-07-05T15:56:20Z",
-    "elapsed_s": 12.93
+    "ended_at": "2026-07-05T16:53:24Z",
+    "elapsed_s": 18.203
   },
   {
     "node": "quality_filter",
-    "started_at": "2026-07-05T15:56:20Z",
+    "started_at": "2026-07-05T16:53:24Z",
     "input_summary": {
-      "n_candidates": 24
+      "n_candidates": 31
     },
     "output_summary": {
-      "kept": 24,
-      "dropped": 0
+      "kept": 23,
+      "dropped": 8
     },
     "tool_calls": [
       {
@@ -118,24 +123,28 @@
       {
         "tool": "re13_quality_filter.llm",
         "batch_size": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 7
       }
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T15:57:40Z",
-    "elapsed_s": 79.848
+    "ended_at": "2026-07-05T16:53:49Z",
+    "elapsed_s": 25.105
   },
   {
     "node": "verify",
-    "started_at": "2026-07-05T15:57:40Z",
+    "started_at": "2026-07-05T16:53:49Z",
     "input_summary": {
-      "n_candidates": 24,
+      "n_candidates": 23,
       "topic_len": 20,
       "round": 1
     },
     "output_summary": {
-      "n_accept": 14,
-      "n_reject_or_weak": 9
+      "n_accept": 4,
+      "n_reject_or_weak": 19
     },
     "tool_calls": [
       {
@@ -145,14 +154,14 @@
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T16:08:37Z",
-    "elapsed_s": 657.234
+    "ended_at": "2026-07-05T16:55:28Z",
+    "elapsed_s": 99.786
   },
   {
     "node": "quality_gate",
-    "started_at": "2026-07-05T16:08:37Z",
+    "started_at": "2026-07-05T16:55:28Z",
     "input_summary": {
-      "n_papers": 14,
+      "n_papers": 4,
       "n_quarantined": 0,
       "n_baseline": 0,
       "n_dataset": 0,
@@ -168,38 +177,73 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T16:08:37Z",
+    "ended_at": "2026-07-05T16:55:28Z",
     "elapsed_s": 0.0
   },
   {
     "node": "citation_expander",
-    "started_at": "2026-07-05T16:08:37Z",
+    "started_at": "2026-07-05T16:55:28Z",
     "input_summary": {
-      "n_verified": 14,
-      "n_seeds": 0,
-      "seed_titles": []
+      "n_verified": 4,
+      "n_seeds": 4,
+      "seed_titles": [
+        "Deep Residual Learning for Image Recognition",
+        "Xception: Deep Learning with Depthwise Separable Convolution",
+        "PyTorch: An Imperative Style, High-Performance Deep Learning",
+        "A survey on Image Data Augmentation for Deep Learning"
+      ]
     },
     "output_summary": {
-      "n_expanded": 0,
-      "reason": "no_seeds_with_ids"
+      "n_expanded": 82,
+      "n_surveys": 2,
+      "n_repos": 2
     },
-    "tool_calls": [],
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 4,
+        "n_expanded": 82,
+        "concurrent": true
+      }
+    ],
     "errors": [],
     "provider": "semantic_scholar",
-    "ended_at": "2026-07-05T16:08:37Z",
-    "elapsed_s": 0.0
+    "per_seed": [
+      {
+        "seed_title": "Deep Residual Learning for Image Recognition",
+        "n_references_plus_citations": 30,
+        "relevance_score": 4
+      },
+      {
+        "seed_title": "Xception: Deep Learning with Depthwise Separable Convolution",
+        "n_references_plus_citations": 30,
+        "relevance_score": 4
+      },
+      {
+        "seed_title": "PyTorch: An Imperative Style, High-Performance Deep Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 4
+      },
+      {
+        "seed_title": "A survey on Image Data Augmentation for Deep Learning",
+        "n_references_plus_citations": 30,
+        "relevance_score": 4
+      }
+    ],
+    "ended_at": "2026-07-05T16:56:01Z",
+    "elapsed_s": 32.417
   },
   {
     "node": "verify",
-    "started_at": "2026-07-05T16:08:37Z",
+    "started_at": "2026-07-05T16:56:01Z",
     "input_summary": {
-      "n_candidates": 0,
+      "n_candidates": 82,
       "topic_len": 20,
       "round": 2
     },
     "output_summary": {
-      "n_accept": 0,
-      "n_reject_or_weak": 0
+      "n_accept": 16,
+      "n_reject_or_weak": 66
     },
     "tool_calls": [
       {
@@ -209,14 +253,14 @@
     ],
     "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T16:08:37Z",
-    "elapsed_s": 0.0
+    "ended_at": "2026-07-05T17:01:58Z",
+    "elapsed_s": 357.243
   },
   {
     "node": "quality_gate",
-    "started_at": "2026-07-05T16:08:37Z",
+    "started_at": "2026-07-05T17:01:58Z",
     "input_summary": {
-      "n_papers": 14,
+      "n_papers": 20,
       "n_quarantined": 0,
       "n_baseline": 0,
       "n_dataset": 0,
@@ -232,12 +276,12 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T16:08:37Z",
+    "ended_at": "2026-07-05T17:01:58Z",
     "elapsed_s": 0.0
   },
   {
     "node": "dataset_repo",
-    "started_at": "2026-07-05T16:09:44Z",
+    "started_at": "2026-07-05T17:02:08Z",
     "input_summary": {
       "n_papers": 8
     },
@@ -252,25 +296,19 @@
         "profile": "fast_json"
       }
     ],
-    "errors": [
-      {
-        "node": "dataset_repo",
-        "for_paper": "SegNeXt: Convolutional Network for Semantic Segmentation in Visual SLAM and Semantic Mapping",
-        "error": "LLMUnavailable"
-      }
-    ],
+    "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T16:09:44Z",
-    "elapsed_s": 67.408
+    "ended_at": "2026-07-05T17:02:08Z",
+    "elapsed_s": 10.406
   },
   {
     "node": "json_graph_builder",
-    "started_at": "2026-07-05T16:09:44Z",
+    "started_at": "2026-07-05T17:02:08Z",
     "input_summary": {
-      "papers": 14
+      "papers": 20
     },
     "output_summary": {
-      "nodes": 14,
+      "nodes": 20,
       "edges": 0
     },
     "tool_calls": [
@@ -278,21 +316,21 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T16:09:44Z",
+    "ended_at": "2026-07-05T17:02:08Z",
     "elapsed_s": 0.0
   },
   {
     "node": "evidence_auditor",
-    "started_at": "2026-07-05T16:09:44Z",
+    "started_at": "2026-07-05T17:02:08Z",
     "input_summary": {
-      "n_verified": 14
+      "n_verified": 20
     },
     "output_summary": {
-      "n_baseline": 10,
-      "n_parallel": 3,
-      "n_survey": 0,
+      "n_baseline": 0,
+      "n_parallel": 7,
+      "n_survey": 1,
       "n_dataset_paper": 0,
-      "n_noise": 1
+      "n_noise": 12
     },
     "tool_calls": [
       {
@@ -302,19 +340,19 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T16:09:44Z",
+    "ended_at": "2026-07-05T17:02:08Z",
     "elapsed_s": 0.0
   },
   {
     "node": "work_package",
-    "started_at": "2026-07-05T16:09:47Z",
+    "started_at": "2026-07-05T17:02:20Z",
     "input_summary": {
-      "n_baseline": 10,
-      "n_parallel": 3
+      "n_baseline": 0,
+      "n_parallel": 7
     },
     "output_summary": {
-      "n_packages": 0,
-      "n_gap": 1
+      "n_packages": 4,
+      "n_gap": 3
     },
     "tool_calls": [
       {
@@ -322,25 +360,20 @@
         "profile": "fast_json"
       }
     ],
-    "errors": [
-      {
-        "node": "work_package",
-        "error": "LLMUnavailable"
-      }
-    ],
+    "errors": [],
     "provider": "fast_json",
-    "ended_at": "2026-07-05T16:09:47Z",
-    "elapsed_s": 2.452
+    "ended_at": "2026-07-05T17:02:20Z",
+    "elapsed_s": 11.803
   },
   {
     "node": "low_bar_review",
-    "started_at": "2026-07-05T16:09:47Z",
+    "started_at": "2026-07-05T17:02:20Z",
     "input_summary": {
-      "n_packages": 0
+      "n_packages": 4
     },
     "output_summary": {
-      "status": "blocked",
-      "n_remaining": 0
+      "status": "pass",
+      "n_remaining": 4
     },
     "tool_calls": [
       {
@@ -349,12 +382,12 @@
     ],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T16:09:47Z",
+    "ended_at": "2026-07-05T17:02:20Z",
     "elapsed_s": 0.0
   },
   {
     "node": "human_gate",
-    "started_at": "2026-07-05T16:09:47Z",
+    "started_at": "2026-07-05T17:02:20Z",
     "input_summary": {
       "enabled": false
     },
@@ -364,12 +397,12 @@
     "tool_calls": [],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T16:09:47Z",
+    "ended_at": "2026-07-05T17:02:20Z",
     "elapsed_s": 0.0
   },
   {
     "node": "final_recommendation",
-    "started_at": "2026-07-05T16:09:47Z",
+    "started_at": "2026-07-05T17:02:20Z",
     "input_summary": {},
     "output_summary": {
       "topic": "基于深度学习的视觉SLAM语义地图的研究",
@@ -378,18 +411,57 @@
       "n_parallel": 0,
       "n_dataset": 0,
       "n_repo": 0,
-      "n_work_packages": 0,
-      "low_bar_status": "blocked",
+      "n_work_packages": 4,
+      "low_bar_status": "pass",
       "human_gate_status": "pass_through",
-      "notes": [
-        "low-bar review blocked the proposal"
-      ],
-      "research_basis": []
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于Faster R-CNN的视觉SLAM语义地图构建",
+          "research_question": "如何利用Faster R-CNN的目标检测能力，在视觉SLAM框架中实时构建包含物体类别和位置的语义地图？",
+          "baseline": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Object Detection Networks on Convolutional Feature Maps",
+          "risk": "Faster R-CNN的推理速度可能无法满足实时SLAM要求，需优化或采用轻量版本。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于全卷积网络的语义分割与SLAM融合地图",
+          "research_question": "如何将全卷积网络（FCN）的像素级语义分割结果与视觉SLAM的几何地图融合，生成稠密语义地图？",
+          "baseline": "Fully convolutional networks for semantic segmentation",
+          "improved_module_source": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+          "data_source": null,
+          "experiment_metrics": "Object Detection Networks on Convolutional Feature Maps",
+          "risk": "FCN输出分辨率低，上采样可能引入误差；稠密地图存储和更新计算量大。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "多区域语义感知的SLAM语义地图增强",
+          "research_question": "如何利用多区域和语义分割感知的CNN模型（如Multi-region CNN）提升SLAM语义地图中物体检测的准确性和鲁棒性？",
+          "baseline": "Object Detection via a Multi-region and Semantic Segmentation-Aware CNN Model",
+          "improved_module_source": "Fast R-CNN",
+          "data_source": null,
+          "experiment_metrics": "Object Detection Networks on Convolutional Feature Maps",
+          "risk": "多区域模型计算复杂度高，可能影响SLAM实时性；需平衡精度与速度。",
+          "estimated_workload": "3.5人月"
+        },
+        {
+          "title": "面向数据稀缺建筑场景的视觉SLAM语义地图迁移学习",
+          "research_question": "如何利用协同域内和域外学习策略，在数据稀缺的建筑场景中强化视觉SLAM语义地图的构建能力？",
+          "baseline": "Synergistic in-domain and out-of-domain learning to strengthen visual scene understanding in data-scarce, imbalanced construction settings",
+          "improved_module_source": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+          "data_source": null,
+          "experiment_metrics": "Object Detection Networks on Convolutional Feature Maps",
+          "risk": "建筑场景数据集未在证据中明确提供，需自行收集或标注；迁移效果依赖源域相似度。",
+          "estimated_workload": "4人月"
+        }
+      ]
     },
     "tool_calls": [],
     "errors": [],
     "provider": "local",
-    "ended_at": "2026-07-05T16:09:47Z",
+    "ended_at": "2026-07-05T17:02:20Z",
     "elapsed_s": 0.0
   }
 ]

@@ -1,0 +1,273 @@
+{
+  "case_id": "ENG-THESIS-039",
+  "topic": "基于生成对抗网络的金属表面缺陷视觉检测方法研究",
+  "user_constraints": {
+    "topic_zh": "基于生成对抗网络的金属表面缺陷视觉检测方法研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "生成对抗网络",
+      "GAN"
+    ],
+    "object": [
+      "金属表面缺陷"
+    ],
+    "task": [
+      "视觉检测"
+    ],
+    "scenario": [
+      "工业质检"
+    ],
+    "domain": "vision_2d",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": []
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "arxiv",
+        "query": "generative adversarial network metal surface defect detection",
+        "why": "The prior Chinese query returned zero results. Switching to English keywords on arxiv to capture the large body of English-language papers on GAN-based defect detection for metal surfaces.",
+        "expected_evidence": "At least one paper proposing or applying a GAN (e.g., DCGAN, CycleGAN, cGAN) for detecting defects (cracks, scratches, pits) on metal surfaces (steel, aluminum, etc.).",
+        "stop_condition": "Stop after scanning 20 results if no relevant paper is found."
+      },
+      {
+        "tool": "openalex",
+        "query": "generative adversarial network metal surface defect detection",
+        "why": "The prior Chinese query failed. OpenAlex indexes a broad set of academic papers and reviews; using English keywords increases recall for this cross-disciplinary topic.",
+        "expected_evidence": "At least one paper or review that explicitly uses a GAN for metal surface defect detection, possibly including dataset or baseline references.",
+        "stop_condition": "Stop after scanning 30 results if no relevant paper is found."
+      },
+      {
+        "tool": "web",
+        "query": "GAN metal surface defect detection dataset",
+        "why": "The prior query was a broad Chinese title. This web search targets dataset pages or benchmark pages that may list GAN-based methods for metal defect detection, filling the dataset gap.",
+        "expected_evidence": "A dataset page (e.g., NEU-DET, GC10-DET, KSDD) that mentions GAN-based augmentation or detection methods.",
+        "stop_condition": "Stop after scanning 20 results if no relevant dataset page is found."
+      }
+    ],
+    "rounds": [
+      "repair"
+    ],
+    "negative_feedback": "The prior round used a single Chinese query that returned zero results. This repair round replaces it with three English queries across different tools (arxiv, openalex, web) to capture the large body of English-language literature and dataset pages on GAN-based metal surface defect detection."
+  },
+  "raw_results": {},
+  "paper_candidates": [],
+  "verified_papers": [],
+  "weak_papers": [],
+  "evidence_audit": {
+    "quality_gate_route": "repair",
+    "quality_gate_snapshot": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "repair_rounds": 1,
+    "last_repair_type": "paper_gap_repair"
+  },
+  "filter_results": {
+    "total": 0,
+    "kept": 0,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T06:21:11Z",
+      "input_summary": {
+        "topic": "基于生成对抗网络的金属表面缺陷视觉检测方法研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T06:21:11Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T06:21:15Z",
+      "input_summary": {
+        "topic_len": 23
+      },
+      "output_summary": {
+        "n_method": 2,
+        "n_object": 1,
+        "domain": "vision_2d"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T06:21:15Z",
+      "elapsed_s": 4.062
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T06:21:15Z",
+      "input_summary": {
+        "topic_len": 23,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 1,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T06:21:15Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T06:21:15Z",
+      "input_summary": {
+        "topic_len": 23,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "raw_tools": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T06:21:15Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T06:21:15Z",
+      "input_summary": {
+        "n_candidates": 0
+      },
+      "output_summary": {
+        "kept": 0,
+        "dropped": 0
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T06:21:15Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T06:21:15Z",
+      "input_summary": {
+        "n_candidates": 0,
+        "topic_len": 23,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 0,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T06:21:15Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T06:21:15Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "repair"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T06:21:15Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "targeted_repair",
+      "started_at": "2026-07-06T06:21:24Z",
+      "input_summary": {
+        "current_round": 0,
+        "repair_type": "paper_gap_repair"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "repair"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re12_repair.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T06:21:24Z",
+      "elapsed_s": 8.894
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T06:21:24Z",
+      "input_summary": {
+        "topic_len": 23,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "raw_tools": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T06:21:24Z",
+      "elapsed_s": 0.001
+    }
+  ],
+  "provider_profile": "legacy_adapter",
+  "errors": []
+}

@@ -1,0 +1,627 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T19:03:37Z",
+    "input_summary": {
+      "topic": "基于YOLOv5的绝缘子检测与缺陷识别方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:03:37Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T19:03:41Z",
+    "input_summary": {
+      "topic_len": 23
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:03:41Z",
+    "elapsed_s": 4.424
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T19:03:41Z",
+    "input_summary": {
+      "topic_len": 23,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:03:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T19:03:41Z",
+    "input_summary": {
+      "topic_len": 23,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 3,
+      "n_steps": 4,
+      "n_tool_calls": 3,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "github": 3
+      },
+      "failed_adapters": [
+        "openalex"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 3
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T19:04:26Z",
+    "elapsed_s": 44.702
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T19:04:26Z",
+    "input_summary": {
+      "n_candidates": 15
+    },
+    "output_summary": {
+      "kept": 15,
+      "dropped": 0,
+      "pre_filter_keep": 15,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 15,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:04:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T19:04:26Z",
+    "input_summary": {
+      "n_candidates": 15,
+      "topic_len": 23,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 8,
+      "n_reject": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:04:33Z",
+    "elapsed_s": 7.321
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T19:04:33Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 8,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 3,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:04:33Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T19:04:33Z",
+    "input_summary": {
+      "n_verified": 3,
+      "n_seeds": 0,
+      "seed_titles": []
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "reason": "no_seeds_with_ids"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "ended_at": "2026-07-06T19:04:33Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T19:04:33Z",
+    "input_summary": {
+      "n_candidates": 15,
+      "topic_len": 23,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 11,
+      "n_reject": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:04:41Z",
+    "elapsed_s": 7.627
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T19:04:41Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 11,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 3,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:04:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T19:04:41Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 0,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:04:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T19:04:41Z",
+    "input_summary": {
+      "papers": 3
+    },
+    "output_summary": {
+      "nodes": 3,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:04:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T19:04:41Z",
+    "input_summary": {
+      "n_verified": 3
+    },
+    "output_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:04:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T19:04:46Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_dataset": 0,
+      "n_repo": 3
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:04:46Z",
+    "elapsed_s": 5.119
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T19:04:55Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 2,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:04:55Z",
+    "elapsed_s": 9.512
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T19:05:07Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:05:07Z",
+    "elapsed_s": 11.375
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T19:05:05Z",
+    "input_summary": {
+      "n_baseline": 3
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:05:05Z",
+    "elapsed_s": 10.146
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T19:05:20Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "InsDefect-YOLO"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:05:20Z",
+    "elapsed_s": 12.92
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T19:05:20Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:05:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T19:05:28Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:05:28Z",
+    "elapsed_s": 8.214
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T19:05:36Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:05:36Z",
+    "elapsed_s": 7.93
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T19:05:47Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "InsDef-YOLO"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:05:47Z",
+    "elapsed_s": 10.927
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T19:05:47Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:05:47Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T19:05:55Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:05:55Z",
+    "elapsed_s": 8.211
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T19:06:03Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:06:03Z",
+    "elapsed_s": 8.64
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T19:06:03Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:06:03Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T19:06:03Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于YOLOv5的绝缘子检测与缺陷识别方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 2,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLOv5的绝缘子检测与缺陷识别基准复现与评估",
+          "research_question": "在公开绝缘子缺陷数据集上，YOLOv5基线模型的检测与缺陷识别性能如何？",
+          "baseline": "lcd955/Insulator_defect-nest_detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "lcd955/Insulator_defect-nest_detection",
+          "risk": "低风险，已有完整代码和说明，但数据集未明确标注，需自行整理或寻找替代公开数据集。",
+          "estimated_workload": "2人周"
+        },
+        {
+          "title": "基于YOLOv5的绝缘子缺陷检测改进模块集成与对比",
+          "research_question": "在YOLOv5基线基础上，集成注意力机制或特征融合模块能否提升绝缘子缺陷检测精度？",
+          "baseline": "share2code99/insulator_defect_detection_yolov5",
+          "improved_module_source": "QQ767172261/How-to-build-an-intelligent-insulator-defect-detection-system-based-on-YOLOv5-highvoltage-transmissi",
+          "data_source": null,
+          "experiment_metrics": "share2code99/insulator_defect_detection_yolov5",
+          "risk": "中风险，改进模块来源为教程性质，可能缺乏完整代码或实验配置，需自行实现。",
+          "estimated_workload": "3人周"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:06:03Z",
+    "elapsed_s": 0.0
+  }
+]

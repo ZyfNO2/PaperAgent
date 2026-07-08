@@ -1,7 +1,6 @@
 """Loop 6: Auto seed selection test — verify seeds are auto-selected from verified_papers."""
 from __future__ import annotations
 
-import pytest
 from unittest.mock import patch
 
 from apps.api.app.services.agents.graph.nodes.citation_expander import (

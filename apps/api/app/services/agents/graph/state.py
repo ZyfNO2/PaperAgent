@@ -18,6 +18,7 @@ class ResearchState(TypedDict, total=False):
     case_id: str
     topic: str
     user_constraints: dict[str, Any]
+    user_papers: list[dict[str, Any]]  # Re3.1: papers uploaded by user before run
 
     # --- Topic parsing ---
     topic_atoms: dict[str, Any]
@@ -87,6 +88,10 @@ class ResearchState(TypedDict, total=False):
 
     # === Re2 new fields ===
     narrative_revision_count: int  # devils_advocate回环计数器
+    devils_advocate_block_count: int  # BLOCK verdict retry counter (Re3.3)
+
+    # === Re3.0 new fields ===
+    search_steps: list[dict[str, Any]]  # React search agent step log
 
     # --- Telemetry ---
     trace_events: Annotated[list[dict[str, Any]], operator.add]

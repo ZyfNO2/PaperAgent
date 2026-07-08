@@ -7,7 +7,6 @@ no adapters.
 from __future__ import annotations
 
 import re
-import time
 from typing import Any
 
 
@@ -176,7 +175,6 @@ def build_axis_bound_queries(domain_kws: dict, role: str) -> list[str]:
         candidates.append(q(head[0] if head else "", "review survey"))
     elif role_lower == "core_paper":
         for t in (m[:1] + o[:1] or head[:1]):
-            candidates.append(q(t, "deep learning survey"))
             candidates.append(q(t, "benchmark comparison"))
         candidates.append(q(head[0] if head else "", "systematic review"))
     else:
@@ -187,7 +185,7 @@ def build_axis_bound_queries(domain_kws: dict, role: str) -> list[str]:
         if c is None:
             continue
         low = c.lower()
-        if low in seen or len(c) < 4:
+        if low in seen or len(c) < 2:
             continue
         seen.add(low)
         out.append(c)

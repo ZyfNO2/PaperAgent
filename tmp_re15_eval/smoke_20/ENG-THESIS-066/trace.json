@@ -1,0 +1,585 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T21:25:00Z",
+    "input_summary": {
+      "topic": "面向自动驾驶中多模态融合感知算法的攻击和防御"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:25:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T21:25:05Z",
+    "input_summary": {
+      "topic_len": 22
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 2,
+      "domain": "robotics_control"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:25:05Z",
+    "elapsed_s": 4.961
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T21:25:05Z",
+    "input_summary": {
+      "topic_len": 22,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:25:05Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T21:25:05Z",
+    "input_summary": {
+      "topic_len": 22,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T21:25:18Z",
+    "elapsed_s": 13.529
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T21:25:18Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 29,
+      "dropped": 2,
+      "pre_filter_keep": 22,
+      "pre_filter_drop": 1,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 22,
+        "pre_drop": 1,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:25:24Z",
+    "elapsed_s": 6.016
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T21:25:24Z",
+    "input_summary": {
+      "n_candidates": 29,
+      "topic_len": 22,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 15,
+      "n_reject": 13
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:25:32Z",
+    "elapsed_s": 7.915
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T21:25:32Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 15,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:25:32Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-05T21:25:32Z",
+    "input_summary": {
+      "n_verified": 11,
+      "n_seeds": 5,
+      "seed_titles": [
+        "The multi-modal fusion in visual question answering: a revie",
+        "Multi-modal fusion network with multi-scale multi-path and c",
+        "Multi-Modal Fusion for End-to-End RGB-T Tracking",
+        "Deep RGB-D Saliency Detection with Depth-Sensitive Attention",
+        "Multi-modal Data Fusion based on Embeddings"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 104,
+      "n_surveys": 4,
+      "n_repos": 11
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 104,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "The multi-modal fusion in visual question answering: a revie",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Multi-modal fusion network with multi-scale multi-path and c",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Multi-Modal Fusion for End-to-End RGB-T Tracking",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Deep RGB-D Saliency Detection with Depth-Sensitive Attention",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Multi-modal Data Fusion based on Embeddings",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-05T21:26:07Z",
+    "elapsed_s": 34.656
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T21:26:07Z",
+    "input_summary": {
+      "n_candidates": 104,
+      "topic_len": 22,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 44,
+      "n_reject": 60
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:26:37Z",
+    "elapsed_s": 29.658
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T21:26:37Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 44,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:26:37Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T21:26:47Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:26:47Z",
+    "elapsed_s": 10.153
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T21:26:47Z",
+    "input_summary": {
+      "papers": 11
+    },
+    "output_summary": {
+      "nodes": 11,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:26:47Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T21:26:47Z",
+    "input_summary": {
+      "n_verified": 11
+    },
+    "output_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:26:47Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-05T21:26:51Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:26:51Z",
+    "elapsed_s": 4.478
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T21:27:00Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:27:00Z",
+    "elapsed_s": 8.363
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-05T21:27:14Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_innovation": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:27:14Z",
+    "elapsed_s": 13.947
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-05T21:27:20Z",
+    "input_summary": {
+      "n_baseline": 1
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:27:20Z",
+    "elapsed_s": 6.855
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-05T21:27:29Z",
+    "input_summary": {
+      "n_innovation": 5
+    },
+    "output_summary": {
+      "nick_model_name": "U2F-DiffSparseFuser"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:27:29Z",
+    "elapsed_s": 8.99
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T21:27:29Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:27:29Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-05T21:27:38Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:27:38Z",
+    "elapsed_s": 8.14
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-05T21:27:45Z",
+    "input_summary": {
+      "n_innovation": 5,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:27:45Z",
+    "elapsed_s": 7.908
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-05T21:27:45Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:27:45Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-05T21:27:45Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "面向自动驾驶中多模态融合感知算法的攻击和防御",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "Adversarial Attack on Multi-Modal Fusion for Autonomous Driving Perception",
+          "research_question": "How can adversarial perturbations be crafted to effectively fool multi-modal fusion perception models (e.g., TransFuser) in autonomous driving scenarios?",
+          "baseline": "autonomousvision/transfuser",
+          "improved_module_source": "hanna-xu/U2Fusion",
+          "data_source": null,
+          "experiment_metrics": "Multi-modal fusion network with multi-scale multi-path and cross-modal interactions for RGB-D salient object detection",
+          "risk": "The attack may not transfer across different fusion architectures or sensor modalities.",
+          "estimated_workload": "3 months"
+        },
+        {
+          "title": "Defense Against Multi-Modal Adversarial Attacks via Robust Fusion Strategies",
+          "research_question": "What defense mechanisms can be integrated into multi-modal fusion (e.g., attention-based fusion) to mitigate adversarial attacks while maintaining perception accuracy?",
+          "baseline": "autonomousvision/transfuser",
+          "improved_module_source": "The multi-modal fusion in visual question answering: a review of attention mechanisms",
+          "data_source": null,
+          "experiment_metrics": "Multi-modal fusion network with multi-scale multi-path and cross-modal interactions for RGB-D salient object detection",
+          "risk": "Defense may reduce performance on clean inputs or be bypassed by adaptive attacks.",
+          "estimated_workload": "4 months"
+        },
+        {
+          "title": "Evaluating Attack Transferability Across Multi-Modal Fusion Architectures",
+          "research_question": "How do adversarial attacks generated for one multi-modal fusion model (e.g., TransFuser) transfer to other fusion models (e.g., SparseFusion, MMIF-DDFM) in autonomous driving?",
+          "baseline": "autonomousvision/transfuser",
+          "improved_module_source": "yichen928/SparseFusion",
+          "data_source": null,
+          "experiment_metrics": "Multi-modal fusion network with multi-scale multi-path and cross-modal interactions for RGB-D salient object detection",
+          "risk": "Limited transferability may reduce the practical threat of attacks.",
+          "estimated_workload": "3 months"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:27:45Z",
+    "elapsed_s": 0.0
+  }
+]

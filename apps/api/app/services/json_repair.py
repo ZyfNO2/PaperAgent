@@ -143,6 +143,7 @@ def fallback_formatter(
     try:
         result = llm_router.call_json(
             prompt, profile=profile, max_tokens=4000, timeout=120,
+            expected=expected,
         )
         if expected == "dict" and isinstance(result, dict):
             return result, True

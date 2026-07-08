@@ -1,0 +1,2074 @@
+{
+  "case_id": "ENG-THESIS-081",
+  "topic": "基于深度学习的混凝土细观损伤特征检测研究",
+  "user_constraints": {
+    "topic_zh": "基于深度学习的混凝土细观损伤特征检测研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "deep learning",
+      "convolutional neural network",
+      "segmentation"
+    ],
+    "object": [
+      "concrete mesoscopic damage",
+      "concrete crack",
+      "concrete damage feature"
+    ],
+    "task": [
+      "detection",
+      "feature extraction",
+      "damage detection"
+    ],
+    "scenario": [
+      "civil infrastructure inspection",
+      "structural health monitoring"
+    ],
+    "domain": "civil_infra",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "macroscopic damage",
+      "metal fatigue"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "deep learning concrete mesoscopic damage",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "convolutional neural network concrete mesoscopic damage",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "deep learning concrete mesoscopic damage detection",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "arxiv": [
+      {
+        "title": "Learn to Accumulate Evidence from All Training Samples: Theory and Practice",
+        "abstract": "Evidential deep learning, built upon belief theory and subjective logic, offers a principled and computationally efficient way to turn a deterministic neural network uncertainty-aware. The resultant evidential models can quantify fine-grained uncertainty using the learned evidence. To ensure theoretically sound evidential models, the evidence needs to be non-negative, which requires special activation functions for model training and inference. This constraint often leads to inferior predictive performance compared to standard softmax models, making it challenging to extend them to many large-scale datasets. To unveil the real cause of this undesired behavior, we theoretically investigate evidential models and identify a fundamental limitation that explains the inferior performance: existing evidential activation functions create zero evidence regions, which prevent the model to learn from training samples falling into such regions. A deeper analysis of evidential activation functions based on our theoretical underpinning inspires the design of a novel regularizer that effectively alleviates this fundamental limitation. Extensive experiments over many challenging real-world datasets and settings confirm our theoretical findings and demonstrate the effectiveness of our proposed approach.",
+        "authors": [
+          "Deep Pandey",
+          "Qi Yu"
+        ],
+        "arxiv_id": "2306.11113v2",
+        "url": "http://arxiv.org/abs/2306.11113v2",
+        "published": "2023-06-19T18:27:12Z",
+        "year": 2023,
+        "source_query": "deep learning"
+      },
+      {
+        "title": "The Modern Mathematics of Deep Learning",
+        "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, and which fine aspects of an architecture affect the behavior of a learning task in which way. We present an overview of modern approaches that yield partial answers to these questions. For selected approaches, we describe the main ideas in more detail.",
+        "authors": [
+          "Julius Berner",
+          "Philipp Grohs",
+          "Gitta Kutyniok",
+          "Philipp Petersen"
+        ],
+        "arxiv_id": "2105.04026v2",
+        "url": "http://arxiv.org/abs/2105.04026v2",
+        "published": "2021-05-09T21:30:42Z",
+        "year": 2021,
+        "source_query": "deep learning"
+      },
+      {
+        "title": "Deep Learning and Computational Physics (Lecture Notes)",
+        "abstract": "These notes were compiled as lecture notes for a course developed and taught at the University of the Southern California. They should be accessible to a typical engineering graduate student with a strong background in Applied Mathematics.\n  The main objective of these notes is to introduce a student who is familiar with concepts in linear algebra and partial differential equations to select topics in deep learning. These lecture notes exploit the strong connections between deep learning algorithms and the more conventional techniques of computational physics to achieve two goals. First, they use concepts from computational physics to develop an understanding of deep learning algorithms. Not surprisingly, many concepts in deep learning can be connected to similar concepts in computational physics, and one can utilize this connection to better understand these algorithms. Second, several novel deep learning algorithms can be used to solve challenging problems in computational physics. Thus, they offer someone who is interested in modeling a physical phenomena with a complementary set of tools.",
+        "authors": [
+          "Deep Ray",
+          "Orazio Pinti",
+          "Assad A. Oberai"
+        ],
+        "arxiv_id": "2301.00942v1",
+        "url": "http://arxiv.org/abs/2301.00942v1",
+        "published": "2023-01-03T03:56:19Z",
+        "year": 2023,
+        "source_query": "deep learning"
+      },
+      {
+        "title": "Monodense Deep Neural Model for Determining Item Price Elasticity",
+        "abstract": "Item Price Elasticity is used to quantify the responsiveness of consumer demand to changes in item prices, enabling businesses to create pricing strategies and optimize revenue management. Sectors such as store retail, e-commerce, and consumer goods rely on elasticity information derived from historical sales and pricing data. This elasticity provides an understanding of purchasing behavior across different items, consumer discount sensitivity, and demand elastic departments. This information is particularly valuable for competitive markets and resource-constrained businesses decision making which aims to maximize profitability and market share. Price elasticity also uncovers historical shifts in consumer responsiveness over time. In this paper, we model item-level price elasticity using large-scale transactional datasets, by proposing a novel elasticity estimation framework which has the capability to work in an absence of treatment control setting. We test this framework by using Machine learning based algorithms listed below, including our newly proposed Monodense deep neural network.\n  (1) Monodense-DL network -- Hybrid neural network architecture combining embedding, dense, and Monodense layers (2) DML -- Double machine learning setting using regression models (3) LGBM -- Light Gradient Boosting Model\n  We evaluate our model on multi-category retail data spanning millions of transactions using a back testing framework. Experimental results demonstrate the superiority of our proposed neural network model within the framework compared to other prevalent ML based methods listed above.",
+        "authors": [
+          "Lakshya Garg",
+          "Sai Yaswanth",
+          "Deep Narayan Mishra",
+          "Karthik Kumaran",
+          "Anupriya Sharma",
+          "Mayank Uniyal"
+        ],
+        "arxiv_id": "2603.29261v1",
+        "url": "http://arxiv.org/abs/2603.29261v1",
+        "published": "2026-03-31T04:50:51Z",
+        "year": 2026,
+        "source_query": "deep learning"
+      },
+      {
+        "title": "A multitask deep learning model for real-time deployment in embedded systems",
+        "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training process that introduces challenges not present in single-task models.",
+        "authors": [
+          "Miquel Martí",
+          "Atsuto Maki"
+        ],
+        "arxiv_id": "1711.00146v1",
+        "url": "http://arxiv.org/abs/1711.00146v1",
+        "published": "2017-10-31T23:59:23Z",
+        "year": 2017,
+        "source_query": "deep learning"
+      },
+      {
+        "title": "Deep learning observables in computational fluid dynamics",
+        "abstract": "Many large scale problems in computational fluid dynamics such as uncertainty quantification, Bayesian inversion, data assimilation and PDE constrained optimization are considered very challenging computationally as they require a large number of expensive (forward) numerical solutions of the corresponding PDEs. We propose a machine learning algorithm, based on deep artificial neural networks, that predicts the underlying \\emph{input parameters to observable} map from a few training samples (computed realizations of this map). By a judicious combination of theoretical arguments and empirical observations, we find suitable network architectures and training hyperparameters that result in robust and efficient neural network approximations of the parameters to observable map. Numerical experiments are presented to demonstrate low prediction errors for the trained network networks, even when the network has been trained with a few samples, at a computational cost which is several orders of magnitude lower than the underlying PDE solver.\n  Moreover, we combine the proposed deep learning algorithm with Monte Carlo (MC) and Quasi-Monte Carlo (QMC) methods to efficiently compute uncertainty propagation for nonlinear PDEs. Under the assumption that the underlying neural networks generalize well, we prove that the deep learning MC and QMC algorithms are guaranteed to be faster than the baseline (quasi-) Monte Carlo methods. Numerical experiments demonstrating one to two orders of magnitude speed up over baseline QMC and MC algorithms, for the intricate problem of computing probability distributions of the observable, are also presented.",
+        "authors": [
+          "Kjetil O. Lye",
+          "Siddhartha Mishra",
+          "Deep Ray"
+        ],
+        "arxiv_id": "1903.03040v2",
+        "url": "http://arxiv.org/abs/1903.03040v2",
+        "published": "2019-03-07T16:57:52Z",
+        "year": 2019,
+        "source_query": "deep learning"
+      },
+      {
+        "title": "DILIE: Deep Internal Learning for Image Enhancement",
+        "abstract": "We consider the generic deep image enhancement problem where an input image is transformed into a perceptually better-looking image. Recent methods for image enhancement consider the problem by performing style transfer and image restoration. The methods mostly fall into two categories: training data-based and training data-independent (deep internal learning methods). We perform image enhancement in the deep internal learning framework. Our Deep Internal Learning for Image Enhancement framework enhances content features and style features and uses contextual content loss for preserving image context in the enhanced image. We show results on both hazy and noisy image enhancement. To validate the results, we use structure similarity and perceptual error, which is efficient in measuring the unrealistic deformation present in the images. We show that the proposed framework outperforms the relevant state-of-the-art works for image enhancement.",
+        "authors": [
+          "Indra Deep Mastan",
+          "Shanmuganathan Raman"
+        ],
+        "arxiv_id": "2012.06469v1",
+        "url": "http://arxiv.org/abs/2012.06469v1",
+        "published": "2020-12-11T16:39:44Z",
+        "year": 2020,
+        "source_query": "deep learning"
+      },
+      {
+        "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+        "abstract": "Evidential deep learning (EDL) models, based on Subjective Logic, introduce a principled and computationally efficient way to make deterministic neural networks uncertainty-aware. The resulting evidential models can quantify fine-grained uncertainty using learned evidence. However, the Subjective-Logic framework constrains evidence to be non-negative, requiring specific activation functions whose geometric properties can induce activation-dependent learning-freeze behavior: a regime where gradients become extremely small for samples mapped into low-evidence regions. We theoretically characterize this behavior and analyze how different evidential activations influence learning dynamics. Building on this analysis, we design a general family of activation functions and corresponding evidential regularizers that provide an alternative pathway for consistent evidence updates across activation regimes. Extensive experiments on four benchmark classification problems (MNIST, CIFAR-10, CIFAR-100, and Tiny-ImageNet), two few-shot classification problems, and blind face restoration problem empirically validate the developed theory and demonstrate the effectiveness of the proposed generalized regularized evidential models.",
+        "authors": [
+          "Deep Shankar Pandey",
+          "Hyomin Choi",
+          "Qi Yu"
+        ],
+        "arxiv_id": "2512.23753v1",
+        "url": "http://arxiv.org/abs/2512.23753v1",
+        "published": "2025-12-27T11:26:18Z",
+        "year": 2025,
+        "source_query": "deep learning"
+      }
+    ],
+    "crossref": [
+      {
+        "title": "What’s Deep About Deep Learning?",
+        "doi": "10.4135/9781506368603.n2",
+        "DOI": "10.4135/9781506368603.n2",
+        "authors": [],
+        "author": [],
+        "venue": "Deep Learning",
+        "container-title": [
+          "Deep Learning"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.4135/9781506368603.n2",
+        "URL": "https://doi.org/10.4135/9781506368603.n2",
+        "year": 2018,
+        "publication_year": 2018,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Designing Deep Learning: Learning Partnerships",
+        "doi": "10.4135/9781506368603.n5",
+        "DOI": "10.4135/9781506368603.n5",
+        "authors": [],
+        "author": [],
+        "venue": "Deep Learning",
+        "container-title": [
+          "Deep Learning"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.4135/9781506368603.n5",
+        "URL": "https://doi.org/10.4135/9781506368603.n5",
+        "year": 2018,
+        "publication_year": 2018,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Designing Deep Learning: Learning Environments, Leveraging Digital, Pedagogical Practices",
+        "doi": "10.4135/9781506368603.n6",
+        "DOI": "10.4135/9781506368603.n6",
+        "authors": [],
+        "author": [],
+        "venue": "Deep Learning",
+        "container-title": [
+          "Deep Learning"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.4135/9781506368603.n6",
+        "URL": "https://doi.org/10.4135/9781506368603.n6",
+        "year": 2018,
+        "publication_year": 2018,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Reinforcement Learning and Deep Reinforcement Learning",
+        "doi": "10.1017/9781108955652.016",
+        "DOI": "10.1017/9781108955652.016",
+        "authors": [],
+        "author": [],
+        "venue": "Deep Learning in Science",
+        "container-title": [
+          "Deep Learning in Science"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1017/9781108955652.016",
+        "URL": "https://doi.org/10.1017/9781108955652.016",
+        "year": 2021,
+        "publication_year": 2021,
+        "citation_count": 4,
+        "_crossref_type": "other"
+      },
+      {
+        "title": "New Measures for Deep Learning",
+        "doi": "10.4135/9781506368603.n9",
+        "DOI": "10.4135/9781506368603.n9",
+        "authors": [],
+        "author": [],
+        "venue": "Deep Learning",
+        "container-title": [
+          "Deep Learning"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.4135/9781506368603.n9",
+        "URL": "https://doi.org/10.4135/9781506368603.n9",
+        "year": 2018,
+        "publication_year": 2018,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "doi": "10.14293/s2199-1006.1.sor-uncat.clzwyuz.v1",
+        "DOI": "10.14293/s2199-1006.1.sor-uncat.clzwyuz.v1",
+        "authors": [
+          "Farshid PirahanSiah"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0000-0001-8382-1389",
+            "authenticated-orcid": false,
+            "given": "Farshid",
+            "family": "PirahanSiah",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.14293/s2199-1006.1.sor-uncat.clzwyuz.v1",
+        "URL": "https://doi.org/10.14293/s2199-1006.1.sor-uncat.clzwyuz.v1",
+        "year": 2019,
+        "publication_year": 2019,
+        "citation_count": 3,
+        "_crossref_type": "database"
+      },
+      {
+        "title": "Introduction to Deep Learning",
+        "doi": "10.7551/mitpress/11171.003.0004",
+        "DOI": "10.7551/mitpress/11171.003.0004",
+        "authors": [],
+        "author": [],
+        "venue": "Deep Learning",
+        "container-title": [
+          "Deep Learning"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.7551/mitpress/11171.003.0004",
+        "URL": "https://doi.org/10.7551/mitpress/11171.003.0004",
+        "year": 2019,
+        "publication_year": 2019,
+        "citation_count": 4,
+        "_crossref_type": "book-chapter"
+      }
+    ],
+    "github": [
+      {
+        "id": 290091948,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyOTAwOTE5NDg=",
+        "name": "annotated_deep_learning_paper_implementations",
+        "full_name": "labmlai/annotated_deep_learning_paper_implementations",
+        "private": false,
+        "owner": {
+          "login": "labmlai",
+          "id": 64068543,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjY0MDY4NTQz",
+          "avatar_url": "https://avatars.githubusercontent.com/u/64068543?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/labmlai",
+          "html_url": "https://github.com/labmlai",
+          "followers_url": "https://api.github.com/users/labmlai/followers",
+          "following_url": "https://api.github.com/users/labmlai/following{/other_user}",
+          "gists_url": "https://api.github.com/users/labmlai/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/labmlai/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/labmlai/subscriptions",
+          "organizations_url": "https://api.github.com/users/labmlai/orgs",
+          "repos_url": "https://api.github.com/users/labmlai/repos",
+          "events_url": "https://api.github.com/users/labmlai/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/labmlai/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/labmlai/annotated_deep_learning_paper_implementations",
+        "description": "🧑‍🏫 60+ Implementations/tutorials of deep learning papers with side-by-side notes 📝; including transformers (original, xl, switch, feedback, vit, ...), optimizers (adam, adabelief, sophia, ...), gans(cyclegan, stylegan2, ...), 🎮 reinforcement learning (ppo, dqn), capsnet, distillation, ... 🧠",
+        "fork": false,
+        "url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations",
+        "forks_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/forks",
+        "keys_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/teams",
+        "hooks_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/hooks",
+        "issue_events_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/events",
+        "assignees_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/tags",
+        "blobs_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/languages",
+        "stargazers_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/stargazers",
+        "contributors_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/contributors",
+        "subscribers_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/subscribers",
+        "subscription_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/subscription",
+        "commits_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/merges",
+        "archive_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/downloads",
+        "issues_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/labels{/name}",
+        "releases_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/labmlai/annotated_deep_learning_paper_implementations/deployments",
+        "created_at": "2020-08-25T02:29:34Z",
+        "updated_at": "2026-07-06T05:37:25Z",
+        "pushed_at": "2026-01-22T04:26:00Z",
+        "git_url": "git://github.com/labmlai/annotated_deep_learning_paper_implementations.git",
+        "ssh_url": "git@github.com:labmlai/annotated_deep_learning_paper_implementations.git",
+        "clone_url": "https://github.com/labmlai/annotated_deep_learning_paper_implementations.git",
+        "svn_url": "https://github.com/labmlai/annotated_deep_learning_paper_implementations",
+        "homepage": "https://nn.labml.ai",
+        "size": 156370,
+        "stargazers_count": 67042,
+        "watchers_count": 67042,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_discussions": true,
+        "forks_count": 6728,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 32,
+        "license": {
+          "key": "mit",
+          "name": "MIT License",
+          "spdx_id": "MIT",
+          "url": "https://api.github.com/licenses/mit",
+          "node_id": "MDc6TGljZW5zZTEz"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "attention",
+          "deep-learning",
+          "deep-learning-tutorial",
+          "gan",
+          "literate-programming",
+          "lora",
+          "machine-learning",
+          "neural-networks",
+          "optimizers",
+          "pytorch",
+          "reinforcement-learning",
+          "transformer",
+          "transformers"
+        ],
+        "visibility": "public",
+        "forks": 6728,
+        "open_issues": 32,
+        "watchers": 67042,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 67042
+      },
+      {
+        "id": 33015583,
+        "node_id": "MDEwOlJlcG9zaXRvcnkzMzAxNTU4Mw==",
+        "name": "keras",
+        "full_name": "keras-team/keras",
+        "private": false,
+        "owner": {
+          "login": "keras-team",
+          "id": 34455048,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjM0NDU1MDQ4",
+          "avatar_url": "https://avatars.githubusercontent.com/u/34455048?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/keras-team",
+          "html_url": "https://github.com/keras-team",
+          "followers_url": "https://api.github.com/users/keras-team/followers",
+          "following_url": "https://api.github.com/users/keras-team/following{/other_user}",
+          "gists_url": "https://api.github.com/users/keras-team/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/keras-team/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/keras-team/subscriptions",
+          "organizations_url": "https://api.github.com/users/keras-team/orgs",
+          "repos_url": "https://api.github.com/users/keras-team/repos",
+          "events_url": "https://api.github.com/users/keras-team/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/keras-team/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/keras-team/keras",
+        "description": "Deep Learning for humans",
+        "fork": false,
+        "url": "https://api.github.com/repos/keras-team/keras",
+        "forks_url": "https://api.github.com/repos/keras-team/keras/forks",
+        "keys_url": "https://api.github.com/repos/keras-team/keras/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/keras-team/keras/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/keras-team/keras/teams",
+        "hooks_url": "https://api.github.com/repos/keras-team/keras/hooks",
+        "issue_events_url": "https://api.github.com/repos/keras-team/keras/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/keras-team/keras/events",
+        "assignees_url": "https://api.github.com/repos/keras-team/keras/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/keras-team/keras/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/keras-team/keras/tags",
+        "blobs_url": "https://api.github.com/repos/keras-team/keras/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/keras-team/keras/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/keras-team/keras/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/keras-team/keras/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/keras-team/keras/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/keras-team/keras/languages",
+        "stargazers_url": "https://api.github.com/repos/keras-team/keras/stargazers",
+        "contributors_url": "https://api.github.com/repos/keras-team/keras/contributors",
+        "subscribers_url": "https://api.github.com/repos/keras-team/keras/subscribers",
+        "subscription_url": "https://api.github.com/repos/keras-team/keras/subscription",
+        "commits_url": "https://api.github.com/repos/keras-team/keras/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/keras-team/keras/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/keras-team/keras/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/keras-team/keras/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/keras-team/keras/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/keras-team/keras/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/keras-team/keras/merges",
+        "archive_url": "https://api.github.com/repos/keras-team/keras/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/keras-team/keras/downloads",
+        "issues_url": "https://api.github.com/repos/keras-team/keras/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/keras-team/keras/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/keras-team/keras/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/keras-team/keras/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/keras-team/keras/labels{/name}",
+        "releases_url": "https://api.github.com/repos/keras-team/keras/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/keras-team/keras/deployments",
+        "created_at": "2015-03-28T00:35:42Z",
+        "updated_at": "2026-07-06T06:52:45Z",
+        "pushed_at": "2026-07-01T17:25:07Z",
+        "git_url": "git://github.com/keras-team/keras.git",
+        "ssh_url": "git@github.com:keras-team/keras.git",
+        "clone_url": "https://github.com/keras-team/keras.git",
+        "svn_url": "https://github.com/keras-team/keras",
+        "homepage": "http://keras.io/",
+        "size": 54121,
+        "stargazers_count": 64152,
+        "watchers_count": 64152,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 19758,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 225,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "data-science",
+          "deep-learning",
+          "jax",
+          "machine-learning",
+          "neural-networks",
+          "python",
+          "pytorch",
+          "tensorflow"
+        ],
+        "visibility": "public",
+        "forks": 19758,
+        "open_issues": 225,
+        "watchers": 64152,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 64152
+      },
+      {
+        "id": 138839979,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxMzg4Mzk5Nzk=",
+        "name": "DeepLearning-500-questions",
+        "full_name": "scutan90/DeepLearning-500-questions",
+        "private": false,
+        "owner": {
+          "login": "scutan90",
+          "id": 31844692,
+          "node_id": "MDQ6VXNlcjMxODQ0Njky",
+          "avatar_url": "https://avatars.githubusercontent.com/u/31844692?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/scutan90",
+          "html_url": "https://github.com/scutan90",
+          "followers_url": "https://api.github.com/users/scutan90/followers",
+          "following_url": "https://api.github.com/users/scutan90/following{/other_user}",
+          "gists_url": "https://api.github.com/users/scutan90/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/scutan90/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/scutan90/subscriptions",
+          "organizations_url": "https://api.github.com/users/scutan90/orgs",
+          "repos_url": "https://api.github.com/users/scutan90/repos",
+          "events_url": "https://api.github.com/users/scutan90/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/scutan90/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/scutan90/DeepLearning-500-questions",
+        "description": "深度学习500问，以问答形式对常用的概率知识、线性代数、机器学习、深度学习、计算机视觉等热点问题进行阐述，以帮助自己及有需要的读者。 全书分为18个章节，50余万字。由于水平有限，书中不妥之处恳请广大读者批评指正。   未完待续............ 如有意合作，联系scutjy2015@163.com                     版权所有，违权必究       Tan 2018.06",
+        "fork": false,
+        "url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions",
+        "forks_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/forks",
+        "keys_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/teams",
+        "hooks_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/hooks",
+        "issue_events_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/events",
+        "assignees_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/tags",
+        "blobs_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/languages",
+        "stargazers_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/stargazers",
+        "contributors_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/contributors",
+        "subscribers_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/subscribers",
+        "subscription_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/subscription",
+        "commits_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/merges",
+        "archive_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/downloads",
+        "issues_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/labels{/name}",
+        "releases_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/scutan90/DeepLearning-500-questions/deployments",
+        "created_at": "2018-06-27T06:36:45Z",
+        "updated_at": "2026-07-06T06:33:24Z",
+        "pushed_at": "2024-06-26T12:10:14Z",
+        "git_url": "git://github.com/scutan90/DeepLearning-500-questions.git",
+        "ssh_url": "git@github.com:scutan90/DeepLearning-500-questions.git",
+        "clone_url": "https://github.com/scutan90/DeepLearning-500-questions.git",
+        "svn_url": "https://github.com/scutan90/DeepLearning-500-questions",
+        "homepage": "https://github.com/scutan90/DeepLearning-500-questions",
+        "size": 207074,
+        "stargazers_count": 57474,
+        "watchers_count": 57474,
+        "language": "JavaScript",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_discussions": false,
+        "forks_count": 15909,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 120,
+        "license": {
+          "key": "gpl-3.0",
+          "name": "GNU General Public License v3.0",
+          "spdx_id": "GPL-3.0",
+          "url": "https://api.github.com/licenses/gpl-3.0",
+          "node_id": "MDc6TGljZW5zZTk="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 15909,
+        "open_issues": 120,
+        "watchers": 57474,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 57474
+      },
+      {
+        "id": 265612440,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyNjU2MTI0NDA=",
+        "name": "TTS",
+        "full_name": "coqui-ai/TTS",
+        "private": false,
+        "owner": {
+          "login": "coqui-ai",
+          "id": 75583352,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjc1NTgzMzUy",
+          "avatar_url": "https://avatars.githubusercontent.com/u/75583352?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/coqui-ai",
+          "html_url": "https://github.com/coqui-ai",
+          "followers_url": "https://api.github.com/users/coqui-ai/followers",
+          "following_url": "https://api.github.com/users/coqui-ai/following{/other_user}",
+          "gists_url": "https://api.github.com/users/coqui-ai/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/coqui-ai/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/coqui-ai/subscriptions",
+          "organizations_url": "https://api.github.com/users/coqui-ai/orgs",
+          "repos_url": "https://api.github.com/users/coqui-ai/repos",
+          "events_url": "https://api.github.com/users/coqui-ai/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/coqui-ai/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/coqui-ai/TTS",
+        "description": "🐸💬 - a deep learning toolkit for Text-to-Speech, battle-tested in research and production",
+        "fork": false,
+        "url": "https://api.github.com/repos/coqui-ai/TTS",
+        "forks_url": "https://api.github.com/repos/coqui-ai/TTS/forks",
+        "keys_url": "https://api.github.com/repos/coqui-ai/TTS/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/coqui-ai/TTS/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/coqui-ai/TTS/teams",
+        "hooks_url": "https://api.github.com/repos/coqui-ai/TTS/hooks",
+        "issue_events_url": "https://api.github.com/repos/coqui-ai/TTS/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/coqui-ai/TTS/events",
+        "assignees_url": "https://api.github.com/repos/coqui-ai/TTS/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/coqui-ai/TTS/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/coqui-ai/TTS/tags",
+        "blobs_url": "https://api.github.com/repos/coqui-ai/TTS/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/coqui-ai/TTS/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/coqui-ai/TTS/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/coqui-ai/TTS/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/coqui-ai/TTS/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/coqui-ai/TTS/languages",
+        "stargazers_url": "https://api.github.com/repos/coqui-ai/TTS/stargazers",
+        "contributors_url": "https://api.github.com/repos/coqui-ai/TTS/contributors",
+        "subscribers_url": "https://api.github.com/repos/coqui-ai/TTS/subscribers",
+        "subscription_url": "https://api.github.com/repos/coqui-ai/TTS/subscription",
+        "commits_url": "https://api.github.com/repos/coqui-ai/TTS/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/coqui-ai/TTS/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/coqui-ai/TTS/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/coqui-ai/TTS/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/coqui-ai/TTS/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/coqui-ai/TTS/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/coqui-ai/TTS/merges",
+        "archive_url": "https://api.github.com/repos/coqui-ai/TTS/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/coqui-ai/TTS/downloads",
+        "issues_url": "https://api.github.com/repos/coqui-ai/TTS/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/coqui-ai/TTS/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/coqui-ai/TTS/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/coqui-ai/TTS/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/coqui-ai/TTS/labels{/name}",
+        "releases_url": "https://api.github.com/repos/coqui-ai/TTS/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/coqui-ai/TTS/deployments",
+        "created_at": "2020-05-20T15:45:28Z",
+        "updated_at": "2026-07-06T03:22:29Z",
+        "pushed_at": "2024-08-16T12:07:14Z",
+        "git_url": "git://github.com/coqui-ai/TTS.git",
+        "ssh_url": "git@github.com:coqui-ai/TTS.git",
+        "clone_url": "https://github.com/coqui-ai/TTS.git",
+        "svn_url": "https://github.com/coqui-ai/TTS",
+        "homepage": "http://coqui.ai",
+        "size": 170196,
+        "stargazers_count": 45697,
+        "watchers_count": 45697,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 6142,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 6,
+        "license": {
+          "key": "mpl-2.0",
+          "name": "Mozilla Public License 2.0",
+          "spdx_id": "MPL-2.0",
+          "url": "https://api.github.com/licenses/mpl-2.0",
+          "node_id": "MDc6TGljZW5zZTE0"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "deep-learning",
+          "glow-tts",
+          "hifigan",
+          "melgan",
+          "multi-speaker-tts",
+          "python",
+          "pytorch",
+          "speaker-encoder",
+          "speaker-encodings",
+          "speech",
+          "speech-synthesis",
+          "tacotron",
+          "text-to-speech",
+          "tts",
+          "tts-model",
+          "vocoder",
+          "voice-cloning",
+          "voice-conversion",
+          "voice-synthesis"
+        ],
+        "visibility": "public",
+        "forks": 6142,
+        "open_issues": 6,
+        "watchers": 45697,
+        "default_branch": "dev",
+        "score": 1.0,
+        "stars": 45697
+      },
+      {
+        "id": 235860204,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyMzU4NjAyMDQ=",
+        "name": "DeepSpeed",
+        "full_name": "deepspeedai/DeepSpeed",
+        "private": false,
+        "owner": {
+          "login": "deepspeedai",
+          "id": 74068820,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjc0MDY4ODIw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/74068820?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/deepspeedai",
+          "html_url": "https://github.com/deepspeedai",
+          "followers_url": "https://api.github.com/users/deepspeedai/followers",
+          "following_url": "https://api.github.com/users/deepspeedai/following{/other_user}",
+          "gists_url": "https://api.github.com/users/deepspeedai/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/deepspeedai/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/deepspeedai/subscriptions",
+          "organizations_url": "https://api.github.com/users/deepspeedai/orgs",
+          "repos_url": "https://api.github.com/users/deepspeedai/repos",
+          "events_url": "https://api.github.com/users/deepspeedai/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/deepspeedai/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/deepspeedai/DeepSpeed",
+        "description": "DeepSpeed is a deep learning optimization library that makes distributed training and inference easy, efficient, and effective.",
+        "fork": false,
+        "url": "https://api.github.com/repos/deepspeedai/DeepSpeed",
+        "forks_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/forks",
+        "keys_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/teams",
+        "hooks_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/hooks",
+        "issue_events_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/events",
+        "assignees_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/tags",
+        "blobs_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/languages",
+        "stargazers_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/stargazers",
+        "contributors_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/contributors",
+        "subscribers_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/subscribers",
+        "subscription_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/subscription",
+        "commits_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/merges",
+        "archive_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/downloads",
+        "issues_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/labels{/name}",
+        "releases_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/deepspeedai/DeepSpeed/deployments",
+        "created_at": "2020-01-23T18:35:18Z",
+        "updated_at": "2026-07-06T07:45:48Z",
+        "pushed_at": "2026-07-06T00:20:16Z",
+        "git_url": "git://github.com/deepspeedai/DeepSpeed.git",
+        "ssh_url": "git@github.com:deepspeedai/DeepSpeed.git",
+        "clone_url": "https://github.com/deepspeedai/DeepSpeed.git",
+        "svn_url": "https://github.com/deepspeedai/DeepSpeed",
+        "homepage": "https://www.deepspeed.ai/",
+        "size": 246795,
+        "stargazers_count": 42663,
+        "watchers_count": 42663,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": true,
+        "has_discussions": true,
+        "forks_count": 4880,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 1307,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "billion-parameters",
+          "compression",
+          "data-parallelism",
+          "deep-learning",
+          "gpu",
+          "inference",
+          "machine-learning",
+          "mixture-of-experts",
+          "model-parallelism",
+          "pipeline-parallelism",
+          "pytorch",
+          "trillion-parameters",
+          "zero"
+        ],
+        "visibility": "public",
+        "forks": 4880,
+        "open_issues": 1307,
+        "watchers": 42663,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 42663
+      },
+      {
+        "id": 70905478,
+        "node_id": "MDEwOlJlcG9zaXRvcnk3MDkwNTQ3OA==",
+        "name": "Deep-Learning-Papers-Reading-Roadmap",
+        "full_name": "floodsung/Deep-Learning-Papers-Reading-Roadmap",
+        "private": false,
+        "owner": {
+          "login": "floodsung",
+          "id": 3880963,
+          "node_id": "MDQ6VXNlcjM4ODA5NjM=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/3880963?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/floodsung",
+          "html_url": "https://github.com/floodsung",
+          "followers_url": "https://api.github.com/users/floodsung/followers",
+          "following_url": "https://api.github.com/users/floodsung/following{/other_user}",
+          "gists_url": "https://api.github.com/users/floodsung/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/floodsung/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/floodsung/subscriptions",
+          "organizations_url": "https://api.github.com/users/floodsung/orgs",
+          "repos_url": "https://api.github.com/users/floodsung/repos",
+          "events_url": "https://api.github.com/users/floodsung/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/floodsung/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap",
+        "description": "Deep Learning papers reading roadmap for anyone who are eager to learn this amazing tech!",
+        "fork": false,
+        "url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap",
+        "forks_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/forks",
+        "keys_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/teams",
+        "hooks_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/hooks",
+        "issue_events_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/events",
+        "assignees_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/tags",
+        "blobs_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/languages",
+        "stargazers_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/stargazers",
+        "contributors_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/contributors",
+        "subscribers_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/subscribers",
+        "subscription_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/subscription",
+        "commits_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/merges",
+        "archive_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/downloads",
+        "issues_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/labels{/name}",
+        "releases_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/floodsung/Deep-Learning-Papers-Reading-Roadmap/deployments",
+        "created_at": "2016-10-14T11:49:48Z",
+        "updated_at": "2026-07-06T07:20:52Z",
+        "pushed_at": "2022-11-27T13:18:32Z",
+        "git_url": "git://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap.git",
+        "ssh_url": "git@github.com:floodsung/Deep-Learning-Papers-Reading-Roadmap.git",
+        "clone_url": "https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap.git",
+        "svn_url": "https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap",
+        "homepage": "",
+        "size": 3638,
+        "stargazers_count": 39531,
+        "watchers_count": 39531,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 7285,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 91,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "deep-learning"
+        ],
+        "visibility": "public",
+        "forks": 7285,
+        "open_issues": 91,
+        "watchers": 39531,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 39531
+      },
+      {
+        "id": 75830968,
+        "node_id": "MDEwOlJlcG9zaXRvcnk3NTgzMDk2OA==",
+        "name": "deeplearningbook-chinese",
+        "full_name": "exacity/deeplearningbook-chinese",
+        "private": false,
+        "owner": {
+          "login": "exacity",
+          "id": 24405523,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjI0NDA1NTIz",
+          "avatar_url": "https://avatars.githubusercontent.com/u/24405523?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/exacity",
+          "html_url": "https://github.com/exacity",
+          "followers_url": "https://api.github.com/users/exacity/followers",
+          "following_url": "https://api.github.com/users/exacity/following{/other_user}",
+          "gists_url": "https://api.github.com/users/exacity/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/exacity/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/exacity/subscriptions",
+          "organizations_url": "https://api.github.com/users/exacity/orgs",
+          "repos_url": "https://api.github.com/users/exacity/repos",
+          "events_url": "https://api.github.com/users/exacity/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/exacity/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/exacity/deeplearningbook-chinese",
+        "description": "Deep Learning Book Chinese Translation",
+        "fork": false,
+        "url": "https://api.github.com/repos/exacity/deeplearningbook-chinese",
+        "forks_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/forks",
+        "keys_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/teams",
+        "hooks_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/hooks",
+        "issue_events_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/events",
+        "assignees_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/tags",
+        "blobs_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/languages",
+        "stargazers_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/stargazers",
+        "contributors_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/contributors",
+        "subscribers_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/subscribers",
+        "subscription_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/subscription",
+        "commits_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/merges",
+        "archive_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/downloads",
+        "issues_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/labels{/name}",
+        "releases_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/exacity/deeplearningbook-chinese/deployments",
+        "created_at": "2016-12-07T11:46:51Z",
+        "updated_at": "2026-07-06T06:58:45Z",
+        "pushed_at": "2019-12-03T04:25:44Z",
+        "git_url": "git://github.com/exacity/deeplearningbook-chinese.git",
+        "ssh_url": "git@github.com:exacity/deeplearningbook-chinese.git",
+        "clone_url": "https://github.com/exacity/deeplearningbook-chinese.git",
+        "svn_url": "https://github.com/exacity/deeplearningbook-chinese",
+        "homepage": "https://exacity.github.io/deeplearningbook-chinese",
+        "size": 8908,
+        "stargazers_count": 37304,
+        "watchers_count": 37304,
+        "language": "TeX",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_discussions": false,
+        "forks_count": 9125,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 67,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 9125,
+        "open_issues": 67,
+        "watchers": 37304,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 37304
+      },
+      {
+        "id": 326174741,
+        "node_id": "MDEwOlJlcG9zaXRvcnkzMjYxNzQ3NDE=",
+        "name": "500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code",
+        "full_name": "ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code",
+        "private": false,
+        "owner": {
+          "login": "ashishpatel26",
+          "id": 3095771,
+          "node_id": "MDQ6VXNlcjMwOTU3NzE=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/3095771?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/ashishpatel26",
+          "html_url": "https://github.com/ashishpatel26",
+          "followers_url": "https://api.github.com/users/ashishpatel26/followers",
+          "following_url": "https://api.github.com/users/ashishpatel26/following{/other_user}",
+          "gists_url": "https://api.github.com/users/ashishpatel26/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/ashishpatel26/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/ashishpatel26/subscriptions",
+          "organizations_url": "https://api.github.com/users/ashishpatel26/orgs",
+          "repos_url": "https://api.github.com/users/ashishpatel26/repos",
+          "events_url": "https://api.github.com/users/ashishpatel26/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/ashishpatel26/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code",
+        "description": "500 AI Machine learning Deep learning Computer vision NLP Projects with code",
+        "fork": false,
+        "url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code",
+        "forks_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/forks",
+        "keys_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/teams",
+        "hooks_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/hooks",
+        "issue_events_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/events",
+        "assignees_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/tags",
+        "blobs_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/languages",
+        "stargazers_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/stargazers",
+        "contributors_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/contributors",
+        "subscribers_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/subscribers",
+        "subscription_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/subscription",
+        "commits_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/merges",
+        "archive_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/downloads",
+        "issues_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/labels{/name}",
+        "releases_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/deployments",
+        "created_at": "2021-01-02T12:08:37Z",
+        "updated_at": "2026-07-06T07:40:55Z",
+        "pushed_at": "2025-08-01T11:54:09Z",
+        "git_url": "git://github.com/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code.git",
+        "ssh_url": "git@github.com:ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code.git",
+        "clone_url": "https://github.com/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code.git",
+        "svn_url": "https://github.com/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code",
+        "homepage": "",
+        "size": 879,
+        "stargazers_count": 35183,
+        "watchers_count": 35183,
+        "language": null,
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_discussions": false,
+        "forks_count": 7322,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 67,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "artificial-intelligence",
+          "artificial-intelligence-projects",
+          "awesome",
+          "computer-vision",
+          "computer-vision-project",
+          "data-science",
+          "deep-learning",
+          "deep-learning-project",
+          "machine-learning",
+          "machine-learning-projects",
+          "nlp",
+          "nlp-projects",
+          "python"
+        ],
+        "visibility": "public",
+        "forks": 7322,
+        "open_issues": 67,
+        "watchers": 35183,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 35183
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<computer-vision-deep-learning-deep-reinforcement-learning>",
+        "type": "paper",
+        "title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "role": "survey"
+      },
+      {
+        "id": "paper:<introduction-to-deep-learning>",
+        "type": "paper",
+        "title": "Introduction to Deep Learning",
+        "role": "survey"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Detection of Malicious Applications Using YOLO V3-Spatial Pyramid Pooling over Optical Character Recognition for Computing Access Time",
+      "abstract": "The goal of research is to use the Novel YOLO V3 SPP for detecting malicious applications while comparingit with the OCR technique for computation of access time. Materials and Methods: The Innovative YOLO V3SPP algorithm is used to determine access time using a sample size of (N=25), a total sample size of (N=50),and G power is computed to be 80%. In terms of data exploitation prediction, the Novel YOLO V3 SPP hasan access time that is slower (83.36ms) than the OCR algorithm's (79.64ms). According to the results, thereis no statistically significant difference between the Novel YOLO V3 SPP Algorithm and the OCR Algorithmwith p=0.218 (independent sample t-test p<0.05). In comparison to OCR's access time of 79.64ms, the novelYOLO V3 SPP method predicts vulnerabilities in native programmes with a longer access time of 83.36ms.",
+      "year": 2024,
+      "venue": "Proceedings of the 1st International Conference on Artificial Intelligence for Internet of Things: Accelerating Innovation in Industry and Consumer Electronics",
+      "citation_count": 0,
+      "doi": "10.5220/0012571800003739",
+      "arxiv_id": null,
+      "paper_id": "2e6f988313ef7d36e6775e5d0d6821e646037ef2",
+      "url": "https://www.semanticscholar.org/paper/2e6f988313ef7d36e6775e5d0d6821e646037ef2",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "Computer Vision, Deep Learning, Deep Reinforcement Learning"
+    },
+    {
+      "title": "An End-to-End Deep Learning System for Recommending Healthy Recipes Based on Food Images",
+      "abstract": "—Healthy food leads to healthy living and it is a major issue in our days. Nutri-Score is a nutrition label that can be calculated from the nutritional values of a food and helps evaluating the healthiness of it. Nevertheless, we don’t always have the nutritional values of the food, so it is not always easy identifying this label. In the same way, it is not easy finding the healthier option to a favorite food. In this paper an end-to end deep learning system is proposed to identify the Nutri-Score label and recommend similar but healthier recipes based on food images. A new dataset of images is extracted from the Recipe 1M and labeled with the Nutri-Score value calculated for each image. Pretrained models Resnet50, Resnet101, EfficientNetB2 and DensNet121 are tuned based on this dataset. The embeddings from the last convolutional layer of the input image are used to find its most similar neighbor based on KNN algorithm. The proposed system suggests recipes with the lowest Nutri-Score similar to the inputted image. Implementations show that the Resnet50 provides highest prediction accuracy.",
+      "year": 2023,
+      "venue": "International Journal of Advanced Computer Science and Applications",
+      "citation_count": 0,
+      "doi": "10.14569/ijacsa.2023.0140401",
+      "arxiv_id": null,
+      "paper_id": "8bbc4d9483edb19b2a23b252bf75971598bc65c3",
+      "url": "https://www.semanticscholar.org/paper/8bbc4d9483edb19b2a23b252bf75971598bc65c3",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "Computer Vision, Deep Learning, Deep Reinforcement Learning"
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Broad survey of computer vision and deep learning, but lacks specific focus on concrete mesoscopic damage detection.",
+      "doi": "10.14293/s2199-1006.1.sor-uncat.clzwyuz.v1",
+      "url": "https://doi.org/10.14293/s2199-1006.1.sor-uncat.clzwyuz.v1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Introduction to Deep Learning",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "General introduction to deep learning, not directly addressing concrete damage feature detection.",
+      "doi": "10.7551/mitpress/11171.003.0004",
+      "url": "https://doi.org/10.7551/mitpress/11171.003.0004",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    }
+  ],
+  "weak_papers": [],
+  "dataset_candidates": [],
+  "repo_candidates": [],
+  "baseline_candidates": [],
+  "parallel_candidates": [],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 2,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "dataset_extractions_tried": 2,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 0,
+    "parallel_n": 0,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 2
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于深度学习的混凝土细观损伤特征检测研究",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 0,
+    "low_bar_status": null,
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": []
+  },
+  "filter_results": {
+    "total": 23,
+    "kept": 15,
+    "dropped": 8,
+    "dropped_items": [
+      {
+        "title": "labmlai/annotated_deep_learning_paper_implementations",
+        "reason": "This is a GitHub repository containing implementations and tutorials of deep learning papers, not a research paper itself."
+      },
+      {
+        "title": "keras-team/keras",
+        "reason": "This is a GitHub repository for the Keras deep learning library, not a research paper."
+      },
+      {
+        "title": "scutan90/DeepLearning-500-questions",
+        "reason": "This is a GitHub repository containing a collection of questions and answers about deep learning, not a research paper."
+      },
+      {
+        "title": "coqui-ai/TTS",
+        "reason": "This is a GitHub repository for a text-to-speech toolkit, not a research paper."
+      },
+      {
+        "title": "deepspeedai/DeepSpeed",
+        "reason": "This is a GitHub repository for a deep learning optimization library, not a research paper."
+      },
+      {
+        "title": "floodsung/Deep-Learning-Papers-Reading-Roadmap",
+        "reason": "This is a GitHub repository containing a reading roadmap for deep learning papers, not a research paper itself."
+      },
+      {
+        "title": "exacity/deeplearningbook-chinese",
+        "reason": "This is a GitHub repository for a Chinese translation of the Deep Learning book, not a research paper."
+      },
+      {
+        "title": "ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code",
+        "reason": "This is a GitHub repository listing AI/ML projects with code, not a research paper."
+      }
+    ]
+  },
+  "seed_papers": [
+    {
+      "title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Broad survey of computer vision and deep learning, but lacks specific focus on concrete mesoscopic damage detection.",
+      "doi": "10.14293/s2199-1006.1.sor-uncat.clzwyuz.v1",
+      "url": "https://doi.org/10.14293/s2199-1006.1.sor-uncat.clzwyuz.v1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=4",
+      "relevance_score": 4
+    },
+    {
+      "title": "Introduction to Deep Learning",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "General introduction to deep learning, not directly addressing concrete damage feature detection.",
+      "doi": "10.7551/mitpress/11171.003.0004",
+      "url": "https://doi.org/10.7551/mitpress/11171.003.0004",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=4",
+      "relevance_score": 4
+    }
+  ],
+  "expanded_papers": [
+    {
+      "title": "Detection of Malicious Applications Using YOLO V3-Spatial Pyramid Pooling over Optical Character Recognition for Computing Access Time",
+      "abstract": "The goal of research is to use the Novel YOLO V3 SPP for detecting malicious applications while comparingit with the OCR technique for computation of access time. Materials and Methods: The Innovative YOLO V3SPP algorithm is used to determine access time using a sample size of (N=25), a total sample size of (N=50),and G power is computed to be 80%. In terms of data exploitation prediction, the Novel YOLO V3 SPP hasan access time that is slower (83.36ms) than the OCR algorithm's (79.64ms). According to the results, thereis no statistically significant difference between the Novel YOLO V3 SPP Algorithm and the OCR Algorithmwith p=0.218 (independent sample t-test p<0.05). In comparison to OCR's access time of 79.64ms, the novelYOLO V3 SPP method predicts vulnerabilities in native programmes with a longer access time of 83.36ms.",
+      "year": 2024,
+      "venue": "Proceedings of the 1st International Conference on Artificial Intelligence for Internet of Things: Accelerating Innovation in Industry and Consumer Electronics",
+      "citation_count": 0,
+      "doi": "10.5220/0012571800003739",
+      "arxiv_id": null,
+      "paper_id": "2e6f988313ef7d36e6775e5d0d6821e646037ef2",
+      "url": "https://www.semanticscholar.org/paper/2e6f988313ef7d36e6775e5d0d6821e646037ef2",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "Computer Vision, Deep Learning, Deep Reinforcement Learning"
+    },
+    {
+      "title": "An End-to-End Deep Learning System for Recommending Healthy Recipes Based on Food Images",
+      "abstract": "—Healthy food leads to healthy living and it is a major issue in our days. Nutri-Score is a nutrition label that can be calculated from the nutritional values of a food and helps evaluating the healthiness of it. Nevertheless, we don’t always have the nutritional values of the food, so it is not always easy identifying this label. In the same way, it is not easy finding the healthier option to a favorite food. In this paper an end-to end deep learning system is proposed to identify the Nutri-Score label and recommend similar but healthier recipes based on food images. A new dataset of images is extracted from the Recipe 1M and labeled with the Nutri-Score value calculated for each image. Pretrained models Resnet50, Resnet101, EfficientNetB2 and DensNet121 are tuned based on this dataset. The embeddings from the last convolutional layer of the input image are used to find its most similar neighbor based on KNN algorithm. The proposed system suggests recipes with the lowest Nutri-Score similar to the inputted image. Implementations show that the Resnet50 provides highest prediction accuracy.",
+      "year": 2023,
+      "venue": "International Journal of Advanced Computer Science and Applications",
+      "citation_count": 0,
+      "doi": "10.14569/ijacsa.2023.0140401",
+      "arxiv_id": null,
+      "paper_id": "8bbc4d9483edb19b2a23b252bf75971598bc65c3",
+      "url": "https://www.semanticscholar.org/paper/8bbc4d9483edb19b2a23b252bf75971598bc65c3",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "Computer Vision, Deep Learning, Deep Reinforcement Learning"
+    }
+  ],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "not_recommended",
+    "score": 15,
+    "reason": "无baseline论文、数据集和代码仓库，题目宽泛，缺乏可复现基础，毕业风险极高。",
+    "100_plus_formula": {
+      "baseline_weight": 0,
+      "module_weights": [],
+      "estimated_total": 0,
+      "assessment": "不足"
+    },
+    "degradation_paths": [
+      "无baseline导致方法设计无据可依",
+      "无数据集无法训练和验证模型",
+      "无代码仓库无法复现和扩展"
+    ]
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "引入迁移学习与数据增强策略",
+        "expected_gain": "提升模型泛化能力，缓解小样本过拟合，提高损伤检测精度",
+        "difficulty": "低",
+        "action_items": [
+          "收集公开混凝土CT/图像数据集进行预训练",
+          "采用旋转、裁剪、噪声添加等数据增强方法",
+          "使用预训练模型（如ResNet、UNet）进行微调"
+        ],
+        "ref_parallel": "无"
+      },
+      {
+        "direction": "结合多尺度特征融合与注意力机制",
+        "expected_gain": "增强对细观裂纹、孔洞等小目标的检测能力",
+        "difficulty": "中",
+        "action_items": [
+          "设计多尺度特征提取模块（如FPN、ASPP）",
+          "引入通道或空间注意力机制（如SE、CBAM）",
+          "在公开数据集上验证并对比baseline"
+        ],
+        "ref_parallel": "无"
+      },
+      {
+        "direction": "采用弱监督或半监督学习框架",
+        "expected_gain": "降低对精细标注数据的依赖，提高数据利用率",
+        "difficulty": "中",
+        "action_items": [
+          "设计基于类激活图（CAM）的弱监督检测方法",
+          "利用少量标注数据与大量未标注数据进行协同训练",
+          "对比全监督与弱监督方法的性能差距"
+        ],
+        "ref_parallel": "无"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "简化任务为二分类（有无损伤）而非细粒度检测",
+        "trade_off": "损失损伤类型与位置信息，降低论文创新性",
+        "survival_rate": "极高"
+      },
+      {
+        "path": "使用传统图像处理方法（如边缘检测、形态学）替代深度学习",
+        "trade_off": "降低技术复杂度，但难以处理复杂损伤形态，发表价值低",
+        "survival_rate": "高"
+      },
+      {
+        "path": "仅做单一数据集上的简单CNN分类实验",
+        "trade_off": "缺乏对比与泛化验证，易被审稿人质疑",
+        "survival_rate": "中"
+      }
+    ],
+    "risk_mitigation": [
+      "立即开始收集或生成合成混凝土细观损伤数据集（如使用有限元模拟或GAN生成）",
+      "与土木工程实验室合作获取真实CT扫描图像，确保数据来源可靠",
+      "设计多组消融实验，明确各模块贡献，增强论文说服力",
+      "提前撰写综述部分，突出深度学习在混凝土损伤检测中的空白与挑战"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "无创新点，未发现真实的研究gap，题目宽泛，缺乏具体问题定义。"
+      },
+      {
+        "dimension": "D2",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "无baseline论文、数据集或代码仓库，方法学基础完全缺失。"
+      },
+      {
+        "dimension": "D3",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "baseline=0，dataset=0，work_package=0，证据严重不足。"
+      },
+      {
+        "dimension": "D4",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "未提出三个问题，也无工作包，论证链条完全断裂。"
+      },
+      {
+        "dimension": "D5",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "叙事为空，无自洽内容，存在过度宣传嫌疑（题目宽泛但无实质支撑）。"
+      }
+    ],
+    "overall_verdict": "BLOCK",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "无baseline论文、数据集或代码仓库，无法复现",
+      "无创新点，研究gap未明确",
+      "无工作包，毕业风险极高"
+    ]
+  },
+  "narrative_revision_count": 1,
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T07:54:17Z",
+      "input_summary": {
+        "topic": "基于深度学习的混凝土细观损伤特征检测研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T07:54:17Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T07:54:21Z",
+      "input_summary": {
+        "topic_len": 20
+      },
+      "output_summary": {
+        "n_method": 3,
+        "n_object": 3,
+        "domain": "civil_infra"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T07:54:21Z",
+      "elapsed_s": 4.387
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T07:54:21Z",
+      "input_summary": {
+        "topic_len": 20,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T07:54:21Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T07:54:21Z",
+      "input_summary": {
+        "topic_len": 20,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 23,
+        "raw_tools": [
+          "arxiv",
+          "crossref",
+          "github"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        },
+        {
+          "tool": "crossref",
+          "n": 7
+        },
+        {
+          "tool": "github",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T07:55:17Z",
+      "elapsed_s": 55.531
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T07:55:17Z",
+      "input_summary": {
+        "n_candidates": 23
+      },
+      "output_summary": {
+        "kept": 15,
+        "dropped": 8,
+        "pre_filter_keep": 15,
+        "pre_filter_drop": 0,
+        "llm_judged": 8
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 15,
+          "pre_drop": 0,
+          "gray_area": 8
+        },
+        {
+          "tool": "re13_quality_filter.llm",
+          "batch_size": 8
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T07:55:22Z",
+      "elapsed_s": 5.37
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T07:55:22Z",
+      "input_summary": {
+        "n_candidates": 15,
+        "topic_len": 20,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 2,
+        "n_reject": 13
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T07:55:29Z",
+      "elapsed_s": 6.834
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T07:55:29Z",
+      "input_summary": {
+        "n_papers": 2,
+        "n_weak": 2,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T07:55:29Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T07:55:29Z",
+      "input_summary": {
+        "n_verified": 2,
+        "n_seeds": 2,
+        "seed_titles": [
+          "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+          "Introduction to Deep Learning"
+        ]
+      },
+      "output_summary": {
+        "n_expanded": 2,
+        "n_surveys": 0,
+        "n_repos": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "semantic_scholar.citations+references",
+          "n_seeds": 2,
+          "n_expanded": 2,
+          "concurrent": true
+        }
+      ],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "per_seed": [
+        {
+          "seed_title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+          "n_references_plus_citations": 2,
+          "relevance_score": 4
+        },
+        {
+          "seed_title": "Introduction to Deep Learning",
+          "n_references_plus_citations": 0,
+          "relevance_score": 4
+        }
+      ],
+      "ended_at": "2026-07-06T07:55:43Z",
+      "elapsed_s": 13.718
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T07:55:43Z",
+      "input_summary": {
+        "n_candidates": 2,
+        "topic_len": 20,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 0,
+        "n_reject": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T07:55:47Z",
+      "elapsed_s": 4.444
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T07:55:47Z",
+      "input_summary": {
+        "n_papers": 2,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T07:55:47Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T07:55:51Z",
+      "input_summary": {
+        "n_papers": 8
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 2,
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T07:55:51Z",
+      "elapsed_s": 4.157
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T07:55:51Z",
+      "input_summary": {
+        "papers": 2
+      },
+      "output_summary": {
+        "nodes": 2,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T07:55:51Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T07:55:51Z",
+      "input_summary": {
+        "n_verified": 2
+      },
+      "output_summary": {
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T07:55:51Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T07:55:56Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "output_summary": {
+        "verdict": "not_recommended",
+        "score": 15
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T07:55:56Z",
+      "elapsed_s": 4.468
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T07:56:06Z",
+      "input_summary": {
+        "feasibility": "not_recommended"
+      },
+      "output_summary": {
+        "n_paths": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T07:56:06Z",
+      "elapsed_s": 9.607
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T07:56:12Z",
+      "input_summary": {
+        "n_innovation": 0,
+        "n_packages": 0
+      },
+      "output_summary": {
+        "overall_verdict": "BLOCK"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T07:56:12Z",
+      "elapsed_s": 6.108
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T07:56:12Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T07:56:12Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T07:56:12Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于深度学习的混凝土细观损伤特征检测研究",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "low_bar_status": null,
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T07:56:12Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

@@ -1,0 +1,574 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T00:36:11Z",
+    "input_summary": {
+      "topic": "基于深度学习的混凝土路面裂缝检测研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:36:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T00:36:15Z",
+    "input_summary": {
+      "topic_len": 18
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 2,
+      "domain": "civil_infra"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:36:15Z",
+    "elapsed_s": 4.017
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T00:36:15Z",
+    "input_summary": {
+      "topic_len": 18,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:36:15Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T00:36:15Z",
+    "input_summary": {
+      "topic_len": 18,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 39,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github",
+        "semantic_scholar"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T00:36:38Z",
+    "elapsed_s": 23.856
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T00:36:38Z",
+    "input_summary": {
+      "n_candidates": 39
+    },
+    "output_summary": {
+      "kept": 31,
+      "dropped": 8,
+      "pre_filter_keep": 31,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 31,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:36:44Z",
+    "elapsed_s": 5.233
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T00:36:44Z",
+    "input_summary": {
+      "n_candidates": 31,
+      "topic_len": 18,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 16,
+      "n_reject": 15
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:36:51Z",
+    "elapsed_s": 6.916
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T00:36:51Z",
+    "input_summary": {
+      "n_papers": 4,
+      "n_weak": 16,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:36:51Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T00:36:51Z",
+    "input_summary": {
+      "n_verified": 4,
+      "n_seeds": 4,
+      "seed_titles": [
+        "Xception: Deep Learning with Depthwise Separable Convolution",
+        "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "Deep Residual Learning for Image Recognition",
+        "PyTorch: An Imperative Style, High-Performance Deep Learning"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 56,
+      "n_surveys": 0,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 4,
+        "n_expanded": 56,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Xception: Deep Learning with Depthwise Separable Convolution",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "n_references_plus_citations": 2,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Deep Residual Learning for Image Recognition",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "PyTorch: An Imperative Style, High-Performance Deep Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T00:37:16Z",
+    "elapsed_s": 25.68
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T00:37:16Z",
+    "input_summary": {
+      "n_candidates": 56,
+      "topic_len": 18,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 25,
+      "n_reject": 29
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:37:31Z",
+    "elapsed_s": 14.925
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T00:37:31Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_weak": 25,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:37:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T00:37:40Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 6,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:37:40Z",
+    "elapsed_s": 9.006
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T00:37:40Z",
+    "input_summary": {
+      "papers": 6
+    },
+    "output_summary": {
+      "nodes": 6,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:37:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T00:37:40Z",
+    "input_summary": {
+      "n_verified": 6
+    },
+    "output_summary": {
+      "n_baseline": 2,
+      "n_parallel": 4,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:37:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T00:37:45Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:37:45Z",
+    "elapsed_s": 5.059
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T00:37:53Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 4
+    },
+    "output_summary": {
+      "n_packages": 2,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:37:53Z",
+    "elapsed_s": 8.099
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T00:38:08Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 4
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:38:08Z",
+    "elapsed_s": 14.937
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T00:38:04Z",
+    "input_summary": {
+      "n_baseline": 2
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:38:04Z",
+    "elapsed_s": 10.118
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T00:38:20Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CrackLightNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:38:20Z",
+    "elapsed_s": 12.084
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T00:38:20Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:38:20Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T00:38:32Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:38:32Z",
+    "elapsed_s": 11.584
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T00:38:41Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:38:41Z",
+    "elapsed_s": 8.984
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T00:38:41Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:38:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T00:38:41Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的混凝土路面裂缝检测研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 2,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于全卷积网络的混凝土路面裂缝语义分割",
+          "research_question": "如何利用全卷积网络（FCN）在混凝土路面图像中实现像素级的裂缝检测？",
+          "baseline": "Fully convolutional networks for semantic segmentation",
+          "improved_module_source": "Deep Residual Learning for Image Recognition",
+          "data_source": null,
+          "experiment_metrics": "Fully convolutional networks for semantic segmentation",
+          "risk": "混凝土路面裂缝数据集缺乏公开标注，需自行采集和标注，可能影响模型泛化性。",
+          "estimated_workload": "3人月（含数据标注、模型训练与评估）"
+        },
+        {
+          "title": "基于多模态图像融合与增强CNN的复杂场景裂缝检测",
+          "research_question": "在多模态图像融合场景下，增强卷积神经网络如何提升混凝土路面裂缝检测的鲁棒性？",
+          "baseline": "Pavement distress detection using multimodal image fusion and enhanced convolutional neural network in complex scenarios",
+          "improved_module_source": "Xception: Deep Learning with Depthwise Separable Convolutions",
+          "data_source": null,
+          "experiment_metrics": "Pavement distress detection using multimodal image fusion and enhanced convolutional neural network in complex scenarios",
+          "risk": "多模态数据获取成本高，且融合策略可能引入噪声，需设计有效的融合模块。",
+          "estimated_workload": "4人月（含多模态数据采集、融合网络设计与实验）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:38:41Z",
+    "elapsed_s": 0.0
+  }
+]

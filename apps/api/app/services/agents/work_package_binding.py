@@ -49,7 +49,7 @@ def validate_work_suggestions(
     baseline = list(synthesis.get("paper_groups", {}).get("baseline") or [])
     parallel = list(synthesis.get("paper_groups", {}).get("parallel") or [])
     reference = list(synthesis.get("paper_groups", {}).get("reference") or [])
-    long_tail = list(synthesis.get("paper_groups", {}).get("long_tail_candidates") or [])
+    list(synthesis.get("paper_groups", {}).get("long_tail_candidates") or [])
     evidence_gaps = list(synthesis.get("evidence_gaps") or [])
     candidate_pool = synthesis.get("candidate_pool") or {}
     datasets = list(candidate_pool.get("dataset") or [])

@@ -238,7 +238,7 @@ def audit_candidates(
                 chunk_stats.append({**stats, "per_candidate_fallback": True})
                 # Replace the heuristic review for this candidate with the
                 # successful LLM row, if any. Track success for marker.
-                returned_rows = [
+                [
                     r for r in block["reviews"]
                     if r.candidate_id == c["candidate_id"] and r.status != "candidate"
                 ]

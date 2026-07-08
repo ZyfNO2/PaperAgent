@@ -1,0 +1,605 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T05:09:21Z",
+    "input_summary": {
+      "topic": "三维重建中点云数据处理关键技术研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:09:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T05:09:25Z",
+    "input_summary": {
+      "topic_len": 17
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:09:25Z",
+    "elapsed_s": 3.849
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T05:09:25Z",
+    "input_summary": {
+      "topic_len": 17,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:09:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T05:09:25Z",
+    "input_summary": {
+      "topic_len": 17,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 30,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T05:09:54Z",
+    "elapsed_s": 29.21
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T05:09:54Z",
+    "input_summary": {
+      "n_candidates": 30
+    },
+    "output_summary": {
+      "kept": 22,
+      "dropped": 8,
+      "pre_filter_keep": 22,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 22,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:09:59Z",
+    "elapsed_s": 4.988
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T05:09:59Z",
+    "input_summary": {
+      "n_candidates": 22,
+      "topic_len": 17,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 12,
+      "n_weak_reject": 8,
+      "n_reject": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:10:06Z",
+    "elapsed_s": 7.076
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T05:10:06Z",
+    "input_summary": {
+      "n_papers": 12,
+      "n_weak": 8,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:10:06Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T05:10:06Z",
+    "input_summary": {
+      "n_verified": 12,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Point Cloud Processing Software – Point2Model",
+        "Point-Cloud Processing and Derivatives",
+        "SPLATNet: Sparse Lattice Networks for Point Cloud Processing",
+        "PointWeb: Enhancing Local Neighborhood Features for Point Cl",
+        "PointASNL: Robust Point Clouds Processing Using Nonlocal Neu"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 67,
+      "n_surveys": 2,
+      "n_repos": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 67,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Point Cloud Processing Software – Point2Model",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Point-Cloud Processing and Derivatives",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "SPLATNet: Sparse Lattice Networks for Point Cloud Processing",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "PointWeb: Enhancing Local Neighborhood Features for Point Cl",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "PointASNL: Robust Point Clouds Processing Using Nonlocal Neu",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T05:10:39Z",
+    "elapsed_s": 33.464
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T05:10:39Z",
+    "input_summary": {
+      "n_candidates": 67,
+      "topic_len": 17,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 19,
+      "n_weak_reject": 44,
+      "n_reject": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:10:59Z",
+    "elapsed_s": 19.771
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T05:10:59Z",
+    "input_summary": {
+      "n_papers": 31,
+      "n_weak": 52,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:10:59Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T05:11:09Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:11:09Z",
+    "elapsed_s": 9.753
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T05:11:09Z",
+    "input_summary": {
+      "papers": 31
+    },
+    "output_summary": {
+      "nodes": 31,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:11:09Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T05:11:09Z",
+    "input_summary": {
+      "n_verified": 31
+    },
+    "output_summary": {
+      "n_baseline": 31,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:11:09Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T05:11:14Z",
+    "input_summary": {
+      "n_baseline": 31,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:11:14Z",
+    "elapsed_s": 5.11
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T05:11:26Z",
+    "input_summary": {
+      "n_baseline": 31,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:11:26Z",
+    "elapsed_s": 11.573
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T05:11:36Z",
+    "input_summary": {
+      "n_baseline": 31,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:11:36Z",
+    "elapsed_s": 10.203
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T05:11:35Z",
+    "input_summary": {
+      "n_baseline": 31
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:11:35Z",
+    "elapsed_s": 9.146
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T05:11:46Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "SparseWebASNL"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:11:46Z",
+    "elapsed_s": 10.3
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T05:11:46Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:11:46Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T05:11:55Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:11:55Z",
+    "elapsed_s": 9.087
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T05:12:02Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:12:02Z",
+    "elapsed_s": 6.469
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T05:12:02Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:12:02Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T05:12:02Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "三维重建中点云数据处理关键技术研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于非局部神经网络的自适应采样点云处理技术研究",
+          "research_question": "如何利用非局部神经网络与自适应采样机制提升三维重建中点云数据的鲁棒性和处理精度？",
+          "baseline": "PointASNL: Robust Point Clouds Processing Using Nonlocal Neural Networks With Adaptive Sampling",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "PointASNL: Robust Point Clouds Processing Using Nonlocal Neural Networks With Adaptive Sampling",
+          "risk": "非局部模块计算开销较大，可能影响实时性；自适应采样对噪声敏感，需设计稳健的训练策略。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于稀疏格点网络的三维点云高效处理技术研究",
+          "research_question": "稀疏格点网络如何平衡三维重建中点云数据的计算效率与特征表达能力？",
+          "baseline": "SPLATNet: Sparse Lattice Networks for Point Cloud Processing",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "SPLATNet: Sparse Lattice Networks for Point Cloud Processing",
+          "risk": "稀疏格点结构可能丢失局部细节，需设计多尺度融合机制。",
+          "estimated_workload": "2.5人月"
+        },
+        {
+          "title": "基于多分辨率树网络的三维点云分层处理技术研究",
+          "research_question": "多分辨率树网络如何实现三维重建中点云数据的分层特征提取与高效处理？",
+          "baseline": "Multiresolution Tree Networks for 3D Point Cloud Processing",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Multiresolution Tree Networks for 3D Point Cloud Processing",
+          "risk": "树结构构建对点云分布敏感，需处理非均匀采样场景。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于密集上下文表示的点云高效处理技术研究",
+          "research_question": "密集上下文表示如何提升三维重建中点云数据的特征学习效率与重建质量？",
+          "baseline": "DensePoint: Learning Densely Contextual Representation for Efficient Point Cloud Processing",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "DensePoint: Learning Densely Contextual Representation for Efficient Point Cloud Processing",
+          "risk": "密集连接可能带来参数冗余，需设计轻量化结构。",
+          "estimated_workload": "2.5人月"
+        },
+        {
+          "title": "基于局部邻域特征增强的点云处理技术研究",
+          "research_question": "PointWeb的局部邻域特征增强机制如何改善三维重建中点云数据的局部几何细节恢复？",
+          "baseline": "PointWeb: Enhancing Local Neighborhood Features for Point Cloud Processing",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "PointWeb: Enhancing Local Neighborhood Features for Point Cloud Processing",
+          "risk": "局部邻域定义对点密度敏感，需自适应邻域选择策略。",
+          "estimated_workload": "2人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:12:02Z",
+    "elapsed_s": 0.0
+  }
+]

@@ -5,9 +5,7 @@ mocked adapters — no network, no API keys.
 from __future__ import annotations
 
 import asyncio
-from typing import Any
 
-import pytest
 
 
 # ---------------------------------------------------------------------------

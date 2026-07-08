@@ -1,0 +1,413 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:17:21Z",
+    "input_summary": {
+      "topic": "基于YOLO算法的遥感图像飞机目标检测技术研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:17:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:17:25Z",
+    "input_summary": {
+      "topic_len": 23
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "remote_sensing"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:17:25Z",
+    "elapsed_s": 4.007
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:17:25Z",
+    "input_summary": {
+      "topic_len": 23,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:17:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:17:25Z",
+    "input_summary": {
+      "topic_len": 23,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 27,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:17:44Z",
+    "elapsed_s": 19.027
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:17:44Z",
+    "input_summary": {
+      "n_candidates": 27
+    },
+    "output_summary": {
+      "kept": 19,
+      "dropped": 8,
+      "pre_filter_keep": 19,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 19,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:17:49Z",
+    "elapsed_s": 5.217
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:17:49Z",
+    "input_summary": {
+      "n_candidates": 19,
+      "topic_len": 23,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 1,
+      "n_reject": 18
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:17:56Z",
+    "elapsed_s": 7.314
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:17:56Z",
+    "input_summary": {
+      "n_papers": 1,
+      "n_weak": 1,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:17:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:17:56Z",
+    "input_summary": {
+      "n_verified": 1,
+      "n_seeds": 0,
+      "seed_titles": []
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "reason": "no_seeds_with_ids"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "ended_at": "2026-07-06T06:17:56Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:17:56Z",
+    "input_summary": {
+      "n_candidates": 19,
+      "topic_len": 23,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 1,
+      "n_reject": 18
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:18:03Z",
+    "elapsed_s": 7.093
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:18:03Z",
+    "input_summary": {
+      "n_papers": 1,
+      "n_weak": 1,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:18:03Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:18:07Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 1,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:18:07Z",
+    "elapsed_s": 4.03
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:18:07Z",
+    "input_summary": {
+      "papers": 1
+    },
+    "output_summary": {
+      "nodes": 1,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:18:07Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:18:07Z",
+    "input_summary": {
+      "n_verified": 1
+    },
+    "output_summary": {
+      "n_baseline": 0,
+      "n_parallel": 1,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:18:07Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:18:12Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "not_recommended",
+      "score": 20
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:18:12Z",
+    "elapsed_s": 4.955
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:18:21Z",
+    "input_summary": {
+      "feasibility": "not_recommended"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:18:21Z",
+    "elapsed_s": 8.675
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:18:27Z",
+    "input_summary": {
+      "n_innovation": 0,
+      "n_packages": 0
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:18:27Z",
+    "elapsed_s": 6.047
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:18:27Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:18:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:18:27Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于YOLO算法的遥感图像飞机目标检测技术研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "low_bar_status": null,
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:18:27Z",
+    "elapsed_s": 0.0
+  }
+]

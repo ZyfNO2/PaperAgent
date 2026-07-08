@@ -1,13 +1,11 @@
 """Loop 1: Quality Filter unit test — 6 candidate types."""
 from __future__ import annotations
 
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from apps.api.app.services.agents.graph.nodes.quality_filter import (
     quality_filter_node,
     _heuristic_filter,
-    _NON_PAPER_PATTERNS,
 )
 
 
@@ -84,7 +82,7 @@ def test_quality_filter_node_with_llm_mock():
                return_value=llm_response):
         result = quality_filter_node(_make_state(CANDIDATES))
 
-    kept = result["paper_candidates"]
+    result["paper_candidates"]
     filter_results = result["filter_results"]
 
     assert filter_results["total"] == 6

@@ -1,0 +1,478 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T20:13:27Z",
+    "input_summary": {
+      "topic": "基于深度学习的磁瓦在线检测技术研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:13:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T20:13:31Z",
+    "input_summary": {
+      "topic_len": 17
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:13:31Z",
+    "elapsed_s": 4.623
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T20:13:31Z",
+    "input_summary": {
+      "topic_len": 17,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:13:31Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T20:13:31Z",
+    "input_summary": {
+      "topic_len": 17,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 0,
+      "n_steps": 6,
+      "n_tool_calls": 5,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github",
+        "semantic_scholar"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "github": 0,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "arxiv",
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T20:14:30Z",
+    "elapsed_s": 58.178
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T20:14:30Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:14:30Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:14:30Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 17,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 4,
+      "n_reject": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:14:36Z",
+    "elapsed_s": 6.605
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:14:36Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 4,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": true
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:14:36Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-06T20:14:42Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:14:42Z",
+    "elapsed_s": 6.199
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T20:14:42Z",
+    "input_summary": {
+      "topic_len": 17,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 0,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 0,
+      "raw_tools": [],
+      "per_adapter": {},
+      "failed_adapters": [
+        "arxiv",
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [
+        "semantic_scholar",
+        "github",
+        "arxiv",
+        "openalex"
+      ],
+      "repair_rounds": 1
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T20:15:16Z",
+    "elapsed_s": 33.909
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T20:15:16Z",
+    "input_summary": {
+      "n_candidates": 0
+    },
+    "output_summary": {
+      "kept": 0,
+      "dropped": 0
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:15:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:15:16Z",
+    "input_summary": {
+      "n_candidates": 0,
+      "topic_len": 17,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 0,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:15:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:15:16Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 1,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:15:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-06T20:15:23Z",
+    "input_summary": {
+      "current_round": 1,
+      "repair_type": "paper_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:15:23Z",
+    "elapsed_s": 6.31
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T20:15:23Z",
+    "input_summary": {
+      "topic_len": 17,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 0,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 0,
+      "raw_tools": [],
+      "per_adapter": {},
+      "failed_adapters": [
+        "arxiv",
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [
+        "semantic_scholar",
+        "github",
+        "arxiv",
+        "openalex"
+      ],
+      "repair_rounds": 2
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T20:15:57Z",
+    "elapsed_s": 34.812
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T20:15:57Z",
+    "input_summary": {
+      "n_candidates": 0
+    },
+    "output_summary": {
+      "kept": 0,
+      "dropped": 0
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:15:57Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T20:15:57Z",
+    "input_summary": {
+      "n_candidates": 0,
+      "topic_len": 17,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 0,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T20:15:57Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T20:15:57Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 2,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:15:57Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T20:15:57Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的磁瓦在线检测技术研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "low_bar_status": null,
+      "human_gate_status": null,
+      "notes": [
+        "human gate: None"
+      ],
+      "research_basis": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T20:15:57Z",
+    "elapsed_s": 0.0
+  }
+]

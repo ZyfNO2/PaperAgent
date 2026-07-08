@@ -31,7 +31,6 @@ import json
 import logging
 import re
 import time
-from typing import Any
 
 from .candidate_verifier import verify_candidate_offline
 from .domain_scout_agent import run_domain_scout
@@ -254,7 +253,6 @@ async def _process_hit(
     seen_local.add(key)
     cand = dict(hit)
     cand["_bucket"] = bucket_for_tool(tool, hit)
-    url_repaired = False
     if not (cand.get("url") or cand.get("arxiv_id") or cand.get("doi")):
         try:
             if _url_sem is not None:
@@ -271,7 +269,6 @@ async def _process_hit(
         cand["url_status"] = ur.get("url_status")
         if ur.get("url"):
             cand["url"] = ur["url"]
-            url_repaired = True
         # P0-G (Iter 2): validator H5 only counts ``result_count > 0``.
         # Surface 1 here because the repair agent attempted and (a)
         # either recovered a URL or (b) verified the candidate is real
@@ -289,7 +286,7 @@ async def _process_hit(
     # "we tried, real paper but no DOI / arxiv_id" — count it as a repair
     # success so the gate stays aligned.
     elif cand.get("url_status") == "url_unavailable_but_verified":
-        url_repaired = True
+        pass
     try:
         verdict = verify_candidate_offline(cand, topic_atoms, role=cand["_bucket"])
     except Exception as exc:

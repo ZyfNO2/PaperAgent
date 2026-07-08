@@ -10,9 +10,7 @@ Tests use a fully-mocked client to avoid network. Validates:
 """
 from __future__ import annotations
 
-import asyncio
 import json
-import sys
 from pathlib import Path
 from typing import Any
 

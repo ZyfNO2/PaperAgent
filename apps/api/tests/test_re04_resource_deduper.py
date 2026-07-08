@@ -1,7 +1,6 @@
 """Re04 SOP §5 Task 5 acceptance — resource deduper + ranking tests."""
 from __future__ import annotations
 
-import pytest
 
 from app.services.agents.resource_deduper import (
     TIER_ORDER,

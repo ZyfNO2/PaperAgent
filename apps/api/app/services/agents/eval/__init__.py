@@ -100,7 +100,7 @@ def _extract_evidence_review(er: Any) -> list[dict]:
             elif hasattr(r, "to_dict"):
                 out.append(r.to_dict())
             elif hasattr(r, "__dict__"):
-                out.append({k: v for k, val in r.__dict__.items()})
+                out.append({k: val for k, val in r.__dict__.items()})
         return out
     if isinstance(er, dict):
         out2: list[dict] = []
@@ -108,7 +108,8 @@ def _extract_evidence_review(er: Any) -> list[dict]:
             if isinstance(v, list):
                 out2.extend(x.to_dict() if hasattr(x, "to_dict") else
                             (x if isinstance(x, dict) else
-                             {k: val for k, val in x.__dict__.items()}))
+                             {k: val for k, val in x.__dict__.items()})
+                            for x in v)
             elif isinstance(v, dict):
                 out2.append(v)
             elif hasattr(v, "to_dict"):
@@ -339,7 +340,7 @@ def compute_resource_status(result: dict) -> dict[str, Any]:
     baseline_bucket = audit["buckets"]["baseline"]
     parallel_bucket = audit["buckets"]["parallel"]
     dataset_bucket = audit["buckets"]["dataset"]
-    repo_bucket = audit["buckets"]["repo"]
+    audit["buckets"]["repo"]
     core_n = core_bucket["n_total"]
 
     core_direct_n = core_bucket["n_aligned"]

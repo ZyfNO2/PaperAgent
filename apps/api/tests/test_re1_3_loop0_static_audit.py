@@ -5,11 +5,9 @@ no hardcoded blacklist, no citation_tracker import, etc.
 """
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 
-import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
@@ -105,7 +103,6 @@ def test_no_manual_seeds_endpoint():
     assert "POST" not in content.upper() or "seeds" not in content.lower().split("post")[0][-50:], \
         "Manual seeds POST endpoint should not exist"
     # More specifically: no @router.post("/{case_id}/seeds") or similar
-    import re
     seed_post_patterns = re.findall(r'@router\.post\(.*seed', content, re.IGNORECASE)
     assert len(seed_post_patterns) == 0, "Manual seeds POST endpoint found"
 

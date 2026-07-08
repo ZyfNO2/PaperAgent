@@ -1,0 +1,442 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T18:42:41Z",
+    "input_summary": {
+      "topic": "基于深度学习的视觉SLAM语义地图的研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:42:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T18:42:46Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T18:42:46Z",
+    "elapsed_s": 5.576
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T18:42:46Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:42:46Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T18:42:46Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 29,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T18:43:08Z",
+    "elapsed_s": 21.462
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T18:43:08Z",
+    "input_summary": {
+      "n_candidates": 29
+    },
+    "output_summary": {
+      "kept": 28,
+      "dropped": 1,
+      "pre_filter_keep": 21,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 21,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T18:43:17Z",
+    "elapsed_s": 9.432
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T18:43:17Z",
+    "input_summary": {
+      "n_candidates": 28,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 4,
+      "n_weak_reject": 16,
+      "n_reject": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T18:43:27Z",
+    "elapsed_s": 10.202
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T18:43:27Z",
+    "input_summary": {
+      "n_papers": 4,
+      "n_weak": 16,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:43:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-05T18:43:27Z",
+    "input_summary": {
+      "n_verified": 4,
+      "n_seeds": 1,
+      "seed_titles": [
+        "Visual SLAM and visual odometry with semantic-based filterin"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 1,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Visual SLAM and visual odometry with semantic-based filterin",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-05T18:43:38Z",
+    "elapsed_s": 10.756
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T18:43:38Z",
+    "input_summary": {
+      "n_candidates": 4,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 2,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T18:43:44Z",
+    "elapsed_s": 6.166
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T18:43:44Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_weak": 18,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:43:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T18:43:56Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 6,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T18:43:56Z",
+    "elapsed_s": 11.352
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T18:43:56Z",
+    "input_summary": {
+      "papers": 6
+    },
+    "output_summary": {
+      "nodes": 4,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:43:56Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T18:43:56Z",
+    "input_summary": {
+      "n_verified": 6
+    },
+    "output_summary": {
+      "n_baseline": 6,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:43:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T18:44:08Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T18:44:08Z",
+    "elapsed_s": 12.228
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T18:44:08Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:44:08Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-05T18:44:08Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:44:08Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-05T18:44:08Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的视觉SLAM语义地图的研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于语义滤波的动态环境视觉SLAM语义地图构建",
+          "research_question": "如何利用深度学习语义分割滤除动态物体，在室内外场景中构建稳定的语义地图？",
+          "baseline": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "improved_module_source": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+          "data_source": null,
+          "experiment_metrics": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "risk": "语义分割模型在极端光照或快速运动下可能失效，导致动态物体滤除不彻底，影响地图一致性。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于OpenVSLAM与语义融合的增量式语义地图构建",
+          "research_question": "在OpenVSLAM框架中集成语义分割输出，能否在保持实时性的同时生成可更新的语义地图？",
+          "baseline": "xdspacelab/openvslam",
+          "improved_module_source": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+          "data_source": null,
+          "experiment_metrics": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "risk": "语义分割模块的计算开销可能降低SLAM前端帧率，需权衡精度与速度。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于ElasticFusion的稠密语义地图优化",
+          "research_question": "在ElasticFusion稠密重建框架中引入语义标签，能否提升室内场景下语义地图的几何与语义一致性？",
+          "baseline": "mp3guy/ElasticFusion",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "risk": "ElasticFusion对GPU显存要求高，语义标签的加入可能进一步增加资源消耗，限制在嵌入式平台部署。",
+          "estimated_workload": "6人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T18:44:08Z",
+    "elapsed_s": 0.0
+  }
+]

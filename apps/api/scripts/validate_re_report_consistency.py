@@ -57,7 +57,7 @@ def _check(name: str, expected, actual, errors: list[str]) -> None:
 
 
 def validate(summary_path: Path, csv_path: Path, md_path: Path) -> int:
-    print(f"=== Cross-validate Re07 reports ===")
+    print("=== Cross-validate Re07 reports ===")
     print(f"  summary: {summary_path}")
     print(f"  csv:     {csv_path}")
     print(f"  md:      {md_path}")

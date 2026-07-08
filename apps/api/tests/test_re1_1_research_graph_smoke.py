@@ -13,7 +13,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
 
 # apps/api/tests/file.py -> apps/api/tests -> apps/api -> apps -> repo root.
 ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -55,7 +54,6 @@ def test_re1_1_test_files_exist() -> None:
 
 def test_no_topic_whitelist_injection_in_prompts() -> None:
     """Loop 0: prompts must not hard-suggest COCO/ORB-SLAM3 by topic keywords."""
-    import re
 
     from apps.api.app.services.agents import prompts as prompts_pkg
 
@@ -87,7 +85,6 @@ def test_graph_compiles_and_runs_offline() -> None:
     """Loop 0: graph must compile; run with mocked LLM should not crash & all 7 nodes write trace."""
     import apps.api.app.services.agents.graph.nodes.retrieve as r_mod
     import apps.api.app.services.agents.graph.nodes.verify as v_mod
-    import apps.api.app.services.agents.graph.nodes.content as c_mod
 
     baseline_titles = ["P1", "P2", "P3"]
 

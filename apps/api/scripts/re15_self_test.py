@@ -111,7 +111,7 @@ def main():
         n_pass_e2e = sum(1 for c in result["per_case"] if c.get("e2e_completeness", {}).get("pass"))
         n_pass_auth = sum(1 for c in result["per_case"] if c.get("paper_authenticity", {}).get("pass"))
         n_pass_rel = sum(1 for c in result["per_case"] if c.get("topic_relevance", {}).get("pass"))
-        print(f"\n=== Summary ===")
+        print("\n=== Summary ===")
         print(f"e2e_completeness: {n_pass_e2e}/{result['n_cases']} pass")
         print(f"paper_authenticity: {n_pass_auth}/{result['n_cases']} pass")
         print(f"topic_relevance: {n_pass_rel}/{result['n_cases']} pass")

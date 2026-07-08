@@ -24,7 +24,6 @@ ponytail:
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +159,7 @@ async def repair_candidate_url(
             "url_status": "url_unavailable_but_verified",
             "url": "",
             "evidence": (
-                f"title+author/year present but no URL found via arxiv/openalex"
+                "title+author/year present but no URL found via arxiv/openalex"
             ),
         }
 

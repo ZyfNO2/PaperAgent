@@ -22,6 +22,7 @@ Ponytail: ~120 lines, no LLM, no class hierarchy, two HTTP calls per seed.
 from __future__ import annotations
 
 import logging
+import re
 from typing import Any
 from urllib.parse import quote
 
@@ -37,6 +38,23 @@ OPENALEX_HEADERS = {
 }
 DEFAULT_TIMEOUT = 12.0
 MAX_REFS_PER_SEED = 8  # hard cap; OpenAlex can return 200+ refs on a survey
+
+# ArXiv ID patterns (new-style 2401.01234 and legacy cs.AI/0703001)
+_ARXIV_RE = re.compile(r"(\d{4}\.\d{4,5})(v\d+)?", re.IGNORECASE)
+_ARXIV_LEGACY_RE = re.compile(r"([a-z\-]+(?:\.[A-Z]{2})?/\d{7})(v\d+)?", re.IGNORECASE)
+
+
+def _extract_arxiv_id_from_url(url: str | None) -> str | None:
+    """Extract a raw arXiv ID (e.g. '2401.01234') from a URL or None."""
+    if not url:
+        return None
+    m = _ARXIV_RE.search(url)
+    if m:
+        return m.group(1)
+    m2 = _ARXIV_LEGACY_RE.search(url)
+    if m2:
+        return m2.group(1)
+    return None
 
 
 def _seed_candidates(raw: dict[str, list[dict[str, Any]]]) -> list[dict[str, Any]]:
@@ -283,7 +301,7 @@ async def citation_expand(
             continue
         for m in meta_list:
             try:
-                cand = pool.add_paper(
+                pool.add_paper(
                     title=m["title"],
                     source="openalex_citation",
                     year=m.get("year"),

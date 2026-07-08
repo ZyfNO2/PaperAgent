@@ -1,6 +1,5 @@
 """Re03 SOP §6.1: EvidenceReview chunked + retry + blocker tests."""
 
-import pytest
 
 from app.services.agents.evidence_review import audit_candidates, EvidenceReview
 
@@ -42,7 +41,8 @@ def test_audit_candidates_returns_one_review_per_candidate_with_fake_chat():
     def fake_chat(prompt, system, max_tokens, timeout=60.0):
         # Return a reviews list with one row per candidate that appeared
         # in the prompt. Extract candidate_ids from the embedded JSON.
-        import re, json as jsonlib
+        import re
+        import json as jsonlib
         m = re.search(r'"candidates_block":\s*(\[.*?\])', prompt, re.DOTALL)
         block = jsonlib.loads(m.group(1))
         return {"reviews": [

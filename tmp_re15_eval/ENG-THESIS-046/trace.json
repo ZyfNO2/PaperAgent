@@ -1,0 +1,568 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T21:59:05Z",
+    "input_summary": {
+      "topic": "基于视觉的机械臂的目标检测和避障路径规划研究与应用"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:59:05Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T21:59:09Z",
+    "input_summary": {
+      "topic_len": 25
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 3,
+      "domain": "robotics_control"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:59:09Z",
+    "elapsed_s": 3.94
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T21:59:09Z",
+    "input_summary": {
+      "topic_len": 25,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:59:09Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T21:59:09Z",
+    "input_summary": {
+      "topic_len": 25,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 23,
+      "raw_tools": [
+        "arxiv",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T21:59:55Z",
+    "elapsed_s": 46.487
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T21:59:55Z",
+    "input_summary": {
+      "n_candidates": 23
+    },
+    "output_summary": {
+      "kept": 14,
+      "dropped": 9,
+      "pre_filter_keep": 14,
+      "pre_filter_drop": 1,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 14,
+        "pre_drop": 1,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:00:00Z",
+    "elapsed_s": 5.415
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T22:00:00Z",
+    "input_summary": {
+      "n_candidates": 14,
+      "topic_len": 25,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 14,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:00:08Z",
+    "elapsed_s": 7.06
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T22:00:08Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 14,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T22:00:08Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-05T22:00:08Z",
+    "input_summary": {
+      "n_verified": 9,
+      "n_seeds": 3,
+      "seed_titles": [
+        "Object Detection and Delineation",
+        "Imaging Modalities for Object Detection",
+        "Object Detection in Degraded Vision"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 3,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Object Detection and Delineation",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Imaging Modalities for Object Detection",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Object Detection in Degraded Vision",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-05T22:00:26Z",
+    "elapsed_s": 18.917
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T22:00:26Z",
+    "input_summary": {
+      "n_candidates": 9,
+      "topic_len": 25,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 4,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:00:33Z",
+    "elapsed_s": 6.329
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T22:00:33Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 4,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T22:00:33Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T22:00:43Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:00:43Z",
+    "elapsed_s": 10.012
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T22:00:43Z",
+    "input_summary": {
+      "papers": 9
+    },
+    "output_summary": {
+      "nodes": 9,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T22:00:43Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T22:00:43Z",
+    "input_summary": {
+      "n_verified": 9
+    },
+    "output_summary": {
+      "n_baseline": 0,
+      "n_parallel": 9,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T22:00:43Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-05T22:00:47Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "not_recommended",
+      "score": 20
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:00:47Z",
+    "elapsed_s": 4.278
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T22:00:55Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:00:55Z",
+    "elapsed_s": 8.212
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-05T22:01:06Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:01:06Z",
+    "elapsed_s": 10.603
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-05T22:01:12Z",
+    "input_summary": {
+      "n_baseline": 0
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:01:12Z",
+    "elapsed_s": 6.442
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-05T22:01:21Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "MultiFusionGraspNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:01:21Z",
+    "elapsed_s": 8.403
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T22:01:21Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T22:01:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-05T22:01:32Z",
+    "input_summary": {
+      "feasibility": "not_recommended"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:01:32Z",
+    "elapsed_s": 10.84
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-05T22:01:39Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T22:01:39Z",
+    "elapsed_s": 7.085
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-05T22:01:39Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T22:01:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-05T22:01:39Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于视觉的机械臂的目标检测和避障路径规划研究与应用",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于深度学习的机械臂目标检测与避障路径规划集成框架",
+          "research_question": "如何将基于视觉的目标检测与避障路径规划有效集成，实现机械臂在动态环境中的自主操作？",
+          "baseline": "Object detection for big data",
+          "improved_module_source": "Object Detection and Delineation",
+          "data_source": null,
+          "experiment_metrics": "Object Detection in Degraded Vision",
+          "risk": "目标检测与路径规划模块的实时性冲突可能导致控制延迟；缺乏公开数据集验证泛化能力。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "基于深度估计的机械臂避障路径规划方法",
+          "research_question": "如何利用深度信息（如点云或深度图）提升机械臂在杂乱环境中的避障路径规划精度？",
+          "baseline": "Exploring Depth Contribution for Camouflaged Object Detection",
+          "improved_module_source": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+          "data_source": null,
+          "experiment_metrics": "Super Sparse 3D Object Detection",
+          "risk": "深度传感器噪声或遮挡可能导致规划失败；计算资源需求高。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于高分辨率数据集的机械臂目标检测与路径规划联合优化",
+          "research_question": "高分辨率图像如何改善机械臂对细小目标或远距离障碍物的检测与路径规划性能？",
+          "baseline": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+          "improved_module_source": "Object Contour and Edge Detection with RefineContourNet",
+          "data_source": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+          "experiment_metrics": "Imaging Modalities for Object Detection",
+          "risk": "高分辨率图像处理速度慢，可能不满足实时性要求；数据集场景与机械臂操作环境存在差异。",
+          "estimated_workload": "7人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T22:01:39Z",
+    "elapsed_s": 0.0
+  }
+]

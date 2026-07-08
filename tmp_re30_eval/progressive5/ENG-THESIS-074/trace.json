@@ -1,0 +1,559 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T19:01:31Z",
+    "input_summary": {
+      "topic": "基于深度学习的混凝土桥梁裂缝检测研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:01:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T19:01:35Z",
+    "input_summary": {
+      "topic_len": 18
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 2,
+      "domain": "civil_infra"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:01:35Z",
+    "elapsed_s": 4.135
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T19:01:35Z",
+    "input_summary": {
+      "topic_len": 18,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:01:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T19:01:35Z",
+    "input_summary": {
+      "topic_len": 18,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 5,
+      "n_steps": 4,
+      "n_tool_calls": 3,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "github": 5
+      },
+      "failed_adapters": [
+        "openalex"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 5
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T19:02:19Z",
+    "elapsed_s": 44.425
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T19:02:19Z",
+    "input_summary": {
+      "n_candidates": 17
+    },
+    "output_summary": {
+      "kept": 17,
+      "dropped": 0,
+      "pre_filter_keep": 17,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 17,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:02:19Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T19:02:19Z",
+    "input_summary": {
+      "n_candidates": 17,
+      "topic_len": 18,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 6,
+      "n_weak_reject": 5,
+      "n_reject": 6
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:02:27Z",
+    "elapsed_s": 7.449
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T19:02:27Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_weak": 5,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 5,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:02:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T19:02:27Z",
+    "input_summary": {
+      "n_verified": 6,
+      "n_seeds": 0,
+      "seed_titles": []
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "reason": "no_seeds_with_ids"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "ended_at": "2026-07-06T19:02:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T19:02:27Z",
+    "input_summary": {
+      "n_candidates": 17,
+      "topic_len": 18,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 5,
+      "n_weak_reject": 6,
+      "n_reject": 6
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:02:35Z",
+    "elapsed_s": 8.253
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T19:02:35Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_weak": 5,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 5,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:02:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T19:02:39Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 2,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:02:39Z",
+    "elapsed_s": 4.543
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T19:02:39Z",
+    "input_summary": {
+      "papers": 6
+    },
+    "output_summary": {
+      "nodes": 7,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:02:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T19:02:39Z",
+    "input_summary": {
+      "n_verified": 6
+    },
+    "output_summary": {
+      "n_baseline": 6,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:02:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T19:02:44Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_dataset": 0,
+      "n_repo": 5
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 85
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:02:44Z",
+    "elapsed_s": 4.642
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T19:02:53Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:02:53Z",
+    "elapsed_s": 9.183
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T19:03:06Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:03:06Z",
+    "elapsed_s": 12.989
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T19:03:04Z",
+    "input_summary": {
+      "n_baseline": 6
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:03:04Z",
+    "elapsed_s": 10.71
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T19:03:18Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CrackFusionNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:03:18Z",
+    "elapsed_s": 11.304
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T19:03:18Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:03:18Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T19:03:29Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:03:29Z",
+    "elapsed_s": 11.377
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T19:03:36Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T19:03:36Z",
+    "elapsed_s": 7.494
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T19:03:36Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:03:36Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T19:03:36Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的混凝土桥梁裂缝检测研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于深度学习的混凝土桥梁裂缝检测基准评估",
+          "research_question": "现有基于深度学习的混凝土桥梁裂缝检测方法在公开基准上的表现如何？",
+          "baseline": "Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+          "risk": "低：已有多个开源实现和评估框架，可直接复现。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于卷积神经网络的混凝土桥梁裂缝检测方法改进",
+          "research_question": "如何改进卷积神经网络结构以提高混凝土桥梁裂缝检测的准确率和鲁棒性？",
+          "baseline": "Kalyan0701/khatry2026automated",
+          "improved_module_source": "dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+          "data_source": null,
+          "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+          "risk": "中：改进模块可能依赖特定数据集，泛化性需验证。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "混凝土桥梁裂缝检测系统的端到端实现与验证",
+          "research_question": "如何将深度学习模型集成到实际的桥梁检测系统中并验证其有效性？",
+          "baseline": "zainfaisal220/FYP",
+          "improved_module_source": "Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+          "data_source": null,
+          "experiment_metrics": "Cracks in concrete",
+          "risk": "高：系统集成和现场验证需要额外硬件和场地支持。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T19:03:36Z",
+    "elapsed_s": 0.0
+  }
+]

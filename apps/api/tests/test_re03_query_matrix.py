@@ -1,6 +1,5 @@
 """Re03 SOP §6.1: query_matrix tests."""
 
-import pytest
 
 from app.services.agents.query_matrix import build_query_matrix
 

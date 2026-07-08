@@ -58,8 +58,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import os
-import re
 import sys
 import time
 from pathlib import Path
@@ -564,7 +562,7 @@ def _er_resp(case: dict[str, Any], candidates: list[dict]) -> dict[str, Any]:
     others as candidate. The function only needs to return rows whose
     candidate_id appears in the candidates list.
     """
-    crossref_titles = {c["title"] for c in CASES[case["id"]].get("crossref", [])}
+    {c["title"] for c in CASES[case["id"]].get("crossref", [])}
     rows: list[dict[str, Any]] = []
     for c in candidates:
         src = c.get("source") or ""
@@ -776,7 +774,7 @@ def _make_chat_json_mock(case: dict[str, Any]):
     The closure captures `case` so the canned helpers can read the
     topic title + id without re-loading from disk.
     """
-    case_id = case["id"]
+    case["id"]
     sys_state = {"call_n": 0, "last_pool_size": 0}
 
     def _chat_json(prompt: str, *, system: str | None = None, **_kw):
@@ -1189,7 +1187,7 @@ async def main() -> int:
     n_weak = sum(1 for c in per_case if c.get("status") == "weak")
     n_fail = sum(1 for c in per_case if c.get("status") == "fail")
     n_blocked = sum(1 for c in per_case if c.get("status") == "blocked")
-    print(f"\n=== Re04 Offline Smoke done ===")
+    print("\n=== Re04 Offline Smoke done ===")
     print(f"  pass: {n_pass}/{len(per_case)}  weak: {n_weak}  "
           f"fail: {n_fail}  blocked: {n_blocked}")
     print(f"  per-case dumps: {out_dir}/<case_id>.json")

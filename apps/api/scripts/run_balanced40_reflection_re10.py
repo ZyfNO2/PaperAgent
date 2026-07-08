@@ -36,7 +36,6 @@ import os
 import sys
 import time
 import uuid
-from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]

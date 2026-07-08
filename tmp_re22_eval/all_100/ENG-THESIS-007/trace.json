@@ -1,0 +1,600 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T05:12:02Z",
+    "input_summary": {
+      "topic": "基于视觉的无人机识别与跟踪技术研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:12:02Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T05:12:06Z",
+    "input_summary": {
+      "topic_len": 17
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 2,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:12:06Z",
+    "elapsed_s": 4.055
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T05:12:06Z",
+    "input_summary": {
+      "topic_len": 17,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:12:06Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T05:12:06Z",
+    "input_summary": {
+      "topic_len": 17,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 24,
+      "raw_tools": [
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T05:12:58Z",
+    "elapsed_s": 52.148
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T05:12:58Z",
+    "input_summary": {
+      "n_candidates": 24
+    },
+    "output_summary": {
+      "kept": 18,
+      "dropped": 6,
+      "pre_filter_keep": 15,
+      "pre_filter_drop": 1,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 15,
+        "pre_drop": 1,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:13:04Z",
+    "elapsed_s": 5.721
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T05:13:04Z",
+    "input_summary": {
+      "n_candidates": 18,
+      "topic_len": 17,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 7,
+      "n_reject": 11
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:13:10Z",
+    "elapsed_s": 6.719
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T05:13:10Z",
+    "input_summary": {
+      "n_papers": 7,
+      "n_weak": 7,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:13:10Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T05:13:10Z",
+    "input_summary": {
+      "n_verified": 7,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Modeling Human Visual Detection Using Deep Networks",
+        "A decision-making theory of visual detection.",
+        "Deep Residual Learning for Image Recognition",
+        "ImageNet Large Scale Visual Recognition Challenge",
+        "Histograms of Oriented Gradients for Human Detection"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 97,
+      "n_surveys": 1,
+      "n_repos": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 97,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Modeling Human Visual Detection Using Deep Networks",
+        "n_references_plus_citations": 11,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "A decision-making theory of visual detection.",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Deep Residual Learning for Image Recognition",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "ImageNet Large Scale Visual Recognition Challenge",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Histograms of Oriented Gradients for Human Detection",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T05:13:44Z",
+    "elapsed_s": 33.934
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T05:13:44Z",
+    "input_summary": {
+      "n_candidates": 97,
+      "topic_len": 17,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 33,
+      "n_reject": 63
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:14:09Z",
+    "elapsed_s": 24.098
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T05:14:09Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 33,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:14:09Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T05:14:18Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:14:18Z",
+    "elapsed_s": 9.152
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T05:14:18Z",
+    "input_summary": {
+      "papers": 8
+    },
+    "output_summary": {
+      "nodes": 8,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:14:18Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T05:14:18Z",
+    "input_summary": {
+      "n_verified": 8
+    },
+    "output_summary": {
+      "n_baseline": 3,
+      "n_parallel": 5,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:14:18Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T05:14:22Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:14:22Z",
+    "elapsed_s": 4.673
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T05:14:33Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:14:33Z",
+    "elapsed_s": 10.505
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T05:14:45Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:14:45Z",
+    "elapsed_s": 11.912
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T05:14:41Z",
+    "input_summary": {
+      "n_baseline": 3
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:14:41Z",
+    "elapsed_s": 8.37
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T05:14:54Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "UAV-SenseNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:14:54Z",
+    "elapsed_s": 8.977
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T05:14:54Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:14:54Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T05:15:04Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:15:04Z",
+    "elapsed_s": 9.886
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T05:15:11Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:15:11Z",
+    "elapsed_s": 7.555
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T05:15:11Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:15:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T05:15:11Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于视觉的无人机识别与跟踪技术研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于深度残差网络的无人机视觉检测基线构建",
+          "research_question": "如何利用深度残差网络（ResNet）在无人机视觉检测任务中建立可靠的基线性能？",
+          "baseline": "Deep Residual Learning for Image Recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "ImageNet Large Scale Visual Recognition Challenge",
+          "risk": "基线模型在无人机小目标检测场景下可能性能不足，需后续改进。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于并行注意力与多尺度融合的小型无人机检测改进",
+          "research_question": "如何通过并行注意力机制和多尺度融合提升对小型无人机的检测精度？",
+          "baseline": "Deep Residual Learning for Image Recognition",
+          "improved_module_source": "Context-aware and deformation-adaptive small unmanned aerial vehicles detection via parallel attention and multi-scale fusion",
+          "data_source": null,
+          "experiment_metrics": "ImageNet Large Scale Visual Recognition Challenge",
+          "risk": "改进模块可能增加计算开销，需平衡精度与实时性。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于YOLOv13的无人机实时跟踪系统研究",
+          "research_question": "YOLOv13架构在无人机实时跟踪任务中的表现如何？",
+          "baseline": "iMoonLab/yolov13",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "ImageNet Large Scale Visual Recognition Challenge",
+          "risk": "YOLOv13为最新版本，可能存在文档不完善或社区支持不足的风险。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于T-Rex的无人机视觉检测与跟踪框架适配",
+          "research_question": "如何将T-Rex通用视觉检测框架适配到无人机识别与跟踪场景？",
+          "baseline": "IDEA-Research/T-Rex",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "ImageNet Large Scale Visual Recognition Challenge",
+          "risk": "T-Rex主要针对通用物体检测，对无人机小目标可能需额外调优。",
+          "estimated_workload": "2人月"
+        },
+        {
+          "title": "基于HOG特征的无人机检测与跟踪对比研究",
+          "research_question": "传统HOG特征在无人机检测与跟踪任务中与深度学习方法相比表现如何？",
+          "baseline": "Histograms of Oriented Gradients for Human Detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "ImageNet Large Scale Visual Recognition Challenge",
+          "risk": "HOG特征在复杂背景和尺度变化下鲁棒性可能不足。",
+          "estimated_workload": "1.5人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:15:11Z",
+    "elapsed_s": 0.0
+  }
+]

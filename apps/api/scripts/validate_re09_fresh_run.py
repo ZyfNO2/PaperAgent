@@ -21,7 +21,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from collections import Counter
 from pathlib import Path
 
 BANNED_SOURCE_DIRS = (
@@ -41,7 +40,7 @@ def _check(errors: list[str], name: str, ok: bool, detail: str = "") -> None:
 
 
 def validate(out_dir: Path) -> int:
-    print(f"=== Re09 fresh-run validator ===")
+    print("=== Re09 fresh-run validator ===")
     print(f"  out_dir: {out_dir}")
 
     errors: list[str] = []
@@ -99,7 +98,7 @@ def validate(out_dir: Path) -> int:
 
         # by_status match between summary and any case-level data
         # (not strictly required, but report should be consistent)
-        by_status = summary.get("by_status") or {}
+        summary.get("by_status") or {}
 
     # Gate 7: per-case repair execution trace must be non-empty for fail
     cases_path = out_dir / "repair_plans.json"

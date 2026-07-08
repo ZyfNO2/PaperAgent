@@ -74,7 +74,6 @@ def test_plan_tools_v2_legacy_keys_are_populated():
 
 
 def test_plan_tools_v2_falls_back_to_atoms_when_llm_budget_zero(monkeypatch):
-    import os
     monkeypatch.setenv("SESSION66_LLM_BUDGET", "0")
     plan = plan_tools_v2(_topic_json())
     assert len(plan["rounds"]) == 3

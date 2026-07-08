@@ -1,0 +1,625 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:40:40Z",
+    "input_summary": {
+      "topic": "基于特征点的目标位姿估计与机械臂抓取控制"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:40:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:40:44Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 2,
+      "domain": "robotics_control"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:40:44Z",
+    "elapsed_s": 4.023
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:40:44Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:40:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:40:44Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:41:13Z",
+    "elapsed_s": 28.45
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:41:13Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 23,
+      "dropped": 8,
+      "pre_filter_keep": 22,
+      "pre_filter_drop": 1,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 22,
+        "pre_drop": 1,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:41:18Z",
+    "elapsed_s": 5.429
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:41:18Z",
+    "input_summary": {
+      "n_candidates": 23,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 10,
+      "n_reject": 13
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:41:25Z",
+    "elapsed_s": 7.144
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:41:25Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 10,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:41:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:41:25Z",
+    "input_summary": {
+      "n_verified": 9,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Weld seam profile detection and feature point extraction for",
+        "Mesh segmentation using feature point and core extraction",
+        "Automatic feature point extraction and tracking in image seq",
+        "Feature extraction from 3D point clouds",
+        "Mesh denoising and feature extraction from point cloud data"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 47,
+      "n_surveys": 2,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 47,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Weld seam profile detection and feature point extraction for",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Mesh segmentation using feature point and core extraction",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Automatic feature point extraction and tracking in image seq",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Feature extraction from 3D point clouds",
+        "n_references_plus_citations": 1,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Mesh denoising and feature extraction from point cloud data",
+        "n_references_plus_citations": 1,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T06:42:00Z",
+    "elapsed_s": 35.051
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:42:00Z",
+    "input_summary": {
+      "n_candidates": 47,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 20,
+      "n_reject": 24
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:42:14Z",
+    "elapsed_s": 14.013
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:42:14Z",
+    "input_summary": {
+      "n_papers": 12,
+      "n_weak": 20,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:42:14Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:42:24Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:42:24Z",
+    "elapsed_s": 9.612
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:42:24Z",
+    "input_summary": {
+      "papers": 12
+    },
+    "output_summary": {
+      "nodes": 12,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:42:24Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:42:24Z",
+    "input_summary": {
+      "n_verified": 12
+    },
+    "output_summary": {
+      "n_baseline": 3,
+      "n_parallel": 9,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:42:24Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:42:29Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:42:29Z",
+    "elapsed_s": 5.187
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T06:42:45Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_packages": 7,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:42:45Z",
+    "elapsed_s": 15.919
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T06:42:57Z",
+    "input_summary": {
+      "n_baseline": 3,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:42:57Z",
+    "elapsed_s": 12.227
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T06:42:54Z",
+    "input_summary": {
+      "n_baseline": 3
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:42:54Z",
+    "elapsed_s": 8.791
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T06:43:08Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "MultiScale-Attention-PointNet (MSAP-Net)"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:43:08Z",
+    "elapsed_s": 10.512
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T06:43:08Z",
+    "input_summary": {
+      "n_packages": 7
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:43:08Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:43:18Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:43:18Z",
+    "elapsed_s": 10.397
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:43:26Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 7
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:43:26Z",
+    "elapsed_s": 7.374
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:43:26Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:43:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:43:26Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于特征点的目标位姿估计与机械臂抓取控制",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 7,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于投票与动态分组的3D模型兴趣点提取及其在机械臂抓取中的应用",
+          "research_question": "如何利用投票与动态分组方法从目标3D模型中提取稳定特征点，以支持后续位姿估计与抓取控制？",
+          "baseline": "Extraction of Points of Interest on 3D Models Based on Voting and Dynamic Grouping",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Extraction of Points of Interest on 3D Models Based on Voting and Dynamic Grouping",
+          "risk": "该基线方法未在抓取场景中验证，可能对噪声或遮挡敏感，需要额外适配。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于漂移校正模板更新策略的精密特征点跟踪与抓取位姿估计",
+          "research_question": "如何通过漂移校正模板更新策略提高特征点跟踪的精度，从而提升机械臂抓取中目标位姿估计的鲁棒性？",
+          "baseline": "Drift-correcting template update strategy for precision feature point tracking",
+          "improved_module_source": "Precision feature point tracking method using a drift-correcting template update strategy",
+          "data_source": null,
+          "experiment_metrics": "Drift-correcting template update strategy for precision feature point tracking",
+          "risk": "模板更新策略在快速运动或光照变化下可能失效，需设计重初始化机制。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于点采样曲面多尺度特征提取的抓取目标位姿估计",
+          "research_question": "如何利用点采样曲面上的多尺度特征提取方法，从3D点云中获取鲁棒特征点以支持机械臂抓取中的位姿估计？",
+          "baseline": "Multi‐scale Feature Extraction on Point‐Sampled Surfaces",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Multi‐scale Feature Extraction on Point‐Sampled Surfaces",
+          "risk": "多尺度特征计算复杂度高，可能难以满足实时抓取要求。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于视觉注意模型的焊缝轮廓检测与特征点提取在机械臂抓取中的应用",
+          "research_question": "如何借鉴焊缝轮廓检测中的视觉注意模型，提取目标物体的关键特征点，用于机械臂抓取中的位姿估计？",
+          "baseline": "Weld seam profile detection and feature point extraction for multi-pass route planning based on visual attention model",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Weld seam profile detection and feature point extraction for multi-pass route planning based on visual attention model",
+          "risk": "该模型针对焊缝特定场景设计，泛化到一般抓取目标可能需大量调参。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于特征点与核心提取的网格分割及其在抓取位姿估计中的应用",
+          "research_question": "如何利用网格分割中的特征点与核心提取方法，从目标物体网格模型中提取稳定特征点以辅助位姿估计？",
+          "baseline": "Mesh segmentation using feature point and core extraction",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Mesh segmentation using feature point and core extraction",
+          "risk": "网格分割结果对噪声敏感，可能影响特征点提取的重复性。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于3D点云特征提取的迭代最近点算法优化及其在抓取位姿估计中的应用",
+          "research_question": "如何通过改进的3D点云特征提取方法提升迭代最近点（ICP）算法的配准精度，从而改善机械臂抓取中的位姿估计？",
+          "baseline": "3314 Feature extraction based Efficient Iterative Closest Point Algorithm",
+          "improved_module_source": "Feature extraction from 3D point clouds",
+          "data_source": null,
+          "experiment_metrics": "3314 Feature extraction based Efficient Iterative Closest Point Algorithm",
+          "risk": "ICP算法对初始位姿敏感，特征提取的改进可能无法完全解决局部最优问题。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于级联特征提取的3D点云配准与机械臂抓取位姿估计",
+          "research_question": "如何利用级联特征提取方法（如yoichiro0406/cascading_feature_extraction）从3D点云中提取多层级特征，以提升抓取目标位姿估计的鲁棒性？",
+          "baseline": "yoichiro0406/cascading_feature_extraction",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "yoichiro0406/cascading_feature_extraction",
+          "risk": "该仓库可能缺乏完整文档或实验验证，需自行评估特征提取效果。",
+          "estimated_workload": "2人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:43:26Z",
+    "elapsed_s": 0.0
+  }
+]

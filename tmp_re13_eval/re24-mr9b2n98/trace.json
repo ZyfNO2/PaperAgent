@@ -1,0 +1,618 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T14:18:48Z",
+    "input_summary": {
+      "topic": "基于大语言模型的医学问答可信度评估方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:18:48Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T14:18:52Z",
+    "input_summary": {
+      "topic_len": 21
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "nlp_llm"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:18:52Z",
+    "elapsed_s": 4.545
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T14:18:52Z",
+    "input_summary": {
+      "topic_len": 21,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:18:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T14:18:52Z",
+    "input_summary": {
+      "topic_len": 21,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 48,
+      "raw_tools": [
+        "arxiv",
+        "crossref",
+        "github",
+        "semantic_scholar"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 12,
+        "semantic_scholar": 12
+      },
+      "failed_adapters": [
+        "openalex"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T14:19:53Z",
+    "elapsed_s": 60.941
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T14:19:53Z",
+    "input_summary": {
+      "n_candidates": 48
+    },
+    "output_summary": {
+      "kept": 48,
+      "dropped": 0,
+      "pre_filter_keep": 48,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 48,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:19:53Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T14:19:53Z",
+    "input_summary": {
+      "n_candidates": 48,
+      "topic_len": 21,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 5,
+      "n_weak_reject": 22,
+      "n_reject": 21
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:20:10Z",
+    "elapsed_s": 16.338
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T14:20:10Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 22,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:20:10Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T14:20:10Z",
+    "input_summary": {
+      "n_verified": 5,
+      "n_seeds": 4,
+      "seed_titles": [
+        "Toward expert-level medical question answering with large la",
+        "Towards Expert-Level Medical Question Answering with Large L",
+        "Leveraging long context in retrieval augmented language mode",
+        "RGAR: Recurrence Generation-augmented Retrieval for Factual-"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 114,
+      "n_surveys": 13,
+      "n_repos": 9
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 4,
+        "n_expanded": 114,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Toward expert-level medical question answering with large la",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Towards Expert-Level Medical Question Answering with Large L",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Leveraging long context in retrieval augmented language mode",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "RGAR: Recurrence Generation-augmented Retrieval for Factual-",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T14:20:42Z",
+    "elapsed_s": 32.122
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T14:20:42Z",
+    "input_summary": {
+      "n_candidates": 114,
+      "topic_len": 21,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 6,
+      "n_weak_reject": 72,
+      "n_reject": 36
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:21:10Z",
+    "elapsed_s": 28.311
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T14:21:10Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 94,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:21:10Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T14:21:19Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:21:19Z",
+    "elapsed_s": 8.97
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T14:21:19Z",
+    "input_summary": {
+      "papers": 11
+    },
+    "output_summary": {
+      "nodes": 11,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:21:19Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T14:21:19Z",
+    "input_summary": {
+      "n_verified": 11
+    },
+    "output_summary": {
+      "n_baseline": 9,
+      "n_parallel": 2,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:21:19Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T14:21:24Z",
+    "input_summary": {
+      "n_baseline": 9,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 50
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:21:24Z",
+    "elapsed_s": 4.863
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T14:21:38Z",
+    "input_summary": {
+      "n_baseline": 9,
+      "n_parallel": 2
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:21:38Z",
+    "elapsed_s": 14.04
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T14:21:54Z",
+    "input_summary": {
+      "n_baseline": 9,
+      "n_parallel": 2
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:21:54Z",
+    "elapsed_s": 15.618
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T14:21:47Z",
+    "input_summary": {
+      "n_baseline": 9
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:21:47Z",
+    "elapsed_s": 8.952
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T14:22:05Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "MediCred-RAG"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:22:05Z",
+    "elapsed_s": 10.974
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T14:22:05Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:22:05Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T14:22:14Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:22:14Z",
+    "elapsed_s": 8.919
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T14:22:21Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T14:22:21Z",
+    "elapsed_s": 7.346
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T14:22:21Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:22:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T14:22:21Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于大语言模型的医学问答可信度评估方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于PediatricsGPT的医学问答可信度评估基线构建",
+          "research_question": "在儿科医学问答场景下，PediatricsGPT作为基线模型，其回答的可信度（如事实准确性、临床证据一致性）如何量化评估？",
+          "baseline": "PediatricsGPT: Large Language Models as Chinese Medical Assistants for Pediatric Applications",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Large Language Models lack essential metacognition for reliable medical reasoning",
+          "risk": "PediatricsGPT可能未公开完整评估指标，需自行实现可信度度量；儿科领域数据稀缺可能影响评估泛化性。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于专家级医学问答模型的可信度对比评估",
+          "research_question": "Toward expert-level medical question answering with large language models中提出的模型，在可信度（如临床证据等级恢复能力）上是否优于通用LLM？",
+          "baseline": "Toward expert-level medical question answering with large language models",
+          "improved_module_source": "The strength of clinical evidence is recoverable from language model representations but not from their stated grades",
+          "data_source": null,
+          "experiment_metrics": "The strength of clinical evidence is recoverable from language model representations but not from their stated grades",
+          "risk": "专家级模型可能依赖私有数据或未公开权重，复现困难；证据等级恢复度量方法需适配。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于检索增强的医学问答可信度提升方法研究",
+          "research_question": "RGAR和Leveraging long context等检索增强方法，能否显著提升LLM在罕见病例（off-guideline）场景下的回答可信度？",
+          "baseline": "When Cases Get Rare: A Retrieval Benchmark for Off-Guideline Clinical Question Answering",
+          "improved_module_source": "RGAR: Recurrence Generation-augmented Retrieval for Factual-aware Medical Question Answering",
+          "data_source": null,
+          "experiment_metrics": "Large Language Models lack essential metacognition for reliable medical reasoning",
+          "risk": "检索增强方法可能引入外部知识噪声，需设计可信度过滤机制；罕见病例基准数据可能不足。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "临床证据等级恢复能力作为可信度指标的验证",
+          "research_question": "LLM在医学问答中能否准确恢复临床证据等级？该能力是否与回答可信度（如医生评分）一致？",
+          "baseline": "The strength of clinical evidence is recoverable from language model representations but not from their stated grades",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "The strength of clinical evidence is recoverable from language model representations but not from their stated grades",
+          "risk": "证据等级恢复可能仅反映模型内部表征，而非实际可信度；需额外人工评估验证。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于元认知缺失的医学问答可信度缺陷分析",
+          "research_question": "LLM在医学推理中缺乏元认知（如不确定性表达）是否导致可信度下降？如何通过提示或微调缓解？",
+          "baseline": "Large Language Models lack essential metacognition for reliable medical reasoning",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Large Language Models lack essential metacognition for reliable medical reasoning",
+          "risk": "元认知增强可能降低回答流畅性；缺乏标准元认知评估数据集。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T14:22:21Z",
+    "elapsed_s": 0.0
+  }
+]
