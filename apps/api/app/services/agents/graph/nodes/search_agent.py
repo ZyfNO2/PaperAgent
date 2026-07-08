@@ -83,7 +83,7 @@ _SYSTEM_PROMPT = """你是学术搜索策略师。根据题目、已有结果和
 - huggingface: 搜模型和数据集
 - core: 搜开放获取论文
 - datacite: 搜注册数据集
-- pubmed: 搜医学/生物论文（仅医学领域可用）
+- pubmed: 搜医学/生物论文（仅医学领域可用，查看 available_extra_tools 确认是否可用）
 
 判断标准:
 - 如果还没有论文 → 搜 method+object 组合
@@ -137,12 +137,17 @@ def _build_decision_prompt(
     # Failed tools to avoid
     failed_list = sorted(failed_tools) if failed_tools else []
 
+    # Re3.9: domain-specific available tools (e.g. pubmed for medical)
+    domain_str = str(domain) if not isinstance(domain, list) else (domain[0] if domain else "unknown")
+    domain_tools = _get_domain_tools(domain_str)
+
     return json.dumps({
         "topic": topic[:200],
         "method_keywords": method[:5],
         "object_keywords": obj[:5],
         "task_keywords": task[:3],
         "domain": domain,
+        "available_extra_tools": sorted(domain_tools) if domain_tools else [],
         "current_paper_count": len(all_papers),
         "current_repo_count": len(all_repos),
         "prior_steps": prior_queries[-8:] if prior_queries else [],
@@ -185,7 +190,7 @@ def _llm_decide(
             }
             if (tool, query) in used:
                 logger.info("search_agent: LLM returned duplicate query %s:%s, using fallback", tool, query[:50])
-                fallback = _fallback_decide(steps, search_plan, all_papers, all_repos, failed_tools)
+                fallback = _fallback_decide(steps, search_plan, all_papers, all_repos, failed_tools, atoms)
                 if fallback.get("action") != "stop":
                     return fallback
             return result
@@ -193,7 +198,7 @@ def _llm_decide(
         logger.warning("search_agent LLM decide failed: %s", exc)
 
     # Fallback: use plan queries in order, then stop
-    return _fallback_decide(steps, search_plan, all_papers, all_repos, failed_tools)
+    return _fallback_decide(steps, search_plan, all_papers, all_repos, failed_tools, atoms)
 
 
 def _fallback_decide(
@@ -202,6 +207,7 @@ def _fallback_decide(
     all_papers: list[dict[str, Any]],
     all_repos: list[dict[str, Any]],
     failed_tools: set[str] | None = None,
+    atoms: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Deterministic fallback when LLM is unavailable: iterate plan queries, then stop."""
     used_queries = {
@@ -216,6 +222,18 @@ def _fallback_decide(
         if s.get("type") == "skip"
     }
     failed = failed_tools or set()
+
+    # Re3.9: if medical domain, try pubmed with method+object keywords as fallback
+    if atoms:
+        domain_val = atoms.get("domain", "unknown")
+        domain_str = str(domain_val[0]) if isinstance(domain_val, list) and domain_val else str(domain_val)
+        if _get_domain_tools(domain_str):
+            method_kws = atoms.get("method") or []
+            obj_kws = atoms.get("object") or []
+            pubmed_q = " ".join((method_kws + obj_kws)[:3])
+            if pubmed_q and ("pubmed", pubmed_q) not in used_queries and "pubmed" not in failed:
+                return {"action": "search", "tool": "pubmed", "query": pubmed_q,
+                        "reason": "domain fallback: medical topic, pubmed search"}
 
     if search_plan and search_plan.get("queries"):
         for q in search_plan["queries"]:
