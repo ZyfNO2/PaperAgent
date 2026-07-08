@@ -10,7 +10,6 @@ The 4 cases are the SOP-required domains:
   D. 基于多时相遥感数据的作物早期识别  (remote_sensing)
 """
 
-import json
 import os
 import pytest
 

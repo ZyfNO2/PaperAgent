@@ -1,0 +1,48 @@
+
+================================================================================
+  CASE: re13-medical-llm-v2
+  TOPIC: 基于大语言模型的医学问答可信度评估方法研究
+================================================================================
+  elapsed: 107.63s
+  filter: kept=24, dropped=8
+  verified_papers: 11 (accept=11, weak_reject=0)
+  weak_papers: 43
+  seed_papers: 2
+  expanded_papers: 59
+  surveys_found: 5
+  repos_found: 2
+  baseline_candidates: 11
+  work_packages: 3
+  has final_recommendation: True
+  final_status: pass
+
+  --- verified_papers (11, first 10) ---
+    [ 0] [accept      ] [baseline  ] Large language models encode clinical knowledge
+    [ 1] [accept      ] [baseline  ] Performance of ChatGPT on USMLE: Potential for AI-assisted medical edu
+    [ 2] [accept      ] [baseline  ] PediatricsGPT: Large Language Models as Chinese Medical Assistants for
+    [ 3] [accept      ] [baseline  ] Can large language models reason about medical questions?
+    [ 4] [accept      ] [baseline  ] Language Models (Mostly) Know What They Know
+    [ 5] [accept      ] [baseline  ] FaithMed: Training LLMs For Faithful Evidence-Based Medical Reasoning
+    [ 6] [accept      ] [baseline  ] Clinical Safety and Reliability of Large Language Models in Answering 
+    [ 7] [accept      ] [baseline  ] Pyramid graph neural network knowledge distillation with pre-trained l
+    [ 8] [accept      ] [baseline  ] The performance of ChatGPT and Google Bard in medical oncology board e
+    [ 9] [accept      ] [baseline  ] Artificial Intelligence Performance Under Different Conditions in Answ
+
+  --- trace (17 events) ---
+    intake                              0.0s
+    topic_parser                        5.0s
+    search_planner                      0.0s
+    retrieve                           21.3s
+    quality_filter                      7.0s
+    verify                              9.3s
+    quality_gate                        0.0s
+    citation_expander                  20.7s
+    verify                             18.4s
+    quality_gate                        0.0s
+    dataset_repo                       11.6s
+    json_graph_builder                  0.0s
+    evidence_auditor                    0.0s
+    work_package                       14.2s
+    low_bar_review                      0.0s
+    human_gate                          0.0s
+    final_recommendation                0.0s

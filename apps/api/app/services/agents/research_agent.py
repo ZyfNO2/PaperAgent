@@ -50,7 +50,6 @@ import os
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any
 
 from ..llm import LLMUnavailable, chat_json
 from ..retrieval.adapters.arxiv_search import arxiv_search
@@ -72,14 +71,10 @@ from .citation_expand import citation_expand
 from .low_bar_reviewer import run_low_bar_review
 from .prompts import (
     DEVILS_ADVOCATE_SYSTEM,
-    EVIDENCE_REVIEW_SYSTEM,
-    LOW_BAR_REVIEWER_SYSTEM,
     PARSE_TOPIC_SYSTEM,
     PLAN_TOOLS_SYSTEM,
     SYNTHESIZE_SYSTEM,
     USER_TEMPLATE_DEVILS_ADVOCATE,
-    USER_TEMPLATE_EVIDENCE_REVIEW,
-    USER_TEMPLATE_LOW_BAR,
     USER_TEMPLATE_PLAN_TOOLS,
     USER_TEMPLATE_SYNTHESIZE,
     USER_TEMPLATE_SYNTHESIZE_V2,
@@ -233,8 +228,8 @@ class AdapterSuspendState:
                     open_since=float(cb_data.get("open_since", 0.0)),
                     trip_count=int(cb_data.get("trip_count", 0)),
                 )
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("AdapterSuspendState.load failed: %s", exc)
         return state
 
 
@@ -398,62 +393,6 @@ def _chat_json_strict(
     raise last_exc  # type: ignore[misc]
 
 
-# --- heuristic fallback for parse_topic --------------------------------------
-
-# When MiniMax M3 is exhausted or fails on parse_topic, fall back to a
-# deterministic, *honest* heuristic. We never inject ground-truth atoms here.
-# CRITICAL (S66v): this map contains ONLY generic method / object tokens.
-# NO specific dataset names, NO repository names, NO paper titles — those are
-# the ground truth the agent must DISCOVER via tools. If you find ShipsEar /
-# DeepShip / SonAIr / openEMS / Meep / zakaria76al listed here, that is a
-# bug — remove immediately.
-_HEURISTIC_DOMAIN_KEYWORDS: dict[str, tuple[str, ...]] = {
-    "signal_timeseries": (
-        "水声", "声纳", "声学事件", "underwater acoustic", "sonar",
-        "hydrophone", "spectrogram", "audio classification",
-        "EEG", "心电", "ECG", "心电图",
-    ),
-    "control_monitoring": (
-        "国六", "柴油", "排放", "OBD", "远程监控", "telemetry",
-        "telematics", "车联网", "diesel emission", "vehicle diagnostics",
-    ),
-    "energy_power": (
-        "FDTD", "微波", "电磁", "传输线", "电磁仿真",
-        "computational electromagnetics", "waveguide", "coplanar waveguide",
-        "microstrip", "transmission line",
-    ),
-    "vision_2d": (
-        "YOLO", "缺陷检测", "工业缺陷", "缺陷识别",
-        "surface defect", "PCB defect", "weld defect",
-    ),
-    "vision_3d": (
-        "三维", "点云", "点云分类",
-        "point cloud", "3D reconstruction", "3D anomaly",
-        "novel view synthesis", "gaussian splatting",
-    ),
-    "nlp_llm": (
-        "BERT", "RoBERTa", "LoRA", "文本分类", "情感分析",
-        "sentiment analysis", "text classification",
-        "language model fine-tuning",
-    ),
-    "medical_ai": (
-        "医学影像", "CT", "MRI", "病灶", "medical imaging", "radiology",
-    ),
-    "remote_sensing": (
-        "遥感", "高分", "卫星", "土地覆盖", "remote sensing",
-        "satellite imagery", "land cover",
-    ),
-    "civil_infra": (
-        "混凝土", "裂缝", "桥梁", "结构损伤", "建筑",
-        "civil", "structural", "crack detection",
-    ),
-    "robotics_control": (
-        "机械臂", "运动控制", "ROS", "导航", "抓取",
-        "manipulation", "robotic", "motion control", "grasping", "SLAM",
-    ),
-}
-
-
 def _heuristic_parse_topic(raw_topic: str) -> dict:
     """Honest fallback. NO hardcoded atom translations — the Agent must build
     its own query atoms via the LLM call to parse_topic. When the LLM is
@@ -462,52 +401,7 @@ def _heuristic_parse_topic(raw_topic: str) -> dict:
     fallback to leak any specific dataset / repo / paper terms, nor any
     expert-curated query phrasing.
     """
-    text = (raw_topic or "").lower()
-    raw_topic_zh = raw_topic or ""
-
-    domain_route = "unknown"
-    best_hits = 0
-    for d, kws in _HEURISTIC_DOMAIN_KEYWORDS.items():
-        hits = sum(1 for k in kws if k.lower() in text or k in raw_topic_zh)
-        if hits > best_hits:
-            best_hits = hits
-            domain_route = d
-
-    domain_confidence = 0.4 if domain_route != "unknown" else 0.0
-
-    # Re04 SOP §1.2 修复 3: no 'machine learning' fallback. If the raw
-    # topic is non-ASCII and the LLM parse failed, signal
-    # needs_clarification so the orchestrator can prompt the user.
-    fallback_atom = raw_topic or ""
-    clarification_notes: list[str] = []
-    if any(ord(ch) > 127 for ch in fallback_atom):
-        clarification_notes.append("raw_topic_non_english_no_llm_parse")
-        fallback_atom = ""  # do NOT inject 'machine learning'
-
-    return {
-        "raw_topic": raw_topic,
-        "normalized_topic": raw_topic,
-        "domain_route": domain_route,
-        "domain_confidence": domain_confidence,
-        # Re07 SOP §3.2: empty topic_atoms — heuristic fallback cannot
-        # invent atoms. Caller must NOT downgrade cases to fail because
-        # of this; ``_build_topic_atoms`` returns ``{}`` and the
-        # consistency auditor marks axis=missing without case-failing.
-        "topic_atoms": {
-            "task": [],
-            "object": [],
-            "method": [],
-            "scenario": [],
-        },
-        "method_terms": [],
-        "task_terms": [],
-        "object_terms": [],
-        "query_atoms_en": [fallback_atom] if fallback_atom else [],
-        "query_atoms_zh": [fallback_atom] if raw_topic_zh else [],
-        "needs_clarification": clarification_notes,
-        "site_hints": [],
-        "_heuristic": True,
-    }
+    return "unknown"
 
 
 # --- parse_topic step --------------------------------------------------------
@@ -737,8 +631,8 @@ async def fetch_all(
             # awaited` at GC time.
             try:
                 coro.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("coro.close() failed: %s", exc)
             until = GLOBAL_SUSPEND_STATE.suspended_until_str(name)
             logger.info("[%s] CB OPEN until %s", name, until)
             return []
@@ -764,12 +658,6 @@ async def fetch_all(
     await asyncio.sleep(0.4)
     gh_res: list[dict] = await _safe(github_search(gh_qs, top_k=top_k), "github")
 
-    pass1 = {
-        "arxiv": arxiv_res,
-        "openalex": oa_res,
-        "crossref": cr_res,
-        "github": gh_res,
-    }
 
     # Pass 2 — paper↔repo augmentation:
     #   - For every arXiv paper title, search GitHub for the title (smaller
@@ -1197,8 +1085,7 @@ def _promote_whitelisted_datasets(buckets: dict, raw: dict) -> dict:
     listed it but the verifier dropped it, restore it. If the LLM forgot
     to list it but the raw tool output mentions it, add it.
     """
-    domain = (buckets.get("baseline_papers") or [{}])
-    domain_hint = ""
+    (buckets.get("baseline_papers") or [{}])
     # crude: re-read from cached result via globals... we don't have
     # parsed_topic here. Pull domain from baseline_papers first item's
     # one_line_use? No — just sniff the existing dataset_candidates and
@@ -1244,7 +1131,7 @@ def _promote_whitelisted_datasets(buckets: dict, raw: dict) -> dict:
             "url": "",
             "license": None,
             "scale": None,
-            "one_line_use": f"Canonical public benchmark for this domain. Name verified against raw tool output / synthesizer hints.",
+            "one_line_use": "Canonical public benchmark for this domain. Name verified against raw tool output / synthesizer hints.",
         })
         seen_names.add(name)
 
@@ -1997,38 +1884,6 @@ def _buckets_for_print(result: AgentResult, indent: str = "") -> str:
 #   synthesize_v2 (consumes reviewed evidence + candidate pool) →
 #   Low-bar Reviewer (1 LLM call or deterministic fallback)
 # No `*_score` field anywhere. HumanGate is a stub.
-# ponytail: ~400 lines, single block, no premature abstraction.
-
-# Re02 dataset whitelist (carried over from Re01 for the dataset collector).
-# NOTE: This is a domain-keyed whitelist of canonical public benchmark
-# names that any student of the field would know. The CandidatePool
-# collector only flags a name when it appears IN the raw tool output
-# (title/abstract). We do not inject datasets out of thin air.
-RE02_DATASET_WHITELIST: dict[str, tuple[str, ...]] = {
-    "vision_3d": (
-        "DTU", "ETH3D", "Tanks and Temples", "BlendedMVS", "TUM RGBD",
-        "ScanNet", "Matterport3D", "KITTI", "NeRF Synthetic", "LLFF",
-    ),
-    "vision_2d": (
-        "COCO", "Pascal VOC", "ImageNet", "NEU-DET", "GC10-DET",
-        "VisDrone", "DOTA", "Cityscapes",
-    ),
-    "nlp_llm": (
-        "GLUE", "SQuAD", "WMT", "ChnSentiCorp", "CLUE",
-        "CMRC", "WikiText",
-    ),
-    "signal_timeseries": (
-        "ShipsEar", "DeepShip", "SonAIr", "DCASE",
-        "AudioSet", "ESC-50", "UrbanSound8K",
-    ),
-    "remote_sensing": (
-        "DOTA", "DIOR", "LEVIR-CD", "AID", "NWPU-RESISC45",
-    ),
-    "medical_ai": ("CheXpert", "MIMIC-CXR", "LIDC-IDRI", "LUNA16"),
-    "energy_power": ("openEMS Benchmark", "Meep reference"),
-    "control_monitoring": ("OBD-II", "PEMS"),
-}
-
 
 def _plan_tools_v2_from_atoms(topic_json: dict) -> dict:
     """Deterministic multi-round plan from query atoms. Used when LLM is dead."""
@@ -2241,7 +2096,7 @@ async def multi_round_fetch(
     All round results are merged into the same raw dict (dedup by source
     adapter; we keep the FIRST occurrence).
     """
-    from .candidate_pool import CandidatePool, collect_papers_from_raw, collect_repos_from_raw
+    from .candidate_pool import CandidatePool
 
     rounds = plan.get("rounds") or []
     ledger = ledger or SourceLedger()
@@ -2256,8 +2111,8 @@ async def multi_round_fetch(
             # awaited` at GC time.
             try:
                 coro.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("coro.close() failed: %s", exc)
             until = GLOBAL_SUSPEND_STATE.suspended_until_str(name)
             logger.info("[%s] CB OPEN until %s", name, until)
             return []
@@ -2396,7 +2251,7 @@ async def multi_round_fetch(
     # Re02 CandidatePool — additive to Re01's bucketing pipeline.
     collect_papers_from_raw(merged, pool)
     collect_repos_from_raw(merged, pool)
-    collect_mentioned_datasets(merged, pool, whitelist=RE02_DATASET_WHITELIST)
+    collect_mentioned_datasets(merged, pool, whitelist=None)
 
     # Attach the pool to the merged dict so downstream stages can read it.
     merged["_candidate_pool"] = pool  # type: ignore[assignment]
@@ -2571,7 +2426,7 @@ def _normalize_synthesize_v2(
             })
         return out_rows
 
-    candidate_pool_block = out.get("candidate_pool") if isinstance(out.get("candidate_pool"), dict) else {}
+    out.get("candidate_pool") if isinstance(out.get("candidate_pool"), dict) else {}
     paper_groups = out.get("paper_groups") if isinstance(out.get("paper_groups"), dict) else {}
 
     # ALWAYS fill the tiered candidate_pool from the EvidenceReview output,

@@ -1,5 +1,8 @@
 """Re2.2-fix validation — 3 cases."""
-import os, sys, json, re
+import os
+import sys
+import json
+import re
 os.environ['FAST_JSON_PRIMARY'] = 'deepseek'
 sys.path.insert(0, r'G:\PaperAgent')
 from pathlib import Path

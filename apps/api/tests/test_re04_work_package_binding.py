@@ -1,7 +1,6 @@
 """Re04 SOP §5 Task 6 — work_package_binding tests."""
 from __future__ import annotations
 
-import pytest
 
 from app.services.agents.work_package_binding import (
     _NO_BASELINE_MSG_ZH,
@@ -19,8 +18,8 @@ def _baseline_syn(baseline_count: int = 2, parallel_count: int = 2, dataset_coun
     ds = [{"candidate_id": f"c-dddddd{i:02x}"} for i in range(dataset_count)]
     if work is None:
         work = [
-            f"使用 c-aaaaaa00 作为基线，参考 c-bbbbbb00 平行方案，复现 c-dddddd00 数据集。",
-            f"扩展 c-aaaaaa01 + c-bbbbbb01 + c-dddddd00。",
+            "使用 c-aaaaaa00 作为基线，参考 c-bbbbbb00 平行方案，复现 c-dddddd00 数据集。",
+            "扩展 c-aaaaaa01 + c-bbbbbb01 + c-dddddd00。",
         ]
     paper_groups = {"baseline": bl, "parallel": pl, "reference": [],
                     "long_tail_candidates": []}

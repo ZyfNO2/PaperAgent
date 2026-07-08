@@ -3,7 +3,8 @@
 Usage:
     python apps/api/scripts/re22_analyze.py --dir tmp_re22_eval/all_100
 """
-import argparse, json
+import argparse
+import json
 from collections import defaultdict
 from pathlib import Path
 
@@ -200,18 +201,18 @@ def main():
 
     out_path = Path('tmp_re22_eval/analysis.json')
     out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding='utf-8')
-    print(f"\n=== Analysis ===")
+    print("\n=== Analysis ===")
     print(f"Cases: {result['n_cases']}, Completed: {result['n_completed']}")
-    print(f"\nDomain matrix:")
+    print("\nDomain matrix:")
     for d, dd in result['domain_matrix'].items():
         print(f"  {d}: n={dd['n']}, avg_accept={dd['avg_accept']}, innovation={dd['innovation_rate']}")
-    print(f"\nDifficulty matrix:")
+    print("\nDifficulty matrix:")
     for d, dd in result['difficulty_matrix'].items():
         print(f"  {d}: n={dd['n']}, avg_accept={dd['avg_accept']}, block_rate={dd['block_rate']}")
-    print(f"\nEdge cases:")
+    print("\nEdge cases:")
     for k, v in result['edge_cases'].items():
         print(f"  {k}: {len(v)}")
-    print(f"\nConsistency:")
+    print("\nConsistency:")
     c = result['consistency_check']
     print(f"  common: {c['n_common']}, feas: {c['feasibility_consistent']}, review: {c['review_consistent']}")
     print(f"\nSaved to: {out_path}")

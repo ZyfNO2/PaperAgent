@@ -1,0 +1,285 @@
+{
+  "case_id": "ENG-THESIS-019",
+  "topic": "基于光学图像YOLO算法的废钢识别分类与统计",
+  "user_constraints": {
+    "topic_zh": "基于光学图像YOLO算法的废钢识别分类与统计"
+  },
+  "topic_atoms": {
+    "method": [
+      "YOLO"
+    ],
+    "object": [
+      "废钢"
+    ],
+    "task": [
+      "识别",
+      "分类",
+      "统计"
+    ],
+    "scenario": [
+      "废钢回收"
+    ],
+    "domain": "vision_2d",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "钢材缺陷检测",
+      "废钢成分分析",
+      "废钢称重"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "arxiv",
+        "query": "YOLO steel scrap detection classification",
+        "why": "The prior query was too specific in Chinese and returned no results. This query uses English keywords on arxiv to find academic papers on YOLO-based steel scrap detection, which directly addresses the baseline_n and paper_candidates_n gaps.",
+        "expected_evidence": "At least 1 paper on YOLO for steel scrap detection/classification with reported mAP or accuracy.",
+        "stop_condition": "Stop after 1 paper found or after 10 results reviewed with none relevant."
+      },
+      {
+        "tool": "openalex",
+        "query": "YOLO scrap steel classification",
+        "why": "The prior query failed due to narrow Chinese phrasing. OpenAlex covers a broad academic corpus; this English query targets dataset and baseline gaps by searching for papers that may include dataset descriptions or baseline comparisons.",
+        "expected_evidence": "At least 1 paper or review mentioning a dataset or baseline for steel scrap classification using YOLO.",
+        "stop_condition": "Stop after 1 relevant result or after 20 results scanned with none relevant."
+      },
+      {
+        "tool": "web",
+        "query": "YOLO steel scrap dataset benchmark",
+        "why": "The prior query did not find any dataset or benchmark. This web search targets dataset pages, benchmark pages, or project pages that might contain public datasets or evaluation results for steel scrap detection, directly addressing the dataset_n and baseline_n gaps.",
+        "expected_evidence": "A dataset page or benchmark page with steel scrap images and YOLO evaluation metrics.",
+        "stop_condition": "Stop after 1 relevant page or after 10 results scanned with none relevant."
+      },
+      {
+        "tool": "github",
+        "query": "YOLO steel scrap detection",
+        "why": "The prior query did not find any repository. This GitHub search targets official or community repositories implementing YOLO for steel scrap detection, addressing the repo_n gap.",
+        "expected_evidence": "At least 1 repository with code for YOLO-based steel scrap detection, possibly with a dataset link or pretrained weights.",
+        "stop_condition": "Stop after 1 relevant repo or after 10 results scanned with none relevant."
+      }
+    ],
+    "rounds": [
+      "repair"
+    ],
+    "negative_feedback": "The prior single Chinese query returned zero results because it was too narrow and language-restricted. This repair round uses four diverse tools (arxiv, openalex, web, github) with English keywords to cover academic papers, datasets, benchmarks, and code repositories, thereby closing the baseline_n, dataset_n, repo_n, and paper_candidates_n gaps."
+  },
+  "raw_results": {},
+  "paper_candidates": [],
+  "verified_papers": [],
+  "weak_papers": [],
+  "evidence_audit": {
+    "quality_gate_route": "repair",
+    "quality_gate_snapshot": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "repair_rounds": 1,
+    "last_repair_type": "paper_gap_repair"
+  },
+  "filter_results": {
+    "total": 0,
+    "kept": 0,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T05:37:54Z",
+      "input_summary": {
+        "topic": "基于光学图像YOLO算法的废钢识别分类与统计"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T05:37:54Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T05:37:58Z",
+      "input_summary": {
+        "topic_len": 22
+      },
+      "output_summary": {
+        "n_method": 1,
+        "n_object": 1,
+        "domain": "vision_2d"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T05:37:58Z",
+      "elapsed_s": 4.719
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T05:37:58Z",
+      "input_summary": {
+        "topic_len": 22,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 1,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T05:37:58Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T05:37:58Z",
+      "input_summary": {
+        "topic_len": 22,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "raw_tools": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T05:37:58Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T05:37:58Z",
+      "input_summary": {
+        "n_candidates": 0
+      },
+      "output_summary": {
+        "kept": 0,
+        "dropped": 0
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T05:37:58Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T05:37:58Z",
+      "input_summary": {
+        "n_candidates": 0,
+        "topic_len": 22,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 0,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T05:37:58Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T05:37:58Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "repair"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T05:37:58Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "targeted_repair",
+      "started_at": "2026-07-06T05:38:08Z",
+      "input_summary": {
+        "current_round": 0,
+        "repair_type": "paper_gap_repair"
+      },
+      "output_summary": {
+        "n_queries": 4,
+        "rounds": [
+          "repair"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re12_repair.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T05:38:08Z",
+      "elapsed_s": 9.845
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T05:38:08Z",
+      "input_summary": {
+        "topic_len": 22,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "raw_tools": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T05:38:08Z",
+      "elapsed_s": 0.001
+    }
+  ],
+  "provider_profile": "legacy_adapter",
+  "errors": []
+}

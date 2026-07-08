@@ -1,0 +1,569 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T03:30:34Z",
+    "input_summary": {
+      "topic": "基于YOLOV5的肺结节检测算法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:30:34Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T03:30:43Z",
+    "input_summary": {
+      "topic_len": 18
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "medical_ai"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:30:43Z",
+    "elapsed_s": 9.172
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T03:30:43Z",
+    "input_summary": {
+      "topic_len": 18,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:30:43Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T03:30:43Z",
+    "input_summary": {
+      "topic_len": 18,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T03:31:39Z",
+    "elapsed_s": 56.238
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T03:31:39Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 18,
+      "dropped": 13,
+      "pre_filter_keep": 18,
+      "pre_filter_drop": 5,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 18,
+        "pre_drop": 5,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:31:49Z",
+    "elapsed_s": 10.343
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T03:31:49Z",
+    "input_summary": {
+      "n_candidates": 18,
+      "topic_len": 18,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 12,
+      "n_reject": 6
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:32:03Z",
+    "elapsed_s": 13.737
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T03:32:03Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 12,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:32:03Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T03:32:03Z",
+    "input_summary": {
+      "n_verified": 10,
+      "n_seeds": 4,
+      "seed_titles": [
+        "YOLOv5-LF: An Optimized YOLOv5 Algorithm for Real-Time Autom",
+        "GBS-YOLOv5: Improved Algorithm for UAV Intelligent Transport",
+        "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improve",
+        "ultralytics/yolov5: v5.0 - YOLOv5-P6 1280 models, AWS, Super"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 15,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 4,
+        "n_expanded": 15,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "YOLOv5-LF: An Optimized YOLOv5 Algorithm for Real-Time Autom",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "GBS-YOLOv5: Improved Algorithm for UAV Intelligent Transport",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improve",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "ultralytics/yolov5: v5.0 - YOLOv5-P6 1280 models, AWS, Super",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T03:33:16Z",
+    "elapsed_s": 72.735
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T03:33:16Z",
+    "input_summary": {
+      "n_candidates": 15,
+      "topic_len": 18,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 4,
+      "n_reject": 11
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:33:28Z",
+    "elapsed_s": 11.789
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T03:33:28Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 4,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:33:28Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T03:33:55Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:33:55Z",
+    "elapsed_s": 26.844
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T03:33:55Z",
+    "input_summary": {
+      "papers": 10
+    },
+    "output_summary": {
+      "nodes": 10,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:33:55Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T03:33:55Z",
+    "input_summary": {
+      "n_verified": 10
+    },
+    "output_summary": {
+      "n_baseline": 2,
+      "n_parallel": 8,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:33:55Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T03:34:05Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:34:05Z",
+    "elapsed_s": 10.586
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T03:34:19Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_packages": 2,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:34:19Z",
+    "elapsed_s": 14.239
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T03:34:39Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:34:39Z",
+    "elapsed_s": 19.816
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T03:34:35Z",
+    "input_summary": {
+      "n_baseline": 2
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:34:35Z",
+    "elapsed_s": 15.157
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T03:34:56Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "LungDet-YOLOv5"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:34:56Z",
+    "elapsed_s": 16.53
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T03:34:56Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:34:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T03:35:11Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:35:11Z",
+    "elapsed_s": 15.453
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T03:35:24Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:35:24Z",
+    "elapsed_s": 13.24
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T03:35:24Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:35:24Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T03:35:24Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于YOLOV5的肺结节检测算法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 2,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLOv5的肺结节检测算法优化研究",
+          "research_question": "如何通过改进YOLOv5的注意力机制或特征融合模块，提升肺结节检测的精度与召回率？",
+          "baseline": "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improvements",
+          "improved_module_source": "UTD-Yolov5: A Real-time Underwater Targets Detection Method based on Attention Improved YOLOv5",
+          "data_source": null,
+          "experiment_metrics": "A Comparative Analysis of YOLOv5, YOLOv8, and YOLOv10 in Kitchen Safety",
+          "risk": "肺结节数据集（如LUNA16、LIDC-IDRI）未在证据中列出，需自行获取或标注；注意力改进模块可能需针对医学影像特点调整。",
+          "estimated_workload": "3个月（含数据预处理、模型改进、实验对比）"
+        },
+        {
+          "title": "YOLOv5在肺结节检测中的轻量化与实时性研究",
+          "research_question": "如何借鉴YOLOv5s-GTB的轻量化设计，在保持检测精度的同时降低模型参数量，满足临床实时检测需求？",
+          "baseline": "ultralytics/yolov5: v5.0 - YOLOv5-P6 1280 models, AWS, Supervise.ly and YouTube integrations",
+          "improved_module_source": "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
+          "data_source": null,
+          "experiment_metrics": "A Comparative Analysis of YOLOv5, YOLOv8, and YOLOv10 in Kitchen Safety",
+          "risk": "轻量化可能导致小肺结节漏检；缺乏公开肺结节数据集引用，需额外收集。",
+          "estimated_workload": "2.5个月（模型剪枝/蒸馏、速度-精度权衡实验）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:35:24Z",
+    "elapsed_s": 0.0
+  }
+]

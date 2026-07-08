@@ -1,9 +1,7 @@
 """Loop 2: Citation Expander unit test — seed selection, dedup, concurrent expansion."""
 from __future__ import annotations
 
-import asyncio
-import pytest
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch
 
 from apps.api.app.services.agents.graph.nodes.citation_expander import (
     citation_expander_node,

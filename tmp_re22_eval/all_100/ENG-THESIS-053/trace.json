@@ -1,0 +1,398 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:50:22Z",
+    "input_summary": {
+      "topic": "复杂动态场景下视觉SLAM研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:50:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:50:27Z",
+    "input_summary": {
+      "topic_len": 15
+    },
+    "output_summary": {
+      "n_method": 4,
+      "n_object": 3,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:50:27Z",
+    "elapsed_s": 4.888
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:50:27Z",
+    "input_summary": {
+      "topic_len": 15,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 4,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:50:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:50:27Z",
+    "input_summary": {
+      "topic_len": 15,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 8,
+      "raw_tools": [
+        "arxiv"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:51:00Z",
+    "elapsed_s": 32.702
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:51:00Z",
+    "input_summary": {
+      "n_candidates": 8
+    },
+    "output_summary": {
+      "kept": 8,
+      "dropped": 0,
+      "pre_filter_keep": 8,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 8,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:51:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:51:00Z",
+    "input_summary": {
+      "n_candidates": 8,
+      "topic_len": 15,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 2,
+      "n_reject": 6
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:51:07Z",
+    "elapsed_s": 7.067
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:51:07Z",
+    "input_summary": {
+      "n_papers": 2,
+      "n_weak": 2,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:51:07Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:51:07Z",
+    "input_summary": {
+      "n_verified": 2,
+      "n_seeds": 0,
+      "seed_titles": []
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "reason": "no_seeds_with_ids"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "ended_at": "2026-07-06T06:51:07Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:51:07Z",
+    "input_summary": {
+      "n_candidates": 8,
+      "topic_len": 15,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 2,
+      "n_reject": 6
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:51:14Z",
+    "elapsed_s": 7.209
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:51:14Z",
+    "input_summary": {
+      "n_papers": 2,
+      "n_weak": 2,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:51:14Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:51:19Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 2,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:51:19Z",
+    "elapsed_s": 4.686
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:51:19Z",
+    "input_summary": {
+      "papers": 2
+    },
+    "output_summary": {
+      "nodes": 2,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:51:19Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:51:19Z",
+    "input_summary": {
+      "n_verified": 2
+    },
+    "output_summary": {
+      "n_baseline": 0,
+      "n_parallel": 2,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:51:19Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:51:24Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "not_recommended",
+      "score": 15
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:51:24Z",
+    "elapsed_s": 5.417
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:51:35Z",
+    "input_summary": {
+      "feasibility": "not_recommended"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:51:35Z",
+    "elapsed_s": 10.413
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:51:41Z",
+    "input_summary": {
+      "n_innovation": 0,
+      "n_packages": 0
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:51:41Z",
+    "elapsed_s": 6.534
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:51:41Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:51:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:51:41Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "复杂动态场景下视觉SLAM研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "low_bar_status": null,
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:51:41Z",
+    "elapsed_s": 0.0
+  }
+]

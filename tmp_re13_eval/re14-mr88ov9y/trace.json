@@ -1,0 +1,567 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T20:24:19Z",
+    "input_summary": {
+      "topic": "基于大语言模型的医学问答可信度评估方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:24:19Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T20:24:24Z",
+    "input_summary": {
+      "topic_len": 21
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "nlp_llm"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:24:24Z",
+    "elapsed_s": 4.193
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T20:24:24Z",
+    "input_summary": {
+      "topic_len": 21,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:24:24Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T20:24:24Z",
+    "input_summary": {
+      "topic_len": 21,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 32,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T20:24:38Z",
+    "elapsed_s": 14.558
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T20:24:38Z",
+    "input_summary": {
+      "n_candidates": 32
+    },
+    "output_summary": {
+      "kept": 24,
+      "dropped": 8,
+      "pre_filter_keep": 24,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 24,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:24:44Z",
+    "elapsed_s": 5.43
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T20:24:44Z",
+    "input_summary": {
+      "n_candidates": 24,
+      "topic_len": 21,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 11,
+      "n_reject": 10
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:24:51Z",
+    "elapsed_s": 7.537
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T20:24:51Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 11,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:24:51Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-05T20:24:51Z",
+    "input_summary": {
+      "n_verified": 3,
+      "n_seeds": 2,
+      "seed_titles": [
+        "Large language models encode clinical knowledge",
+        "Performance of ChatGPT on USMLE: Potential for AI-assisted m"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 59,
+      "n_surveys": 5,
+      "n_repos": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 2,
+        "n_expanded": 59,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Large language models encode clinical knowledge",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Performance of ChatGPT on USMLE: Potential for AI-assisted m",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      }
+    ],
+    "ended_at": "2026-07-05T20:25:06Z",
+    "elapsed_s": 14.451
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T20:25:06Z",
+    "input_summary": {
+      "n_candidates": 59,
+      "topic_len": 21,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 7,
+      "n_weak_reject": 37,
+      "n_reject": 15
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:25:22Z",
+    "elapsed_s": 16.876
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T20:25:22Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 48,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:25:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T20:25:32Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:25:32Z",
+    "elapsed_s": 9.956
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T20:25:32Z",
+    "input_summary": {
+      "papers": 10
+    },
+    "output_summary": {
+      "nodes": 10,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:25:32Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T20:25:32Z",
+    "input_summary": {
+      "n_verified": 10
+    },
+    "output_summary": {
+      "n_baseline": 10,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:25:32Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-05T20:25:37Z",
+    "input_summary": {
+      "n_baseline": 10,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:25:37Z",
+    "elapsed_s": 4.778
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T20:25:48Z",
+    "input_summary": {
+      "n_baseline": 10,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:25:48Z",
+    "elapsed_s": 11.289
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-05T20:26:00Z",
+    "input_summary": {
+      "n_baseline": 10,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:26:00Z",
+    "elapsed_s": 11.278
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-05T20:26:05Z",
+    "input_summary": {
+      "n_baseline": 10
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:26:05Z",
+    "elapsed_s": 5.704
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-05T20:26:13Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "MedCred-3D"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:26:13Z",
+    "elapsed_s": 8.059
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T20:26:13Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:26:13Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-05T20:26:23Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:26:23Z",
+    "elapsed_s": 9.057
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-05T20:26:30Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T20:26:30Z",
+    "elapsed_s": 6.965
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-05T20:26:30Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:26:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-05T20:26:30Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于大语言模型的医学问答可信度评估方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "医学问答可信度评估框架构建与基准测试",
+          "research_question": "如何利用现有医学QA数据集和LLM知识编码能力，构建一个针对医学问答可信度的多维度评估框架？",
+          "baseline": "Large language models encode clinical knowledge",
+          "improved_module_source": "Language Models (Mostly) Know What They Know",
+          "data_source": null,
+          "experiment_metrics": "Clinical Safety and Reliability of Large Language Models in Answering Hemorrhoid-Related Patient Questions: A Comparative Study of ChatGPT, Gemini, and DeepSeek",
+          "risk": "现有数据集可能不覆盖所有医学子领域，导致评估偏差；LLM自我认知能力有限，可能无法准确反映真实可信度。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于临床推理链的可信度增强方法",
+          "research_question": "能否通过显式临床推理链（如CHARD框架）提升LLM在医学问答中的可信度，并设计相应的评估指标？",
+          "baseline": "CHARD: Clinical Health-Aware Reasoning Across Dimensions for Text Generation Models",
+          "improved_module_source": "FaithMed: Training LLMs For Faithful Evidence-Based Medical Reasoning",
+          "data_source": null,
+          "experiment_metrics": "Performance of ChatGPT on USMLE: Potential for AI-assisted medical education using large language models",
+          "risk": "推理链可能增加计算开销，且对复杂病例的推理准确性仍待验证。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "多模型医学问答可信度对比与鲁棒性分析",
+          "research_question": "不同LLM（如ChatGPT、Gemini、DeepSeek）在医学问答中的可信度差异如何？是否存在领域特定的鲁棒性问题？",
+          "baseline": "Clinical Safety and Reliability of Large Language Models in Answering Hemorrhoid-Related Patient Questions: A Comparative Study of ChatGPT, Gemini, and DeepSeek",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Can large language models reason about medical questions?",
+          "risk": "对比结果可能受限于所选模型版本和测试集规模，泛化性需谨慎。",
+          "estimated_workload": "2人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T20:26:30Z",
+    "elapsed_s": 0.0
+  }
+]

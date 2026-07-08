@@ -29,7 +29,7 @@ import re
 from collections import defaultdict
 from typing import Any, Iterable
 
-from ..retrieval._http import normalize_title, title_similarity
+from ..retrieval._http import title_similarity
 
 # Tier ordering: lower number = higher priority.
 TIER_ORDER = {

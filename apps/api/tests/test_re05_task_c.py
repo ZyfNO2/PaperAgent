@@ -7,9 +7,6 @@ endpoints, plus file-system cache tests against a tmp dir.
 from __future__ import annotations
 
 import asyncio
-import json
-import os
-from pathlib import Path
 from typing import Any
 
 import pytest

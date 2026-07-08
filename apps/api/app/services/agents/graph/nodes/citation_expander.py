@@ -23,9 +23,7 @@ _CITS_PER_SEED = 15
 _MAX_EXPANDED = 150
 
 
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+from ._util import now_iso as _now_iso
 
 
 def _select_seeds(verified_papers: list[dict[str, Any]], topic_atoms: dict[str, Any],
@@ -198,6 +196,9 @@ def citation_expander_node(state: ResearchState) -> dict[str, Any]:
         "tool_calls": [],
         "errors": [],
         "provider": "semantic_scholar",
+        "state_keys": ["expanded_papers", "seed_papers", "surveys_found",
+                       "repos_found", "citation_expansion_done",
+                       "paper_candidates", "trace_events"],
     }
 
     # Select seeds

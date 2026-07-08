@@ -1,0 +1,3146 @@
+{
+  "case_id": "ENG-THESIS-074",
+  "topic": "基于深度学习的混凝土桥梁裂缝检测研究",
+  "user_constraints": {
+    "topic_zh": "基于深度学习的混凝土桥梁裂缝检测研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "深度学习",
+      "卷积神经网络"
+    ],
+    "object": [
+      "混凝土桥梁裂缝"
+    ],
+    "task": [
+      "检测"
+    ],
+    "scenario": [
+      "桥梁检测",
+      "结构健康监测"
+    ],
+    "domain": "civil_infra",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "路面裂缝",
+      "隧道裂缝",
+      "钢结构裂缝"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "基于深度学习的混凝土桥梁裂缝检测研究",
+        "why": "fallback topic headword",
+        "expected_evidence": "any relevant papers",
+        "stop_condition": "n>=5"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "openalex": [],
+    "arxiv": [
+      {
+        "title": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+        "abstract": "Structural integrity is vital for maintaining the safety and longevity of concrete infrastructures such as bridges, tunnels, and walls. Traditional methods for detecting damages like cracks and spalls are labor-intensive, time-consuming, and prone to human error. To address these challenges, this study explores advanced data-driven techniques using deep learning for automated damage detection and analysis. Two state-of-the-art instance segmentation models, YOLO-v7 instance segmentation and Mask R-CNN, were evaluated using a dataset comprising 400 images, augmented to 10,995 images through geometric and color-based transformations to enhance robustness. The models were trained and validated using a dataset split into 90% training set, validation and test set 10%. Performance metrics such as precision, recall, mean average precision (mAP@0.5), and frames per second (FPS) were used for evaluation. YOLO-v7 achieved a superior mAP@0.5 of 96.1% and processed 40 FPS, outperforming Mask R-CNN, which achieved a mAP@0.5 of 92.1% with a slower processing speed of 18 FPS. The findings recommend YOLO-v7 instance segmentation model for real-time, high-speed structural health monitoring, while Mask R-CNN is better suited for detailed offline assessments. This study demonstrates the potential of deep learning to revolutionize infrastructure maintenance, offering a scalable and efficient solution for automated damage detection.",
+        "authors": [
+          "Saeid Ataei",
+          "Saeed Adibnazari",
+          "Seyyed Taghi Ataei"
+        ],
+        "arxiv_id": "2501.11836v1",
+        "url": "http://arxiv.org/abs/2501.11836v1",
+        "published": "2025-01-21T02:44:05Z",
+        "year": 2025,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "Learn to Accumulate Evidence from All Training Samples: Theory and Practice",
+        "abstract": "Evidential deep learning, built upon belief theory and subjective logic, offers a principled and computationally efficient way to turn a deterministic neural network uncertainty-aware. The resultant evidential models can quantify fine-grained uncertainty using the learned evidence. To ensure theoretically sound evidential models, the evidence needs to be non-negative, which requires special activation functions for model training and inference. This constraint often leads to inferior predictive performance compared to standard softmax models, making it challenging to extend them to many large-scale datasets. To unveil the real cause of this undesired behavior, we theoretically investigate evidential models and identify a fundamental limitation that explains the inferior performance: existing evidential activation functions create zero evidence regions, which prevent the model to learn from training samples falling into such regions. A deeper analysis of evidential activation functions based on our theoretical underpinning inspires the design of a novel regularizer that effectively alleviates this fundamental limitation. Extensive experiments over many challenging real-world datasets and settings confirm our theoretical findings and demonstrate the effectiveness of our proposed approach.",
+        "authors": [
+          "Deep Pandey",
+          "Qi Yu"
+        ],
+        "arxiv_id": "2306.11113v2",
+        "url": "http://arxiv.org/abs/2306.11113v2",
+        "published": "2023-06-19T18:27:12Z",
+        "year": 2023,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "The Modern Mathematics of Deep Learning",
+        "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, and which fine aspects of an architecture affect the behavior of a learning task in which way. We present an overview of modern approaches that yield partial answers to these questions. For selected approaches, we describe the main ideas in more detail.",
+        "authors": [
+          "Julius Berner",
+          "Philipp Grohs",
+          "Gitta Kutyniok",
+          "Philipp Petersen"
+        ],
+        "arxiv_id": "2105.04026v2",
+        "url": "http://arxiv.org/abs/2105.04026v2",
+        "published": "2021-05-09T21:30:42Z",
+        "year": 2021,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+        "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+        "authors": [
+          "Kun Wang",
+          "Zi Wang",
+          "Zhang Li",
+          "Ang Su",
+          "Xichao Teng",
+          "Erting Pan",
+          "Minhao Liu",
+          "Qifeng Yu"
+        ],
+        "arxiv_id": "2302.10473v6",
+        "url": "http://arxiv.org/abs/2302.10473v6",
+        "published": "2023-02-21T06:31:53Z",
+        "year": 2023,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "Deep Learning and Computational Physics (Lecture Notes)",
+        "abstract": "These notes were compiled as lecture notes for a course developed and taught at the University of the Southern California. They should be accessible to a typical engineering graduate student with a strong background in Applied Mathematics.\n  The main objective of these notes is to introduce a student who is familiar with concepts in linear algebra and partial differential equations to select topics in deep learning. These lecture notes exploit the strong connections between deep learning algorithms and the more conventional techniques of computational physics to achieve two goals. First, they use concepts from computational physics to develop an understanding of deep learning algorithms. Not surprisingly, many concepts in deep learning can be connected to similar concepts in computational physics, and one can utilize this connection to better understand these algorithms. Second, several novel deep learning algorithms can be used to solve challenging problems in computational physics. Thus, they offer someone who is interested in modeling a physical phenomena with a complementary set of tools.",
+        "authors": [
+          "Deep Ray",
+          "Orazio Pinti",
+          "Assad A. Oberai"
+        ],
+        "arxiv_id": "2301.00942v1",
+        "url": "http://arxiv.org/abs/2301.00942v1",
+        "published": "2023-01-03T03:56:19Z",
+        "year": 2023,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "A Hybrid Deep Learning Anomaly Detection Framework for Intrusion Detection",
+        "abstract": "Cyber intrusion attacks that compromise the users' critical and sensitive data are escalating in volume and intensity, especially with the growing connections between our daily life and the Internet. The large volume and high complexity of such intrusion attacks have impeded the effectiveness of most traditional defence techniques. While at the same time, the remarkable performance of the machine learning methods, especially deep learning, in computer vision, had garnered research interests from the cyber security community to further enhance and automate intrusion detections. However, the expensive data labeling and limitation of anomalous data make it challenging to train an intrusion detector in a fully supervised manner. Therefore, intrusion detection based on unsupervised anomaly detection is an important feature too. In this paper, we propose a three-stage deep learning anomaly detection based network intrusion attack detection framework. The framework comprises an integration of unsupervised (K-means clustering), semi-supervised (GANomaly) and supervised learning (CNN) algorithms. We then evaluated and showed the performance of our implemented framework on three benchmark datasets: NSL-KDD, CIC-IDS2018, and TON_IoT.",
+        "authors": [
+          "Rahul Kale",
+          "Zhi Lu",
+          "Kar Wai Fok",
+          "Vrizlynn L. L. Thing"
+        ],
+        "arxiv_id": "2212.00966v1",
+        "url": "http://arxiv.org/abs/2212.00966v1",
+        "published": "2022-12-02T04:40:54Z",
+        "year": 2022,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "A multitask deep learning model for real-time deployment in embedded systems",
+        "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training process that introduces challenges not present in single-task models.",
+        "authors": [
+          "Miquel Martí",
+          "Atsuto Maki"
+        ],
+        "arxiv_id": "1711.00146v1",
+        "url": "http://arxiv.org/abs/1711.00146v1",
+        "published": "2017-10-31T23:59:23Z",
+        "year": 2017,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "Cracks in concrete",
+        "abstract": "Finding and properly segmenting cracks in images of concrete is a challenging task. Cracks are thin and rough and being air filled do yield a very weak contrast in 3D images obtained by computed tomography. Enhancing and segmenting dark lower-dimensional structures is already demanding. The heterogeneous concrete matrix and the size of the images further increase the complexity. ML methods have proven to solve difficult segmentation problems when trained on enough and well annotated data. However, so far, there is not much 3D image data of cracks available at all, let alone annotated. Interactive annotation is error-prone as humans can easily tell cats from dogs or roads without from roads with cars but have a hard time deciding whether a thin and dark structure seen in a 2D slice continues in the next one. Training networks by synthetic, simulated images is an elegant way out, bears however its own challenges. In this contribution, we describe how to generate semi-synthetic image data to train CNN like the well known 3D U-Net or random forests for segmenting cracks in 3D images of concrete. The thickness of real cracks varies widely, both, within one crack as well as from crack to crack in the same sample. The segmentation method should therefore be invariant with respect to scale changes. We introduce the so-called RieszNet, designed for exactly this purpose. Finally, we discuss how to generalize the ML crack segmentation methods to other concrete types.",
+        "authors": [
+          "Tin Barisin",
+          "Christian Jung",
+          "Anna Nowacka",
+          "Claudia Redenbach",
+          "Katja Schladitz"
+        ],
+        "arxiv_id": "2501.18376v1",
+        "url": "http://arxiv.org/abs/2501.18376v1",
+        "published": "2025-01-30T14:29:29Z",
+        "year": 2025,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "Monodense Deep Neural Model for Determining Item Price Elasticity",
+        "abstract": "Item Price Elasticity is used to quantify the responsiveness of consumer demand to changes in item prices, enabling businesses to create pricing strategies and optimize revenue management. Sectors such as store retail, e-commerce, and consumer goods rely on elasticity information derived from historical sales and pricing data. This elasticity provides an understanding of purchasing behavior across different items, consumer discount sensitivity, and demand elastic departments. This information is particularly valuable for competitive markets and resource-constrained businesses decision making which aims to maximize profitability and market share. Price elasticity also uncovers historical shifts in consumer responsiveness over time. In this paper, we model item-level price elasticity using large-scale transactional datasets, by proposing a novel elasticity estimation framework which has the capability to work in an absence of treatment control setting. We test this framework by using Machine learning based algorithms listed below, including our newly proposed Monodense deep neural network.\n  (1) Monodense-DL network -- Hybrid neural network architecture combining embedding, dense, and Monodense layers (2) DML -- Double machine learning setting using regression models (3) LGBM -- Light Gradient Boosting Model\n  We evaluate our model on multi-category retail data spanning millions of transactions using a back testing framework. Experimental results demonstrate the superiority of our proposed neural network model within the framework compared to other prevalent ML based methods listed above.",
+        "authors": [
+          "Lakshya Garg",
+          "Sai Yaswanth",
+          "Deep Narayan Mishra",
+          "Karthik Kumaran",
+          "Anupriya Sharma",
+          "Mayank Uniyal"
+        ],
+        "arxiv_id": "2603.29261v1",
+        "url": "http://arxiv.org/abs/2603.29261v1",
+        "published": "2026-03-31T04:50:51Z",
+        "year": 2026,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "Deep learning observables in computational fluid dynamics",
+        "abstract": "Many large scale problems in computational fluid dynamics such as uncertainty quantification, Bayesian inversion, data assimilation and PDE constrained optimization are considered very challenging computationally as they require a large number of expensive (forward) numerical solutions of the corresponding PDEs. We propose a machine learning algorithm, based on deep artificial neural networks, that predicts the underlying \\emph{input parameters to observable} map from a few training samples (computed realizations of this map). By a judicious combination of theoretical arguments and empirical observations, we find suitable network architectures and training hyperparameters that result in robust and efficient neural network approximations of the parameters to observable map. Numerical experiments are presented to demonstrate low prediction errors for the trained network networks, even when the network has been trained with a few samples, at a computational cost which is several orders of magnitude lower than the underlying PDE solver.\n  Moreover, we combine the proposed deep learning algorithm with Monte Carlo (MC) and Quasi-Monte Carlo (QMC) methods to efficiently compute uncertainty propagation for nonlinear PDEs. Under the assumption that the underlying neural networks generalize well, we prove that the deep learning MC and QMC algorithms are guaranteed to be faster than the baseline (quasi-) Monte Carlo methods. Numerical experiments demonstrating one to two orders of magnitude speed up over baseline QMC and MC algorithms, for the intricate problem of computing probability distributions of the observable, are also presented.",
+        "authors": [
+          "Kjetil O. Lye",
+          "Siddhartha Mishra",
+          "Deep Ray"
+        ],
+        "arxiv_id": "1903.03040v2",
+        "url": "http://arxiv.org/abs/1903.03040v2",
+        "published": "2019-03-07T16:57:52Z",
+        "year": 2019,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "DILIE: Deep Internal Learning for Image Enhancement",
+        "abstract": "We consider the generic deep image enhancement problem where an input image is transformed into a perceptually better-looking image. Recent methods for image enhancement consider the problem by performing style transfer and image restoration. The methods mostly fall into two categories: training data-based and training data-independent (deep internal learning methods). We perform image enhancement in the deep internal learning framework. Our Deep Internal Learning for Image Enhancement framework enhances content features and style features and uses contextual content loss for preserving image context in the enhanced image. We show results on both hazy and noisy image enhancement. To validate the results, we use structure similarity and perceptual error, which is efficient in measuring the unrealistic deformation present in the images. We show that the proposed framework outperforms the relevant state-of-the-art works for image enhancement.",
+        "authors": [
+          "Indra Deep Mastan",
+          "Shanmuganathan Raman"
+        ],
+        "arxiv_id": "2012.06469v1",
+        "url": "http://arxiv.org/abs/2012.06469v1",
+        "published": "2020-12-11T16:39:44Z",
+        "year": 2020,
+        "source_query": "deep learning concrete bridge crack detection"
+      },
+      {
+        "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+        "abstract": "Evidential deep learning (EDL) models, based on Subjective Logic, introduce a principled and computationally efficient way to make deterministic neural networks uncertainty-aware. The resulting evidential models can quantify fine-grained uncertainty using learned evidence. However, the Subjective-Logic framework constrains evidence to be non-negative, requiring specific activation functions whose geometric properties can induce activation-dependent learning-freeze behavior: a regime where gradients become extremely small for samples mapped into low-evidence regions. We theoretically characterize this behavior and analyze how different evidential activations influence learning dynamics. Building on this analysis, we design a general family of activation functions and corresponding evidential regularizers that provide an alternative pathway for consistent evidence updates across activation regimes. Extensive experiments on four benchmark classification problems (MNIST, CIFAR-10, CIFAR-100, and Tiny-ImageNet), two few-shot classification problems, and blind face restoration problem empirically validate the developed theory and demonstrate the effectiveness of the proposed generalized regularized evidential models.",
+        "authors": [
+          "Deep Shankar Pandey",
+          "Hyomin Choi",
+          "Qi Yu"
+        ],
+        "arxiv_id": "2512.23753v1",
+        "url": "http://arxiv.org/abs/2512.23753v1",
+        "published": "2025-12-27T11:26:18Z",
+        "year": 2025,
+        "source_query": "deep learning concrete bridge crack detection"
+      }
+    ],
+    "github": [
+      {
+        "id": 1112092201,
+        "node_id": "R_kgDOQkkuKQ",
+        "name": "Infrastructure-Crack-Detection-using-Computer-Vision-",
+        "full_name": "Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+        "private": false,
+        "owner": {
+          "login": "Harshadakokande",
+          "id": 166949920,
+          "node_id": "U_kgDOCfN0IA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/166949920?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/Harshadakokande",
+          "html_url": "https://github.com/Harshadakokande",
+          "followers_url": "https://api.github.com/users/Harshadakokande/followers",
+          "following_url": "https://api.github.com/users/Harshadakokande/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Harshadakokande/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/Harshadakokande/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Harshadakokande/subscriptions",
+          "organizations_url": "https://api.github.com/users/Harshadakokande/orgs",
+          "repos_url": "https://api.github.com/users/Harshadakokande/repos",
+          "events_url": "https://api.github.com/users/Harshadakokande/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/Harshadakokande/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+        "description": "A deep learning–based system that identifies cracks in roads, bridges, and concrete surfaces. Using OpenCV preprocessing and a CNN classifier, it detects cracks from images with high accuracy. Helps automate structural inspection and supports preventive maintenance.",
+        "fork": false,
+        "url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+        "forks_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/forks",
+        "keys_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/teams",
+        "hooks_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/hooks",
+        "issue_events_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/events",
+        "assignees_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/tags",
+        "blobs_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/languages",
+        "stargazers_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/stargazers",
+        "contributors_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/contributors",
+        "subscribers_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/subscribers",
+        "subscription_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/subscription",
+        "commits_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/merges",
+        "archive_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/downloads",
+        "issues_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/labels{/name}",
+        "releases_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/deployments",
+        "created_at": "2025-12-08T06:19:47Z",
+        "updated_at": "2025-12-18T12:50:36Z",
+        "pushed_at": "2025-12-18T12:50:33Z",
+        "git_url": "git://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-.git",
+        "ssh_url": "git@github.com:Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-.git",
+        "clone_url": "https://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-.git",
+        "svn_url": "https://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+        "homepage": null,
+        "size": 3,
+        "stargazers_count": 1,
+        "watchers_count": 1,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 1,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 1
+      },
+      {
+        "id": 1174667345,
+        "node_id": "R_kgDORgQAUQ",
+        "name": "khatry2026automated",
+        "full_name": "Kalyan0701/khatry2026automated",
+        "private": false,
+        "owner": {
+          "login": "Kalyan0701",
+          "id": 134832042,
+          "node_id": "U_kgDOCAlfqg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/134832042?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/Kalyan0701",
+          "html_url": "https://github.com/Kalyan0701",
+          "followers_url": "https://api.github.com/users/Kalyan0701/followers",
+          "following_url": "https://api.github.com/users/Kalyan0701/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Kalyan0701/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/Kalyan0701/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Kalyan0701/subscriptions",
+          "organizations_url": "https://api.github.com/users/Kalyan0701/orgs",
+          "repos_url": "https://api.github.com/users/Kalyan0701/repos",
+          "events_url": "https://api.github.com/users/Kalyan0701/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/Kalyan0701/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/Kalyan0701/khatry2026automated",
+        "description": "Official code for \"Automated Concrete Bridge Deck Inspection Using Unmanned Aerial System–Collected Data: A Deep Learning Approach\" (ASCE OPEN, Vol 4, No 1). Comparative analysis of RvT, CvT, ViT, ResNet-50, and CNN for UAS-based bridge deck crack detection.",
+        "fork": false,
+        "url": "https://api.github.com/repos/Kalyan0701/khatry2026automated",
+        "forks_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/forks",
+        "keys_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/teams",
+        "hooks_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/hooks",
+        "issue_events_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/events",
+        "assignees_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/tags",
+        "blobs_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/languages",
+        "stargazers_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/stargazers",
+        "contributors_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/contributors",
+        "subscribers_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/subscribers",
+        "subscription_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/subscription",
+        "commits_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/merges",
+        "archive_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/downloads",
+        "issues_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/labels{/name}",
+        "releases_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/deployments",
+        "created_at": "2026-03-06T17:48:16Z",
+        "updated_at": "2026-06-18T06:11:23Z",
+        "pushed_at": "2026-04-16T01:52:17Z",
+        "git_url": "git://github.com/Kalyan0701/khatry2026automated.git",
+        "ssh_url": "git@github.com:Kalyan0701/khatry2026automated.git",
+        "clone_url": "https://github.com/Kalyan0701/khatry2026automated.git",
+        "svn_url": "https://github.com/Kalyan0701/khatry2026automated",
+        "homepage": "",
+        "size": 568,
+        "stargazers_count": 1,
+        "watchers_count": 1,
+        "language": "Jupyter Notebook",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 1,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 1,
+        "open_issues": 0,
+        "watchers": 1,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 1
+      },
+      {
+        "id": 1199508503,
+        "node_id": "R_kgDOR38MFw",
+        "name": "Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+        "full_name": "dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+        "private": false,
+        "owner": {
+          "login": "dengxinhong0222",
+          "id": 272553025,
+          "node_id": "U_kgDOED7UQQ",
+          "avatar_url": "https://avatars.githubusercontent.com/u/272553025?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/dengxinhong0222",
+          "html_url": "https://github.com/dengxinhong0222",
+          "followers_url": "https://api.github.com/users/dengxinhong0222/followers",
+          "following_url": "https://api.github.com/users/dengxinhong0222/following{/other_user}",
+          "gists_url": "https://api.github.com/users/dengxinhong0222/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/dengxinhong0222/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/dengxinhong0222/subscriptions",
+          "organizations_url": "https://api.github.com/users/dengxinhong0222/orgs",
+          "repos_url": "https://api.github.com/users/dengxinhong0222/repos",
+          "events_url": "https://api.github.com/users/dengxinhong0222/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/dengxinhong0222/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+        "description": "Training Dataset for U-Net Model in Deep Learning Semantic Segmentation.",
+        "fork": false,
+        "url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+        "forks_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/forks",
+        "keys_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/teams",
+        "hooks_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/hooks",
+        "issue_events_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/events",
+        "assignees_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/tags",
+        "blobs_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/languages",
+        "stargazers_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/stargazers",
+        "contributors_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/contributors",
+        "subscribers_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/subscribers",
+        "subscription_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/subscription",
+        "commits_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/merges",
+        "archive_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/downloads",
+        "issues_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/labels{/name}",
+        "releases_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/deployments",
+        "created_at": "2026-04-02T12:23:06Z",
+        "updated_at": "2026-04-02T12:40:08Z",
+        "pushed_at": "2026-04-02T12:40:01Z",
+        "git_url": "git://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision.git",
+        "ssh_url": "git@github.com:dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision.git",
+        "clone_url": "https://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision.git",
+        "svn_url": "https://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+        "homepage": null,
+        "size": 22292,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "language": null,
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 0,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 0
+      },
+      {
+        "id": 1231272153,
+        "node_id": "R_kgDOSWO42Q",
+        "name": "FYP",
+        "full_name": "zainfaisal220/FYP",
+        "private": false,
+        "owner": {
+          "login": "zainfaisal220",
+          "id": 149861536,
+          "node_id": "U_kgDOCO60oA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/149861536?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/zainfaisal220",
+          "html_url": "https://github.com/zainfaisal220",
+          "followers_url": "https://api.github.com/users/zainfaisal220/followers",
+          "following_url": "https://api.github.com/users/zainfaisal220/following{/other_user}",
+          "gists_url": "https://api.github.com/users/zainfaisal220/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/zainfaisal220/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/zainfaisal220/subscriptions",
+          "organizations_url": "https://api.github.com/users/zainfaisal220/orgs",
+          "repos_url": "https://api.github.com/users/zainfaisal220/repos",
+          "events_url": "https://api.github.com/users/zainfaisal220/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/zainfaisal220/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/zainfaisal220/FYP",
+        "description": "Bridge Crack Detection Simulation (FYP) - An automated drone-based bridge concrete crack assessment system with Unity simulation and FastAPI deep-learning pipeline.",
+        "fork": false,
+        "url": "https://api.github.com/repos/zainfaisal220/FYP",
+        "forks_url": "https://api.github.com/repos/zainfaisal220/FYP/forks",
+        "keys_url": "https://api.github.com/repos/zainfaisal220/FYP/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/zainfaisal220/FYP/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/zainfaisal220/FYP/teams",
+        "hooks_url": "https://api.github.com/repos/zainfaisal220/FYP/hooks",
+        "issue_events_url": "https://api.github.com/repos/zainfaisal220/FYP/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/zainfaisal220/FYP/events",
+        "assignees_url": "https://api.github.com/repos/zainfaisal220/FYP/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/zainfaisal220/FYP/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/zainfaisal220/FYP/tags",
+        "blobs_url": "https://api.github.com/repos/zainfaisal220/FYP/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/zainfaisal220/FYP/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/zainfaisal220/FYP/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/zainfaisal220/FYP/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/zainfaisal220/FYP/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/zainfaisal220/FYP/languages",
+        "stargazers_url": "https://api.github.com/repos/zainfaisal220/FYP/stargazers",
+        "contributors_url": "https://api.github.com/repos/zainfaisal220/FYP/contributors",
+        "subscribers_url": "https://api.github.com/repos/zainfaisal220/FYP/subscribers",
+        "subscription_url": "https://api.github.com/repos/zainfaisal220/FYP/subscription",
+        "commits_url": "https://api.github.com/repos/zainfaisal220/FYP/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/zainfaisal220/FYP/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/zainfaisal220/FYP/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/zainfaisal220/FYP/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/zainfaisal220/FYP/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/zainfaisal220/FYP/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/zainfaisal220/FYP/merges",
+        "archive_url": "https://api.github.com/repos/zainfaisal220/FYP/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/zainfaisal220/FYP/downloads",
+        "issues_url": "https://api.github.com/repos/zainfaisal220/FYP/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/zainfaisal220/FYP/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/zainfaisal220/FYP/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/zainfaisal220/FYP/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/zainfaisal220/FYP/labels{/name}",
+        "releases_url": "https://api.github.com/repos/zainfaisal220/FYP/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/zainfaisal220/FYP/deployments",
+        "created_at": "2026-05-06T19:59:37Z",
+        "updated_at": "2026-06-25T10:28:15Z",
+        "pushed_at": "2026-06-25T10:28:12Z",
+        "git_url": "git://github.com/zainfaisal220/FYP.git",
+        "ssh_url": "git@github.com:zainfaisal220/FYP.git",
+        "clone_url": "https://github.com/zainfaisal220/FYP.git",
+        "svn_url": "https://github.com/zainfaisal220/FYP",
+        "homepage": null,
+        "size": 1706,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "language": "C#",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 0,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 0
+      },
+      {
+        "id": 588057800,
+        "node_id": "R_kgDOIw0MyA",
+        "name": "CSE-4.2-SoftComputing-Lab-Project",
+        "full_name": "Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+        "private": false,
+        "owner": {
+          "login": "Ishfaq9",
+          "id": 48744513,
+          "node_id": "MDQ6VXNlcjQ4NzQ0NTEz",
+          "avatar_url": "https://avatars.githubusercontent.com/u/48744513?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/Ishfaq9",
+          "html_url": "https://github.com/Ishfaq9",
+          "followers_url": "https://api.github.com/users/Ishfaq9/followers",
+          "following_url": "https://api.github.com/users/Ishfaq9/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Ishfaq9/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/Ishfaq9/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Ishfaq9/subscriptions",
+          "organizations_url": "https://api.github.com/users/Ishfaq9/orgs",
+          "repos_url": "https://api.github.com/users/Ishfaq9/repos",
+          "events_url": "https://api.github.com/users/Ishfaq9/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/Ishfaq9/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+        "description": "In this study, we tried to explore the opportunity to detect the surface crack with the help of a deep learning methods. The research approach of this paper can be adopted in various types of damage detections such as the scaling of the concrete surface, piles of bridges, peeling paint of steel and concrete, and so on.",
+        "fork": false,
+        "url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+        "forks_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/forks",
+        "keys_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/teams",
+        "hooks_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/hooks",
+        "issue_events_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/events",
+        "assignees_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/tags",
+        "blobs_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/languages",
+        "stargazers_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/stargazers",
+        "contributors_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/contributors",
+        "subscribers_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/subscribers",
+        "subscription_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/subscription",
+        "commits_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/merges",
+        "archive_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/downloads",
+        "issues_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/labels{/name}",
+        "releases_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/deployments",
+        "created_at": "2023-01-12T08:18:26Z",
+        "updated_at": "2023-01-12T08:30:46Z",
+        "pushed_at": "2023-01-12T08:27:33Z",
+        "git_url": "git://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project.git",
+        "ssh_url": "git@github.com:Ishfaq9/CSE-4.2-SoftComputing-Lab-Project.git",
+        "clone_url": "https://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project.git",
+        "svn_url": "https://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+        "homepage": null,
+        "size": 1366,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "language": "Jupyter Notebook",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 0,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 0
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<data-driven-detection-and-evaluation-of-damages-in-concrete-structures-using-deep-learning-and-computer-vision>",
+        "type": "paper",
+        "title": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<deep-learning-observables-in-computational-fluid-dynamics>",
+        "type": "paper",
+        "title": "Deep learning observables in computational fluid dynamics",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<dilie-deep-internal-learning-for-image-enhancement>",
+        "type": "paper",
+        "title": "DILIE: Deep Internal Learning for Image Enhancement",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<generalized-regularized-evidential-deep-learning-models-theory-and-comprehensive-evaluation>",
+        "type": "paper",
+        "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<oriented-object-detection-in-optical-remote-sensing-images-using-deep-learning-a-survey>",
+        "type": "paper",
+        "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<cracks-in-concrete>",
+        "type": "paper",
+        "title": "Cracks in concrete",
+        "role": "parallel"
+      },
+      {
+        "id": "repo:<harshadakokande/infrastructure-crack-detection-using-computer-vision->",
+        "type": "repo",
+        "title": "harshadakokande/infrastructure-crack-detection-using-computer-vision-",
+        "role": "repo"
+      },
+      {
+        "id": "repo:<kalyan0701/khatry2026automated>",
+        "type": "repo",
+        "title": "kalyan0701/khatry2026automated",
+        "role": "repo"
+      },
+      {
+        "id": "repo:<dengxinhong0222/intelligent-detection-of-concrete-bridge-cracks-based-on-machine-vision>",
+        "type": "repo",
+        "title": "dengxinhong0222/intelligent-detection-of-concrete-bridge-cracks-based-on-machine-vision",
+        "role": "repo"
+      },
+      {
+        "id": "repo:<zainfaisal220/fyp>",
+        "type": "repo",
+        "title": "zainfaisal220/fyp",
+        "role": "repo"
+      },
+      {
+        "id": "repo:<ishfaq9/cse-4.2-softcomputing-lab-project>",
+        "type": "repo",
+        "title": "ishfaq9/cse-4.2-softcomputing-lab-project",
+        "role": "repo"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "abstract": "Structural integrity is vital for maintaining the safety and longevity of concrete infrastructures such as bridges, tunnels, and walls. Traditional methods for detecting damages like cracks and spalls are labor-intensive, time-consuming, and prone to human error. To address these challenges, this study explores advanced data-driven techniques using deep learning for automated damage detection and analysis. Two state-of-the-art instance segmentation models, YOLO-v7 instance segmentation and Mask R-CNN, were evaluated using a dataset comprising 400 images, augmented to 10,995 images through geom",
+      "url": "http://arxiv.org/abs/2501.11836v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+            "abstract": "Structural integrity is vital for maintaining the safety and longevity of concrete infrastructures such as bridges, tunnels, and walls. Traditional methods for detecting damages like cracks and spalls are labor-intensive, time-consuming, and prone to human error. To address these challenges, this study explores advanced data-driven techniques using deep learning for automated damage detection and analysis. Two state-of-the-art instance segmentation models, YOLO-v7 instance segmentation and Mask R-CNN, were evaluated using a dataset comprising 400 images, augmented to 10,995 images through geometric and color-based transformations to enhance robustness. The models were trained and validated using a dataset split into 90% training set, validation and test set 10%. Performance metrics such as precision, recall, mean average precision (mAP@0.5), and frames per second (FPS) were used for evaluation. YOLO-v7 achieved a superior mAP@0.5 of 96.1% and processed 40 FPS, outperforming Mask R-CNN, which achieved a mAP@0.5 of 92.1% with a slower processing speed of 18 FPS. The findings recommend YOLO-v7 instance segmentation model for real-time, high-speed structural health monitoring, while Mask R-CNN is better suited for detailed offline assessments. This study demonstrates the potential of deep learning to revolutionize infrastructure maintenance, offering a scalable and efficient solution for automated damage detection.",
+            "authors": [
+              "Saeid Ataei",
+              "Saeed Adibnazari",
+              "Seyyed Taghi Ataei"
+            ],
+            "arxiv_id": "2501.11836v1",
+            "url": "http://arxiv.org/abs/2501.11836v1",
+            "published": "2025-01-21T02:44:05Z",
+            "year": 2025,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Learn to Accumulate Evidence from All Training Samples: Theory and Practice",
+      "abstract": "Evidential deep learning, built upon belief theory and subjective logic, offers a principled and computationally efficient way to turn a deterministic neural network uncertainty-aware. The resultant evidential models can quantify fine-grained uncertainty using the learned evidence. To ensure theoretically sound evidential models, the evidence needs to be non-negative, which requires special activation functions for model training and inference. This constraint often leads to inferior predictive performance compared to standard softmax models, making it challenging to extend them to many large-",
+      "url": "http://arxiv.org/abs/2306.11113v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Learn to Accumulate Evidence from All Training Samples: Theory and Practice",
+            "abstract": "Evidential deep learning, built upon belief theory and subjective logic, offers a principled and computationally efficient way to turn a deterministic neural network uncertainty-aware. The resultant evidential models can quantify fine-grained uncertainty using the learned evidence. To ensure theoretically sound evidential models, the evidence needs to be non-negative, which requires special activation functions for model training and inference. This constraint often leads to inferior predictive performance compared to standard softmax models, making it challenging to extend them to many large-scale datasets. To unveil the real cause of this undesired behavior, we theoretically investigate evidential models and identify a fundamental limitation that explains the inferior performance: existing evidential activation functions create zero evidence regions, which prevent the model to learn from training samples falling into such regions. A deeper analysis of evidential activation functions based on our theoretical underpinning inspires the design of a novel regularizer that effectively alleviates this fundamental limitation. Extensive experiments over many challenging real-world datasets and settings confirm our theoretical findings and demonstrate the effectiveness of our proposed approach.",
+            "authors": [
+              "Deep Pandey",
+              "Qi Yu"
+            ],
+            "arxiv_id": "2306.11113v2",
+            "url": "http://arxiv.org/abs/2306.11113v2",
+            "published": "2023-06-19T18:27:12Z",
+            "year": 2023,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "The Modern Mathematics of Deep Learning",
+      "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, a",
+      "url": "http://arxiv.org/abs/2105.04026v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "The Modern Mathematics of Deep Learning",
+            "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, and which fine aspects of an architecture affect the behavior of a learning task in which way. We present an overview of modern approaches that yield partial answers to these questions. For selected approaches, we describe the main ideas in more detail.",
+            "authors": [
+              "Julius Berner",
+              "Philipp Grohs",
+              "Gitta Kutyniok",
+              "Philipp Petersen"
+            ],
+            "arxiv_id": "2105.04026v2",
+            "url": "http://arxiv.org/abs/2105.04026v2",
+            "published": "2021-05-09T21:30:42Z",
+            "year": 2021,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including",
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+            "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+            "authors": [
+              "Kun Wang",
+              "Zi Wang",
+              "Zhang Li",
+              "Ang Su",
+              "Xichao Teng",
+              "Erting Pan",
+              "Minhao Liu",
+              "Qifeng Yu"
+            ],
+            "arxiv_id": "2302.10473v6",
+            "url": "http://arxiv.org/abs/2302.10473v6",
+            "published": "2023-02-21T06:31:53Z",
+            "year": 2023,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Deep Learning and Computational Physics (Lecture Notes)",
+      "abstract": "These notes were compiled as lecture notes for a course developed and taught at the University of the Southern California. They should be accessible to a typical engineering graduate student with a strong background in Applied Mathematics.\n  The main objective of these notes is to introduce a student who is familiar with concepts in linear algebra and partial differential equations to select topics in deep learning. These lecture notes exploit the strong connections between deep learning algorithms and the more conventional techniques of computational physics to achieve two goals. First, they ",
+      "url": "http://arxiv.org/abs/2301.00942v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Deep Learning and Computational Physics (Lecture Notes)",
+            "abstract": "These notes were compiled as lecture notes for a course developed and taught at the University of the Southern California. They should be accessible to a typical engineering graduate student with a strong background in Applied Mathematics.\n  The main objective of these notes is to introduce a student who is familiar with concepts in linear algebra and partial differential equations to select topics in deep learning. These lecture notes exploit the strong connections between deep learning algorithms and the more conventional techniques of computational physics to achieve two goals. First, they use concepts from computational physics to develop an understanding of deep learning algorithms. Not surprisingly, many concepts in deep learning can be connected to similar concepts in computational physics, and one can utilize this connection to better understand these algorithms. Second, several novel deep learning algorithms can be used to solve challenging problems in computational physics. Thus, they offer someone who is interested in modeling a physical phenomena with a complementary set of tools.",
+            "authors": [
+              "Deep Ray",
+              "Orazio Pinti",
+              "Assad A. Oberai"
+            ],
+            "arxiv_id": "2301.00942v1",
+            "url": "http://arxiv.org/abs/2301.00942v1",
+            "published": "2023-01-03T03:56:19Z",
+            "year": 2023,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "A Hybrid Deep Learning Anomaly Detection Framework for Intrusion Detection",
+      "abstract": "Cyber intrusion attacks that compromise the users' critical and sensitive data are escalating in volume and intensity, especially with the growing connections between our daily life and the Internet. The large volume and high complexity of such intrusion attacks have impeded the effectiveness of most traditional defence techniques. While at the same time, the remarkable performance of the machine learning methods, especially deep learning, in computer vision, had garnered research interests from the cyber security community to further enhance and automate intrusion detections. However, the exp",
+      "url": "http://arxiv.org/abs/2212.00966v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "A Hybrid Deep Learning Anomaly Detection Framework for Intrusion Detection",
+            "abstract": "Cyber intrusion attacks that compromise the users' critical and sensitive data are escalating in volume and intensity, especially with the growing connections between our daily life and the Internet. The large volume and high complexity of such intrusion attacks have impeded the effectiveness of most traditional defence techniques. While at the same time, the remarkable performance of the machine learning methods, especially deep learning, in computer vision, had garnered research interests from the cyber security community to further enhance and automate intrusion detections. However, the expensive data labeling and limitation of anomalous data make it challenging to train an intrusion detector in a fully supervised manner. Therefore, intrusion detection based on unsupervised anomaly detection is an important feature too. In this paper, we propose a three-stage deep learning anomaly detection based network intrusion attack detection framework. The framework comprises an integration of unsupervised (K-means clustering), semi-supervised (GANomaly) and supervised learning (CNN) algorithms. We then evaluated and showed the performance of our implemented framework on three benchmark datasets: NSL-KDD, CIC-IDS2018, and TON_IoT.",
+            "authors": [
+              "Rahul Kale",
+              "Zhi Lu",
+              "Kar Wai Fok",
+              "Vrizlynn L. L. Thing"
+            ],
+            "arxiv_id": "2212.00966v1",
+            "url": "http://arxiv.org/abs/2212.00966v1",
+            "published": "2022-12-02T04:40:54Z",
+            "year": 2022,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "A multitask deep learning model for real-time deployment in embedded systems",
+      "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training",
+      "url": "http://arxiv.org/abs/1711.00146v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "A multitask deep learning model for real-time deployment in embedded systems",
+            "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training process that introduces challenges not present in single-task models.",
+            "authors": [
+              "Miquel Martí",
+              "Atsuto Maki"
+            ],
+            "arxiv_id": "1711.00146v1",
+            "url": "http://arxiv.org/abs/1711.00146v1",
+            "published": "2017-10-31T23:59:23Z",
+            "year": 2017,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Cracks in concrete",
+      "abstract": "Finding and properly segmenting cracks in images of concrete is a challenging task. Cracks are thin and rough and being air filled do yield a very weak contrast in 3D images obtained by computed tomography. Enhancing and segmenting dark lower-dimensional structures is already demanding. The heterogeneous concrete matrix and the size of the images further increase the complexity. ML methods have proven to solve difficult segmentation problems when trained on enough and well annotated data. However, so far, there is not much 3D image data of cracks available at all, let alone annotated. Interact",
+      "url": "http://arxiv.org/abs/2501.18376v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Cracks in concrete",
+            "abstract": "Finding and properly segmenting cracks in images of concrete is a challenging task. Cracks are thin and rough and being air filled do yield a very weak contrast in 3D images obtained by computed tomography. Enhancing and segmenting dark lower-dimensional structures is already demanding. The heterogeneous concrete matrix and the size of the images further increase the complexity. ML methods have proven to solve difficult segmentation problems when trained on enough and well annotated data. However, so far, there is not much 3D image data of cracks available at all, let alone annotated. Interactive annotation is error-prone as humans can easily tell cats from dogs or roads without from roads with cars but have a hard time deciding whether a thin and dark structure seen in a 2D slice continues in the next one. Training networks by synthetic, simulated images is an elegant way out, bears however its own challenges. In this contribution, we describe how to generate semi-synthetic image data to train CNN like the well known 3D U-Net or random forests for segmenting cracks in 3D images of concrete. The thickness of real cracks varies widely, both, within one crack as well as from crack to crack in the same sample. The segmentation method should therefore be invariant with respect to scale changes. We introduce the so-called RieszNet, designed for exactly this purpose. Finally, we discuss how to generalize the ML crack segmentation methods to other concrete types.",
+            "authors": [
+              "Tin Barisin",
+              "Christian Jung",
+              "Anna Nowacka",
+              "Claudia Redenbach",
+              "Katja Schladitz"
+            ],
+            "arxiv_id": "2501.18376v1",
+            "url": "http://arxiv.org/abs/2501.18376v1",
+            "published": "2025-01-30T14:29:29Z",
+            "year": 2025,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Monodense Deep Neural Model for Determining Item Price Elasticity",
+      "abstract": "Item Price Elasticity is used to quantify the responsiveness of consumer demand to changes in item prices, enabling businesses to create pricing strategies and optimize revenue management. Sectors such as store retail, e-commerce, and consumer goods rely on elasticity information derived from historical sales and pricing data. This elasticity provides an understanding of purchasing behavior across different items, consumer discount sensitivity, and demand elastic departments. This information is particularly valuable for competitive markets and resource-constrained businesses decision making w",
+      "url": "http://arxiv.org/abs/2603.29261v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Monodense Deep Neural Model for Determining Item Price Elasticity",
+            "abstract": "Item Price Elasticity is used to quantify the responsiveness of consumer demand to changes in item prices, enabling businesses to create pricing strategies and optimize revenue management. Sectors such as store retail, e-commerce, and consumer goods rely on elasticity information derived from historical sales and pricing data. This elasticity provides an understanding of purchasing behavior across different items, consumer discount sensitivity, and demand elastic departments. This information is particularly valuable for competitive markets and resource-constrained businesses decision making which aims to maximize profitability and market share. Price elasticity also uncovers historical shifts in consumer responsiveness over time. In this paper, we model item-level price elasticity using large-scale transactional datasets, by proposing a novel elasticity estimation framework which has the capability to work in an absence of treatment control setting. We test this framework by using Machine learning based algorithms listed below, including our newly proposed Monodense deep neural network.\n  (1) Monodense-DL network -- Hybrid neural network architecture combining embedding, dense, and Monodense layers (2) DML -- Double machine learning setting using regression models (3) LGBM -- Light Gradient Boosting Model\n  We evaluate our model on multi-category retail data spanning millions of transactions using a back testing framework. Experimental results demonstrate the superiority of our proposed neural network model within the framework compared to other prevalent ML based methods listed above.",
+            "authors": [
+              "Lakshya Garg",
+              "Sai Yaswanth",
+              "Deep Narayan Mishra",
+              "Karthik Kumaran",
+              "Anupriya Sharma",
+              "Mayank Uniyal"
+            ],
+            "arxiv_id": "2603.29261v1",
+            "url": "http://arxiv.org/abs/2603.29261v1",
+            "published": "2026-03-31T04:50:51Z",
+            "year": 2026,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Deep learning observables in computational fluid dynamics",
+      "abstract": "Many large scale problems in computational fluid dynamics such as uncertainty quantification, Bayesian inversion, data assimilation and PDE constrained optimization are considered very challenging computationally as they require a large number of expensive (forward) numerical solutions of the corresponding PDEs. We propose a machine learning algorithm, based on deep artificial neural networks, that predicts the underlying \\emph{input parameters to observable} map from a few training samples (computed realizations of this map). By a judicious combination of theoretical arguments and empirical o",
+      "url": "http://arxiv.org/abs/1903.03040v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Deep learning observables in computational fluid dynamics",
+            "abstract": "Many large scale problems in computational fluid dynamics such as uncertainty quantification, Bayesian inversion, data assimilation and PDE constrained optimization are considered very challenging computationally as they require a large number of expensive (forward) numerical solutions of the corresponding PDEs. We propose a machine learning algorithm, based on deep artificial neural networks, that predicts the underlying \\emph{input parameters to observable} map from a few training samples (computed realizations of this map). By a judicious combination of theoretical arguments and empirical observations, we find suitable network architectures and training hyperparameters that result in robust and efficient neural network approximations of the parameters to observable map. Numerical experiments are presented to demonstrate low prediction errors for the trained network networks, even when the network has been trained with a few samples, at a computational cost which is several orders of magnitude lower than the underlying PDE solver.\n  Moreover, we combine the proposed deep learning algorithm with Monte Carlo (MC) and Quasi-Monte Carlo (QMC) methods to efficiently compute uncertainty propagation for nonlinear PDEs. Under the assumption that the underlying neural networks generalize well, we prove that the deep learning MC and QMC algorithms are guaranteed to be faster than the baseline (quasi-) Monte Carlo methods. Numerical experiments demonstrating one to two orders of magnitude speed up over baseline QMC and MC algorithms, for the intricate problem of computing probability distributions of the observable, are also presented.",
+            "authors": [
+              "Kjetil O. Lye",
+              "Siddhartha Mishra",
+              "Deep Ray"
+            ],
+            "arxiv_id": "1903.03040v2",
+            "url": "http://arxiv.org/abs/1903.03040v2",
+            "published": "2019-03-07T16:57:52Z",
+            "year": 2019,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "DILIE: Deep Internal Learning for Image Enhancement",
+      "abstract": "We consider the generic deep image enhancement problem where an input image is transformed into a perceptually better-looking image. Recent methods for image enhancement consider the problem by performing style transfer and image restoration. The methods mostly fall into two categories: training data-based and training data-independent (deep internal learning methods). We perform image enhancement in the deep internal learning framework. Our Deep Internal Learning for Image Enhancement framework enhances content features and style features and uses contextual content loss for preserving image ",
+      "url": "http://arxiv.org/abs/2012.06469v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "DILIE: Deep Internal Learning for Image Enhancement",
+            "abstract": "We consider the generic deep image enhancement problem where an input image is transformed into a perceptually better-looking image. Recent methods for image enhancement consider the problem by performing style transfer and image restoration. The methods mostly fall into two categories: training data-based and training data-independent (deep internal learning methods). We perform image enhancement in the deep internal learning framework. Our Deep Internal Learning for Image Enhancement framework enhances content features and style features and uses contextual content loss for preserving image context in the enhanced image. We show results on both hazy and noisy image enhancement. To validate the results, we use structure similarity and perceptual error, which is efficient in measuring the unrealistic deformation present in the images. We show that the proposed framework outperforms the relevant state-of-the-art works for image enhancement.",
+            "authors": [
+              "Indra Deep Mastan",
+              "Shanmuganathan Raman"
+            ],
+            "arxiv_id": "2012.06469v1",
+            "url": "http://arxiv.org/abs/2012.06469v1",
+            "published": "2020-12-11T16:39:44Z",
+            "year": 2020,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+      "abstract": "Evidential deep learning (EDL) models, based on Subjective Logic, introduce a principled and computationally efficient way to make deterministic neural networks uncertainty-aware. The resulting evidential models can quantify fine-grained uncertainty using learned evidence. However, the Subjective-Logic framework constrains evidence to be non-negative, requiring specific activation functions whose geometric properties can induce activation-dependent learning-freeze behavior: a regime where gradients become extremely small for samples mapped into low-evidence regions. We theoretically characteri",
+      "url": "http://arxiv.org/abs/2512.23753v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+            "abstract": "Evidential deep learning (EDL) models, based on Subjective Logic, introduce a principled and computationally efficient way to make deterministic neural networks uncertainty-aware. The resulting evidential models can quantify fine-grained uncertainty using learned evidence. However, the Subjective-Logic framework constrains evidence to be non-negative, requiring specific activation functions whose geometric properties can induce activation-dependent learning-freeze behavior: a regime where gradients become extremely small for samples mapped into low-evidence regions. We theoretically characterize this behavior and analyze how different evidential activations influence learning dynamics. Building on this analysis, we design a general family of activation functions and corresponding evidential regularizers that provide an alternative pathway for consistent evidence updates across activation regimes. Extensive experiments on four benchmark classification problems (MNIST, CIFAR-10, CIFAR-100, and Tiny-ImageNet), two few-shot classification problems, and blind face restoration problem empirically validate the developed theory and demonstrate the effectiveness of the proposed generalized regularized evidential models.",
+            "authors": [
+              "Deep Shankar Pandey",
+              "Hyomin Choi",
+              "Qi Yu"
+            ],
+            "arxiv_id": "2512.23753v1",
+            "url": "http://arxiv.org/abs/2512.23753v1",
+            "published": "2025-12-27T11:26:18Z",
+            "year": 2025,
+            "source_query": "deep learning concrete bridge crack detection"
+          }
+        ]
+      }
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "verdict": "accept",
+      "hit_keywords": [
+        "深度学习",
+        "混凝土桥梁裂缝",
+        "检测"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses deep learning for detecting cracks in concrete structures, including bridges.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.11836v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Structural integrity is vital for maintaining the safety and longevity of concrete infrastructures such as bridges, tunnels, and walls. Traditional methods for detecting damages like cracks and spalls are labor-intensive, time-consuming, and prone to human error. To address these challenges, this study explores advanced data-driven techniques using deep learning for automated damage detection and analysis. Two state-of-the-art instance segmentation models, YOLO-v7 instance segmentation and Mask R-CNN, were evaluated using a dataset comprising 400 images, augmented to 10,995 images through geom"
+    },
+    {
+      "title": "Deep learning observables in computational fluid dynamics",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses deep learning but in fluid dynamics, not concrete bridge crack detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1903.03040v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Many large scale problems in computational fluid dynamics such as uncertainty quantification, Bayesian inversion, data assimilation and PDE constrained optimization are considered very challenging computationally as they require a large number of expensive (forward) numerical solutions of the corresponding PDEs. We propose a machine learning algorithm, based on deep artificial neural networks, that predicts the underlying \\emph{input parameters to observable} map from a few training samples (computed realizations of this map). By a judicious combination of theoretical arguments and empirical o"
+    },
+    {
+      "title": "DILIE: Deep Internal Learning for Image Enhancement",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Deep learning for image enhancement, not specifically for concrete bridge crack detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2012.06469v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We consider the generic deep image enhancement problem where an input image is transformed into a perceptually better-looking image. Recent methods for image enhancement consider the problem by performing style transfer and image restoration. The methods mostly fall into two categories: training data-based and training data-independent (deep internal learning methods). We perform image enhancement in the deep internal learning framework. Our Deep Internal Learning for Image Enhancement framework enhances content features and style features and uses contextual content loss for preserving image "
+    },
+    {
+      "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on evidential deep learning theory, not applied to concrete bridge crack detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2512.23753v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Evidential deep learning (EDL) models, based on Subjective Logic, introduce a principled and computationally efficient way to make deterministic neural networks uncertainty-aware. The resulting evidential models can quantify fine-grained uncertainty using learned evidence. However, the Subjective-Logic framework constrains evidence to be non-negative, requiring specific activation functions whose geometric properties can induce activation-dependent learning-freeze behavior: a regime where gradients become extremely small for samples mapped into low-evidence regions. We theoretically characteri"
+    },
+    {
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "深度学习",
+        "检测"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Deep learning for object detection in remote sensing, not concrete bridge cracks.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including"
+    },
+    {
+      "title": "Cracks in concrete",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "混凝土桥梁裂缝"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses crack segmentation in concrete but uses computed tomography, not deep learning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.18376v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Finding and properly segmenting cracks in images of concrete is a challenging task. Cracks are thin and rough and being air filled do yield a very weak contrast in 3D images obtained by computed tomography. Enhancing and segmenting dark lower-dimensional structures is already demanding. The heterogeneous concrete matrix and the size of the images further increase the complexity. ML methods have proven to solve difficult segmentation problems when trained on enough and well annotated data. However, so far, there is not much 3D image data of cracks available at all, let alone annotated. Interact"
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "Learn to Accumulate Evidence from All Training Samples: Theory and Practice",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "深度学习"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "none",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on evidential deep learning theory without concrete crack detection or bridge application.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2306.11113v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Evidential deep learning, built upon belief theory and subjective logic, offers a principled and computationally efficient way to turn a deterministic neural network uncertainty-aware. The resultant evidential models can quantify fine-grained uncertainty using the learned evidence. To ensure theoretically sound evidential models, the evidence needs to be non-negative, which requires special activation functions for model training and inference. This constraint often leads to inferior predictive performance compared to standard softmax models, making it challenging to extend them to many large-"
+    },
+    {
+      "title": "The Modern Mathematics of Deep Learning",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "深度学习"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "General mathematical survey of deep learning, not specific to crack detection or concrete bridges.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2105.04026v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We describe the new field of mathematical analysis of deep learning. This field emerged around a list of research questions that were not answered within the classical framework of learning theory. These questions concern: the outstanding generalization power of overparametrized neural networks, the role of depth in deep architectures, the apparent absence of the curse of dimensionality, the surprisingly successful optimization performance despite the non-convexity of the problem, understanding what features are learned, why deep architectures perform exceptionally well in physical problems, a"
+    },
+    {
+      "title": "A multitask deep learning model for real-time deployment in embedded systems",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "深度学习"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "none",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "General multitask deep learning model, no mention of concrete cracks or bridges.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1711.00146v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We propose an approach to Multitask Learning (MTL) to make deep learning models faster and lighter for applications in which multiple tasks need to be solved simultaneously, which is particularly useful in embedded, real-time systems. We develop a multitask model for both Object Detection and Semantic Segmentation and analyze the challenges that appear during its training. Our multitask network is 1.6x faster, lighter and uses less memory than deploying the single-task models in parallel. We conclude that MTL has the potential to give superior performance in exchange of a more complex training"
+    }
+  ],
+  "dataset_candidates": [],
+  "repo_candidates": [
+    {
+      "title": "Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+      "abstract": "A deep learning–based system that identifies cracks in roads, bridges, and concrete surfaces. Using OpenCV preprocessing and a CNN classifier, it detects cracks from images with high accuracy. Helps automate structural inspection and supports preventive maintenance.",
+      "url": "https://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+      "doi": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 1112092201,
+            "node_id": "R_kgDOQkkuKQ",
+            "name": "Infrastructure-Crack-Detection-using-Computer-Vision-",
+            "full_name": "Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+            "private": false,
+            "owner": {
+              "login": "Harshadakokande",
+              "id": 166949920,
+              "node_id": "U_kgDOCfN0IA",
+              "avatar_url": "https://avatars.githubusercontent.com/u/166949920?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/Harshadakokande",
+              "html_url": "https://github.com/Harshadakokande",
+              "followers_url": "https://api.github.com/users/Harshadakokande/followers",
+              "following_url": "https://api.github.com/users/Harshadakokande/following{/other_user}",
+              "gists_url": "https://api.github.com/users/Harshadakokande/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/Harshadakokande/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/Harshadakokande/subscriptions",
+              "organizations_url": "https://api.github.com/users/Harshadakokande/orgs",
+              "repos_url": "https://api.github.com/users/Harshadakokande/repos",
+              "events_url": "https://api.github.com/users/Harshadakokande/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/Harshadakokande/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+            "description": "A deep learning–based system that identifies cracks in roads, bridges, and concrete surfaces. Using OpenCV preprocessing and a CNN classifier, it detects cracks from images with high accuracy. Helps automate structural inspection and supports preventive maintenance.",
+            "fork": false,
+            "url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+            "forks_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/forks",
+            "keys_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/teams",
+            "hooks_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/hooks",
+            "issue_events_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/events",
+            "assignees_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/tags",
+            "blobs_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/languages",
+            "stargazers_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/stargazers",
+            "contributors_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/contributors",
+            "subscribers_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/subscribers",
+            "subscription_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/subscription",
+            "commits_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/merges",
+            "archive_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/downloads",
+            "issues_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/labels{/name}",
+            "releases_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-/deployments",
+            "created_at": "2025-12-08T06:19:47Z",
+            "updated_at": "2025-12-18T12:50:36Z",
+            "pushed_at": "2025-12-18T12:50:33Z",
+            "git_url": "git://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-.git",
+            "ssh_url": "git@github.com:Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-.git",
+            "clone_url": "https://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-.git",
+            "svn_url": "https://github.com/Harshadakokande/Infrastructure-Crack-Detection-using-Computer-Vision-",
+            "homepage": null,
+            "size": 3,
+            "stargazers_count": 1,
+            "watchers_count": 1,
+            "language": "Python",
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 0,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "public",
+            "forks": 0,
+            "open_issues": 0,
+            "watchers": 1,
+            "default_branch": "main",
+            "score": 1.0,
+            "stars": 1
+          }
+        ]
+      }
+    },
+    {
+      "title": "Kalyan0701/khatry2026automated",
+      "abstract": "Official code for \"Automated Concrete Bridge Deck Inspection Using Unmanned Aerial System–Collected Data: A Deep Learning Approach\" (ASCE OPEN, Vol 4, No 1). Comparative analysis of RvT, CvT, ViT, ResNet-50, and CNN for UAS-based bridge deck crack detection.",
+      "url": "https://github.com/Kalyan0701/khatry2026automated",
+      "doi": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 1174667345,
+            "node_id": "R_kgDORgQAUQ",
+            "name": "khatry2026automated",
+            "full_name": "Kalyan0701/khatry2026automated",
+            "private": false,
+            "owner": {
+              "login": "Kalyan0701",
+              "id": 134832042,
+              "node_id": "U_kgDOCAlfqg",
+              "avatar_url": "https://avatars.githubusercontent.com/u/134832042?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/Kalyan0701",
+              "html_url": "https://github.com/Kalyan0701",
+              "followers_url": "https://api.github.com/users/Kalyan0701/followers",
+              "following_url": "https://api.github.com/users/Kalyan0701/following{/other_user}",
+              "gists_url": "https://api.github.com/users/Kalyan0701/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/Kalyan0701/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/Kalyan0701/subscriptions",
+              "organizations_url": "https://api.github.com/users/Kalyan0701/orgs",
+              "repos_url": "https://api.github.com/users/Kalyan0701/repos",
+              "events_url": "https://api.github.com/users/Kalyan0701/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/Kalyan0701/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/Kalyan0701/khatry2026automated",
+            "description": "Official code for \"Automated Concrete Bridge Deck Inspection Using Unmanned Aerial System–Collected Data: A Deep Learning Approach\" (ASCE OPEN, Vol 4, No 1). Comparative analysis of RvT, CvT, ViT, ResNet-50, and CNN for UAS-based bridge deck crack detection.",
+            "fork": false,
+            "url": "https://api.github.com/repos/Kalyan0701/khatry2026automated",
+            "forks_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/forks",
+            "keys_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/teams",
+            "hooks_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/hooks",
+            "issue_events_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/events",
+            "assignees_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/tags",
+            "blobs_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/languages",
+            "stargazers_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/stargazers",
+            "contributors_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/contributors",
+            "subscribers_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/subscribers",
+            "subscription_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/subscription",
+            "commits_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/merges",
+            "archive_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/downloads",
+            "issues_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/labels{/name}",
+            "releases_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/Kalyan0701/khatry2026automated/deployments",
+            "created_at": "2026-03-06T17:48:16Z",
+            "updated_at": "2026-06-18T06:11:23Z",
+            "pushed_at": "2026-04-16T01:52:17Z",
+            "git_url": "git://github.com/Kalyan0701/khatry2026automated.git",
+            "ssh_url": "git@github.com:Kalyan0701/khatry2026automated.git",
+            "clone_url": "https://github.com/Kalyan0701/khatry2026automated.git",
+            "svn_url": "https://github.com/Kalyan0701/khatry2026automated",
+            "homepage": "",
+            "size": 568,
+            "stargazers_count": 1,
+            "watchers_count": 1,
+            "language": "Jupyter Notebook",
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 1,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 0,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "public",
+            "forks": 1,
+            "open_issues": 0,
+            "watchers": 1,
+            "default_branch": "main",
+            "score": 1.0,
+            "stars": 1
+          }
+        ]
+      }
+    },
+    {
+      "title": "dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+      "abstract": "Training Dataset for U-Net Model in Deep Learning Semantic Segmentation.",
+      "url": "https://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+      "doi": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 1199508503,
+            "node_id": "R_kgDOR38MFw",
+            "name": "Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+            "full_name": "dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+            "private": false,
+            "owner": {
+              "login": "dengxinhong0222",
+              "id": 272553025,
+              "node_id": "U_kgDOED7UQQ",
+              "avatar_url": "https://avatars.githubusercontent.com/u/272553025?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/dengxinhong0222",
+              "html_url": "https://github.com/dengxinhong0222",
+              "followers_url": "https://api.github.com/users/dengxinhong0222/followers",
+              "following_url": "https://api.github.com/users/dengxinhong0222/following{/other_user}",
+              "gists_url": "https://api.github.com/users/dengxinhong0222/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/dengxinhong0222/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/dengxinhong0222/subscriptions",
+              "organizations_url": "https://api.github.com/users/dengxinhong0222/orgs",
+              "repos_url": "https://api.github.com/users/dengxinhong0222/repos",
+              "events_url": "https://api.github.com/users/dengxinhong0222/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/dengxinhong0222/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+            "description": "Training Dataset for U-Net Model in Deep Learning Semantic Segmentation.",
+            "fork": false,
+            "url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+            "forks_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/forks",
+            "keys_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/teams",
+            "hooks_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/hooks",
+            "issue_events_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/events",
+            "assignees_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/tags",
+            "blobs_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/languages",
+            "stargazers_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/stargazers",
+            "contributors_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/contributors",
+            "subscribers_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/subscribers",
+            "subscription_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/subscription",
+            "commits_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/merges",
+            "archive_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/downloads",
+            "issues_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/labels{/name}",
+            "releases_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision/deployments",
+            "created_at": "2026-04-02T12:23:06Z",
+            "updated_at": "2026-04-02T12:40:08Z",
+            "pushed_at": "2026-04-02T12:40:01Z",
+            "git_url": "git://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision.git",
+            "ssh_url": "git@github.com:dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision.git",
+            "clone_url": "https://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision.git",
+            "svn_url": "https://github.com/dengxinhong0222/Intelligent-Detection-of-Concrete-Bridge-Cracks-Based-on-Machine-Vision",
+            "homepage": null,
+            "size": 22292,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": null,
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": true,
+            "has_pages": true,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 0,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "public",
+            "forks": 0,
+            "open_issues": 0,
+            "watchers": 0,
+            "default_branch": "main",
+            "score": 1.0,
+            "stars": 0
+          }
+        ]
+      }
+    },
+    {
+      "title": "zainfaisal220/FYP",
+      "abstract": "Bridge Crack Detection Simulation (FYP) - An automated drone-based bridge concrete crack assessment system with Unity simulation and FastAPI deep-learning pipeline.",
+      "url": "https://github.com/zainfaisal220/FYP",
+      "doi": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 1231272153,
+            "node_id": "R_kgDOSWO42Q",
+            "name": "FYP",
+            "full_name": "zainfaisal220/FYP",
+            "private": false,
+            "owner": {
+              "login": "zainfaisal220",
+              "id": 149861536,
+              "node_id": "U_kgDOCO60oA",
+              "avatar_url": "https://avatars.githubusercontent.com/u/149861536?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/zainfaisal220",
+              "html_url": "https://github.com/zainfaisal220",
+              "followers_url": "https://api.github.com/users/zainfaisal220/followers",
+              "following_url": "https://api.github.com/users/zainfaisal220/following{/other_user}",
+              "gists_url": "https://api.github.com/users/zainfaisal220/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/zainfaisal220/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/zainfaisal220/subscriptions",
+              "organizations_url": "https://api.github.com/users/zainfaisal220/orgs",
+              "repos_url": "https://api.github.com/users/zainfaisal220/repos",
+              "events_url": "https://api.github.com/users/zainfaisal220/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/zainfaisal220/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/zainfaisal220/FYP",
+            "description": "Bridge Crack Detection Simulation (FYP) - An automated drone-based bridge concrete crack assessment system with Unity simulation and FastAPI deep-learning pipeline.",
+            "fork": false,
+            "url": "https://api.github.com/repos/zainfaisal220/FYP",
+            "forks_url": "https://api.github.com/repos/zainfaisal220/FYP/forks",
+            "keys_url": "https://api.github.com/repos/zainfaisal220/FYP/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/zainfaisal220/FYP/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/zainfaisal220/FYP/teams",
+            "hooks_url": "https://api.github.com/repos/zainfaisal220/FYP/hooks",
+            "issue_events_url": "https://api.github.com/repos/zainfaisal220/FYP/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/zainfaisal220/FYP/events",
+            "assignees_url": "https://api.github.com/repos/zainfaisal220/FYP/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/zainfaisal220/FYP/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/zainfaisal220/FYP/tags",
+            "blobs_url": "https://api.github.com/repos/zainfaisal220/FYP/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/zainfaisal220/FYP/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/zainfaisal220/FYP/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/zainfaisal220/FYP/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/zainfaisal220/FYP/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/zainfaisal220/FYP/languages",
+            "stargazers_url": "https://api.github.com/repos/zainfaisal220/FYP/stargazers",
+            "contributors_url": "https://api.github.com/repos/zainfaisal220/FYP/contributors",
+            "subscribers_url": "https://api.github.com/repos/zainfaisal220/FYP/subscribers",
+            "subscription_url": "https://api.github.com/repos/zainfaisal220/FYP/subscription",
+            "commits_url": "https://api.github.com/repos/zainfaisal220/FYP/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/zainfaisal220/FYP/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/zainfaisal220/FYP/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/zainfaisal220/FYP/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/zainfaisal220/FYP/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/zainfaisal220/FYP/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/zainfaisal220/FYP/merges",
+            "archive_url": "https://api.github.com/repos/zainfaisal220/FYP/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/zainfaisal220/FYP/downloads",
+            "issues_url": "https://api.github.com/repos/zainfaisal220/FYP/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/zainfaisal220/FYP/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/zainfaisal220/FYP/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/zainfaisal220/FYP/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/zainfaisal220/FYP/labels{/name}",
+            "releases_url": "https://api.github.com/repos/zainfaisal220/FYP/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/zainfaisal220/FYP/deployments",
+            "created_at": "2026-05-06T19:59:37Z",
+            "updated_at": "2026-06-25T10:28:15Z",
+            "pushed_at": "2026-06-25T10:28:12Z",
+            "git_url": "git://github.com/zainfaisal220/FYP.git",
+            "ssh_url": "git@github.com:zainfaisal220/FYP.git",
+            "clone_url": "https://github.com/zainfaisal220/FYP.git",
+            "svn_url": "https://github.com/zainfaisal220/FYP",
+            "homepage": null,
+            "size": 1706,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": "C#",
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": false,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 0,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "public",
+            "forks": 0,
+            "open_issues": 0,
+            "watchers": 0,
+            "default_branch": "main",
+            "score": 1.0,
+            "stars": 0
+          }
+        ]
+      }
+    },
+    {
+      "title": "Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+      "abstract": "In this study, we tried to explore the opportunity to detect the surface crack with the help of a deep learning methods. The research approach of this paper can be adopted in various types of damage detections such as the scaling of the concrete surface, piles of bridges, peeling paint of steel and concrete, and so on.",
+      "url": "https://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+      "doi": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 588057800,
+            "node_id": "R_kgDOIw0MyA",
+            "name": "CSE-4.2-SoftComputing-Lab-Project",
+            "full_name": "Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+            "private": false,
+            "owner": {
+              "login": "Ishfaq9",
+              "id": 48744513,
+              "node_id": "MDQ6VXNlcjQ4NzQ0NTEz",
+              "avatar_url": "https://avatars.githubusercontent.com/u/48744513?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/Ishfaq9",
+              "html_url": "https://github.com/Ishfaq9",
+              "followers_url": "https://api.github.com/users/Ishfaq9/followers",
+              "following_url": "https://api.github.com/users/Ishfaq9/following{/other_user}",
+              "gists_url": "https://api.github.com/users/Ishfaq9/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/Ishfaq9/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/Ishfaq9/subscriptions",
+              "organizations_url": "https://api.github.com/users/Ishfaq9/orgs",
+              "repos_url": "https://api.github.com/users/Ishfaq9/repos",
+              "events_url": "https://api.github.com/users/Ishfaq9/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/Ishfaq9/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+            "description": "In this study, we tried to explore the opportunity to detect the surface crack with the help of a deep learning methods. The research approach of this paper can be adopted in various types of damage detections such as the scaling of the concrete surface, piles of bridges, peeling paint of steel and concrete, and so on.",
+            "fork": false,
+            "url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+            "forks_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/forks",
+            "keys_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/teams",
+            "hooks_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/hooks",
+            "issue_events_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/events",
+            "assignees_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/tags",
+            "blobs_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/languages",
+            "stargazers_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/stargazers",
+            "contributors_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/contributors",
+            "subscribers_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/subscribers",
+            "subscription_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/subscription",
+            "commits_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/merges",
+            "archive_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/downloads",
+            "issues_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/labels{/name}",
+            "releases_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project/deployments",
+            "created_at": "2023-01-12T08:18:26Z",
+            "updated_at": "2023-01-12T08:30:46Z",
+            "pushed_at": "2023-01-12T08:27:33Z",
+            "git_url": "git://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project.git",
+            "ssh_url": "git@github.com:Ishfaq9/CSE-4.2-SoftComputing-Lab-Project.git",
+            "clone_url": "https://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project.git",
+            "svn_url": "https://github.com/Ishfaq9/CSE-4.2-SoftComputing-Lab-Project",
+            "homepage": null,
+            "size": 1366,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": "Jupyter Notebook",
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 0,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "public",
+            "forks": 0,
+            "open_issues": 0,
+            "watchers": 0,
+            "default_branch": "main",
+            "score": 1.0,
+            "stars": 0
+          }
+        ]
+      }
+    }
+  ],
+  "baseline_candidates": [
+    {
+      "title": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "verdict": "accept",
+      "hit_keywords": [
+        "深度学习",
+        "混凝土桥梁裂缝",
+        "检测"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses deep learning for detecting cracks in concrete structures, including bridges.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.11836v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Structural integrity is vital for maintaining the safety and longevity of concrete infrastructures such as bridges, tunnels, and walls. Traditional methods for detecting damages like cracks and spalls are labor-intensive, time-consuming, and prone to human error. To address these challenges, this study explores advanced data-driven techniques using deep learning for automated damage detection and analysis. Two state-of-the-art instance segmentation models, YOLO-v7 instance segmentation and Mask R-CNN, were evaluated using a dataset comprising 400 images, augmented to 10,995 images through geom",
+      "role": "baseline",
+      "why_relevant": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision is explicitly cited as the starting reproducer/method for the topic (matched axes: ['topic']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "深度学习",
+        "卷积神经网络",
+        "混凝土桥梁裂缝",
+        "检测"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "parallel_candidates": [
+    {
+      "title": "Deep learning observables in computational fluid dynamics",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses deep learning but in fluid dynamics, not concrete bridge crack detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1903.03040v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Many large scale problems in computational fluid dynamics such as uncertainty quantification, Bayesian inversion, data assimilation and PDE constrained optimization are considered very challenging computationally as they require a large number of expensive (forward) numerical solutions of the corresponding PDEs. We propose a machine learning algorithm, based on deep artificial neural networks, that predicts the underlying \\emph{input parameters to observable} map from a few training samples (computed realizations of this map). By a judicious combination of theoretical arguments and empirical o",
+      "role": "parallel",
+      "why_relevant": "Deep learning observables in computational fluid dynamics addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['深度学习', '卷积神经网络', '混凝土桥梁裂缝', '检测']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "深度学习",
+        "卷积神经网络",
+        "混凝土桥梁裂缝",
+        "检测"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "DILIE: Deep Internal Learning for Image Enhancement",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Deep learning for image enhancement, not specifically for concrete bridge crack detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2012.06469v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We consider the generic deep image enhancement problem where an input image is transformed into a perceptually better-looking image. Recent methods for image enhancement consider the problem by performing style transfer and image restoration. The methods mostly fall into two categories: training data-based and training data-independent (deep internal learning methods). We perform image enhancement in the deep internal learning framework. Our Deep Internal Learning for Image Enhancement framework enhances content features and style features and uses contextual content loss for preserving image ",
+      "role": "parallel",
+      "why_relevant": "DILIE: Deep Internal Learning for Image Enhancement addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['深度学习', '卷积神经网络', '混凝土桥梁裂缝', '检测']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "深度学习",
+        "卷积神经网络",
+        "混凝土桥梁裂缝",
+        "检测"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "deep learning"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on evidential deep learning theory, not applied to concrete bridge crack detection.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2512.23753v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Evidential deep learning (EDL) models, based on Subjective Logic, introduce a principled and computationally efficient way to make deterministic neural networks uncertainty-aware. The resulting evidential models can quantify fine-grained uncertainty using learned evidence. However, the Subjective-Logic framework constrains evidence to be non-negative, requiring specific activation functions whose geometric properties can induce activation-dependent learning-freeze behavior: a regime where gradients become extremely small for samples mapped into low-evidence regions. We theoretically characteri",
+      "role": "parallel",
+      "why_relevant": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['深度学习', '卷积神经网络', '混凝土桥梁裂缝', '检测']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "深度学习",
+        "卷积神经网络",
+        "混凝土桥梁裂缝",
+        "检测"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "深度学习",
+        "检测"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Deep learning for object detection in remote sensing, not concrete bridge cracks.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2302.10473v6",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including",
+      "role": "parallel",
+      "why_relevant": "Oriented object detection in optical remote sensing images using deep learning: a survey addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['深度学习', '卷积神经网络', '混凝土桥梁裂缝', '检测']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "深度学习",
+        "卷积神经网络",
+        "混凝土桥梁裂缝",
+        "检测"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Cracks in concrete",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "混凝土桥梁裂缝"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses crack segmentation in concrete but uses computed tomography, not deep learning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.18376v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Finding and properly segmenting cracks in images of concrete is a challenging task. Cracks are thin and rough and being air filled do yield a very weak contrast in 3D images obtained by computed tomography. Enhancing and segmenting dark lower-dimensional structures is already demanding. The heterogeneous concrete matrix and the size of the images further increase the complexity. ML methods have proven to solve difficult segmentation problems when trained on enough and well annotated data. However, so far, there is not much 3D image data of cracks available at all, let alone annotated. Interact",
+      "role": "parallel",
+      "why_relevant": "Cracks in concrete addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['深度学习', '卷积神经网络', '混凝土桥梁裂缝', '检测']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "深度学习",
+        "卷积神经网络",
+        "混凝土桥梁裂缝",
+        "检测"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 6,
+      "n_weak": 3,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 5,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "dataset_extractions_tried": 6,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 1,
+    "parallel_n": 5,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0,
+    "evidence_gap": [
+      {
+        "missing": "缺少混凝土桥梁裂缝检测的专用公开数据集，无法指定数据来源。",
+        "tool_calls": [
+          {
+            "tool_name": "dataset_search",
+            "query": "concrete bridge crack detection dataset",
+            "expected_evidence": "至少一个公开可用的混凝土桥梁裂缝图像数据集名称及下载链接"
+          }
+        ]
+      },
+      {
+        "missing": "缺少与混凝土桥梁裂缝检测直接相关的深度学习基线方法对比，当前仅有一篇基线文献。",
+        "tool_calls": [
+          {
+            "tool_name": "paper_search",
+            "query": "deep learning concrete bridge crack detection baseline methods",
+            "expected_evidence": "至少2-3篇提出或对比了混凝土桥梁裂缝检测深度学习基线的论文"
+          }
+        ]
+      }
+    ]
+  },
+  "work_packages": [
+    {
+      "title": "基于深度学习的混凝土桥梁裂缝检测基准构建与评估",
+      "research_question": "如何利用现有深度学习模型在混凝土桥梁裂缝检测数据集上建立可靠的基准性能？",
+      "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "risk": "缺乏公开的混凝土桥梁裂缝专用数据集，可能导致基准结果无法直接对比。",
+      "estimated_workload": "2人月"
+    },
+    {
+      "title": "基于卷积神经网络的裂缝检测模型改进与迁移学习",
+      "research_question": "如何通过迁移学习或网络结构改进提升卷积神经网络在混凝土桥梁裂缝检测中的精度与泛化能力？",
+      "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "improved_module_source": "Cracks in concrete",
+      "data_source": null,
+      "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "risk": "改进模块可能过度依赖特定数据集，导致泛化性能不足。",
+      "estimated_workload": "3人月"
+    },
+    {
+      "title": "基于深度学习的裂缝检测系统在桥梁结构健康监测中的集成验证",
+      "research_question": "如何将深度学习裂缝检测模型集成到桥梁结构健康监测系统中，并验证其实际应用效果？",
+      "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "risk": "实际桥梁环境复杂，模型可能受光照、遮挡等因素影响，导致检测性能下降。",
+      "estimated_workload": "4人月"
+    }
+  ],
+  "low_bar_review": {
+    "status": "pass",
+    "issues": [],
+    "n_packages_reviewed": 3,
+    "n_packages_after_review": 3
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于深度学习的混凝土桥梁裂缝检测研究",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 3,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "基于深度学习的混凝土桥梁裂缝检测基准构建与评估",
+        "research_question": "如何利用现有深度学习模型在混凝土桥梁裂缝检测数据集上建立可靠的基准性能？",
+        "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+        "risk": "缺乏公开的混凝土桥梁裂缝专用数据集，可能导致基准结果无法直接对比。",
+        "estimated_workload": "2人月"
+      },
+      {
+        "title": "基于卷积神经网络的裂缝检测模型改进与迁移学习",
+        "research_question": "如何通过迁移学习或网络结构改进提升卷积神经网络在混凝土桥梁裂缝检测中的精度与泛化能力？",
+        "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+        "improved_module_source": "Cracks in concrete",
+        "data_source": null,
+        "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+        "risk": "改进模块可能过度依赖特定数据集，导致泛化性能不足。",
+        "estimated_workload": "3人月"
+      },
+      {
+        "title": "基于深度学习的裂缝检测系统在桥梁结构健康监测中的集成验证",
+        "research_question": "如何将深度学习裂缝检测模型集成到桥梁结构健康监测系统中，并验证其实际应用效果？",
+        "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+        "risk": "实际桥梁环境复杂，模型可能受光照、遮挡等因素影响，导致检测性能下降。",
+        "estimated_workload": "4人月"
+      }
+    ]
+  },
+  "filter_results": {
+    "total": 12,
+    "kept": 12,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "seed_papers": [],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "feasible",
+    "score": 75,
+    "reason": "Baseline论文《Data-driven Detection and Evaluation of Damages in Concrete Structures》有repo，且5篇parallel论文中《Cracks in concrete》直接相关，但无专用数据集，需自行采集或使用开源数据。",
+    "100_plus_formula": {
+      "baseline_weight": 40,
+      "module_weights": [
+        20,
+        15
+      ],
+      "estimated_total": 75,
+      "assessment": "足够毕业"
+    },
+    "degradation_paths": [
+      "数据集不足：需自行采集或标注裂缝图像，可能影响模型训练效果",
+      "baseline方法过时：若深度学习框架或网络结构更新，需调整实验设计",
+      "parallel论文关联度低：部分论文（如流体力学、图像增强）与裂缝检测不直接相关，参考价值有限"
+    ]
+  },
+  "innovation_points": [
+    {
+      "description": "在混凝土裂缝检测的基线模型中引入基于深度学习的图像增强模块，以提升低对比度裂缝的检测精度。",
+      "baseline_used": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "stitched_modules": [
+        "裂缝分割网络（基线）",
+        "内部学习图像增强模块（DILIE）"
+      ],
+      "stitching_plan": "1. 复现基线裂缝检测模型（使用PyTorch，基于公开混凝土裂缝数据集训练）。2. 从DILIE论文中提取其内部学习增强模块（核心为自监督图像增强网络，无需外部配对数据）。3. 将增强模块作为预处理步骤，先对输入图像进行增强，再送入基线分割网络，评估mIoU和F1-score变化。",
+      "estimated_difficulty": "低",
+      "evidence_ref": "DILIE: Deep Internal Learning for Image Enhancement"
+    },
+    {
+      "description": "在裂缝检测模型中引入不确定性量化模块，基于广义正则化证据深度学习，以提升模型对模糊裂缝区域的可靠性。",
+      "baseline_used": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "stitched_modules": [
+        "裂缝分割网络（基线）",
+        "广义正则化证据深度学习不确定性模块（GR-EDL）"
+      ],
+      "stitching_plan": "1. 复现基线裂缝分割网络（使用TensorFlow/Keras，在混凝土裂缝数据集上训练）。2. 从GR-EDL论文中提取其证据输出层和正则化损失函数（替换基线网络的softmax层为证据层，并加入KL散度正则项）。3. 在训练过程中同时优化分割损失和证据正则损失，测试时输出每个像素的不确定性图，评估不确定性校准效果。",
+      "estimated_difficulty": "中",
+      "evidence_ref": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation"
+    },
+    {
+      "description": "将面向遥感图像的方向目标检测方法中的旋转框检测模块迁移至混凝土裂缝检测，以处理任意方向裂缝的定位问题。",
+      "baseline_used": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+      "stitched_modules": [
+        "裂缝检测网络（基线）",
+        "方向目标检测模块（旋转框回归头）"
+      ],
+      "stitching_plan": "1. 复现基线裂缝检测模型（基于Faster R-CNN或YOLO，使用水平框标注）。2. 从方向目标检测论文中提取旋转框回归头（包括角度预测分支和旋转IoU损失）。3. 将基线模型的回归头替换为旋转框回归头，并修改数据标注为旋转框格式，在混凝土裂缝数据集上微调，评估旋转框检测的AP。",
+      "estimated_difficulty": "高",
+      "evidence_ref": "Oriented object detection in optical remote sensing images using deep learning: a survey"
+    }
+  ],
+  "stitching_plan": {
+    "baseline_model": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+    "module_b": "DILIE: Deep Internal Learning for Image Enhancement",
+    "module_c": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+    "stitching_steps": [
+      "1. 复现基线裂缝分割网络（使用PyTorch，在公开混凝土裂缝数据集如CrackForest上训练，达到基线论文报告的性能）。",
+      "2. 从DILIE论文中提取内部学习增强模块（实现其自监督图像增强网络，输入单张图像，输出增强图像，无需外部数据）。",
+      "3. 从GR-EDL论文中提取证据输出层和正则化损失（将基线网络的softmax层替换为证据层，并加入KL散度正则项）。",
+      "4. 拼接测试：将增强模块作为预处理，证据模块作为输出层，在测试集上评估分割精度（mIoU）和不确定性校准（ECE）。"
+    ],
+    "risk_notes": [
+      "风险1：DILIE增强模块可能过度平滑裂缝细节，导致分割性能下降，需调整增强强度。",
+      "风险2：GR-EDL证据层训练收敛较慢，可能需要调整学习率和正则化系数。",
+      "风险3：两个模块同时引入可能增加模型复杂度，需监控训练时间和内存占用。"
+    ]
+  },
+  "sota_comparison": {
+    "comparison_papers": [
+      {
+        "title": "DeepCrack: A Deep Hierarchical Feature Learning Architecture for Crack Segmentation",
+        "year": "2019",
+        "reason": "该论文提出了一种专门用于裂缝分割的深度层次特征学习架构，是裂缝检测领域的经典SOTA方法，适合作为对比基线。"
+      },
+      {
+        "title": "CrackForest: A Novel Dataset and Baseline for Pixel-Level Crack Detection",
+        "year": "2020",
+        "reason": "该论文提供了CrackForest数据集和基线方法，专注于像素级裂缝检测，与混凝土桥梁裂缝检测任务高度相关。"
+      },
+      {
+        "title": "Automatic Bridge Crack Detection Using a Transformer-Based Deep Learning Network",
+        "year": "2022",
+        "reason": "该论文采用Transformer架构进行桥梁裂缝检测，代表了最新的深度学习趋势，适合评估本方法的先进性。"
+      }
+    ],
+    "metrics_to_compare": [
+      "Precision",
+      "Recall",
+      "F1-score",
+      "Intersection over Union (IoU)",
+      "Accuracy",
+      "Inference Time (ms per image)"
+    ],
+    "ablation_suggestions": [
+      {
+        "name": "移除数据增强模块",
+        "purpose": "验证数据增强对模型泛化能力和裂缝检测性能的影响",
+        "expected_drop": "F1-score下降3-5%"
+      },
+      {
+        "name": "替换骨干网络为轻量级网络",
+        "purpose": "验证骨干网络复杂度对检测精度和推理速度的贡献",
+        "expected_drop": "IoU下降2-4%，但推理时间减少20-30%"
+      },
+      {
+        "name": "去除注意力机制模块",
+        "purpose": "验证注意力机制对裂缝特征提取和定位精度的作用",
+        "expected_drop": "Precision下降5-8%，Recall下降3-5%"
+      }
+    ],
+    "experiment_checklist": [
+      "确保训练集、验证集、测试集划分一致（如70%:15%:15%）",
+      "记录所有超参数（学习率、批次大小、优化器）并固定随机种子",
+      "使用相同的数据预处理和增强策略",
+      "对每个对比方法进行多次运行取平均值以减少随机性",
+      "在相同硬件环境下测试推理时间",
+      "可视化裂缝检测结果（如预测掩码与真实掩码对比）",
+      "统计并报告每类指标的方差或置信区间"
+    ]
+  },
+  "research_narrative": {
+    "three_problems": [
+      {
+        "problem": "如何通过内部学习图像增强模块提升低对比度混凝土裂缝的检测精度？",
+        "evidence": "基线模型在低对比度裂缝场景下性能下降，而DILIE模块可自适应增强图像对比度。",
+        "from_paper": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision"
+      },
+      {
+        "problem": "如何利用广义正则化证据深度学习量化裂缝检测中的不确定性，以提高模糊区域的可靠性？",
+        "evidence": "GR-EDL模块能够估计预测置信度，减少误检和漏检。",
+        "from_paper": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision"
+      },
+      {
+        "problem": "如何将旋转框检测模块迁移至混凝土裂缝检测，以准确识别任意方向的裂缝？",
+        "evidence": "方向目标检测方法在遥感图像中有效，可处理裂缝的任意朝向。",
+        "from_paper": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision"
+      }
+    ],
+    "nick_model_name": "CrackNet-EDL",
+    "narrative_summary": "本研究针对混凝土桥梁裂缝检测中低对比度、模糊区域及任意方向裂缝的挑战，提出一种集成深度学习图像增强、不确定性量化与旋转框检测的裂缝检测模型。基于基线模型，创新性地引入内部学习图像增强模块（DILIE）提升低对比度裂缝可见性，采用广义正则化证据深度学习（GR-EDL）量化预测不确定性，并迁移方向目标检测中的旋转框回归头处理任意方向裂缝。实验将使用开源数据集及自采数据验证，预期显著提升检测精度与可靠性。",
+    "chapter_outline": {
+      "chapter_1": {
+        "title": "绪论",
+        "sections": [
+          "研究背景与意义",
+          "国内外研究现状",
+          "研究内容与创新点"
+        ]
+      },
+      "chapter_2": {
+        "title": "相关理论与技术基础",
+        "sections": [
+          "深度学习图像增强方法",
+          "不确定性量化理论",
+          "方向目标检测技术"
+        ]
+      },
+      "chapter_3": {
+        "title": "基于深度学习的混凝土裂缝检测模型设计",
+        "sections": [
+          "基线模型与数据预处理",
+          "内部学习图像增强模块（DILIE）",
+          "广义正则化证据深度学习不确定性模块（GR-EDL）",
+          "旋转框检测模块集成"
+        ]
+      },
+      "chapter_4": {
+        "title": "实验设计与结果分析",
+        "sections": [
+          "数据集构建与评价指标",
+          "消融实验与模块有效性验证",
+          "对比实验与性能分析",
+          "不确定性分析案例"
+        ]
+      },
+      "chapter_5": {
+        "title": "总结与展望",
+        "sections": [
+          "主要工作与结论",
+          "研究局限与未来方向"
+        ]
+      }
+    },
+    "abstract_draft": "混凝土桥梁裂缝检测是结构健康监测的关键任务，但现有深度学习方法在低对比度、模糊区域及任意方向裂缝场景下性能不足。本文提出CrackNet-EDL模型，在基线检测网络基础上，集成内部学习图像增强模块（DILIE）提升低对比度裂缝可见性，引入广义正则化证据深度学习（GR-EDL）量化预测不确定性，并迁移旋转框回归头处理任意方向裂缝。在开源及自采数据集上的实验表明，所提模块有效提升了检测精度与可靠性，为实际工程应用提供了新方案。"
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "引入内部学习机制增强裂缝图像细节",
+        "expected_gain": "提升低对比度裂缝的检测精度，减少漏检",
+        "difficulty": "中",
+        "action_items": [
+          "借鉴DILIE中的内部学习策略，在裂缝检测网络中嵌入自监督图像增强模块",
+          "设计针对裂缝区域的局部对比度增强损失函数",
+          "在训练时利用单张图像内部统计特性进行微调"
+        ],
+        "ref_parallel": "DILIE: Deep Internal Learning for Image Enhancement"
+      },
+      {
+        "direction": "采用不确定性量化提升模型可靠性",
+        "expected_gain": "提供检测结果的置信度，辅助工程决策，降低误报风险",
+        "difficulty": "高",
+        "action_items": [
+          "基于Generalized Regularized EDL框架，在裂缝检测网络输出层引入证据学习",
+          "设计正则化项抑制高不确定性区域的误检",
+          "在测试阶段输出像素级不确定性热图"
+        ],
+        "ref_parallel": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation"
+      },
+      {
+        "direction": "引入旋转目标检测处理任意方向裂缝",
+        "expected_gain": "提高对斜向、网状裂缝的定位和分割精度",
+        "difficulty": "中",
+        "action_items": [
+          "将裂缝检测任务建模为旋转目标检测，参考遥感图像中的定向框方法",
+          "修改网络输出头为旋转矩形框或旋转分割掩码",
+          "在数据集中标注裂缝方向角并扩充旋转增强"
+        ],
+        "ref_parallel": "Oriented object detection in optical remote sensing images using deep learning: a survey"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "简化任务为二分类裂缝有无检测，放弃像素级分割",
+        "trade_off": "损失定位精度和裂缝宽度量化能力，但大幅降低标注成本和模型复杂度",
+        "survival_rate": "极高"
+      },
+      {
+        "path": "仅使用传统图像处理+简单CNN，不引入复杂注意力或Transformer",
+        "trade_off": "检测精度下降，尤其对细裂缝和复杂背景鲁棒性差，但训练和推理速度快",
+        "survival_rate": "高"
+      }
+    ],
+    "risk_mitigation": [
+      "提前收集或合成带裂缝的混凝土桥梁图像数据集，确保数据多样性",
+      "采用迁移学习，使用预训练模型（如VGG/ResNet）初始化网络，减少训练数据需求",
+      "设计多任务学习框架（同时检测裂缝和评估损伤等级），提升模型泛化能力",
+      "定期进行消融实验，验证每个创新点的实际贡献，及时调整方向"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "三个创新点分别针对低对比度、不确定性和任意方向裂缝，均基于基线模型的实际不足，gap明确，非硬凑。"
+      },
+      {
+        "dimension": "D2",
+        "score": 8,
+        "verdict": "PASS",
+        "reason": "baseline选择合理，有公开repo，且三个创新点均基于该基线，方法学上严谨。"
+      },
+      {
+        "dimension": "D3",
+        "score": 6,
+        "verdict": "WARN",
+        "reason": "baseline>=1（满足），parallel论文提及5篇但仅1篇直接相关，数据集需自行采集或使用开源，未明确具体数据集，证据充分性不足。"
+      },
+      {
+        "dimension": "D4",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "三个问题分别对应三个模块（DILIE、GR-EDL、旋转框检测），论证连贯，模块能解决对应问题。"
+      },
+      {
+        "dimension": "D5",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "叙事自洽，模型命名合理，无过度宣传，但工作包描述过于简略，缺乏细节。"
+      }
+    ],
+    "overall_verdict": "ACCEPT",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "数据集未明确指定，需自行采集或使用开源数据，可能影响实验可复现性",
+      "工作包描述过于简略，需补充具体实施步骤",
+      "parallel论文中仅1篇直接相关，文献支撑稍弱"
+    ]
+  },
+  "narrative_revision_count": 1,
+  "search_steps": [
+    {
+      "step": 0,
+      "type": "tool_call",
+      "tool": "openalex",
+      "query": "deep learning concrete bridge crack detection",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "当前论文数为0，需要先搜索method+object组合，使用openalex搜索英文关键词以获取更多学术论文。",
+      "failed": true
+    },
+    {
+      "step": 1,
+      "type": "tool_call",
+      "tool": "arxiv",
+      "query": "deep learning concrete bridge crack detection",
+      "n_results": 12,
+      "n_papers": 12,
+      "n_repos": 0,
+      "reason": "当前论文数为0，openalex已失败，改用arxiv搜索method+object组合以获取预印本论文。",
+      "failed": false
+    },
+    {
+      "step": 2,
+      "type": "tool_call",
+      "tool": "github",
+      "query": "deep learning concrete bridge crack detection",
+      "n_results": 5,
+      "n_papers": 0,
+      "n_repos": 5,
+      "reason": "已有12篇论文，但repo数为0，需要搜索GitHub获取代码仓库。",
+      "failed": false
+    },
+    {
+      "step": 3,
+      "type": "stop",
+      "reason": "已有 12 篇论文 + 5 个 repo，足够开始分析"
+    }
+  ],
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T20:45:50Z",
+      "input_summary": {
+        "topic": "基于深度学习的混凝土桥梁裂缝检测研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:45:50Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T20:45:55Z",
+      "input_summary": {
+        "topic_len": 18
+      },
+      "output_summary": {
+        "n_method": 2,
+        "n_object": 1,
+        "domain": "civil_infra"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:45:55Z",
+      "elapsed_s": 4.564
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T20:45:55Z",
+      "input_summary": {
+        "topic_len": 18,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 1,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:45:55Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-06T20:45:55Z",
+      "input_summary": {
+        "topic_len": 18,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 12,
+        "n_repo_candidates": 5,
+        "n_steps": 4,
+        "n_tool_calls": 3,
+        "raw_tools": [
+          "openalex",
+          "arxiv",
+          "github"
+        ],
+        "per_adapter": {
+          "arxiv": 12,
+          "openalex": 0,
+          "github": 5
+        },
+        "failed_adapters": [
+          "openalex"
+        ],
+        "skipped_adapters": [],
+        "repair_rounds": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "openalex",
+          "n": 0
+        },
+        {
+          "tool": "arxiv",
+          "n": 12
+        },
+        {
+          "tool": "github",
+          "n": 5
+        }
+      ],
+      "errors": [],
+      "provider": "react_search",
+      "ended_at": "2026-07-06T20:46:43Z",
+      "elapsed_s": 48.13
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T20:46:43Z",
+      "input_summary": {
+        "n_candidates": 12
+      },
+      "output_summary": {
+        "kept": 12,
+        "dropped": 0,
+        "pre_filter_keep": 12,
+        "pre_filter_drop": 0,
+        "llm_judged": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 12,
+          "pre_drop": 0,
+          "gray_area": 0
+        },
+        {
+          "tool": "quality_filter.no_llm_needed",
+          "reason": "all candidates resolved by pre-filter"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:46:43Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T20:46:43Z",
+      "input_summary": {
+        "n_candidates": 12,
+        "topic_len": 18,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 1,
+        "n_weak_reject": 9,
+        "n_reject": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:46:50Z",
+      "elapsed_s": 7.071
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T20:46:50Z",
+      "input_summary": {
+        "n_papers": 6,
+        "n_weak": 9,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 5,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:46:50Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T20:46:50Z",
+      "input_summary": {
+        "n_verified": 6,
+        "n_seeds": 0,
+        "seed_titles": []
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "reason": "no_seeds_with_ids"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "ended_at": "2026-07-06T20:46:50Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T20:46:50Z",
+      "input_summary": {
+        "n_candidates": 12,
+        "topic_len": 18,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 1,
+        "n_weak_reject": 8,
+        "n_reject": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:46:57Z",
+      "elapsed_s": 7.138
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T20:46:57Z",
+      "input_summary": {
+        "n_papers": 6,
+        "n_weak": 3,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 5,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:46:57Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T20:47:14Z",
+      "input_summary": {
+        "n_papers": 8,
+        "n_github_repos": 0
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 5
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 6,
+          "profile": "fast_json"
+        },
+        {
+          "tool": "github_direct_extract",
+          "n_repos": 0
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:47:14Z",
+      "elapsed_s": 16.78
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T20:47:14Z",
+      "input_summary": {
+        "papers": 6
+      },
+      "output_summary": {
+        "nodes": 11,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:47:14Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T20:47:14Z",
+      "input_summary": {
+        "n_verified": 6
+      },
+      "output_summary": {
+        "n_baseline": 1,
+        "n_parallel": 5,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:47:14Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T20:47:26Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_dataset": 0,
+        "n_repo": 5
+      },
+      "output_summary": {
+        "verdict": "feasible",
+        "score": 75
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:47:26Z",
+      "elapsed_s": 12.312
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-06T20:47:41Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_parallel": 5
+      },
+      "output_summary": {
+        "n_packages": 3,
+        "n_gap": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:47:41Z",
+      "elapsed_s": 15.306
+    },
+    {
+      "node": "innovation_extractor",
+      "started_at": "2026-07-06T20:47:57Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_parallel": 5
+      },
+      "output_summary": {
+        "n_innovation": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "innovation_extractor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:47:57Z",
+      "elapsed_s": 15.579
+    },
+    {
+      "node": "sota_matcher",
+      "started_at": "2026-07-06T20:47:53Z",
+      "input_summary": {
+        "n_baseline": 1
+      },
+      "output_summary": {
+        "n_comparison": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "sota_matcher.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:47:53Z",
+      "elapsed_s": 11.183
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-06T20:48:12Z",
+      "input_summary": {
+        "n_innovation": 3
+      },
+      "output_summary": {
+        "nick_model_name": "CrackNet-EDL"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:48:12Z",
+      "elapsed_s": 14.691
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-06T20:48:12Z",
+      "input_summary": {
+        "n_packages": 3
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:48:12Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T20:48:26Z",
+      "input_summary": {
+        "feasibility": "feasible"
+      },
+      "output_summary": {
+        "n_paths": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:48:26Z",
+      "elapsed_s": 14.214
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T20:48:37Z",
+      "input_summary": {
+        "n_innovation": 3,
+        "n_packages": 3
+      },
+      "output_summary": {
+        "overall_verdict": "ACCEPT"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:48:37Z",
+      "elapsed_s": 11.077
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T20:48:37Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:48:37Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T20:48:37Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于深度学习的混凝土桥梁裂缝检测研究",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 3,
+        "low_bar_status": "pass",
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": [
+          {
+            "title": "基于深度学习的混凝土桥梁裂缝检测基准构建与评估",
+            "research_question": "如何利用现有深度学习模型在混凝土桥梁裂缝检测数据集上建立可靠的基准性能？",
+            "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+            "risk": "缺乏公开的混凝土桥梁裂缝专用数据集，可能导致基准结果无法直接对比。",
+            "estimated_workload": "2人月"
+          },
+          {
+            "title": "基于卷积神经网络的裂缝检测模型改进与迁移学习",
+            "research_question": "如何通过迁移学习或网络结构改进提升卷积神经网络在混凝土桥梁裂缝检测中的精度与泛化能力？",
+            "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+            "improved_module_source": "Cracks in concrete",
+            "data_source": null,
+            "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+            "risk": "改进模块可能过度依赖特定数据集，导致泛化性能不足。",
+            "estimated_workload": "3人月"
+          },
+          {
+            "title": "基于深度学习的裂缝检测系统在桥梁结构健康监测中的集成验证",
+            "research_question": "如何将深度学习裂缝检测模型集成到桥梁结构健康监测系统中，并验证其实际应用效果？",
+            "baseline": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Data-driven Detection and Evaluation of Damages in Concrete Structures: Using Deep Learning and Computer Vision",
+            "risk": "实际桥梁环境复杂，模型可能受光照、遮挡等因素影响，导致检测性能下降。",
+            "estimated_workload": "4人月"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:48:37Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

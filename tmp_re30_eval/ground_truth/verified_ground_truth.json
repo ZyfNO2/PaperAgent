@@ -1,0 +1,128 @@
+[
+  {
+    "domain": "工业缺陷检测/钢铁表面缺陷",
+    "cases": ["ENG-THESIS-002", "ENG-THESIS-022"],
+    "keywords": ["defect detection", "surface defect", "steel", "NEU-DET"],
+    "baselines": [
+      "Deep Learning (LeCun 2015, Nature 521:436)",
+      "Deep Residual Learning for Image Recognition (He 2015, arxiv:1512.03385)"
+    ],
+    "datasets": ["NEU-DET", "GC10-DET"],
+    "repos": ["ultralytics/yolov5"],
+    "feasibility": "feasible",
+    "notes": "arxiv 上钢材缺陷论文较少，多在 IEEE 期刊。NEU-DET 是标准数据集。"
+  },
+  {
+    "domain": "自动驾驶/交通标志检测",
+    "cases": ["ENG-THESIS-010", "ENG-THESIS-066"],
+    "keywords": ["traffic sign", "detection", "recognition", "autonomous driving"],
+    "baselines": [
+      "You Only Look Once: Unified Real-Time Object Detection (Redmon 2015, arxiv:1506.02640)",
+      "Deep Residual Learning for Image Recognition (He 2015, arxiv:1512.03385)"
+    ],
+    "datasets": ["COCO", "GTSRB", "GTSDB"],
+    "repos": ["ultralytics/yolov5"],
+    "feasibility": "feasible"
+  },
+  {
+    "domain": "三维视觉/SLAM",
+    "cases": ["ENG-THESIS-016", "ENG-THESIS-048"],
+    "keywords": ["SLAM", "visual odometry", "mapping", "localization", "point cloud"],
+    "baselines": [
+      "ORB-SLAM: A Versatile and Accurate Monocular SLAM System (Mur-Artal 2015, arxiv:1502.00956)",
+      "ORB-SLAM2: An Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras (Mur-Artal 2017, arxiv:1610.06475)",
+      "LSD-SLAM: Large-Scale Direct Monocular SLAM (Engel 2014, ECCV)"
+    ],
+    "datasets": ["KITTI Vision Benchmark Suite", "TUM RGB-D", "EuRoC MAV"],
+    "repos": ["raulmur/ORB_SLAM2", "UZ-SLAMLab/ORB_SLAM3"],
+    "feasibility": "risky",
+    "notes": "SLAM 论文在 arxiv 和 IEEE 都有。GitHub 有 ORB-SLAM2/3 等高 star repo。"
+  },
+  {
+    "domain": "遥感/无人机目标检测",
+    "cases": ["ENG-THESIS-027", "ENG-THESIS-038"],
+    "keywords": ["remote sensing", "UAV", "aerial", "object detection", "small object"],
+    "baselines": [
+      "You Only Look Once (Redmon 2015, arxiv:1506.02640)",
+      "Deep Residual Learning for Image Recognition (He 2015, arxiv:1512.03385)"
+    ],
+    "datasets": ["DOTA", "VisDrone", "UAVDT"],
+    "repos": ["ultralytics/yolov5"],
+    "feasibility": "feasible"
+  },
+  {
+    "domain": "机器人/机械臂",
+    "cases": ["ENG-THESIS-046", "ENG-THESIS-063"],
+    "keywords": ["robot", "manipulator", "grasping", "mechanical arm", "ROS"],
+    "baselines": [
+      "Deep Residual Learning for Image Recognition (He 2015, arxiv:1512.03385)"
+    ],
+    "datasets": ["Cornell Grasping Dataset", "Jacquard Dataset"],
+    "repos": [],
+    "feasibility": "not_recommended",
+    "notes": "硬件依赖是主风险，非算法问题。GitHub 上没有标准 repo。"
+  },
+  {
+    "domain": "土木/裂缝检测",
+    "cases": ["ENG-THESIS-074", "ENG-THESIS-079"],
+    "keywords": ["crack", "concrete", "bridge", "pavement", "crack detection"],
+    "baselines": [
+      "U-Net: Convolutional Networks for Biomedical Image Segmentation (Ronneberger 2015, arxiv:1505.04597)",
+      "Deep Residual Learning for Image Recognition (He 2015, arxiv:1512.03385)"
+    ],
+    "datasets": ["DeepCrack", "Crack500", "SDNET2018"],
+    "repos": ["ultralytics/yolov5"],
+    "feasibility": "feasible"
+  },
+  {
+    "domain": "电力/巡检",
+    "cases": ["ENG-THESIS-028", "ENG-THESIS-093"],
+    "keywords": ["insulator", "power line", "defect", "inspection", "transmission"],
+    "baselines": [
+      "You Only Look Once (Redmon 2015, arxiv:1506.02640)",
+      "Deep Residual Learning for Image Recognition (He 2015, arxiv:1512.03385)"
+    ],
+    "datasets": ["COCO", "TT100K"],
+    "repos": ["ultralytics/yolov5"],
+    "feasibility": "risky",
+    "notes": "巡检数据多需自采，公开数据集少。"
+  },
+  {
+    "domain": "能源装备/风机",
+    "cases": ["ENG-THESIS-092", "ENG-THESIS-096"],
+    "keywords": ["wind turbine", "blade", "defect", "fault diagnosis"],
+    "baselines": [
+      "Deep Residual Learning for Image Recognition (He 2015, arxiv:1512.03385)"
+    ],
+    "datasets": [],
+    "repos": [],
+    "feasibility": "not_recommended",
+    "notes": "数据稀缺 + 实验台依赖。arxiv 上论文极少。"
+  },
+  {
+    "domain": "工科AI/农作物",
+    "cases": ["ENG-THESIS-004", "ENG-THESIS-034", "YOLO-CROP"],
+    "keywords": ["YOLO", "crop", "agriculture", "plant detection", "crop disease"],
+    "baselines": [
+      "You Only Look Once (Redmon 2015, arxiv:1506.02640)",
+      "Using Deep Learning for Image-Based Plant Disease Detection (Mohanty 2016, Front. Plant Sci. 7:1419)"
+    ],
+    "datasets": ["PlantVillage", "PlantDoc", "COCO"],
+    "repos": ["ultralytics/yolov5"],
+    "feasibility": "feasible",
+    "notes": "YOLO 农作物检测是成熟方向，arxiv 和 Crossref 应有大量论文。"
+  },
+  {
+    "domain": "医学/肺结节",
+    "cases": ["ENG-THESIS-033"],
+    "keywords": ["lung nodule", "CT", "medical image", "detection", "YOLO"],
+    "baselines": [
+      "U-Net: Convolutional Networks for Biomedical Image Segmentation (Ronneberger 2015, arxiv:1505.04597)",
+      "You Only Look Once (Redmon 2015, arxiv:1506.02640)"
+    ],
+    "datasets": ["LUNA16", "LIDC-IDRI"],
+    "repos": ["ultralytics/yolov5"],
+    "feasibility": "risky",
+    "notes": "医疗数据合规风险。arxiv 上有 LUNA16 相关论文。"
+  }
+]

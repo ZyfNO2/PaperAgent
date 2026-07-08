@@ -16,8 +16,8 @@ metadata glue errors** (e.g. crossref returning a real paper's title with a
 random abstract from another paper) — that's why all 3 Re07 fail cases
 (ENG-THESIS-043 / 048 / 075) hit ``all_evidence_critical_consistency_error``.
 The LLM verifier is the second-opinion layer: it sees the candidate + the
-topic atoms together and can spot "title is on concrete cracks but abstract
-is about masonry walls" or "DOI resolves to an unrelated 2014 paper".
+topic atoms together and can spot "title mentions the topic's object but
+abstract is about a different application" or "DOI resolves to an unrelated paper".
 """
 
 VERIFY_CANDIDATE_SYSTEM = """You are the candidate-evidence verifier for an

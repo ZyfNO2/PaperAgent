@@ -1,8 +1,8 @@
-﻿"""LangGraph node A3 — targeted_repair_node.
+﻿"""LangGraph node A3 — targeted_repair_node (Re3.0: Reflection strategy switch).
 
-Targets a SINGLE failure slice (baseline_gap / dataset_gap / repo_gap /
-paper_gap / metadata_mismatch / url_repair) and produces a new search_plan
-with rounds=["repair"]. Caps total repairs via MAX_REPAIR_ROUNDS.
+Targets a SINGLE failure slice and produces a new search_plan with
+rounds=["repair"]. Re3.0 adds strategy switching (synonym/broaden/switch_tool)
+inspired by ARS failure_paths F2/F8 and ARC's PIVOT/REFINE.
 
 Inputs from state:
   - baseline_candidates / dataset_candidates / repo_candidates (counts)
@@ -12,7 +12,7 @@ Inputs from state:
   - search_plan.queries (prior queries the repair must not repeat)
 
 Patch fields:
-  search_plan            replacement with a repair-round plan
+  search_plan            replacement with a repair-round plan (includes strategy)
   evidence_audit         merged (repair_rounds+1, last_repair_type, repair_exhausted)
   repair_exhausted       set True when the round cap is reached
   trace_events           appended
@@ -28,11 +28,12 @@ from typing import Any
 from apps.api.app.services.agents.graph.state import ResearchState
 from apps.api.app.services.agents.prompts import re12_repair as P
 from apps.api.app.services.llm_router import call_json, LLMUnavailable
+from ._util import emit_trace as _emit
 
 logger = logging.getLogger(__name__)
 
 
-MAX_REPAIR_ROUNDS = 2
+MAX_REPAIR_ROUNDS = int(os.environ.get("PAPERAGENT_MAX_REPAIR_ROUNDS", "2"))
 REPAIR_TYPES = [
     "paper_gap_repair",
     "dataset_gap_repair",
@@ -42,7 +43,7 @@ REPAIR_TYPES = [
     "url_repair",
 ]
 
-_TOOLS = frozenset({"arxiv", "openalex", "crossref", "web", "github"})
+_TOOLS = frozenset({"arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite"})
 
 
 def _env_int(name: str, default: int) -> int:
@@ -53,26 +54,6 @@ def _env_int(name: str, default: int) -> int:
         return int(raw)
     except ValueError:
         return default
-
-
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-
-
-def _emit(node: str, t0: float, ins: dict, out: dict,
-          tools: list[dict], prov: str, errs: list[dict]) -> dict[str, Any]:
-    return {
-        "node": node,
-        "started_at": _now_iso(),
-        "input_summary": ins,
-        "output_summary": out,
-        "tool_calls": tools,
-        "errors": errs,
-        "provider": prov,
-        "ended_at": _now_iso(),
-        "elapsed_s": round(time.time() - t0, 3),
-    }
 
 
 def _as_str(v: Any) -> str:
@@ -97,6 +78,21 @@ def _decide_repair_type(state: ResearchState) -> str:
     if quota_ratio > 0.4:
         return "paper_gap_repair"
     return "paper_gap_repair"
+
+
+def _infer_strategy(round_num: int, gaps: dict[str, Any]) -> str:
+    """Re3.0: Infer search strategy for this repair round.
+
+    Round 0 → "synonym" (try different keywords)
+    Round 1 → "broaden" (remove qualifiers, search broader)
+    Failed adapters → "switch_tool"
+    """
+    failed = gaps.get("failed_adapters") or []
+    if failed and round_num > 0:
+        return "switch_tool"
+    if round_num == 0:
+        return "synonym"
+    return "broaden"
 
 
 def _normalize(raw: dict[str, Any], repair_type: str) -> dict[str, Any]:
@@ -141,7 +137,9 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
         trace = _emit("targeted_repair", t0,
                       {"current_round": current_round},
                       {"exhausted": True}, [{"tool": "repair.cap_check"}],
-                      "local", [])
+                      "local", [],
+                      state_keys=["repair_exhausted", "evidence_audit",
+                                  "trace_events"])
         return {
             "repair_exhausted": True,
             "evidence_audit": exhausted_audit,
@@ -161,6 +159,17 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
         "repair_round": current_round + 1,
         "max_repair_rounds": MAX_REPAIR_ROUNDS,
     }
+
+    # Fix 6 (Re2.3): pass per-adapter status so the LLM knows which adapters failed
+    prior_traces = state.get("trace_events") or []
+    retrieve_traces = [
+        t for t in prior_traces
+        if t.get("node") in ("retrieve", "paper_retriever")
+    ]
+    if retrieve_traces:
+        last_summary = retrieve_traces[-1].get("output_summary") or {}
+        gaps["per_adapter"] = last_summary.get("per_adapter", {})
+        gaps["failed_adapters"] = last_summary.get("failed_adapters", [])
 
     # Rejected titles: paper_candidates that did NOT become verified
     verified_titles = {
@@ -209,11 +218,17 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
             schema_hint=(
                 '{"queries":[{tool,query,why,expected_evidence,stop_condition}...],'
                 '"rounds":["repair"],'
-                '"negative_feedback":str}'
+                '"negative_feedback":str,'
+                '"strategy":"synonym|broaden|switch_tool"}'
             ),
         )
         plan = _normalize(raw if isinstance(raw, dict) else {}, repair_type)
-    except BaseException as exc:  # noqa: BLE001
+        # Re3.0: record strategy from LLM or infer from repair type
+        if isinstance(raw, dict) and raw.get("strategy"):
+            plan["strategy"] = raw["strategy"]
+        else:
+            plan["strategy"] = _infer_strategy(current_round, gaps)
+    except Exception as exc:  # noqa: BLE001
         kind = "LLMUnavailable" if isinstance(exc, LLMUnavailable) else type(exc).__name__
         logger.warning("targeted_repair_node LLM call failed (%s); using empty repair plan", kind)
         errors_out.append({"node": "targeted_repair", "error": kind})
@@ -223,7 +238,9 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
                   {"n_queries": len(plan.get("queries") or []),
                    "rounds": plan.get("rounds")},
                   [{"tool": "re12_repair.llm", "attempts": tries}],
-                  "fast_json", errors_out)
+                  "fast_json", errors_out,
+                  state_keys=["search_plan", "evidence_audit",
+                              "trace_events", "errors", "provider_profile"])
 
     return {
         "search_plan": plan,

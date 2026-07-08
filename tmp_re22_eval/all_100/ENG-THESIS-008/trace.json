@@ -1,0 +1,600 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T05:15:11Z",
+    "input_summary": {
+      "topic": "焊点缺陷检测方法研究及其应用"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:15:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T05:15:15Z",
+    "input_summary": {
+      "topic_len": 14
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:15:15Z",
+    "elapsed_s": 3.871
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T05:15:15Z",
+    "input_summary": {
+      "topic_len": 14,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:15:15Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T05:15:15Z",
+    "input_summary": {
+      "topic_len": 14,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 17,
+      "raw_tools": [
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 1
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T05:15:38Z",
+    "elapsed_s": 22.688
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T05:15:38Z",
+    "input_summary": {
+      "n_candidates": 17
+    },
+    "output_summary": {
+      "kept": 16,
+      "dropped": 1,
+      "pre_filter_keep": 16,
+      "pre_filter_drop": 0,
+      "llm_judged": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 16,
+        "pre_drop": 0,
+        "gray_area": 1
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:15:42Z",
+    "elapsed_s": 4.335
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T05:15:42Z",
+    "input_summary": {
+      "n_candidates": 16,
+      "topic_len": 14,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 5,
+      "n_reject": 9
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:15:49Z",
+    "elapsed_s": 7.084
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T05:15:49Z",
+    "input_summary": {
+      "n_papers": 7,
+      "n_weak": 5,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:15:49Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T05:15:49Z",
+    "input_summary": {
+      "n_verified": 7,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Research on Defects Inspection of Solder Bumps Using Active ",
+        "BGA焊点缺陷的全光学激光超声检测技术",
+        "TOFD检测方法在水利工程焊缝质量检测中的应用研究",
+        "Research on Quality Defect Detection Method and Application ",
+        "压力容器焊接工艺优化及焊缝无损检测技术应用研究"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 5,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 5,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Research on Defects Inspection of Solder Bumps Using Active ",
+        "n_references_plus_citations": 5,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "BGA焊点缺陷的全光学激光超声检测技术",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "TOFD检测方法在水利工程焊缝质量检测中的应用研究",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Research on Quality Defect Detection Method and Application ",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "压力容器焊接工艺优化及焊缝无损检测技术应用研究",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T05:16:22Z",
+    "elapsed_s": 32.595
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T05:16:22Z",
+    "input_summary": {
+      "n_candidates": 5,
+      "topic_len": 14,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 1,
+      "n_reject": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:16:28Z",
+    "elapsed_s": 6.013
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T05:16:28Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 1,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:16:28Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T05:16:37Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:16:37Z",
+    "elapsed_s": 8.985
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T05:16:37Z",
+    "input_summary": {
+      "papers": 10
+    },
+    "output_summary": {
+      "nodes": 9,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:16:37Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T05:16:37Z",
+    "input_summary": {
+      "n_verified": 10
+    },
+    "output_summary": {
+      "n_baseline": 5,
+      "n_parallel": 5,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:16:37Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T05:16:42Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:16:42Z",
+    "elapsed_s": 4.939
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T05:16:51Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:16:51Z",
+    "elapsed_s": 8.837
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T05:17:04Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:17:04Z",
+    "elapsed_s": 13.463
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T05:16:59Z",
+    "input_summary": {
+      "n_baseline": 5
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:16:59Z",
+    "elapsed_s": 8.539
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T05:17:14Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Thermo-PDCA-Net"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:17:14Z",
+    "elapsed_s": 9.922
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T05:17:14Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:17:14Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T05:17:24Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:17:24Z",
+    "elapsed_s": 9.611
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T05:17:31Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T05:17:31Z",
+    "elapsed_s": 7.065
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T05:17:31Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:17:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T05:17:31Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "焊点缺陷检测方法研究及其应用",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于主动红外热成像的焊点缺陷检测方法研究",
+          "research_question": "如何利用主动红外热成像技术有效检测焊点缺陷，并提升检测精度与效率？",
+          "baseline": "Research on Defects Inspection of Solder Bumps Using Active Infrared Thermography Technology",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Research on Defects Inspection of Solder Bumps Using Active Infrared Thermography Technology",
+          "risk": "主动红外热成像对焊点微小缺陷的灵敏度可能不足，且环境温度变化可能干扰检测结果。",
+          "estimated_workload": "6个月"
+        },
+        {
+          "title": "基于全光学激光超声的BGA焊点缺陷检测技术研究",
+          "research_question": "全光学激光超声检测技术如何应用于BGA焊点缺陷的精确识别与分类？",
+          "baseline": "BGA焊点缺陷的全光学激光超声检测技术",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "BGA焊点缺陷的全光学激光超声检测技术",
+          "risk": "激光超声设备成本高，且对焊点表面状态敏感，可能影响检测稳定性。",
+          "estimated_workload": "8个月"
+        },
+        {
+          "title": "基于分辨率增强SAM图像的倒装芯片焊点智能诊断研究",
+          "research_question": "如何通过分辨率增强的扫描声学显微镜（SAM）图像实现倒装芯片焊点缺陷的智能诊断？",
+          "baseline": "Intelligent diagnosis of flip chip solder joints with resolution enhanced SAM image.",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Intelligent diagnosis of flip chip solder joints with resolution enhanced SAM image.",
+          "risk": "SAM图像分辨率增强算法可能引入伪影，影响诊断准确性。",
+          "estimated_workload": "7个月"
+        },
+        {
+          "title": "基于主动热成像与概率神经网络的微焊球缺陷检测研究",
+          "research_question": "如何结合主动热成像技术与概率神经网络实现微焊球缺陷的自动检测与分类？",
+          "baseline": "Detection of micro solder balls using active thermography and probabilistic neural network",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Detection of micro solder balls using active thermography and probabilistic neural network",
+          "risk": "概率神经网络对训练数据量要求较高，小样本下可能泛化能力不足。",
+          "estimated_workload": "6个月"
+        },
+        {
+          "title": "基于主动热成像仿真的焊球缺陷检测参数优化研究",
+          "research_question": "如何通过仿真实验优化主动热成像检测焊球缺陷的工艺参数，以提高检测灵敏度？",
+          "baseline": "Simulation and Experimental Investigation on Active Thermography Test of the Solder Balls",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Simulation and Experimental Investigation on Active Thermography Test of the Solder Balls",
+          "risk": "仿真模型与实际工况存在偏差，优化参数可能无法直接迁移至实际检测。",
+          "estimated_workload": "5个月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T05:17:31Z",
+    "elapsed_s": 0.0
+  }
+]

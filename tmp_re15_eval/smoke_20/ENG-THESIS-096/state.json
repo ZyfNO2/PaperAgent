@@ -1,0 +1,1929 @@
+{
+  "case_id": "ENG-THESIS-096",
+  "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+  "user_constraints": {
+    "topic_zh": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "electrothermal effect",
+      "graphene film heating"
+    ],
+    "object": [
+      "wind turbine blade",
+      "ice layer"
+    ],
+    "task": [
+      "anti-icing",
+      "de-icing"
+    ],
+    "scenario": [
+      "wind turbine operation"
+    ],
+    "domain": "energy_power",
+    "dataset_terms": [],
+    "baseline_terms": [
+      "electrothermal de-icing",
+      "resistive heating"
+    ],
+    "avoid_terms": [
+      "airfoil icing",
+      "aircraft icing",
+      "road de-icing"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "arxiv",
+        "query": "graphene electrothermal deicing wind turbine",
+        "why": "Replaces the prior query 'graphene film heating wind turbine blade' which returned no relevant results. This query uses 'deicing' instead of 'heating' to target specific anti-icing applications and adds 'wind turbine' to narrow the scope, aiming to find papers on graphene-based electrothermal de-icing for wind turbine blades.",
+        "expected_evidence": "At least one paper explicitly studying graphene film electrothermal de-icing on wind turbine blades, including experimental or simulation results.",
+        "stop_condition": "Stop after 5 results if none match the expected evidence; otherwise stop after finding 1 relevant paper."
+      },
+      {
+        "tool": "openalex",
+        "query": "graphene film electrothermal anti-icing wind turbine",
+        "why": "Replaces the prior query 'electrothermal effect wind turbine blade anti-icing' which returned only general reviews. This query adds 'graphene film' to specifically target graphene-based solutions and uses 'anti-icing' to capture both de-icing and anti-icing studies, aiming to find dataset or baseline evidence.",
+        "expected_evidence": "At least one paper or dataset on graphene film electrothermal anti-icing for wind turbine blades, including performance metrics or experimental data.",
+        "stop_condition": "Stop after 10 results if no relevant paper found; otherwise stop after finding 1 relevant paper."
+      }
+    ],
+    "rounds": [
+      "repair"
+    ],
+    "negative_feedback": "The prior round failed because queries like 'graphene film heating wind turbine blade' and 'electrothermal effect wind turbine blade anti-icing' returned zero or only general review papers, not specific graphene-based electrothermal de-icing studies. This repair round uses more targeted keywords ('deicing', 'anti-icing') and explicitly includes 'graphene' to close the gap, and switches tools (arxiv, openalex) to cover different academic sources."
+  },
+  "raw_results": {
+    "arxiv": [
+      {
+        "title": "Alteration in contact line dynamics through competition between thermocapillary and electrothermal effects",
+        "abstract": "The contact line dynamics of a thermal field assisted flow configuration of two immiscible fluids is considered in a narrow thermofluidic pathway. The surfaces of the channel are wetted with predesigned wettabilities and interdigitated electrodes are mounted on the substrates to generate non-uniform electric field. In this study, the interplay of thermocapillary and electrothermal forces on interfacial dynamics are studied in detail. The former is caused by surface tension gradients while the latter results from gradients in permittivity and electrical conductivity. Our investigations reveal that the relative strength of interfacial forces and electrothermal forces and their interactions can be effectively used to control the capillary filling time as well as the flow dynamics. For same strength of thermocapillary and electrothermal forces (characterized by individual dimensionless numbers) electrothermal forces dominate over thermocapillary forces. However, interfacial forces at some wettabilities dominate over electrothermal forces and set the fluid motion toward the entry of the channel.",
+        "authors": [
+          "Golak Kunti",
+          "Anandaroop Bhattacharya",
+          "Suman Chakraborty"
+        ],
+        "arxiv_id": "1804.07579v1",
+        "url": "http://arxiv.org/abs/1804.07579v1",
+        "published": "2018-04-20T12:44:55Z",
+        "year": 2018,
+        "source_query": "electrothermal effect"
+      },
+      {
+        "title": "Electrothermal flow in Dielectrophoresis of Single-Walled Carbon Nanotubes",
+        "abstract": "We theoretically investigate the impact of the electrothermal flow on the dielectrophoretic separation of single-walled carbon nanotubes (SWNT). The electrothermal flow is observed to control the motions of semiconducting SWNTs in a sizeable domain near the electrodes under typical experimental conditions, therefore helping the dielectrophoretic force to attract semiconducting SWNTs in a broader range. Moreover, with the increase of the surfactant concentration, the electrothermal flow is enhanced, and with the change of frequency, the pattern of the electrothermal flow changes. It is shown that under some typical experimental conditions of dielectrophoresis separation of SWNTs, the electrothermal flow is a dominating factor in determining the motion of SWNTs.",
+        "authors": [
+          "Yuan Lin",
+          "Junichiro Shiomi",
+          "Shigeo Maruyama",
+          "Gustav Amberg"
+        ],
+        "arxiv_id": "cond-mat",
+        "url": "http://arxiv.org/abs/cond-mat/0702550v2",
+        "published": "2007-02-23T14:48:37Z",
+        "year": 2007,
+        "source_query": "electrothermal effect"
+      },
+      {
+        "title": "Electrothermal Model of Kinetic Inductance Detectors",
+        "abstract": "An electrothermal model of Kinetic Inductance Detectors (KIDs) is described. The non-equilibrium state of the resonator's quasiparticle system is characterized by an effective temperature, which because of readout-power heating is higher than that of the bath. By balancing the flow of energy into the quasiparticle system, it is possible to calculate the steady-state large-signal, small-signal and noise behaviour. Resonance-curve distortion and hysteretic switching appear naturally within the framework. It is shown that an electrothermal feedback process exists, which affects all aspects of behaviour. It is also shown that generation-recombination noise can be interpreted in terms of the thermal fluctuation noise in the effective thermal conductance that links the quasiparticle and phonon systems of the resonator. Because the scheme is based on electrothermal considerations, multiple elements can be added to simulate the behaviour of complex devices, such as resonators on membranes, again taking into account readout power heating.",
+        "authors": [
+          "Christopher N Thomas",
+          "Stafford Withington",
+          "David J Goldie"
+        ],
+        "arxiv_id": "1411.1565v2",
+        "url": "http://arxiv.org/abs/1411.1565v2",
+        "published": "2014-11-06T11:11:21Z",
+        "year": 2014,
+        "source_query": "electrothermal effect"
+      },
+      {
+        "title": "Electrothermal Feedback in Kinetic Inductance Detectors",
+        "abstract": "In Kinetic Inductance Detectors (KIDs) and other similar applications of superconducting microresonators, both the large and small-signal behaviour of the device may be affected by electrothermal feedback. Microwave power applied to read out the device is absorbed by and heats the superconductor quasiparticles, changing the superconductor conductivity and hence the readout power absorbed in a positive or negative feedback loop. In this work, we explore numerically the implications of an extensible theoretical model of a generic superconducting microresonator device for a typical KID, incorporating recent work on the power flow between superconductor quasiparticles and phonons. This model calculates the large-signal (changes in operating point) and small-signal behaviour of a device, allowing us to determine the effect of electrothermal feedback on device responsivity and noise characteristics under various operating conditions. We also investigate how thermally isolating the device from the bath, for example by designing the device on a membrane only connected to the bulk substrate by thin legs, affects device performance. We find that at a typical device operating point, positive electrothermal feedback reduces the effective thermal conductance from the superconductor quasiparticles to the bath, and so increases responsivity to signal (pair-breaking) power, increases noise from temperature fluctuations, and decreases the Noise Equivalent Power (NEP). Similarly, increasing the thermal isolation of the device while keeping the quasiparticle temperature constant decreases the NEP, but also decreases the device response bandwidth.",
+        "authors": [
+          "T. Guruswamy",
+          "C. N. Thomas",
+          "S. Withington",
+          "D. J. Goldie"
+        ],
+        "arxiv_id": "1701.09145v1",
+        "url": "http://arxiv.org/abs/1701.09145v1",
+        "published": "2017-01-31T17:34:26Z",
+        "year": 2017,
+        "source_query": "electrothermal effect"
+      },
+      {
+        "title": "Two-Temperature Principle for Electrothermal Performance Evaluation of GaN HEMTs",
+        "abstract": "We present a comprehensive investigation of self-heating in gallium nitride (GaN) high-electron-mobility transistors (HEMTs) through technology computer-aided design (TCAD) simulations and phonon Monte Carlo (MC) simulations. With microscopic phonon-based electrothermal simulations, we scrutinize both the temperature profiles and electrothermal coupling effect within GaN HEMTs. Two metrics, maximum channel temperature ($T_\\text{max}$) and equivalent channel temperature ($T_\\text{eq}$), are introduced to measure the reliability and electrical performance degradation of the device, respectively. The influence of bias-dependent heat generation and phonon ballistic transport on the two indicators is thoroughly examined.",
+        "authors": [
+          "Yang Shen",
+          "Bing-Yang Cao"
+        ],
+        "arxiv_id": "2306.08911v1",
+        "url": "http://arxiv.org/abs/2306.08911v1",
+        "published": "2023-06-15T07:26:59Z",
+        "year": 2023,
+        "source_query": "electrothermal effect"
+      },
+      {
+        "title": "Electrothermal feedback in superconducting nanowire single-photon detectors",
+        "abstract": "We investigate the role of electrothermal feedback in the operation of superconducting nanowire single-photon detectors (SNSPDs). It is found that the desired mode of operation for SNSPDs is only achieved if this feedback is unstable, which happens naturally through the slow electrical response associated with their relatively large kinetic inductance. If this response is sped up in an effort to increase the device count rate, the electrothermal feedback becomes stable and results in an effect known as latching, where the device is locked in a resistive state and can no longer detect photons. We present a set of experiments which elucidate this effect, and a simple model which quantitatively explains the results.",
+        "authors": [
+          "Andrew J. Kerman",
+          "Joel K. W. Yang",
+          "Richard J. Molnar",
+          "Eric A. Dauler",
+          "Karl K. Berggren"
+        ],
+        "arxiv_id": "0812.0290v1",
+        "url": "http://arxiv.org/abs/0812.0290v1",
+        "published": "2008-12-01T13:24:38Z",
+        "year": 2008,
+        "source_query": "electrothermal effect"
+      },
+      {
+        "title": "Quantum Cascade Lasers: Electrothermal Simulation",
+        "abstract": "Book chapter on multiscale electrothermal simulation of midinfrared quantum cascade lasers. To appear in Handbook of Optoelectronic Device Modeling and Simulation, Taylor and Francis Books, 2017. Editor: Joachim Piprek.",
+        "authors": [
+          "S. Mei",
+          "Y. B. Shi",
+          "O. Jonasson",
+          "I. Knezevic"
+        ],
+        "arxiv_id": "1609.09130v1",
+        "url": "http://arxiv.org/abs/1609.09130v1",
+        "published": "2016-09-28T21:51:13Z",
+        "year": 2016,
+        "source_query": "electrothermal effect"
+      },
+      {
+        "title": "Electrothermally induced flow in AC EWOD droplet",
+        "abstract": "We show a novel way of generating electrohydrodynamic motion inside a droplet under AC electrowetting. Using a very low applied voltage (10<V) strong electrothermal motion can be generated in the droplet. Alternating current electrothermal (ACET) actuation originates due to imposed Joule heating into the fluid body via applied electric field. A parametric study based on operating parameters and geometrical parameter is conducted experimentally and numerically. With the operating ranges of parameters, high fluid velocity of the order of mm/s can be generated inside the droplet. Further improvement in fluid motion can be anticipated through optimization technique. The investigations revealed in the analysis can be used as useful tool in the design of efficient drop-based micromixer.",
+        "authors": [
+          "Golak Kunti",
+          "Anandaroop Bhattacharya",
+          "Suman Chakraborty"
+        ],
+        "arxiv_id": "1804.06427v2",
+        "url": "http://arxiv.org/abs/1804.06427v2",
+        "published": "2018-04-17T18:32:41Z",
+        "year": 2018,
+        "source_query": "electrothermal effect"
+      }
+    ],
+    "crossref": [
+      {
+        "title": "AC Electrothermal Effect Promotes Enhanced Solute Mixing in a Wavy Microchannel",
+        "doi": "10.1021/acs.langmuir.3c02150.s001",
+        "DOI": "10.1021/acs.langmuir.3c02150.s001",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1021/acs.langmuir.3c02150.s001",
+        "URL": "https://doi.org/10.1021/acs.langmuir.3c02150.s001",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      },
+      {
+        "title": "Electrothermal Effect in Formaldehyde Oxidation over a Nickel-Supported Nano MnO2 Catalyst",
+        "doi": "10.1021/acsanm.5c00869.s001",
+        "DOI": "10.1021/acsanm.5c00869.s001",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1021/acsanm.5c00869.s001",
+        "URL": "https://doi.org/10.1021/acsanm.5c00869.s001",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      },
+      {
+        "title": "Localized Electrothermal Annealing with Nanowatt Power for a Silicon Nanowire Field-Effect Transistor",
+        "doi": "10.1021/acsami.7b17794.s001",
+        "DOI": "10.1021/acsami.7b17794.s001",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1021/acsami.7b17794.s001",
+        "URL": "https://doi.org/10.1021/acsami.7b17794.s001",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      },
+      {
+        "title": "Fast-timing Electrothermal Simulation",
+        "doi": "10.1007/0-306-47024-1_5",
+        "DOI": "10.1007/0-306-47024-1_5",
+        "authors": [],
+        "author": [],
+        "venue": "Electrothermal Analysis of VLSI Systems",
+        "container-title": [
+          "Electrothermal Analysis of VLSI Systems"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1007/0-306-47024-1_5",
+        "URL": "https://doi.org/10.1007/0-306-47024-1_5",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+        "doi": "10.1021/acsapm.6c00765.s001",
+        "DOI": "10.1021/acsapm.6c00765.s001",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1021/acsapm.6c00765.s001",
+        "URL": "https://doi.org/10.1021/acsapm.6c00765.s001",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      },
+      {
+        "title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+        "doi": "10.1615/ihtc16.mpf.022048",
+        "DOI": "10.1615/ihtc16.mpf.022048",
+        "authors": [
+          "Chunhua Xiao",
+          "Yewei Gui"
+        ],
+        "author": [
+          {
+            "given": "Chunhua",
+            "family": "Xiao",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Yewei",
+            "family": "Gui",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "International Heat Transfer Conference 16",
+        "container-title": [
+          "International Heat Transfer Conference 16"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1615/ihtc16.mpf.022048",
+        "URL": "https://doi.org/10.1615/ihtc16.mpf.022048",
+        "year": 2018,
+        "publication_year": 2018,
+        "citation_count": 0,
+        "_crossref_type": "proceedings-article"
+      },
+      {
+        "title": "electrothermal recording",
+        "doi": "10.1007/springerreference_13447",
+        "DOI": "10.1007/springerreference_13447",
+        "authors": [],
+        "author": [],
+        "venue": "SpringerReference",
+        "container-title": [
+          "SpringerReference"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1007/springerreference_13447",
+        "URL": "https://doi.org/10.1007/springerreference_13447",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "reference-entry"
+      },
+      {
+        "title": "Electrothermal Effects",
+        "doi": "10.1007/springerreference_66701",
+        "DOI": "10.1007/springerreference_66701",
+        "authors": [],
+        "author": [],
+        "venue": "SpringerReference",
+        "container-title": [
+          "SpringerReference"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1007/springerreference_66701",
+        "URL": "https://doi.org/10.1007/springerreference_66701",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "reference-entry"
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<effect-of-ice-shedding-on-heat-transfer-characteristics-of-electrothermal-deicing-process>",
+        "type": "paper",
+        "title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<mxene-assisted-cellulose-aerogel-with-synergistic-photo-electrothermal-effect-for-all-weather-crude-oil-remediation>",
+        "type": "paper",
+        "title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+        "role": "parallel"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Alteration in contact line dynamics through competition between thermocapillary and electrothermal effects",
+      "abstract": "The contact line dynamics of a thermal field assisted flow configuration of two immiscible fluids is considered in a narrow thermofluidic pathway. The surfaces of the channel are wetted with predesigned wettabilities and interdigitated electrodes are mounted on the substrates to generate non-uniform electric field. In this study, the interplay of thermocapillary and electrothermal forces on interfacial dynamics are studied in detail. The former is caused by surface tension gradients while the latter results from gradients in permittivity and electrical conductivity. Our investigations reveal t",
+      "url": "http://arxiv.org/abs/1804.07579v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Alteration in contact line dynamics through competition between thermocapillary and electrothermal effects",
+            "abstract": "The contact line dynamics of a thermal field assisted flow configuration of two immiscible fluids is considered in a narrow thermofluidic pathway. The surfaces of the channel are wetted with predesigned wettabilities and interdigitated electrodes are mounted on the substrates to generate non-uniform electric field. In this study, the interplay of thermocapillary and electrothermal forces on interfacial dynamics are studied in detail. The former is caused by surface tension gradients while the latter results from gradients in permittivity and electrical conductivity. Our investigations reveal that the relative strength of interfacial forces and electrothermal forces and their interactions can be effectively used to control the capillary filling time as well as the flow dynamics. For same strength of thermocapillary and electrothermal forces (characterized by individual dimensionless numbers) electrothermal forces dominate over thermocapillary forces. However, interfacial forces at some wettabilities dominate over electrothermal forces and set the fluid motion toward the entry of the channel.",
+            "authors": [
+              "Golak Kunti",
+              "Anandaroop Bhattacharya",
+              "Suman Chakraborty"
+            ],
+            "arxiv_id": "1804.07579v1",
+            "url": "http://arxiv.org/abs/1804.07579v1",
+            "published": "2018-04-20T12:44:55Z",
+            "year": 2018,
+            "source_query": "electrothermal effect"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Electrothermal flow in Dielectrophoresis of Single-Walled Carbon Nanotubes",
+      "abstract": "We theoretically investigate the impact of the electrothermal flow on the dielectrophoretic separation of single-walled carbon nanotubes (SWNT). The electrothermal flow is observed to control the motions of semiconducting SWNTs in a sizeable domain near the electrodes under typical experimental conditions, therefore helping the dielectrophoretic force to attract semiconducting SWNTs in a broader range. Moreover, with the increase of the surfactant concentration, the electrothermal flow is enhanced, and with the change of frequency, the pattern of the electrothermal flow changes. It is shown th",
+      "url": "http://arxiv.org/abs/cond-mat/0702550v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Electrothermal flow in Dielectrophoresis of Single-Walled Carbon Nanotubes",
+            "abstract": "We theoretically investigate the impact of the electrothermal flow on the dielectrophoretic separation of single-walled carbon nanotubes (SWNT). The electrothermal flow is observed to control the motions of semiconducting SWNTs in a sizeable domain near the electrodes under typical experimental conditions, therefore helping the dielectrophoretic force to attract semiconducting SWNTs in a broader range. Moreover, with the increase of the surfactant concentration, the electrothermal flow is enhanced, and with the change of frequency, the pattern of the electrothermal flow changes. It is shown that under some typical experimental conditions of dielectrophoresis separation of SWNTs, the electrothermal flow is a dominating factor in determining the motion of SWNTs.",
+            "authors": [
+              "Yuan Lin",
+              "Junichiro Shiomi",
+              "Shigeo Maruyama",
+              "Gustav Amberg"
+            ],
+            "arxiv_id": "cond-mat",
+            "url": "http://arxiv.org/abs/cond-mat/0702550v2",
+            "published": "2007-02-23T14:48:37Z",
+            "year": 2007,
+            "source_query": "electrothermal effect"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Electrothermal Model of Kinetic Inductance Detectors",
+      "abstract": "An electrothermal model of Kinetic Inductance Detectors (KIDs) is described. The non-equilibrium state of the resonator's quasiparticle system is characterized by an effective temperature, which because of readout-power heating is higher than that of the bath. By balancing the flow of energy into the quasiparticle system, it is possible to calculate the steady-state large-signal, small-signal and noise behaviour. Resonance-curve distortion and hysteretic switching appear naturally within the framework. It is shown that an electrothermal feedback process exists, which affects all aspects of beh",
+      "url": "http://arxiv.org/abs/1411.1565v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Electrothermal Model of Kinetic Inductance Detectors",
+            "abstract": "An electrothermal model of Kinetic Inductance Detectors (KIDs) is described. The non-equilibrium state of the resonator's quasiparticle system is characterized by an effective temperature, which because of readout-power heating is higher than that of the bath. By balancing the flow of energy into the quasiparticle system, it is possible to calculate the steady-state large-signal, small-signal and noise behaviour. Resonance-curve distortion and hysteretic switching appear naturally within the framework. It is shown that an electrothermal feedback process exists, which affects all aspects of behaviour. It is also shown that generation-recombination noise can be interpreted in terms of the thermal fluctuation noise in the effective thermal conductance that links the quasiparticle and phonon systems of the resonator. Because the scheme is based on electrothermal considerations, multiple elements can be added to simulate the behaviour of complex devices, such as resonators on membranes, again taking into account readout power heating.",
+            "authors": [
+              "Christopher N Thomas",
+              "Stafford Withington",
+              "David J Goldie"
+            ],
+            "arxiv_id": "1411.1565v2",
+            "url": "http://arxiv.org/abs/1411.1565v2",
+            "published": "2014-11-06T11:11:21Z",
+            "year": 2014,
+            "source_query": "electrothermal effect"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Electrothermal Feedback in Kinetic Inductance Detectors",
+      "abstract": "In Kinetic Inductance Detectors (KIDs) and other similar applications of superconducting microresonators, both the large and small-signal behaviour of the device may be affected by electrothermal feedback. Microwave power applied to read out the device is absorbed by and heats the superconductor quasiparticles, changing the superconductor conductivity and hence the readout power absorbed in a positive or negative feedback loop. In this work, we explore numerically the implications of an extensible theoretical model of a generic superconducting microresonator device for a typical KID, incorpora",
+      "url": "http://arxiv.org/abs/1701.09145v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Electrothermal Feedback in Kinetic Inductance Detectors",
+            "abstract": "In Kinetic Inductance Detectors (KIDs) and other similar applications of superconducting microresonators, both the large and small-signal behaviour of the device may be affected by electrothermal feedback. Microwave power applied to read out the device is absorbed by and heats the superconductor quasiparticles, changing the superconductor conductivity and hence the readout power absorbed in a positive or negative feedback loop. In this work, we explore numerically the implications of an extensible theoretical model of a generic superconducting microresonator device for a typical KID, incorporating recent work on the power flow between superconductor quasiparticles and phonons. This model calculates the large-signal (changes in operating point) and small-signal behaviour of a device, allowing us to determine the effect of electrothermal feedback on device responsivity and noise characteristics under various operating conditions. We also investigate how thermally isolating the device from the bath, for example by designing the device on a membrane only connected to the bulk substrate by thin legs, affects device performance. We find that at a typical device operating point, positive electrothermal feedback reduces the effective thermal conductance from the superconductor quasiparticles to the bath, and so increases responsivity to signal (pair-breaking) power, increases noise from temperature fluctuations, and decreases the Noise Equivalent Power (NEP). Similarly, increasing the thermal isolation of the device while keeping the quasiparticle temperature constant decreases the NEP, but also decreases the device response bandwidth.",
+            "authors": [
+              "T. Guruswamy",
+              "C. N. Thomas",
+              "S. Withington",
+              "D. J. Goldie"
+            ],
+            "arxiv_id": "1701.09145v1",
+            "url": "http://arxiv.org/abs/1701.09145v1",
+            "published": "2017-01-31T17:34:26Z",
+            "year": 2017,
+            "source_query": "electrothermal effect"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Two-Temperature Principle for Electrothermal Performance Evaluation of GaN HEMTs",
+      "abstract": "We present a comprehensive investigation of self-heating in gallium nitride (GaN) high-electron-mobility transistors (HEMTs) through technology computer-aided design (TCAD) simulations and phonon Monte Carlo (MC) simulations. With microscopic phonon-based electrothermal simulations, we scrutinize both the temperature profiles and electrothermal coupling effect within GaN HEMTs. Two metrics, maximum channel temperature ($T_\\text{max}$) and equivalent channel temperature ($T_\\text{eq}$), are introduced to measure the reliability and electrical performance degradation of the device, respectively.",
+      "url": "http://arxiv.org/abs/2306.08911v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Two-Temperature Principle for Electrothermal Performance Evaluation of GaN HEMTs",
+            "abstract": "We present a comprehensive investigation of self-heating in gallium nitride (GaN) high-electron-mobility transistors (HEMTs) through technology computer-aided design (TCAD) simulations and phonon Monte Carlo (MC) simulations. With microscopic phonon-based electrothermal simulations, we scrutinize both the temperature profiles and electrothermal coupling effect within GaN HEMTs. Two metrics, maximum channel temperature ($T_\\text{max}$) and equivalent channel temperature ($T_\\text{eq}$), are introduced to measure the reliability and electrical performance degradation of the device, respectively. The influence of bias-dependent heat generation and phonon ballistic transport on the two indicators is thoroughly examined.",
+            "authors": [
+              "Yang Shen",
+              "Bing-Yang Cao"
+            ],
+            "arxiv_id": "2306.08911v1",
+            "url": "http://arxiv.org/abs/2306.08911v1",
+            "published": "2023-06-15T07:26:59Z",
+            "year": 2023,
+            "source_query": "electrothermal effect"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Electrothermal feedback in superconducting nanowire single-photon detectors",
+      "abstract": "We investigate the role of electrothermal feedback in the operation of superconducting nanowire single-photon detectors (SNSPDs). It is found that the desired mode of operation for SNSPDs is only achieved if this feedback is unstable, which happens naturally through the slow electrical response associated with their relatively large kinetic inductance. If this response is sped up in an effort to increase the device count rate, the electrothermal feedback becomes stable and results in an effect known as latching, where the device is locked in a resistive state and can no longer detect photons. ",
+      "url": "http://arxiv.org/abs/0812.0290v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Electrothermal feedback in superconducting nanowire single-photon detectors",
+            "abstract": "We investigate the role of electrothermal feedback in the operation of superconducting nanowire single-photon detectors (SNSPDs). It is found that the desired mode of operation for SNSPDs is only achieved if this feedback is unstable, which happens naturally through the slow electrical response associated with their relatively large kinetic inductance. If this response is sped up in an effort to increase the device count rate, the electrothermal feedback becomes stable and results in an effect known as latching, where the device is locked in a resistive state and can no longer detect photons. We present a set of experiments which elucidate this effect, and a simple model which quantitatively explains the results.",
+            "authors": [
+              "Andrew J. Kerman",
+              "Joel K. W. Yang",
+              "Richard J. Molnar",
+              "Eric A. Dauler",
+              "Karl K. Berggren"
+            ],
+            "arxiv_id": "0812.0290v1",
+            "url": "http://arxiv.org/abs/0812.0290v1",
+            "published": "2008-12-01T13:24:38Z",
+            "year": 2008,
+            "source_query": "electrothermal effect"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Quantum Cascade Lasers: Electrothermal Simulation",
+      "abstract": "Book chapter on multiscale electrothermal simulation of midinfrared quantum cascade lasers. To appear in Handbook of Optoelectronic Device Modeling and Simulation, Taylor and Francis Books, 2017. Editor: Joachim Piprek.",
+      "url": "http://arxiv.org/abs/1609.09130v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Quantum Cascade Lasers: Electrothermal Simulation",
+            "abstract": "Book chapter on multiscale electrothermal simulation of midinfrared quantum cascade lasers. To appear in Handbook of Optoelectronic Device Modeling and Simulation, Taylor and Francis Books, 2017. Editor: Joachim Piprek.",
+            "authors": [
+              "S. Mei",
+              "Y. B. Shi",
+              "O. Jonasson",
+              "I. Knezevic"
+            ],
+            "arxiv_id": "1609.09130v1",
+            "url": "http://arxiv.org/abs/1609.09130v1",
+            "published": "2016-09-28T21:51:13Z",
+            "year": 2016,
+            "source_query": "electrothermal effect"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Electrothermally induced flow in AC EWOD droplet",
+      "abstract": "We show a novel way of generating electrohydrodynamic motion inside a droplet under AC electrowetting. Using a very low applied voltage (10<V) strong electrothermal motion can be generated in the droplet. Alternating current electrothermal (ACET) actuation originates due to imposed Joule heating into the fluid body via applied electric field. A parametric study based on operating parameters and geometrical parameter is conducted experimentally and numerically. With the operating ranges of parameters, high fluid velocity of the order of mm/s can be generated inside the droplet. Further improvem",
+      "url": "http://arxiv.org/abs/1804.06427v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Electrothermally induced flow in AC EWOD droplet",
+            "abstract": "We show a novel way of generating electrohydrodynamic motion inside a droplet under AC electrowetting. Using a very low applied voltage (10<V) strong electrothermal motion can be generated in the droplet. Alternating current electrothermal (ACET) actuation originates due to imposed Joule heating into the fluid body via applied electric field. A parametric study based on operating parameters and geometrical parameter is conducted experimentally and numerically. With the operating ranges of parameters, high fluid velocity of the order of mm/s can be generated inside the droplet. Further improvement in fluid motion can be anticipated through optimization technique. The investigations revealed in the analysis can be used as useful tool in the design of efficient drop-based micromixer.",
+            "authors": [
+              "Golak Kunti",
+              "Anandaroop Bhattacharya",
+              "Suman Chakraborty"
+            ],
+            "arxiv_id": "1804.06427v2",
+            "url": "http://arxiv.org/abs/1804.06427v2",
+            "published": "2018-04-17T18:32:41Z",
+            "year": 2018,
+            "source_query": "electrothermal effect"
+          }
+        ]
+      }
+    },
+    {
+      "title": "AC Electrothermal Effect Promotes Enhanced Solute Mixing in a Wavy Microchannel",
+      "abstract": "",
+      "url": "https://doi.org/10.1021/acs.langmuir.3c02150.s001",
+      "doi": "10.1021/acs.langmuir.3c02150.s001",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "AC Electrothermal Effect Promotes Enhanced Solute Mixing in a Wavy Microchannel",
+            "doi": "10.1021/acs.langmuir.3c02150.s001",
+            "DOI": "10.1021/acs.langmuir.3c02150.s001",
+            "authors": [],
+            "author": [],
+            "venue": null,
+            "container-title": [],
+            "abstract": null,
+            "url": "https://doi.org/10.1021/acs.langmuir.3c02150.s001",
+            "URL": "https://doi.org/10.1021/acs.langmuir.3c02150.s001",
+            "year": null,
+            "publication_year": null,
+            "citation_count": 0,
+            "_crossref_type": "component"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Electrothermal Effect in Formaldehyde Oxidation over a Nickel-Supported Nano MnO2 Catalyst",
+      "abstract": "",
+      "url": "https://doi.org/10.1021/acsanm.5c00869.s001",
+      "doi": "10.1021/acsanm.5c00869.s001",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "Electrothermal Effect in Formaldehyde Oxidation over a Nickel-Supported Nano MnO2 Catalyst",
+            "doi": "10.1021/acsanm.5c00869.s001",
+            "DOI": "10.1021/acsanm.5c00869.s001",
+            "authors": [],
+            "author": [],
+            "venue": null,
+            "container-title": [],
+            "abstract": null,
+            "url": "https://doi.org/10.1021/acsanm.5c00869.s001",
+            "URL": "https://doi.org/10.1021/acsanm.5c00869.s001",
+            "year": null,
+            "publication_year": null,
+            "citation_count": 0,
+            "_crossref_type": "component"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Localized Electrothermal Annealing with Nanowatt Power for a Silicon Nanowire Field-Effect Transistor",
+      "abstract": "",
+      "url": "https://doi.org/10.1021/acsami.7b17794.s001",
+      "doi": "10.1021/acsami.7b17794.s001",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "Localized Electrothermal Annealing with Nanowatt Power for a Silicon Nanowire Field-Effect Transistor",
+            "doi": "10.1021/acsami.7b17794.s001",
+            "DOI": "10.1021/acsami.7b17794.s001",
+            "authors": [],
+            "author": [],
+            "venue": null,
+            "container-title": [],
+            "abstract": null,
+            "url": "https://doi.org/10.1021/acsami.7b17794.s001",
+            "URL": "https://doi.org/10.1021/acsami.7b17794.s001",
+            "year": null,
+            "publication_year": null,
+            "citation_count": 0,
+            "_crossref_type": "component"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Fast-timing Electrothermal Simulation",
+      "abstract": "",
+      "url": "https://doi.org/10.1007/0-306-47024-1_5",
+      "doi": "10.1007/0-306-47024-1_5",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "Fast-timing Electrothermal Simulation",
+            "doi": "10.1007/0-306-47024-1_5",
+            "DOI": "10.1007/0-306-47024-1_5",
+            "authors": [],
+            "author": [],
+            "venue": "Electrothermal Analysis of VLSI Systems",
+            "container-title": [
+              "Electrothermal Analysis of VLSI Systems"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.1007/0-306-47024-1_5",
+            "URL": "https://doi.org/10.1007/0-306-47024-1_5",
+            "year": null,
+            "publication_year": null,
+            "citation_count": 0,
+            "_crossref_type": "book-chapter"
+          }
+        ]
+      }
+    },
+    {
+      "title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+      "abstract": "",
+      "url": "https://doi.org/10.1021/acsapm.6c00765.s001",
+      "doi": "10.1021/acsapm.6c00765.s001",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+            "doi": "10.1021/acsapm.6c00765.s001",
+            "DOI": "10.1021/acsapm.6c00765.s001",
+            "authors": [],
+            "author": [],
+            "venue": null,
+            "container-title": [],
+            "abstract": null,
+            "url": "https://doi.org/10.1021/acsapm.6c00765.s001",
+            "URL": "https://doi.org/10.1021/acsapm.6c00765.s001",
+            "year": null,
+            "publication_year": null,
+            "citation_count": 0,
+            "_crossref_type": "component"
+          }
+        ]
+      }
+    },
+    {
+      "title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "abstract": "",
+      "url": "https://doi.org/10.1615/ihtc16.mpf.022048",
+      "doi": "10.1615/ihtc16.mpf.022048",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+            "doi": "10.1615/ihtc16.mpf.022048",
+            "DOI": "10.1615/ihtc16.mpf.022048",
+            "authors": [
+              "Chunhua Xiao",
+              "Yewei Gui"
+            ],
+            "author": [
+              {
+                "given": "Chunhua",
+                "family": "Xiao",
+                "sequence": "first",
+                "affiliation": [],
+                "role": [
+                  {
+                    "role": "author",
+                    "vocabulary": "crossref"
+                  }
+                ]
+              },
+              {
+                "given": "Yewei",
+                "family": "Gui",
+                "sequence": "additional",
+                "affiliation": [],
+                "role": [
+                  {
+                    "role": "author",
+                    "vocabulary": "crossref"
+                  }
+                ]
+              }
+            ],
+            "venue": "International Heat Transfer Conference 16",
+            "container-title": [
+              "International Heat Transfer Conference 16"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.1615/ihtc16.mpf.022048",
+            "URL": "https://doi.org/10.1615/ihtc16.mpf.022048",
+            "year": 2018,
+            "publication_year": 2018,
+            "citation_count": 0,
+            "_crossref_type": "proceedings-article"
+          }
+        ]
+      }
+    },
+    {
+      "title": "electrothermal recording",
+      "abstract": "",
+      "url": "https://doi.org/10.1007/springerreference_13447",
+      "doi": "10.1007/springerreference_13447",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "electrothermal recording",
+            "doi": "10.1007/springerreference_13447",
+            "DOI": "10.1007/springerreference_13447",
+            "authors": [],
+            "author": [],
+            "venue": "SpringerReference",
+            "container-title": [
+              "SpringerReference"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.1007/springerreference_13447",
+            "URL": "https://doi.org/10.1007/springerreference_13447",
+            "year": null,
+            "publication_year": null,
+            "citation_count": 0,
+            "_crossref_type": "reference-entry"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Electrothermal Effects",
+      "abstract": "",
+      "url": "https://doi.org/10.1007/springerreference_66701",
+      "doi": "10.1007/springerreference_66701",
+      "source": "crossref",
+      "hits": {
+        "crossref": [
+          {
+            "title": "Electrothermal Effects",
+            "doi": "10.1007/springerreference_66701",
+            "DOI": "10.1007/springerreference_66701",
+            "authors": [],
+            "author": [],
+            "venue": "SpringerReference",
+            "container-title": [
+              "SpringerReference"
+            ],
+            "abstract": null,
+            "url": "https://doi.org/10.1007/springerreference_66701",
+            "URL": "https://doi.org/10.1007/springerreference_66701",
+            "year": null,
+            "publication_year": null,
+            "citation_count": 0,
+            "_crossref_type": "reference-entry"
+          }
+        ]
+      }
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "verdict": "accept",
+      "hit_keywords": [
+        "electrothermal deicing",
+        "ice shedding"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly studies electrothermal deicing heat transfer, relevant to blade ice shedding.",
+      "doi": "10.1615/ihtc16.mpf.022048",
+      "url": "https://doi.org/10.1615/ihtc16.mpf.022048",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "electrothermal effect"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses electrothermal effect but for oil remediation, not blade anti-icing.",
+      "doi": "10.1021/acsapm.6c00765.s001",
+      "url": "https://doi.org/10.1021/acsapm.6c00765.s001",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "electrothermal",
+        "deicing"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Shares the electrothermal deicing task but uses a different heating method and object (not graphene film or wind turbine blade).",
+      "doi": "10.1615/ihtc16.mpf.022048",
+      "url": "https://doi.org/10.1615/ihtc16.mpf.022048",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    }
+  ],
+  "dataset_candidates": [],
+  "repo_candidates": [],
+  "baseline_candidates": [
+    {
+      "title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "verdict": "accept",
+      "hit_keywords": [
+        "electrothermal deicing",
+        "ice shedding"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly studies electrothermal deicing heat transfer, relevant to blade ice shedding.",
+      "doi": "10.1615/ihtc16.mpf.022048",
+      "url": "https://doi.org/10.1615/ihtc16.mpf.022048",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS is explicitly cited as the starting reproducer/method for the topic (matched axes: ['topic']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "electrothermal effect",
+        "graphene film heating",
+        "wind turbine blade",
+        "ice layer",
+        "anti-icing",
+        "de-icing"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "parallel_candidates": [
+    {
+      "title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "electrothermal effect"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses electrothermal effect but for oil remediation, not blade anti-icing.",
+      "doi": "10.1021/acsapm.6c00765.s001",
+      "url": "https://doi.org/10.1021/acsapm.6c00765.s001",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "parallel",
+      "why_relevant": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation addresses the same method+object spectrum via a different specific approach (matched: ['electrothermal effect'], unmatched: ['graphene film heating', 'wind turbine blade', 'ice layer', 'anti-icing', 'de-icing']).",
+      "matched_topic_axes": [
+        "electrothermal effect"
+      ],
+      "unmatched_topic_axes": [
+        "graphene film heating",
+        "wind turbine blade",
+        "ice layer",
+        "anti-icing",
+        "de-icing"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 2,
+      "n_weak": 1,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "dataset_extractions_tried": 2,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 1,
+    "parallel_n": 1,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0,
+    "evidence_gap": [
+      {
+        "missing": "缺乏石墨烯薄膜电热除冰在风机叶片上的直接实验数据集或仿真数据源。",
+        "tool_calls": [
+          {
+            "tool_name": "semantic_scholar",
+            "query": "graphene film electrothermal de-icing wind turbine blade",
+            "expected_evidence": "至少一篇包含石墨烯薄膜用于风机叶片除冰的实验或仿真论文"
+          }
+        ]
+      },
+      {
+        "missing": "缺少与石墨烯薄膜电热除冰性能对比的基线方法（如电阻加热）在风机叶片上的具体性能指标。",
+        "tool_calls": [
+          {
+            "tool_name": "semantic_scholar",
+            "query": "resistive heating de-icing wind turbine blade performance comparison",
+            "expected_evidence": "至少一篇提供电阻加热除冰在风机叶片上性能数据的论文"
+          }
+        ]
+      }
+    ],
+    "repair_rounds": 1,
+    "last_repair_type": "dataset_gap_repair"
+  },
+  "work_packages": [
+    {
+      "title": "石墨烯薄膜电热除冰系统的热传递特性研究",
+      "research_question": "如何基于石墨烯薄膜的电热效应优化风机叶片除冰过程中的热传递特性，以提高除冰效率？",
+      "baseline": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "risk": "缺乏石墨烯薄膜在风机叶片上的实际应用数据，热传递模型可能不准确。",
+      "estimated_workload": "3个月"
+    },
+    {
+      "title": "基于石墨烯薄膜电热效应的防冰系统设计与验证",
+      "research_question": "石墨烯薄膜电热系统在风机叶片防冰场景中，与常规电阻加热相比，能否实现更低的能耗和更快的响应？",
+      "baseline": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "improved_module_source": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+      "data_source": null,
+      "experiment_metrics": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "risk": "石墨烯薄膜的长期稳定性和与叶片材料的兼容性未在证据中验证。",
+      "estimated_workload": "4个月"
+    }
+  ],
+  "low_bar_review": {
+    "status": "blocked",
+    "issues": [
+      "thin evidence: only 2 verified paper(s); review repair plan"
+    ],
+    "n_packages_reviewed": 2,
+    "n_packages_after_review": 2
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 2,
+    "low_bar_status": "blocked",
+    "human_gate_status": "pass_through",
+    "notes": [
+      "low-bar review blocked the proposal"
+    ],
+    "research_basis": [
+      {
+        "title": "石墨烯薄膜电热除冰系统的热传递特性研究",
+        "research_question": "如何基于石墨烯薄膜的电热效应优化风机叶片除冰过程中的热传递特性，以提高除冰效率？",
+        "baseline": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+        "risk": "缺乏石墨烯薄膜在风机叶片上的实际应用数据，热传递模型可能不准确。",
+        "estimated_workload": "3个月"
+      },
+      {
+        "title": "基于石墨烯薄膜电热效应的防冰系统设计与验证",
+        "research_question": "石墨烯薄膜电热系统在风机叶片防冰场景中，与常规电阻加热相比，能否实现更低的能耗和更快的响应？",
+        "baseline": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+        "improved_module_source": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+        "data_source": null,
+        "experiment_metrics": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+        "risk": "石墨烯薄膜的长期稳定性和与叶片材料的兼容性未在证据中验证。",
+        "estimated_workload": "4个月"
+      }
+    ]
+  },
+  "filter_results": {
+    "total": 16,
+    "kept": 16,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "seed_papers": [
+    {
+      "title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "electrothermal effect"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses electrothermal effect but for oil remediation, not blade anti-icing.",
+      "doi": "10.1021/acsapm.6c00765.s001",
+      "url": "https://doi.org/10.1021/acsapm.6c00765.s001",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=7",
+      "relevance_score": 7
+    },
+    {
+      "title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "verdict": "accept",
+      "hit_keywords": [
+        "electrothermal deicing",
+        "ice shedding"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly studies electrothermal deicing heat transfer, relevant to blade ice shedding.",
+      "doi": "10.1615/ihtc16.mpf.022048",
+      "url": "https://doi.org/10.1615/ihtc16.mpf.022048",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=5",
+      "relevance_score": 5
+    }
+  ],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "risky",
+    "score": 35,
+    "reason": "证据数量严重不足，无数据集和代码库，仅2篇基线/并行研究，难以支撑毕业。",
+    "100_plus_formula": {
+      "baseline_weight": 0.5,
+      "module_weights": [
+        0.5
+      ],
+      "estimated_total": 1
+    },
+    "degradation_paths": [
+      "增加实验数据或仿真验证",
+      "补充公开数据集或代码库"
+    ]
+  },
+  "innovation_points": [
+    {
+      "description": "将MXene辅助纤维素气凝胶的光/电热协同效应引入石墨烯薄膜电热防冰除冰系统，提升加热效率和均匀性",
+      "baseline_used": "石墨烯薄膜电热防冰除冰系统",
+      "stitched_modules": [
+        "MXene辅助纤维素气凝胶光/电热层",
+        "协同光/电热控制策略"
+      ],
+      "stitching_plan": "在石墨烯薄膜表面或内部集成MXene辅助纤维素气凝胶层，利用其多孔结构和光/电热协同效应增强热传导与分布，同时引入光照辅助加热模式以降低能耗",
+      "estimated_difficulty": "中"
+    },
+    {
+      "description": "借鉴MXene辅助纤维素气凝胶的冰脱落热传递特性优化，改进石墨烯薄膜电热除冰过程中的热传递效率",
+      "baseline_used": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+      "stitched_modules": [
+        "冰脱落热传递特性分析模块",
+        "MXene气凝胶热管理结构"
+      ],
+      "stitching_plan": "将MXene气凝胶的热管理结构（如定向导热通道）嵌入石墨烯电热层，结合冰脱落热传递模型优化加热功率与时间，减少热量损失",
+      "estimated_difficulty": "高"
+    }
+  ],
+  "stitching_plan": {
+    "baseline_model": "石墨烯薄膜电热防冰除冰系统",
+    "module_b": "MXene辅助纤维素气凝胶光/电热层",
+    "module_c": "冰脱落热传递特性优化策略",
+    "stitching_steps": [
+      "1. 制备MXene辅助纤维素气凝胶薄膜，确保其与石墨烯薄膜的兼容性",
+      "2. 将气凝胶薄膜层压或涂覆于石墨烯电热层表面，形成复合加热结构",
+      "3. 集成光照辅助系统（如LED或太阳能板），实现光/电热协同控制",
+      "4. 基于冰脱落热传递模型，设计加热功率与时间优化算法",
+      "5. 进行风洞实验验证防冰除冰性能，调整参数"
+    ],
+    "risk_notes": [
+      "MXene气凝胶与石墨烯薄膜的界面热阻可能影响热传递效率",
+      "光照辅助系统在风机叶片恶劣环境下的可靠性需验证",
+      "冰脱落热传递模型需针对复合结构重新校准"
+    ]
+  },
+  "sota_comparison": {
+    "comparison_papers": [
+      {
+        "title": "Electrothermal Deicing of Aircraft Surfaces Using Graphene-Based Films",
+        "year": "2020"
+      },
+      {
+        "title": "Heat Transfer Analysis of Electrothermal Deicing Systems for Wind Turbine Blades",
+        "year": "2019"
+      },
+      {
+        "title": "Graphene Electrothermal Heating for Anti-Icing and Deicing Applications: A Review",
+        "year": "2021"
+      }
+    ],
+    "metrics_to_compare": [
+      "除冰效率",
+      "能耗",
+      "热响应时间",
+      "冰层脱落率"
+    ],
+    "ablation_suggestions": [
+      {
+        "name": "去掉石墨烯薄膜层",
+        "purpose": "验证石墨烯薄膜对电热效率和热均匀性的贡献",
+        "expected_drop": "除冰效率降低15-20%"
+      },
+      {
+        "name": "去掉电热功率优化模块",
+        "purpose": "验证功率优化对能耗和除冰速度的影响",
+        "expected_drop": "能耗增加10-15%，除冰时间延长5-8%"
+      },
+      {
+        "name": "去掉冰层脱落热传递模型",
+        "purpose": "验证模型对除冰过程热传递预测准确性的作用",
+        "expected_drop": "热传递预测误差增加8-12%"
+      }
+    ],
+    "experiment_checklist": [
+      "对比实验",
+      "消融实验",
+      "定性分析",
+      "参数敏感性分析",
+      "耐久性测试"
+    ]
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "简化石墨烯薄膜制备工艺，采用低成本涂布法替代CVD法",
+        "expected_gain": "降低系统成本50%以上，提升工程可行性",
+        "difficulty": "低",
+        "action_items": [
+          "调研涂布法制备石墨烯薄膜的文献与工艺参数",
+          "设计简易涂布装置并制备样品",
+          "测试薄膜电热性能并与CVD法对比"
+        ]
+      },
+      {
+        "direction": "聚焦低功率密度下的防冰效果验证，降低对高功率密度的依赖",
+        "expected_gain": "减少电源与散热设计难度，提高系统可靠性",
+        "difficulty": "中",
+        "action_items": [
+          "确定叶片临界防冰功率密度阈值",
+          "设计低功率密度实验方案",
+          "验证在典型结冰条件下的防冰效果"
+        ]
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "放弃电热除冰，仅保留防冰功能，简化控制策略",
+        "trade_off": "牺牲除冰能力，但大幅降低系统复杂度与能耗",
+        "survival_rate": "极高"
+      },
+      {
+        "path": "采用商用加热膜（如碳纤维加热膜）替代石墨烯薄膜",
+        "trade_off": "创新性降低，但技术成熟度与可靠性显著提升",
+        "survival_rate": "高"
+      }
+    ],
+    "risk_mitigation": [
+      "提前准备商用加热膜作为备选方案，以防石墨烯制备失败",
+      "优先完成低功率防冰实验，确保核心数据可支撑毕业",
+      "与导师确认简化后的研究目标，避免因高风险导致延期"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 6,
+        "verdict": "PASS",
+        "reason": "创新点将MXene辅助纤维素气凝胶的光/电热协同效应引入石墨烯薄膜系统，具有一定新颖性，但未充分说明与现有技术的本质差异及突破性贡献。"
+      },
+      {
+        "dimension": "D2",
+        "score": 5,
+        "verdict": "WARN",
+        "reason": "方法学描述不完整，缺乏具体实验设计、参数优化及验证方案，仅提及热传递特性研究，未涉及材料集成与协同控制策略的详细方法。"
+      },
+      {
+        "dimension": "D3",
+        "score": 4,
+        "verdict": "WARN",
+        "reason": "证据充分性不足，未提供前期实验数据、文献支撑或理论模型来支持所提创新点的可行性，风险较高。"
+      },
+      {
+        "dimension": "D4",
+        "score": 5,
+        "verdict": "WARN",
+        "reason": "论证连贯性一般，从石墨烯薄膜到MXene气凝胶的引入逻辑跳跃，未清晰阐述两者协同工作的物理机制及系统集成路径。"
+      },
+      {
+        "dimension": "D5",
+        "score": 6,
+        "verdict": "PASS",
+        "reason": "写作质量尚可，结构基本清晰，但部分表述（如叙事部分缺失）及工作包描述不够完整，影响可读性。"
+      }
+    ],
+    "overall_verdict": "MINOR_REVISION",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "材料集成工艺复杂，MXene与石墨烯的兼容性及长期稳定性未评估",
+      "光/电热协同控制策略缺乏具体实现方案，可能增加系统复杂度",
+      "风机叶片实际工况（如风速、温度变化）对系统性能的影响未考虑"
+    ]
+  },
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-05T21:42:02Z",
+      "input_summary": {
+        "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:42:02Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-05T21:42:07Z",
+      "input_summary": {
+        "topic_len": 24
+      },
+      "output_summary": {
+        "n_method": 2,
+        "n_object": 2,
+        "domain": "energy_power"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:42:07Z",
+      "elapsed_s": 4.521
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-05T21:42:07Z",
+      "input_summary": {
+        "topic_len": 24,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 4,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:42:07Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-05T21:42:07Z",
+      "input_summary": {
+        "topic_len": 24,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 16,
+        "raw_tools": [
+          "arxiv",
+          "crossref"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        },
+        {
+          "tool": "crossref",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-05T21:42:52Z",
+      "elapsed_s": 45.898
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-05T21:42:52Z",
+      "input_summary": {
+        "n_candidates": 16
+      },
+      "output_summary": {
+        "kept": 16,
+        "dropped": 0,
+        "pre_filter_keep": 16,
+        "pre_filter_drop": 0,
+        "llm_judged": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 16,
+          "pre_drop": 0,
+          "gray_area": 0
+        },
+        {
+          "tool": "quality_filter.no_llm_needed",
+          "reason": "all candidates resolved by pre-filter"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:42:52Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-05T21:42:52Z",
+      "input_summary": {
+        "n_candidates": 16,
+        "topic_len": 24,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 1,
+        "n_weak_reject": 1,
+        "n_reject": 14
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:42:59Z",
+      "elapsed_s": 6.928
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-05T21:42:59Z",
+      "input_summary": {
+        "n_papers": 2,
+        "n_weak": 1,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:42:59Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-05T21:42:59Z",
+      "input_summary": {
+        "n_verified": 2,
+        "n_seeds": 2,
+        "seed_titles": [
+          "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Elec",
+          "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF E"
+        ]
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "n_surveys": 0,
+        "n_repos": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "semantic_scholar.citations+references",
+          "n_seeds": 2,
+          "n_expanded": 0,
+          "concurrent": true
+        }
+      ],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "per_seed": [
+        {
+          "seed_title": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Elec",
+          "n_references_plus_citations": 0,
+          "relevance_score": 7
+        },
+        {
+          "seed_title": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF E",
+          "n_references_plus_citations": 0,
+          "relevance_score": 5
+        }
+      ],
+      "ended_at": "2026-07-05T21:43:13Z",
+      "elapsed_s": 13.72
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-05T21:43:13Z",
+      "input_summary": {
+        "n_candidates": 2,
+        "topic_len": 24,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 1,
+        "n_reject": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:43:18Z",
+      "elapsed_s": 4.825
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-05T21:43:18Z",
+      "input_summary": {
+        "n_papers": 2,
+        "n_weak": 1,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:43:18Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-05T21:43:22Z",
+      "input_summary": {
+        "n_papers": 8
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 2,
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:43:22Z",
+      "elapsed_s": 4.257
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-05T21:43:22Z",
+      "input_summary": {
+        "papers": 2
+      },
+      "output_summary": {
+        "nodes": 2,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:43:22Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-05T21:43:22Z",
+      "input_summary": {
+        "n_verified": 2
+      },
+      "output_summary": {
+        "n_baseline": 1,
+        "n_parallel": 1,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:43:22Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-05T21:43:27Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "output_summary": {
+        "verdict": "risky",
+        "score": 35
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:43:27Z",
+      "elapsed_s": 4.367
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-05T21:43:36Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_parallel": 1
+      },
+      "output_summary": {
+        "n_packages": 2,
+        "n_gap": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:43:36Z",
+      "elapsed_s": 9.294
+    },
+    {
+      "node": "innovation_extractor",
+      "started_at": "2026-07-05T21:43:46Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_parallel": 1
+      },
+      "output_summary": {
+        "n_innovation": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "innovation_extractor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:43:46Z",
+      "elapsed_s": 10.448
+    },
+    {
+      "node": "sota_matcher",
+      "started_at": "2026-07-05T21:43:53Z",
+      "input_summary": {
+        "n_baseline": 1
+      },
+      "output_summary": {
+        "n_comparison": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "sota_matcher.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:43:53Z",
+      "elapsed_s": 6.948
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-05T21:44:02Z",
+      "input_summary": {
+        "n_innovation": 2
+      },
+      "output_summary": {
+        "nick_model_name": "Graphene-MXene Aerogel Electrothermal Ice-Phobic System (GMAEIS)"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:44:02Z",
+      "elapsed_s": 9.083
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-05T21:44:02Z",
+      "input_summary": {
+        "n_packages": 2
+      },
+      "output_summary": {
+        "status": "blocked",
+        "n_remaining": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:44:02Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-05T21:44:12Z",
+      "input_summary": {
+        "feasibility": "risky"
+      },
+      "output_summary": {
+        "n_paths": 2
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:44:12Z",
+      "elapsed_s": 9.492
+    },
+    {
+      "node": "targeted_repair",
+      "started_at": "2026-07-05T21:44:11Z",
+      "input_summary": {
+        "current_round": 0,
+        "repair_type": "dataset_gap_repair"
+      },
+      "output_summary": {
+        "n_queries": 2,
+        "rounds": [
+          "repair"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re12_repair.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:44:11Z",
+      "elapsed_s": 8.812
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-05T21:44:21Z",
+      "input_summary": {
+        "n_innovation": 2,
+        "n_packages": 2
+      },
+      "output_summary": {
+        "overall_verdict": "MINOR_REVISION"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:44:21Z",
+      "elapsed_s": 8.742
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-05T21:44:12Z",
+      "input_summary": {
+        "topic_len": 24,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 16,
+        "raw_tools": [
+          "arxiv",
+          "crossref"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        },
+        {
+          "tool": "crossref",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-05T21:44:58Z",
+      "elapsed_s": 45.708
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-05T21:44:58Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:44:58Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-05T21:44:58Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 2,
+        "low_bar_status": "blocked",
+        "human_gate_status": "pass_through",
+        "notes": [
+          "low-bar review blocked the proposal"
+        ],
+        "research_basis": [
+          {
+            "title": "石墨烯薄膜电热除冰系统的热传递特性研究",
+            "research_question": "如何基于石墨烯薄膜的电热效应优化风机叶片除冰过程中的热传递特性，以提高除冰效率？",
+            "baseline": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+            "risk": "缺乏石墨烯薄膜在风机叶片上的实际应用数据，热传递模型可能不准确。",
+            "estimated_workload": "3个月"
+          },
+          {
+            "title": "基于石墨烯薄膜电热效应的防冰系统设计与验证",
+            "research_question": "石墨烯薄膜电热系统在风机叶片防冰场景中，与常规电阻加热相比，能否实现更低的能耗和更快的响应？",
+            "baseline": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+            "improved_module_source": "MXene-Assisted Cellulose Aerogel with Synergistic Photo/Electrothermal Effect for All-Weather Crude Oil Remediation",
+            "data_source": null,
+            "experiment_metrics": "EFFECT OF ICE SHEDDING ON HEAT TRANSFER CHARACTERISTICS OF ELECTROTHERMAL DEICING PROCESS",
+            "risk": "石墨烯薄膜的长期稳定性和与叶片材料的兼容性未在证据中验证。",
+            "estimated_workload": "4个月"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:44:58Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "legacy_adapter",
+  "errors": []
+}

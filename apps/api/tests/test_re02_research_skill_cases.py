@@ -9,7 +9,6 @@ D. Multi-temporal remote-sensing crop
 
 from __future__ import annotations
 
-import os
 
 import pytest
 

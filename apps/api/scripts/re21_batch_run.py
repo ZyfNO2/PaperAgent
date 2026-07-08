@@ -1,5 +1,9 @@
 """Re2.1 batch run script — same as re15 but outputs to tmp_re21_eval."""
-import argparse, json, os, sys, time
+import argparse
+import json
+import os
+import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
@@ -146,7 +150,7 @@ def main():
                'n_has_final': n_final, 'results': results}
     sp = Path(out_base) / f'summary_{args.provider}.json'
     sp.write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str), encoding='utf-8')
-    print(f"\n=== Summary ===")
+    print("\n=== Summary ===")
     print(f"Total: {len(results)}, Done: {n_done}, Has final: {n_final}")
     print(f"Saved to: {sp}")
 

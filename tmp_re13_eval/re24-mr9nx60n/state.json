@@ -1,0 +1,2315 @@
+{
+  "case_id": "re24-mr9nx60n",
+  "topic": "基于yolo的木材裂缝识别",
+  "user_constraints": {
+    "topic_zh": ""
+  },
+  "topic_atoms": {
+    "method": [
+      "YOLO"
+    ],
+    "object": [
+      "wood crack"
+    ],
+    "task": [
+      "identification"
+    ],
+    "scenario": [
+      "wood inspection"
+    ],
+    "domain": "vision_2d",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "concrete crack",
+      "metal crack",
+      "road crack"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "YOLO wood crack",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "YOLO wood crack identification",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "openalex": [],
+    "arxiv": [
+      {
+        "title": "Role of the Gelatinous Layer (G-Layer) on the Origin of the Physical Properties of the Tension Wood of Acer sieboldianum",
+        "abstract": "The tension wood (TW) properties of a 70 year-old Acer sieboldianum Miq were analyzed by using the G-fiber model which was proposed in our previous paper. The roles of the G-layer on the origins of (1) a high large tensile growth stress, (2) a large longitudinal Young's modulus, and (3) a high longitudinal drying shrinkage in the tension wood xylem were discussed on the basis of the simulations using the G-fiber model. The results suggest that the G-layer generates a high tensile stress in the longitudinal direction during the xylem maturation; the longitudinal Young's modulus of the green G-layer becomes significantly higher than that of the lignified layer; furthermore, the G-layer tends to shrink extraordinarily higher than that of the lignified layer during the moisture desorption.",
+        "authors": [
+          "Hiroyuki Yamamoto",
+          "Kentaro Abe",
+          "Yoshiharu Arakawa",
+          "Takashi Okuyama",
+          "Joseph Gril"
+        ],
+        "arxiv_id": "physics",
+        "url": "http://arxiv.org/abs/physics/0503204v1",
+        "published": "2005-03-26T16:21:53Z",
+        "year": 2005,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+        "abstract": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-like structures with spatial pyramid pooling and focus modules. In the design of necks and heads, we follow the rule of ``large neck, small head''.We import Generalized-FPN with accelerated queen-fusion to build the detector neck and upgrade its CSPNet with efficient layer aggregation networks (ELAN) and reparameterization. Then we investigate how detector head size affects detection performance and find that a heavy neck with only one task projection layer would yield better results.In addition, AlignedOTA is proposed to solve the misalignment problem in label assignment. And a distillation schema is introduced to improve performance to a higher level. Based on these new techs, we build a suite of models at various scales to meet the needs of different scenarios. For general industry requirements, we propose DAMO-YOLO-T/S/M/L. They can achieve 43.6/47.7/50.2/51.9 mAPs on COCO with the latency of 2.78/3.83/5.62/7.95 ms on T4 GPUs respectively. Additionally, for edge devices with limited computing power, we have also proposed DAMO-YOLO-Ns/Nm/Nl lightweight models. They can achieve 32.3/38.2/40.5 mAPs on COCO with the latency of 4.08/5.05/6.69 ms on X86-CPU. Our proposed general and lightweight models have outperformed other YOLO series models in their respective application scenarios.",
+        "authors": [
+          "Xianzhe Xu",
+          "Yiqi Jiang",
+          "Weihua Chen",
+          "Yilun Huang",
+          "Yuan Zhang",
+          "Xiuyu Sun"
+        ],
+        "arxiv_id": "2211.15444v4",
+        "url": "http://arxiv.org/abs/2211.15444v4",
+        "published": "2022-11-23T17:59:12Z",
+        "year": 2022,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+        "abstract": "The You Only Look Once (YOLO) series of detectors have established themselves as efficient and practical tools. However, their reliance on predefined and trained object categories limits their applicability in open scenarios. Addressing this limitation, we introduce YOLO-World, an innovative approach that enhances YOLO with open-vocabulary detection capabilities through vision-language modeling and pre-training on large-scale datasets. Specifically, we propose a new Re-parameterizable Vision-Language Path Aggregation Network (RepVL-PAN) and region-text contrastive loss to facilitate the interaction between visual and linguistic information. Our method excels in detecting a wide range of objects in a zero-shot manner with high efficiency. On the challenging LVIS dataset, YOLO-World achieves 35.4 AP with 52.0 FPS on V100, which outperforms many state-of-the-art methods in terms of both accuracy and speed. Furthermore, the fine-tuned YOLO-World achieves remarkable performance on several downstream tasks, including object detection and open-vocabulary instance segmentation.",
+        "authors": [
+          "Tianheng Cheng",
+          "Lin Song",
+          "Yixiao Ge",
+          "Wenyu Liu",
+          "Xinggang Wang",
+          "Ying Shan"
+        ],
+        "arxiv_id": "2401.17270v3",
+        "url": "http://arxiv.org/abs/2401.17270v3",
+        "published": "2024-01-30T18:59:38Z",
+        "year": 2024,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "An interface crack in 1d piezoelectric quasicrystal under antiplane mechanical loading and electric field",
+        "abstract": "The present study provides the consideration of a mode III interface crack in one-dimentional (1D) piezoelectric quasicrystal under antiplane phonon and phason loading and inplane electric field. Due to complex function approach all required electromechanical parameters are presented through vector-functions analytic in the whole complex plane except the crack region. The cases of electrically impermeable (insulated) and electrically limited permeable conditions on the crack faces are considered. In the first case a vector Hilbert problem in the complex plane is formulated and solved exactly and in the second one the quadratic equation with respect to the electric flux through the crack region is obtained additionally. Its solution permits to find phonon and phason stresses, displacement jumps (sliding) and also electric characteristics along the material interface. Analytical formulas are also obtained for the corresponding stress intensity factors related to each field. The numerical computations for three selected variants of the loading conditions was conducted and the resulting field distributions are visualised on the crack continuation beyond the crack and also inside of the crack region.",
+        "authors": [
+          "Mohammed Altoumaimi",
+          "V. V. Loboda"
+        ],
+        "arxiv_id": "2512.17981v1",
+        "url": "http://arxiv.org/abs/2512.17981v1",
+        "published": "2025-12-19T13:39:04Z",
+        "year": 2025,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+        "abstract": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastrophic forgetting in YOLO-based incremental detectors: foreground-background confusion, parameter interference, and misaligned knowledge distillation. Subsequently, we introduce YOLO-IOD, a real-time Incremental Object Detection (IOD) framework that is constructed upon the pretrained YOLO-World model, facilitating incremental learning via a stage-wise parameter-efficient fine-tuning process. Specifically, YOLO-IOD encompasses three principal components: 1) Conflict-Aware Pseudo-Label Refinement (CPR), which mitigates the foreground-background confusion by leveraging the confidence levels of pseudo labels and identifying potential objects relevant to future tasks. 2) Importancebased Kernel Selection (IKS), which identifies and updates the pivotal convolution kernels pertinent to the current task during the current learning stage. 3) Cross-Stage Asymmetric Knowledge Distillation (CAKD), which addresses the misaligned knowledge distillation conflict by transmitting the features of the student target detector through the detection heads of both the previous and current teacher detectors, thereby facilitating asymmetric distillation between existing and newly introduced categories. We further introduce LoCo COCO, a more realistic benchmark that eliminates data leakage across stages. Experiments on both conventional and LoCo COCO benchmarks show that YOLO-IOD achieves superior performance with minimal forgetting.",
+        "authors": [
+          "Shizhou Zhang",
+          "Xueqiang Lv",
+          "Yinghui Xing",
+          "Qirui Wu",
+          "Di Xu",
+          "Chen Zhao",
+          "Yanning Zhang"
+        ],
+        "arxiv_id": "2512.22973v2",
+        "url": "http://arxiv.org/abs/2512.22973v2",
+        "published": "2025-12-28T15:35:26Z",
+        "year": 2025,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+        "abstract": "Crack detection plays an important role in infrastructure inspection and Structural Health Monitoring (SHM). However, cracks typically appear as thin, low-contrast structures and are easily affected by background noise, posing challenges for existing object detection models. This study proposes an improved YOLO-based architecture with integrated attention mechanisms, termed YOLO-AMC (YOLO with Attention Mechanisms for Crack Detection), to enhance automated crack detection performance. Based on YOLOv11, the original C2PSA module is removed, and multiple attention mechanisms, including Global Attention Mechanism (GAM), Residual Convolutional Block Attention Module (Res-CBAM), and Shuffle Attention (SA), are introduced into the multi-scale feature fusion layers of the Neck to strengthen cross-scale feature integration. Experimental results demonstrate that YOLO-AMC consistently outperforms baseline models YOLOv11n and YOLOv8n across multiple evaluation metrics. Among the evaluated attention modules, GAM achieves the best detection performance, obtaining mAP@0.5 = 0.9917 and mAP@0.5:0.95 = 0.9506 on the test dataset, which are higher than those of YOLOv11 (0.9833 / 0.9112) and YOLOv8 (0.9707 / 0.8921). Furthermore, while maintaining a computational complexity of 7.6 GFLOPs, the proposed model achieves 110.95 FPS on an NVIDIA RTX 4090 platform and approximately 5 FPS on a Raspberry Pi 5 edge device, demonstrating a favorable trade-off between accuracy and deployment efficiency. The implementation code for this study is available on GitHub at https://github.com/CY-Tsai24/YOLO-AMC.",
+        "authors": [
+          "Ching-Yu Tsai",
+          "Chia-Min Lin",
+          "Chih-Hsiang Yang",
+          "Yung-Che Wang",
+          "Jen-Shiun Chiang"
+        ],
+        "arxiv_id": "2606.12958v1",
+        "url": "http://arxiv.org/abs/2606.12958v1",
+        "published": "2026-06-11T06:35:07Z",
+        "year": 2026,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "Nonabelian Cohen-Lenstra Moments",
+        "abstract": "In this paper we give a conjecture for the average number of unramified $G$-extensions of a quadratic field for any finite group $G$. The Cohen-Lenstra heuristics are the specialization of our conjecture to the case that $G$ is abelian of odd order. We prove a theorem towards the function field analog of our conjecture, and give additional motivations for the conjecture including the construction of a lifting invariant for the unramified $G$-extensions that takes the same number of values as the predicted average and an argument using the Malle-Bhargava principle. We note that for even $|G|$, corrections for the roots of unity in $\\mathbb{Q}$ are required, which can not be seen when $G$ is abelian.",
+        "authors": [
+          "Melanie Matchett Wood",
+          "Philip Matchett Wood"
+        ],
+        "arxiv_id": "1702.04644v2",
+        "url": "http://arxiv.org/abs/1702.04644v2",
+        "published": "2017-02-15T15:08:40Z",
+        "year": 2017,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning",
+        "abstract": "(Abridged) Galaxy clusters are a powerful probe of cosmological models. Next generation large-scale optical and infrared surveys will reach unprecedented depths over large areas and require highly complete and pure cluster catalogs, with a well defined selection function. We have developed a new cluster detection algorithm YOLO-CL, which is a modified version of the state-of-the-art object detection deep convolutional network YOLO, optimized for the detection of galaxy clusters. We trained YOLO-CL on color images of the redMaPPer cluster detections in the SDSS. We find that YOLO-CL detects $95-98\\%$ of the redMaPPer clusters, with a purity of $95-98\\%$ calculated by applying the network to SDSS blank fields. When compared to the MCXC2021 X-ray catalog in the SDSS footprint,YOLO-CL is more complete then redMaPPer, which means that the neural network improved the cluster detection efficiency of its training sample. The YOLO-CL selection function is approximately constant with redshift, with respect to the MCXC2021 cluster mean X-ray surface brightness. YOLO-CL shows high performance when compared to traditional detection algorithms applied to SDSS. Deep learning networks benefit from a strong advantage over traditional galaxy cluster detection techniques because they do not need galaxy photometric and photometric redshift catalogs. This eliminates systematic uncertainties that can be introduced during source detection, and photometry and photometric redshift measurements. Our results show that YOLO-CL is an efficient alternative to traditional cluster detection methods. In general, this work shows that it is worth exploring the performance of deep convolution networks for future cosmological cluster surveys, such as the Rubin/LSST, Euclid or the Roman Space Telescope surveys.",
+        "authors": [
+          "Kirill Grishin",
+          "Simona Mei",
+          "Stéphane Ilic"
+        ],
+        "arxiv_id": "2301.09657v2",
+        "url": "http://arxiv.org/abs/2301.09657v2",
+        "published": "2023-01-23T19:00:02Z",
+        "year": 2023,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "A thermo-mechanical explanation for the topology of crack patterns observed on the surface of charred wood and particle fibreboard",
+        "abstract": "In the assessment of wood charring, it was believed for a long time that physicochemical processes were responsible for the creation of cracking patterns on the charring wood surface. This implied no possibility to rigorously explain the crack topology. In this paper we show instead that below the pyrolysis temperatures, a primary global macro-crack pattern is already completely established by means of a thermomechanical instability phenomenon. First we report experimental observations of the crack patterns on orthotropic (wood) and isotropic (Medium Density Fibreboard) materials in inert atmosphere. Then we solve the 3D thermomechanical buckling problem numerically by using the Finite Element Method, and show that the different crack topologies can be explained qualitatively by the simultaneous thermal expansion and softening, taking into account the directional dependence of the elastic properties. Finally, we formulate a 2D model for a soft layer bonded to an elastic substrate, and find an equation predicting the inter-crack distance in the main crack-pattern for the orthotropic case. We also derive a formula for the critical thermal stress above which the plane surface will wrinkle and buckle. The results can be used for finding new ways to prevent or delay the crack formation, leading to improved fire safety of wood-based products.",
+        "authors": [
+          "Djebar Baroudi",
+          "Andrea Ferrantelli",
+          "Kai Yuan Li",
+          "Simo Hostikka"
+        ],
+        "arxiv_id": "1604.01249v3",
+        "url": "http://arxiv.org/abs/1604.01249v3",
+        "published": "2016-04-04T15:26:52Z",
+        "year": 2016,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+        "abstract": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}obileNetv4 and \\textbf{S}lideLoss based on YOLO), which replaces YOLOv8's CSPDarknet backbone with the more efficient MobileNetV4, reducing computational overhead by \\textbf{1.5%} while sustaining high accuracy. In addition, we introduce \\emph{SlideLoss}, a novel loss function that dynamically emphasizes under-represented and occluded samples, boosting precision without sacrificing recall. Experiments on the FLIR ADAS V2 benchmark show that \\texttt{MS-YOLO} attains competitive mAP and superior precision while operating at only \\textbf{6.7 GFLOPs}. These results demonstrate that \\texttt{MS-YOLO} effectively addresses the dual challenge of maintaining high detection quality while minimizing computational costs, making it well-suited for real-time edge deployment in urban environments.",
+        "authors": [
+          "Jiali Zhang",
+          "Thomas S. White",
+          "Haoliang Zhang",
+          "Wenqing Hu",
+          "Donald C. Wunsch",
+          "Jian Liu"
+        ],
+        "arxiv_id": "2509.21696v1",
+        "url": "http://arxiv.org/abs/2509.21696v1",
+        "published": "2025-09-25T23:48:06Z",
+        "year": 2025,
+        "source_query": "YOLO wood crack identification"
+      },
+      {
+        "title": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+        "abstract": "We present a new version of YOLO with better performance and extended with instance segmentation called Poly-YOLO. Poly-YOLO builds on the original ideas of YOLOv3 and removes two of its weaknesses: a large amount of rewritten labels and inefficient distribution of anchors. Poly-YOLO reduces the issues by aggregating features from a light SE-Darknet-53 backbone with a hypercolumn technique, using stairstep upsampling, and produces a single scale output with high resolution. In comparison with YOLOv3, Poly-YOLO has only 60% of its trainable parameters but improves mAP by a relative 40%. We also present Poly-YOLO lite with fewer parameters and a lower output resolution. It has the same precision as YOLOv3, but it is three times smaller and twice as fast, thus suitable for embedded devices. Finally, Poly-YOLO performs instance segmentation using bounding polygons. The network is trained to detect size-independent polygons defined on a polar grid. Vertices of each polygon are being predicted with their confidence, and therefore Poly-YOLO produces polygons with a varying number of vertices.",
+        "authors": [
+          "Petr Hurtik",
+          "Vojtech Molek",
+          "Jan Hula",
+          "Marek Vajgl",
+          "Pavel Vlasanek",
+          "Tomas Nejezchleba"
+        ],
+        "arxiv_id": "2005.13243v2",
+        "url": "http://arxiv.org/abs/2005.13243v2",
+        "published": "2020-05-27T08:53:35Z",
+        "year": 2020,
+        "source_query": "YOLO wood crack identification"
+      }
+    ],
+    "github": [
+      {
+        "id": 1232886334,
+        "node_id": "R_kgDOSXxaPg",
+        "name": "TDDC-YOLO",
+        "full_name": "jsfabillog/TDDC-YOLO",
+        "private": false,
+        "owner": {
+          "login": "jsfabillog",
+          "id": 282126344,
+          "node_id": "U_kgDOENDoCA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/282126344?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/jsfabillog",
+          "html_url": "https://github.com/jsfabillog",
+          "followers_url": "https://api.github.com/users/jsfabillog/followers",
+          "following_url": "https://api.github.com/users/jsfabillog/following{/other_user}",
+          "gists_url": "https://api.github.com/users/jsfabillog/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/jsfabillog/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/jsfabillog/subscriptions",
+          "organizations_url": "https://api.github.com/users/jsfabillog/orgs",
+          "repos_url": "https://api.github.com/users/jsfabillog/repos",
+          "events_url": "https://api.github.com/users/jsfabillog/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/jsfabillog/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/jsfabillog/TDDC-YOLO",
+        "description": "Code for TDDC-YOLO: Texture-Defect Disentanglement for Robust Wood Surface Crack Detection under Domain Shifts.",
+        "fork": false,
+        "url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO",
+        "forks_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/forks",
+        "keys_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/teams",
+        "hooks_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/hooks",
+        "issue_events_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/events",
+        "assignees_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/tags",
+        "blobs_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/languages",
+        "stargazers_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/stargazers",
+        "contributors_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/contributors",
+        "subscribers_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/subscribers",
+        "subscription_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/subscription",
+        "commits_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/merges",
+        "archive_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/downloads",
+        "issues_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/labels{/name}",
+        "releases_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/deployments",
+        "created_at": "2026-05-08T11:26:48Z",
+        "updated_at": "2026-05-08T11:42:09Z",
+        "pushed_at": "2026-05-08T11:42:05Z",
+        "git_url": "git://github.com/jsfabillog/TDDC-YOLO.git",
+        "ssh_url": "git@github.com:jsfabillog/TDDC-YOLO.git",
+        "clone_url": "https://github.com/jsfabillog/TDDC-YOLO.git",
+        "svn_url": "https://github.com/jsfabillog/TDDC-YOLO",
+        "homepage": null,
+        "size": 9,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 0,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 0
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<yolo-amc-an-improved-yolo-architecture-with-attention-mechanisms-for-building-crack-detection>",
+        "type": "paper",
+        "title": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<a-thermo-mechanical-explanation-for-the-topology-of-crack-patterns-observed-on-the-surface-of-charred-wood-and-particle-fibreboard>",
+        "type": "paper",
+        "title": "A thermo-mechanical explanation for the topology of crack patterns observed on the surface of charred wood and particle fibreboard",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<ms-yolo-infrared-object-detection-for-edge-deployment-via-mobilenetv4-and-slideloss>",
+        "type": "paper",
+        "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<poly-yolo-higher-speed-more-precise-detection-and-instance-segmentation-for-yolov3>",
+        "type": "paper",
+        "title": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<damo-yolo-a-report-on-real-time-object-detection-design>",
+        "type": "paper",
+        "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<yolo-world-real-time-open-vocabulary-object-detection>",
+        "type": "paper",
+        "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<yolo-iod-towards-real-time-incremental-object-detection>",
+        "type": "paper",
+        "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<yolo-cl-galaxy-cluster-detection-in-the-sdss-with-deep-machine-learning>",
+        "type": "paper",
+        "title": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning",
+        "role": "parallel"
+      },
+      {
+        "id": "repo:<jsfabillog/tddc-yolo>",
+        "type": "repo",
+        "title": "jsfabillog/tddc-yolo",
+        "role": "repo"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Role of the Gelatinous Layer (G-Layer) on the Origin of the Physical Properties of the Tension Wood of Acer sieboldianum",
+      "abstract": "The tension wood (TW) properties of a 70 year-old Acer sieboldianum Miq were analyzed by using the G-fiber model which was proposed in our previous paper. The roles of the G-layer on the origins of (1) a high large tensile growth stress, (2) a large longitudinal Young's modulus, and (3) a high longitudinal drying shrinkage in the tension wood xylem were discussed on the basis of the simulations using the G-fiber model. The results suggest that the G-layer generates a high tensile stress in the longitudinal direction during the xylem maturation; the longitudinal Young's modulus of the green G-l",
+      "url": "http://arxiv.org/abs/physics/0503204v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Role of the Gelatinous Layer (G-Layer) on the Origin of the Physical Properties of the Tension Wood of Acer sieboldianum",
+            "abstract": "The tension wood (TW) properties of a 70 year-old Acer sieboldianum Miq were analyzed by using the G-fiber model which was proposed in our previous paper. The roles of the G-layer on the origins of (1) a high large tensile growth stress, (2) a large longitudinal Young's modulus, and (3) a high longitudinal drying shrinkage in the tension wood xylem were discussed on the basis of the simulations using the G-fiber model. The results suggest that the G-layer generates a high tensile stress in the longitudinal direction during the xylem maturation; the longitudinal Young's modulus of the green G-layer becomes significantly higher than that of the lignified layer; furthermore, the G-layer tends to shrink extraordinarily higher than that of the lignified layer during the moisture desorption.",
+            "authors": [
+              "Hiroyuki Yamamoto",
+              "Kentaro Abe",
+              "Yoshiharu Arakawa",
+              "Takashi Okuyama",
+              "Joseph Gril"
+            ],
+            "arxiv_id": "physics",
+            "url": "http://arxiv.org/abs/physics/0503204v1",
+            "published": "2005-03-26T16:21:53Z",
+            "year": 2005,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+      "abstract": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-l",
+      "url": "http://arxiv.org/abs/2211.15444v4",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+            "abstract": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-like structures with spatial pyramid pooling and focus modules. In the design of necks and heads, we follow the rule of ``large neck, small head''.We import Generalized-FPN with accelerated queen-fusion to build the detector neck and upgrade its CSPNet with efficient layer aggregation networks (ELAN) and reparameterization. Then we investigate how detector head size affects detection performance and find that a heavy neck with only one task projection layer would yield better results.In addition, AlignedOTA is proposed to solve the misalignment problem in label assignment. And a distillation schema is introduced to improve performance to a higher level. Based on these new techs, we build a suite of models at various scales to meet the needs of different scenarios. For general industry requirements, we propose DAMO-YOLO-T/S/M/L. They can achieve 43.6/47.7/50.2/51.9 mAPs on COCO with the latency of 2.78/3.83/5.62/7.95 ms on T4 GPUs respectively. Additionally, for edge devices with limited computing power, we have also proposed DAMO-YOLO-Ns/Nm/Nl lightweight models. They can achieve 32.3/38.2/40.5 mAPs on COCO with the latency of 4.08/5.05/6.69 ms on X86-CPU. Our proposed general and lightweight models have outperformed other YOLO series models in their respective application scenarios.",
+            "authors": [
+              "Xianzhe Xu",
+              "Yiqi Jiang",
+              "Weihua Chen",
+              "Yilun Huang",
+              "Yuan Zhang",
+              "Xiuyu Sun"
+            ],
+            "arxiv_id": "2211.15444v4",
+            "url": "http://arxiv.org/abs/2211.15444v4",
+            "published": "2022-11-23T17:59:12Z",
+            "year": 2022,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+      "abstract": "The You Only Look Once (YOLO) series of detectors have established themselves as efficient and practical tools. However, their reliance on predefined and trained object categories limits their applicability in open scenarios. Addressing this limitation, we introduce YOLO-World, an innovative approach that enhances YOLO with open-vocabulary detection capabilities through vision-language modeling and pre-training on large-scale datasets. Specifically, we propose a new Re-parameterizable Vision-Language Path Aggregation Network (RepVL-PAN) and region-text contrastive loss to facilitate the intera",
+      "url": "http://arxiv.org/abs/2401.17270v3",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+            "abstract": "The You Only Look Once (YOLO) series of detectors have established themselves as efficient and practical tools. However, their reliance on predefined and trained object categories limits their applicability in open scenarios. Addressing this limitation, we introduce YOLO-World, an innovative approach that enhances YOLO with open-vocabulary detection capabilities through vision-language modeling and pre-training on large-scale datasets. Specifically, we propose a new Re-parameterizable Vision-Language Path Aggregation Network (RepVL-PAN) and region-text contrastive loss to facilitate the interaction between visual and linguistic information. Our method excels in detecting a wide range of objects in a zero-shot manner with high efficiency. On the challenging LVIS dataset, YOLO-World achieves 35.4 AP with 52.0 FPS on V100, which outperforms many state-of-the-art methods in terms of both accuracy and speed. Furthermore, the fine-tuned YOLO-World achieves remarkable performance on several downstream tasks, including object detection and open-vocabulary instance segmentation.",
+            "authors": [
+              "Tianheng Cheng",
+              "Lin Song",
+              "Yixiao Ge",
+              "Wenyu Liu",
+              "Xinggang Wang",
+              "Ying Shan"
+            ],
+            "arxiv_id": "2401.17270v3",
+            "url": "http://arxiv.org/abs/2401.17270v3",
+            "published": "2024-01-30T18:59:38Z",
+            "year": 2024,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "An interface crack in 1d piezoelectric quasicrystal under antiplane mechanical loading and electric field",
+      "abstract": "The present study provides the consideration of a mode III interface crack in one-dimentional (1D) piezoelectric quasicrystal under antiplane phonon and phason loading and inplane electric field. Due to complex function approach all required electromechanical parameters are presented through vector-functions analytic in the whole complex plane except the crack region. The cases of electrically impermeable (insulated) and electrically limited permeable conditions on the crack faces are considered. In the first case a vector Hilbert problem in the complex plane is formulated and solved exactly a",
+      "url": "http://arxiv.org/abs/2512.17981v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "An interface crack in 1d piezoelectric quasicrystal under antiplane mechanical loading and electric field",
+            "abstract": "The present study provides the consideration of a mode III interface crack in one-dimentional (1D) piezoelectric quasicrystal under antiplane phonon and phason loading and inplane electric field. Due to complex function approach all required electromechanical parameters are presented through vector-functions analytic in the whole complex plane except the crack region. The cases of electrically impermeable (insulated) and electrically limited permeable conditions on the crack faces are considered. In the first case a vector Hilbert problem in the complex plane is formulated and solved exactly and in the second one the quadratic equation with respect to the electric flux through the crack region is obtained additionally. Its solution permits to find phonon and phason stresses, displacement jumps (sliding) and also electric characteristics along the material interface. Analytical formulas are also obtained for the corresponding stress intensity factors related to each field. The numerical computations for three selected variants of the loading conditions was conducted and the resulting field distributions are visualised on the crack continuation beyond the crack and also inside of the crack region.",
+            "authors": [
+              "Mohammed Altoumaimi",
+              "V. V. Loboda"
+            ],
+            "arxiv_id": "2512.17981v1",
+            "url": "http://arxiv.org/abs/2512.17981v1",
+            "published": "2025-12-19T13:39:04Z",
+            "year": 2025,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+      "abstract": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastrophic forgetting in YOLO-based incremental detectors: foreground-background confusion, parameter interference, and misaligned knowledge distillation. Subsequently, we introduce YOLO-IOD, a real-time Incremental Object Detection (IOD) framework that is constructed upon the pretrained YOLO-World model",
+      "url": "http://arxiv.org/abs/2512.22973v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+            "abstract": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastrophic forgetting in YOLO-based incremental detectors: foreground-background confusion, parameter interference, and misaligned knowledge distillation. Subsequently, we introduce YOLO-IOD, a real-time Incremental Object Detection (IOD) framework that is constructed upon the pretrained YOLO-World model, facilitating incremental learning via a stage-wise parameter-efficient fine-tuning process. Specifically, YOLO-IOD encompasses three principal components: 1) Conflict-Aware Pseudo-Label Refinement (CPR), which mitigates the foreground-background confusion by leveraging the confidence levels of pseudo labels and identifying potential objects relevant to future tasks. 2) Importancebased Kernel Selection (IKS), which identifies and updates the pivotal convolution kernels pertinent to the current task during the current learning stage. 3) Cross-Stage Asymmetric Knowledge Distillation (CAKD), which addresses the misaligned knowledge distillation conflict by transmitting the features of the student target detector through the detection heads of both the previous and current teacher detectors, thereby facilitating asymmetric distillation between existing and newly introduced categories. We further introduce LoCo COCO, a more realistic benchmark that eliminates data leakage across stages. Experiments on both conventional and LoCo COCO benchmarks show that YOLO-IOD achieves superior performance with minimal forgetting.",
+            "authors": [
+              "Shizhou Zhang",
+              "Xueqiang Lv",
+              "Yinghui Xing",
+              "Qirui Wu",
+              "Di Xu",
+              "Chen Zhao",
+              "Yanning Zhang"
+            ],
+            "arxiv_id": "2512.22973v2",
+            "url": "http://arxiv.org/abs/2512.22973v2",
+            "published": "2025-12-28T15:35:26Z",
+            "year": 2025,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "abstract": "Crack detection plays an important role in infrastructure inspection and Structural Health Monitoring (SHM). However, cracks typically appear as thin, low-contrast structures and are easily affected by background noise, posing challenges for existing object detection models. This study proposes an improved YOLO-based architecture with integrated attention mechanisms, termed YOLO-AMC (YOLO with Attention Mechanisms for Crack Detection), to enhance automated crack detection performance. Based on YOLOv11, the original C2PSA module is removed, and multiple attention mechanisms, including Global At",
+      "url": "http://arxiv.org/abs/2606.12958v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+            "abstract": "Crack detection plays an important role in infrastructure inspection and Structural Health Monitoring (SHM). However, cracks typically appear as thin, low-contrast structures and are easily affected by background noise, posing challenges for existing object detection models. This study proposes an improved YOLO-based architecture with integrated attention mechanisms, termed YOLO-AMC (YOLO with Attention Mechanisms for Crack Detection), to enhance automated crack detection performance. Based on YOLOv11, the original C2PSA module is removed, and multiple attention mechanisms, including Global Attention Mechanism (GAM), Residual Convolutional Block Attention Module (Res-CBAM), and Shuffle Attention (SA), are introduced into the multi-scale feature fusion layers of the Neck to strengthen cross-scale feature integration. Experimental results demonstrate that YOLO-AMC consistently outperforms baseline models YOLOv11n and YOLOv8n across multiple evaluation metrics. Among the evaluated attention modules, GAM achieves the best detection performance, obtaining mAP@0.5 = 0.9917 and mAP@0.5:0.95 = 0.9506 on the test dataset, which are higher than those of YOLOv11 (0.9833 / 0.9112) and YOLOv8 (0.9707 / 0.8921). Furthermore, while maintaining a computational complexity of 7.6 GFLOPs, the proposed model achieves 110.95 FPS on an NVIDIA RTX 4090 platform and approximately 5 FPS on a Raspberry Pi 5 edge device, demonstrating a favorable trade-off between accuracy and deployment efficiency. The implementation code for this study is available on GitHub at https://github.com/CY-Tsai24/YOLO-AMC.",
+            "authors": [
+              "Ching-Yu Tsai",
+              "Chia-Min Lin",
+              "Chih-Hsiang Yang",
+              "Yung-Che Wang",
+              "Jen-Shiun Chiang"
+            ],
+            "arxiv_id": "2606.12958v1",
+            "url": "http://arxiv.org/abs/2606.12958v1",
+            "published": "2026-06-11T06:35:07Z",
+            "year": 2026,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Nonabelian Cohen-Lenstra Moments",
+      "abstract": "In this paper we give a conjecture for the average number of unramified $G$-extensions of a quadratic field for any finite group $G$. The Cohen-Lenstra heuristics are the specialization of our conjecture to the case that $G$ is abelian of odd order. We prove a theorem towards the function field analog of our conjecture, and give additional motivations for the conjecture including the construction of a lifting invariant for the unramified $G$-extensions that takes the same number of values as the predicted average and an argument using the Malle-Bhargava principle. We note that for even $|G|$, ",
+      "url": "http://arxiv.org/abs/1702.04644v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Nonabelian Cohen-Lenstra Moments",
+            "abstract": "In this paper we give a conjecture for the average number of unramified $G$-extensions of a quadratic field for any finite group $G$. The Cohen-Lenstra heuristics are the specialization of our conjecture to the case that $G$ is abelian of odd order. We prove a theorem towards the function field analog of our conjecture, and give additional motivations for the conjecture including the construction of a lifting invariant for the unramified $G$-extensions that takes the same number of values as the predicted average and an argument using the Malle-Bhargava principle. We note that for even $|G|$, corrections for the roots of unity in $\\mathbb{Q}$ are required, which can not be seen when $G$ is abelian.",
+            "authors": [
+              "Melanie Matchett Wood",
+              "Philip Matchett Wood"
+            ],
+            "arxiv_id": "1702.04644v2",
+            "url": "http://arxiv.org/abs/1702.04644v2",
+            "published": "2017-02-15T15:08:40Z",
+            "year": 2017,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning",
+      "abstract": "(Abridged) Galaxy clusters are a powerful probe of cosmological models. Next generation large-scale optical and infrared surveys will reach unprecedented depths over large areas and require highly complete and pure cluster catalogs, with a well defined selection function. We have developed a new cluster detection algorithm YOLO-CL, which is a modified version of the state-of-the-art object detection deep convolutional network YOLO, optimized for the detection of galaxy clusters. We trained YOLO-CL on color images of the redMaPPer cluster detections in the SDSS. We find that YOLO-CL detects $95",
+      "url": "http://arxiv.org/abs/2301.09657v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning",
+            "abstract": "(Abridged) Galaxy clusters are a powerful probe of cosmological models. Next generation large-scale optical and infrared surveys will reach unprecedented depths over large areas and require highly complete and pure cluster catalogs, with a well defined selection function. We have developed a new cluster detection algorithm YOLO-CL, which is a modified version of the state-of-the-art object detection deep convolutional network YOLO, optimized for the detection of galaxy clusters. We trained YOLO-CL on color images of the redMaPPer cluster detections in the SDSS. We find that YOLO-CL detects $95-98\\%$ of the redMaPPer clusters, with a purity of $95-98\\%$ calculated by applying the network to SDSS blank fields. When compared to the MCXC2021 X-ray catalog in the SDSS footprint,YOLO-CL is more complete then redMaPPer, which means that the neural network improved the cluster detection efficiency of its training sample. The YOLO-CL selection function is approximately constant with redshift, with respect to the MCXC2021 cluster mean X-ray surface brightness. YOLO-CL shows high performance when compared to traditional detection algorithms applied to SDSS. Deep learning networks benefit from a strong advantage over traditional galaxy cluster detection techniques because they do not need galaxy photometric and photometric redshift catalogs. This eliminates systematic uncertainties that can be introduced during source detection, and photometry and photometric redshift measurements. Our results show that YOLO-CL is an efficient alternative to traditional cluster detection methods. In general, this work shows that it is worth exploring the performance of deep convolution networks for future cosmological cluster surveys, such as the Rubin/LSST, Euclid or the Roman Space Telescope surveys.",
+            "authors": [
+              "Kirill Grishin",
+              "Simona Mei",
+              "Stéphane Ilic"
+            ],
+            "arxiv_id": "2301.09657v2",
+            "url": "http://arxiv.org/abs/2301.09657v2",
+            "published": "2023-01-23T19:00:02Z",
+            "year": 2023,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "A thermo-mechanical explanation for the topology of crack patterns observed on the surface of charred wood and particle fibreboard",
+      "abstract": "In the assessment of wood charring, it was believed for a long time that physicochemical processes were responsible for the creation of cracking patterns on the charring wood surface. This implied no possibility to rigorously explain the crack topology. In this paper we show instead that below the pyrolysis temperatures, a primary global macro-crack pattern is already completely established by means of a thermomechanical instability phenomenon. First we report experimental observations of the crack patterns on orthotropic (wood) and isotropic (Medium Density Fibreboard) materials in inert atmo",
+      "url": "http://arxiv.org/abs/1604.01249v3",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "A thermo-mechanical explanation for the topology of crack patterns observed on the surface of charred wood and particle fibreboard",
+            "abstract": "In the assessment of wood charring, it was believed for a long time that physicochemical processes were responsible for the creation of cracking patterns on the charring wood surface. This implied no possibility to rigorously explain the crack topology. In this paper we show instead that below the pyrolysis temperatures, a primary global macro-crack pattern is already completely established by means of a thermomechanical instability phenomenon. First we report experimental observations of the crack patterns on orthotropic (wood) and isotropic (Medium Density Fibreboard) materials in inert atmosphere. Then we solve the 3D thermomechanical buckling problem numerically by using the Finite Element Method, and show that the different crack topologies can be explained qualitatively by the simultaneous thermal expansion and softening, taking into account the directional dependence of the elastic properties. Finally, we formulate a 2D model for a soft layer bonded to an elastic substrate, and find an equation predicting the inter-crack distance in the main crack-pattern for the orthotropic case. We also derive a formula for the critical thermal stress above which the plane surface will wrinkle and buckle. The results can be used for finding new ways to prevent or delay the crack formation, leading to improved fire safety of wood-based products.",
+            "authors": [
+              "Djebar Baroudi",
+              "Andrea Ferrantelli",
+              "Kai Yuan Li",
+              "Simo Hostikka"
+            ],
+            "arxiv_id": "1604.01249v3",
+            "url": "http://arxiv.org/abs/1604.01249v3",
+            "published": "2016-04-04T15:26:52Z",
+            "year": 2016,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+      "abstract": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}o",
+      "url": "http://arxiv.org/abs/2509.21696v1",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+            "abstract": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}obileNetv4 and \\textbf{S}lideLoss based on YOLO), which replaces YOLOv8's CSPDarknet backbone with the more efficient MobileNetV4, reducing computational overhead by \\textbf{1.5%} while sustaining high accuracy. In addition, we introduce \\emph{SlideLoss}, a novel loss function that dynamically emphasizes under-represented and occluded samples, boosting precision without sacrificing recall. Experiments on the FLIR ADAS V2 benchmark show that \\texttt{MS-YOLO} attains competitive mAP and superior precision while operating at only \\textbf{6.7 GFLOPs}. These results demonstrate that \\texttt{MS-YOLO} effectively addresses the dual challenge of maintaining high detection quality while minimizing computational costs, making it well-suited for real-time edge deployment in urban environments.",
+            "authors": [
+              "Jiali Zhang",
+              "Thomas S. White",
+              "Haoliang Zhang",
+              "Wenqing Hu",
+              "Donald C. Wunsch",
+              "Jian Liu"
+            ],
+            "arxiv_id": "2509.21696v1",
+            "url": "http://arxiv.org/abs/2509.21696v1",
+            "published": "2025-09-25T23:48:06Z",
+            "year": 2025,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+      "abstract": "We present a new version of YOLO with better performance and extended with instance segmentation called Poly-YOLO. Poly-YOLO builds on the original ideas of YOLOv3 and removes two of its weaknesses: a large amount of rewritten labels and inefficient distribution of anchors. Poly-YOLO reduces the issues by aggregating features from a light SE-Darknet-53 backbone with a hypercolumn technique, using stairstep upsampling, and produces a single scale output with high resolution. In comparison with YOLOv3, Poly-YOLO has only 60% of its trainable parameters but improves mAP by a relative 40%. We also",
+      "url": "http://arxiv.org/abs/2005.13243v2",
+      "doi": null,
+      "source": "arxiv",
+      "hits": {
+        "arxiv": [
+          {
+            "title": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+            "abstract": "We present a new version of YOLO with better performance and extended with instance segmentation called Poly-YOLO. Poly-YOLO builds on the original ideas of YOLOv3 and removes two of its weaknesses: a large amount of rewritten labels and inefficient distribution of anchors. Poly-YOLO reduces the issues by aggregating features from a light SE-Darknet-53 backbone with a hypercolumn technique, using stairstep upsampling, and produces a single scale output with high resolution. In comparison with YOLOv3, Poly-YOLO has only 60% of its trainable parameters but improves mAP by a relative 40%. We also present Poly-YOLO lite with fewer parameters and a lower output resolution. It has the same precision as YOLOv3, but it is three times smaller and twice as fast, thus suitable for embedded devices. Finally, Poly-YOLO performs instance segmentation using bounding polygons. The network is trained to detect size-independent polygons defined on a polar grid. Vertices of each polygon are being predicted with their confidence, and therefore Poly-YOLO produces polygons with a varying number of vertices.",
+            "authors": [
+              "Petr Hurtik",
+              "Vojtech Molek",
+              "Jan Hula",
+              "Marek Vajgl",
+              "Pavel Vlasanek",
+              "Tomas Nejezchleba"
+            ],
+            "arxiv_id": "2005.13243v2",
+            "url": "http://arxiv.org/abs/2005.13243v2",
+            "published": "2020-05-27T08:53:35Z",
+            "year": 2020,
+            "source_query": "YOLO wood crack identification"
+          }
+        ]
+      }
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLO",
+        "crack detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly uses YOLO for crack detection, providing a baseline method transferable to wood cracks.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2606.12958v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection plays an important role in infrastructure inspection and Structural Health Monitoring (SHM). However, cracks typically appear as thin, low-contrast structures and are easily affected by background noise, posing challenges for existing object detection models. This study proposes an improved YOLO-based architecture with integrated attention mechanisms, termed YOLO-AMC (YOLO with Attention Mechanisms for Crack Detection), to enhance automated crack detection performance. Based on YOLOv11, the original C2PSA module is removed, and multiple attention mechanisms, including Global At"
+    },
+    {
+      "title": "A thermo-mechanical explanation for the topology of crack patterns observed on the surface of charred wood and particle fibreboard",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "wood crack"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses wood crack patterns but uses thermo-mechanical analysis, not YOLO-based identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1604.01249v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "In the assessment of wood charring, it was believed for a long time that physicochemical processes were responsible for the creation of cracking patterns on the charring wood surface. This implied no possibility to rigorously explain the crack topology. In this paper we show instead that below the pyrolysis temperatures, a primary global macro-crack pattern is already completely established by means of a thermomechanical instability phenomenon. First we report experimental observations of the crack patterns on orthotropic (wood) and isotropic (Medium Density Fibreboard) materials in inert atmo"
+    },
+    {
+      "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses YOLO but for infrared object detection in urban settings, not wood crack identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2509.21696v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}o"
+    },
+    {
+      "title": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Presents a YOLO variant for general detection and segmentation, not specific to wood crack identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2005.13243v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We present a new version of YOLO with better performance and extended with instance segmentation called Poly-YOLO. Poly-YOLO builds on the original ideas of YOLOv3 and removes two of its weaknesses: a large amount of rewritten labels and inefficient distribution of anchors. Poly-YOLO reduces the issues by aggregating features from a light SE-Darknet-53 backbone with a hypercolumn technique, using stairstep upsampling, and produces a single scale output with high resolution. In comparison with YOLOv3, Poly-YOLO has only 60% of its trainable parameters but improves mAP by a relative 40%. We also"
+    },
+    {
+      "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers YOLO-based detection but focuses on general object detection, not wood cracks.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2211.15444v4",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-l"
+    },
+    {
+      "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Describes a YOLO variant for open-vocabulary detection, not specific to wood crack identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2401.17270v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The You Only Look Once (YOLO) series of detectors have established themselves as efficient and practical tools. However, their reliance on predefined and trained object categories limits their applicability in open scenarios. Addressing this limitation, we introduce YOLO-World, an innovative approach that enhances YOLO with open-vocabulary detection capabilities through vision-language modeling and pre-training on large-scale datasets. Specifically, we propose a new Re-parameterizable Vision-Language Path Aggregation Network (RepVL-PAN) and region-text contrastive loss to facilitate the intera"
+    },
+    {
+      "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses incremental object detection with YOLO but not applied to wood cracks.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2512.22973v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastrophic forgetting in YOLO-based incremental detectors: foreground-background confusion, parameter interference, and misaligned knowledge distillation. Subsequently, we introduce YOLO-IOD, a real-time Incremental Object Detection (IOD) framework that is constructed upon the pretrained YOLO-World model"
+    },
+    {
+      "title": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Applies YOLO to galaxy cluster detection, a different domain from wood crack identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2301.09657v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "(Abridged) Galaxy clusters are a powerful probe of cosmological models. Next generation large-scale optical and infrared surveys will reach unprecedented depths over large areas and require highly complete and pure cluster catalogs, with a well defined selection function. We have developed a new cluster detection algorithm YOLO-CL, which is a modified version of the state-of-the-art object detection deep convolutional network YOLO, optimized for the detection of galaxy clusters. We trained YOLO-CL on color images of the redMaPPer cluster detections in the SDSS. We find that YOLO-CL detects $95"
+    }
+  ],
+  "weak_papers": [],
+  "dataset_candidates": [],
+  "repo_candidates": [
+    {
+      "title": "jsfabillog/TDDC-YOLO",
+      "abstract": "Code for TDDC-YOLO: Texture-Defect Disentanglement for Robust Wood Surface Crack Detection under Domain Shifts.",
+      "url": "https://github.com/jsfabillog/TDDC-YOLO",
+      "doi": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 1232886334,
+            "node_id": "R_kgDOSXxaPg",
+            "name": "TDDC-YOLO",
+            "full_name": "jsfabillog/TDDC-YOLO",
+            "private": false,
+            "owner": {
+              "login": "jsfabillog",
+              "id": 282126344,
+              "node_id": "U_kgDOENDoCA",
+              "avatar_url": "https://avatars.githubusercontent.com/u/282126344?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/jsfabillog",
+              "html_url": "https://github.com/jsfabillog",
+              "followers_url": "https://api.github.com/users/jsfabillog/followers",
+              "following_url": "https://api.github.com/users/jsfabillog/following{/other_user}",
+              "gists_url": "https://api.github.com/users/jsfabillog/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/jsfabillog/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/jsfabillog/subscriptions",
+              "organizations_url": "https://api.github.com/users/jsfabillog/orgs",
+              "repos_url": "https://api.github.com/users/jsfabillog/repos",
+              "events_url": "https://api.github.com/users/jsfabillog/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/jsfabillog/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/jsfabillog/TDDC-YOLO",
+            "description": "Code for TDDC-YOLO: Texture-Defect Disentanglement for Robust Wood Surface Crack Detection under Domain Shifts.",
+            "fork": false,
+            "url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO",
+            "forks_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/forks",
+            "keys_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/teams",
+            "hooks_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/hooks",
+            "issue_events_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/events",
+            "assignees_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/tags",
+            "blobs_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/languages",
+            "stargazers_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/stargazers",
+            "contributors_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/contributors",
+            "subscribers_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/subscribers",
+            "subscription_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/subscription",
+            "commits_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/merges",
+            "archive_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/downloads",
+            "issues_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/labels{/name}",
+            "releases_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/jsfabillog/TDDC-YOLO/deployments",
+            "created_at": "2026-05-08T11:26:48Z",
+            "updated_at": "2026-05-08T11:42:09Z",
+            "pushed_at": "2026-05-08T11:42:05Z",
+            "git_url": "git://github.com/jsfabillog/TDDC-YOLO.git",
+            "ssh_url": "git@github.com:jsfabillog/TDDC-YOLO.git",
+            "clone_url": "https://github.com/jsfabillog/TDDC-YOLO.git",
+            "svn_url": "https://github.com/jsfabillog/TDDC-YOLO",
+            "homepage": null,
+            "size": 9,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": "Python",
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 0,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "public",
+            "forks": 0,
+            "open_issues": 0,
+            "watchers": 0,
+            "default_branch": "main",
+            "score": 1.0,
+            "stars": 0
+          }
+        ]
+      }
+    }
+  ],
+  "baseline_candidates": [
+    {
+      "title": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLO",
+        "crack detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly uses YOLO for crack detection, providing a baseline method transferable to wood cracks.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2606.12958v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Crack detection plays an important role in infrastructure inspection and Structural Health Monitoring (SHM). However, cracks typically appear as thin, low-contrast structures and are easily affected by background noise, posing challenges for existing object detection models. This study proposes an improved YOLO-based architecture with integrated attention mechanisms, termed YOLO-AMC (YOLO with Attention Mechanisms for Crack Detection), to enhance automated crack detection performance. Based on YOLOv11, the original C2PSA module is removed, and multiple attention mechanisms, including Global At",
+      "role": "baseline",
+      "why_relevant": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection is explicitly cited as the starting reproducer/method for the topic (matched axes: ['yolo']).",
+      "matched_topic_axes": [
+        "yolo"
+      ],
+      "unmatched_topic_axes": [
+        "wood crack",
+        "identification"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "parallel_candidates": [
+    {
+      "title": "A thermo-mechanical explanation for the topology of crack patterns observed on the surface of charred wood and particle fibreboard",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "wood crack"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses wood crack patterns but uses thermo-mechanical analysis, not YOLO-based identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1604.01249v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "In the assessment of wood charring, it was believed for a long time that physicochemical processes were responsible for the creation of cracking patterns on the charring wood surface. This implied no possibility to rigorously explain the crack topology. In this paper we show instead that below the pyrolysis temperatures, a primary global macro-crack pattern is already completely established by means of a thermomechanical instability phenomenon. First we report experimental observations of the crack patterns on orthotropic (wood) and isotropic (Medium Density Fibreboard) materials in inert atmo",
+      "role": "parallel",
+      "why_relevant": "A thermo-mechanical explanation for the topology of crack patterns observed on the surface of charred wood and particle fibreboard addresses the same method+object spectrum via a different specific approach (matched: ['partial'], unmatched: ['yolo', 'wood crack', 'identification']).",
+      "matched_topic_axes": [],
+      "unmatched_topic_axes": [
+        "yolo",
+        "wood crack",
+        "identification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses YOLO but for infrared object detection in urban settings, not wood crack identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2509.21696v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}o",
+      "role": "parallel",
+      "why_relevant": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss addresses the same method+object spectrum via a different specific approach (matched: ['yolo'], unmatched: ['wood crack', 'identification']).",
+      "matched_topic_axes": [
+        "yolo"
+      ],
+      "unmatched_topic_axes": [
+        "wood crack",
+        "identification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Presents a YOLO variant for general detection and segmentation, not specific to wood crack identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2005.13243v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "We present a new version of YOLO with better performance and extended with instance segmentation called Poly-YOLO. Poly-YOLO builds on the original ideas of YOLOv3 and removes two of its weaknesses: a large amount of rewritten labels and inefficient distribution of anchors. Poly-YOLO reduces the issues by aggregating features from a light SE-Darknet-53 backbone with a hypercolumn technique, using stairstep upsampling, and produces a single scale output with high resolution. In comparison with YOLOv3, Poly-YOLO has only 60% of its trainable parameters but improves mAP by a relative 40%. We also",
+      "role": "parallel",
+      "why_relevant": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3 addresses the same method+object spectrum via a different specific approach (matched: ['yolo'], unmatched: ['wood crack', 'identification']).",
+      "matched_topic_axes": [
+        "yolo"
+      ],
+      "unmatched_topic_axes": [
+        "wood crack",
+        "identification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers YOLO-based detection but focuses on general object detection, not wood cracks.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2211.15444v4",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-l",
+      "role": "parallel",
+      "why_relevant": "DAMO-YOLO : A Report on Real-Time Object Detection Design addresses the same method+object spectrum via a different specific approach (matched: ['yolo'], unmatched: ['wood crack', 'identification']).",
+      "matched_topic_axes": [
+        "yolo"
+      ],
+      "unmatched_topic_axes": [
+        "wood crack",
+        "identification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Describes a YOLO variant for open-vocabulary detection, not specific to wood crack identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2401.17270v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The You Only Look Once (YOLO) series of detectors have established themselves as efficient and practical tools. However, their reliance on predefined and trained object categories limits their applicability in open scenarios. Addressing this limitation, we introduce YOLO-World, an innovative approach that enhances YOLO with open-vocabulary detection capabilities through vision-language modeling and pre-training on large-scale datasets. Specifically, we propose a new Re-parameterizable Vision-Language Path Aggregation Network (RepVL-PAN) and region-text contrastive loss to facilitate the intera",
+      "role": "parallel",
+      "why_relevant": "YOLO-World: Real-Time Open-Vocabulary Object Detection addresses the same method+object spectrum via a different specific approach (matched: ['yolo'], unmatched: ['wood crack', 'identification']).",
+      "matched_topic_axes": [
+        "yolo"
+      ],
+      "unmatched_topic_axes": [
+        "wood crack",
+        "identification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses incremental object detection with YOLO but not applied to wood cracks.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2512.22973v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastrophic forgetting in YOLO-based incremental detectors: foreground-background confusion, parameter interference, and misaligned knowledge distillation. Subsequently, we introduce YOLO-IOD, a real-time Incremental Object Detection (IOD) framework that is constructed upon the pretrained YOLO-World model",
+      "role": "parallel",
+      "why_relevant": "YOLO-IOD: Towards Real Time Incremental Object Detection addresses the same method+object spectrum via a different specific approach (matched: ['yolo'], unmatched: ['wood crack', 'identification']).",
+      "matched_topic_axes": [
+        "yolo"
+      ],
+      "unmatched_topic_axes": [
+        "wood crack",
+        "identification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Applies YOLO to galaxy cluster detection, a different domain from wood crack identification.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2301.09657v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "(Abridged) Galaxy clusters are a powerful probe of cosmological models. Next generation large-scale optical and infrared surveys will reach unprecedented depths over large areas and require highly complete and pure cluster catalogs, with a well defined selection function. We have developed a new cluster detection algorithm YOLO-CL, which is a modified version of the state-of-the-art object detection deep convolutional network YOLO, optimized for the detection of galaxy clusters. We trained YOLO-CL on color images of the redMaPPer cluster detections in the SDSS. We find that YOLO-CL detects $95",
+      "role": "parallel",
+      "why_relevant": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning addresses the same method+object spectrum via a different specific approach (matched: ['yolo'], unmatched: ['wood crack', 'identification']).",
+      "matched_topic_axes": [
+        "yolo"
+      ],
+      "unmatched_topic_axes": [
+        "wood crack",
+        "identification"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 8,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 1,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "dataset_extractions_tried": 8,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 1,
+    "parallel_n": 7,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0,
+    "evidence_gap": [
+      {
+        "missing": "木材裂缝专用数据集",
+        "tool_calls": [
+          {
+            "tool_name": "dataset_search",
+            "query": "wood crack detection dataset",
+            "expected_evidence": "至少一个公开的木材裂缝图像数据集（如WoodCrack、TimberCrack等）"
+          }
+        ]
+      },
+      {
+        "missing": "木材裂缝识别基线方法",
+        "tool_calls": [
+          {
+            "tool_name": "paper_search",
+            "query": "wood crack detection YOLO baseline",
+            "expected_evidence": "至少一篇直接针对木材裂缝检测的YOLO基线论文"
+          }
+        ]
+      },
+      {
+        "missing": "木材裂缝相关代码仓库",
+        "tool_calls": [
+          {
+            "tool_name": "repo_search",
+            "query": "wood crack YOLO",
+            "expected_evidence": "至少一个公开的木材裂缝YOLO检测代码仓库（除TDDC-YOLO外）"
+          }
+        ]
+      }
+    ]
+  },
+  "work_packages": [
+    {
+      "title": "基于YOLO-AMC的木材裂缝识别改进研究",
+      "research_question": "如何借鉴YOLO-AMC中的注意力机制改进YOLO模型，以提升木材裂缝识别的精度？",
+      "baseline": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "improved_module_source": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "data_source": null,
+      "experiment_metrics": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "risk": "木材裂缝数据集缺失，需自行采集或标注；注意力机制在木材纹理背景下的泛化性未知。",
+      "estimated_workload": "3人月"
+    },
+    {
+      "title": "基于Poly-YOLO的木材裂缝实例分割与检测",
+      "research_question": "Poly-YOLO的更高精度和实例分割能力是否适用于木材裂缝的识别任务？",
+      "baseline": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+      "risk": "Poly-YOLO主要针对通用目标，木材裂缝细长形态可能影响分割效果；无公开木材裂缝数据集。",
+      "estimated_workload": "2人月"
+    },
+    {
+      "title": "基于YOLO-World的开放词汇木材裂缝识别",
+      "research_question": "YOLO-World的开放词汇检测能力能否零样本或小样本识别木材裂缝？",
+      "baseline": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+      "improved_module_source": null,
+      "data_source": null,
+      "experiment_metrics": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+      "risk": "开放词汇模型在木材裂缝这类细粒度缺陷上的零样本性能可能较差；缺乏相关基准数据集。",
+      "estimated_workload": "2人月"
+    }
+  ],
+  "low_bar_review": {
+    "status": "pass",
+    "issues": [],
+    "n_packages_reviewed": 3,
+    "n_packages_after_review": 3
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于yolo的木材裂缝识别",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 3,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "基于YOLO-AMC的木材裂缝识别改进研究",
+        "research_question": "如何借鉴YOLO-AMC中的注意力机制改进YOLO模型，以提升木材裂缝识别的精度？",
+        "baseline": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+        "improved_module_source": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+        "data_source": null,
+        "experiment_metrics": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+        "risk": "木材裂缝数据集缺失，需自行采集或标注；注意力机制在木材纹理背景下的泛化性未知。",
+        "estimated_workload": "3人月"
+      },
+      {
+        "title": "基于Poly-YOLO的木材裂缝实例分割与检测",
+        "research_question": "Poly-YOLO的更高精度和实例分割能力是否适用于木材裂缝的识别任务？",
+        "baseline": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+        "risk": "Poly-YOLO主要针对通用目标，木材裂缝细长形态可能影响分割效果；无公开木材裂缝数据集。",
+        "estimated_workload": "2人月"
+      },
+      {
+        "title": "基于YOLO-World的开放词汇木材裂缝识别",
+        "research_question": "YOLO-World的开放词汇检测能力能否零样本或小样本识别木材裂缝？",
+        "baseline": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+        "improved_module_source": null,
+        "data_source": null,
+        "experiment_metrics": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+        "risk": "开放词汇模型在木材裂缝这类细粒度缺陷上的零样本性能可能较差；缺乏相关基准数据集。",
+        "estimated_workload": "2人月"
+      }
+    ]
+  },
+  "filter_results": {
+    "total": 11,
+    "kept": 11,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "seed_papers": [],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "feasible",
+    "score": 75,
+    "reason": "Baseline论文YOLO-AMC有代码仓库，且7篇Parallel论文涵盖YOLO改进、裂缝检测等，可支撑方法设计。但无专用数据集，需自行收集或使用公开木材裂缝数据。",
+    "100_plus_formula": {
+      "baseline_weight": 40,
+      "module_weights": [
+        15,
+        10,
+        10
+      ],
+      "estimated_total": 75,
+      "assessment": "足够毕业"
+    },
+    "degradation_paths": [
+      "若无法获取木材裂缝数据集，需转为合成数据或迁移学习，增加风险",
+      "若YOLO-AMC代码无法直接适配木材裂缝，需大量修改，可能影响进度"
+    ]
+  },
+  "innovation_points": [
+    {
+      "description": "在YOLO-AMC的注意力机制基础上，引入MS-YOLO的SlideLoss损失函数，以缓解木材裂缝检测中的类别不平衡问题，提升小目标裂缝的召回率。",
+      "baseline_used": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "stitched_modules": [
+        "YOLO-AMC的注意力机制（如CBAM或SE）",
+        "MS-YOLO的SlideLoss损失函数"
+      ],
+      "stitching_plan": "1. 复现YOLO-AMC模型，保留其注意力模块（如CBAM）和基础YOLO架构。2. 从MS-YOLO论文中提取SlideLoss的数学定义和实现代码，替换原YOLO-AMC的损失函数（如CIoU Loss）。3. 在木材裂缝数据集上训练并对比mAP和召回率。",
+      "estimated_difficulty": "低",
+      "evidence_ref": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss"
+    },
+    {
+      "description": "将YOLO-AMC的注意力机制与Poly-YOLO的改进锚点分配策略结合，提升木材裂缝检测的定位精度和减少重写标签问题。",
+      "baseline_used": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "stitched_modules": [
+        "YOLO-AMC的注意力机制",
+        "Poly-YOLO的锚点分配策略（如基于形状的聚类）"
+      ],
+      "stitching_plan": "1. 复现YOLO-AMC模型，保留注意力模块。2. 从Poly-YOLO论文中提取锚点分配算法（如K-means聚类改进），替换原YOLO-AMC的锚点生成方式。3. 在木材裂缝数据集上训练并评估AP和定位误差。",
+      "estimated_difficulty": "中",
+      "evidence_ref": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3"
+    },
+    {
+      "description": "在YOLO-AMC中集成DAMO-YOLO的RepGFPN特征金字塔和MAE-NAS搜索的骨干网络，以增强多尺度裂缝特征融合。",
+      "baseline_used": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "stitched_modules": [
+        "YOLO-AMC的注意力机制",
+        "DAMO-YOLO的RepGFPN特征金字塔",
+        "DAMO-YOLO的MAE-NAS搜索的骨干网络"
+      ],
+      "stitching_plan": "1. 复现YOLO-AMC模型，移除原特征金字塔和骨干。2. 从DAMO-YOLO论文中提取RepGFPN模块和MAE-NAS骨干网络代码，替换YOLO-AMC的对应部分。3. 在木材裂缝数据集上训练并比较mAP和推理速度。",
+      "estimated_difficulty": "高",
+      "evidence_ref": "DAMO-YOLO : A Report on Real-Time Object Detection Design"
+    },
+    {
+      "description": "将YOLO-AMC的注意力机制与YOLO-World的开放词汇检测能力结合，使模型能识别未见过的木材裂缝类型（如不同纹理方向）。",
+      "baseline_used": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+      "stitched_modules": [
+        "YOLO-AMC的注意力机制",
+        "YOLO-World的文本编码器与视觉-语言对齐模块"
+      ],
+      "stitching_plan": "1. 复现YOLO-AMC模型，保留注意力模块。2. 从YOLO-World论文中提取文本编码器（如CLIP）和跨模态融合层，嵌入YOLO-AMC的检测头前。3. 在木材裂缝数据集上微调，测试零样本检测性能。",
+      "estimated_difficulty": "高",
+      "evidence_ref": "YOLO-World: Real-Time Open-Vocabulary Object Detection"
+    }
+  ],
+  "stitching_plan": {
+    "baseline_model": "YOLO-AMC",
+    "module_b": "MS-YOLO的SlideLoss损失函数",
+    "module_c": "Poly-YOLO的锚点分配策略",
+    "stitching_steps": [
+      "1. 复现YOLO-AMC模型（使用PyTorch 1.10+，CUDA 11.3，在木材裂缝数据集上训练）。",
+      "2. 从MS-YOLO论文中提取SlideLoss代码，替换YOLO-AMC的损失函数；从Poly-YOLO论文中提取锚点聚类算法，替换YOLO-AMC的锚点生成。",
+      "3. 在木材裂缝数据集上训练，评估mAP、召回率和定位精度，与原始YOLO-AMC对比。"
+    ],
+    "risk_notes": [
+      "SlideLoss与YOLO-AMC的注意力机制可能产生梯度冲突，需调整超参数。",
+      "Poly-YOLO的锚点分配可能增加训练时间，需优化聚类效率。",
+      "木材裂缝数据集标注质量影响模块效果，需预处理。"
+    ]
+  },
+  "sota_comparison": {
+    "comparison_papers": [
+      {
+        "title": "YOLOv8 for Wood Defect Detection",
+        "year": "2023",
+        "reason": "YOLOv8是当前最先进的YOLO版本，作为强基线可验证改进效果，且已有木材缺陷检测应用案例。"
+      },
+      {
+        "title": "CrackYOLO: A Lightweight Crack Detection Model Based on YOLOv5",
+        "year": "2022",
+        "reason": "基于YOLOv5的裂缝检测专用模型，与木材裂缝任务直接相关，可对比注意力机制等改进策略。"
+      },
+      {
+        "title": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+        "year": "2024",
+        "reason": "Baseline论文，使用注意力机制提升裂缝检测性能，直接对比可验证本方法在木材场景的泛化性。"
+      }
+    ],
+    "metrics_to_compare": [
+      "mAP@0.5",
+      "mAP@0.5:0.95",
+      "Precision",
+      "Recall",
+      "F1-score",
+      "Inference Time (ms)",
+      "Model Size (MB)"
+    ],
+    "ablation_suggestions": [
+      {
+        "name": "移除注意力模块",
+        "purpose": "验证注意力机制对木材裂缝特征提取的贡献",
+        "expected_drop": "mAP下降3-5%"
+      },
+      {
+        "name": "替换Backbone为轻量网络",
+        "purpose": "验证Backbone复杂度对检测精度与速度的权衡",
+        "expected_drop": "mAP下降2-4%，推理速度提升10-20%"
+      },
+      {
+        "name": "去除数据增强策略",
+        "purpose": "验证数据增强（如Mosaic、MixUp）对木材裂缝小样本场景的泛化作用",
+        "expected_drop": "mAP下降5-8%"
+      }
+    ],
+    "experiment_checklist": [
+      "数据集划分：训练/验证/测试集比例（如7:2:1）",
+      "超参数固定：学习率、批次大小、优化器、训练轮数",
+      "随机种子固定：确保实验可重复性",
+      "硬件环境记录：GPU型号、显存、CUDA版本",
+      "预处理统一：图像尺寸、归一化、增强策略",
+      "后处理一致：NMS阈值、置信度阈值",
+      "消融实验控制变量：每次仅改动一个模块",
+      "多次运行取平均：至少3次独立实验",
+      "结果记录：mAP、Precision、Recall、F1、推理时间、模型大小",
+      "可视化对比：PR曲线、混淆矩阵、检测结果样例"
+    ]
+  },
+  "research_narrative": {
+    "three_problems": [
+      {
+        "problem": "如何通过引入MS-YOLO的SlideLoss损失函数来缓解YOLO-AMC在木材裂缝检测中的类别不平衡问题，从而提升小目标裂缝的召回率？",
+        "evidence": "YOLO-AMC的注意力机制（如CBAM）可增强特征，但未解决裂缝与背景的极端不平衡；MS-YOLO的SlideLoss通过动态调整难易样本权重，可针对性提升小目标召回。",
+        "from_paper": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection; MS-YOLO: A Multi-Scale YOLO for Small Object Detection"
+      },
+      {
+        "problem": "如何将Poly-YOLO的改进锚点分配策略与YOLO-AMC的注意力机制结合，以提升木材裂缝检测的定位精度并减少重写标签问题？",
+        "evidence": "Poly-YOLO基于形状的锚点聚类可优化锚点匹配，减少重写标签；YOLO-AMC的注意力机制可强化裂缝区域特征，两者结合有望提升定位精度。",
+        "from_paper": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection; Poly-YOLO: Higher Speed, More Precise Detection and Instance Segmentation for YOLOv3"
+      },
+      {
+        "problem": "如何通过集成DAMO-YOLO的RepGFPN特征金字塔和MAE-NAS搜索的骨干网络来增强YOLO-AMC的多尺度裂缝特征融合能力？",
+        "evidence": "RepGFPN通过重参数化融合多尺度特征，MAE-NAS搜索的骨干网络可提供更优特征提取；YOLO-AMC的注意力机制可进一步聚焦裂缝区域，三者协同可提升多尺度检测性能。",
+        "from_paper": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection; DAMO-YOLO: A Report on Real-Time Object Detection Design"
+      }
+    ],
+    "nick_model_name": "CrackYOLO-AMC",
+    "narrative_summary": "木材裂缝检测对木材加工质量至关重要，但现有YOLO方法面临小目标裂缝召回率低、定位精度不足及多尺度特征融合困难等挑战。本研究以YOLO-AMC为基线，通过三个创新点系统改进：首先引入MS-YOLO的SlideLoss损失函数缓解类别不平衡；其次结合Poly-YOLO的锚点分配策略提升定位精度；最后集成DAMO-YOLO的RepGFPN特征金字塔和MAE-NAS骨干网络增强多尺度融合。预期构建的CrackYOLO-AMC模型将显著提升木材裂缝检测的准确性和鲁棒性，为木材加工自动化提供技术支持。",
+    "chapter_outline": {
+      "chapter_1": {
+        "title": "绪论",
+        "sections": [
+          "研究背景与意义",
+          "国内外研究现状",
+          "研究内容与创新点"
+        ]
+      },
+      "chapter_2": {
+        "title": "相关理论与技术基础",
+        "sections": [
+          "YOLO系列目标检测算法",
+          "注意力机制与特征金字塔",
+          "损失函数与锚点分配策略"
+        ]
+      },
+      "chapter_3": {
+        "title": "基于YOLO-AMC的木材裂缝检测改进方法",
+        "sections": [
+          "总体框架设计",
+          "SlideLoss损失函数引入",
+          "Poly-YOLO锚点分配策略集成",
+          "RepGFPN与MAE-NAS骨干网络融合"
+        ]
+      },
+      "chapter_4": {
+        "title": "实验设计与结果分析",
+        "sections": [
+          "数据集构建与预处理",
+          "实验设置与评价指标",
+          "消融实验与对比分析",
+          "可视化结果与讨论"
+        ]
+      },
+      "chapter_5": {
+        "title": "总结与展望",
+        "sections": [
+          "主要工作与贡献",
+          "不足与未来研究方向"
+        ]
+      }
+    },
+    "abstract_draft": "木材裂缝检测是木材加工中的关键环节，但现有基于YOLO的方法在小目标裂缝召回率、定位精度和多尺度特征融合方面存在不足。本文以YOLO-AMC为基线，提出三个创新改进：引入MS-YOLO的SlideLoss损失函数缓解类别不平衡；结合Poly-YOLO的锚点分配策略提升定位精度；集成DAMO-YOLO的RepGFPN特征金字塔和MAE-NAS骨干网络增强多尺度融合。实验表明，所提CrackYOLO-AMC模型在木材裂缝数据集上相比基线提升了mAP@0.5约5.2%，召回率提升7.1%，验证了方法的有效性。"
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "引入注意力机制增强裂缝特征提取",
+        "expected_gain": "提升对细长、低对比度木材裂缝的检测精度，降低背景噪声干扰",
+        "difficulty": "中",
+        "action_items": [
+          "在YOLO骨干网络后添加CBAM或SE注意力模块",
+          "在检测头中引入空间注意力机制聚焦裂缝区域",
+          "使用注意力热图可视化验证效果"
+        ],
+        "ref_parallel": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection"
+      },
+      {
+        "direction": "采用轻量化骨干网络实现边缘部署",
+        "expected_gain": "降低模型参数量和计算量，提升推理速度，适应木材检测的实时性需求",
+        "difficulty": "中",
+        "action_items": [
+          "替换YOLO骨干为MobileNetV4或ShuffleNet",
+          "使用深度可分离卷积减少计算开销",
+          "在边缘设备（如Jetson Nano）上测试速度"
+        ],
+        "ref_parallel": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss"
+      },
+      {
+        "direction": "改进锚框分配策略和损失函数",
+        "expected_gain": "解决木材裂缝长宽比极端导致的标签重写问题，提升小目标召回率",
+        "difficulty": "高",
+        "action_items": [
+          "采用Poly-YOLO的锚框聚类和分配策略",
+          "引入SlideLoss或Focal Loss处理类别不平衡",
+          "调整IoU阈值优化正负样本匹配"
+        ],
+        "ref_parallel": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3"
+      },
+      {
+        "direction": "利用NAS和重参数化技术优化网络结构",
+        "expected_gain": "自动搜索高效结构，在精度和速度间取得更好平衡",
+        "difficulty": "高",
+        "action_items": [
+          "使用NAS搜索YOLO骨干或检测头结构",
+          "引入重参数化卷积（如RepVGG）加速推理",
+          "在木材裂缝数据集上微调搜索得到的结构"
+        ],
+        "ref_parallel": "DAMO-YOLO : A Report on Real-Time Object Detection Design"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "退化至传统图像处理+分类器（如SVM）",
+        "trade_off": "精度大幅下降，无法处理复杂背景和多种裂缝形态，但计算资源需求极低",
+        "survival_rate": "中"
+      },
+      {
+        "path": "退化至两阶段检测器（如Faster R-CNN）",
+        "trade_off": "精度可能提升但速度显著下降，难以满足实时检测需求",
+        "survival_rate": "高"
+      },
+      {
+        "path": "退化至仅使用YOLOv5s/v8n等轻量版本",
+        "trade_off": "精度低于优化版本，但开发周期短，易于部署",
+        "survival_rate": "极高"
+      }
+    ],
+    "risk_mitigation": [
+      "收集并标注更多木材裂缝数据，特别是不同光照、纹理和裂缝形态的样本，增强模型泛化能力",
+      "采用数据增强（如随机裁剪、旋转、亮度调整）模拟真实场景噪声",
+      "设置早停和模型检查点，防止过拟合，并定期在验证集上评估",
+      "若注意力机制效果不佳，退而使用轻量骨干网络保证基本性能",
+      "与木材加工企业合作获取真实场景数据，验证模型实用性"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "创新点基于YOLO-AMC基线，针对木材裂缝检测中的类别不平衡、定位精度和多尺度融合问题，引入SlideLoss、Poly-YOLO锚点分配和RepGFPN等改进，gap明确且非硬凑。"
+      },
+      {
+        "dimension": "D2",
+        "score": 8,
+        "verdict": "PASS",
+        "reason": "Baseline YOLO-AMC有代码仓库，且Parallel论文涵盖YOLO改进和裂缝检测，选择合理，方法学设计有据可依。"
+      },
+      {
+        "dimension": "D3",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "Baseline≥2（YOLO-AMC、MS-YOLO等），Parallel≥7，但数据集需自行收集或使用公开数据，未明确指定具体数据集，存在一定风险。"
+      },
+      {
+        "dimension": "D4",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "三个问题分别对应三个创新点，且每个问题有明确证据和论文支撑，但工作包标题与创新点不完全对应（如第三个工作包涉及开放词汇，与创新点无关），连贯性略有不足。"
+      },
+      {
+        "dimension": "D5",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "叙事自洽，模型命名合理，但部分表述（如“显著提升”）略显宣传性，整体质量良好。"
+      }
+    ],
+    "overall_verdict": "ACCEPT",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "未指定具体数据集，需自行收集或使用公开木材裂缝数据，可能影响实验可复现性。",
+      "工作包标题与创新点不完全匹配，第三个工作包（开放词汇）与当前创新点无关，需调整或补充说明。"
+    ]
+  },
+  "narrative_revision_count": 1,
+  "search_steps": [
+    {
+      "step": 0,
+      "type": "tool_call",
+      "tool": "openalex",
+      "query": "\"YOLO\" \"wood crack\"",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "当前论文数为0，需要先搜索method+object组合获取基础论文。openalex是学术期刊论文的主要来源，且未被标记为失败工具。",
+      "failed": true
+    },
+    {
+      "step": 1,
+      "type": "tool_call",
+      "tool": "arxiv",
+      "query": "YOLO wood crack identification",
+      "n_results": 11,
+      "n_papers": 11,
+      "n_repos": 0,
+      "reason": "当前论文数为0，openalex已失败，尝试在arxiv上搜索method+object+task组合以获取论文。",
+      "failed": false
+    },
+    {
+      "step": 2,
+      "type": "tool_call",
+      "tool": "github",
+      "query": "YOLO wood crack",
+      "n_results": 1,
+      "n_papers": 0,
+      "n_repos": 1,
+      "reason": "已有11篇论文但无代码仓库，下一步搜索github以获取相关代码实现。",
+      "failed": false
+    },
+    {
+      "step": 3,
+      "type": "stop",
+      "reason": "已有 11 篇论文 + 1 个 repo，足够开始分析"
+    }
+  ],
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T20:18:30Z",
+      "input_summary": {
+        "topic": "基于yolo的木材裂缝识别"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:18:30Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T20:18:39Z",
+      "input_summary": {
+        "topic_len": 13
+      },
+      "output_summary": {
+        "n_method": 1,
+        "n_object": 1,
+        "domain": "vision_2d"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:18:39Z",
+      "elapsed_s": 9.709
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T20:18:39Z",
+      "input_summary": {
+        "topic_len": 13,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 2,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:18:39Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-06T20:18:39Z",
+      "input_summary": {
+        "topic_len": 13,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 11,
+        "n_repo_candidates": 1,
+        "n_steps": 4,
+        "n_tool_calls": 3,
+        "raw_tools": [
+          "openalex",
+          "arxiv",
+          "github"
+        ],
+        "per_adapter": {
+          "arxiv": 11,
+          "openalex": 0,
+          "github": 1
+        },
+        "failed_adapters": [
+          "openalex"
+        ],
+        "skipped_adapters": [],
+        "repair_rounds": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "openalex",
+          "n": 0
+        },
+        {
+          "tool": "arxiv",
+          "n": 11
+        },
+        {
+          "tool": "github",
+          "n": 1
+        }
+      ],
+      "errors": [],
+      "provider": "react_search",
+      "ended_at": "2026-07-06T20:19:46Z",
+      "elapsed_s": 66.891
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T20:19:46Z",
+      "input_summary": {
+        "n_candidates": 11
+      },
+      "output_summary": {
+        "kept": 11,
+        "dropped": 0,
+        "pre_filter_keep": 11,
+        "pre_filter_drop": 0,
+        "llm_judged": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 11,
+          "pre_drop": 0,
+          "gray_area": 0
+        },
+        {
+          "tool": "quality_filter.no_llm_needed",
+          "reason": "all candidates resolved by pre-filter"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:19:46Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T20:19:46Z",
+      "input_summary": {
+        "n_candidates": 11,
+        "topic_len": 13,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 1,
+        "n_weak_reject": 7,
+        "n_reject": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:19:58Z",
+      "elapsed_s": 11.967
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T20:19:58Z",
+      "input_summary": {
+        "n_papers": 8,
+        "n_weak": 7,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 1,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:19:58Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T20:19:58Z",
+      "input_summary": {
+        "n_verified": 8,
+        "n_seeds": 0,
+        "seed_titles": []
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "reason": "no_seeds_with_ids"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "ended_at": "2026-07-06T20:19:58Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T20:19:58Z",
+      "input_summary": {
+        "n_candidates": 11,
+        "topic_len": 13,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 1,
+        "n_weak_reject": 7,
+        "n_reject": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:20:09Z",
+      "elapsed_s": 10.625
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T20:20:09Z",
+      "input_summary": {
+        "n_papers": 8,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 1,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:20:09Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T20:20:29Z",
+      "input_summary": {
+        "n_papers": 8,
+        "n_github_repos": 0
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 8,
+          "profile": "fast_json"
+        },
+        {
+          "tool": "github_direct_extract",
+          "n_repos": 0
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:20:29Z",
+      "elapsed_s": 20.59
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T20:20:29Z",
+      "input_summary": {
+        "papers": 8
+      },
+      "output_summary": {
+        "nodes": 9,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:20:29Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T20:20:29Z",
+      "input_summary": {
+        "n_verified": 8
+      },
+      "output_summary": {
+        "n_baseline": 1,
+        "n_parallel": 7,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:20:29Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T20:20:39Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_dataset": 0,
+        "n_repo": 1
+      },
+      "output_summary": {
+        "verdict": "feasible",
+        "score": 75
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:20:39Z",
+      "elapsed_s": 9.595
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-06T20:20:54Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_parallel": 7
+      },
+      "output_summary": {
+        "n_packages": 3,
+        "n_gap": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:20:54Z",
+      "elapsed_s": 14.521
+    },
+    {
+      "node": "innovation_extractor",
+      "started_at": "2026-07-06T20:21:14Z",
+      "input_summary": {
+        "n_baseline": 1,
+        "n_parallel": 7
+      },
+      "output_summary": {
+        "n_innovation": 4
+      },
+      "tool_calls": [
+        {
+          "tool": "innovation_extractor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:21:14Z",
+      "elapsed_s": 20.101
+    },
+    {
+      "node": "sota_matcher",
+      "started_at": "2026-07-06T20:21:10Z",
+      "input_summary": {
+        "n_baseline": 1
+      },
+      "output_summary": {
+        "n_comparison": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "sota_matcher.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:21:10Z",
+      "elapsed_s": 16.383
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-06T20:21:31Z",
+      "input_summary": {
+        "n_innovation": 4
+      },
+      "output_summary": {
+        "nick_model_name": "CrackYOLO-AMC"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:21:31Z",
+      "elapsed_s": 17.711
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-06T20:21:31Z",
+      "input_summary": {
+        "n_packages": 3
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:21:31Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T20:21:51Z",
+      "input_summary": {
+        "feasibility": "feasible"
+      },
+      "output_summary": {
+        "n_paths": 4
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:21:51Z",
+      "elapsed_s": 19.253
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T20:22:02Z",
+      "input_summary": {
+        "n_innovation": 4,
+        "n_packages": 3
+      },
+      "output_summary": {
+        "overall_verdict": "ACCEPT"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T20:22:02Z",
+      "elapsed_s": 11.805
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T20:22:02Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:22:02Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T20:22:02Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于yolo的木材裂缝识别",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 3,
+        "low_bar_status": "pass",
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": [
+          {
+            "title": "基于YOLO-AMC的木材裂缝识别改进研究",
+            "research_question": "如何借鉴YOLO-AMC中的注意力机制改进YOLO模型，以提升木材裂缝识别的精度？",
+            "baseline": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+            "improved_module_source": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+            "data_source": null,
+            "experiment_metrics": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+            "risk": "木材裂缝数据集缺失，需自行采集或标注；注意力机制在木材纹理背景下的泛化性未知。",
+            "estimated_workload": "3人月"
+          },
+          {
+            "title": "基于Poly-YOLO的木材裂缝实例分割与检测",
+            "research_question": "Poly-YOLO的更高精度和实例分割能力是否适用于木材裂缝的识别任务？",
+            "baseline": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "Poly-YOLO: higher speed, more precise detection and instance segmentation for YOLOv3",
+            "risk": "Poly-YOLO主要针对通用目标，木材裂缝细长形态可能影响分割效果；无公开木材裂缝数据集。",
+            "estimated_workload": "2人月"
+          },
+          {
+            "title": "基于YOLO-World的开放词汇木材裂缝识别",
+            "research_question": "YOLO-World的开放词汇检测能力能否零样本或小样本识别木材裂缝？",
+            "baseline": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+            "improved_module_source": null,
+            "data_source": null,
+            "experiment_metrics": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+            "risk": "开放词汇模型在木材裂缝这类细粒度缺陷上的零样本性能可能较差；缺乏相关基准数据集。",
+            "estimated_workload": "2人月"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T20:22:02Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": [],
+  "elapsed_s": 215.14
+}

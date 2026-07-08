@@ -1,7 +1,6 @@
 """Run a single Re1.3 E2E case to collect real data."""
 import json
 import os
-import sys
 import time
 from pathlib import Path
 
@@ -22,7 +21,7 @@ topic = "YOLOv5-based steel surface defect detection on hot-rolled strip using N
 
 print(f"=== Re1.3 E2E: {case_id} ===")
 print(f"topic: {topic}")
-print(f"provider: stepfun (RPM=10, max_workers=1)")
+print("provider: stepfun (RPM=10, max_workers=1)")
 print()
 
 state_in: ResearchState = {

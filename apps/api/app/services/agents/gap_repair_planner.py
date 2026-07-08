@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Callable
+from typing import Callable
 
 from .prompts.gap_repair_planner import render_gap_repair
 

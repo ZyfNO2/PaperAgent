@@ -198,7 +198,7 @@ def main():
     )
 
     print()
-    print(f"=== Summary ===")
+    print("=== Summary ===")
     print(f"Total: {len(results)}, Done: {n_done}, Error: {n_error}, Has final: {n_has_final}")
     print(f"Summary saved to: {summary_path}")
 

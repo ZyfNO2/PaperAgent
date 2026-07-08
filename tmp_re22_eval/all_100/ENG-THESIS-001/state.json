@@ -1,0 +1,281 @@
+{
+  "case_id": "ENG-THESIS-001",
+  "topic": "室内移动机器人目标搜寻与抓取研究",
+  "user_constraints": {
+    "topic_zh": "室内移动机器人目标搜寻与抓取研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "目标检测",
+      "路径规划",
+      "机械臂控制",
+      "SLAM"
+    ],
+    "object": [
+      "移动机器人",
+      "目标物体"
+    ],
+    "task": [
+      "目标搜寻",
+      "抓取"
+    ],
+    "scenario": [
+      "室内环境"
+    ],
+    "domain": "robotics_control",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "室外导航",
+      "无人机",
+      "人机交互"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "arxiv",
+        "query": "mobile robot object search grasping",
+        "why": "The prior Chinese query '室内移动机器人目标搜寻与抓取研究' returned zero relevant results. Switching to English keywords on arxiv to find academic papers on mobile robot object search and grasping, which directly addresses the baseline_n and paper_candidates_n gaps.",
+        "expected_evidence": "At least 1 paper on mobile robot object search and grasping, e.g., 'Mobile Robot Object Search and Grasping' or similar.",
+        "stop_condition": "Stop after 1 relevant paper found or after 10 results scanned with none relevant."
+      },
+      {
+        "tool": "openalex",
+        "query": "mobile robot object search grasping",
+        "why": "The prior Chinese query failed. Using English keywords on OpenAlex to find datasets or baseline methods for mobile robot object search and grasping, targeting the dataset_n and baseline_n gaps.",
+        "expected_evidence": "At least 1 dataset or baseline method (e.g., 'Mobile Manipulation Dataset' or 'Object Search Baseline') related to mobile robot object search and grasping.",
+        "stop_condition": "Stop after 1 relevant dataset or baseline found or after 10 results scanned with none relevant."
+      },
+      {
+        "tool": "web",
+        "query": "mobile robot object search grasping dataset benchmark",
+        "why": "The prior Chinese query failed. Using English web search to find dataset pages, benchmark pages, or project pages for mobile robot object search and grasping, targeting the dataset_n and repo_n gaps.",
+        "expected_evidence": "At least 1 dataset page or benchmark page (e.g., 'Mobile Manipulation Benchmark' or 'Object Search Dataset') for mobile robot object search and grasping.",
+        "stop_condition": "Stop after 1 relevant page found or after 10 results scanned with none relevant."
+      }
+    ],
+    "rounds": [
+      "repair"
+    ],
+    "negative_feedback": "The prior round used a single Chinese query '室内移动机器人目标搜寻与抓取研究' which returned zero relevant results. This repair round uses three English queries across different tools (arxiv, openalex, web) to find academic papers, datasets, baselines, and benchmarks for mobile robot object search and grasping, directly closing the baseline_n, dataset_n, repo_n, and paper_candidates_n gaps."
+  },
+  "raw_results": {},
+  "paper_candidates": [],
+  "verified_papers": [],
+  "weak_papers": [],
+  "evidence_audit": {
+    "quality_gate_route": "repair",
+    "quality_gate_snapshot": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "repair_rounds": 1,
+    "last_repair_type": "paper_gap_repair"
+  },
+  "filter_results": {
+    "total": 0,
+    "kept": 0,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T04:59:25Z",
+      "input_summary": {
+        "topic": "室内移动机器人目标搜寻与抓取研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T04:59:25Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T04:59:33Z",
+      "input_summary": {
+        "topic_len": 16
+      },
+      "output_summary": {
+        "n_method": 4,
+        "n_object": 2,
+        "domain": "robotics_control"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T04:59:33Z",
+      "elapsed_s": 8.363
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T04:59:33Z",
+      "input_summary": {
+        "topic_len": 16,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 1,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T04:59:33Z",
+      "elapsed_s": 0.003
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T04:59:33Z",
+      "input_summary": {
+        "topic_len": 16,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "raw_tools": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T04:59:33Z",
+      "elapsed_s": 0.086
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T04:59:33Z",
+      "input_summary": {
+        "n_candidates": 0
+      },
+      "output_summary": {
+        "kept": 0,
+        "dropped": 0
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T04:59:33Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T04:59:33Z",
+      "input_summary": {
+        "n_candidates": 0,
+        "topic_len": 16,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 0,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T04:59:33Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T04:59:33Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "repair"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T04:59:33Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "targeted_repair",
+      "started_at": "2026-07-06T04:59:47Z",
+      "input_summary": {
+        "current_round": 0,
+        "repair_type": "paper_gap_repair"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "repair"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re12_repair.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T04:59:47Z",
+      "elapsed_s": 13.938
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T04:59:47Z",
+      "input_summary": {
+        "topic_len": 16,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "raw_tools": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T04:59:47Z",
+      "elapsed_s": 0.002
+    }
+  ],
+  "provider_profile": "legacy_adapter",
+  "errors": []
+}

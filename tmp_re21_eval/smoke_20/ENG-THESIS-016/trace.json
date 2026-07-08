@@ -1,0 +1,590 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T00:06:46Z",
+    "input_summary": {
+      "topic": "基于深度学习的视觉SLAM语义地图的研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:06:46Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T00:06:50Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:06:50Z",
+    "elapsed_s": 3.878
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T00:06:50Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:06:50Z",
+    "elapsed_s": 0.002
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T00:06:50Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 39,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github",
+        "semantic_scholar"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T00:07:15Z",
+    "elapsed_s": 25.129
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T00:07:15Z",
+    "input_summary": {
+      "n_candidates": 39
+    },
+    "output_summary": {
+      "kept": 31,
+      "dropped": 8,
+      "pre_filter_keep": 31,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 31,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:07:19Z",
+    "elapsed_s": 4.727
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T00:07:19Z",
+    "input_summary": {
+      "n_candidates": 31,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 16,
+      "n_reject": 14
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:07:26Z",
+    "elapsed_s": 6.401
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T00:07:26Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 16,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:07:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T00:07:26Z",
+    "input_summary": {
+      "n_verified": 11,
+      "n_seeds": 5,
+      "seed_titles": [
+        "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+        "A Real-Time, Robust, and Versatile Visual-SLAM Framework Bas",
+        "Deep Residual Learning for Image Recognition",
+        "Xception: Deep Learning with Depthwise Separable Convolution",
+        "PyTorch: An Imperative Style, High-Performance Deep Learning"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 99,
+      "n_surveys": 3,
+      "n_repos": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 99,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A Real-Time, Robust, and Versatile Visual-SLAM Framework Bas",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Deep Residual Learning for Image Recognition",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Xception: Deep Learning with Depthwise Separable Convolution",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "PyTorch: An Imperative Style, High-Performance Deep Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T00:08:00Z",
+    "elapsed_s": 33.697
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T00:08:00Z",
+    "input_summary": {
+      "n_candidates": 99,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 13,
+      "n_weak_reject": 35,
+      "n_reject": 51
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:08:23Z",
+    "elapsed_s": 23.437
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T00:08:23Z",
+    "input_summary": {
+      "n_papers": 24,
+      "n_weak": 35,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:08:23Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T00:08:32Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:08:32Z",
+    "elapsed_s": 8.831
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T00:08:32Z",
+    "input_summary": {
+      "papers": 24
+    },
+    "output_summary": {
+      "nodes": 24,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:08:32Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T00:08:32Z",
+    "input_summary": {
+      "n_verified": 24
+    },
+    "output_summary": {
+      "n_baseline": 14,
+      "n_parallel": 10,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:08:32Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T00:08:37Z",
+    "input_summary": {
+      "n_baseline": 14,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 45
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:08:37Z",
+    "elapsed_s": 4.963
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T00:08:48Z",
+    "input_summary": {
+      "n_baseline": 14,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:08:48Z",
+    "elapsed_s": 10.749
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T00:09:00Z",
+    "input_summary": {
+      "n_baseline": 14,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:09:00Z",
+    "elapsed_s": 12.548
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T00:08:56Z",
+    "input_summary": {
+      "n_baseline": 14
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:08:56Z",
+    "elapsed_s": 8.879
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T00:09:10Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "LightSem-SLAM"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:09:10Z",
+    "elapsed_s": 10.418
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T00:09:10Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:09:10Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T00:09:20Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:09:20Z",
+    "elapsed_s": 9.8
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T00:09:27Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:09:27Z",
+    "elapsed_s": 6.978
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T00:09:27Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:09:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T00:09:27Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的视觉SLAM语义地图的研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于深度学习的动态环境语义SLAM系统构建与评估",
+          "research_question": "如何利用深度学习技术（如实例分割、光流估计）构建一个能够在动态环境中鲁棒运行的视觉SLAM系统，并生成包含语义信息的语义地图？",
+          "baseline": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "improved_module_source": "An instance-aware segmentation and optical flow based DVI-SLAM for dynamic environments",
+          "data_source": null,
+          "experiment_metrics": "A Real-Time, Robust, and Versatile Visual-SLAM Framework Based on Deep Learning Networks",
+          "risk": "动态物体检测与剔除的实时性可能不足，影响SLAM系统的整体帧率；语义地图的稠密重建精度可能受限于深度估计质量。",
+          "estimated_workload": "高（约6-8个月）：需要实现并集成深度学习模块（实例分割、光流）、修改SLAM前端/后端、在多个动态场景数据集上测试并调优。"
+        },
+        {
+          "title": "基于3D高斯泼溅的稠密语义SLAM研究",
+          "research_question": "如何将3D高斯泼溅（3D Gaussian Splatting）技术应用于稠密视觉SLAM，并同时构建包含物体级语义信息的语义地图？",
+          "baseline": "GS-SLAM: Dense Visual SLAM with 3D Gaussian Splatting",
+          "improved_module_source": "CGS-SLAM: Compact 3D Gaussian Splatting for Dense Visual SLAM",
+          "data_source": "TartanAir: A Dataset to Push the Limits of Visual SLAM",
+          "experiment_metrics": "GS-SLAM: Dense Visual SLAM with 3D Gaussian Splatting",
+          "risk": "3D高斯泼溅的实时渲染与优化计算量较大，可能难以达到实时SLAM的要求；语义标签与高斯属性的融合方式需要精心设计。",
+          "estimated_workload": "高（约6-9个月）：需要深入理解3D高斯泼溅原理，将其与SLAM框架结合，并在TartanAir等数据集上验证重建精度与语义一致性。"
+        },
+        {
+          "title": "面向嵌入式系统的轻量级语义SLAM方法",
+          "research_question": "如何设计一个基于多任务深度学习模型的轻量级视觉SLAM系统，使其能够在嵌入式设备上实时运行并生成语义地图？",
+          "baseline": "A Stereo Visual SLAM System Using Object-Level Motion Estimation and Geometric Filtering Based on Cross Disparity",
+          "improved_module_source": "A multitask deep learning model for real-time deployment in embedded systems",
+          "data_source": null,
+          "experiment_metrics": "A Real-Time, Robust, and Versatile Visual-SLAM Framework Based on Deep Learning Networks",
+          "risk": "多任务模型在嵌入式平台上的精度与速度权衡可能难以达到理想效果；缺乏公开的嵌入式SLAM基准数据集。",
+          "estimated_workload": "中高（约5-7个月）：需要设计并训练轻量级多任务网络，移植到嵌入式平台（如Jetson），并进行系统级优化与评估。"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:09:27Z",
+    "elapsed_s": 0.0
+  }
+]

@@ -20,7 +20,6 @@ Re04 acceptance:
 """
 from __future__ import annotations
 
-import asyncio
 import logging
 from typing import Any, Awaitable, Callable
 
@@ -33,7 +32,6 @@ from .candidate_pool import (
 from .citation_expand import citation_expand
 from .query_matrix import build_query_matrix
 from .result_expander import expand_from_round1
-from .seed_relevance import filter_seeds
 from .source_ledger import SourceLedger
 from .resource_deduper import dedup_candidates
 

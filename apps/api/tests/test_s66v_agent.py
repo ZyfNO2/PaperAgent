@@ -14,11 +14,8 @@ To run only these:
 
 from __future__ import annotations
 
-import asyncio
-import json
 import os
 import time
-from unittest.mock import AsyncMock
 
 import pytest
 
@@ -26,14 +23,9 @@ from app.services.agents.research_agent import (
     _extract_quoted_titles,
     _apply_verifier,
     _build_verifier_index,
-    _normalize_buckets,
-    GLOBAL_COUNTER,
     reset_counter,
     parse_topic,
     plan_tools,
-    fetch_all,
-    synthesize_buckets,
-    devils_advocate,
     run_research_agent,
 )
 

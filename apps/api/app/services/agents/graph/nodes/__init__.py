@@ -15,7 +15,7 @@ from . import intake as _intake
 from . import json_graph_builder as _json_graph_builder
 from . import quality_filter as _quality_filter
 from . import quality_gate as _quality_gate
-from . import retrieve as _retrieve
+from . import search_agent as _search_agent  # Re3.0: React search agent
 from . import search_planner as _search_planner
 from . import targeted_repair as _targeted_repair
 from . import topic_parser as _topic_parser
@@ -33,8 +33,8 @@ REGISTRY: dict[str, callable] = {
     "intake": _intake.intake_node,
     "topic_parser": _topic_parser.topic_parser_node,
     "search_planner": _search_planner.search_planner_node,
-    "paper_retriever": _retrieve.retrieve_node,
-    "retrieve": _retrieve.retrieve_node,                    # Re1.1 compat alias
+    "paper_retriever": _search_agent.search_agent_node,  # Re3.0: React search agent
+    "search_agent": _search_agent.search_agent_node,     # Re3.0 alias
     "quality_filter": _quality_filter.quality_filter_node,  # Re1.3
     "paper_verifier": _verify.verify_node,
     "verify": _verify.verify_node,                          # Re1.1 compat alias
@@ -64,8 +64,8 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "intake": ("case_id", "trace_events", "errors", "provider_profile"),
     "topic_parser": ("topic_atoms", "trace_events", "errors", "provider_profile"),
     "search_planner": ("search_plan", "trace_events", "errors", "provider_profile"),
-    "paper_retriever": ("raw_results", "paper_candidates", "trace_events",
-                       "errors", "provider_profile"),
+    "paper_retriever": ("raw_results", "paper_candidates", "repo_candidates",
+                       "search_steps", "trace_events", "errors", "provider_profile"),
     "quality_filter": ("paper_candidates", "filter_results", "trace_events", "errors"),
     "paper_verifier": ("verified_papers", "paper_candidates", "trace_events",
                       "errors", "provider_profile"),
@@ -89,7 +89,7 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "feasibility_assessor": ("feasibility_report", "trace_events"),
     "innovation_extractor": ("innovation_points", "stitching_plan", "trace_events"),
     "sota_matcher": ("sota_comparison", "trace_events"),
-    "narrative_builder": ("research_narratives", "trace_events"),
+    "narrative_builder": ("research_narrative", "trace_events"),
     "optimization_advisor": ("optimization_directions", "trace_events"),
     "devils_advocate": ("review_report", "trace_events"),
 }

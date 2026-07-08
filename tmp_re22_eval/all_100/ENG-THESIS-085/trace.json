@@ -1,0 +1,634 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T08:01:57Z",
+    "input_summary": {
+      "topic": "高速公路沥青面裂缝检测识别算法的研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:01:57Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T08:02:01Z",
+    "input_summary": {
+      "topic_len": 18
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 1,
+      "domain": "civil_infra"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:02:01Z",
+    "elapsed_s": 4.121
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T08:02:01Z",
+    "input_summary": {
+      "topic_len": 18,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:02:01Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T08:02:01Z",
+    "input_summary": {
+      "topic_len": 18,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 23,
+      "raw_tools": [
+        "arxiv",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T08:02:50Z",
+    "elapsed_s": 48.978
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T08:02:50Z",
+    "input_summary": {
+      "n_candidates": 23
+    },
+    "output_summary": {
+      "kept": 18,
+      "dropped": 5,
+      "pre_filter_keep": 15,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 15,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:02:56Z",
+    "elapsed_s": 6.158
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T08:02:56Z",
+    "input_summary": {
+      "n_candidates": 18,
+      "topic_len": 18,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 9,
+      "n_weak_reject": 4,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:03:03Z",
+    "elapsed_s": 7.698
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T08:03:03Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 4,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:03:03Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T08:03:03Z",
+    "input_summary": {
+      "n_verified": 9,
+      "n_seeds": 4,
+      "seed_titles": [
+        "Crack Detection with Fully Convolutional Network",
+        "Crack Detection with Generative Adversarial Learning",
+        "Crack Detection with Deep Classification Network",
+        "Self-Supervised Structure Learning for Crack Detection"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 4,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Crack Detection with Fully Convolutional Network",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Crack Detection with Generative Adversarial Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Crack Detection with Deep Classification Network",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Self-Supervised Structure Learning for Crack Detection",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T08:03:31Z",
+    "elapsed_s": 27.017
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T08:03:31Z",
+    "input_summary": {
+      "n_candidates": 9,
+      "topic_len": 18,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 4,
+      "n_weak_reject": 5,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:03:38Z",
+    "elapsed_s": 7.292
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T08:03:38Z",
+    "input_summary": {
+      "n_papers": 13,
+      "n_weak": 9,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:03:38Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T08:03:48Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:03:48Z",
+    "elapsed_s": 10.174
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T08:03:48Z",
+    "input_summary": {
+      "papers": 13
+    },
+    "output_summary": {
+      "nodes": 9,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:03:48Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T08:03:48Z",
+    "input_summary": {
+      "n_verified": 13
+    },
+    "output_summary": {
+      "n_baseline": 13,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:03:48Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T08:03:54Z",
+    "input_summary": {
+      "n_baseline": 13,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:03:54Z",
+    "elapsed_s": 5.753
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T08:04:10Z",
+    "input_summary": {
+      "n_baseline": 13,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 9,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:04:10Z",
+    "elapsed_s": 16.206
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T08:04:24Z",
+    "input_summary": {
+      "n_baseline": 13,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:04:24Z",
+    "elapsed_s": 13.869
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T08:04:20Z",
+    "input_summary": {
+      "n_baseline": 13
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:04:20Z",
+    "elapsed_s": 10.065
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T08:04:35Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CrackFusionNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:04:35Z",
+    "elapsed_s": 11.471
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T08:04:35Z",
+    "input_summary": {
+      "n_packages": 9
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 9
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:04:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T08:04:45Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:04:45Z",
+    "elapsed_s": 9.485
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T08:04:52Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 9
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T08:04:52Z",
+    "elapsed_s": 7.275
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T08:04:52Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:04:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T08:04:52Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "高速公路沥青面裂缝检测识别算法的研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 9,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于生成对抗网络的高速公路沥青面裂缝检测算法研究",
+          "research_question": "如何利用生成对抗网络提升高速公路沥青面裂缝检测的精度与鲁棒性？",
+          "baseline": "Crack Detection with Generative Adversarial Learning",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Crack Detection with Generative Adversarial Learning",
+          "risk": "生成对抗网络训练不稳定，且缺乏公开的高速公路沥青面专用数据集，可能影响泛化能力。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "基于深度分类网络的高速公路沥青面裂缝检测算法研究",
+          "research_question": "深度分类网络在高速公路沥青面裂缝检测中如何实现高效且准确的分类？",
+          "baseline": "Crack Detection with Deep Classification Network",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Crack Detection with Deep Classification Network",
+          "risk": "分类网络对裂缝形态多样性敏感，可能在小裂缝或复杂背景下误检。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于全卷积网络的高速公路沥青面裂缝分割算法研究",
+          "research_question": "全卷积网络如何实现高速公路沥青面裂缝的像素级分割？",
+          "baseline": "Crack Detection with Fully Convolutional Network",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Crack Detection with Fully Convolutional Network",
+          "risk": "全卷积网络对裂缝边缘细节的分割精度可能不足，需要后处理优化。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于自监督结构学习的高速公路沥青面裂缝检测算法研究",
+          "research_question": "自监督结构学习能否在无标注数据条件下提升裂缝检测性能？",
+          "baseline": "Self-Supervised Structure Learning for Crack Detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Self-Supervised Structure Learning for Crack Detection",
+          "risk": "自监督学习依赖数据内在结构，高速公路沥青面裂缝特征可能不足以支撑有效学习。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于DeepCrack的高速公路沥青面裂缝检测算法研究",
+          "research_question": "DeepCrack网络结构在高速公路沥青面裂缝检测中的适用性与改进方向？",
+          "baseline": "qinnzou/DeepCrack",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "qinnzou/DeepCrack",
+          "risk": "DeepCrack原为混凝土裂缝设计，迁移至沥青面需调整网络参数。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于粗到细裂缝线索的高速公路沥青面裂缝检测算法研究",
+          "research_question": "粗到细裂缝线索策略如何提升高速公路沥青面裂缝检测的召回率？",
+          "baseline": "Coarse-to-fine crack cue for robust crack detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Coarse-to-fine crack cue for robust crack detection",
+          "risk": "粗到细策略可能增加计算开销，实时性需验证。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于Crack-pot的高速公路沥青面裂缝与坑槽检测算法研究",
+          "research_question": "Crack-pot算法在高速公路沥青面裂缝与坑槽联合检测中的性能如何？",
+          "baseline": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Crack-pot: Autonomous Road Crack and Pothole Detection",
+          "risk": "坑槽与裂缝形态差异大，统一模型可能降低裂缝检测精度。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "基于NHA12D数据集的高速公路沥青面裂缝检测算法比较研究",
+          "research_question": "在NHA12D数据集上，不同裂缝检测算法对高速公路沥青面的适用性如何？",
+          "baseline": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+          "improved_module_source": null,
+          "data_source": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+          "experiment_metrics": "NHA12D: A New Pavement Crack Dataset and a Comparison Study Of Crack Detection Algorithms",
+          "risk": "NHA12D数据集可能不专门针对高速公路沥青面，需验证领域匹配度。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于特征金字塔与层次提升网络的高速公路沥青面裂缝检测算法研究",
+          "research_question": "特征金字塔与层次提升网络如何增强多尺度裂缝的检测能力？",
+          "baseline": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Feature Pyramid and Hierarchical Boosting Network for Pavement Crack Detection",
+          "risk": "网络复杂度高，训练资源需求大。",
+          "estimated_workload": "6人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T08:04:52Z",
+    "elapsed_s": 0.0
+  }
+]

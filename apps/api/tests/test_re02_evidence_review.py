@@ -63,7 +63,8 @@ def test_audit_candidates_returns_one_row_per_input():
 
 def test_audit_candidates_default_tier_is_candidate():
     """When the LLM never returns a row for a candidate, we default to 'candidate' (NOT 'rejected')."""
-    chat = lambda *a, **kw: {"reviews": []}  # LLM returns nothing
+    def chat(*a, **kw):
+        return {"reviews": []}  # LLM returns nothing
     cands = [_cand("orphan1"), _cand("orphan2")]
     reviews = audit_candidates(parsed_topic={}, candidates=cands, raw={}, chat_json_strict=chat)
     assert len(reviews) == 2
@@ -72,9 +73,10 @@ def test_audit_candidates_default_tier_is_candidate():
 
 
 def test_audit_candidates_invalid_exists_verdict_falls_back():
-    chat = lambda *a, **kw: {"reviews": [
-        {"candidate_id": "x", "status": "core", "exists_verdict": "WHATEVER_NONSENSE"},
-    ]}
+    def chat(*a, **kw):
+        return {"reviews": [
+            {"candidate_id": "x", "status": "core", "exists_verdict": "WHATEVER_NONSENSE"},
+        ]}
     reviews = audit_candidates(parsed_topic={}, candidates=[_cand("x")], raw={}, chat_json_strict=chat)
     assert reviews[0].exists_verdict == "likely_exists"
 

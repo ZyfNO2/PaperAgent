@@ -1,0 +1,585 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:43:26Z",
+    "input_summary": {
+      "topic": "基于深度学习的自动驾驶感知算法"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:43:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:43:30Z",
+    "input_summary": {
+      "topic_len": 15
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "robotics_control"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:43:30Z",
+    "elapsed_s": 4.132
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:43:30Z",
+    "input_summary": {
+      "topic_len": 15,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:43:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:43:30Z",
+    "input_summary": {
+      "topic_len": 15,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:44:06Z",
+    "elapsed_s": 35.655
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:44:06Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 23,
+      "dropped": 8,
+      "pre_filter_keep": 23,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 23,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:44:11Z",
+    "elapsed_s": 5.447
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:44:11Z",
+    "input_summary": {
+      "n_candidates": 23,
+      "topic_len": 15,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 15,
+      "n_reject": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:44:18Z",
+    "elapsed_s": 6.786
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:44:18Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 15,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:44:18Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:44:18Z",
+    "input_summary": {
+      "n_verified": 9,
+      "n_seeds": 5,
+      "seed_titles": [
+        "New Measures for Deep Learning",
+        "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "Deep Residual Learning for Image Recognition",
+        "Xception: Deep Learning with Depthwise Separable Convolution",
+        "PyTorch: An Imperative Style, High-Performance Deep Learning"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 56,
+      "n_surveys": 0,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 56,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "New Measures for Deep Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "n_references_plus_citations": 2,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Deep Residual Learning for Image Recognition",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Xception: Deep Learning with Depthwise Separable Convolution",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "PyTorch: An Imperative Style, High-Performance Deep Learning",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T06:44:51Z",
+    "elapsed_s": 33.62
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:44:51Z",
+    "input_summary": {
+      "n_candidates": 56,
+      "topic_len": 15,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 5,
+      "n_weak_reject": 21,
+      "n_reject": 30
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:45:06Z",
+    "elapsed_s": 14.596
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:45:06Z",
+    "input_summary": {
+      "n_papers": 14,
+      "n_weak": 21,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:45:06Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:45:16Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:45:16Z",
+    "elapsed_s": 9.88
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:45:16Z",
+    "input_summary": {
+      "papers": 14
+    },
+    "output_summary": {
+      "nodes": 14,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:45:16Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:45:16Z",
+    "input_summary": {
+      "n_verified": 14
+    },
+    "output_summary": {
+      "n_baseline": 5,
+      "n_parallel": 9,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:45:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:45:21Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:45:21Z",
+    "elapsed_s": 5.1
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T06:45:32Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:45:32Z",
+    "elapsed_s": 10.819
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T06:45:43Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:45:43Z",
+    "elapsed_s": 11.672
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T06:45:41Z",
+    "input_summary": {
+      "n_baseline": 5
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:45:41Z",
+    "elapsed_s": 9.357
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T06:45:54Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Uncertainty-Aware Multi-Task Perceptron (UAMP)"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:45:54Z",
+    "elapsed_s": 10.057
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T06:45:54Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:45:54Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:46:04Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:46:04Z",
+    "elapsed_s": 10.478
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:46:12Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:46:12Z",
+    "elapsed_s": 7.532
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:46:12Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:46:12Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:46:12Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的自动驾驶感知算法",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于Faster R-CNN的自动驾驶场景多目标检测优化",
+          "research_question": "如何利用Faster R-CNN在自动驾驶场景中实现高精度多目标检测，并评估其与语义分割联合训练的效果？",
+          "baseline": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+          "improved_module_source": "A multitask deep learning model for real-time deployment in embedded systems",
+          "data_source": null,
+          "experiment_metrics": "New Measures for Deep Learning",
+          "risk": "自动驾驶场景的复杂光照和遮挡可能降低检测精度，需额外数据增强策略。",
+          "estimated_workload": "3人月（包括模型复现、多任务训练、嵌入式部署适配）"
+        },
+        {
+          "title": "基于全卷积网络的自动驾驶场景语义分割与目标检测联合学习",
+          "research_question": "如何将全卷积网络（FCN）与Faster R-CNN结合，在自动驾驶场景中同时完成语义分割和目标检测？",
+          "baseline": "Fully convolutional networks for semantic segmentation",
+          "improved_module_source": "Object Detection via a Multi-region and Semantic Segmentation-Aware CNN Model",
+          "data_source": null,
+          "experiment_metrics": "Generalized Regularized Evidential Deep Learning Models: Theory and Comprehensive Evaluation",
+          "risk": "多任务学习可能导致训练不稳定，需设计合适的损失权重。",
+          "estimated_workload": "4人月（包括模型设计、联合训练、消融实验）"
+        },
+        {
+          "title": "基于深度残差网络的自动驾驶感知特征提取与迁移学习",
+          "research_question": "如何利用Deep Residual Learning（ResNet）作为骨干网络提升自动驾驶感知算法的特征提取能力，并验证其在PyTorch框架下的效率？",
+          "baseline": "Deep Residual Learning for Image Recognition",
+          "improved_module_source": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+          "data_source": null,
+          "experiment_metrics": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+          "risk": "残差网络深度增加可能导致计算延迟，需平衡精度与实时性。",
+          "estimated_workload": "2.5人月（包括骨干网络替换、PyTorch实现、性能对比）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:46:12Z",
+    "elapsed_s": 0.0
+  }
+]

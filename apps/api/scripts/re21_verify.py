@@ -2,7 +2,10 @@
 
 Runs V-MED / V-SLAM / V-CRACK and outputs results to tmp_re21_eval/verify/.
 """
-import os, sys, json, time
+import os
+import sys
+import json
+import time
 from pathlib import Path
 
 os.environ['FAST_JSON_PRIMARY'] = 'deepseek'

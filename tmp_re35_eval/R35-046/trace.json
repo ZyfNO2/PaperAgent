@@ -1,0 +1,890 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T12:41:21Z",
+    "input_summary": {
+      "topic": "基于视觉的机械臂目标检测和避障路径规划研究与应用"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:41:21Z",
+    "elapsed_s": 0.0,
+    "state_keys": []
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T12:41:23Z",
+    "input_summary": {
+      "topic_len": 24
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 0,
+      "domain": "unknown"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:41:23Z",
+    "elapsed_s": 2.24,
+    "state_keys": []
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T12:41:23Z",
+    "input_summary": {
+      "topic_len": 24,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:41:23Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T12:41:23Z",
+    "input_summary": {
+      "topic_len": 24,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 11,
+      "n_steps": 3,
+      "n_tool_calls": 2,
+      "raw_tools": [
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "github": 11
+      },
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 11
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T12:41:35Z",
+    "elapsed_s": 12.168
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T12:41:35Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:41:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T12:41:35Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 24,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 12,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:41:41Z",
+    "elapsed_s": 6.464
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T12:41:41Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 12,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 11,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": true
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:41:41Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-08T12:41:49Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:41:49Z",
+    "elapsed_s": 7.03,
+    "state_keys": []
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T12:41:49Z",
+    "input_summary": {
+      "topic_len": 24,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 45,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "arxiv",
+        "github",
+        "openalex",
+        "semantic_scholar",
+        "core",
+        "crossref",
+        "huggingface"
+      ],
+      "per_adapter": {
+        "arxiv": 24,
+        "openalex": 12,
+        "crossref": 12,
+        "github": 0,
+        "semantic_scholar": 0,
+        "huggingface": 0,
+        "core": 8
+      },
+      "failed_adapters": [
+        "github",
+        "huggingface",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 24
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "openalex",
+        "n": 12
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "core",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "huggingface",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T12:42:37Z",
+    "elapsed_s": 48.848
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T12:42:37Z",
+    "input_summary": {
+      "n_candidates": 45
+    },
+    "output_summary": {
+      "kept": 45,
+      "dropped": 0,
+      "pre_filter_keep": 42,
+      "pre_filter_drop": 0,
+      "llm_judged": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 42,
+        "pre_drop": 0,
+        "gray_area": 3
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 3
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:42:42Z",
+    "elapsed_s": 4.319
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T12:42:42Z",
+    "input_summary": {
+      "n_candidates": 45,
+      "topic_len": 24,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 11,
+      "n_weak_reject": 25,
+      "n_reject": 9
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:42:55Z",
+    "elapsed_s": 13.703
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T12:42:55Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 25,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 1,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:42:55Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T12:42:55Z",
+    "input_summary": {
+      "n_verified": 11,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Enhanced Visual Detection and Path Planning for Robotic Arms",
+        "Vision-based obstacle avoidance robotic arm path planning ba",
+        "Comparative analysis of obstacle avoidance path planning alg",
+        "Obstacle Avoidance of Robotic Arm in Path Planning Based on ",
+        "Obstacle Avoidance Planning Algorithm for Robotic Arm Motion"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 26,
+      "n_surveys": 1,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 26,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Enhanced Visual Detection and Path Planning for Robotic Arms",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Vision-based obstacle avoidance robotic arm path planning ba",
+        "n_references_plus_citations": 21,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Comparative analysis of obstacle avoidance path planning alg",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Obstacle Avoidance of Robotic Arm in Path Planning Based on ",
+        "n_references_plus_citations": 1,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Obstacle Avoidance Planning Algorithm for Robotic Arm Motion",
+        "n_references_plus_citations": 5,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-08T12:42:57Z",
+    "elapsed_s": 1.142
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T12:42:57Z",
+    "input_summary": {
+      "n_candidates": 26,
+      "topic_len": 24,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 4,
+      "n_weak_reject": 17,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:43:04Z",
+    "elapsed_s": 7.888
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T12:43:04Z",
+    "input_summary": {
+      "n_papers": 15,
+      "n_weak": 42,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 1,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:43:04Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T12:43:19Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:43:19Z",
+    "elapsed_s": 14.219,
+    "state_keys": []
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T12:43:19Z",
+    "input_summary": {
+      "papers": 15
+    },
+    "output_summary": {
+      "nodes": 15,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:43:19Z",
+    "elapsed_s": 0.0,
+    "state_keys": []
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T12:43:22Z",
+    "input_summary": {
+      "n_verified": 15
+    },
+    "output_summary": {
+      "n_baseline": 2,
+      "n_parallel": 13,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": true
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier+llm_reclassify",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:43:22Z",
+    "elapsed_s": 3.712,
+    "state_keys": []
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T12:43:27Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:43:27Z",
+    "elapsed_s": 4.351,
+    "state_keys": []
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T12:43:41Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 13
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:43:41Z",
+    "elapsed_s": 14.705,
+    "state_keys": []
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T12:43:55Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 13
+    },
+    "output_summary": {
+      "n_innovation": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:43:55Z",
+    "elapsed_s": 13.724,
+    "state_keys": []
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T12:43:49Z",
+    "input_summary": {
+      "n_baseline": 2
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:43:49Z",
+    "elapsed_s": 7.726,
+    "state_keys": []
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T12:44:06Z",
+    "input_summary": {
+      "n_innovation": 4
+    },
+    "output_summary": {
+      "nick_model_name": "YOLO-MSC-RRT Arm Planner"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:44:06Z",
+    "elapsed_s": 10.575,
+    "state_keys": []
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T12:44:06Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:44:06Z",
+    "elapsed_s": 0.0,
+    "state_keys": []
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T12:44:16Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:44:16Z",
+    "elapsed_s": 10.322,
+    "state_keys": []
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T12:44:23Z",
+    "input_summary": {
+      "n_innovation": 4,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:44:23Z",
+    "elapsed_s": 6.432,
+    "state_keys": []
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T12:44:33Z",
+    "input_summary": {
+      "n_innovation": 4
+    },
+    "output_summary": {
+      "nick_model_name": "YOLO-MSC-RRT Arm Planner"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:44:33Z",
+    "elapsed_s": 10.842,
+    "state_keys": []
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T12:44:33Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:44:33Z",
+    "elapsed_s": 0.0,
+    "state_keys": []
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T12:44:44Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:44:44Z",
+    "elapsed_s": 10.744,
+    "state_keys": []
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T12:44:51Z",
+    "input_summary": {
+      "n_innovation": 4,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T12:44:51Z",
+    "elapsed_s": 6.672,
+    "state_keys": []
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T12:44:51Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:44:51Z",
+    "elapsed_s": 0.0,
+    "state_keys": []
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T12:44:51Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于视觉的机械臂目标检测和避障路径规划研究与应用",
+      "n_papers": 15,
+      "n_baseline": 2,
+      "n_parallel": 13,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于改进YOLOv10n-SSE的机械臂目标检测与混合避障路径规划",
+          "research_question": "如何将YOLOv10n-SSE增强视觉检测与混合路径规划算法结合，提升机械臂在复杂环境下的目标识别与避障能力？",
+          "baseline": "Enhanced Visual Detection and Path Planning for Robotic Arms Using Yolov10n-SSE and Hybrid Algorithms",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Enhanced Visual Detection and Path Planning for Robotic Arms Using Yolov10n-SSE and Hybrid Algorithms",
+          "risk": "该基线论文已提出完整方案，直接复现可能缺乏创新增量；需在检测精度或规划效率上提出明确改进点。",
+          "estimated_workload": "3个月（复现基线+设计改进实验）"
+        },
+        {
+          "title": "基于多级PPO框架的视觉避障路径规划",
+          "research_question": "多级PPO框架如何利用视觉输入实现机械臂在动态障碍环境中的端到端路径规划？",
+          "baseline": "Vision-based obstacle avoidance robotic arm path planning based on a multi-level PPO framework",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Vision-based obstacle avoidance robotic arm path planning based on a multi-level PPO framework",
+          "risk": "强化学习训练收敛慢，仿真到真实环境的迁移（Sim-to-Real）可能存在差距。",
+          "estimated_workload": "4个月（环境搭建+训练+调参）"
+        },
+        {
+          "title": "基于RGB-D视觉引导的6-DOF机械臂定位与避障路径规划",
+          "research_question": "如何利用RGB-D视觉信息实现6-DOF机械臂在静态和动态障碍下的精确定位与无碰撞路径规划？",
+          "baseline": "Research on Six-Degree-of-Freedom Refueling Robotic Arm Positioning and Docking Based on RGB-D Visual Guidance",
+          "improved_module_source": "Fast Robot Arm Inverse Kinematics and Path Planning Under Complex Static and Dynamic Obstacle Constraints",
+          "data_source": null,
+          "experiment_metrics": "Research on Six-Degree-of-Freedom Refueling Robotic Arm Positioning and Docking Based on RGB-D Visual Guidance",
+          "risk": "RGB-D传感器在强光或反射表面可能失效，需设计鲁棒性补偿机制。",
+          "estimated_workload": "5个月（硬件集成+算法融合+实验验证）"
+        },
+        {
+          "title": "基于点云环境建模的机械臂抓取避障路径规划",
+          "research_question": "如何利用点云环境建模方法提升机械臂在非结构化环境中的避障路径规划效率？",
+          "baseline": "An obstacle avoidance path planning method for robot grasping based on point cloud environment modelling",
+          "improved_module_source": "Quicker Path planning of a collaborative dual-arm robot using Modified BP-RRT* algorithm",
+          "data_source": null,
+          "experiment_metrics": "An obstacle avoidance path planning method for robot grasping based on point cloud environment modelling",
+          "risk": "点云处理计算量大，实时性可能受限；需优化算法或使用GPU加速。",
+          "estimated_workload": "4个月（点云处理模块+路径规划改进+实验）"
+        },
+        {
+          "title": "融合改进A*与人工势场法的6-DOF机械臂避障路径规划",
+          "research_question": "改进A*算法与人工势场法如何结合，以解决6-DOF机械臂在复杂障碍环境中的路径规划问题？",
+          "baseline": "Obstacle avoidance path planning of 6-DOF robotic arm based on improved A* algorithm and artificial potential field method",
+          "improved_module_source": "Comparative analysis of obstacle avoidance path planning algorithms for robotic manipulators: RRT, APF, and CHOMP",
+          "data_source": null,
+          "experiment_metrics": "Obstacle avoidance path planning of 6-DOF robotic arm based on improved A* algorithm and artificial potential field method",
+          "risk": "A*与APF的融合可能导致局部最优，需设计切换或混合策略。",
+          "estimated_workload": "3个月（算法实现+仿真对比）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T12:44:51Z",
+    "elapsed_s": 0.0,
+    "state_keys": []
+  }
+]

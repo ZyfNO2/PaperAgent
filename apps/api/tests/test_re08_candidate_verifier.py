@@ -6,7 +6,6 @@ the gap_repair planner produces 1-3 targeted queries per gap reason.
 """
 from __future__ import annotations
 
-import pytest
 
 
 def test_verifier_marks_direct_when_axis_matches():
@@ -106,7 +105,7 @@ def test_gap_repair_plan_handles_unknown_gap():
 
 def test_gap_repair_plan_query_substitution():
     from app.services.agents.gap_repair_planner import (
-        _build_query, rule_repair_plan,
+        _build_query,
     )
     atoms = {
         "task": [{"en": "crack detection"}],

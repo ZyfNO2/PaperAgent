@@ -1,0 +1,3044 @@
+{
+  "case_id": "FIX-048",
+  "topic": "面向动态环境的视觉SLAM研究",
+  "user_constraints": {
+    "topic_zh": "面向动态环境的视觉SLAM研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "visual SLAM",
+      "dynamic SLAM",
+      "feature matching",
+      "motion segmentation"
+    ],
+    "object": [
+      "dynamic environment",
+      "moving objects"
+    ],
+    "task": [
+      "simultaneous localization and mapping",
+      "pose estimation"
+    ],
+    "scenario": [
+      "dynamic environment"
+    ],
+    "domain": "vision_3d",
+    "dataset_terms": [],
+    "baseline_terms": [
+      "ORB-SLAM2",
+      "ORB-SLAM3",
+      "DS-SLAM"
+    ],
+    "avoid_terms": [
+      "static SLAM",
+      "lidar SLAM",
+      "visual odometry"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "visual SLAM dynamic environment",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "dynamic SLAM dynamic environment",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "ORB-SLAM2 survey review",
+        "why": "baseline",
+        "expected_evidence": "survey or baseline papers",
+        "stop_condition": "n>=3"
+      },
+      {
+        "tool": "arxiv",
+        "query": "visual SLAM dynamic environment simultaneous localization and mapping",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "arxiv": [
+      {
+        "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+        "abstract": "Visual SLAM in dynamic environments remains challenging, as several existing methods rely on semantic filtering that only handles known object classes, or use fixed robust kernels that cannot adapt to unknown moving objects, leading to degraded accuracy when they appear in the scene. We present VAR-SLAM (Visual Adaptive and Robust SLAM), an ORB-SLAM3-based system that combines a lightweight semantic keypoint filter to deal with known moving objects, with Barron's adaptive robust loss to handle unknown ones. The shape parameter of the robust kernel is estimated online from residuals, allowing the system to automatically adjust between Gaussian and heavy-tailed behavior. We evaluate VAR-SLAM on the TUM RGB-D, Bonn RGB-D Dynamic, and OpenLORIS datasets, which include both known and unknown moving objects. Results show improved trajectory accuracy and robustness over state-of-the-art baselines, achieving up to 25% lower ATE RMSE than NGD-SLAM on challenging sequences, while maintaining performance at 27 FPS on average.",
+        "authors": [
+          "João Carlos Virgolino Soares",
+          "Gabriel Fischer Abati",
+          "Claudio Semini"
+        ],
+        "arxiv_id": "2510.16205v1",
+        "url": "http://arxiv.org/abs/2510.16205v1",
+        "published": "2025-10-17T20:36:49Z",
+        "year": 2025,
+        "source_query": "visual SLAM"
+      },
+      {
+        "title": "OKVIS2-X: Open Keyframe-based Visual-Inertial SLAM Configurable with Dense Depth or LiDAR, and GNSS",
+        "abstract": "To empower mobile robots with usable maps as well as highest state estimation accuracy and robustness, we present OKVIS2-X: a state-of-the-art multi-sensor Simultaneous Localization and Mapping (SLAM) system building dense volumetric occupancy maps, while scalable to large environments and operating in realtime. Our unified SLAM framework seamlessly integrates different sensor modalities: visual, inertial, measured or learned depth, LiDAR and Global Navigation Satellite System (GNSS) measurements. Unlike most state-of-the-art SLAM systems, we advocate using dense volumetric map representations when leveraging depth or range-sensing capabilities. We employ an efficient submapping strategy that allows our system to scale to large environments, showcased in sequences of up to 9 kilometers. OKVIS2-X enhances its accuracy and robustness by tightly-coupling the estimator and submaps through map alignment factors. Our system provides globally consistent maps, directly usable for autonomous navigation. To further improve the accuracy of OKVIS2-X, we also incorporate the option of performing online calibration of camera extrinsics. Our system achieves the highest trajectory accuracy in EuRoC against state-of-the-art alternatives, outperforms all competitors in the Hilti22 VI-only benchmark, while also proving competitive in the LiDAR version, and showcases state of the art accuracy in the diverse and large-scale sequences from the VBR dataset.",
+        "authors": [
+          "Simon Boche",
+          "Jaehyung Jung",
+          "Sebastián Barbas Laina",
+          "Stefan Leutenegger"
+        ],
+        "arxiv_id": "2510.04612v1",
+        "url": "http://arxiv.org/abs/2510.04612v1",
+        "published": "2025-10-06T09:23:36Z",
+        "year": 2025,
+        "source_query": "visual SLAM"
+      },
+      {
+        "title": "PL-VINS: Real-Time Monocular Visual-Inertial SLAM with Point and Line Features",
+        "abstract": "Leveraging line features to improve localization accuracy of point-based visual-inertial SLAM (VINS) is gaining interest as they provide additional constraints on scene structure. However, real-time performance when incorporating line features in VINS has not been addressed. This paper presents PL-VINS, a real-time optimization-based monocular VINS method with point and line features, developed based on the state-of-the-art point-based VINS-Mono \\cite{vins}. We observe that current works use the LSD \\cite{lsd} algorithm to extract line features; however, LSD is designed for scene shape representation instead of the pose estimation problem, which becomes the bottleneck for the real-time performance due to its high computational cost. In this paper, a modified LSD algorithm is presented by studying a hidden parameter tuning and length rejection strategy. The modified LSD can run at least three times as fast as LSD. Further, by representing space lines with the Plücker coordinates, the residual error in line estimation is modeled in terms of the point-to-line distance, which is then minimized by iteratively updating the minimum four-parameter orthonormal representation of the Plücker coordinates. Experiments in a public benchmark dataset show that the localization error of our method is 12-16\\% less than that of VINS-Mono at the same pose update frequency. %For the benefit of the community, The source code of our method is available at: https://github.com/cnqiangfu/PL-VINS.",
+        "authors": [
+          "Qiang Fu",
+          "Jialong Wang",
+          "Hongshan Yu",
+          "Islam Ali",
+          "Feng Guo",
+          "Yijia He",
+          "Hong Zhang"
+        ],
+        "arxiv_id": "2009.07462v3",
+        "url": "http://arxiv.org/abs/2009.07462v3",
+        "published": "2020-09-16T04:27:33Z",
+        "year": 2020,
+        "source_query": "visual SLAM"
+      },
+      {
+        "title": "ViSTA-SLAM: Visual SLAM with Symmetric Two-view Association",
+        "abstract": "We present ViSTA-SLAM as a real-time monocular visual SLAM system that operates without requiring camera intrinsics, making it broadly applicable across diverse camera setups. At its core, the system employs a lightweight symmetric two-view association (STA) model as the frontend, which simultaneously estimates relative camera poses and regresses local pointmaps from only two RGB images. This design reduces model complexity significantly, the size of our frontend is only 35\\% that of comparable state-of-the-art methods, while enhancing the quality of two-view constraints used in the pipeline. In the backend, we construct a specially designed Sim(3) pose graph that incorporates loop closures to address accumulated drift. Extensive experiments demonstrate that our approach achieves superior performance in both camera tracking and dense 3D reconstruction quality compared to current methods. Github repository: https://github.com/zhangganlin/vista-slam",
+        "authors": [
+          "Ganlin Zhang",
+          "Shenhan Qian",
+          "Xi Wang",
+          "Daniel Cremers"
+        ],
+        "arxiv_id": "2509.01584v2",
+        "url": "http://arxiv.org/abs/2509.01584v2",
+        "published": "2025-09-01T16:12:23Z",
+        "year": 2025,
+        "source_query": "visual SLAM"
+      },
+      {
+        "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+        "abstract": "Traditional Visual Simultaneous Localization and Mapping (vSLAM) systems focus solely on static scene structures, overlooking dynamic elements in the environment. Although effective for accurate visual odometry in complex scenarios, these methods discard crucial information about moving objects. By incorporating this information into a Dynamic SLAM framework, the motion of dynamic entities can be estimated, enhancing navigation whilst ensuring accurate localization. However, the fundamental formulation of Dynamic SLAM remains an open challenge, with no consensus on the optimal approach for accurate motion estimation within a SLAM pipeline. Therefore, we developed DynoSAM, an open-source framework for Dynamic SLAM that enables the efficient implementation, testing, and comparison of various Dynamic SLAM optimization formulations. DynoSAM integrates static and dynamic measurements into a unified optimization problem solved using factor graphs, simultaneously estimating camera poses, static scene, object motion or poses, and object structures. We evaluate DynoSAM across diverse simulated and real-world datasets, achieving state-of-the-art motion estimation in indoor and outdoor environments, with substantial improvements over existing systems. Additionally, we demonstrate DynoSAM utility in downstream applications, including 3D reconstruction of dynamic scenes and trajectory prediction, thereby showcasing potential for advancing dynamic object-aware SLAM systems. DynoSAM is open-sourced at https://github.com/ACFR-RPG/DynOSAM.",
+        "authors": [
+          "Jesse Morris",
+          "Yiduo Wang",
+          "Mikolaj Kliniewski",
+          "Viorela Ila"
+        ],
+        "arxiv_id": "2501.11893v3",
+        "url": "http://arxiv.org/abs/2501.11893v3",
+        "published": "2025-01-21T05:03:06Z",
+        "year": 2025,
+        "source_query": "visual SLAM"
+      },
+      {
+        "title": "MLP-SLAM: Multilayer Perceptron-Based Simultaneous Localization and Mapping",
+        "abstract": "The Visual Simultaneous Localization and Mapping (V-SLAM) system has seen significant development in recent years, demonstrating high precision in environments with limited dynamic objects. However, their performance significantly deteriorates when deployed in settings with a higher presence of movable objects, such as environments with pedestrians, cars, and buses, which are common in outdoor scenes. To address this issue, we propose a Multilayer Perceptron (MLP)-based real-time stereo SLAM system that leverages complete geometry information to avoid information loss. Moreover, there is currently no publicly available dataset for directly evaluating the effectiveness of dynamic and static feature classification methods, and to bridge this gap, we have created a publicly available dataset containing over 50,000 feature points. Experimental results demonstrate that our MLP-based dynamic and static feature point discriminator has achieved superior performance compared to other methods on this dataset. Furthermore, the MLP-based real-time stereo SLAM system has shown the highest average precision and fastest speed on the outdoor KITTI tracking datasets compared to other dynamic SLAM systems.The open-source code and datasets are available at https://github.com/TaozheLi/MLP-SLAM.",
+        "authors": [
+          "Taozhe Li",
+          "Wei Sun"
+        ],
+        "arxiv_id": "2410.10669v2",
+        "url": "http://arxiv.org/abs/2410.10669v2",
+        "published": "2024-10-14T16:13:52Z",
+        "year": 2024,
+        "source_query": "visual SLAM"
+      },
+      {
+        "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+        "abstract": "Simultaneous Localization and Mapping (SLAM) is considered to be a fundamental capability for intelligent mobile robots. Over the past decades, many impressed SLAM systems have been developed and achieved good performance under certain circumstances. However, some problems are still not well solved, for example, how to tackle the moving objects in the dynamic environments, how to make the robots truly understand the surroundings and accomplish advanced tasks. In this paper, a robust semantic visual SLAM towards dynamic environments named DS-SLAM is proposed. Five threads run in parallel in DS-SLAM: tracking, semantic segmentation, local mapping, loop closing, and dense semantic map creation. DS-SLAM combines semantic segmentation network with moving consistency check method to reduce the impact of dynamic objects, and thus the localization accuracy is highly improved in dynamic environments. Meanwhile, a dense semantic octo-tree map is produced, which could be employed for high-level tasks. We conduct experiments both on TUM RGB-D dataset and in the real-world environment. The results demonstrate the absolute trajectory accuracy in DS-SLAM can be improved by one order of magnitude compared with ORB-SLAM2. It is one of the state-of-the-art SLAM systems in high-dynamic environments. Now the code is available at our github: https://github.com/ivipsourcecode/DS-SLAM",
+        "authors": [
+          "Chao Yu",
+          "Zuxin Liu",
+          "Xinjun Liu",
+          "Fugui Xie",
+          "Yi Yang",
+          "Qi Wei",
+          "Qiao Fei"
+        ],
+        "arxiv_id": "1809.08379v2",
+        "url": "http://arxiv.org/abs/1809.08379v2",
+        "published": "2018-09-22T04:23:26Z",
+        "year": 2018,
+        "source_query": "visual SLAM"
+      },
+      {
+        "title": "MBA-SLAM: Motion Blur Aware Gaussian Splatting SLAM",
+        "abstract": "Emerging 3D scene representations, such as Neural Radiance Fields (NeRF) and 3D Gaussian Splatting (3DGS), have demonstrated their effectiveness in Simultaneous Localization and Mapping (SLAM) for photo-realistic rendering, particularly when using high-quality video sequences as input. However, existing methods struggle with motion-blurred frames, which are common in real-world scenarios like low-light or long-exposure conditions. This often results in a significant reduction in both camera localization accuracy and map reconstruction quality. To address this challenge, we propose a dense visual deblur SLAM pipeline (i.e. MBA-SLAM) to handle severe motion-blurred inputs and enhance image deblurring. Our approach integrates an efficient motion blur-aware tracker with either neural radiance fields or Gaussian Splatting based mapper. By accurately modeling the physical image formation process of motion-blurred images, our method simultaneously learns 3D scene representation and estimates the cameras' local trajectory during exposure time, enabling proactive compensation for motion blur caused by camera movement. In our experiments, we demonstrate that MBA-SLAM surpasses previous state-of-the-art methods in both camera localization and map reconstruction, showcasing superior performance across a range of datasets, including synthetic and real datasets featuring sharp images as well as those affected by motion blur, highlighting the versatility and robustness of our approach. Code is available at https://github.com/WU-CVGL/MBA-SLAM.",
+        "authors": [
+          "Peng Wang",
+          "Lingzhe Zhao",
+          "Yin Zhang",
+          "Shiyu Zhao",
+          "Peidong Liu"
+        ],
+        "arxiv_id": "2411.08279v2",
+        "url": "http://arxiv.org/abs/2411.08279v2",
+        "published": "2024-11-13T01:38:06Z",
+        "year": 2024,
+        "source_query": "visual SLAM"
+      }
+    ],
+    "crossref": [
+      {
+        "title": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+        "doi": "10.47749/t/unicamp.2023.1347033",
+        "DOI": "10.47749/t/unicamp.2023.1347033",
+        "authors": [
+          "Leonardo Rezende Costa"
+        ],
+        "author": [
+          {
+            "given": "Leonardo",
+            "family": "Rezende Costa",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.47749/t/unicamp.2023.1347033",
+        "URL": "https://doi.org/10.47749/t/unicamp.2023.1347033",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "dissertation"
+      },
+      {
+        "title": "Understanding Visual SLAM",
+        "doi": "10.1007/978-981-97-3573-0_1",
+        "DOI": "10.1007/978-981-97-3573-0_1",
+        "authors": [
+          "Jingao Xu",
+          "Zheng Yang",
+          "Yunhao Liu",
+          "Hao Cao"
+        ],
+        "author": [
+          {
+            "given": "Jingao",
+            "family": "Xu",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Zheng",
+            "family": "Yang",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Yunhao",
+            "family": "Liu",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "ORCID": "https://orcid.org/0000-0002-9872-2380",
+            "authenticated-orcid": false,
+            "given": "Hao",
+            "family": "Cao",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Edge Assisted Mobile Visual SLAM",
+        "container-title": [
+          "Edge Assisted Mobile Visual SLAM"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1007/978-981-97-3573-0_1",
+        "URL": "https://doi.org/10.1007/978-981-97-3573-0_1",
+        "year": 2024,
+        "publication_year": 2024,
+        "citation_count": 1,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "LIFT-SLAM",
+        "doi": "10.47749/t/unicamp.2020.1129339",
+        "DOI": "10.47749/t/unicamp.2020.1129339",
+        "authors": [
+          "Hudson Martins Silva Bruno"
+        ],
+        "author": [
+          {
+            "given": "Hudson",
+            "family": "Martins Silva Bruno",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.47749/t/unicamp.2020.1129339",
+        "URL": "https://doi.org/10.47749/t/unicamp.2020.1129339",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "dissertation"
+      },
+      {
+        "title": "Slam-Vii: Slam-Centric Visual Inspections of Infrastructure",
+        "doi": "10.2139/ssrn.5214962",
+        "DOI": "10.2139/ssrn.5214962",
+        "authors": [
+          "Nicholas Charron",
+          "Jake McLaughlin",
+          "Sriram Narasimhan"
+        ],
+        "author": [
+          {
+            "given": "Nicholas",
+            "family": "Charron",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Jake",
+            "family": "McLaughlin",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Sriram",
+            "family": "Narasimhan",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.2139/ssrn.5214962",
+        "URL": "https://doi.org/10.2139/ssrn.5214962",
+        "year": 2025,
+        "publication_year": 2025,
+        "citation_count": 0,
+        "_crossref_type": "posted-content"
+      },
+      {
+        "title": "EdgeSLAM 1.0: Architectural Innovations in Mobile Visual SLAM",
+        "doi": "10.1007/978-981-97-3573-0_3",
+        "DOI": "10.1007/978-981-97-3573-0_3",
+        "authors": [
+          "Jingao Xu",
+          "Zheng Yang",
+          "Yunhao Liu",
+          "Hao Cao"
+        ],
+        "author": [
+          {
+            "given": "Jingao",
+            "family": "Xu",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Zheng",
+            "family": "Yang",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Yunhao",
+            "family": "Liu",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "ORCID": "https://orcid.org/0000-0002-9872-2380",
+            "authenticated-orcid": false,
+            "given": "Hao",
+            "family": "Cao",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Edge Assisted Mobile Visual SLAM",
+        "container-title": [
+          "Edge Assisted Mobile Visual SLAM"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1007/978-981-97-3573-0_3",
+        "URL": "https://doi.org/10.1007/978-981-97-3573-0_3",
+        "year": 2024,
+        "publication_year": 2024,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "CHAMELEON-SLAM: Adaptive Feature Selection and Uncertainty-Aware Matching for Robust Monocular Visual SLAM",
+        "doi": "10.36227/techrxiv.177223033.30463461/v1",
+        "DOI": "10.36227/techrxiv.177223033.30463461/v1",
+        "authors": [
+          "Shahram Najam Syed"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0009-0007-5752-0786",
+            "authenticated-orcid": false,
+            "given": "Shahram Najam",
+            "family": "Syed",
+            "sequence": "first",
+            "affiliation": [
+              {
+                "name": "Robotics Institute, Carnegie Mellon University"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": "<jats:p>Visual SLAM systems employ fixed feature extractors regardless of scene content. This is suboptimal: hightexture outdoor environments favor fast, sparse features, while low-texture indoor scenes or motion-blurred frames demand denser or more robust alternatives. We present CHAMELEON-SLAM, a visual SLAM system that adapts its feature extraction strategy to scene characteristics and incorporates per-match uncertainty into pose optimization. Our approach introduces two complementary components: (1) a lightweight scene classifier that selects among XFeat, ALIKED, and SuperPoint based on texture density, edge structure, and blur metrics, adding under 1 ms of overhead, and (2) a multi-scale descriptor consistency measure that estimates per-keypoint uncertainty and down-weights unreliable matches in bundle adjustment without requiring additional training. We integrate both components into ORB-SLAM3's tracking and local mapping threads. Experiments on KITTI and EuRoC demonstrate that adaptive feature selection alone reduces absolute trajectory error by 41-65% over ORB-SLAM3 depending on the dataset, uncertainty weighting provides 34-59%, and the combined system achieves 45-70% lower ATE (57% on average) while maintaining realtime performance at 32 FPS. Ablations confirm that the two mechanisms address complementary failure modes.</jats:p>",
+        "url": "https://doi.org/10.36227/techrxiv.177223033.30463461/v1",
+        "URL": "https://doi.org/10.36227/techrxiv.177223033.30463461/v1",
+        "year": 2026,
+        "publication_year": 2026,
+        "citation_count": 0,
+        "_crossref_type": "posted-content"
+      },
+      {
+        "title": "VI-NeRF-SLAM: A Real-time Visual-Inertial SLAM with NeRF Mapping",
+        "doi": "10.21203/rs.3.rs-3710160/v1",
+        "DOI": "10.21203/rs.3.rs-3710160/v1",
+        "authors": [
+          "DaoQing Liao",
+          "Wei Ai"
+        ],
+        "author": [
+          {
+            "given": "DaoQing",
+            "family": "Liao",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Wei",
+            "family": "Ai",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": "<jats:title>Abstract</jats:title>\n        <jats:p>In numerous robotic and autonomous driving tasks, traditional visual SLAM algorithms estimate the camera's position in a scene through sparse feature points and express the map by estimating the depth of sparse point clouds. However,practical applications require SLAM to create dense maps in real-time, overcoming the sparsity and occlusion issues of point clouds. Furthermore,it is advantageous for SLAM map to possess an auto-completion capability, where the map can automatically infer and complete the remaining 20% when the camera observes only 80% of an object. Therefore, a more dense and intelligent map representation is needed. In this paper, we propose a Visual-Inertial SLAM with Neural Radiance Fields reconstruction to address the aforementioned challenges. We integrate traditional rule-based optimization with NeRF. This approach allows for the real-time update of NeRF local functions by rapidly estimating camera motion and sparse feature point depths to reconstruct 3D scenes. To achieve better camera poses and globally consistent map, we address the issue of IMU noise spikes resulting from rapid motion changes, along with handling pose adjustments due to loop closure fusion. Specifically, we employ a form of widening the static noise covariance to refit the dynamic noise covariance. During loop closure fusion, we treat the pose adjustment between pre- and post- loop closure as a spatiotemporal transformation, migrating NeRF parameters from pre- to post- to expedite loop closure adjustments in NeRF mapping. Moreover, we extend this method to scenarios with only grayscale images. By expanding the color channels of grayscale images and conducting linear spatial mapping, we can rapidly reconstruct 3D scenes with only grayscale images. We demonstrate the precision and speed advantages of our method in both RGB and grayscale scenes.</jats:p>",
+        "url": "https://doi.org/10.21203/rs.3.rs-3710160/v1",
+        "URL": "https://doi.org/10.21203/rs.3.rs-3710160/v1",
+        "year": 2023,
+        "publication_year": 2023,
+        "citation_count": 0,
+        "_crossref_type": "posted-content"
+      },
+      {
+        "title": "CHAMELEON-SLAM: Adaptive Feature Selection and Uncertainty-Aware Matching for Robust Monocular Visual SLAM",
+        "doi": "10.21203/rs.3.rs-8990859/v1",
+        "DOI": "10.21203/rs.3.rs-8990859/v1",
+        "authors": [
+          "Shahram Najam Syed"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0009-0007-5752-0786",
+            "authenticated-orcid": false,
+            "given": "Shahram Najam",
+            "family": "Syed",
+            "sequence": "first",
+            "affiliation": [
+              {
+                "name": "Carnegie Mellon University"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": "<title>Abstract</title>\n                <p>Visual SLAM systems employ fixed feature extractors regardless of scene content. This is suboptimal: high-texture outdoor environments favor fast, sparse features, while low-texture indoor scenes or motion-blurred frames demand denser or more robust alternatives. We present CHAMELEON-SLAM, a visual SLAM system that adapts its feature extraction strategy to scene characteristics and incorporates per-match uncertainty into pose optimization. Our approach introduces two complementary components: (1) a lightweight scene classifier that selects among XFeat, ALIKED, and SuperPoint based on texture density, edge structure, and blur metrics, adding under 1 ms of overhead, and (2) a multi-scale descriptor consistency measure that estimates per-keypoint uncertainty and down-weights unreliable matches in bundle adjustment without requiring additional training. We integrate both components into ORB-SLAM3's tracking and local mapping threads. Experiments on KITTI and EuRoC demonstrate that adaptive feature selection alone reduces absolute trajectory error by 41–65% over ORB-SLAM3 depending on the dataset, uncertainty weighting provides 34–59%, and the combined system achieves 45–70% lower ATE (57% on average) while maintaining real-time performance at 32 FPS. The system also improves by 11–25% over the strongest fixed baseline with learned matching (SuperPoint + LightGlue).</p>",
+        "url": "https://doi.org/10.21203/rs.3.rs-8990859/v1",
+        "URL": "https://doi.org/10.21203/rs.3.rs-8990859/v1",
+        "year": 2026,
+        "publication_year": 2026,
+        "citation_count": 0,
+        "_crossref_type": "posted-content"
+      }
+    ],
+    "github": [
+      {
+        "id": 280608729,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyODA2MDg3Mjk=",
+        "name": "ORB_SLAM3",
+        "full_name": "UZ-SLAMLab/ORB_SLAM3",
+        "private": false,
+        "owner": {
+          "login": "UZ-SLAMLab",
+          "id": 25055183,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjI1MDU1MTgz",
+          "avatar_url": "https://avatars.githubusercontent.com/u/25055183?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/UZ-SLAMLab",
+          "html_url": "https://github.com/UZ-SLAMLab",
+          "followers_url": "https://api.github.com/users/UZ-SLAMLab/followers",
+          "following_url": "https://api.github.com/users/UZ-SLAMLab/following{/other_user}",
+          "gists_url": "https://api.github.com/users/UZ-SLAMLab/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/UZ-SLAMLab/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/UZ-SLAMLab/subscriptions",
+          "organizations_url": "https://api.github.com/users/UZ-SLAMLab/orgs",
+          "repos_url": "https://api.github.com/users/UZ-SLAMLab/repos",
+          "events_url": "https://api.github.com/users/UZ-SLAMLab/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/UZ-SLAMLab/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/UZ-SLAMLab/ORB_SLAM3",
+        "description": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM",
+        "fork": false,
+        "url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3",
+        "forks_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/forks",
+        "keys_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/teams",
+        "hooks_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/hooks",
+        "issue_events_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/events",
+        "assignees_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/tags",
+        "blobs_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/languages",
+        "stargazers_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/stargazers",
+        "contributors_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/contributors",
+        "subscribers_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/subscribers",
+        "subscription_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/subscription",
+        "commits_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/merges",
+        "archive_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/downloads",
+        "issues_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/labels{/name}",
+        "releases_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3/deployments",
+        "created_at": "2020-07-18T07:47:46Z",
+        "updated_at": "2026-07-06T08:39:32Z",
+        "pushed_at": "2024-07-24T08:41:52Z",
+        "git_url": "git://github.com/UZ-SLAMLab/ORB_SLAM3.git",
+        "ssh_url": "git@github.com:UZ-SLAMLab/ORB_SLAM3.git",
+        "clone_url": "https://github.com/UZ-SLAMLab/ORB_SLAM3.git",
+        "svn_url": "https://github.com/UZ-SLAMLab/ORB_SLAM3",
+        "homepage": "",
+        "size": 183277,
+        "stargazers_count": 8793,
+        "watchers_count": 8793,
+        "language": "C++",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 3114,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 570,
+        "license": {
+          "key": "gpl-3.0",
+          "name": "GNU General Public License v3.0",
+          "spdx_id": "GPL-3.0",
+          "url": "https://api.github.com/licenses/gpl-3.0",
+          "node_id": "MDc6TGljZW5zZTk="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "slam-algorithms"
+        ],
+        "visibility": "public",
+        "forks": 3114,
+        "open_issues": 570,
+        "watchers": 8793,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 8793
+      },
+      {
+        "id": 790197987,
+        "node_id": "R_kgDOLxl24w",
+        "name": "FAST-LIVO2",
+        "full_name": "hku-mars/FAST-LIVO2",
+        "private": false,
+        "owner": {
+          "login": "hku-mars",
+          "id": 51474179,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjUxNDc0MTc5",
+          "avatar_url": "https://avatars.githubusercontent.com/u/51474179?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/hku-mars",
+          "html_url": "https://github.com/hku-mars",
+          "followers_url": "https://api.github.com/users/hku-mars/followers",
+          "following_url": "https://api.github.com/users/hku-mars/following{/other_user}",
+          "gists_url": "https://api.github.com/users/hku-mars/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/hku-mars/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/hku-mars/subscriptions",
+          "organizations_url": "https://api.github.com/users/hku-mars/orgs",
+          "repos_url": "https://api.github.com/users/hku-mars/repos",
+          "events_url": "https://api.github.com/users/hku-mars/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/hku-mars/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/hku-mars/FAST-LIVO2",
+        "description": "FAST-LIVO2: Fast, Direct LiDAR-Inertial-Visual Odometry",
+        "fork": false,
+        "url": "https://api.github.com/repos/hku-mars/FAST-LIVO2",
+        "forks_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/forks",
+        "keys_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/teams",
+        "hooks_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/hooks",
+        "issue_events_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/events",
+        "assignees_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/tags",
+        "blobs_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/languages",
+        "stargazers_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/stargazers",
+        "contributors_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/contributors",
+        "subscribers_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/subscribers",
+        "subscription_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/subscription",
+        "commits_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/merges",
+        "archive_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/downloads",
+        "issues_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/labels{/name}",
+        "releases_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/hku-mars/FAST-LIVO2/deployments",
+        "created_at": "2024-04-22T12:49:47Z",
+        "updated_at": "2026-07-06T09:32:21Z",
+        "pushed_at": "2026-03-08T15:40:36Z",
+        "git_url": "git://github.com/hku-mars/FAST-LIVO2.git",
+        "ssh_url": "git@github.com:hku-mars/FAST-LIVO2.git",
+        "clone_url": "https://github.com/hku-mars/FAST-LIVO2.git",
+        "svn_url": "https://github.com/hku-mars/FAST-LIVO2",
+        "homepage": "",
+        "size": 108632,
+        "stargazers_count": 4314,
+        "watchers_count": 4314,
+        "language": "C++",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 784,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 320,
+        "license": {
+          "key": "gpl-2.0",
+          "name": "GNU General Public License v2.0",
+          "spdx_id": "GPL-2.0",
+          "url": "https://api.github.com/licenses/gpl-2.0",
+          "node_id": "MDc6TGljZW5zZTg="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "3d-reconstruction",
+          "colored-point-cloud",
+          "gaussian-splatting",
+          "lidar-camera-fusion",
+          "lidar-inertial-odometry",
+          "lidar-slam",
+          "mesh-reconstruction",
+          "nerf",
+          "sensor-fusion",
+          "slam"
+        ],
+        "visibility": "public",
+        "forks": 784,
+        "open_issues": 320,
+        "watchers": 4314,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 4314
+      },
+      {
+        "id": 179858671,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxNzk4NTg2NzE=",
+        "name": "pyslam",
+        "full_name": "luigifreda/pyslam",
+        "private": false,
+        "owner": {
+          "login": "luigifreda",
+          "id": 10080262,
+          "node_id": "MDQ6VXNlcjEwMDgwMjYy",
+          "avatar_url": "https://avatars.githubusercontent.com/u/10080262?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/luigifreda",
+          "html_url": "https://github.com/luigifreda",
+          "followers_url": "https://api.github.com/users/luigifreda/followers",
+          "following_url": "https://api.github.com/users/luigifreda/following{/other_user}",
+          "gists_url": "https://api.github.com/users/luigifreda/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/luigifreda/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/luigifreda/subscriptions",
+          "organizations_url": "https://api.github.com/users/luigifreda/orgs",
+          "repos_url": "https://api.github.com/users/luigifreda/repos",
+          "events_url": "https://api.github.com/users/luigifreda/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/luigifreda/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/luigifreda/pyslam",
+        "description": "pySLAM is a hybrid Python/C++ Visual SLAM pipeline supporting monocular, stereo, and RGB-D cameras. It provides a broad set of modern local and global feature extractors, multiple loop-closure strategies, a volumetric reconstruction module, integrated depth-prediction models, and semantic segmentation capabilities for enhanced scene understanding.",
+        "fork": false,
+        "url": "https://api.github.com/repos/luigifreda/pyslam",
+        "forks_url": "https://api.github.com/repos/luigifreda/pyslam/forks",
+        "keys_url": "https://api.github.com/repos/luigifreda/pyslam/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/luigifreda/pyslam/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/luigifreda/pyslam/teams",
+        "hooks_url": "https://api.github.com/repos/luigifreda/pyslam/hooks",
+        "issue_events_url": "https://api.github.com/repos/luigifreda/pyslam/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/luigifreda/pyslam/events",
+        "assignees_url": "https://api.github.com/repos/luigifreda/pyslam/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/luigifreda/pyslam/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/luigifreda/pyslam/tags",
+        "blobs_url": "https://api.github.com/repos/luigifreda/pyslam/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/luigifreda/pyslam/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/luigifreda/pyslam/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/luigifreda/pyslam/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/luigifreda/pyslam/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/luigifreda/pyslam/languages",
+        "stargazers_url": "https://api.github.com/repos/luigifreda/pyslam/stargazers",
+        "contributors_url": "https://api.github.com/repos/luigifreda/pyslam/contributors",
+        "subscribers_url": "https://api.github.com/repos/luigifreda/pyslam/subscribers",
+        "subscription_url": "https://api.github.com/repos/luigifreda/pyslam/subscription",
+        "commits_url": "https://api.github.com/repos/luigifreda/pyslam/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/luigifreda/pyslam/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/luigifreda/pyslam/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/luigifreda/pyslam/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/luigifreda/pyslam/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/luigifreda/pyslam/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/luigifreda/pyslam/merges",
+        "archive_url": "https://api.github.com/repos/luigifreda/pyslam/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/luigifreda/pyslam/downloads",
+        "issues_url": "https://api.github.com/repos/luigifreda/pyslam/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/luigifreda/pyslam/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/luigifreda/pyslam/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/luigifreda/pyslam/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/luigifreda/pyslam/labels{/name}",
+        "releases_url": "https://api.github.com/repos/luigifreda/pyslam/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/luigifreda/pyslam/deployments",
+        "created_at": "2019-04-06T16:32:09Z",
+        "updated_at": "2026-07-06T08:59:01Z",
+        "pushed_at": "2026-06-28T18:53:31Z",
+        "git_url": "git://github.com/luigifreda/pyslam.git",
+        "ssh_url": "git@github.com:luigifreda/pyslam.git",
+        "clone_url": "https://github.com/luigifreda/pyslam.git",
+        "svn_url": "https://github.com/luigifreda/pyslam",
+        "homepage": "",
+        "size": 629478,
+        "stargazers_count": 3359,
+        "watchers_count": 3359,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 530,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 2,
+        "license": {
+          "key": "gpl-3.0",
+          "name": "GNU General Public License v3.0",
+          "spdx_id": "GPL-3.0",
+          "url": "https://api.github.com/licenses/gpl-3.0",
+          "node_id": "MDc6TGljZW5zZTk="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "3d-reconstruction",
+          "depth-estimation",
+          "depth-prediction",
+          "end-to-end-reconstruction",
+          "feature-matching",
+          "gaussian-splatting",
+          "global-features",
+          "instance-segmentation",
+          "local-features",
+          "loop-closure",
+          "place-recognition",
+          "rgbd-slam",
+          "scene-understanding",
+          "semantic-mapping",
+          "semantic-segmentation",
+          "semantic-understanding",
+          "slam",
+          "stereo-slam",
+          "visual-odometry",
+          "volumetric-reconstruction"
+        ],
+        "visibility": "public",
+        "forks": 530,
+        "open_issues": 2,
+        "watchers": 3359,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 3359
+      },
+      {
+        "id": 183462315,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxODM0NjIzMTU=",
+        "name": "openvslam",
+        "full_name": "xdspacelab/openvslam",
+        "private": false,
+        "owner": {
+          "login": "xdspacelab",
+          "id": 44391689,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjQ0MzkxNjg5",
+          "avatar_url": "https://avatars.githubusercontent.com/u/44391689?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/xdspacelab",
+          "html_url": "https://github.com/xdspacelab",
+          "followers_url": "https://api.github.com/users/xdspacelab/followers",
+          "following_url": "https://api.github.com/users/xdspacelab/following{/other_user}",
+          "gists_url": "https://api.github.com/users/xdspacelab/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/xdspacelab/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/xdspacelab/subscriptions",
+          "organizations_url": "https://api.github.com/users/xdspacelab/orgs",
+          "repos_url": "https://api.github.com/users/xdspacelab/repos",
+          "events_url": "https://api.github.com/users/xdspacelab/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/xdspacelab/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/xdspacelab/openvslam",
+        "description": "OpenVSLAM: A Versatile Visual SLAM Framework",
+        "fork": false,
+        "url": "https://api.github.com/repos/xdspacelab/openvslam",
+        "forks_url": "https://api.github.com/repos/xdspacelab/openvslam/forks",
+        "keys_url": "https://api.github.com/repos/xdspacelab/openvslam/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/xdspacelab/openvslam/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/xdspacelab/openvslam/teams",
+        "hooks_url": "https://api.github.com/repos/xdspacelab/openvslam/hooks",
+        "issue_events_url": "https://api.github.com/repos/xdspacelab/openvslam/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/xdspacelab/openvslam/events",
+        "assignees_url": "https://api.github.com/repos/xdspacelab/openvslam/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/xdspacelab/openvslam/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/xdspacelab/openvslam/tags",
+        "blobs_url": "https://api.github.com/repos/xdspacelab/openvslam/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/xdspacelab/openvslam/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/xdspacelab/openvslam/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/xdspacelab/openvslam/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/xdspacelab/openvslam/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/xdspacelab/openvslam/languages",
+        "stargazers_url": "https://api.github.com/repos/xdspacelab/openvslam/stargazers",
+        "contributors_url": "https://api.github.com/repos/xdspacelab/openvslam/contributors",
+        "subscribers_url": "https://api.github.com/repos/xdspacelab/openvslam/subscribers",
+        "subscription_url": "https://api.github.com/repos/xdspacelab/openvslam/subscription",
+        "commits_url": "https://api.github.com/repos/xdspacelab/openvslam/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/xdspacelab/openvslam/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/xdspacelab/openvslam/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/xdspacelab/openvslam/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/xdspacelab/openvslam/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/xdspacelab/openvslam/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/xdspacelab/openvslam/merges",
+        "archive_url": "https://api.github.com/repos/xdspacelab/openvslam/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/xdspacelab/openvslam/downloads",
+        "issues_url": "https://api.github.com/repos/xdspacelab/openvslam/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/xdspacelab/openvslam/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/xdspacelab/openvslam/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/xdspacelab/openvslam/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/xdspacelab/openvslam/labels{/name}",
+        "releases_url": "https://api.github.com/repos/xdspacelab/openvslam/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/xdspacelab/openvslam/deployments",
+        "created_at": "2019-04-25T15:32:08Z",
+        "updated_at": "2026-07-02T16:39:44Z",
+        "pushed_at": "2021-02-25T06:32:26Z",
+        "git_url": "git://github.com/xdspacelab/openvslam.git",
+        "ssh_url": "git@github.com:xdspacelab/openvslam.git",
+        "clone_url": "https://github.com/xdspacelab/openvslam.git",
+        "svn_url": "https://github.com/xdspacelab/openvslam",
+        "homepage": "https://openvslam.readthedocs.io/",
+        "size": 0,
+        "stargazers_count": 2979,
+        "watchers_count": 2979,
+        "language": null,
+        "has_issues": true,
+        "has_projects": false,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 868,
+        "mirror_url": null,
+        "archived": true,
+        "disabled": false,
+        "open_issues_count": 207,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "computer-vision",
+          "fisheye",
+          "panorama",
+          "robotics",
+          "slam",
+          "visual-odometry",
+          "visual-slam",
+          "vr",
+          "vslam"
+        ],
+        "visibility": "public",
+        "forks": 868,
+        "open_issues": 207,
+        "watchers": 2979,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 2979
+      },
+      {
+        "id": 166249121,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxNjYyNDkxMjE=",
+        "name": "open_vins",
+        "full_name": "rpng/open_vins",
+        "private": false,
+        "owner": {
+          "login": "rpng",
+          "id": 9867640,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjk4Njc2NDA=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/9867640?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/rpng",
+          "html_url": "https://github.com/rpng",
+          "followers_url": "https://api.github.com/users/rpng/followers",
+          "following_url": "https://api.github.com/users/rpng/following{/other_user}",
+          "gists_url": "https://api.github.com/users/rpng/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/rpng/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/rpng/subscriptions",
+          "organizations_url": "https://api.github.com/users/rpng/orgs",
+          "repos_url": "https://api.github.com/users/rpng/repos",
+          "events_url": "https://api.github.com/users/rpng/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/rpng/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/rpng/open_vins",
+        "description": "An open source platform for visual-inertial navigation research.",
+        "fork": false,
+        "url": "https://api.github.com/repos/rpng/open_vins",
+        "forks_url": "https://api.github.com/repos/rpng/open_vins/forks",
+        "keys_url": "https://api.github.com/repos/rpng/open_vins/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/rpng/open_vins/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/rpng/open_vins/teams",
+        "hooks_url": "https://api.github.com/repos/rpng/open_vins/hooks",
+        "issue_events_url": "https://api.github.com/repos/rpng/open_vins/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/rpng/open_vins/events",
+        "assignees_url": "https://api.github.com/repos/rpng/open_vins/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/rpng/open_vins/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/rpng/open_vins/tags",
+        "blobs_url": "https://api.github.com/repos/rpng/open_vins/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/rpng/open_vins/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/rpng/open_vins/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/rpng/open_vins/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/rpng/open_vins/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/rpng/open_vins/languages",
+        "stargazers_url": "https://api.github.com/repos/rpng/open_vins/stargazers",
+        "contributors_url": "https://api.github.com/repos/rpng/open_vins/contributors",
+        "subscribers_url": "https://api.github.com/repos/rpng/open_vins/subscribers",
+        "subscription_url": "https://api.github.com/repos/rpng/open_vins/subscription",
+        "commits_url": "https://api.github.com/repos/rpng/open_vins/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/rpng/open_vins/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/rpng/open_vins/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/rpng/open_vins/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/rpng/open_vins/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/rpng/open_vins/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/rpng/open_vins/merges",
+        "archive_url": "https://api.github.com/repos/rpng/open_vins/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/rpng/open_vins/downloads",
+        "issues_url": "https://api.github.com/repos/rpng/open_vins/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/rpng/open_vins/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/rpng/open_vins/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/rpng/open_vins/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/rpng/open_vins/labels{/name}",
+        "releases_url": "https://api.github.com/repos/rpng/open_vins/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/rpng/open_vins/deployments",
+        "created_at": "2019-01-17T15:33:28Z",
+        "updated_at": "2026-07-04T12:39:26Z",
+        "pushed_at": "2025-11-30T08:23:17Z",
+        "git_url": "git://github.com/rpng/open_vins.git",
+        "ssh_url": "git@github.com:rpng/open_vins.git",
+        "clone_url": "https://github.com/rpng/open_vins.git",
+        "svn_url": "https://github.com/rpng/open_vins",
+        "homepage": "https://docs.openvins.com",
+        "size": 171850,
+        "stargazers_count": 2965,
+        "watchers_count": 2965,
+        "language": "C++",
+        "has_issues": true,
+        "has_projects": false,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": true,
+        "has_discussions": false,
+        "forks_count": 879,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 69,
+        "license": {
+          "key": "gpl-3.0",
+          "name": "GNU General Public License v3.0",
+          "spdx_id": "GPL-3.0",
+          "url": "https://api.github.com/licenses/gpl-3.0",
+          "node_id": "MDc6TGljZW5zZTk="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "ekf-localization",
+          "msckf",
+          "open-vins",
+          "research-platform",
+          "robotics",
+          "sensor-calibration",
+          "slam",
+          "vio",
+          "visual-inertial-odometry"
+        ],
+        "visibility": "public",
+        "forks": 879,
+        "open_issues": 69,
+        "watchers": 2965,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 2965
+      },
+      {
+        "id": 63038123,
+        "node_id": "MDEwOlJlcG9zaXRvcnk2MzAzODEyMw==",
+        "name": "awesome-visual-slam",
+        "full_name": "tzutalin/awesome-visual-slam",
+        "private": false,
+        "owner": {
+          "login": "tzutalin",
+          "id": 3283822,
+          "node_id": "MDQ6VXNlcjMyODM4MjI=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/3283822?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/tzutalin",
+          "html_url": "https://github.com/tzutalin",
+          "followers_url": "https://api.github.com/users/tzutalin/followers",
+          "following_url": "https://api.github.com/users/tzutalin/following{/other_user}",
+          "gists_url": "https://api.github.com/users/tzutalin/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/tzutalin/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/tzutalin/subscriptions",
+          "organizations_url": "https://api.github.com/users/tzutalin/orgs",
+          "repos_url": "https://api.github.com/users/tzutalin/repos",
+          "events_url": "https://api.github.com/users/tzutalin/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/tzutalin/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/tzutalin/awesome-visual-slam",
+        "description": ":books: The list of vision-based SLAM / Visual Odometry open source, blogs, and papers",
+        "fork": false,
+        "url": "https://api.github.com/repos/tzutalin/awesome-visual-slam",
+        "forks_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/forks",
+        "keys_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/teams",
+        "hooks_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/hooks",
+        "issue_events_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/events",
+        "assignees_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/tags",
+        "blobs_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/languages",
+        "stargazers_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/stargazers",
+        "contributors_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/contributors",
+        "subscribers_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/subscribers",
+        "subscription_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/subscription",
+        "commits_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/merges",
+        "archive_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/downloads",
+        "issues_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/labels{/name}",
+        "releases_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/tzutalin/awesome-visual-slam/deployments",
+        "created_at": "2016-07-11T05:04:36Z",
+        "updated_at": "2026-07-04T16:44:02Z",
+        "pushed_at": "2022-05-10T17:57:19Z",
+        "git_url": "git://github.com/tzutalin/awesome-visual-slam.git",
+        "ssh_url": "git@github.com:tzutalin/awesome-visual-slam.git",
+        "clone_url": "https://github.com/tzutalin/awesome-visual-slam.git",
+        "svn_url": "https://github.com/tzutalin/awesome-visual-slam",
+        "homepage": "",
+        "size": 47,
+        "stargazers_count": 2424,
+        "watchers_count": 2424,
+        "language": null,
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 437,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 3,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "books",
+          "computervision",
+          "learning",
+          "point-cloud",
+          "reconstruction",
+          "ros",
+          "slam"
+        ],
+        "visibility": "public",
+        "forks": 437,
+        "open_issues": 3,
+        "watchers": 2424,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 2424
+      },
+      {
+        "id": 404724835,
+        "node_id": "MDEwOlJlcG9zaXRvcnk0MDQ3MjQ4MzU=",
+        "name": "r3live",
+        "full_name": "hku-mars/r3live",
+        "private": false,
+        "owner": {
+          "login": "hku-mars",
+          "id": 51474179,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjUxNDc0MTc5",
+          "avatar_url": "https://avatars.githubusercontent.com/u/51474179?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/hku-mars",
+          "html_url": "https://github.com/hku-mars",
+          "followers_url": "https://api.github.com/users/hku-mars/followers",
+          "following_url": "https://api.github.com/users/hku-mars/following{/other_user}",
+          "gists_url": "https://api.github.com/users/hku-mars/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/hku-mars/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/hku-mars/subscriptions",
+          "organizations_url": "https://api.github.com/users/hku-mars/orgs",
+          "repos_url": "https://api.github.com/users/hku-mars/repos",
+          "events_url": "https://api.github.com/users/hku-mars/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/hku-mars/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/hku-mars/r3live",
+        "description": "A Robust, Real-time, RGB-colored, LiDAR-Inertial-Visual tightly-coupled state Estimation and mapping package",
+        "fork": false,
+        "url": "https://api.github.com/repos/hku-mars/r3live",
+        "forks_url": "https://api.github.com/repos/hku-mars/r3live/forks",
+        "keys_url": "https://api.github.com/repos/hku-mars/r3live/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/hku-mars/r3live/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/hku-mars/r3live/teams",
+        "hooks_url": "https://api.github.com/repos/hku-mars/r3live/hooks",
+        "issue_events_url": "https://api.github.com/repos/hku-mars/r3live/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/hku-mars/r3live/events",
+        "assignees_url": "https://api.github.com/repos/hku-mars/r3live/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/hku-mars/r3live/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/hku-mars/r3live/tags",
+        "blobs_url": "https://api.github.com/repos/hku-mars/r3live/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/hku-mars/r3live/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/hku-mars/r3live/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/hku-mars/r3live/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/hku-mars/r3live/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/hku-mars/r3live/languages",
+        "stargazers_url": "https://api.github.com/repos/hku-mars/r3live/stargazers",
+        "contributors_url": "https://api.github.com/repos/hku-mars/r3live/contributors",
+        "subscribers_url": "https://api.github.com/repos/hku-mars/r3live/subscribers",
+        "subscription_url": "https://api.github.com/repos/hku-mars/r3live/subscription",
+        "commits_url": "https://api.github.com/repos/hku-mars/r3live/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/hku-mars/r3live/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/hku-mars/r3live/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/hku-mars/r3live/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/hku-mars/r3live/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/hku-mars/r3live/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/hku-mars/r3live/merges",
+        "archive_url": "https://api.github.com/repos/hku-mars/r3live/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/hku-mars/r3live/downloads",
+        "issues_url": "https://api.github.com/repos/hku-mars/r3live/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/hku-mars/r3live/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/hku-mars/r3live/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/hku-mars/r3live/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/hku-mars/r3live/labels{/name}",
+        "releases_url": "https://api.github.com/repos/hku-mars/r3live/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/hku-mars/r3live/deployments",
+        "created_at": "2021-09-09T13:05:05Z",
+        "updated_at": "2026-07-06T01:58:17Z",
+        "pushed_at": "2025-12-04T08:57:54Z",
+        "git_url": "git://github.com/hku-mars/r3live.git",
+        "ssh_url": "git@github.com:hku-mars/r3live.git",
+        "clone_url": "https://github.com/hku-mars/r3live.git",
+        "svn_url": "https://github.com/hku-mars/r3live",
+        "homepage": "",
+        "size": 23048,
+        "stargazers_count": 2423,
+        "watchers_count": 2423,
+        "language": "C++",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 482,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 0,
+        "license": {
+          "key": "gpl-2.0",
+          "name": "GNU General Public License v2.0",
+          "spdx_id": "GPL-2.0",
+          "url": "https://api.github.com/licenses/gpl-2.0",
+          "node_id": "MDc6TGljZW5zZTg="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "3d-mapping",
+          "3d-reconstruction",
+          "lidar-camera-fusion",
+          "lidar-inertial-odometry",
+          "lidar-odometry",
+          "lidar-slam",
+          "mesh-reconstruction",
+          "sensor-fusion",
+          "slam"
+        ],
+        "visibility": "public",
+        "forks": 482,
+        "open_issues": 0,
+        "watchers": 2423,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 2423
+      },
+      {
+        "id": 44748564,
+        "node_id": "MDEwOlJlcG9zaXRvcnk0NDc0ODU2NA==",
+        "name": "ElasticFusion",
+        "full_name": "mp3guy/ElasticFusion",
+        "private": false,
+        "owner": {
+          "login": "mp3guy",
+          "id": 3238631,
+          "node_id": "MDQ6VXNlcjMyMzg2MzE=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/3238631?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/mp3guy",
+          "html_url": "https://github.com/mp3guy",
+          "followers_url": "https://api.github.com/users/mp3guy/followers",
+          "following_url": "https://api.github.com/users/mp3guy/following{/other_user}",
+          "gists_url": "https://api.github.com/users/mp3guy/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/mp3guy/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/mp3guy/subscriptions",
+          "organizations_url": "https://api.github.com/users/mp3guy/orgs",
+          "repos_url": "https://api.github.com/users/mp3guy/repos",
+          "events_url": "https://api.github.com/users/mp3guy/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/mp3guy/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/mp3guy/ElasticFusion",
+        "description": "Real-time dense visual SLAM system",
+        "fork": false,
+        "url": "https://api.github.com/repos/mp3guy/ElasticFusion",
+        "forks_url": "https://api.github.com/repos/mp3guy/ElasticFusion/forks",
+        "keys_url": "https://api.github.com/repos/mp3guy/ElasticFusion/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/mp3guy/ElasticFusion/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/mp3guy/ElasticFusion/teams",
+        "hooks_url": "https://api.github.com/repos/mp3guy/ElasticFusion/hooks",
+        "issue_events_url": "https://api.github.com/repos/mp3guy/ElasticFusion/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/mp3guy/ElasticFusion/events",
+        "assignees_url": "https://api.github.com/repos/mp3guy/ElasticFusion/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/mp3guy/ElasticFusion/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/mp3guy/ElasticFusion/tags",
+        "blobs_url": "https://api.github.com/repos/mp3guy/ElasticFusion/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/mp3guy/ElasticFusion/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/mp3guy/ElasticFusion/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/mp3guy/ElasticFusion/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/mp3guy/ElasticFusion/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/mp3guy/ElasticFusion/languages",
+        "stargazers_url": "https://api.github.com/repos/mp3guy/ElasticFusion/stargazers",
+        "contributors_url": "https://api.github.com/repos/mp3guy/ElasticFusion/contributors",
+        "subscribers_url": "https://api.github.com/repos/mp3guy/ElasticFusion/subscribers",
+        "subscription_url": "https://api.github.com/repos/mp3guy/ElasticFusion/subscription",
+        "commits_url": "https://api.github.com/repos/mp3guy/ElasticFusion/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/mp3guy/ElasticFusion/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/mp3guy/ElasticFusion/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/mp3guy/ElasticFusion/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/mp3guy/ElasticFusion/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/mp3guy/ElasticFusion/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/mp3guy/ElasticFusion/merges",
+        "archive_url": "https://api.github.com/repos/mp3guy/ElasticFusion/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/mp3guy/ElasticFusion/downloads",
+        "issues_url": "https://api.github.com/repos/mp3guy/ElasticFusion/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/mp3guy/ElasticFusion/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/mp3guy/ElasticFusion/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/mp3guy/ElasticFusion/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/mp3guy/ElasticFusion/labels{/name}",
+        "releases_url": "https://api.github.com/repos/mp3guy/ElasticFusion/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/mp3guy/ElasticFusion/deployments",
+        "created_at": "2015-10-22T13:54:58Z",
+        "updated_at": "2026-06-20T18:13:32Z",
+        "pushed_at": "2025-08-03T10:04:09Z",
+        "git_url": "git://github.com/mp3guy/ElasticFusion.git",
+        "ssh_url": "git@github.com:mp3guy/ElasticFusion.git",
+        "clone_url": "https://github.com/mp3guy/ElasticFusion.git",
+        "svn_url": "https://github.com/mp3guy/ElasticFusion",
+        "homepage": null,
+        "size": 1366,
+        "stargazers_count": 1921,
+        "watchers_count": 1921,
+        "language": "C++",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 592,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 4,
+        "license": {
+          "key": "other",
+          "name": "Other",
+          "spdx_id": "NOASSERTION",
+          "url": null,
+          "node_id": "MDc6TGljZW5zZTA="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "cuda",
+          "reconstruction",
+          "slam"
+        ],
+        "visibility": "public",
+        "forks": 592,
+        "open_issues": 4,
+        "watchers": 1921,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 1921
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<visual-slam-and-visual-odometry-with-semantic-based-filtering-of-dynamic-objects>",
+        "type": "paper",
+        "title": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<var-slam-visual-adaptive-and-robust-slam-for-dynamic-environments>",
+        "type": "paper",
+        "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<dynosam-open-source-smoothing-and-mapping-framework-for-dynamic-slam>",
+        "type": "paper",
+        "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<ds-slam-a-semantic-visual-slam-towards-dynamic-environments>",
+        "type": "paper",
+        "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+        "role": "baseline"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "moving objects",
+        "dynamic SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses dynamic environment SLAM with semantic filtering of moving objects.",
+      "doi": "10.47749/t/unicamp.2023.1347033",
+      "url": "https://doi.org/10.47749/t/unicamp.2023.1347033",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "dynamic SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses visual SLAM in dynamic environments with adaptive robust methods.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2510.16205v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Visual SLAM in dynamic environments remains challenging, as several existing methods rely on semantic filtering that only handles known object classes, or use fixed robust kernels that cannot adapt to unknown moving objects, leading to degraded accuracy when they appear in the scene. We present VAR-SLAM (Visual Adaptive and Robust SLAM), an ORB-SLAM3-based system that combines a lightweight semantic keypoint filter to deal with known moving objects, with Barron's adaptive robust loss to handle unknown ones. The shape parameter of the robust kernel is estimated online from residuals, allowing t"
+    },
+    {
+      "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+      "verdict": "accept",
+      "hit_keywords": [
+        "dynamic SLAM",
+        "visual SLAM",
+        "dynamic environment",
+        "moving objects"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly targets dynamic SLAM with smoothing and mapping for moving objects.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.11893v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Traditional Visual Simultaneous Localization and Mapping (vSLAM) systems focus solely on static scene structures, overlooking dynamic elements in the environment. Although effective for accurate visual odometry in complex scenarios, these methods discard crucial information about moving objects. By incorporating this information into a Dynamic SLAM framework, the motion of dynamic entities can be estimated, enhancing navigation whilst ensuring accurate localization. However, the fundamental formulation of Dynamic SLAM remains an open challenge, with no consensus on the optimal approach for acc"
+    },
+    {
+      "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "semantic",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses semantic visual SLAM for dynamic environments.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1809.08379v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Simultaneous Localization and Mapping (SLAM) is considered to be a fundamental capability for intelligent mobile robots. Over the past decades, many impressed SLAM systems have been developed and achieved good performance under certain circumstances. However, some problems are still not well solved, for example, how to tackle the moving objects in the dynamic environments, how to make the robots truly understand the surroundings and accomplish advanced tasks. In this paper, a robust semantic visual SLAM towards dynamic environments named DS-SLAM is proposed. Five threads run in parallel in DS-"
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "moving objects",
+        "dynamic SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses dynamic environment SLAM with semantic filtering of moving objects.",
+      "doi": "10.47749/t/unicamp.2023.1347033",
+      "url": "https://doi.org/10.47749/t/unicamp.2023.1347033",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "dynamic SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses visual SLAM in dynamic environments with adaptive robust methods.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2510.16205v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Visual SLAM in dynamic environments remains challenging, as several existing methods rely on semantic filtering that only handles known object classes, or use fixed robust kernels that cannot adapt to unknown moving objects, leading to degraded accuracy when they appear in the scene. We present VAR-SLAM (Visual Adaptive and Robust SLAM), an ORB-SLAM3-based system that combines a lightweight semantic keypoint filter to deal with known moving objects, with Barron's adaptive robust loss to handle unknown ones. The shape parameter of the robust kernel is estimated online from residuals, allowing t"
+    },
+    {
+      "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+      "verdict": "accept",
+      "hit_keywords": [
+        "dynamic SLAM",
+        "visual SLAM",
+        "dynamic environment",
+        "moving objects"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly targets dynamic SLAM with smoothing and mapping for moving objects.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.11893v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Traditional Visual Simultaneous Localization and Mapping (vSLAM) systems focus solely on static scene structures, overlooking dynamic elements in the environment. Although effective for accurate visual odometry in complex scenarios, these methods discard crucial information about moving objects. By incorporating this information into a Dynamic SLAM framework, the motion of dynamic entities can be estimated, enhancing navigation whilst ensuring accurate localization. However, the fundamental formulation of Dynamic SLAM remains an open challenge, with no consensus on the optimal approach for acc"
+    },
+    {
+      "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "semantic",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses semantic visual SLAM for dynamic environments.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1809.08379v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Simultaneous Localization and Mapping (SLAM) is considered to be a fundamental capability for intelligent mobile robots. Over the past decades, many impressed SLAM systems have been developed and achieved good performance under certain circumstances. However, some problems are still not well solved, for example, how to tackle the moving objects in the dynamic environments, how to make the robots truly understand the surroundings and accomplish advanced tasks. In this paper, a robust semantic visual SLAM towards dynamic environments named DS-SLAM is proposed. Five threads run in parallel in DS-"
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "luigifreda/pyslam",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM",
+        "feature matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a general visual SLAM pipeline but lacks specific focus on dynamic environments or moving objects.",
+      "doi": null,
+      "url": "https://api.github.com/repos/luigifreda/pyslam",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "pySLAM is a hybrid Python/C++ Visual SLAM pipeline supporting monocular, stereo, and RGB-D cameras. It provides a broad set of modern local and global feature extractors, multiple loop-closure strategies, a volumetric reconstruction module, integrated depth-prediction models, and semantic segmentation capabilities for enhanced scene understanding."
+    },
+    {
+      "title": "xdspacelab/openvslam",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "A versatile visual SLAM framework but does not address dynamic environments or moving objects.",
+      "doi": null,
+      "url": "https://api.github.com/repos/xdspacelab/openvslam",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "OpenVSLAM: A Versatile Visual SLAM Framework"
+    },
+    {
+      "title": "rpng/open_vins",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on visual-inertial navigation, not specifically on dynamic environments or motion segmentation.",
+      "doi": null,
+      "url": "https://api.github.com/repos/rpng/open_vins",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "An open source platform for visual-inertial navigation research."
+    },
+    {
+      "title": "tzutalin/awesome-visual-slam",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "A curated list of resources but not directly usable for dynamic environment research.",
+      "doi": null,
+      "url": "https://api.github.com/repos/tzutalin/awesome-visual-slam",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ":books: The list of vision-based SLAM / Visual Odometry open source, blogs, and papers"
+    },
+    {
+      "title": "mp3guy/ElasticFusion",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "A real-time dense visual SLAM system but does not specifically handle dynamic environments or moving objects.",
+      "doi": null,
+      "url": "https://api.github.com/repos/mp3guy/ElasticFusion",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Real-time dense visual SLAM system"
+    },
+    {
+      "title": "Understanding Visual SLAM",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "survey",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Likely a general survey on visual SLAM, not specifically focused on dynamic environments.",
+      "doi": "10.1007/978-981-97-3573-0_1",
+      "url": "https://doi.org/10.1007/978-981-97-3573-0_1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "CHAMELEON-SLAM: Adaptive Feature Selection and Uncertainty-Aware Matching for Robust Monocular Visual SLAM",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM",
+        "feature matching"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses feature selection and matching for robustness but not specifically dynamic environments.",
+      "doi": "10.36227/techrxiv.177223033.30463461/v1",
+      "url": "https://doi.org/10.36227/techrxiv.177223033.30463461/v1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "<jats:p>Visual SLAM systems employ fixed feature extractors regardless of scene content. This is suboptimal: hightexture outdoor environments favor fast, sparse features, while low-texture indoor scenes or motion-blurred frames demand denser or more robust alternatives. We present CHAMELEON-SLAM, a visual SLAM system that adapts its feature extraction strategy to scene characteristics and incorporates per-match uncertainty into pose optimization. Our approach introduces two complementary components: (1) a lightweight scene classifier that selects among XFeat, ALIKED, and SuperPoint based on te"
+    },
+    {
+      "title": "VI-NeRF-SLAM: A Real-time Visual-Inertial SLAM with NeRF Mapping",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on visual-inertial SLAM with NeRF, not dynamic environment challenges.",
+      "doi": "10.21203/rs.3.rs-3710160/v1",
+      "url": "https://doi.org/10.21203/rs.3.rs-3710160/v1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "<jats:title>Abstract</jats:title>\n        <jats:p>In numerous robotic and autonomous driving tasks, traditional visual SLAM algorithms estimate the camera's position in a scene through sparse feature points and express the map by estimating the depth of sparse point clouds. However,practical applications require SLAM to create dense maps in real-time, overcoming the sparsity and occlusion issues of point clouds. Furthermore,it is advantageous for SLAM map to possess an auto-completion capability, where the map can automatically infer and complete the remaining 20% when the camera observes only"
+    },
+    {
+      "title": "UZ-SLAMLab/ORB_SLAM3",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "A standard SLAM library that may serve as a baseline but does not specifically address dynamic environments.",
+      "doi": null,
+      "url": "https://api.github.com/repos/UZ-SLAMLab/ORB_SLAM3",
+      "source": "github",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM"
+    },
+    {
+      "title": "MLP-SLAM: Multilayer Perceptron-Based Simultaneous Localization and Mapping",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "visual SLAM",
+        "simultaneous localization and mapping",
+        "dynamic objects"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Mentions dynamic objects but focuses on MLP-based SLAM, not dynamic environment adaptation.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2410.10669v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The Visual Simultaneous Localization and Mapping (V-SLAM) system has seen significant development in recent years, demonstrating high precision in environments with limited dynamic objects. However, their performance significantly deteriorates when deployed in settings with a higher presence of movable objects, such as environments with pedestrians, cars, and buses, which are common in outdoor scenes. To address this issue, we propose a Multilayer Perceptron (MLP)-based real-time stereo SLAM system that leverages complete geometry information to avoid information loss. Moreover, there is curre"
+    },
+    {
+      "title": "MBA-SLAM: Motion Blur Aware Gaussian Splatting SLAM",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "SLAM",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on motion blur in 3D scene representations, not dynamic object handling.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2411.08279v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Emerging 3D scene representations, such as Neural Radiance Fields (NeRF) and 3D Gaussian Splatting (3DGS), have demonstrated their effectiveness in Simultaneous Localization and Mapping (SLAM) for photo-realistic rendering, particularly when using high-quality video sequences as input. However, existing methods struggle with motion-blurred frames, which are common in real-world scenarios like low-light or long-exposure conditions. This often results in a significant reduction in both camera localization accuracy and map reconstruction quality. To address this challenge, we propose a dense visu"
+    }
+  ],
+  "dataset_candidates": [],
+  "repo_candidates": [],
+  "baseline_candidates": [
+    {
+      "title": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "moving objects",
+        "dynamic SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses dynamic environment SLAM with semantic filtering of moving objects.",
+      "doi": "10.47749/t/unicamp.2023.1347033",
+      "url": "https://doi.org/10.47749/t/unicamp.2023.1347033",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects is explicitly cited as the starting reproducer/method for the topic (matched axes: ['visual slam']).",
+      "matched_topic_axes": [
+        "visual slam"
+      ],
+      "unmatched_topic_axes": [
+        "dynamic slam",
+        "feature matching",
+        "motion segmentation",
+        "dynamic environment",
+        "moving objects",
+        "simultaneous localization and mapping",
+        "pose estimation"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "dynamic SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses visual SLAM in dynamic environments with adaptive robust methods.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2510.16205v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Visual SLAM in dynamic environments remains challenging, as several existing methods rely on semantic filtering that only handles known object classes, or use fixed robust kernels that cannot adapt to unknown moving objects, leading to degraded accuracy when they appear in the scene. We present VAR-SLAM (Visual Adaptive and Robust SLAM), an ORB-SLAM3-based system that combines a lightweight semantic keypoint filter to deal with known moving objects, with Barron's adaptive robust loss to handle unknown ones. The shape parameter of the robust kernel is estimated online from residuals, allowing t",
+      "role": "baseline",
+      "why_relevant": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments is explicitly cited as the starting reproducer/method for the topic (matched axes: ['visual slam', 'dynamic environment', 'moving objects']).",
+      "matched_topic_axes": [
+        "visual slam",
+        "dynamic environment",
+        "moving objects"
+      ],
+      "unmatched_topic_axes": [
+        "dynamic slam",
+        "feature matching",
+        "motion segmentation",
+        "simultaneous localization and mapping",
+        "pose estimation"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+      "verdict": "accept",
+      "hit_keywords": [
+        "dynamic SLAM",
+        "visual SLAM",
+        "dynamic environment",
+        "moving objects"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly targets dynamic SLAM with smoothing and mapping for moving objects.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2501.11893v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Traditional Visual Simultaneous Localization and Mapping (vSLAM) systems focus solely on static scene structures, overlooking dynamic elements in the environment. Although effective for accurate visual odometry in complex scenarios, these methods discard crucial information about moving objects. By incorporating this information into a Dynamic SLAM framework, the motion of dynamic entities can be estimated, enhancing navigation whilst ensuring accurate localization. However, the fundamental formulation of Dynamic SLAM remains an open challenge, with no consensus on the optimal approach for acc",
+      "role": "baseline",
+      "why_relevant": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM is explicitly cited as the starting reproducer/method for the topic (matched axes: ['dynamic slam', 'moving objects', 'simultaneous localization and mapping']).",
+      "matched_topic_axes": [
+        "dynamic slam",
+        "moving objects",
+        "simultaneous localization and mapping"
+      ],
+      "unmatched_topic_axes": [
+        "visual slam",
+        "feature matching",
+        "motion segmentation",
+        "dynamic environment",
+        "pose estimation"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "semantic",
+        "simultaneous localization and mapping"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses semantic visual SLAM for dynamic environments.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1809.08379v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Simultaneous Localization and Mapping (SLAM) is considered to be a fundamental capability for intelligent mobile robots. Over the past decades, many impressed SLAM systems have been developed and achieved good performance under certain circumstances. However, some problems are still not well solved, for example, how to tackle the moving objects in the dynamic environments, how to make the robots truly understand the surroundings and accomplish advanced tasks. In this paper, a robust semantic visual SLAM towards dynamic environments named DS-SLAM is proposed. Five threads run in parallel in DS-",
+      "role": "baseline",
+      "why_relevant": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments is explicitly cited as the starting reproducer/method for the topic (matched axes: ['visual slam', 'dynamic environment', 'moving objects', 'simultaneous localization and mapping']).",
+      "matched_topic_axes": [
+        "visual slam",
+        "dynamic environment",
+        "moving objects",
+        "simultaneous localization and mapping"
+      ],
+      "unmatched_topic_axes": [
+        "dynamic slam",
+        "feature matching",
+        "motion segmentation",
+        "pose estimation"
+      ],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "parallel_candidates": [],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 4,
+      "n_weak": 11,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "dataset_extractions_tried": 4,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 4,
+    "parallel_n": 0,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0,
+    "evidence_gap": []
+  },
+  "work_packages": [
+    {
+      "title": "基于语义先验的动态特征剔除与SLAM鲁棒性增强",
+      "research_question": "如何利用语义分割先验信息有效剔除动态物体上的特征点，以提升ORB-SLAM2在动态环境下的定位精度？",
+      "baseline": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+      "improved_module_source": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+      "data_source": null,
+      "experiment_metrics": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+      "risk": "语义分割模型在嵌入式平台上的实时性可能不足，导致SLAM前端帧率下降。",
+      "estimated_workload": "3人月"
+    }
+  ],
+  "low_bar_review": {
+    "status": "blocked",
+    "issues": [
+      "work-package baseline not in evidence graph: ORB-SLAM3",
+      "work-package baseline not in evidence graph: ORB-SLAM2"
+    ],
+    "n_packages_reviewed": 3,
+    "n_packages_after_review": 1
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "面向动态环境的视觉SLAM研究",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 1,
+    "low_bar_status": "blocked",
+    "human_gate_status": "pass_through",
+    "notes": [
+      "low-bar review blocked the proposal"
+    ],
+    "research_basis": [
+      {
+        "title": "基于语义先验的动态特征剔除与SLAM鲁棒性增强",
+        "research_question": "如何利用语义分割先验信息有效剔除动态物体上的特征点，以提升ORB-SLAM2在动态环境下的定位精度？",
+        "baseline": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+        "improved_module_source": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+        "data_source": null,
+        "experiment_metrics": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+        "risk": "语义分割模型在嵌入式平台上的实时性可能不足，导致SLAM前端帧率下降。",
+        "estimated_workload": "3人月"
+      }
+    ]
+  },
+  "filter_results": {
+    "total": 22,
+    "kept": 22,
+    "dropped": 0,
+    "dropped_items": []
+  },
+  "seed_papers": [
+    {
+      "title": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+      "verdict": "accept",
+      "hit_keywords": [
+        "visual SLAM",
+        "dynamic environment",
+        "moving objects",
+        "dynamic SLAM"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses dynamic environment SLAM with semantic filtering of moving objects.",
+      "doi": "10.47749/t/unicamp.2023.1347033",
+      "url": "https://doi.org/10.47749/t/unicamp.2023.1347033",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=13",
+      "relevance_score": 13
+    }
+  ],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "feasible",
+    "score": 75,
+    "reason": "4篇baseline均有repo，覆盖语义滤波、自适应鲁棒、平滑建图等方向，但无数据集和parallel论文，需自行采集数据。",
+    "100_plus_formula": {
+      "baseline_weight": 4,
+      "module_weights": [],
+      "estimated_total": 4,
+      "assessment": "足够毕业"
+    },
+    "degradation_paths": [
+      "若无法获取动态场景数据集，可退化为使用TUM RGB-D等公开数据集并手动标注动态物体",
+      "若语义滤波效果不佳，可退化为仅处理静态场景的经典SLAM方法"
+    ]
+  },
+  "innovation_points": [
+    {
+      "description": "结合语义滤波与自适应鲁棒核的动态物体处理模块，提升对未知动态物体的鲁棒性",
+      "baseline_used": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+      "stitched_modules": [
+        "语义分割网络（如SegNet）用于已知动态物体检测",
+        "自适应鲁棒核函数（如Huber核的动态调整）用于未知动态物体抑制"
+      ],
+      "stitching_plan": "1. 在baseline的ORB-SLAM2框架中集成语义分割模块，对每帧图像进行语义分割，标记已知动态物体（如人、车）的特征点。2. 在优化阶段，对未标记的特征点使用自适应鲁棒核（如根据残差动态调整阈值）进行加权，抑制未知动态物体的影响。3. 在公开数据集（如TUM RGB-D）上对比原始baseline和缝合后系统的轨迹误差。",
+      "estimated_difficulty": "中",
+      "evidence_ref": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments"
+    },
+    {
+      "description": "融合语义滤波与动态物体平滑建图框架，实现动态物体的跟踪与地图更新",
+      "baseline_used": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+      "stitched_modules": [
+        "语义分割与运动一致性检测（如光流法）",
+        "动态物体因子图优化与地图更新（如DynoSAM中的滑动窗口平滑）"
+      ],
+      "stitching_plan": "1. 在DS-SLAM的语义分割基础上，增加运动一致性检测（如基于光流或几何约束）以识别动态物体。2. 引入DynoSAM的因子图框架，将动态物体作为变量加入优化，并定期更新地图中的动态区域。3. 在KITTI或TUM数据集上评估动态场景下的定位精度和地图一致性。",
+      "estimated_difficulty": "高",
+      "evidence_ref": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM"
+    },
+    {
+      "description": "结合自适应鲁棒核与动态物体平滑建图，提升对未知动态物体的鲁棒性并保留动态信息",
+      "baseline_used": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+      "stitched_modules": [
+        "自适应鲁棒核函数（如动态调整的Huber核）",
+        "动态物体因子图优化与地图更新（如DynoSAM中的滑动窗口平滑）"
+      ],
+      "stitching_plan": "1. 在VAR-SLAM的自适应鲁棒核基础上，集成DynoSAM的动态物体因子图优化模块，将动态物体作为独立变量进行跟踪。2. 修改优化流程：先使用自适应鲁棒核抑制未知动态物体对位姿的影响，再对动态物体进行平滑建图。3. 在动态场景数据集（如TUM RGB-D动态序列）上测试定位精度和动态物体重建质量。",
+      "estimated_difficulty": "高",
+      "evidence_ref": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM"
+    }
+  ],
+  "stitching_plan": {
+    "baseline_model": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+    "module_b": "自适应鲁棒核函数（来自VAR-SLAM）",
+    "module_c": "动态物体因子图优化与地图更新（来自DynoSAM）",
+    "stitching_steps": [
+      "1. 复现baseline：在Ubuntu 20.04上配置ORB-SLAM2环境，集成语义分割网络（如SegNet），实现已知动态物体特征点剔除。",
+      "2. 提取模块B：从VAR-SLAM论文中实现自适应鲁棒核函数，在优化阶段根据残差动态调整核函数阈值。",
+      "3. 拼接测试：将模块B集成到baseline的优化步骤中，在TUM RGB-D动态序列上评估轨迹误差（ATE），并与原始baseline对比。"
+    ],
+    "risk_notes": [
+      "自适应鲁棒核的参数调整可能需要在不同数据集上重新调优，增加泛化难度。",
+      "语义分割网络的计算开销可能影响实时性，需考虑轻量化模型或GPU加速。",
+      "动态物体因子图优化可能引入额外延迟，需平衡精度与速度。"
+    ]
+  },
+  "sota_comparison": {
+    "comparison_papers": [
+      {
+        "title": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+        "year": "2018",
+        "reason": "经典语义动态SLAM基线，验证语义过滤的有效性，适合对比动态物体处理能力。"
+      },
+      {
+        "title": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+        "year": "2024",
+        "reason": "最新自适应鲁棒方法，处理未知动态物体，对比鲁棒性和适应性。"
+      },
+      {
+        "title": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+        "year": "2024",
+        "reason": "开源动态SLAM框架，强调平滑与建图，对比整体系统性能和动态物体建模。"
+      }
+    ],
+    "metrics_to_compare": [
+      "ATE RMSE (绝对轨迹误差均方根)",
+      "RPE RMSE (相对位姿误差均方根)",
+      "动态物体检测召回率",
+      "动态物体检测精确率",
+      "运行帧率 (FPS)"
+    ],
+    "ablation_suggestions": [
+      {
+        "name": "去除动态物体检测模块",
+        "purpose": "验证动态物体检测对定位精度的贡献",
+        "expected_drop": "ATE RMSE 增加 30-50%"
+      },
+      {
+        "name": "替换语义分割为传统几何方法",
+        "purpose": "验证语义信息相比几何方法的优势",
+        "expected_drop": "动态物体检测召回率下降 20-40%"
+      },
+      {
+        "name": "关闭自适应鲁棒核函数",
+        "purpose": "验证自适应机制对未知动态物体的鲁棒性贡献",
+        "expected_drop": "ATE RMSE 增加 15-25%"
+      }
+    ],
+    "experiment_checklist": [
+      "在TUM RGB-D dynamic序列上测试",
+      "在KITTI odometry序列上测试",
+      "记录ATE和RPE的均值和标准差",
+      "统计动态物体检测的精确率和召回率",
+      "测量每帧平均处理时间",
+      "与baseline论文在相同硬件和参数下复现对比",
+      "进行至少3次独立运行取平均结果"
+    ]
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "融合自适应鲁棒核函数与语义先验的动态物体过滤",
+        "expected_gain": "提升对未知动态物体的鲁棒性，减少误剔除静态特征",
+        "difficulty": "中",
+        "action_items": [
+          "在VAR-SLAM的自适应鲁棒核函数基础上，引入语义分割网络（如YOLO）过滤已知动态物体",
+          "设计动态概率图，结合语义标签和几何一致性（如极线约束）判断特征点动态性",
+          "在公开数据集（如TUM RGB-D、KITTI）上对比DS-SLAM和DynoSAM的精度"
+        ],
+        "ref_parallel": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments"
+      },
+      {
+        "direction": "利用动态物体信息进行地图构建与场景理解",
+        "expected_gain": "增强SLAM的环境理解能力，支持动态物体跟踪与长期地图更新",
+        "difficulty": "高",
+        "action_items": [
+          "参考DynoSAM的因子图框架，将动态物体建模为独立因子节点",
+          "设计动态物体轨迹与静态地图的联合优化策略",
+          "在动态场景数据集（如Oxford RobotCar）上验证地图一致性"
+        ],
+        "ref_parallel": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM"
+      },
+      {
+        "direction": "轻量化语义分割网络用于实时动态SLAM",
+        "expected_gain": "降低计算开销，提升在嵌入式平台上的实时性",
+        "difficulty": "低",
+        "action_items": [
+          "采用MobileNet或EfficientNet-Lite作为语义分割骨干网络",
+          "在DS-SLAM框架中替换原有分割模块，对比运行帧率与精度",
+          "在TUM动态序列上测试实时性指标"
+        ],
+        "ref_parallel": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "退化为静态环境SLAM，仅保留几何一致性剔除动态点",
+        "trade_off": "丧失对动态物体的语义理解能力，在高度动态场景下鲁棒性下降",
+        "survival_rate": "中"
+      },
+      {
+        "path": "退化为基于语义过滤的SLAM，仅处理已知动态类别",
+        "trade_off": "无法应对未知动态物体，泛化能力受限",
+        "survival_rate": "高"
+      }
+    ],
+    "risk_mitigation": [
+      "在多个动态程度不同的数据集（如TUM动态序列、KITTI动态子集）上评估，避免过拟合特定场景",
+      "设计消融实验，分别验证语义过滤、自适应核函数、动态地图模块的贡献",
+      "若计算资源不足，优先保证实时性，采用轻量化网络并降低动态物体检测频率",
+      "提前准备退化路线（如静态SLAM基线），确保在创新点失效时仍有可发表的对比结果"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 6,
+        "verdict": "PASS",
+        "reason": "创新点结合了语义滤波、自适应鲁棒核和平滑建图，但三个创新点本质上是两两组合，缺乏对动态环境SLAM核心gap的深入挖掘，原创性一般。"
+      },
+      {
+        "dimension": "D2",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "baseline选择合理，覆盖了语义滤波、自适应鲁棒和平滑建图三个方向，且均有repo，但缺少对baseline局限性的具体分析。"
+      },
+      {
+        "dimension": "D3",
+        "score": 5,
+        "verdict": "WARN",
+        "reason": "baseline数量满足要求（3篇），但无parallel论文和数据集，需自行采集数据，证据充分性不足。"
+      },
+      {
+        "dimension": "D4",
+        "score": 4,
+        "verdict": "WARN",
+        "reason": "叙事中未明确三个具体问题，工作包只有一个且描述不完整，难以判断创新点是否真正解决问题。"
+      },
+      {
+        "dimension": "D5",
+        "score": 5,
+        "verdict": "WARN",
+        "reason": "叙事部分缺失（three_problems为空，narrative_summary为空），写作不完整，存在过度宣传风险（创新点描述模糊）。"
+      }
+    ],
+    "overall_verdict": "MINOR_REVISION",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "缺乏数据集和parallel论文，需自行采集数据，可能影响实验可复现性",
+      "工作包不完整，仅有一个且描述为空，需补充详细内容",
+      "叙事部分缺失，需明确三个具体问题并论证模块如何解决"
+    ]
+  },
+  "narrative_revision_count": 2,
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-06T10:26:51Z",
+      "input_summary": {
+        "topic": "面向动态环境的视觉SLAM研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:26:51Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-06T10:26:56Z",
+      "input_summary": {
+        "topic_len": 15
+      },
+      "output_summary": {
+        "n_method": 4,
+        "n_object": 2,
+        "domain": "vision_3d"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:26:56Z",
+      "elapsed_s": 4.66
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-06T10:26:56Z",
+      "input_summary": {
+        "topic_len": 15,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 4,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:26:56Z",
+      "elapsed_s": 0.002
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-06T10:26:56Z",
+      "input_summary": {
+        "topic_len": 15,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 22,
+        "raw_tools": [
+          "arxiv",
+          "crossref",
+          "github"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        },
+        {
+          "tool": "crossref",
+          "n": 8
+        },
+        {
+          "tool": "github",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-06T10:27:25Z",
+      "elapsed_s": 29.641
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-06T10:27:25Z",
+      "input_summary": {
+        "n_candidates": 22
+      },
+      "output_summary": {
+        "kept": 22,
+        "dropped": 0,
+        "pre_filter_keep": 22,
+        "pre_filter_drop": 0,
+        "llm_judged": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 22,
+          "pre_drop": 0,
+          "gray_area": 0
+        },
+        {
+          "tool": "quality_filter.no_llm_needed",
+          "reason": "all candidates resolved by pre-filter"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:27:25Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T10:27:25Z",
+      "input_summary": {
+        "n_candidates": 22,
+        "topic_len": 15,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 4,
+        "n_weak_reject": 11,
+        "n_reject": 7
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:27:33Z",
+      "elapsed_s": 7.916
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T10:27:33Z",
+      "input_summary": {
+        "n_papers": 4,
+        "n_weak": 11,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:27:33Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-06T10:27:33Z",
+      "input_summary": {
+        "n_verified": 4,
+        "n_seeds": 1,
+        "seed_titles": [
+          "Visual SLAM and visual odometry with semantic-based filterin"
+        ]
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "n_surveys": 0,
+        "n_repos": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "semantic_scholar.citations+references",
+          "n_seeds": 1,
+          "n_expanded": 0,
+          "concurrent": true
+        }
+      ],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "per_seed": [
+        {
+          "seed_title": "Visual SLAM and visual odometry with semantic-based filterin",
+          "n_references_plus_citations": 0,
+          "relevance_score": 13
+        }
+      ],
+      "ended_at": "2026-07-06T10:27:40Z",
+      "elapsed_s": 7.122
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-06T10:27:40Z",
+      "input_summary": {
+        "n_candidates": 4,
+        "topic_len": 15,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 4,
+        "n_weak_reject": 0,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:27:46Z",
+      "elapsed_s": 5.945
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-06T10:27:46Z",
+      "input_summary": {
+        "n_papers": 4,
+        "n_weak": 11,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:27:46Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-06T10:27:51Z",
+      "input_summary": {
+        "n_papers": 8,
+        "n_github_repos": 0
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 4,
+          "profile": "fast_json"
+        },
+        {
+          "tool": "github_direct_extract",
+          "n_repos": 0
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:27:51Z",
+      "elapsed_s": 4.683
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-06T10:27:51Z",
+      "input_summary": {
+        "papers": 4
+      },
+      "output_summary": {
+        "nodes": 4,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:27:51Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-06T10:27:51Z",
+      "input_summary": {
+        "n_verified": 4
+      },
+      "output_summary": {
+        "n_baseline": 4,
+        "n_parallel": 0,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:27:51Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-06T10:27:56Z",
+      "input_summary": {
+        "n_baseline": 4,
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "output_summary": {
+        "verdict": "feasible",
+        "score": 75
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:27:56Z",
+      "elapsed_s": 5.235
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-06T10:28:05Z",
+      "input_summary": {
+        "n_baseline": 4,
+        "n_parallel": 0
+      },
+      "output_summary": {
+        "n_packages": 3,
+        "n_gap": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:28:05Z",
+      "elapsed_s": 8.822
+    },
+    {
+      "node": "innovation_extractor",
+      "started_at": "2026-07-06T10:28:19Z",
+      "input_summary": {
+        "n_baseline": 4,
+        "n_parallel": 0
+      },
+      "output_summary": {
+        "n_innovation": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "innovation_extractor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:28:19Z",
+      "elapsed_s": 14.151
+    },
+    {
+      "node": "sota_matcher",
+      "started_at": "2026-07-06T10:28:14Z",
+      "input_summary": {
+        "n_baseline": 4
+      },
+      "output_summary": {
+        "n_comparison": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "sota_matcher.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:28:14Z",
+      "elapsed_s": 8.889
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-06T10:28:30Z",
+      "input_summary": {
+        "n_innovation": 3
+      },
+      "output_summary": {
+        "nick_model_name": "DynoSLAM-AR"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:28:30Z",
+      "elapsed_s": 11.241
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-06T10:28:30Z",
+      "input_summary": {
+        "n_packages": 3
+      },
+      "output_summary": {
+        "status": "blocked",
+        "n_remaining": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:28:30Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-06T10:28:42Z",
+      "input_summary": {
+        "feasibility": "feasible"
+      },
+      "output_summary": {
+        "n_paths": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:28:42Z",
+      "elapsed_s": 11.348
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-06T10:28:49Z",
+      "input_summary": {
+        "n_innovation": 3,
+        "n_packages": 1
+      },
+      "output_summary": {
+        "overall_verdict": "MINOR_REVISION"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-06T10:28:49Z",
+      "elapsed_s": 6.875
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-06T10:28:49Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:28:49Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-06T10:28:49Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "面向动态环境的视觉SLAM研究",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 1,
+        "low_bar_status": "blocked",
+        "human_gate_status": "pass_through",
+        "notes": [
+          "low-bar review blocked the proposal"
+        ],
+        "research_basis": [
+          {
+            "title": "基于语义先验的动态特征剔除与SLAM鲁棒性增强",
+            "research_question": "如何利用语义分割先验信息有效剔除动态物体上的特征点，以提升ORB-SLAM2在动态环境下的定位精度？",
+            "baseline": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+            "improved_module_source": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+            "data_source": null,
+            "experiment_metrics": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+            "risk": "语义分割模型在嵌入式平台上的实时性可能不足，导致SLAM前端帧率下降。",
+            "estimated_workload": "3人月"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-06T10:28:49Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

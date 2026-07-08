@@ -1,9 +1,7 @@
 """Re03 SOP §6.1: Low-bar v3 llm_blocker enforcement tests (SOP §4.4)."""
 
-import pytest
 
 from app.services.agents.low_bar_reviewer import (
-    LowBarVerdict,
     _deterministic_verdict,
     run_low_bar_review,
 )

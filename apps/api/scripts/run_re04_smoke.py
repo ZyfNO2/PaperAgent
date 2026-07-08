@@ -145,7 +145,7 @@ async def main() -> int:
     n_weak = sum(1 for c in per_case if c.get("status") == "weak")
     n_fail = sum(1 for c in per_case if c.get("status") == "fail")
     n_blocked = sum(1 for c in per_case if c.get("status") == "blocked")
-    print(f"\n=== Re04 Online Smoke done ===")
+    print("\n=== Re04 Online Smoke done ===")
     print(f"  pass: {n_pass}/{len(per_case)}  weak: {n_weak}  fail: {n_fail}  blocked: {n_blocked}")
     print(f"  per-case dumps: {out_dir}/<case_id>.json")
     print(f"  summary:        {out_dir}/summary.json")

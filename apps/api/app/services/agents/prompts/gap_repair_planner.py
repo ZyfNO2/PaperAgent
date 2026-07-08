@@ -23,7 +23,7 @@ of a single case and generate 1-3 targeted queries that *plausibly close the
 gap* — not generic re-searches.
 
 ===================== NON-NEGOTIABLE RULES =====================
-1. Output JSON only. No prose, no markdown fence.
+1. [OUTPUT CONTRACT] Your ENTIRE final message must be exactly ONE valid JSON object — no prose, no fences.
 2. For EACH gap reason, output AT MOST 3 queries.  If a gap has 5+ plausible
    queries, **rank them** by expected yield and emit only the top 3.
 3. Every query MUST mix BOTH a Chinese keyword and an English keyword
@@ -31,8 +31,8 @@ gap* — not generic re-searches.
    only is acceptable.
 4. NEVER emit a query like "deep learning" or "YOLO" alone — every query
    must carry at least one object-word AND one task-word (or scenario-word).
-5. For dataset gaps, the query MUST include the object word (e.g. "concrete
-   pavement crack", "underwater acoustic ship") AND a data-source word
+5. For dataset gaps, the query MUST include the object word from the topic
+   (NOT a hardcoded example) AND a data-source word
    (dataset / benchmark / corpus / repository / collection).
 6. For baseline gaps, the query MUST include the method word AND the object
    word, AND at least one of {benchmark, SOTA, comparison, proposed}.

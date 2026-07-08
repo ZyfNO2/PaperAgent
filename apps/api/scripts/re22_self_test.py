@@ -3,7 +3,9 @@
 Usage:
     python apps/api/scripts/re22_self_test.py --dir tmp_re22_eval/all_100
 """
-import argparse, json, sys
+import argparse
+import json
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
@@ -66,7 +68,7 @@ def main():
     out_path = Path('tmp_re22_eval/self_test_report.json')
     out_path.write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str), encoding='utf-8')
 
-    print(f"\n=== Self-test Results ===")
+    print("\n=== Self-test Results ===")
     print(f"e2e_completeness: {n_e2e}/{len(states)}")
     print(f"paper_authenticity: {n_auth}/{len(states)}")
     print(f"topic_relevance: {n_rel}/{len(states)}")

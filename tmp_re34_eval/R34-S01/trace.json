@@ -1,0 +1,690 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T11:54:31Z",
+    "input_summary": {
+      "topic": "基于多视差一致性的伪深度图误差过滤方法"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:54:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T11:54:33Z",
+    "input_summary": {
+      "topic_len": 19
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 0,
+      "domain": "unknown"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:54:33Z",
+    "elapsed_s": 2.271
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T11:54:33Z",
+    "input_summary": {
+      "topic_len": 19,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:54:33Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T11:54:33Z",
+    "input_summary": {
+      "topic_len": 19,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 27,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "github",
+        "semantic_scholar",
+        "crossref",
+        "core",
+        "huggingface"
+      ],
+      "per_adapter": {
+        "arxiv": 0,
+        "openalex": 24,
+        "crossref": 12,
+        "github": 0,
+        "semantic_scholar": 0,
+        "huggingface": 0,
+        "core": 0
+      },
+      "failed_adapters": [
+        "arxiv",
+        "core",
+        "github",
+        "huggingface",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 0
+      },
+      {
+        "tool": "openalex",
+        "n": 24
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "core",
+        "n": 0
+      },
+      {
+        "tool": "huggingface",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T11:55:19Z",
+    "elapsed_s": 46.448
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T11:55:19Z",
+    "input_summary": {
+      "n_candidates": 27
+    },
+    "output_summary": {
+      "kept": 26,
+      "dropped": 1,
+      "pre_filter_keep": 26,
+      "pre_filter_drop": 1,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 26,
+        "pre_drop": 1,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:55:19Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T11:55:19Z",
+    "input_summary": {
+      "n_candidates": 26,
+      "topic_len": 19,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 4,
+      "n_weak_reject": 11,
+      "n_reject": 11
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:55:25Z",
+    "elapsed_s": 5.563
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T11:55:25Z",
+    "input_summary": {
+      "n_papers": 4,
+      "n_weak": 11,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:55:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T11:55:25Z",
+    "input_summary": {
+      "n_verified": 4,
+      "n_seeds": 4,
+      "seed_titles": [
+        "Multi-View Depth Map Estimation With Cross-View Consistency",
+        "Edge and motion-adaptive median filtering for multi-view dep",
+        "Depth map inter-view consistency refinement for multiview vi",
+        "Discontinuity-adaptive Depth Map Filtering for 3D View Gener"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 67,
+      "n_surveys": 1,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 4,
+        "n_expanded": 67,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Multi-View Depth Map Estimation With Cross-View Consistency",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "Edge and motion-adaptive median filtering for multi-view dep",
+        "n_references_plus_citations": 26,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "Depth map inter-view consistency refinement for multiview vi",
+        "n_references_plus_citations": 14,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "Discontinuity-adaptive Depth Map Filtering for 3D View Gener",
+        "n_references_plus_citations": 30,
+        "relevance_score": 5
+      }
+    ],
+    "ended_at": "2026-07-08T11:55:26Z",
+    "elapsed_s": 1.547
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T11:55:26Z",
+    "input_summary": {
+      "n_candidates": 67,
+      "topic_len": 19,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 25,
+      "n_reject": 41
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:55:39Z",
+    "elapsed_s": 12.41
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T11:55:39Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 36,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:55:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T11:55:45Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 5,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:55:45Z",
+    "elapsed_s": 6.378
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T11:55:45Z",
+    "input_summary": {
+      "papers": 5
+    },
+    "output_summary": {
+      "nodes": 5,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:55:45Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T11:55:45Z",
+    "input_summary": {
+      "n_verified": 5
+    },
+    "output_summary": {
+      "n_baseline": 5,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:55:45Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T11:55:49Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:55:49Z",
+    "elapsed_s": 3.292
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T11:55:55Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 2,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:55:55Z",
+    "elapsed_s": 6.855
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T11:56:08Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:56:08Z",
+    "elapsed_s": 12.176
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T11:56:03Z",
+    "input_summary": {
+      "n_baseline": 5
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:56:03Z",
+    "elapsed_s": 7.963
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T11:56:16Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "EdgeConsistNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:56:16Z",
+    "elapsed_s": 8.891
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T11:56:16Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:56:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T11:56:25Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:56:25Z",
+    "elapsed_s": 8.339
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T11:56:31Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:56:31Z",
+    "elapsed_s": 5.915
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T11:56:40Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "EdgeConsistNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:56:40Z",
+    "elapsed_s": 9.303
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T11:56:40Z",
+    "input_summary": {
+      "n_packages": 2
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:56:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T11:56:49Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:56:49Z",
+    "elapsed_s": 8.918
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T11:56:54Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 2
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T11:56:54Z",
+    "elapsed_s": 5.125
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T11:56:54Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:56:54Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T11:56:54Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于多视差一致性的伪深度图误差过滤方法",
+      "n_papers": 5,
+      "n_baseline": 5,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 2,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于跨视差一致性检验的伪深度图误差过滤方法",
+          "research_question": "如何利用多视差一致性约束，有效过滤伪深度图中的不一致误差，提升深度图质量？",
+          "baseline": "Inter-View Depth Consistency Testing in Depth Difference Subspace",
+          "improved_module_source": "Depth map inter-view consistency refinement for multiview video",
+          "data_source": null,
+          "experiment_metrics": "Multi-View Depth Map Estimation With Cross-View Consistency",
+          "risk": "多视差一致性假设在遮挡区域可能失效，导致过度过滤或漏检。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "结合边缘自适应滤波的多视差一致性误差过滤",
+          "research_question": "在保持边缘细节的前提下，如何利用多视差一致性信息过滤伪深度图中的误差？",
+          "baseline": "Edge and motion-adaptive median filtering for multi-view depth map enhancement",
+          "improved_module_source": "Discontinuity-adaptive Depth Map Filtering for 3D View Generation",
+          "data_source": null,
+          "experiment_metrics": "Multi-View Depth Map Estimation With Cross-View Consistency",
+          "risk": "边缘自适应滤波可能引入新的伪影，需精细调参。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T11:56:54Z",
+    "elapsed_s": 0.0
+  }
+]

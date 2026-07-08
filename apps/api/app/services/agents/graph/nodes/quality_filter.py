@@ -15,6 +15,9 @@ from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
 
+# Re3.7: These regex patterns are a LAST-RESORT heuristic filter that only
+# activates when the LLM is unavailable. They are NOT a replacement for
+# LLM judgment and do not affect the primary code path.
 # Heuristic fallback patterns (from Re1.2 pollution data — NOT a domain blacklist)
 _NON_PAPER_PATTERNS = [
     r"(?i)term\s*entry",
@@ -38,9 +41,7 @@ _COMPILED_PATTERNS = [re.compile(p) for p in _NON_PAPER_PATTERNS]
 _BATCH_SIZE = 8
 
 
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+from ._util import now_iso as _now_iso
 
 
 def _heuristic_filter(candidates: list[dict[str, Any]]) -> list[tuple[int, bool, str]]:
@@ -122,6 +123,12 @@ def _pre_filter(candidates: list[dict[str, Any]]) -> list[tuple[int, bool, str]]
         if is_non_paper:
             continue
 
+        # Crossref component type (table/figure, not a paper)
+        crossref_type = c.get("_crossref_type") or ""
+        if crossref_type and crossref_type in ("component", "book-section", "book-part", "book-series"):
+            results.append((i, False, f"crossref type={crossref_type}, not a paper"))
+            continue
+
         # Trusted URL → definitely a paper (don't let LLM second-guess)
         if url and trusted_url.search(url):
             results.append((i, True, "has trusted academic URL (arxiv/doi/openalex/s2)"))
@@ -174,6 +181,7 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
         "tool_calls": [],
         "errors": [],
         "provider": "fast_json",
+        "state_keys": ["paper_candidates", "filter_results", "trace_events"],
     }
 
     if not candidates:

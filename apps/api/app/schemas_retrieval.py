@@ -18,6 +18,9 @@ SearchSource = Literal[
     "github",
     "huggingface",
     "kaggle",
+    "core",
+    "datacite",
+    "crossref",
     "manual_fallback",
 ]
 

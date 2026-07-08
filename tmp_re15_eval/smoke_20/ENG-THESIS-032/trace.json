@@ -1,0 +1,583 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-05T21:12:43Z",
+    "input_summary": {
+      "topic": "基于深度学习的液晶屏表面缺陷检测方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:12:43Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-05T21:12:48Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 4,
+      "n_object": 3,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:12:48Z",
+    "elapsed_s": 4.172
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-05T21:12:48Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:12:48Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-05T21:12:48Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-05T21:13:01Z",
+    "elapsed_s": 13.198
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-05T21:13:01Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 23,
+      "dropped": 8,
+      "pre_filter_keep": 23,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 23,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:13:06Z",
+    "elapsed_s": 4.739
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T21:13:06Z",
+    "input_summary": {
+      "n_candidates": 23,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 13,
+      "n_reject": 10
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:13:12Z",
+    "elapsed_s": 6.596
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T21:13:12Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 13,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:13:12Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-05T21:13:12Z",
+    "input_summary": {
+      "n_verified": 5,
+      "n_seeds": 3,
+      "seed_titles": [
+        "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "Deep Residual Learning for Image Recognition",
+        "Xception: Deep Learning with Depthwise Separable Convolution"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 56,
+      "n_surveys": 0,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 3,
+        "n_expanded": 56,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Computer Vision, Deep Learning, Deep Reinforcement Learning",
+        "n_references_plus_citations": 2,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Deep Residual Learning for Image Recognition",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Xception: Deep Learning with Depthwise Separable Convolution",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-05T21:13:31Z",
+    "elapsed_s": 18.676
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-05T21:13:31Z",
+    "input_summary": {
+      "n_candidates": 56,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 29,
+      "n_reject": 27
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:13:45Z",
+    "elapsed_s": 13.745
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-05T21:13:45Z",
+    "input_summary": {
+      "n_papers": 5,
+      "n_weak": 29,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:13:45Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-05T21:13:52Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 5,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:13:52Z",
+    "elapsed_s": 7.548
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-05T21:13:52Z",
+    "input_summary": {
+      "papers": 5
+    },
+    "output_summary": {
+      "nodes": 5,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:13:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-05T21:13:52Z",
+    "input_summary": {
+      "n_verified": 5
+    },
+    "output_summary": {
+      "n_baseline": 0,
+      "n_parallel": 5,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:13:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-05T21:13:56Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 40
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:13:56Z",
+    "elapsed_s": 3.562
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-05T21:14:07Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_packages": 4,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:14:07Z",
+    "elapsed_s": 10.996
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-05T21:14:16Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_innovation": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:14:16Z",
+    "elapsed_s": 9.578
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-05T21:14:22Z",
+    "input_summary": {
+      "n_baseline": 0
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:14:22Z",
+    "elapsed_s": 5.737
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-05T21:14:28Z",
+    "input_summary": {
+      "n_innovation": 4
+    },
+    "output_summary": {
+      "nick_model_name": "ResXception-MTL"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:14:28Z",
+    "elapsed_s": 6.349
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-05T21:14:28Z",
+    "input_summary": {
+      "n_packages": 4
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:14:28Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-05T21:14:40Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:14:40Z",
+    "elapsed_s": 11.48
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-05T21:14:47Z",
+    "input_summary": {
+      "n_innovation": 4,
+      "n_packages": 4
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-05T21:14:47Z",
+    "elapsed_s": 7.001
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-05T21:14:47Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:14:47Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-05T21:14:47Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于深度学习的液晶屏表面缺陷检测方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 4,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于深度残差网络的液晶屏表面缺陷检测",
+          "research_question": "如何利用深度残差网络（ResNet）的结构优势提升液晶屏表面缺陷检测的准确率与鲁棒性？",
+          "baseline": "Deep Residual Learning for Image Recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Deep Residual Learning for Image Recognition",
+          "risk": "缺乏公开的液晶屏缺陷数据集，需自行采集或合成，可能影响实验可比性。",
+          "estimated_workload": "高（需构建数据集、设计检测头、调参及对比实验）"
+        },
+        {
+          "title": "基于深度可分离卷积的轻量级液晶屏缺陷检测网络",
+          "research_question": "Xception中的深度可分离卷积能否在保持检测精度的同时显著降低模型参数量和计算量，适用于产线实时检测？",
+          "baseline": "Xception: Deep Learning with Depthwise Separable Convolutions",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Xception: Deep Learning with Depthwise Separable Convolutions",
+          "risk": "轻量网络可能在小缺陷或低对比度缺陷上精度下降，需权衡速度与精度。",
+          "estimated_workload": "中（基于Xception修改检测头，在自建数据集上训练评估）"
+        },
+        {
+          "title": "面向嵌入式实时部署的多任务液晶屏缺陷检测模型",
+          "research_question": "如何借鉴多任务学习框架（如A multitask deep learning model for real-time deployment in embedded systems）同时检测多种液晶屏表面缺陷并满足嵌入式实时性要求？",
+          "baseline": "A multitask deep learning model for real-time deployment in embedded systems",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "A multitask deep learning model for real-time deployment in embedded systems",
+          "risk": "多任务学习需要精心设计任务间权重和共享层结构，且缺乏现成多标签液晶屏缺陷数据集。",
+          "estimated_workload": "高（需设计多任务架构、采集标注多类缺陷数据、嵌入式平台移植与优化）"
+        },
+        {
+          "title": "基于深度内部学习的液晶屏缺陷图像增强与检测",
+          "research_question": "DILIE中的内部学习策略能否用于增强低对比度或微小液晶屏缺陷的可见性，从而提升后续检测模型的性能？",
+          "baseline": "DILIE: Deep Internal Learning for Image Enhancement",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "DILIE: Deep Internal Learning for Image Enhancement",
+          "risk": "内部学习依赖单张图像自身信息，可能对噪声敏感，且增强效果需与检测模型联合调优。",
+          "estimated_workload": "中（实现DILIE增强模块，与检测网络级联训练，在自建数据集上评估）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-05T21:14:47Z",
+    "elapsed_s": 0.0
+  }
+]

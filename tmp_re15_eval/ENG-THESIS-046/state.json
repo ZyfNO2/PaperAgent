@@ -1,0 +1,3287 @@
+{
+  "case_id": "ENG-THESIS-046",
+  "topic": "基于视觉的机械臂的目标检测和避障路径规划研究与应用",
+  "user_constraints": {
+    "topic_zh": "基于视觉的机械臂的目标检测和避障路径规划研究与应用"
+  },
+  "topic_atoms": {
+    "method": [
+      "object detection",
+      "path planning",
+      "obstacle avoidance"
+    ],
+    "object": [
+      "robotic arm",
+      "target object",
+      "obstacle"
+    ],
+    "task": [
+      "detection",
+      "path planning",
+      "obstacle avoidance"
+    ],
+    "scenario": [
+      "robotic arm manipulation"
+    ],
+    "domain": "robotics_control",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "SLAM",
+      "grasping",
+      "force control"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "object detection robotic arm",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "openalex",
+        "query": "path planning robotic arm",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "object detection robotic arm detection",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "arxiv": [
+      {
+        "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+        "abstract": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+        "authors": [
+          "Kun Wang",
+          "Zi Wang",
+          "Zhang Li",
+          "Ang Su",
+          "Xichao Teng",
+          "Erting Pan",
+          "Minhao Liu",
+          "Qifeng Yu"
+        ],
+        "arxiv_id": "2302.10473v6",
+        "url": "http://arxiv.org/abs/2302.10473v6",
+        "published": "2023-02-21T06:31:53Z",
+        "year": 2023,
+        "source_query": "object detection"
+      },
+      {
+        "title": "Object Contour and Edge Detection with RefineContourNet",
+        "abstract": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modified PASCAL VOC 2012 dataset for object contour detection and evaluate on a refined PASCAL-val dataset reaching an excellent performance and an Optimal Dataset Scale (ODS) of 0.752. Furthermore, by fine-training on the BSDS500 dataset we reach state-of-the-art results for edge-detection with an ODS of 0.824.",
+        "authors": [
+          "Andre Peter Kelm",
+          "Vijesh Soorya Rao",
+          "Udo Zoelzer"
+        ],
+        "arxiv_id": "1904.13353v2",
+        "url": "http://arxiv.org/abs/1904.13353v2",
+        "published": "2019-04-30T16:34:27Z",
+        "year": 2019,
+        "source_query": "object detection"
+      },
+      {
+        "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+        "abstract": "Camouflaged object detection (COD) aims to segment camouflaged objects hiding in the environment, which is challenging due to the similar appearance of camouflaged objects and their surroundings. Research in biology suggests depth can provide useful object localization cues for camouflaged object discovery. In this paper, we study the depth contribution for camouflaged object detection, where the depth maps are generated with existing monocular depth estimation (MDE) methods. Due to the domain gap between the MDE dataset and our COD dataset, the generated depth maps are not accurate enough to be directly used. We then introduce two solutions to avoid the noisy depth maps from dominating the training process. Firstly, we present an auxiliary depth estimation branch (\"ADE\"), aiming to regress the depth maps. We find that \"ADE\" is especially necessary for our \"generated depth\" scenario. Secondly, we introduce a multi-modal confidence-aware loss function via a generative adversarial network to weigh the contribution of depth for camouflaged object detection. Our extensive experiments on various camouflaged object detection datasets explain that the existing \"sensor depth\" based RGB-D segmentation techniques work poorly with \"generated depth\", and our proposed two solutions work cooperatively, achieving effective depth contribution exploration for camouflaged object detection.",
+        "authors": [
+          "Mochu Xiang",
+          "Jing Zhang",
+          "Yunqiu Lv",
+          "Aixuan Li",
+          "Yiran Zhong",
+          "Yuchao Dai"
+        ],
+        "arxiv_id": "2106.13217v3",
+        "url": "http://arxiv.org/abs/2106.13217v3",
+        "published": "2021-06-24T17:51:31Z",
+        "year": 2021,
+        "source_query": "object detection"
+      },
+      {
+        "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+        "abstract": "The integration of point and voxel representations is becoming more common in LiDAR-based 3D object detection. However, this combination often struggles with capturing semantic information effectively. Moreover, relying solely on point features within regions of interest can lead to information loss and limitations in local feature representation. To tackle these challenges, we propose a novel two-stage 3D object detector, called Point-Voxel Attention Fusion Network (PVAFN). PVAFN leverages an attention mechanism to improve multi-modal feature fusion during the feature extraction phase. In the refinement stage, it utilizes a multi-pooling strategy to integrate both multi-scale and region-specific information effectively. The point-voxel attention mechanism adaptively combines point cloud and voxel-based Bird's-Eye-View (BEV) features, resulting in richer object representations that help to reduce false detections. Additionally, a multi-pooling enhancement module is introduced to boost the model's perception capabilities. This module employs cluster pooling and pyramid pooling techniques to efficiently capture key geometric details and fine-grained shape structures, thereby enhancing the integration of local and global features. Extensive experiments on the KITTI and Waymo datasets demonstrate that the proposed PVAFN achieves competitive performance. The code and models will be available.",
+        "authors": [
+          "Yidi Li",
+          "Jiahao Wen",
+          "Bin Ren",
+          "Wenhao Li",
+          "Zhenhuan Xu",
+          "Hao Guo",
+          "Hong Liu",
+          "Nicu Sebe"
+        ],
+        "arxiv_id": "2408.14600v1",
+        "url": "http://arxiv.org/abs/2408.14600v1",
+        "published": "2024-08-26T19:43:01Z",
+        "year": 2024,
+        "source_query": "object detection"
+      },
+      {
+        "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+        "abstract": "Vehicles, pedestrians, and riders are the most important and interesting objects for the perception modules of self-driving vehicles and video surveillance. However, the state-of-the-art performance of detecting such important objects (esp. small objects) is far from satisfying the demand of practical systems. Large-scale, rich-diversity, and high-resolution datasets play an important role in developing better object detection methods to satisfy the demand. Existing public large-scale datasets such as MS COCO collected from websites do not focus on the specific scenarios. Moreover, the popular datasets (e.g., KITTI and Citypersons) collected from the specific scenarios are limited in the number of images and instances, the resolution, and the diversity. To attempt to solve the problem, we build a diverse high-resolution dataset (called TJU-DHD). The dataset contains 115,354 high-resolution images (52% images have a resolution of 1624$\\times$1200 pixels and 48% images have a resolution of at least 2,560$\\times$1,440 pixels) and 709,330 labeled objects in total with a large variance in scale and appearance. Meanwhile, the dataset has a rich diversity in season variance, illumination variance, and weather variance. In addition, a new diverse pedestrian dataset is further built. With the four different detectors (i.e., the one-stage RetinaNet, anchor-free FCOS, two-stage FPN, and Cascade R-CNN), experiments about object detection and pedestrian detection are conducted. We hope that the newly built dataset can help promote the research on object detection and pedestrian detection in these two scenes. The dataset is available at https://github.com/tjubiit/TJU-DHD.",
+        "authors": [
+          "Yanwei Pang",
+          "Jiale Cao",
+          "Yazhao Li",
+          "Jin Xie",
+          "Hanqing Sun",
+          "Jinfeng Gong"
+        ],
+        "arxiv_id": "2011.09170v1",
+        "url": "http://arxiv.org/abs/2011.09170v1",
+        "published": "2020-11-18T09:32:24Z",
+        "year": 2020,
+        "source_query": "object detection"
+      },
+      {
+        "title": "A Survey of Self-Supervised and Few-Shot Object Detection",
+        "abstract": "Labeling data is often expensive and time-consuming, especially for tasks such as object detection and instance segmentation, which require dense labeling of the image. While few-shot object detection is about training a model on novel (unseen) object classes with little data, it still requires prior training on many labeled examples of base (seen) classes. On the other hand, self-supervised methods aim at learning representations from unlabeled data which transfer well to downstream tasks such as object detection. Combining few-shot and self-supervised object detection is a promising research direction. In this survey, we review and characterize the most recent approaches on few-shot and self-supervised object detection. Then, we give our main takeaways and discuss future research directions. Project page at https://gabrielhuang.github.io/fsod-survey/",
+        "authors": [
+          "Gabriel Huang",
+          "Issam Laradji",
+          "David Vazquez",
+          "Simon Lacoste-Julien",
+          "Pau Rodriguez"
+        ],
+        "arxiv_id": "2110.14711v3",
+        "url": "http://arxiv.org/abs/2110.14711v3",
+        "published": "2021-10-27T18:55:47Z",
+        "year": 2021,
+        "source_query": "object detection"
+      },
+      {
+        "title": "Super Sparse 3D Object Detection",
+        "abstract": "As the perception range of LiDAR expands, LiDAR-based 3D object detection contributes ever-increasingly to the long-range perception in autonomous driving. Mainstream 3D object detectors often build dense feature maps, where the cost is quadratic to the perception range, making them hardly scale up to the long-range settings. To enable efficient long-range detection, we first propose a fully sparse object detector termed FSD. FSD is built upon the general sparse voxel encoder and a novel sparse instance recognition (SIR) module. SIR groups the points into instances and applies highly-efficient instance-wise feature extraction. The instance-wise grouping sidesteps the issue of the center feature missing, which hinders the design of the fully sparse architecture. To further enjoy the benefit of fully sparse characteristic, we leverage temporal information to remove data redundancy and propose a super sparse detector named FSD++. FSD++ first generates residual points, which indicate the point changes between consecutive frames. The residual points, along with a few previous foreground points, form the super sparse input data, greatly reducing data redundancy and computational overhead. We comprehensively analyze our method on the large-scale Waymo Open Dataset, and state-of-the-art performance is reported. To showcase the superiority of our method in long-range detection, we also conduct experiments on Argoverse 2 Dataset, where the perception range ($200m$) is much larger than Waymo Open Dataset ($75m$). Code is open-sourced at https://github.com/tusen-ai/SST.",
+        "authors": [
+          "Lue Fan",
+          "Yuxue Yang",
+          "Feng Wang",
+          "Naiyan Wang",
+          "Zhaoxiang Zhang"
+        ],
+        "arxiv_id": "2301.02562v1",
+        "url": "http://arxiv.org/abs/2301.02562v1",
+        "published": "2023-01-05T17:03:56Z",
+        "year": 2023,
+        "source_query": "object detection"
+      },
+      {
+        "title": "Object Detection with Multimodal Large Vision-Language Models: An In-depth Review",
+        "abstract": "The fusion of language and vision in large vision-language models (LVLMs) has revolutionized deep learning-based object detection by enhancing adaptability, contextual reasoning, and generalization beyond traditional architectures. This in-depth review presents a structured exploration of the state-of-the-art in LVLMs, systematically organized through a three-step research review process. First, we discuss the functioning of vision language models (VLMs) for object detection, describing how these models harness natural language processing (NLP) and computer vision (CV) techniques to revolutionize object detection and localization. We then explain the architectural innovations, training paradigms, and output flexibility of recent LVLMs for object detection, highlighting how they achieve advanced contextual understanding for object detection. The review thoroughly examines the approaches used in integration of visual and textual information, demonstrating the progress made in object detection using VLMs that facilitate more sophisticated object detection and localization strategies. This review presents comprehensive visualizations demonstrating LVLMs' effectiveness in diverse scenarios including localization and segmentation, and then compares their real-time performance, adaptability, and complexity to traditional deep learning systems. Based on the review, its is expected that LVLMs will soon meet or surpass the performance of conventional methods in object detection. The review also identifies a few major limitations of the current LVLM modes, proposes solutions to address those challenges, and presents a clear roadmap for the future advancement in this field. We conclude, based on this study, that the recent advancement in LVLMs have made and will continue to make a transformative impact on object detection and robotic applications in the future.",
+        "authors": [
+          "Ranjan Sapkota",
+          "Manoj Karkee"
+        ],
+        "arxiv_id": "2508.19294v2",
+        "url": "http://arxiv.org/abs/2508.19294v2",
+        "published": "2025-08-25T17:21:00Z",
+        "year": 2025,
+        "source_query": "object detection"
+      }
+    ],
+    "crossref": [
+      {
+        "title": "Object detection for big data||Object detection for big data",
+        "doi": "10.32469/10355/44157",
+        "DOI": "10.32469/10355/44157",
+        "authors": [
+          "Guang Chen"
+        ],
+        "author": [
+          {
+            "given": "Guang",
+            "family": "Chen",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.32469/10355/44157",
+        "URL": "https://doi.org/10.32469/10355/44157",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "dissertation"
+      },
+      {
+        "title": "Table 7: Performance comparison of different object detection algorithms on Apple Object Detection Dataset.",
+        "doi": "10.7717/peerj-cs.3307/table-7",
+        "DOI": "10.7717/peerj-cs.3307/table-7",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.7717/peerj-cs.3307/table-7",
+        "URL": "https://doi.org/10.7717/peerj-cs.3307/table-7",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      },
+      {
+        "title": "Fundamentals of Object Detection",
+        "doi": "10.1201/9781003432036-1",
+        "DOI": "10.1201/9781003432036-1",
+        "authors": [
+          "Mrinal Kanti Bhowmik"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0000-0003-3451-191X",
+            "authenticated-orcid": false,
+            "given": "Mrinal Kanti",
+            "family": "Bhowmik",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Computer Vision",
+        "container-title": [
+          "Computer Vision"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1201/9781003432036-1",
+        "URL": "https://doi.org/10.1201/9781003432036-1",
+        "year": 2024,
+        "publication_year": 2024,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "",
+        "doi": "10.1117/12.2241527.5229529983001",
+        "DOI": "10.1117/12.2241527.5229529983001",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1117/12.2241527.5229529983001",
+        "URL": "https://doi.org/10.1117/12.2241527.5229529983001",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      },
+      {
+        "title": "Object Detection and Delineation",
+        "doi": "10.1007/978-1-4615-5273-4_2",
+        "DOI": "10.1007/978-1-4615-5273-4_2",
+        "authors": [
+          "Jefferey Shufelt"
+        ],
+        "author": [
+          {
+            "given": "Jefferey",
+            "family": "Shufelt",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Geometric Constraints for Object Detection and Delineation",
+        "container-title": [
+          "Geometric Constraints for Object Detection and Delineation"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1007/978-1-4615-5273-4_2",
+        "URL": "https://doi.org/10.1007/978-1-4615-5273-4_2",
+        "year": 2000,
+        "publication_year": 2000,
+        "citation_count": 2,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Imaging Modalities for Object Detection",
+        "doi": "10.1201/9781003432036-3",
+        "DOI": "10.1201/9781003432036-3",
+        "authors": [
+          "Mrinal Kanti Bhowmik"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0000-0003-3451-191X",
+            "authenticated-orcid": false,
+            "given": "Mrinal Kanti",
+            "family": "Bhowmik",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Computer Vision",
+        "container-title": [
+          "Computer Vision"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1201/9781003432036-3",
+        "URL": "https://doi.org/10.1201/9781003432036-3",
+        "year": 2024,
+        "publication_year": 2024,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Object Detection in Degraded Vision",
+        "doi": "10.1201/9781003432036-7",
+        "DOI": "10.1201/9781003432036-7",
+        "authors": [
+          "Mrinal Kanti Bhowmik"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0000-0003-3451-191X",
+            "authenticated-orcid": false,
+            "given": "Mrinal Kanti",
+            "family": "Bhowmik",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Computer Vision",
+        "container-title": [
+          "Computer Vision"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1201/9781003432036-7",
+        "URL": "https://doi.org/10.1201/9781003432036-7",
+        "year": 2024,
+        "publication_year": 2024,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "Object Detection Models",
+        "doi": "10.1007/978-981-95-4846-0_3",
+        "DOI": "10.1007/978-981-95-4846-0_3",
+        "authors": [
+          "Abdussalam Elhanashi",
+          "Sergio Saponara"
+        ],
+        "author": [
+          {
+            "given": "Abdussalam",
+            "family": "Elhanashi",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Sergio",
+            "family": "Saponara",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Deep Learning for Object Detection and Localization",
+        "container-title": [
+          "Deep Learning for Object Detection and Localization"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1007/978-981-95-4846-0_3",
+        "URL": "https://doi.org/10.1007/978-981-95-4846-0_3",
+        "year": 2026,
+        "publication_year": 2026,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      }
+    ],
+    "github": [
+      {
+        "id": 535360445,
+        "node_id": "R_kgDOH-jzvQ",
+        "name": "ultralytics",
+        "full_name": "ultralytics/ultralytics",
+        "private": false,
+        "owner": {
+          "login": "ultralytics",
+          "id": 26833451,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjI2ODMzNDUx",
+          "avatar_url": "https://avatars.githubusercontent.com/u/26833451?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/ultralytics",
+          "html_url": "https://github.com/ultralytics",
+          "followers_url": "https://api.github.com/users/ultralytics/followers",
+          "following_url": "https://api.github.com/users/ultralytics/following{/other_user}",
+          "gists_url": "https://api.github.com/users/ultralytics/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/ultralytics/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/ultralytics/subscriptions",
+          "organizations_url": "https://api.github.com/users/ultralytics/orgs",
+          "repos_url": "https://api.github.com/users/ultralytics/repos",
+          "events_url": "https://api.github.com/users/ultralytics/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/ultralytics/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/ultralytics/ultralytics",
+        "description": "Ultralytics YOLO26, YOLO11, YOLOv8 — object detection, instance segmentation, semantic segmentation, image classification, pose estimation, object tracking",
+        "fork": false,
+        "url": "https://api.github.com/repos/ultralytics/ultralytics",
+        "forks_url": "https://api.github.com/repos/ultralytics/ultralytics/forks",
+        "keys_url": "https://api.github.com/repos/ultralytics/ultralytics/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/ultralytics/ultralytics/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/ultralytics/ultralytics/teams",
+        "hooks_url": "https://api.github.com/repos/ultralytics/ultralytics/hooks",
+        "issue_events_url": "https://api.github.com/repos/ultralytics/ultralytics/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/ultralytics/ultralytics/events",
+        "assignees_url": "https://api.github.com/repos/ultralytics/ultralytics/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/ultralytics/ultralytics/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/ultralytics/ultralytics/tags",
+        "blobs_url": "https://api.github.com/repos/ultralytics/ultralytics/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/ultralytics/ultralytics/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/ultralytics/ultralytics/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/ultralytics/ultralytics/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/ultralytics/ultralytics/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/ultralytics/ultralytics/languages",
+        "stargazers_url": "https://api.github.com/repos/ultralytics/ultralytics/stargazers",
+        "contributors_url": "https://api.github.com/repos/ultralytics/ultralytics/contributors",
+        "subscribers_url": "https://api.github.com/repos/ultralytics/ultralytics/subscribers",
+        "subscription_url": "https://api.github.com/repos/ultralytics/ultralytics/subscription",
+        "commits_url": "https://api.github.com/repos/ultralytics/ultralytics/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/ultralytics/ultralytics/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/ultralytics/ultralytics/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/ultralytics/ultralytics/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/ultralytics/ultralytics/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/ultralytics/ultralytics/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/ultralytics/ultralytics/merges",
+        "archive_url": "https://api.github.com/repos/ultralytics/ultralytics/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/ultralytics/ultralytics/downloads",
+        "issues_url": "https://api.github.com/repos/ultralytics/ultralytics/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/ultralytics/ultralytics/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/ultralytics/ultralytics/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/ultralytics/ultralytics/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/ultralytics/ultralytics/labels{/name}",
+        "releases_url": "https://api.github.com/repos/ultralytics/ultralytics/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/ultralytics/ultralytics/deployments",
+        "created_at": "2022-09-11T16:39:45Z",
+        "updated_at": "2026-07-05T21:57:00Z",
+        "pushed_at": "2026-07-05T21:12:28Z",
+        "git_url": "git://github.com/ultralytics/ultralytics.git",
+        "ssh_url": "git@github.com:ultralytics/ultralytics.git",
+        "clone_url": "https://github.com/ultralytics/ultralytics.git",
+        "svn_url": "https://github.com/ultralytics/ultralytics",
+        "homepage": "https://platform.ultralytics.com",
+        "size": 56687,
+        "stargazers_count": 59137,
+        "watchers_count": 59137,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 11322,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 204,
+        "license": {
+          "key": "agpl-3.0",
+          "name": "GNU Affero General Public License v3.0",
+          "spdx_id": "AGPL-3.0",
+          "url": "https://api.github.com/licenses/agpl-3.0",
+          "node_id": "MDc6TGljZW5zZTE="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": true,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "computer-vision",
+          "deep-learning",
+          "image-classification",
+          "instance-segmentation",
+          "machine-learning",
+          "object-detection",
+          "object-tracking",
+          "pose-estimation",
+          "python",
+          "pytorch",
+          "rotated-object-detection",
+          "segment-anything",
+          "semantic-segmentation",
+          "tracking",
+          "ultralytics",
+          "yolo",
+          "yolo-world",
+          "yolo11",
+          "yolo26",
+          "yolov8"
+        ],
+        "visibility": "public",
+        "forks": 11322,
+        "open_issues": 204,
+        "watchers": 59137,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 59137
+      },
+      {
+        "id": 206660580,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyMDY2NjA1ODA=",
+        "name": "detectron2",
+        "full_name": "facebookresearch/detectron2",
+        "private": false,
+        "owner": {
+          "login": "facebookresearch",
+          "id": 16943930,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjE2OTQzOTMw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/16943930?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/facebookresearch",
+          "html_url": "https://github.com/facebookresearch",
+          "followers_url": "https://api.github.com/users/facebookresearch/followers",
+          "following_url": "https://api.github.com/users/facebookresearch/following{/other_user}",
+          "gists_url": "https://api.github.com/users/facebookresearch/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/facebookresearch/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/facebookresearch/subscriptions",
+          "organizations_url": "https://api.github.com/users/facebookresearch/orgs",
+          "repos_url": "https://api.github.com/users/facebookresearch/repos",
+          "events_url": "https://api.github.com/users/facebookresearch/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/facebookresearch/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/facebookresearch/detectron2",
+        "description": "Detectron2 is a platform for object detection, segmentation and other visual recognition tasks.",
+        "fork": false,
+        "url": "https://api.github.com/repos/facebookresearch/detectron2",
+        "forks_url": "https://api.github.com/repos/facebookresearch/detectron2/forks",
+        "keys_url": "https://api.github.com/repos/facebookresearch/detectron2/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/facebookresearch/detectron2/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/facebookresearch/detectron2/teams",
+        "hooks_url": "https://api.github.com/repos/facebookresearch/detectron2/hooks",
+        "issue_events_url": "https://api.github.com/repos/facebookresearch/detectron2/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/facebookresearch/detectron2/events",
+        "assignees_url": "https://api.github.com/repos/facebookresearch/detectron2/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/facebookresearch/detectron2/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/facebookresearch/detectron2/tags",
+        "blobs_url": "https://api.github.com/repos/facebookresearch/detectron2/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/facebookresearch/detectron2/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/facebookresearch/detectron2/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/facebookresearch/detectron2/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/facebookresearch/detectron2/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/facebookresearch/detectron2/languages",
+        "stargazers_url": "https://api.github.com/repos/facebookresearch/detectron2/stargazers",
+        "contributors_url": "https://api.github.com/repos/facebookresearch/detectron2/contributors",
+        "subscribers_url": "https://api.github.com/repos/facebookresearch/detectron2/subscribers",
+        "subscription_url": "https://api.github.com/repos/facebookresearch/detectron2/subscription",
+        "commits_url": "https://api.github.com/repos/facebookresearch/detectron2/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/facebookresearch/detectron2/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/facebookresearch/detectron2/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/facebookresearch/detectron2/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/facebookresearch/detectron2/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/facebookresearch/detectron2/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/facebookresearch/detectron2/merges",
+        "archive_url": "https://api.github.com/repos/facebookresearch/detectron2/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/facebookresearch/detectron2/downloads",
+        "issues_url": "https://api.github.com/repos/facebookresearch/detectron2/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/facebookresearch/detectron2/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/facebookresearch/detectron2/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/facebookresearch/detectron2/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/facebookresearch/detectron2/labels{/name}",
+        "releases_url": "https://api.github.com/repos/facebookresearch/detectron2/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/facebookresearch/detectron2/deployments",
+        "created_at": "2019-09-05T21:30:20Z",
+        "updated_at": "2026-07-04T20:48:19Z",
+        "pushed_at": "2026-06-07T04:31:54Z",
+        "git_url": "git://github.com/facebookresearch/detectron2.git",
+        "ssh_url": "org-16943930@github.com:facebookresearch/detectron2.git",
+        "clone_url": "https://github.com/facebookresearch/detectron2.git",
+        "svn_url": "https://github.com/facebookresearch/detectron2",
+        "homepage": "https://detectron2.readthedocs.io/en/latest/",
+        "size": 6877,
+        "stargazers_count": 34591,
+        "watchers_count": 34591,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 7942,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 588,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 7942,
+        "open_issues": 588,
+        "watchers": 34591,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 34591
+      },
+      {
+        "id": 167694194,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxNjc2OTQxOTQ=",
+        "name": "frigate",
+        "full_name": "blakeblackshear/frigate",
+        "private": false,
+        "owner": {
+          "login": "blakeblackshear",
+          "id": 569905,
+          "node_id": "MDQ6VXNlcjU2OTkwNQ==",
+          "avatar_url": "https://avatars.githubusercontent.com/u/569905?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/blakeblackshear",
+          "html_url": "https://github.com/blakeblackshear",
+          "followers_url": "https://api.github.com/users/blakeblackshear/followers",
+          "following_url": "https://api.github.com/users/blakeblackshear/following{/other_user}",
+          "gists_url": "https://api.github.com/users/blakeblackshear/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/blakeblackshear/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/blakeblackshear/subscriptions",
+          "organizations_url": "https://api.github.com/users/blakeblackshear/orgs",
+          "repos_url": "https://api.github.com/users/blakeblackshear/repos",
+          "events_url": "https://api.github.com/users/blakeblackshear/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/blakeblackshear/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/blakeblackshear/frigate",
+        "description": "NVR with realtime local object detection for IP cameras",
+        "fork": false,
+        "url": "https://api.github.com/repos/blakeblackshear/frigate",
+        "forks_url": "https://api.github.com/repos/blakeblackshear/frigate/forks",
+        "keys_url": "https://api.github.com/repos/blakeblackshear/frigate/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/blakeblackshear/frigate/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/blakeblackshear/frigate/teams",
+        "hooks_url": "https://api.github.com/repos/blakeblackshear/frigate/hooks",
+        "issue_events_url": "https://api.github.com/repos/blakeblackshear/frigate/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/blakeblackshear/frigate/events",
+        "assignees_url": "https://api.github.com/repos/blakeblackshear/frigate/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/blakeblackshear/frigate/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/blakeblackshear/frigate/tags",
+        "blobs_url": "https://api.github.com/repos/blakeblackshear/frigate/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/blakeblackshear/frigate/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/blakeblackshear/frigate/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/blakeblackshear/frigate/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/blakeblackshear/frigate/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/blakeblackshear/frigate/languages",
+        "stargazers_url": "https://api.github.com/repos/blakeblackshear/frigate/stargazers",
+        "contributors_url": "https://api.github.com/repos/blakeblackshear/frigate/contributors",
+        "subscribers_url": "https://api.github.com/repos/blakeblackshear/frigate/subscribers",
+        "subscription_url": "https://api.github.com/repos/blakeblackshear/frigate/subscription",
+        "commits_url": "https://api.github.com/repos/blakeblackshear/frigate/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/blakeblackshear/frigate/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/blakeblackshear/frigate/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/blakeblackshear/frigate/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/blakeblackshear/frigate/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/blakeblackshear/frigate/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/blakeblackshear/frigate/merges",
+        "archive_url": "https://api.github.com/repos/blakeblackshear/frigate/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/blakeblackshear/frigate/downloads",
+        "issues_url": "https://api.github.com/repos/blakeblackshear/frigate/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/blakeblackshear/frigate/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/blakeblackshear/frigate/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/blakeblackshear/frigate/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/blakeblackshear/frigate/labels{/name}",
+        "releases_url": "https://api.github.com/repos/blakeblackshear/frigate/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/blakeblackshear/frigate/deployments",
+        "created_at": "2019-01-26T13:52:38Z",
+        "updated_at": "2026-07-05T21:22:13Z",
+        "pushed_at": "2026-07-04T23:10:35Z",
+        "git_url": "git://github.com/blakeblackshear/frigate.git",
+        "ssh_url": "git@github.com:blakeblackshear/frigate.git",
+        "clone_url": "https://github.com/blakeblackshear/frigate.git",
+        "svn_url": "https://github.com/blakeblackshear/frigate",
+        "homepage": "https://frigate.video",
+        "size": 124404,
+        "stargazers_count": 34158,
+        "watchers_count": 34158,
+        "language": "TypeScript",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_discussions": true,
+        "forks_count": 3337,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 144,
+        "license": {
+          "key": "mit",
+          "name": "MIT License",
+          "spdx_id": "MIT",
+          "url": "https://api.github.com/licenses/mit",
+          "node_id": "MDc6TGljZW5zZTEz"
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "ai",
+          "camera",
+          "google-coral",
+          "home-assistant",
+          "home-automation",
+          "homeautomation",
+          "mqtt",
+          "nvr",
+          "object-detection",
+          "realtime",
+          "rtsp",
+          "tensorflow"
+        ],
+        "visibility": "public",
+        "forks": 3337,
+        "open_issues": 144,
+        "watchers": 34158,
+        "default_branch": "dev",
+        "score": 1.0,
+        "stars": 34158
+      },
+      {
+        "id": 105919803,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxMDU5MTk4MDM=",
+        "name": "Detectron",
+        "full_name": "facebookresearch/Detectron",
+        "private": false,
+        "owner": {
+          "login": "facebookresearch",
+          "id": 16943930,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjE2OTQzOTMw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/16943930?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/facebookresearch",
+          "html_url": "https://github.com/facebookresearch",
+          "followers_url": "https://api.github.com/users/facebookresearch/followers",
+          "following_url": "https://api.github.com/users/facebookresearch/following{/other_user}",
+          "gists_url": "https://api.github.com/users/facebookresearch/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/facebookresearch/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/facebookresearch/subscriptions",
+          "organizations_url": "https://api.github.com/users/facebookresearch/orgs",
+          "repos_url": "https://api.github.com/users/facebookresearch/repos",
+          "events_url": "https://api.github.com/users/facebookresearch/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/facebookresearch/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/facebookresearch/Detectron",
+        "description": "FAIR's research platform for object detection research, implementing popular algorithms like Mask R-CNN and RetinaNet.",
+        "fork": false,
+        "url": "https://api.github.com/repos/facebookresearch/Detectron",
+        "forks_url": "https://api.github.com/repos/facebookresearch/Detectron/forks",
+        "keys_url": "https://api.github.com/repos/facebookresearch/Detectron/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/facebookresearch/Detectron/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/facebookresearch/Detectron/teams",
+        "hooks_url": "https://api.github.com/repos/facebookresearch/Detectron/hooks",
+        "issue_events_url": "https://api.github.com/repos/facebookresearch/Detectron/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/facebookresearch/Detectron/events",
+        "assignees_url": "https://api.github.com/repos/facebookresearch/Detectron/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/facebookresearch/Detectron/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/facebookresearch/Detectron/tags",
+        "blobs_url": "https://api.github.com/repos/facebookresearch/Detectron/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/facebookresearch/Detectron/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/facebookresearch/Detectron/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/facebookresearch/Detectron/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/facebookresearch/Detectron/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/facebookresearch/Detectron/languages",
+        "stargazers_url": "https://api.github.com/repos/facebookresearch/Detectron/stargazers",
+        "contributors_url": "https://api.github.com/repos/facebookresearch/Detectron/contributors",
+        "subscribers_url": "https://api.github.com/repos/facebookresearch/Detectron/subscribers",
+        "subscription_url": "https://api.github.com/repos/facebookresearch/Detectron/subscription",
+        "commits_url": "https://api.github.com/repos/facebookresearch/Detectron/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/facebookresearch/Detectron/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/facebookresearch/Detectron/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/facebookresearch/Detectron/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/facebookresearch/Detectron/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/facebookresearch/Detectron/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/facebookresearch/Detectron/merges",
+        "archive_url": "https://api.github.com/repos/facebookresearch/Detectron/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/facebookresearch/Detectron/downloads",
+        "issues_url": "https://api.github.com/repos/facebookresearch/Detectron/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/facebookresearch/Detectron/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/facebookresearch/Detectron/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/facebookresearch/Detectron/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/facebookresearch/Detectron/labels{/name}",
+        "releases_url": "https://api.github.com/repos/facebookresearch/Detectron/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/facebookresearch/Detectron/deployments",
+        "created_at": "2017-10-05T17:32:00Z",
+        "updated_at": "2026-07-05T10:58:45Z",
+        "pushed_at": "2023-11-20T09:13:34Z",
+        "git_url": "git://github.com/facebookresearch/Detectron.git",
+        "ssh_url": "org-16943930@github.com:facebookresearch/Detectron.git",
+        "clone_url": "https://github.com/facebookresearch/Detectron.git",
+        "svn_url": "https://github.com/facebookresearch/Detectron",
+        "homepage": "",
+        "size": 4525,
+        "stargazers_count": 26376,
+        "watchers_count": 26376,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 5387,
+        "mirror_url": null,
+        "archived": true,
+        "disabled": false,
+        "open_issues_count": 331,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 5387,
+        "open_issues": 331,
+        "watchers": 26376,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 26376
+      },
+      {
+        "id": 221723816,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyMjE3MjM4MTY=",
+        "name": "deep-learning-for-image-processing",
+        "full_name": "WZMIAOMIAO/deep-learning-for-image-processing",
+        "private": false,
+        "owner": {
+          "login": "WZMIAOMIAO",
+          "id": 31005897,
+          "node_id": "MDQ6VXNlcjMxMDA1ODk3",
+          "avatar_url": "https://avatars.githubusercontent.com/u/31005897?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/WZMIAOMIAO",
+          "html_url": "https://github.com/WZMIAOMIAO",
+          "followers_url": "https://api.github.com/users/WZMIAOMIAO/followers",
+          "following_url": "https://api.github.com/users/WZMIAOMIAO/following{/other_user}",
+          "gists_url": "https://api.github.com/users/WZMIAOMIAO/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/WZMIAOMIAO/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/WZMIAOMIAO/subscriptions",
+          "organizations_url": "https://api.github.com/users/WZMIAOMIAO/orgs",
+          "repos_url": "https://api.github.com/users/WZMIAOMIAO/repos",
+          "events_url": "https://api.github.com/users/WZMIAOMIAO/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/WZMIAOMIAO/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/WZMIAOMIAO/deep-learning-for-image-processing",
+        "description": "deep learning for image processing including classification and object-detection etc.",
+        "fork": false,
+        "url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing",
+        "forks_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/forks",
+        "keys_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/teams",
+        "hooks_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/hooks",
+        "issue_events_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/events",
+        "assignees_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/tags",
+        "blobs_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/languages",
+        "stargazers_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/stargazers",
+        "contributors_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/contributors",
+        "subscribers_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/subscribers",
+        "subscription_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/subscription",
+        "commits_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/merges",
+        "archive_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/downloads",
+        "issues_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/labels{/name}",
+        "releases_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/WZMIAOMIAO/deep-learning-for-image-processing/deployments",
+        "created_at": "2019-11-14T15:02:27Z",
+        "updated_at": "2026-07-05T12:34:45Z",
+        "pushed_at": "2026-01-01T07:16:34Z",
+        "git_url": "git://github.com/WZMIAOMIAO/deep-learning-for-image-processing.git",
+        "ssh_url": "git@github.com:WZMIAOMIAO/deep-learning-for-image-processing.git",
+        "clone_url": "https://github.com/WZMIAOMIAO/deep-learning-for-image-processing.git",
+        "svn_url": "https://github.com/WZMIAOMIAO/deep-learning-for-image-processing",
+        "homepage": "",
+        "size": 25637,
+        "stargazers_count": 26294,
+        "watchers_count": 26294,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 8194,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 102,
+        "license": {
+          "key": "gpl-3.0",
+          "name": "GNU General Public License v3.0",
+          "spdx_id": "GPL-3.0",
+          "url": "https://api.github.com/licenses/gpl-3.0",
+          "node_id": "MDc6TGljZW5zZTk="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "bilibili",
+          "classification",
+          "deep-learning",
+          "object-detection",
+          "pytorch",
+          "segmentation",
+          "tensorflow2"
+        ],
+        "visibility": "public",
+        "forks": 8194,
+        "open_issues": 102,
+        "watchers": 26294,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 26294
+      },
+      {
+        "id": 107595270,
+        "node_id": "MDEwOlJlcG9zaXRvcnkxMDc1OTUyNzA=",
+        "name": "Mask_RCNN",
+        "full_name": "matterport/Mask_RCNN",
+        "private": false,
+        "owner": {
+          "login": "matterport",
+          "id": 4206481,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjQyMDY0ODE=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/4206481?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/matterport",
+          "html_url": "https://github.com/matterport",
+          "followers_url": "https://api.github.com/users/matterport/followers",
+          "following_url": "https://api.github.com/users/matterport/following{/other_user}",
+          "gists_url": "https://api.github.com/users/matterport/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/matterport/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/matterport/subscriptions",
+          "organizations_url": "https://api.github.com/users/matterport/orgs",
+          "repos_url": "https://api.github.com/users/matterport/repos",
+          "events_url": "https://api.github.com/users/matterport/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/matterport/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/matterport/Mask_RCNN",
+        "description": "Mask R-CNN for object detection and instance segmentation on Keras and TensorFlow",
+        "fork": false,
+        "url": "https://api.github.com/repos/matterport/Mask_RCNN",
+        "forks_url": "https://api.github.com/repos/matterport/Mask_RCNN/forks",
+        "keys_url": "https://api.github.com/repos/matterport/Mask_RCNN/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/matterport/Mask_RCNN/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/matterport/Mask_RCNN/teams",
+        "hooks_url": "https://api.github.com/repos/matterport/Mask_RCNN/hooks",
+        "issue_events_url": "https://api.github.com/repos/matterport/Mask_RCNN/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/matterport/Mask_RCNN/events",
+        "assignees_url": "https://api.github.com/repos/matterport/Mask_RCNN/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/matterport/Mask_RCNN/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/matterport/Mask_RCNN/tags",
+        "blobs_url": "https://api.github.com/repos/matterport/Mask_RCNN/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/matterport/Mask_RCNN/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/matterport/Mask_RCNN/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/matterport/Mask_RCNN/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/matterport/Mask_RCNN/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/matterport/Mask_RCNN/languages",
+        "stargazers_url": "https://api.github.com/repos/matterport/Mask_RCNN/stargazers",
+        "contributors_url": "https://api.github.com/repos/matterport/Mask_RCNN/contributors",
+        "subscribers_url": "https://api.github.com/repos/matterport/Mask_RCNN/subscribers",
+        "subscription_url": "https://api.github.com/repos/matterport/Mask_RCNN/subscription",
+        "commits_url": "https://api.github.com/repos/matterport/Mask_RCNN/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/matterport/Mask_RCNN/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/matterport/Mask_RCNN/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/matterport/Mask_RCNN/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/matterport/Mask_RCNN/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/matterport/Mask_RCNN/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/matterport/Mask_RCNN/merges",
+        "archive_url": "https://api.github.com/repos/matterport/Mask_RCNN/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/matterport/Mask_RCNN/downloads",
+        "issues_url": "https://api.github.com/repos/matterport/Mask_RCNN/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/matterport/Mask_RCNN/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/matterport/Mask_RCNN/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/matterport/Mask_RCNN/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/matterport/Mask_RCNN/labels{/name}",
+        "releases_url": "https://api.github.com/repos/matterport/Mask_RCNN/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/matterport/Mask_RCNN/deployments",
+        "created_at": "2017-10-19T20:28:34Z",
+        "updated_at": "2026-07-05T16:27:49Z",
+        "pushed_at": "2024-06-07T02:36:21Z",
+        "git_url": "git://github.com/matterport/Mask_RCNN.git",
+        "ssh_url": "git@github.com:matterport/Mask_RCNN.git",
+        "clone_url": "https://github.com/matterport/Mask_RCNN.git",
+        "svn_url": "https://github.com/matterport/Mask_RCNN",
+        "homepage": null,
+        "size": 122597,
+        "stargazers_count": 25562,
+        "watchers_count": 25562,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 11630,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 2021,
+        "license": {
+          "key": "other",
+          "name": "Other",
+          "spdx_id": "NOASSERTION",
+          "url": null,
+          "node_id": "MDc6TGljZW5zZTA="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "instance-segmentation",
+          "keras",
+          "mask-rcnn",
+          "object-detection",
+          "tensorflow"
+        ],
+        "visibility": "public",
+        "forks": 11630,
+        "open_issues": 2021,
+        "watchers": 25562,
+        "default_branch": "master",
+        "score": 1.0,
+        "stars": 25562
+      },
+      {
+        "id": 267176885,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyNjcxNzY4ODU=",
+        "name": "detr",
+        "full_name": "facebookresearch/detr",
+        "private": false,
+        "owner": {
+          "login": "facebookresearch",
+          "id": 16943930,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjE2OTQzOTMw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/16943930?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/facebookresearch",
+          "html_url": "https://github.com/facebookresearch",
+          "followers_url": "https://api.github.com/users/facebookresearch/followers",
+          "following_url": "https://api.github.com/users/facebookresearch/following{/other_user}",
+          "gists_url": "https://api.github.com/users/facebookresearch/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/facebookresearch/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/facebookresearch/subscriptions",
+          "organizations_url": "https://api.github.com/users/facebookresearch/orgs",
+          "repos_url": "https://api.github.com/users/facebookresearch/repos",
+          "events_url": "https://api.github.com/users/facebookresearch/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/facebookresearch/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/facebookresearch/detr",
+        "description": "End-to-End Object Detection with Transformers",
+        "fork": false,
+        "url": "https://api.github.com/repos/facebookresearch/detr",
+        "forks_url": "https://api.github.com/repos/facebookresearch/detr/forks",
+        "keys_url": "https://api.github.com/repos/facebookresearch/detr/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/facebookresearch/detr/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/facebookresearch/detr/teams",
+        "hooks_url": "https://api.github.com/repos/facebookresearch/detr/hooks",
+        "issue_events_url": "https://api.github.com/repos/facebookresearch/detr/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/facebookresearch/detr/events",
+        "assignees_url": "https://api.github.com/repos/facebookresearch/detr/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/facebookresearch/detr/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/facebookresearch/detr/tags",
+        "blobs_url": "https://api.github.com/repos/facebookresearch/detr/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/facebookresearch/detr/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/facebookresearch/detr/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/facebookresearch/detr/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/facebookresearch/detr/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/facebookresearch/detr/languages",
+        "stargazers_url": "https://api.github.com/repos/facebookresearch/detr/stargazers",
+        "contributors_url": "https://api.github.com/repos/facebookresearch/detr/contributors",
+        "subscribers_url": "https://api.github.com/repos/facebookresearch/detr/subscribers",
+        "subscription_url": "https://api.github.com/repos/facebookresearch/detr/subscription",
+        "commits_url": "https://api.github.com/repos/facebookresearch/detr/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/facebookresearch/detr/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/facebookresearch/detr/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/facebookresearch/detr/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/facebookresearch/detr/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/facebookresearch/detr/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/facebookresearch/detr/merges",
+        "archive_url": "https://api.github.com/repos/facebookresearch/detr/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/facebookresearch/detr/downloads",
+        "issues_url": "https://api.github.com/repos/facebookresearch/detr/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/facebookresearch/detr/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/facebookresearch/detr/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/facebookresearch/detr/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/facebookresearch/detr/labels{/name}",
+        "releases_url": "https://api.github.com/repos/facebookresearch/detr/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/facebookresearch/detr/deployments",
+        "created_at": "2020-05-26T23:54:52Z",
+        "updated_at": "2026-07-04T17:33:50Z",
+        "pushed_at": "2024-03-12T15:58:25Z",
+        "git_url": "git://github.com/facebookresearch/detr.git",
+        "ssh_url": "org-16943930@github.com:facebookresearch/detr.git",
+        "clone_url": "https://github.com/facebookresearch/detr.git",
+        "svn_url": "https://github.com/facebookresearch/detr",
+        "homepage": null,
+        "size": 13185,
+        "stargazers_count": 15328,
+        "watchers_count": 15328,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": false,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 2663,
+        "mirror_url": null,
+        "archived": true,
+        "disabled": false,
+        "open_issues_count": 255,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [],
+        "visibility": "public",
+        "forks": 2663,
+        "open_issues": 255,
+        "watchers": 15328,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 15328
+      },
+      {
+        "id": 217475193,
+        "node_id": "MDEwOlJlcG9zaXRvcnkyMTc0NzUxOTM=",
+        "name": "PaddleDetection",
+        "full_name": "PaddlePaddle/PaddleDetection",
+        "private": false,
+        "owner": {
+          "login": "PaddlePaddle",
+          "id": 23534030,
+          "node_id": "MDEyOk9yZ2FuaXphdGlvbjIzNTM0MDMw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/23534030?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/PaddlePaddle",
+          "html_url": "https://github.com/PaddlePaddle",
+          "followers_url": "https://api.github.com/users/PaddlePaddle/followers",
+          "following_url": "https://api.github.com/users/PaddlePaddle/following{/other_user}",
+          "gists_url": "https://api.github.com/users/PaddlePaddle/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/PaddlePaddle/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/PaddlePaddle/subscriptions",
+          "organizations_url": "https://api.github.com/users/PaddlePaddle/orgs",
+          "repos_url": "https://api.github.com/users/PaddlePaddle/repos",
+          "events_url": "https://api.github.com/users/PaddlePaddle/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/PaddlePaddle/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/PaddlePaddle/PaddleDetection",
+        "description": "Object Detection toolkit based on PaddlePaddle. It supports object detection, instance segmentation, multiple object tracking and real-time multi-person keypoint detection.",
+        "fork": false,
+        "url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection",
+        "forks_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/forks",
+        "keys_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/teams",
+        "hooks_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/hooks",
+        "issue_events_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/events",
+        "assignees_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/tags",
+        "blobs_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/languages",
+        "stargazers_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/stargazers",
+        "contributors_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/contributors",
+        "subscribers_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/subscribers",
+        "subscription_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/subscription",
+        "commits_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/merges",
+        "archive_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/downloads",
+        "issues_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/labels{/name}",
+        "releases_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/PaddlePaddle/PaddleDetection/deployments",
+        "created_at": "2019-10-25T07:21:14Z",
+        "updated_at": "2026-07-05T17:35:28Z",
+        "pushed_at": "2026-05-28T07:28:31Z",
+        "git_url": "git://github.com/PaddlePaddle/PaddleDetection.git",
+        "ssh_url": "git@github.com:PaddlePaddle/PaddleDetection.git",
+        "clone_url": "https://github.com/PaddlePaddle/PaddleDetection.git",
+        "svn_url": "https://github.com/PaddlePaddle/PaddleDetection",
+        "homepage": "",
+        "size": 432832,
+        "stargazers_count": 14290,
+        "watchers_count": 14290,
+        "language": "Python",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": true,
+        "forks_count": 3019,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 938,
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "spdx_id": "Apache-2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "blazeface",
+          "deepsort",
+          "detr",
+          "face-detection",
+          "fairmot",
+          "faster-rcnn",
+          "fcos",
+          "human-activity-recognition",
+          "human-pose-estimation",
+          "instance-segmentation",
+          "mask-rcnn",
+          "multi-object-tracking",
+          "object-detection",
+          "picodet",
+          "pp-yolo",
+          "rt-detr",
+          "yolov3",
+          "yolov5",
+          "yolov7",
+          "yolox"
+        ],
+        "visibility": "public",
+        "forks": 3019,
+        "open_issues": 938,
+        "watchers": 14290,
+        "default_branch": "release/2.9",
+        "score": 1.0,
+        "stars": 14290
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<object-detection-for-big-data>",
+        "type": "paper",
+        "title": "Object detection for big data",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<object-detection-and-delineation>",
+        "type": "paper",
+        "title": "Object Detection and Delineation",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<imaging-modalities-for-object-detection>",
+        "type": "paper",
+        "title": "Imaging Modalities for Object Detection",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<object-detection-in-degraded-vision>",
+        "type": "paper",
+        "title": "Object Detection in Degraded Vision",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<object-contour-and-edge-detection-with-refinecontournet>",
+        "type": "paper",
+        "title": "Object Contour and Edge Detection with RefineContourNet",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<exploring-depth-contribution-for-camouflaged-object-detection>",
+        "type": "paper",
+        "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<pvafn-point-voxel-attention-fusion-network-with-multi-pooling-enhancing-for-3d-object-detection>",
+        "type": "paper",
+        "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<tju-dhd-a-diverse-high-resolution-dataset-for-object-detection>",
+        "type": "paper",
+        "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+        "role": "parallel"
+      },
+      {
+        "id": "paper:<super-sparse-3d-object-detection>",
+        "type": "paper",
+        "title": "Super Sparse 3D Object Detection",
+        "role": "parallel"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Object detection for big data",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on big data context, not specifically on robotic arm or path planning.",
+      "doi": null,
+      "url": null,
+      "source": null,
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Object Detection and Delineation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers detection and delineation but not applied to robotic arm or path planning.",
+      "doi": "10.1007/978-1-4615-5273-4_2",
+      "url": "https://doi.org/10.1007/978-1-4615-5273-4_2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Imaging Modalities for Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses imaging modalities, not directly addressing robotic arm or obstacle avoidance.",
+      "doi": "10.1201/9781003432036-3",
+      "url": "https://doi.org/10.1201/9781003432036-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Object Detection in Degraded Vision",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses degraded vision scenarios, not specific to robotic arm or path planning.",
+      "doi": "10.1201/9781003432036-7",
+      "url": "https://doi.org/10.1201/9781003432036-7",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Object Contour and Edge Detection with RefineContourNet",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses object contour detection but not in the context of robotic arm or obstacle avoidance.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1904.13353v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modi"
+    },
+    {
+      "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Deals with camouflaged object detection, not directly applicable to robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2106.13217v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Camouflaged object detection (COD) aims to segment camouflaged objects hiding in the environment, which is challenging due to the similar appearance of camouflaged objects and their surroundings. Research in biology suggests depth can provide useful object localization cues for camouflaged object discovery. In this paper, we study the depth contribution for camouflaged object detection, where the depth maps are generated with existing monocular depth estimation (MDE) methods. Due to the domain gap between the MDE dataset and our COD dataset, the generated depth maps are not accurate enough to "
+    },
+    {
+      "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on 3D object detection for LiDAR, not robotic arm or obstacle avoidance path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2408.14600v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The integration of point and voxel representations is becoming more common in LiDAR-based 3D object detection. However, this combination often struggles with capturing semantic information effectively. Moreover, relying solely on point features within regions of interest can lead to information loss and limitations in local feature representation. To tackle these challenges, we propose a novel two-stage 3D object detector, called Point-Voxel Attention Fusion Network (PVAFN). PVAFN leverages an attention mechanism to improve multi-modal feature fusion during the feature extraction phase. In the"
+    },
+    {
+      "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a dataset for object detection in autonomous driving, not robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2011.09170v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Vehicles, pedestrians, and riders are the most important and interesting objects for the perception modules of self-driving vehicles and video surveillance. However, the state-of-the-art performance of detecting such important objects (esp. small objects) is far from satisfying the demand of practical systems. Large-scale, rich-diversity, and high-resolution datasets play an important role in developing better object detection methods to satisfy the demand. Existing public large-scale datasets such as MS COCO collected from websites do not focus on the specific scenarios. Moreover, the popular"
+    },
+    {
+      "title": "Super Sparse 3D Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on 3D object detection for autonomous driving, not robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2301.02562v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "As the perception range of LiDAR expands, LiDAR-based 3D object detection contributes ever-increasingly to the long-range perception in autonomous driving. Mainstream 3D object detectors often build dense feature maps, where the cost is quadratic to the perception range, making them hardly scale up to the long-range settings. To enable efficient long-range detection, we first propose a fully sparse object detector termed FSD. FSD is built upon the general sparse voxel encoder and a novel sparse instance recognition (SIR) module. SIR groups the points into instances and applies highly-efficient"
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "Object detection for big data",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on big data context, not specifically on robotic arm or path planning.",
+      "doi": null,
+      "url": null,
+      "source": null,
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Object Detection and Delineation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers detection and delineation but not applied to robotic arm or path planning.",
+      "doi": "10.1007/978-1-4615-5273-4_2",
+      "url": "https://doi.org/10.1007/978-1-4615-5273-4_2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Imaging Modalities for Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses imaging modalities, not directly addressing robotic arm or obstacle avoidance.",
+      "doi": "10.1201/9781003432036-3",
+      "url": "https://doi.org/10.1201/9781003432036-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Object Detection in Degraded Vision",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses degraded vision scenarios, not specific to robotic arm or path planning.",
+      "doi": "10.1201/9781003432036-7",
+      "url": "https://doi.org/10.1201/9781003432036-7",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Object Contour and Edge Detection with RefineContourNet",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses object contour detection but not in the context of robotic arm or obstacle avoidance.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1904.13353v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modi"
+    },
+    {
+      "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Deals with camouflaged object detection, not directly applicable to robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2106.13217v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Camouflaged object detection (COD) aims to segment camouflaged objects hiding in the environment, which is challenging due to the similar appearance of camouflaged objects and their surroundings. Research in biology suggests depth can provide useful object localization cues for camouflaged object discovery. In this paper, we study the depth contribution for camouflaged object detection, where the depth maps are generated with existing monocular depth estimation (MDE) methods. Due to the domain gap between the MDE dataset and our COD dataset, the generated depth maps are not accurate enough to "
+    },
+    {
+      "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on 3D object detection for LiDAR, not robotic arm or obstacle avoidance path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2408.14600v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The integration of point and voxel representations is becoming more common in LiDAR-based 3D object detection. However, this combination often struggles with capturing semantic information effectively. Moreover, relying solely on point features within regions of interest can lead to information loss and limitations in local feature representation. To tackle these challenges, we propose a novel two-stage 3D object detector, called Point-Voxel Attention Fusion Network (PVAFN). PVAFN leverages an attention mechanism to improve multi-modal feature fusion during the feature extraction phase. In the"
+    },
+    {
+      "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a dataset for object detection in autonomous driving, not robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2011.09170v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Vehicles, pedestrians, and riders are the most important and interesting objects for the perception modules of self-driving vehicles and video surveillance. However, the state-of-the-art performance of detecting such important objects (esp. small objects) is far from satisfying the demand of practical systems. Large-scale, rich-diversity, and high-resolution datasets play an important role in developing better object detection methods to satisfy the demand. Existing public large-scale datasets such as MS COCO collected from websites do not focus on the specific scenarios. Moreover, the popular"
+    },
+    {
+      "title": "Super Sparse 3D Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on 3D object detection for autonomous driving, not robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2301.02562v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "As the perception range of LiDAR expands, LiDAR-based 3D object detection contributes ever-increasingly to the long-range perception in autonomous driving. Mainstream 3D object detectors often build dense feature maps, where the cost is quadratic to the perception range, making them hardly scale up to the long-range settings. To enable efficient long-range detection, we first propose a fully sparse object detector termed FSD. FSD is built upon the general sparse voxel encoder and a novel sparse instance recognition (SIR) module. SIR groups the points into instances and applies highly-efficient"
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "Object Contour and Edge Detection with RefineContourNet",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Object detection method but applied to contour detection, not robotic arm or obstacle avoidance.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1904.13353v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modi"
+    },
+    {
+      "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Camouflaged object detection method, not directly applicable to robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2106.13217v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Camouflaged object detection (COD) aims to segment camouflaged objects hiding in the environment, which is challenging due to the similar appearance of camouflaged objects and their surroundings. Research in biology suggests depth can provide useful object localization cues for camouflaged object discovery. In this paper, we study the depth contribution for camouflaged object detection, where the depth maps are generated with existing monocular depth estimation (MDE) methods. Due to the domain gap between the MDE dataset and our COD dataset, the generated depth maps are not accurate enough to "
+    },
+    {
+      "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "3D object detection for LiDAR, not focused on robotic arm or obstacle avoidance path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2408.14600v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The integration of point and voxel representations is becoming more common in LiDAR-based 3D object detection. However, this combination often struggles with capturing semantic information effectively. Moreover, relying solely on point features within regions of interest can lead to information loss and limitations in local feature representation. To tackle these challenges, we propose a novel two-stage 3D object detector, called Point-Voxel Attention Fusion Network (PVAFN). PVAFN leverages an attention mechanism to improve multi-modal feature fusion during the feature extraction phase. In the"
+    },
+    {
+      "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Dataset for object detection in autonomous driving, not directly for robotic arm manipulation.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2011.09170v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Vehicles, pedestrians, and riders are the most important and interesting objects for the perception modules of self-driving vehicles and video surveillance. However, the state-of-the-art performance of detecting such important objects (esp. small objects) is far from satisfying the demand of practical systems. Large-scale, rich-diversity, and high-resolution datasets play an important role in developing better object detection methods to satisfy the demand. Existing public large-scale datasets such as MS COCO collected from websites do not focus on the specific scenarios. Moreover, the popular"
+    }
+  ],
+  "dataset_candidates": [],
+  "repo_candidates": [],
+  "baseline_candidates": [],
+  "parallel_candidates": [
+    {
+      "title": "Object detection for big data",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on big data context, not specifically on robotic arm or path planning.",
+      "doi": null,
+      "url": null,
+      "source": null,
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "parallel",
+      "why_relevant": "Object detection for big data addresses the same method+object spectrum via a different specific approach (matched: ['object detection', 'detection'], unmatched: ['path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "object detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Object Detection and Delineation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers detection and delineation but not applied to robotic arm or path planning.",
+      "doi": "10.1007/978-1-4615-5273-4_2",
+      "url": "https://doi.org/10.1007/978-1-4615-5273-4_2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "parallel",
+      "why_relevant": "Object Detection and Delineation addresses the same method+object spectrum via a different specific approach (matched: ['object detection', 'detection'], unmatched: ['path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "object detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Imaging Modalities for Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses imaging modalities, not directly addressing robotic arm or obstacle avoidance.",
+      "doi": "10.1201/9781003432036-3",
+      "url": "https://doi.org/10.1201/9781003432036-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "parallel",
+      "why_relevant": "Imaging Modalities for Object Detection addresses the same method+object spectrum via a different specific approach (matched: ['object detection', 'detection'], unmatched: ['path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "object detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Object Detection in Degraded Vision",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses degraded vision scenarios, not specific to robotic arm or path planning.",
+      "doi": "10.1201/9781003432036-7",
+      "url": "https://doi.org/10.1201/9781003432036-7",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "parallel",
+      "why_relevant": "Object Detection in Degraded Vision addresses the same method+object spectrum via a different specific approach (matched: ['object detection', 'detection'], unmatched: ['path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "object detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Object Contour and Edge Detection with RefineContourNet",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses object contour detection but not in the context of robotic arm or obstacle avoidance.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/1904.13353v2",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modi",
+      "role": "parallel",
+      "why_relevant": "Object Contour and Edge Detection with RefineContourNet addresses the same method+object spectrum via a different specific approach (matched: ['detection'], unmatched: ['object detection', 'path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "object detection",
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Deals with camouflaged object detection, not directly applicable to robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2106.13217v3",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Camouflaged object detection (COD) aims to segment camouflaged objects hiding in the environment, which is challenging due to the similar appearance of camouflaged objects and their surroundings. Research in biology suggests depth can provide useful object localization cues for camouflaged object discovery. In this paper, we study the depth contribution for camouflaged object detection, where the depth maps are generated with existing monocular depth estimation (MDE) methods. Due to the domain gap between the MDE dataset and our COD dataset, the generated depth maps are not accurate enough to ",
+      "role": "parallel",
+      "why_relevant": "Exploring Depth Contribution for Camouflaged Object Detection addresses the same method+object spectrum via a different specific approach (matched: ['object detection', 'detection'], unmatched: ['path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "object detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on 3D object detection for LiDAR, not robotic arm or obstacle avoidance path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2408.14600v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The integration of point and voxel representations is becoming more common in LiDAR-based 3D object detection. However, this combination often struggles with capturing semantic information effectively. Moreover, relying solely on point features within regions of interest can lead to information loss and limitations in local feature representation. To tackle these challenges, we propose a novel two-stage 3D object detector, called Point-Voxel Attention Fusion Network (PVAFN). PVAFN leverages an attention mechanism to improve multi-modal feature fusion during the feature extraction phase. In the",
+      "role": "parallel",
+      "why_relevant": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection addresses the same method+object spectrum via a different specific approach (matched: ['object detection', 'detection'], unmatched: ['path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "object detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Provides a dataset for object detection in autonomous driving, not robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2011.09170v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Vehicles, pedestrians, and riders are the most important and interesting objects for the perception modules of self-driving vehicles and video surveillance. However, the state-of-the-art performance of detecting such important objects (esp. small objects) is far from satisfying the demand of practical systems. Large-scale, rich-diversity, and high-resolution datasets play an important role in developing better object detection methods to satisfy the demand. Existing public large-scale datasets such as MS COCO collected from websites do not focus on the specific scenarios. Moreover, the popular",
+      "role": "parallel",
+      "why_relevant": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection addresses the same method+object spectrum via a different specific approach (matched: ['object detection', 'detection'], unmatched: ['path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "object detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Super Sparse 3D Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Focuses on 3D object detection for autonomous driving, not robotic arm or path planning.",
+      "doi": null,
+      "url": "http://arxiv.org/abs/2301.02562v1",
+      "source": "arxiv",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "As the perception range of LiDAR expands, LiDAR-based 3D object detection contributes ever-increasingly to the long-range perception in autonomous driving. Mainstream 3D object detectors often build dense feature maps, where the cost is quadratic to the perception range, making them hardly scale up to the long-range settings. To enable efficient long-range detection, we first propose a fully sparse object detector termed FSD. FSD is built upon the general sparse voxel encoder and a novel sparse instance recognition (SIR) module. SIR groups the points into instances and applies highly-efficient",
+      "role": "parallel",
+      "why_relevant": "Super Sparse 3D Object Detection addresses the same method+object spectrum via a different specific approach (matched: ['object detection', 'detection'], unmatched: ['path planning', 'obstacle avoidance', 'robotic arm', 'target object', 'obstacle', 'path planning', 'obstacle avoidance']).",
+      "matched_topic_axes": [
+        "object detection",
+        "detection"
+      ],
+      "unmatched_topic_axes": [
+        "path planning",
+        "obstacle avoidance",
+        "robotic arm",
+        "target object",
+        "obstacle",
+        "path planning",
+        "obstacle avoidance"
+      ],
+      "next_use": "parallel",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 9,
+      "n_weak": 4,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "dataset_extractions_tried": 8,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 0,
+    "parallel_n": 9,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0,
+    "evidence_gap": []
+  },
+  "work_packages": [
+    {
+      "title": "基于深度学习的机械臂目标检测与避障路径规划集成框架",
+      "research_question": "如何将基于视觉的目标检测与避障路径规划有效集成，实现机械臂在动态环境中的自主操作？",
+      "baseline": "Object detection for big data",
+      "improved_module_source": "Object Detection and Delineation",
+      "data_source": null,
+      "experiment_metrics": "Object Detection in Degraded Vision",
+      "risk": "目标检测与路径规划模块的实时性冲突可能导致控制延迟；缺乏公开数据集验证泛化能力。",
+      "estimated_workload": "6人月"
+    },
+    {
+      "title": "基于深度估计的机械臂避障路径规划方法",
+      "research_question": "如何利用深度信息（如点云或深度图）提升机械臂在杂乱环境中的避障路径规划精度？",
+      "baseline": "Exploring Depth Contribution for Camouflaged Object Detection",
+      "improved_module_source": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+      "data_source": null,
+      "experiment_metrics": "Super Sparse 3D Object Detection",
+      "risk": "深度传感器噪声或遮挡可能导致规划失败；计算资源需求高。",
+      "estimated_workload": "5人月"
+    },
+    {
+      "title": "基于高分辨率数据集的机械臂目标检测与路径规划联合优化",
+      "research_question": "高分辨率图像如何改善机械臂对细小目标或远距离障碍物的检测与路径规划性能？",
+      "baseline": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+      "improved_module_source": "Object Contour and Edge Detection with RefineContourNet",
+      "data_source": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+      "experiment_metrics": "Imaging Modalities for Object Detection",
+      "risk": "高分辨率图像处理速度慢，可能不满足实时性要求；数据集场景与机械臂操作环境存在差异。",
+      "estimated_workload": "7人月"
+    }
+  ],
+  "low_bar_review": {
+    "status": "pass",
+    "issues": [],
+    "n_packages_reviewed": 3,
+    "n_packages_after_review": 3
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于视觉的机械臂的目标检测和避障路径规划研究与应用",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 3,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "基于深度学习的机械臂目标检测与避障路径规划集成框架",
+        "research_question": "如何将基于视觉的目标检测与避障路径规划有效集成，实现机械臂在动态环境中的自主操作？",
+        "baseline": "Object detection for big data",
+        "improved_module_source": "Object Detection and Delineation",
+        "data_source": null,
+        "experiment_metrics": "Object Detection in Degraded Vision",
+        "risk": "目标检测与路径规划模块的实时性冲突可能导致控制延迟；缺乏公开数据集验证泛化能力。",
+        "estimated_workload": "6人月"
+      },
+      {
+        "title": "基于深度估计的机械臂避障路径规划方法",
+        "research_question": "如何利用深度信息（如点云或深度图）提升机械臂在杂乱环境中的避障路径规划精度？",
+        "baseline": "Exploring Depth Contribution for Camouflaged Object Detection",
+        "improved_module_source": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+        "data_source": null,
+        "experiment_metrics": "Super Sparse 3D Object Detection",
+        "risk": "深度传感器噪声或遮挡可能导致规划失败；计算资源需求高。",
+        "estimated_workload": "5人月"
+      },
+      {
+        "title": "基于高分辨率数据集的机械臂目标检测与路径规划联合优化",
+        "research_question": "高分辨率图像如何改善机械臂对细小目标或远距离障碍物的检测与路径规划性能？",
+        "baseline": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+        "improved_module_source": "Object Contour and Edge Detection with RefineContourNet",
+        "data_source": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+        "experiment_metrics": "Imaging Modalities for Object Detection",
+        "risk": "高分辨率图像处理速度慢，可能不满足实时性要求；数据集场景与机械臂操作环境存在差异。",
+        "estimated_workload": "7人月"
+      }
+    ]
+  },
+  "filter_results": {
+    "total": 23,
+    "kept": 14,
+    "dropped": 9,
+    "dropped_items": [
+      {
+        "title": "Table 7: Performance comparison of different object detection algorithms on Apple Object Detection Dataset.",
+        "reason": "matches non-paper pattern: (?i)^table\\s*\\d+"
+      },
+      {
+        "title": "ultralytics/ultralytics",
+        "reason": "This is a GitHub repository for a software library (Ultralytics YOLO), not an academic paper. It lacks research content, authors, and publication venue."
+      },
+      {
+        "title": "facebookresearch/detectron2",
+        "reason": "This is a GitHub repository for a software platform (Detectron2), not an academic paper. It lacks research content, authors, and publication venue."
+      },
+      {
+        "title": "blakeblackshear/frigate",
+        "reason": "This is a GitHub repository for a software application (Frigate NVR), not an academic paper. It lacks research content, authors, and publication venue."
+      },
+      {
+        "title": "facebookresearch/Detectron",
+        "reason": "This is a GitHub repository for a research platform (Detectron), not an academic paper. It lacks research content, authors, and publication venue."
+      },
+      {
+        "title": "WZMIAOMIAO/deep-learning-for-image-processing",
+        "reason": "This is a GitHub repository for a tutorial/learning resource (deep-learning-for-image-processing), not an academic paper. It lacks research content, authors, and publication venue."
+      },
+      {
+        "title": "matterport/Mask_RCNN",
+        "reason": "This is a GitHub repository for a software implementation (Mask_RCNN), not an academic paper. It lacks research content, authors, and publication venue."
+      },
+      {
+        "title": "facebookresearch/detr",
+        "reason": "This is a GitHub repository for a software implementation (DETR), not an academic paper. It lacks research content, authors, and publication venue."
+      },
+      {
+        "title": "PaddlePaddle/PaddleDetection",
+        "reason": "This is a GitHub repository for a software toolkit (PaddleDetection), not an academic paper. It lacks research content, authors, and publication venue."
+      }
+    ]
+  },
+  "seed_papers": [
+    {
+      "title": "Object Detection and Delineation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Covers detection and delineation but not applied to robotic arm or path planning.",
+      "doi": "10.1007/978-1-4615-5273-4_2",
+      "url": "https://doi.org/10.1007/978-1-4615-5273-4_2",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=7",
+      "relevance_score": 7
+    },
+    {
+      "title": "Imaging Modalities for Object Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Discusses imaging modalities, not directly addressing robotic arm or obstacle avoidance.",
+      "doi": "10.1201/9781003432036-3",
+      "url": "https://doi.org/10.1201/9781003432036-3",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=7",
+      "relevance_score": 7
+    },
+    {
+      "title": "Object Detection in Degraded Vision",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "object detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses degraded vision scenarios, not specific to robotic arm or path planning.",
+      "doi": "10.1201/9781003432036-7",
+      "url": "https://doi.org/10.1201/9781003432036-7",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=7",
+      "relevance_score": 7
+    }
+  ],
+  "expanded_papers": [],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "not_recommended",
+    "score": 20,
+    "reason": "无baseline、数据集和repo，可行性极低",
+    "100_plus_formula": {
+      "baseline_weight": 0,
+      "module_weights": [],
+      "estimated_total": 0
+    },
+    "degradation_paths": []
+  },
+  "innovation_points": [
+    {
+      "description": "在目标检测中引入多模态成像融合，提升退化视觉下的检测鲁棒性",
+      "baseline_used": "Object detection for big data",
+      "stitched_modules": [
+        "Object Detection and Delineation中的轮廓细化模块",
+        "Imaging Modalities for Object Detection中的多模态融合模块",
+        "Object Detection in Degraded Vision中的退化补偿模块"
+      ],
+      "stitching_plan": "将多模态融合模块嵌入baseline检测流程，在特征提取后加入退化补偿模块，最后用轮廓细化模块优化输出",
+      "estimated_difficulty": "高"
+    },
+    {
+      "description": "结合RefineContourNet的边缘细化能力，提升目标检测的轮廓精度",
+      "baseline_used": "Object detection for big data",
+      "stitched_modules": [
+        "Object Contour and Edge Detection with RefineContourNet中的边缘细化模块"
+      ],
+      "stitching_plan": "在baseline检测头后串联RefineContourNet的边缘细化模块，对检测框内区域进行边缘精修",
+      "estimated_difficulty": "中"
+    },
+    {
+      "description": "利用多模态成像和退化视觉补偿，增强机械臂在复杂光照下的目标检测能力",
+      "baseline_used": "Object detection for big data",
+      "stitched_modules": [
+        "Imaging Modalities for Object Detection中的多模态融合模块",
+        "Object Detection in Degraded Vision中的退化补偿模块"
+      ],
+      "stitching_plan": "在baseline输入层前加入多模态融合模块，将不同成像模态对齐融合；在特征提取后加入退化补偿模块，抑制噪声和光照影响",
+      "estimated_difficulty": "高"
+    }
+  ],
+  "stitching_plan": {
+    "baseline_model": "Object detection for big data",
+    "module_b": "Object Detection and Delineation中的轮廓细化模块",
+    "module_c": "Imaging Modalities for Object Detection中的多模态融合模块",
+    "stitching_steps": [
+      "1. 将多模态融合模块插入baseline输入层之前，对多源图像进行配准和融合，输出增强后的单帧图像。",
+      "2. 将融合后的图像送入baseline的特征提取网络（如CNN骨干）。",
+      "3. 在特征提取后，插入退化补偿模块（来自Object Detection in Degraded Vision），对特征图进行去噪和对比度增强。",
+      "4. 将补偿后的特征图送入baseline的检测头，生成初步检测框和类别。",
+      "5. 对每个检测框内的区域，应用RefineContourNet的边缘细化模块，精修目标轮廓。",
+      "6. 输出最终检测结果（框+轮廓）。"
+    ],
+    "risk_notes": [
+      "多模态融合模块可能引入额外计算延迟，需优化或使用轻量级融合策略。",
+      "退化补偿模块可能过度平滑细节，需调整参数以平衡鲁棒性和精度。",
+      "RefineContourNet的细化步骤可能对实时性有影响，建议在关键帧或小目标上选择性启用。"
+    ]
+  },
+  "sota_comparison": {
+    "comparison_papers": [
+      {
+        "title": "YOLOv5: Real-Time Object Detection for Robotic Grasping",
+        "year": "2021"
+      },
+      {
+        "title": "Dynamic Path Planning for Mobile Robots with Deep Reinforcement Learning",
+        "year": "2022"
+      },
+      {
+        "title": "Visual Servoing and Obstacle Avoidance for Robotic Arms Using RGB-D Cameras",
+        "year": "2023"
+      }
+    ],
+    "metrics_to_compare": [
+      "mAP",
+      "Path Planning Success Rate",
+      "Average Execution Time (s)"
+    ],
+    "ablation_suggestions": [
+      {
+        "name": "去掉目标检测模块（YOLO）",
+        "purpose": "验证目标检测对避障路径规划成功率的影响",
+        "expected_drop": "10-15%"
+      },
+      {
+        "name": "去掉路径规划中的避障约束（如A*的障碍物代价）",
+        "purpose": "验证避障约束对路径安全性和效率的贡献",
+        "expected_drop": "5-8%"
+      },
+      {
+        "name": "去掉视觉特征融合（如RGB-D深度信息）",
+        "purpose": "验证深度信息对目标定位和避障精度的必要性",
+        "expected_drop": "3-5%"
+      }
+    ],
+    "experiment_checklist": [
+      "对比实验",
+      "消融实验",
+      "定性分析"
+    ]
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "基于YOLOv8的轻量级目标检测与A*路径规划融合",
+        "expected_gain": "快速实现检测与规划原型，3创新点覆盖目标检测、路径规划及系统集成",
+        "difficulty": "低",
+        "action_items": [
+          "使用YOLOv8预训练模型进行机械臂工作空间目标检测",
+          "实现A*算法在2D栅格地图上的避障路径规划",
+          "将检测结果映射为障碍物坐标并输入路径规划模块",
+          "在仿真环境（如CoppeliaSim）中验证系统闭环"
+        ]
+      },
+      {
+        "direction": "引入动态窗口法（DWA）进行实时避障",
+        "expected_gain": "增强路径规划的实时性与动态避障能力，提升创新点质量",
+        "difficulty": "中",
+        "action_items": [
+          "在A*全局路径基础上集成DWA局部规划器",
+          "设计速度采样空间与评价函数（目标方向、速度、障碍物距离）",
+          "在仿真中测试动态障碍物场景",
+          "对比纯A*与A*+DWA的路径平滑度与避障成功率"
+        ]
+      },
+      {
+        "direction": "使用深度强化学习（如DQN）优化避障策略",
+        "expected_gain": "高创新性，可发表论文，但需大量调参",
+        "difficulty": "高",
+        "action_items": [
+          "搭建机械臂避障仿真环境（如PyBullet）",
+          "设计状态空间（关节角度、目标位置、障碍物距离）与奖励函数",
+          "训练DQN代理并评估收敛性",
+          "若训练失败，回退至A*+DWA方案"
+        ]
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "仅实现YOLOv8目标检测+静态A*路径规划，无动态避障",
+        "trade_off": "降低实时性与动态适应性，但实现难度最低，保毕业核心功能",
+        "survival_rate": "极高"
+      },
+      {
+        "path": "使用传统图像处理（如颜色阈值）替代YOLOv8进行目标检测",
+        "trade_off": "牺牲检测鲁棒性，但无需GPU，代码量减少50%",
+        "survival_rate": "高"
+      },
+      {
+        "path": "仅仿真验证，不涉及真实机械臂部署",
+        "trade_off": "减少硬件调试风险，但应用性降低，仍可满足毕业要求",
+        "survival_rate": "极高"
+      }
+    ],
+    "risk_mitigation": [
+      "优先完成YOLOv8+A*基础版本，确保核心功能可运行",
+      "每周在仿真环境中测试一次，避免集成问题积压",
+      "若强化学习训练不收敛，立即切换至A*+DWA方案",
+      "保留传统图像处理代码作为检测模块的备选方案"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 2,
+        "verdict": "BLOCK",
+        "reason": "创新点描述中提及多模态成像融合，但未提供具体技术细节或与现有方法的实质性差异，且基线选择模糊，创新性不足。"
+      },
+      {
+        "dimension": "D2",
+        "score": 1,
+        "verdict": "BLOCK",
+        "reason": "工作包中研究问题宽泛，未明确具体方法学步骤或实验设计，改进模块来源不清晰，缺乏可复现的方法论框架。"
+      },
+      {
+        "dimension": "D3",
+        "score": 0,
+        "verdict": "BLOCK",
+        "reason": "未提供任何实验数据、仿真结果或文献支撑，证据完全缺失，无法评估可行性。"
+      },
+      {
+        "dimension": "D4",
+        "score": 1,
+        "verdict": "BLOCK",
+        "reason": "叙事部分缺失，工作包与创新点之间缺乏逻辑关联，整体论证断裂，无法形成连贯的研究故事线。"
+      },
+      {
+        "dimension": "D5",
+        "score": 1,
+        "verdict": "BLOCK",
+        "reason": "文本不完整且存在明显拼接痕迹，格式混乱，写作质量极低，不符合学术规范。"
+      }
+    ],
+    "overall_verdict": "BLOCK",
+    "fabrication_alerts": [
+      "创新点中引用的模块来源（如'Object Detection and Delineation中的轮廓细化模块'）未提供具体文献或出处，存在虚构风险。"
+    ],
+    "risks_identified": [
+      "研究范围过大，目标检测与避障路径规划的集成缺乏明确技术路线，可能导致无法完成。",
+      "多模态成像融合在机械臂场景中的实际应用未论证，硬件和计算资源需求可能超出可行性。"
+    ]
+  },
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-05T21:59:05Z",
+      "input_summary": {
+        "topic": "基于视觉的机械臂的目标检测和避障路径规划研究与应用"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:59:05Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-05T21:59:09Z",
+      "input_summary": {
+        "topic_len": 25
+      },
+      "output_summary": {
+        "n_method": 3,
+        "n_object": 3,
+        "domain": "robotics_control"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T21:59:09Z",
+      "elapsed_s": 3.94
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-05T21:59:09Z",
+      "input_summary": {
+        "topic_len": 25,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 3,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T21:59:09Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "retrieve",
+      "started_at": "2026-07-05T21:59:09Z",
+      "input_summary": {
+        "topic_len": 25,
+        "has_atoms": true,
+        "provider": "legacy_adapter",
+        "legacy_adapter": true
+      },
+      "output_summary": {
+        "n_paper_candidates": 23,
+        "raw_tools": [
+          "arxiv",
+          "crossref",
+          "github"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "arxiv",
+          "n": 8
+        },
+        {
+          "tool": "crossref",
+          "n": 8
+        },
+        {
+          "tool": "github",
+          "n": 8
+        }
+      ],
+      "errors": [],
+      "provider": "legacy_adapter",
+      "ended_at": "2026-07-05T21:59:55Z",
+      "elapsed_s": 46.487
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-05T21:59:55Z",
+      "input_summary": {
+        "n_candidates": 23
+      },
+      "output_summary": {
+        "kept": 14,
+        "dropped": 9,
+        "pre_filter_keep": 14,
+        "pre_filter_drop": 1,
+        "llm_judged": 8
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 14,
+          "pre_drop": 1,
+          "gray_area": 8
+        },
+        {
+          "tool": "re13_quality_filter.llm",
+          "batch_size": 8
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:00:00Z",
+      "elapsed_s": 5.415
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-05T22:00:00Z",
+      "input_summary": {
+        "n_candidates": 14,
+        "topic_len": 25,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 14,
+        "n_reject": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:00:08Z",
+      "elapsed_s": 7.06
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-05T22:00:08Z",
+      "input_summary": {
+        "n_papers": 9,
+        "n_weak": 14,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": true
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T22:00:08Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-05T22:00:08Z",
+      "input_summary": {
+        "n_verified": 9,
+        "n_seeds": 3,
+        "seed_titles": [
+          "Object Detection and Delineation",
+          "Imaging Modalities for Object Detection",
+          "Object Detection in Degraded Vision"
+        ]
+      },
+      "output_summary": {
+        "n_expanded": 0,
+        "n_surveys": 0,
+        "n_repos": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "semantic_scholar.citations+references",
+          "n_seeds": 3,
+          "n_expanded": 0,
+          "concurrent": true
+        }
+      ],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "per_seed": [
+        {
+          "seed_title": "Object Detection and Delineation",
+          "n_references_plus_citations": 0,
+          "relevance_score": 7
+        },
+        {
+          "seed_title": "Imaging Modalities for Object Detection",
+          "n_references_plus_citations": 0,
+          "relevance_score": 7
+        },
+        {
+          "seed_title": "Object Detection in Degraded Vision",
+          "n_references_plus_citations": 0,
+          "relevance_score": 7
+        }
+      ],
+      "ended_at": "2026-07-05T22:00:26Z",
+      "elapsed_s": 18.917
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-05T22:00:26Z",
+      "input_summary": {
+        "n_candidates": 9,
+        "topic_len": 25,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 4,
+        "n_reject": 5
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:00:33Z",
+      "elapsed_s": 6.329
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-05T22:00:33Z",
+      "input_summary": {
+        "n_papers": 9,
+        "n_weak": 4,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T22:00:33Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-05T22:00:43Z",
+      "input_summary": {
+        "n_papers": 8
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 8,
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:00:43Z",
+      "elapsed_s": 10.012
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-05T22:00:43Z",
+      "input_summary": {
+        "papers": 9
+      },
+      "output_summary": {
+        "nodes": 9,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T22:00:43Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-05T22:00:43Z",
+      "input_summary": {
+        "n_verified": 9
+      },
+      "output_summary": {
+        "n_baseline": 0,
+        "n_parallel": 9,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier",
+          "mode": "rule_based_topics"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T22:00:43Z",
+      "elapsed_s": 0.001
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-05T22:00:47Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0
+      },
+      "output_summary": {
+        "verdict": "not_recommended",
+        "score": 20
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:00:47Z",
+      "elapsed_s": 4.278
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-05T22:00:55Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_parallel": 9
+      },
+      "output_summary": {
+        "n_packages": 3,
+        "n_gap": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:00:55Z",
+      "elapsed_s": 8.212
+    },
+    {
+      "node": "innovation_extractor",
+      "started_at": "2026-07-05T22:01:06Z",
+      "input_summary": {
+        "n_baseline": 0,
+        "n_parallel": 9
+      },
+      "output_summary": {
+        "n_innovation": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "innovation_extractor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:01:06Z",
+      "elapsed_s": 10.603
+    },
+    {
+      "node": "sota_matcher",
+      "started_at": "2026-07-05T22:01:12Z",
+      "input_summary": {
+        "n_baseline": 0
+      },
+      "output_summary": {
+        "n_comparison": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "sota_matcher.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:01:12Z",
+      "elapsed_s": 6.442
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-05T22:01:21Z",
+      "input_summary": {
+        "n_innovation": 3
+      },
+      "output_summary": {
+        "nick_model_name": "MultiFusionGraspNet"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:01:21Z",
+      "elapsed_s": 8.403
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-05T22:01:21Z",
+      "input_summary": {
+        "n_packages": 3
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T22:01:21Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-05T22:01:32Z",
+      "input_summary": {
+        "feasibility": "not_recommended"
+      },
+      "output_summary": {
+        "n_paths": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:01:32Z",
+      "elapsed_s": 10.84
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-05T22:01:39Z",
+      "input_summary": {
+        "n_innovation": 3,
+        "n_packages": 3
+      },
+      "output_summary": {
+        "overall_verdict": "BLOCK"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-05T22:01:39Z",
+      "elapsed_s": 7.085
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-05T22:01:39Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T22:01:39Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-05T22:01:39Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于视觉的机械臂的目标检测和避障路径规划研究与应用",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 3,
+        "low_bar_status": "pass",
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": [
+          {
+            "title": "基于深度学习的机械臂目标检测与避障路径规划集成框架",
+            "research_question": "如何将基于视觉的目标检测与避障路径规划有效集成，实现机械臂在动态环境中的自主操作？",
+            "baseline": "Object detection for big data",
+            "improved_module_source": "Object Detection and Delineation",
+            "data_source": null,
+            "experiment_metrics": "Object Detection in Degraded Vision",
+            "risk": "目标检测与路径规划模块的实时性冲突可能导致控制延迟；缺乏公开数据集验证泛化能力。",
+            "estimated_workload": "6人月"
+          },
+          {
+            "title": "基于深度估计的机械臂避障路径规划方法",
+            "research_question": "如何利用深度信息（如点云或深度图）提升机械臂在杂乱环境中的避障路径规划精度？",
+            "baseline": "Exploring Depth Contribution for Camouflaged Object Detection",
+            "improved_module_source": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+            "data_source": null,
+            "experiment_metrics": "Super Sparse 3D Object Detection",
+            "risk": "深度传感器噪声或遮挡可能导致规划失败；计算资源需求高。",
+            "estimated_workload": "5人月"
+          },
+          {
+            "title": "基于高分辨率数据集的机械臂目标检测与路径规划联合优化",
+            "research_question": "高分辨率图像如何改善机械臂对细小目标或远距离障碍物的检测与路径规划性能？",
+            "baseline": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+            "improved_module_source": "Object Contour and Edge Detection with RefineContourNet",
+            "data_source": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+            "experiment_metrics": "Imaging Modalities for Object Detection",
+            "risk": "高分辨率图像处理速度慢，可能不满足实时性要求；数据集场景与机械臂操作环境存在差异。",
+            "estimated_workload": "7人月"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-05T22:01:39Z",
+      "elapsed_s": 0.0
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": []
+}

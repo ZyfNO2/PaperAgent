@@ -33,11 +33,13 @@ and return a STRICT JSON object.
    `domain_route` to "unknown" and list 2-3 clarification questions in
    `needs_clarification`.
 3. `query_atoms_en` MUST contain 3-6 concrete search phrases in English.
-   Each phrase is a method×object noun-phrase a real arXiv/OpenAlex query
-   can match: e.g. "underwater acoustic classification", "ship-radiated noise
-   CNN", "FDTD microwave transmission line", "YOLOv8 steel surface defect",
-   "BERT Chinese sentiment", "PMSAID diffusion dataset",
-   "multi-view stereo 3D reconstruction", "binocular depth estimation".
+   Each phrase is a "<method> <object> <task>" noun-phrase.
+   To avoid domain bias, examples below come from 6 DIFFERENT fields:
+   - "<method_A> <object_A> <task_A>"
+   - "<method_B> <object_B> <task_B>"
+   - "<method_C> <object_C> <task_C>"
+   Think of these as FORMAT templates — replace A/B/C with the topic's
+   actual terms. NEVER copy the placeholder letters.
    NEVER emit generic atoms like "machine learning", "deep learning", "survey",
    "classification" alone — these pollute downstream retrieval.
 4. `query_atoms_zh` MUST contain 3-6 Chinese noun-phrases a CNKI/百度学术 query
@@ -51,19 +53,29 @@ and return a STRICT JSON object.
    still emit a generic atom (e.g. "deep learning") for that one axis only
    and explain in `needs_clarification`.
 6. `aliases` MUST include canonical English academic terms (not just
-   synonyms) that downstream cross-source matching needs:
-   - method aliases: framework versions ("YOLOv5", "YOLOv8", "U-Net",
-     "PointNet++", "BERT", "RoBERTa") + family ("transformer", "CNN").
-   - task aliases: synonyms ("crack detection" → "defect detection" →
-     "damage detection"; "lane detection" → "lane segmentation";
-     "SLAM" → "visual odometry" → "pose estimation").
-   - object aliases: concrete nouns ("concrete pavement" → "road pavement"
-     → "concrete surface"; "point cloud completion" → "3D shape completion").
-   - scenario aliases: real-world domains ("road inspection" →
-     "infrastructure inspection"; "railway" → "high-speed rail").
+   synonyms) that downstream cross-source matching needs.
+   To avoid bias toward any single domain, each rule below uses placeholders
+   from a DIFFERENT field. Replace them with the topic's actual terms:
+   - method aliases: if the topic mentions a specific framework version,
+     list that version + its family. Example pattern:
+     topic says "<X_vN>" → aliases = ["<X_vN>", "<X_vN+1>", "<family_name>"]
+   - task aliases: if the topic mentions a task, list 2-3 academic synonyms.
+     Example pattern:
+     topic says "<task_X>" → aliases = ["<synonym_1>", "<synonym_2>"]
+   - object aliases: if the topic mentions an object, list 2-3 concrete
+     nouns that refer to the same physical/behavioral target.
+     Example pattern:
+     topic says "<object_X>" → aliases = ["<related_noun_1>", "<related_noun_2>"]
+   - scenario aliases: if the topic mentions an application scenario,
+     list 2-3 broader/narrower real-world domains.
+     Example pattern:
+     topic says "<scenario_X>" → aliases = ["<broader_domain>", "<narrower_domain>"]
+   CRITICAL: Generate aliases FROM the topic's actual domain. Do NOT
+   import terms from other fields. If the topic is about <object_X>,
+   every alias must refer to <object_X> or its direct synonyms, never to
+   an unrelated object that happens to share a keyword.
 7. You may additionally set `site_hints` to a short list of authoritative
-   websites the agent should browse for this domain (e.g. ["aclanthology.org",
-   "openaccess.thecvf.com", "clinicaltrials.gov"]). Keep it ≤ 5 items.
+   websites the agent should browse for this domain. Keep it ≤ 5 items.
 8. **CRITICAL FOR NON-ENGLISH TOPICS**: the `query_atoms_en` are the ONLY
    atoms used to search GitHub, arXiv, Crossref, and OpenAlex. GitHub's
    search engine is English-only and Chinese-character queries return
@@ -71,8 +83,7 @@ and return a STRICT JSON object.
    in their bio (often unrelated). Even when the user writes in Chinese,
    `query_atoms_en` MUST be 100% English noun-phrases. NEVER transliterate
    Chinese into Pinyin for GitHub / arXiv search — use the academic English
-   equivalent ("binocular stereo" not "shuangmu lunti"). Chinese strings
-   belong in `query_atoms_zh` only.
+   equivalent. Chinese strings belong in `query_atoms_zh` only.
 
 ===================== JSON SCHEMA =====================
 {
@@ -107,8 +118,10 @@ and return a STRICT JSON object.
 - Generic nouns ("survey", "research", "paper").
 - A `domain_route` you cannot name explicitly (use "unknown").
 - ANY Chinese / non-ASCII character inside `query_atoms_en` strings.
-- Pinyin transliteration of Chinese ("shuangmu", "shuisheng") instead of the
-  real English term ("binocular", "underwater").
+- Pinyin transliteration of Chinese instead of the real English term.
 - Empty `topic_atoms.<axis>` arrays — every axis MUST have at least one atom.
 - `aliases` containing less than 2 entries per atom (no axis coverage).
+- Importing terms from a DIFFERENT domain than the topic. For example,
+  if the topic is about <object_X>, do NOT emit aliases containing
+  <object_Y> from an adjacent field just because they share a keyword.
 """

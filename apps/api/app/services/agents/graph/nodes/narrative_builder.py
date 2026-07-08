@@ -1,18 +1,13 @@
 ﻿"""narrative_builder — Re1.4 MVP node."""
-import time, logging, re
+import time
+import logging
+import re
 from typing import Any
 from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
 
-def _now_iso():
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-
-def _emit(node, t0, ins, out, tools, prov, errs):
-    return {"node": node, "started_at": _now_iso(), "input_summary": ins,
-            "output_summary": out, "tool_calls": tools, "errors": errs,
-            "provider": prov, "ended_at": _now_iso(), "elapsed_s": round(time.time()-t0, 3)}
+from ._util import emit_trace as _emit
 
 def _heuristic(state):
     topic = state.get("topic", "")
@@ -56,8 +51,11 @@ def narrative_builder_node(state: ResearchState) -> dict[str, Any]:
                   {"n_innovation": len(innovations)},
                   {"nick_model_name": result.get("nick_model_name", "")},
                   [{"tool": "narrative_builder.llm" if prov != "heuristic" else "heuristic"}],
-                  prov, [])
+                  prov, [],
+                  state_keys=["research_narratives", "narrative_revision_count",
+                              "trace_events"])
     current_count = state.get("narrative_revision_count", 0)
-    return {"research_narratives": result,
+    # Re3.0 Fix 2.1: field name unified to research_narrative (singular)
+    return {"research_narrative": result,
             "narrative_revision_count": current_count + 1,
             "trace_events": [trace]}

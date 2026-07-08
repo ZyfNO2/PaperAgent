@@ -1,0 +1,590 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T00:13:56Z",
+    "input_summary": {
+      "topic": "基于YOLOv5模型的遥感影像飞机目标检测"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:13:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T00:14:00Z",
+    "input_summary": {
+      "topic_len": 21
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "remote_sensing"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:14:00Z",
+    "elapsed_s": 3.854
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T00:14:00Z",
+    "input_summary": {
+      "topic_len": 21,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:14:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T00:14:00Z",
+    "input_summary": {
+      "topic_len": 21,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 39,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github",
+        "semantic_scholar"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T00:14:22Z",
+    "elapsed_s": 22.107
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T00:14:22Z",
+    "input_summary": {
+      "n_candidates": 39
+    },
+    "output_summary": {
+      "kept": 26,
+      "dropped": 13,
+      "pre_filter_keep": 26,
+      "pre_filter_drop": 5,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 26,
+        "pre_drop": 5,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:14:27Z",
+    "elapsed_s": 5.136
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T00:14:27Z",
+    "input_summary": {
+      "n_candidates": 26,
+      "topic_len": 21,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 15,
+      "n_reject": 11
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:14:34Z",
+    "elapsed_s": 7.193
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T00:14:34Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 15,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:14:34Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T00:14:34Z",
+    "input_summary": {
+      "n_verified": 10,
+      "n_seeds": 5,
+      "seed_titles": [
+        "YOLOv5-LF: An Optimized YOLOv5 Algorithm for Real-Time Autom",
+        "GBS-YOLOv5: Improved Algorithm for UAV Intelligent Transport",
+        "DiffDet4SAR: Diffusion-Based Aircraft Target Detection Netwo",
+        "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improve",
+        "ultralytics/yolov5: v5.0 - YOLOv5-P6 1280 models, AWS, Super"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 59,
+      "n_surveys": 1,
+      "n_repos": 9
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 59,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "YOLOv5-LF: An Optimized YOLOv5 Algorithm for Real-Time Autom",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "GBS-YOLOv5: Improved Algorithm for UAV Intelligent Transport",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "DiffDet4SAR: Diffusion-Based Aircraft Target Detection Netwo",
+        "n_references_plus_citations": 29,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improve",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "ultralytics/yolov5: v5.0 - YOLOv5-P6 1280 models, AWS, Super",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T00:15:07Z",
+    "elapsed_s": 32.465
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T00:15:07Z",
+    "input_summary": {
+      "n_candidates": 59,
+      "topic_len": 21,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 24,
+      "n_reject": 33
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:15:21Z",
+    "elapsed_s": 14.2
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T00:15:21Z",
+    "input_summary": {
+      "n_papers": 12,
+      "n_weak": 24,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:15:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T00:15:30Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:15:30Z",
+    "elapsed_s": 8.933
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T00:15:30Z",
+    "input_summary": {
+      "papers": 12
+    },
+    "output_summary": {
+      "nodes": 12,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:15:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T00:15:30Z",
+    "input_summary": {
+      "n_verified": 12
+    },
+    "output_summary": {
+      "n_baseline": 4,
+      "n_parallel": 8,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:15:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T00:15:34Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:15:34Z",
+    "elapsed_s": 4.358
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T00:16:18Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:16:18Z",
+    "elapsed_s": 44.131
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T00:16:33Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 8
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:16:33Z",
+    "elapsed_s": 14.708
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T00:16:27Z",
+    "input_summary": {
+      "n_baseline": 4
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:16:27Z",
+    "elapsed_s": 9.077
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T00:16:44Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Swin-SAR-YOLO"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:16:44Z",
+    "elapsed_s": 11.037
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T00:16:44Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:16:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T00:16:54Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:16:54Z",
+    "elapsed_s": 10.315
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T00:17:01Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T00:17:01Z",
+    "elapsed_s": 7.166
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T00:17:01Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:17:01Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T00:17:01Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于YOLOv5模型的遥感影像飞机目标检测",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "Baseline YOLOv5 for Aircraft Detection in Remote Sensing Imagery",
+          "research_question": "How does the standard YOLOv5 model perform on aircraft detection in remote sensing imagery, and what are the baseline metrics?",
+          "baseline": "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improvements",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+          "risk": "Baseline may underperform due to domain shift, small object scales, and dense scenes typical of remote sensing.",
+          "estimated_workload": "2 weeks"
+        },
+        {
+          "title": "Lightweight YOLOv5 for Aircraft Detection in Remote Sensing Using SARLite-Inspired Architecture",
+          "research_question": "Can applying lightweight convolution and attention mechanisms from SARLite improve YOLOv5's efficiency and accuracy for aircraft detection in remote sensing?",
+          "baseline": "ultralytics/yolov5: v5.0 - YOLOv5-P6 1280 models, AWS, Supervise.ly and YouTube integrations",
+          "improved_module_source": "SARLite: enhanced lightweight YOLO framework for SAR object detection",
+          "data_source": null,
+          "experiment_metrics": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+          "risk": "Lightweight modules may trade accuracy for speed; domain gap between SAR and optical remote sensing may limit transferability.",
+          "estimated_workload": "4 weeks"
+        },
+        {
+          "title": "Comparative Study of YOLOv5 and Its Variants for Aircraft Detection in Remote Sensing",
+          "research_question": "How do YOLOv5, SARLite-YOLO, and Swin-YOLO compare in aircraft detection performance on remote sensing imagery?",
+          "baseline": "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improvements",
+          "improved_module_source": "Swin-YOLO: Hybrid Deep Learning Model for Enhanced SAR Aircraft Detection",
+          "data_source": null,
+          "experiment_metrics": "YOLOv5 vs. YOLOv8 in Marine Fisheries: Balancing Class Detection and Instance Count",
+          "risk": "Lack of a common benchmark dataset; high computational cost of training multiple models; models are designed for SAR, not optical imagery.",
+          "estimated_workload": "6 weeks"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T00:17:01Z",
+    "elapsed_s": 0.0
+  }
+]

@@ -14,6 +14,13 @@ _API_ROOT = str(Path(__file__).resolve().parent.parent)
 if _API_ROOT not in sys.path:
     sys.path.insert(0, _API_ROOT)
 
+# Load .env from project root (so bat-launched uvicorn gets API keys)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(_PROJECT_ROOT, ".env"), override=True)
+except ImportError:
+    pass
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles

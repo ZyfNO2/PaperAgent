@@ -17,16 +17,12 @@ Strict non-negotiables (SOP §4.2 "该模块不应该"):
 """
 from __future__ import annotations
 
-import asyncio
-import json
 import logging
 import re
-from typing import Any, Callable, Iterable
+from typing import Any, Callable
 
 from .candidate_verifier import (
-    VERIFY_CANDIDATE_SYSTEM,  # re-exported via prompts package
     VerificationResult,
-    _flatten_atom_text,
     _normalize_id_field,
     _word_overlap,
     verify_candidate_offline,
@@ -153,11 +149,11 @@ async def repair_candidate(
     auditor can compare; ``verification_status`` is set on the result, not
     on the candidate.
     """
-    cid = candidate.get("candidate_id") or candidate.get("id") or ""
+    candidate.get("candidate_id") or candidate.get("id") or ""
     ids = _normalize_id_field(candidate)
     title = (candidate.get("title") or "").strip()
     abstract = (candidate.get("abstract") or "").strip()
-    url = candidate.get("url") or ""
+    candidate.get("url") or ""
 
     repaired: dict | None = None
     attempts: list[str] = []

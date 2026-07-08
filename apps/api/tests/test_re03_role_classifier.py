@@ -1,6 +1,5 @@
 """Re03 SOP §6.1: literature_role_classifier tests (SOP §3.5)."""
 
-import pytest
 
 from app.services.agents.literature_role_classifier import classify_literature_role
 

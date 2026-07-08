@@ -31,24 +31,10 @@ _EDGE_TYPES = frozenset({
 })
 
 
-def _now_iso() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def _emit(node: str, t0: float, ins: dict, out: dict,
-          tools: list, prov: str, errs: list) -> dict[str, Any]:
-    return {
-        "node": node,
-        "started_at": _now_iso(),
-        "input_summary": ins,
-        "output_summary": out,
-        "tool_calls": tools,
-        "errors": errs,
-        "provider": prov,
-        "ended_at": _now_iso(),
-        "elapsed_s": round(time.time() - t0, 3),
-    }
+
+from ._util import emit_trace as _emit
 
 
 def _kebab(text: str) -> str:
@@ -217,7 +203,8 @@ def json_graph_builder_node(state: ResearchState) -> dict[str, Any]:
     trace = _emit("json_graph_builder", t0,
                   {"papers": len(verified)},
                   {"nodes": len(nodes), "edges": len(edges)},
-                  ["local.classifier"], "local", [])
+                  ["local.classifier"], "local", [],
+                  state_keys=["evidence_graph", "evidence_audit", "trace_events"])
 
     return {
         "evidence_graph": graph,

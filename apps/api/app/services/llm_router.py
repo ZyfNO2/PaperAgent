@@ -1,8 +1,8 @@
 """LLM provider router — maps provider profiles to concrete providers.
 
 Profiles (SOP §7):
-  fast_json        -> DeepSeek flash (topic parse, planner, verifier JSON)
-  execution        -> StepFun (connectivity / cheap / simple exec; no final judge)
+  fast_json        -> StepFun (default) or DeepSeek (env FAST_JSON_PRIMARY=deepseek)
+  execution        -> StepFun (connectivity / cheap / simple exec; no final Judge)
   premium_review   -> VOAPI GPT-5.4-medium (final sampling review only)
   disabled         -> MiniMax etc. (no implicit fallback; raises)
 
@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 logger = logging.getLogger(__name__)
 
@@ -196,7 +196,7 @@ def call_json(
             raw = _llm._chat_stepfun(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
         else:
             raise LLMUnavailable(f"no adapter for provider {spec.provider!r}")
-    except BaseException as exc:
+    except Exception as exc:
         raise LLMUnavailable(_redact(exc)) from exc
 
     if not raw:

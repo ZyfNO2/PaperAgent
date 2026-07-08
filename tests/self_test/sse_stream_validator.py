@@ -1,7 +1,6 @@
 """Self-test validator: SSE stream — verifies event completeness and data consistency."""
 from __future__ import annotations
 
-import json
 from typing import Any
 
 

@@ -51,11 +51,7 @@ from app.services.agents.eval import (  # noqa: E402
     write_markdown_report,
 )
 from app.services.agents.candidate_verifier import (  # noqa: E402
-    verify_bucket,
     verify_candidate_offline,
-)
-from app.services.agents.gap_repair_planner import (  # noqa: E402
-    build_repair_plan,
 )
 from app.services.agents import research_agent as ra  # noqa: E402
 from app.services.retrieval.adapters import (  # noqa: E402
@@ -317,7 +313,7 @@ async def main_async(args) -> int:
     # Re-key on the legacy 'case_id' alias so downstream code stays simple.
     for c in cases:
         c.setdefault("case_id", c.get("id"))
-    cases_index = {c["case_id"]: c for c in cases}
+    {c["case_id"]: c for c in cases}
     re08_plans = _load_re08_repair_plans()
     re08_per_case = _load_re08_per_case()
 

@@ -1,0 +1,795 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T10:55:29Z",
+    "input_summary": {
+      "topic": "基于yolo的农作物识别"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:55:29Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T10:55:31Z",
+    "input_summary": {
+      "topic_len": 12
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:55:31Z",
+    "elapsed_s": 1.978
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T10:55:31Z",
+    "input_summary": {
+      "topic_len": 12,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:55:31Z",
+    "elapsed_s": 0.002
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T10:55:31Z",
+    "input_summary": {
+      "topic_len": 12,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 12,
+      "n_steps": 3,
+      "n_tool_calls": 2,
+      "raw_tools": [
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "github": 12
+      },
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T10:55:39Z",
+    "elapsed_s": 8.098
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T10:55:39Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:55:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T10:55:39Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 12,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 5,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:55:43Z",
+    "elapsed_s": 4.488
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T10:55:43Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 5,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": true
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:55:43Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-08T10:55:48Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:55:48Z",
+    "elapsed_s": 4.771
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T10:55:48Z",
+    "input_summary": {
+      "topic_len": 12,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 21,
+      "n_repo_candidates": 12,
+      "n_steps": 5,
+      "n_tool_calls": 4,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 0,
+        "openalex": 24,
+        "github": 12
+      },
+      "failed_adapters": [
+        "arxiv"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 0
+      },
+      {
+        "tool": "openalex",
+        "n": 24
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-08T10:56:16Z",
+    "elapsed_s": 28.078
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T10:56:16Z",
+    "input_summary": {
+      "n_candidates": 21
+    },
+    "output_summary": {
+      "kept": 21,
+      "dropped": 0,
+      "pre_filter_keep": 21,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 21,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:56:16Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T10:56:16Z",
+    "input_summary": {
+      "n_candidates": 21,
+      "topic_len": 12,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 11,
+      "n_weak_reject": 10,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:56:21Z",
+    "elapsed_s": 5.071
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T10:56:21Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 10,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 1,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:56:21Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T10:56:21Z",
+    "input_summary": {
+      "n_verified": 11,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Tea leaf disease detection and identification based on YOLOv",
+        "Crop Disease Detection Using YOLO",
+        "Advancing Plant Diseases Detection with Pre-trained YOLO Mod",
+        "YOLO-Tea: A Tea Disease Detection Model Improved by YOLOv5",
+        "Deep Object Detection of Crop Weeds: Performance of YOLOv7 o"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 115,
+      "n_surveys": 18,
+      "n_repos": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 115,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Tea leaf disease detection and identification based on YOLOv",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Crop Disease Detection Using YOLO",
+        "n_references_plus_citations": 15,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Advancing Plant Diseases Detection with Pre-trained YOLO Mod",
+        "n_references_plus_citations": 14,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "YOLO-Tea: A Tea Disease Detection Model Improved by YOLOv5",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Deep Object Detection of Crop Weeds: Performance of YOLOv7 o",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      }
+    ],
+    "ended_at": "2026-07-08T10:56:24Z",
+    "elapsed_s": 2.224
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T10:56:24Z",
+    "input_summary": {
+      "n_candidates": 115,
+      "topic_len": 12,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 29,
+      "n_weak_reject": 55,
+      "n_reject": 31
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:56:46Z",
+    "elapsed_s": 22.027
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T10:56:46Z",
+    "input_summary": {
+      "n_papers": 40,
+      "n_weak": 65,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 1,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:56:46Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T10:56:51Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:56:51Z",
+    "elapsed_s": 5.377
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T10:56:51Z",
+    "input_summary": {
+      "papers": 40
+    },
+    "output_summary": {
+      "nodes": 52,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:56:51Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T10:56:51Z",
+    "input_summary": {
+      "n_verified": 40
+    },
+    "output_summary": {
+      "n_baseline": 39,
+      "n_parallel": 0,
+      "n_survey": 1,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:56:51Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T10:56:54Z",
+    "input_summary": {
+      "n_baseline": 39,
+      "n_dataset": 0,
+      "n_repo": 12
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:56:54Z",
+    "elapsed_s": 3.38
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T10:57:09Z",
+    "input_summary": {
+      "n_baseline": 39,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 8,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:57:09Z",
+    "elapsed_s": 15.086
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T10:57:20Z",
+    "input_summary": {
+      "n_baseline": 39,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:57:20Z",
+    "elapsed_s": 10.307
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T10:57:17Z",
+    "input_summary": {
+      "n_baseline": 39
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:57:17Z",
+    "elapsed_s": 7.855
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T10:57:29Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CropGuard-YOLO"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:57:29Z",
+    "elapsed_s": 9.71
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T10:57:29Z",
+    "input_summary": {
+      "n_packages": 8
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:57:29Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T10:57:41Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:57:41Z",
+    "elapsed_s": 11.856
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T10:57:46Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 8
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T10:57:46Z",
+    "elapsed_s": 4.753
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T10:57:46Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:57:46Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T10:57:46Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于yolo的农作物识别",
+      "n_papers": 40,
+      "n_baseline": 39,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 8,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于YOLOv7的茶叶病害检测与识别",
+          "research_question": "如何利用YOLOv7改进模型（YOLO-T）在茶叶病害检测任务中实现更高的精度和实时性？",
+          "baseline": "Tea leaf disease detection and identification based on YOLOv7 (YOLO-T)",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Tea leaf disease detection and identification based on YOLOv7 (YOLO-T)",
+          "risk": "公开茶叶病害数据集可能不足，需自行采集或标注，影响复现性。",
+          "estimated_workload": "中等（2-3个月）：模型训练、调参、对比实验。"
+        },
+        {
+          "title": "基于YOLOv5的茶叶病害检测改进（YOLO-Tea）",
+          "research_question": "YOLOv5在茶叶病害检测中的改进策略（如注意力机制、特征融合）如何提升检测性能？",
+          "baseline": "YOLO-Tea: A Tea Disease Detection Model Improved by YOLOv5",
+          "improved_module_source": "YOLO-Tea: A Tea Disease Detection Model Improved by YOLOv5",
+          "data_source": null,
+          "experiment_metrics": "YOLO-Tea: A Tea Disease Detection Model Improved by YOLOv5",
+          "risk": "改进模块的泛化性可能受限于特定茶叶病害数据集。",
+          "estimated_workload": "中等（2-3个月）：复现改进模块、消融实验。"
+        },
+        {
+          "title": "基于YOLOv7的作物与杂草识别（无人机图像）",
+          "research_question": "YOLOv7在无人机图像中作物与杂草检测的性能如何？其与轻量级YOLO变体的对比结果如何？",
+          "baseline": "Deep Object Detection of Crop Weeds: Performance of YOLOv7 on a Real Case Dataset from UAV Images",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Deep Object Detection of Crop Weeds: Performance of YOLOv7 on a Real Case Dataset from UAV Images",
+          "risk": "无人机图像数据集获取困难，且标注成本高。",
+          "estimated_workload": "高（3-4个月）：数据预处理、模型训练、多场景评估。"
+        },
+        {
+          "title": "基于YOLOv5的甜椒叶片病害检测",
+          "research_question": "YOLOv5在甜椒叶片病害检测中的适用性如何？其与其它YOLO版本（如v8）的对比表现如何？",
+          "baseline": "Leaf-based disease detection in bell pepper plant using YOLO v5",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Leaf-based disease detection in bell pepper plant using YOLO v5",
+          "risk": "甜椒病害数据集可能较小，导致模型过拟合。",
+          "estimated_workload": "低（1-2个月）：直接应用YOLOv5进行训练和测试。"
+        },
+        {
+          "title": "基于改进YOLOv3的番茄病虫害检测",
+          "research_question": "改进YOLOv3（如特征金字塔、注意力机制）在番茄病虫害检测中的效果如何？",
+          "baseline": "Tomato Diseases and Pests Detection Based on Improved Yolo V3 Convolutional Neural Network",
+          "improved_module_source": "Tomato Diseases and Pests Detection Based on Improved Yolo V3 Convolutional Neural Network",
+          "data_source": null,
+          "experiment_metrics": "Tomato Diseases and Pests Detection Based on Improved Yolo V3 Convolutional Neural Network",
+          "risk": "改进模块的复杂度可能影响实时性。",
+          "estimated_workload": "中等（2-3个月）：复现改进结构、对比实验。"
+        },
+        {
+          "title": "基于YOLO的作物与杂草识别对比研究（精准农业）",
+          "research_question": "不同YOLO版本（v3/v5/v7/v8）在作物与杂草识别任务中的精度与速度权衡如何？",
+          "baseline": "Advancing precision agriculture with computer vision: A comparative study of YOLO models for weed and crop recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Advancing precision agriculture with computer vision: A comparative study of YOLO models for weed and crop recognition",
+          "risk": "对比实验需要统一数据集和评估标准，可能需额外收集数据。",
+          "estimated_workload": "高（3-4个月）：多模型训练、性能分析。"
+        },
+        {
+          "title": "基于YOLOv3的番茄检测算法（YOLO-Tomato）",
+          "research_question": "YOLOv3在番茄检测中的鲁棒性如何？其与改进版本（如YOLO-Tomato）的差异体现在哪些方面？",
+          "baseline": "YOLO-Tomato: A Robust Algorithm for Tomato Detection Based on YOLOv3",
+          "improved_module_source": "YOLO-Tomato: A Robust Algorithm for Tomato Detection Based on YOLOv3",
+          "data_source": null,
+          "experiment_metrics": "YOLO-Tomato: A Robust Algorithm for Tomato Detection Based on YOLOv3",
+          "risk": "番茄检测场景（如成熟度、遮挡）可能影响模型泛化。",
+          "estimated_workload": "中等（2-3个月）：复现算法、测试不同环境。"
+        },
+        {
+          "title": "基于轻量级YOLO的番茄早疫病边缘端检测",
+          "research_question": "轻量级YOLO架构（如YOLOv5-nano、YOLOv8-nano）在边缘AI平台上对番茄早疫病的实时检测性能如何？",
+          "baseline": "Benchmarking lightweight YOLO architectures for real-time early blight detection in tomato on an edge AI platform",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Benchmarking lightweight YOLO architectures for real-time early blight detection in tomato on an edge AI platform",
+          "risk": "边缘设备算力限制可能导致精度下降。",
+          "estimated_workload": "高（3-4个月）：模型轻量化、边缘端部署、性能测试。"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T10:57:46Z",
+    "elapsed_s": 0.0
+  }
+]

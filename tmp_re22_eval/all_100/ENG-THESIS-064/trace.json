@@ -1,0 +1,568 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T07:14:35Z",
+    "input_summary": {
+      "topic": "面向复杂道路场景的车辆目标检测算法研究与实现"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:14:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T07:14:39Z",
+    "input_summary": {
+      "topic_len": 22
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:14:39Z",
+    "elapsed_s": 4.055
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T07:14:39Z",
+    "input_summary": {
+      "topic_len": 22,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:14:39Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T07:14:39Z",
+    "input_summary": {
+      "topic_len": 22,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 19,
+      "raw_tools": [
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 3
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T07:14:58Z",
+    "elapsed_s": 18.274
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T07:14:58Z",
+    "input_summary": {
+      "n_candidates": 19
+    },
+    "output_summary": {
+      "kept": 16,
+      "dropped": 3,
+      "pre_filter_keep": 16,
+      "pre_filter_drop": 0,
+      "llm_judged": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 16,
+        "pre_drop": 0,
+        "gray_area": 3
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 3
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:15:02Z",
+    "elapsed_s": 4.796
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T07:15:02Z",
+    "input_summary": {
+      "n_candidates": 16,
+      "topic_len": 22,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 8,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:15:10Z",
+    "elapsed_s": 7.588
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T07:15:10Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 8,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:15:10Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T07:15:10Z",
+    "input_summary": {
+      "n_verified": 3,
+      "n_seeds": 3,
+      "seed_titles": [
+        "Research and Improvement of Object Detection Algorithms in T",
+        "An Instance Segmentation Method for Road Scene Images Based ",
+        "基于改进 YOLOv8 的乡村无信号灯交叉口多目标检测方法"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 3,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Research and Improvement of Object Detection Algorithms in T",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "An Instance Segmentation Method for Road Scene Images Based ",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "基于改进 YOLOv8 的乡村无信号灯交叉口多目标检测方法",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T07:15:30Z",
+    "elapsed_s": 20.122
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T07:15:30Z",
+    "input_summary": {
+      "n_candidates": 3,
+      "topic_len": 22,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 2,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:15:35Z",
+    "elapsed_s": 5.161
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T07:15:35Z",
+    "input_summary": {
+      "n_papers": 4,
+      "n_weak": 10,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:15:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T07:15:40Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 4,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:15:40Z",
+    "elapsed_s": 5.03
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T07:15:40Z",
+    "input_summary": {
+      "papers": 4
+    },
+    "output_summary": {
+      "nodes": 3,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:15:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T07:15:40Z",
+    "input_summary": {
+      "n_verified": 4
+    },
+    "output_summary": {
+      "n_baseline": 4,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:15:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T07:15:46Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:15:46Z",
+    "elapsed_s": 5.198
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T07:15:56Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:15:56Z",
+    "elapsed_s": 10.863
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T07:16:35Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:16:35Z",
+    "elapsed_s": 38.377
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T07:16:07Z",
+    "input_summary": {
+      "n_baseline": 4
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:16:07Z",
+    "elapsed_s": 10.705
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T07:16:46Z",
+    "input_summary": {
+      "n_innovation": 1
+    },
+    "output_summary": {
+      "nick_model_name": "YOLO-TransSeg"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:16:46Z",
+    "elapsed_s": 11.269
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T07:16:46Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:16:46Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T07:16:57Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:16:57Z",
+    "elapsed_s": 10.789
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T07:17:04Z",
+    "input_summary": {
+      "n_innovation": 1,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:17:04Z",
+    "elapsed_s": 7.072
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T07:17:04Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:17:04Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T07:17:04Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "面向复杂道路场景的车辆目标检测算法研究与实现",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于改进YOLOv8的乡村无信号灯交叉口车辆检测方法研究",
+          "research_question": "如何针对乡村无信号灯交叉口这一复杂道路场景，改进YOLOv8算法以提升车辆目标检测的准确率和召回率？",
+          "baseline": "基于改进 YOLOv8 的乡村无信号灯交叉口多目标检测方法",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "基于改进 YOLOv8 的乡村无信号灯交叉口多目标检测方法",
+          "risk": "该文献主要针对乡村交叉口场景，若直接迁移至其他复杂道路场景（如城市拥堵、夜间等）可能泛化能力不足；且未提供公开数据集，实验复现存在困难。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "面向交通场景的小目标和遮挡车辆检测方法研究——基于改进YOLOv11",
+          "research_question": "在复杂道路场景中，如何通过改进YOLOv11算法有效检测小尺寸和被遮挡的车辆目标？",
+          "baseline": "Research and Improvement of Object Detection Algorithms in Traffic Scenarios—A Small and Occluded Object Detection Method Based on Improved YOLOv11",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Research and Improvement of Object Detection Algorithms in Traffic Scenarios—A Small and Occluded Object Detection Method Based on Improved YOLOv11",
+          "risk": "改进模块可能针对特定遮挡或小目标场景设计，对其他复杂场景（如光照变化、多尺度）的适应性需验证；且缺乏公开数据集支撑。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "基于改进YOLOv5的道路场景实例分割方法在车辆检测中的应用",
+          "research_question": "如何利用改进YOLOv5的实例分割能力，提升复杂道路场景中车辆目标的检测精度与边界定位？",
+          "baseline": "An Instance Segmentation Method for Road Scene Images Based on Improved YOLOv5",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "An Instance Segmentation Method for Road Scene Images Based on Improved YOLOv5",
+          "risk": "实例分割计算开销较大，实时性可能受限；且文献未明确针对车辆检测优化，需额外适配。",
+          "estimated_workload": "4人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:17:04Z",
+    "elapsed_s": 0.0
+  }
+]

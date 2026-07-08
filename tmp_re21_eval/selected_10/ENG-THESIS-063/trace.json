@@ -1,0 +1,580 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T03:04:31Z",
+    "input_summary": {
+      "topic": "基于3D视觉的机械臂无序抓取系统研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:04:31Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T03:04:40Z",
+    "input_summary": {
+      "topic_len": 18
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 2,
+      "domain": "robotics_control"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:04:40Z",
+    "elapsed_s": 9.503
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T03:04:40Z",
+    "input_summary": {
+      "topic_len": 18,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:04:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T03:04:40Z",
+    "input_summary": {
+      "topic_len": 18,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 24,
+      "raw_tools": [
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T03:06:03Z",
+    "elapsed_s": 82.313
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T03:06:03Z",
+    "input_summary": {
+      "n_candidates": 24
+    },
+    "output_summary": {
+      "kept": 16,
+      "dropped": 8,
+      "pre_filter_keep": 16,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 16,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:06:14Z",
+    "elapsed_s": 10.927
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T03:06:14Z",
+    "input_summary": {
+      "n_candidates": 16,
+      "topic_len": 18,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 11,
+      "n_reject": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:06:26Z",
+    "elapsed_s": 12.265
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T03:06:26Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 11,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:06:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T03:06:26Z",
+    "input_summary": {
+      "n_verified": 11,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Robot vision using 3D TOF systems",
+        "3D Cameras: 3D Computer Vision of Wide Scope",
+        "Continuous Signed Distance Functions for 3D Vision",
+        "Joint Representation of Primitive and Non-primitive Objects ",
+        "Active Stereo Vision for 3D Profile Measurement"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 55,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 55,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Robot vision using 3D TOF systems",
+        "n_references_plus_citations": 2,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "3D Cameras: 3D Computer Vision of Wide Scope",
+        "n_references_plus_citations": 30,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Continuous Signed Distance Functions for 3D Vision",
+        "n_references_plus_citations": 3,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Joint Representation of Primitive and Non-primitive Objects ",
+        "n_references_plus_citations": 5,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Active Stereo Vision for 3D Profile Measurement",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T03:07:58Z",
+    "elapsed_s": 92.09
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T03:07:58Z",
+    "input_summary": {
+      "n_candidates": 55,
+      "topic_len": 18,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 35,
+      "n_reject": 20
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:08:27Z",
+    "elapsed_s": 29.133
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T03:08:27Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 35,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:08:27Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T03:08:52Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:08:52Z",
+    "elapsed_s": 24.856
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T03:08:52Z",
+    "input_summary": {
+      "papers": 11
+    },
+    "output_summary": {
+      "nodes": 11,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:08:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T03:08:52Z",
+    "input_summary": {
+      "n_verified": 11
+    },
+    "output_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:08:52Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T03:09:01Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:09:01Z",
+    "elapsed_s": 9.55
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T03:09:17Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:09:17Z",
+    "elapsed_s": 15.496
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T03:09:35Z",
+    "input_summary": {
+      "n_baseline": 1,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:09:35Z",
+    "elapsed_s": 18.27
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T03:09:31Z",
+    "input_summary": {
+      "n_baseline": 1
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:09:31Z",
+    "elapsed_s": 13.551
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T03:09:50Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "GraspFusionNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:09:50Z",
+    "elapsed_s": 14.772
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T03:09:50Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:09:50Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T03:10:04Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:10:04Z",
+    "elapsed_s": 14.292
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T03:10:15Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "BLOCK"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T03:10:15Z",
+    "elapsed_s": 11.102
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T03:10:15Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:10:15Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T03:10:15Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于3D视觉的机械臂无序抓取系统研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于3D TOF相机的点云预处理与机械臂抓取位姿估计",
+          "research_question": "如何利用3D TOF相机获取的点云数据，结合点云处理技术，实现工业场景下无序堆叠物体的抓取位姿估计？",
+          "baseline": "Robot vision using 3D TOF systems",
+          "improved_module_source": "DUSt3R: Geometric 3D Vision Made Easy",
+          "data_source": null,
+          "experiment_metrics": "Robot vision using 3D TOF systems",
+          "risk": "点云数据在金属反光或透明物体上存在缺失和噪声，影响位姿估计精度。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于主动立体视觉的深度获取与抓取系统集成",
+          "research_question": "主动立体视觉技术能否在非结构环境中提供足够精度的深度信息，以支持机械臂对无序物体的抓取？",
+          "baseline": "Robot vision using 3D TOF systems",
+          "improved_module_source": "Active Stereo Vision for 3D Profile Measurement",
+          "data_source": null,
+          "experiment_metrics": "Robot vision using 3D TOF systems",
+          "risk": "主动立体视觉在光照变化或纹理缺乏场景下匹配失败，导致深度缺失。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于连续符号距离函数的抓取姿态优化",
+          "research_question": "连续符号距离函数（SDF）能否用于从点云中隐式建模物体形状，从而提升抓取姿态的鲁棒性？",
+          "baseline": "Robot vision using 3D TOF systems",
+          "improved_module_source": "Continuous Signed Distance Functions for 3D Vision",
+          "data_source": null,
+          "experiment_metrics": "Robot vision using 3D TOF systems",
+          "risk": "SDF模型训练需要大量标注数据，且推理速度可能无法满足实时抓取要求。",
+          "estimated_workload": "6人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T03:10:15Z",
+    "elapsed_s": 0.0
+  }
+]

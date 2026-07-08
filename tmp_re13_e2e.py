@@ -1,7 +1,5 @@
 """Re1.3 E2E test — run the full graph with real LLM on 3 topics."""
 import json
-import os
-import sys
 import time
 from pathlib import Path
 

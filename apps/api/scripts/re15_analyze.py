@@ -1,3 +1,4 @@
+# Analysis-only script, not runtime code. domain_map is for batch analysis, not pipeline.
 """Re1.5 auto analysis script.
 
 Reads all case state.json files from a directory, analyzes patterns,
@@ -172,16 +173,16 @@ def main():
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
 
-    print(f"\n=== Analysis ===")
+    print("\n=== Analysis ===")
     print(f"Cases: {result['n_cases']}, Completed: {result['n_completed']}")
-    print(f"\nDomain stats:")
+    print("\nDomain stats:")
     for domain, ds in result["domain_stats"].items():
         print(f"  {domain}: {ds['n']} cases, avg_accept={ds['avg_accept']}, zero_accept={ds['n_zero_accept']}")
-    print(f"\nFeasibility:")
+    print("\nFeasibility:")
     print(f"  Verdicts: {result['feasibility_stats']['unique_verdicts']}")
     print(f"  All same: {result['feasibility_stats']['all_same']}")
     print(f"  Score spread: {result['feasibility_stats']['score_spread']}")
-    print(f"\nReview:")
+    print("\nReview:")
     print(f"  Verdicts: {result['review_stats']['unique_verdicts']}")
     print(f"  All same: {result['review_stats']['all_same']}")
     print(f"\nZero-accept cases: {result['zero_accept_cases']}")

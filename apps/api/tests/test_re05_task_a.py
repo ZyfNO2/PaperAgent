@@ -16,10 +16,8 @@ sees entries added via the whitelist path).
 from __future__ import annotations
 
 import asyncio
-import json
 import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -210,7 +208,7 @@ def test_huggingface_search_returns_dataset_shaped_rows():
     # We don't strictly assert 2 calls (the second query may be empty
     # and skip), but if there is a second query in the input both
     # must have been issued.
-    out2 = asyncio.run(
+    asyncio.run(
         huggingface_search(
             ["image classification", "object detection"],
             top_k=5,
@@ -236,7 +234,6 @@ def test_huggingface_adapter_filter_errors_propagate():
     """HttpError from the underlying client must NOT be swallowed —
     it should propagate so the orchestrator can ledger it as error.
     """
-    from app.services.retrieval._http import HttpError
     from app.services.retrieval.adapters.huggingface_search import (
         huggingface_search,
     )

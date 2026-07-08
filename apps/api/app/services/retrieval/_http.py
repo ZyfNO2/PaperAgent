@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import asyncio
 import os
 import re
 import socket
-import time
 from typing import Any, Awaitable, Callable
 from urllib.parse import urlparse
 
@@ -125,37 +123,23 @@ async def fetch_with_timeout(
         return body
 
     try:
-        import httpx  # type: ignore
+        import httpx
     except ImportError:
-        httpx = None  # type: ignore
-
-    if httpx is not None:
-        try:
-            async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client_:
-                resp = await client_.request(method, url, headers=headers or {})
-            if resp.status_code == 429:
-                retry_after = resp.headers.get("retry-after", "")
-                raise HttpError(f"HTTP 429 retry-after={retry_after} for {url}")
-            if resp.status_code >= 400:
-                raise HttpError(f"HTTP {resp.status_code} for {url}")
-            ctype = resp.headers.get("content-type", "")
-            if "json" in ctype:
-                return resp.json()
-            return resp.text
-        except (httpx.HTTPError, socket.gaierror, TimeoutError, OSError) as e:  # type: ignore
-            raise HttpError(f"{type(e).__name__}: {e}") from e
-
-    # 降级到 urllib (同步 -> 异步包装)
-    def _do() -> str:
-        import urllib.request
-
-        req = urllib.request.Request(url, method=method, headers=headers or {})
-        with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310
-            return r.read().decode("utf-8", errors="replace")
+        raise HttpError("httpx is required but not installed") from None
 
     try:
-        return await asyncio.to_thread(_do)
-    except Exception as e:  # noqa: BLE001
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, proxy=None, verify=False) as client_:
+            resp = await client_.request(method, url, headers=headers or {})
+        if resp.status_code == 429:
+            retry_after = resp.headers.get("retry-after", "")
+            raise HttpError(f"HTTP 429 retry-after={retry_after} for {url}")
+        if resp.status_code >= 400:
+            raise HttpError(f"HTTP {resp.status_code} for {url}")
+        ctype = resp.headers.get("content-type", "")
+        if "json" in ctype:
+            return resp.json()
+        return resp.text
+    except (httpx.HTTPError, socket.gaierror, TimeoutError, OSError) as e:
         raise HttpError(f"{type(e).__name__}: {e}") from e
 
 
@@ -171,11 +155,3 @@ async def safe_call(
         return await coro_factory(), None
     except Exception as e:  # noqa: BLE001
         return default, f"{error_message}: {type(e).__name__}: {e}"
-
-
-def now_ms() -> int:
-    return int(time.time() * 1000)
-
-
-def now_iso() -> str:
-    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())

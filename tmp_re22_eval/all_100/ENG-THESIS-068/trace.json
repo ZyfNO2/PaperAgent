@@ -1,0 +1,610 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T07:23:56Z",
+    "input_summary": {
+      "topic": "室内动态环境下的语义视觉SLAM方法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:23:56Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T07:24:00Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 2,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:24:00Z",
+    "elapsed_s": 4.093
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T07:24:00Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:24:00Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T07:24:00Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 39,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github",
+        "semantic_scholar"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T07:24:19Z",
+    "elapsed_s": 19.68
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T07:24:19Z",
+    "input_summary": {
+      "n_candidates": 39
+    },
+    "output_summary": {
+      "kept": 31,
+      "dropped": 8,
+      "pre_filter_keep": 31,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 31,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:24:26Z",
+    "elapsed_s": 6.688
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T07:24:26Z",
+    "input_summary": {
+      "n_candidates": 31,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 8,
+      "n_weak_reject": 20,
+      "n_reject": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:24:35Z",
+    "elapsed_s": 8.624
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T07:24:35Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 20,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:24:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T07:24:35Z",
+    "input_summary": {
+      "n_verified": 8,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Khronos: A Unified Approach for Spatio-Temporal Metric-Seman",
+        "SD-SLAM: Visual SLAM Combining Semantic Segmentation and Dyn",
+        "Blitz-SLAM: A semantic SLAM in dynamic environments",
+        "YOLO-SLAM: A semantic SLAM system towards dynamic environmen",
+        "ZLY-SLAM: RGB-D dense semantic SLAM system based on point an"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 58,
+      "n_surveys": 2,
+      "n_repos": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 58,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Khronos: A Unified Approach for Spatio-Temporal Metric-Seman",
+        "n_references_plus_citations": 30,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "SD-SLAM: Visual SLAM Combining Semantic Segmentation and Dyn",
+        "n_references_plus_citations": 2,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Blitz-SLAM: A semantic SLAM in dynamic environments",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "YOLO-SLAM: A semantic SLAM system towards dynamic environmen",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "ZLY-SLAM: RGB-D dense semantic SLAM system based on point an",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T07:25:08Z",
+    "elapsed_s": 33.14
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T07:25:08Z",
+    "input_summary": {
+      "n_candidates": 58,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 25,
+      "n_weak_reject": 21,
+      "n_reject": 12
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:25:25Z",
+    "elapsed_s": 16.959
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T07:25:25Z",
+    "input_summary": {
+      "n_papers": 33,
+      "n_weak": 41,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:25:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T07:25:34Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:25:34Z",
+    "elapsed_s": 9.548
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T07:25:34Z",
+    "input_summary": {
+      "papers": 33
+    },
+    "output_summary": {
+      "nodes": 33,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:25:34Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T07:25:34Z",
+    "input_summary": {
+      "n_verified": 33
+    },
+    "output_summary": {
+      "n_baseline": 33,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:25:34Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T07:25:40Z",
+    "input_summary": {
+      "n_baseline": 33,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:25:40Z",
+    "elapsed_s": 5.355
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T07:25:53Z",
+    "input_summary": {
+      "n_baseline": 33,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 5,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:25:53Z",
+    "elapsed_s": 12.863
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T07:26:06Z",
+    "input_summary": {
+      "n_baseline": 33,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:26:06Z",
+    "elapsed_s": 12.939
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T07:26:03Z",
+    "input_summary": {
+      "n_baseline": 33
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:26:03Z",
+    "elapsed_s": 10.342
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T07:26:17Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Kairos-SLAM"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:26:17Z",
+    "elapsed_s": 11.729
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T07:26:17Z",
+    "input_summary": {
+      "n_packages": 5
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:26:17Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T07:26:29Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:26:29Z",
+    "elapsed_s": 11.765
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T07:26:37Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 5
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:26:37Z",
+    "elapsed_s": 7.646
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T07:26:37Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:26:37Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T07:26:37Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "室内动态环境下的语义视觉SLAM方法研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 5,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于几何约束与语义分割的动态物体剔除方法研究",
+          "research_question": "如何结合几何约束与语义分割，在室内动态环境中有效剔除动态特征点，提升视觉SLAM的定位精度和鲁棒性？",
+          "baseline": "YOLO-SLAM: A semantic SLAM system towards dynamic environment with geometric constraint",
+          "improved_module_source": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "data_source": null,
+          "experiment_metrics": "YOLO-SLAM: A semantic SLAM system towards dynamic environment with geometric constraint",
+          "risk": "动态物体检测可能受遮挡或光照变化影响，导致误剔除静态特征点。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "轻量化语义SLAM在动态环境中的实时性优化",
+          "research_question": "如何在保证语义分割精度的前提下，降低计算开销，实现室内动态场景下的实时语义SLAM？",
+          "baseline": "HDC-SLAM: A Lightweight Semantic Visual SLAM for Dynamic Environments",
+          "improved_module_source": "Blitz-SLAM: A semantic SLAM in dynamic environments",
+          "data_source": null,
+          "experiment_metrics": "HDC-SLAM: A Lightweight Semantic Visual SLAM for Dynamic Environments",
+          "risk": "轻量化模型可能牺牲语义分割精度，影响动态物体检测效果。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于点线特征的RGB-D密集语义SLAM在动态环境中的鲁棒性研究",
+          "research_question": "在室内动态环境中，融合点特征和线特征能否提升语义SLAM对动态物体的鲁棒性和地图构建的完整性？",
+          "baseline": "ZLY-SLAM: RGB-D dense semantic SLAM system based on point and line features in dynamic environments",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "ZLY-SLAM: RGB-D dense semantic SLAM system based on point and line features in dynamic environments",
+          "risk": "线特征提取和匹配在低纹理或动态区域可能不稳定。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "自适应动态物体检测与SLAM鲁棒性增强方法",
+          "research_question": "如何设计自适应机制，使视觉SLAM能够根据场景动态程度自动调整特征点筛选策略，提升在高度动态环境中的定位精度？",
+          "baseline": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+          "improved_module_source": "SD-SLAM: Visual SLAM Combining Semantic Segmentation and Dynamic Feature Point Detection",
+          "data_source": null,
+          "experiment_metrics": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+          "risk": "自适应阈值可能引入额外参数调优难度，且对极端动态场景响应不足。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "面向长期动态场景维护的物体中心3D高斯泼溅SLAM研究",
+          "research_question": "在室内长期动态环境中，如何利用物体中心3D高斯泼溅表示实现场景的持续更新与维护，避免地图退化？",
+          "baseline": "CubifyGS: Object-Centric 3D Gaussian Splatting for Lifelong Dynamic Scene Maintenance",
+          "improved_module_source": "Building Volumetric Beliefs for Dynamic Environments Exploiting Map-Based Moving Object Segmentation",
+          "data_source": null,
+          "experiment_metrics": "CubifyGS: Object-Centric 3D Gaussian Splatting for Lifelong Dynamic Scene Maintenance",
+          "risk": "3D高斯泼溅的计算和存储开销较大，实时性可能受限。",
+          "estimated_workload": "6人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:26:37Z",
+    "elapsed_s": 0.0
+  }
+]

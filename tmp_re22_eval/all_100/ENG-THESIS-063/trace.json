@@ -1,0 +1,600 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T07:11:40Z",
+    "input_summary": {
+      "topic": "基于3D视觉的机械臂无序抓取系统研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:11:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T07:11:44Z",
+    "input_summary": {
+      "topic_len": 18
+    },
+    "output_summary": {
+      "n_method": 3,
+      "n_object": 2,
+      "domain": "robotics_control"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:11:44Z",
+    "elapsed_s": 4.409
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T07:11:44Z",
+    "input_summary": {
+      "topic_len": 18,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:11:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T07:11:44Z",
+    "input_summary": {
+      "topic_len": 18,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 40,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github",
+        "semantic_scholar"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T07:12:08Z",
+    "elapsed_s": 23.359
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T07:12:08Z",
+    "input_summary": {
+      "n_candidates": 40
+    },
+    "output_summary": {
+      "kept": 32,
+      "dropped": 8,
+      "pre_filter_keep": 32,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 32,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:12:14Z",
+    "elapsed_s": 5.954
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T07:12:14Z",
+    "input_summary": {
+      "n_candidates": 32,
+      "topic_len": 18,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 21,
+      "n_reject": 9
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:12:22Z",
+    "elapsed_s": 8.708
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T07:12:22Z",
+    "input_summary": {
+      "n_papers": 12,
+      "n_weak": 21,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:12:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T07:12:22Z",
+    "input_summary": {
+      "n_verified": 12,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Occluded Apple Fruit Detection and Localization with a Frust",
+        "Robot vision using 3D TOF systems",
+        "Joint Representation of Primitive and Non-primitive Objects ",
+        "Continuous Signed Distance Functions for 3D Vision",
+        "Active Stereo Vision for 3D Profile Measurement"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 70,
+      "n_surveys": 2,
+      "n_repos": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 70,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Occluded Apple Fruit Detection and Localization with a Frust",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Robot vision using 3D TOF systems",
+        "n_references_plus_citations": 17,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Joint Representation of Primitive and Non-primitive Objects ",
+        "n_references_plus_citations": 5,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Continuous Signed Distance Functions for 3D Vision",
+        "n_references_plus_citations": 3,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Active Stereo Vision for 3D Profile Measurement",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T07:12:58Z",
+    "elapsed_s": 35.581
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T07:12:58Z",
+    "input_summary": {
+      "n_candidates": 70,
+      "topic_len": 18,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 46,
+      "n_reject": 21
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:13:22Z",
+    "elapsed_s": 23.878
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T07:13:22Z",
+    "input_summary": {
+      "n_papers": 15,
+      "n_weak": 46,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:13:22Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T07:13:32Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:13:32Z",
+    "elapsed_s": 10.444
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T07:13:32Z",
+    "input_summary": {
+      "papers": 15
+    },
+    "output_summary": {
+      "nodes": 15,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:13:32Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T07:13:32Z",
+    "input_summary": {
+      "n_verified": 15
+    },
+    "output_summary": {
+      "n_baseline": 5,
+      "n_parallel": 10,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:13:32Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T07:13:37Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:13:37Z",
+    "elapsed_s": 5.064
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T07:13:51Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_packages": 4,
+      "n_gap": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:13:51Z",
+    "elapsed_s": 13.686
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T07:14:04Z",
+    "input_summary": {
+      "n_baseline": 5,
+      "n_parallel": 10
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:14:04Z",
+    "elapsed_s": 13.304
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T07:14:01Z",
+    "input_summary": {
+      "n_baseline": 5
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:14:01Z",
+    "elapsed_s": 10.004
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T07:14:16Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "GraspPointNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:14:16Z",
+    "elapsed_s": 11.88
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T07:14:16Z",
+    "input_summary": {
+      "n_packages": 4
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:14:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T07:14:28Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:14:28Z",
+    "elapsed_s": 11.728
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T07:14:35Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 4
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T07:14:35Z",
+    "elapsed_s": 7.242
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T07:14:35Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:14:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T07:14:35Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于3D视觉的机械臂无序抓取系统研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 4,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于3D TOF点云处理的机械臂无序抓取位姿估计",
+          "research_question": "如何利用3D TOF相机获取的点云数据，结合局部邻域特征增强方法，实现工业场景中无序堆叠物体的抓取位姿估计？",
+          "baseline": "Robot vision using 3D TOF systems",
+          "improved_module_source": "PointWeb: Enhancing Local Neighborhood Features for Point Cloud Processing",
+          "data_source": null,
+          "experiment_metrics": "Robot vision using 3D TOF systems",
+          "risk": "3D TOF相机在强环境光或高反射物体表面可能产生噪声，影响点云质量；PointWeb特征增强的计算开销可能影响实时性。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "基于点云稀疏格网网络的机械臂抓取规划",
+          "research_question": "如何利用稀疏格网网络（SPLATNet）对3D点云进行高效处理，以支持机械臂在无序抓取任务中的实时抓取规划？",
+          "baseline": "Three-Dimensional TOF Robot Vision System",
+          "improved_module_source": "SPLATNet: Sparse Lattice Networks for Point Cloud Processing",
+          "data_source": null,
+          "experiment_metrics": "Three-Dimensional TOF Robot Vision System",
+          "risk": "稀疏格网网络在点云密度极低时可能丢失细节；与TOF系统集成时需解决数据格式对齐问题。",
+          "estimated_workload": "5人月"
+        },
+        {
+          "title": "基于局部光谱与空间点分组的点云处理在遮挡物体抓取中的应用",
+          "research_question": "如何结合局部光谱与空间点分组（S2ANet）处理遮挡场景下的点云，提升机械臂对部分遮挡物体的抓取成功率？",
+          "baseline": "Occluded Apple Fruit Detection and Localization with a Frustum-Based Point-Cloud-Processing Approach for Robotic Harvesting",
+          "improved_module_source": "S2ANet: Combining local spectral and spatial point grouping for point cloud processing",
+          "data_source": null,
+          "experiment_metrics": "Occluded Apple Fruit Detection and Localization with a Frustum-Based Point-Cloud-Processing Approach for Robotic Harvesting",
+          "risk": "S2ANet对遮挡物体的分组可能受点云稀疏性影响；农业场景与工业场景的物体形状差异可能导致迁移困难。",
+          "estimated_workload": "7人月"
+        },
+        {
+          "title": "基于高维位置编码的MLP点云处理在无序抓取中的鲁棒性研究",
+          "research_question": "如何通过高维位置编码改进MLP点云处理，增强机械臂在无序抓取中对噪声和缺失点云的鲁棒性？",
+          "baseline": "Dual-Detector Vision and Depth-Aware Back-Projection for Accurate Apple Detection and 3D Localisation for Robotic Harvesting",
+          "improved_module_source": "Improved MLP Point Cloud Processing with High-Dimensional Positional Encoding",
+          "data_source": null,
+          "experiment_metrics": "Dual-Detector Vision and Depth-Aware Back-Projection for Accurate Apple Detection and 3D Localisation for Robotic Harvesting",
+          "risk": "高维位置编码可能增加模型参数量，导致训练和推理速度下降；在工业场景中需验证泛化能力。",
+          "estimated_workload": "6人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T07:14:35Z",
+    "elapsed_s": 0.0
+  }
+]

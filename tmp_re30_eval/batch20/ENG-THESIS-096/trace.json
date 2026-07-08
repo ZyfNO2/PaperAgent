@@ -1,0 +1,615 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T21:05:33Z",
+    "input_summary": {
+      "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:05:33Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T21:05:43Z",
+    "input_summary": {
+      "topic_len": 24
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 2,
+      "domain": "energy_power"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:05:43Z",
+    "elapsed_s": 10.003
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T21:05:43Z",
+    "input_summary": {
+      "topic_len": 24,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:05:43Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-06T21:05:43Z",
+    "input_summary": {
+      "topic_len": 24,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 24,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 7,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "github",
+        "semantic_scholar",
+        "crossref"
+      ],
+      "per_adapter": {
+        "arxiv": 24,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 0,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "crossref",
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 24
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "ended_at": "2026-07-06T21:07:43Z",
+    "elapsed_s": 119.849
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T21:07:43Z",
+    "input_summary": {
+      "n_candidates": 24
+    },
+    "output_summary": {
+      "kept": 24,
+      "dropped": 0,
+      "pre_filter_keep": 24,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 24,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:07:43Z",
+    "elapsed_s": 0.002
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T21:07:43Z",
+    "input_summary": {
+      "n_candidates": 24,
+      "topic_len": 24,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 8,
+      "n_reject": 15
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:07:53Z",
+    "elapsed_s": 10.216
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T21:07:53Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_weak": 8,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:07:53Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T21:07:53Z",
+    "input_summary": {
+      "n_verified": 6,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Multifunctional wearable protective fabrics for wind turbine",
+        "Wind Tunnel Tests on Anti-Icing Performance of Wind Turbine ",
+        "Numerical Simulation of Icing Characteristics on a Blade Air",
+        "Field measurements of wind turbine icing",
+        "Plasma-based technologies for wind turbine icing mitigation"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 29,
+      "n_surveys": 1,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 29,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Multifunctional wearable protective fabrics for wind turbine",
+        "n_references_plus_citations": 13,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Wind Tunnel Tests on Anti-Icing Performance of Wind Turbine ",
+        "n_references_plus_citations": 16,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Numerical Simulation of Icing Characteristics on a Blade Air",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Field measurements of wind turbine icing",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Plasma-based technologies for wind turbine icing mitigation",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      }
+    ],
+    "ended_at": "2026-07-06T21:07:56Z",
+    "elapsed_s": 3.058
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T21:07:56Z",
+    "input_summary": {
+      "n_candidates": 29,
+      "topic_len": 24,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 15,
+      "n_reject": 11
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:08:12Z",
+    "elapsed_s": 15.69
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T21:08:12Z",
+    "input_summary": {
+      "n_papers": 9,
+      "n_weak": 15,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:08:12Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T21:08:25Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:08:25Z",
+    "elapsed_s": 12.376
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T21:08:25Z",
+    "input_summary": {
+      "papers": 9
+    },
+    "output_summary": {
+      "nodes": 9,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:08:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T21:08:25Z",
+    "input_summary": {
+      "n_verified": 9
+    },
+    "output_summary": {
+      "n_baseline": 4,
+      "n_parallel": 5,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:08:25Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T21:08:30Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "feasible",
+      "score": 75
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:08:30Z",
+    "elapsed_s": 5.868
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T21:08:43Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:08:43Z",
+    "elapsed_s": 12.246
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T21:08:57Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 5
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:08:57Z",
+    "elapsed_s": 14.026
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T21:08:55Z",
+    "input_summary": {
+      "n_baseline": 4
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:08:55Z",
+    "elapsed_s": 11.951
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T21:09:16Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "Graphene-IceShield"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:09:16Z",
+    "elapsed_s": 19.477
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T21:09:16Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:09:16Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T21:09:29Z",
+    "input_summary": {
+      "feasibility": "feasible"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:09:29Z",
+    "elapsed_s": 13.257
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T21:09:44Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "ACCEPT"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T21:09:44Z",
+    "elapsed_s": 14.605
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T21:09:44Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:09:44Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T21:09:44Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "石墨烯薄膜电热防冰除冰系统设计与性能验证",
+          "research_question": "如何基于石墨烯薄膜的电热效应设计风机叶片防冰除冰系统，并验证其防冰除冰性能？",
+          "baseline": "Multifunctional wearable protective fabrics for wind turbine blades: Triple-functional co-design of electrothermal de-icing/anti-icing, pressure sensing, and environmental protection",
+          "improved_module_source": "Anti-icing performance of electric heating for wind turbine blades based on the positive temperature coefficient material",
+          "data_source": null,
+          "experiment_metrics": "Anti-icing performance of electric heating for wind turbine blades based on the positive temperature coefficient material",
+          "risk": "石墨烯薄膜的均匀性、耐久性及与叶片基材的附着力可能影响长期运行效果；电热系统的能耗与防冰效率的平衡需实验验证。",
+          "estimated_workload": "6个月（包括材料制备、系统集成、风洞测试）"
+        },
+        {
+          "title": "混合策略：石墨烯电热与超疏冰涂层协同防冰除冰",
+          "research_question": "将石墨烯薄膜电热与超疏冰/疏冰表面涂层结合，能否在降低能耗的同时提升风机叶片防冰除冰效果？",
+          "baseline": "A hybrid strategy combining minimized leading-edge electric-heating and superhydro-/ice-phobic surface coating for wind turbine icing mitigation",
+          "improved_module_source": "Hydro-/ice-phobic coatings and materials for wind turbine icing mitigation",
+          "data_source": null,
+          "experiment_metrics": "A hybrid strategy combining minimized leading-edge electric-heating and superhydro-/ice-phobic surface coating for wind turbine icing mitigation",
+          "risk": "涂层与石墨烯薄膜的兼容性及长期服役下的性能衰减；混合系统的控制策略复杂度增加。",
+          "estimated_workload": "8个月（包括涂层制备、电热系统集成、结冰风洞实验）"
+        },
+        {
+          "title": "石墨烯电热系统在风机叶片结冰条件下的数值模拟与实验验证",
+          "research_question": "如何通过数值模拟预测石墨烯薄膜电热系统在不同结冰条件下的防冰除冰效果，并与现场实测数据对比验证？",
+          "baseline": "Numerical and experimental analysis of the lightning transient behavior of electric heating deicing control system of wind turbine blade",
+          "improved_module_source": "Numerical Simulation of Icing Characteristics on a Blade Airfoil for Vertical-Axis Wind Turbine under Various Icing Conditions",
+          "data_source": null,
+          "experiment_metrics": "Field measurements of wind turbine icing",
+          "risk": "数值模型对石墨烯电热特性的准确表征难度大；现场实测数据获取受天气和场地限制。",
+          "estimated_workload": "10个月（包括建模、仿真、现场实验）"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T21:09:44Z",
+    "elapsed_s": 0.0
+  }
+]

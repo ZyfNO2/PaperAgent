@@ -7,7 +7,6 @@ Verifies that citation_expand:
   - Returns stats with seeds_total/eligible/rejected/refs_added
 """
 
-import asyncio
 import pytest
 
 from app.services.agents.candidate_pool import CandidatePool

@@ -1,0 +1,567 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:38:26Z",
+    "input_summary": {
+      "topic": "面向动态环境的视觉SLAM研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:38:26Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:38:30Z",
+    "input_summary": {
+      "topic_len": 15
+    },
+    "output_summary": {
+      "n_method": 4,
+      "n_object": 2,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:38:30Z",
+    "elapsed_s": 4.817
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:38:30Z",
+    "input_summary": {
+      "topic_len": 15,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 4,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:38:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:38:30Z",
+    "input_summary": {
+      "topic_len": 15,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 29,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:39:01Z",
+    "elapsed_s": 30.531
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:39:01Z",
+    "input_summary": {
+      "n_candidates": 29
+    },
+    "output_summary": {
+      "kept": 28,
+      "dropped": 1,
+      "pre_filter_keep": 21,
+      "pre_filter_drop": 0,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 21,
+        "pre_drop": 0,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:39:07Z",
+    "elapsed_s": 6.111
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:39:07Z",
+    "input_summary": {
+      "n_candidates": 28,
+      "topic_len": 15,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 6,
+      "n_weak_reject": 17,
+      "n_reject": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:39:15Z",
+    "elapsed_s": 8.294
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:39:15Z",
+    "input_summary": {
+      "n_papers": 6,
+      "n_weak": 17,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:39:15Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:39:15Z",
+    "input_summary": {
+      "n_verified": 6,
+      "n_seeds": 2,
+      "seed_titles": [
+        "Visual SLAM and visual odometry with semantic-based filterin",
+        "CHAMELEON-SLAM: Adaptive Feature Selection and Uncertainty-A"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 2,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "Visual SLAM and visual odometry with semantic-based filterin",
+        "n_references_plus_citations": 0,
+        "relevance_score": 15
+      },
+      {
+        "seed_title": "CHAMELEON-SLAM: Adaptive Feature Selection and Uncertainty-A",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-06T06:39:29Z",
+    "elapsed_s": 13.98
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:39:29Z",
+    "input_summary": {
+      "n_candidates": 6,
+      "topic_len": 15,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 4,
+      "n_weak_reject": 2,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:39:35Z",
+    "elapsed_s": 6.057
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:39:35Z",
+    "input_summary": {
+      "n_papers": 10,
+      "n_weak": 19,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:39:35Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:39:45Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:39:45Z",
+    "elapsed_s": 9.821
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:39:45Z",
+    "input_summary": {
+      "papers": 10
+    },
+    "output_summary": {
+      "nodes": 6,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:39:45Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:39:45Z",
+    "input_summary": {
+      "n_verified": 10
+    },
+    "output_summary": {
+      "n_baseline": 10,
+      "n_parallel": 0,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:39:45Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:39:50Z",
+    "input_summary": {
+      "n_baseline": 10,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:39:50Z",
+    "elapsed_s": 4.57
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T06:39:58Z",
+    "input_summary": {
+      "n_baseline": 10,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:39:58Z",
+    "elapsed_s": 8.377
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T06:40:13Z",
+    "input_summary": {
+      "n_baseline": 10,
+      "n_parallel": 0
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:40:13Z",
+    "elapsed_s": 14.314
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T06:40:08Z",
+    "input_summary": {
+      "n_baseline": 10
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:40:08Z",
+    "elapsed_s": 9.665
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T06:40:23Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "DynaFusion-SLAM"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:40:23Z",
+    "elapsed_s": 10.48
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T06:40:23Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:40:23Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:40:33Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:40:33Z",
+    "elapsed_s": 9.85
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:40:40Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:40:40Z",
+    "elapsed_s": 7.376
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:40:40Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:40:40Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:40:40Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "面向动态环境的视觉SLAM研究",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于语义先验的动态特征剔除与SLAM鲁棒性增强",
+          "research_question": "如何利用语义分割网络提供的先验知识，在动态环境中有效剔除属于运动物体的特征点，从而提升视觉SLAM系统的定位精度与地图一致性？",
+          "baseline": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "improved_module_source": "Visual SLAM and visual odometry with semantic-based filtering of dynamic objects",
+          "data_source": null,
+          "experiment_metrics": "DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments",
+          "risk": "语义分割的实时性可能成为瓶颈，且对未训练过的动态物体类别可能失效。",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "自适应特征选择与不确定性匹配的动态SLAM",
+          "research_question": "在动态场景中，如何通过自适应特征选择与不确定性感知的匹配策略，减少动态物体对位姿估计的干扰，同时保持对静态场景的高效建模？",
+          "baseline": "CHAMELEON-SLAM: Adaptive Feature Selection and Uncertainty-Aware Matching for Robust Monocular Visual SLAM",
+          "improved_module_source": "VAR-SLAM: Visual Adaptive and Robust SLAM for Dynamic Environments",
+          "data_source": null,
+          "experiment_metrics": "CHAMELEON-SLAM: Adaptive Feature Selection and Uncertainty-Aware Matching for Robust Monocular Visual SLAM",
+          "risk": "自适应策略在高度动态或快速运动场景下可能难以收敛，需要大量调参。",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于平滑与映射框架的动态SLAM后端优化",
+          "research_question": "如何利用平滑与映射框架（如因子图）显式建模动态物体轨迹，从而在动态环境中同时优化相机位姿和运动物体状态？",
+          "baseline": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "DynoSAM: Open-Source Smoothing and Mapping Framework for Dynamic SLAM",
+          "risk": "后端优化复杂度高，实时性可能受限；需要准确的动态物体数据关联。",
+          "estimated_workload": "5人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:40:40Z",
+    "elapsed_s": 0.0
+  }
+]

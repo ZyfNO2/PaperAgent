@@ -1,0 +1,585 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-06T06:01:30Z",
+    "input_summary": {
+      "topic": "基于改进YOLOv5的轻量化违禁物检测技术研究与实践"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:01:30Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-06T06:01:34Z",
+    "input_summary": {
+      "topic_len": 26
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:01:34Z",
+    "elapsed_s": 4.35
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-06T06:01:34Z",
+    "input_summary": {
+      "topic_len": 26,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 4,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:01:34Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "retrieve",
+    "started_at": "2026-07-06T06:01:34Z",
+    "input_summary": {
+      "topic_len": 26,
+      "has_atoms": true,
+      "provider": "legacy_adapter",
+      "legacy_adapter": true
+    },
+    "output_summary": {
+      "n_paper_candidates": 31,
+      "raw_tools": [
+        "arxiv",
+        "openalex",
+        "crossref",
+        "github"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 8
+      },
+      {
+        "tool": "openalex",
+        "n": 8
+      },
+      {
+        "tool": "crossref",
+        "n": 8
+      },
+      {
+        "tool": "github",
+        "n": 8
+      }
+    ],
+    "errors": [],
+    "provider": "legacy_adapter",
+    "ended_at": "2026-07-06T06:02:06Z",
+    "elapsed_s": 31.847
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-06T06:02:06Z",
+    "input_summary": {
+      "n_candidates": 31
+    },
+    "output_summary": {
+      "kept": 18,
+      "dropped": 13,
+      "pre_filter_keep": 18,
+      "pre_filter_drop": 5,
+      "llm_judged": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 18,
+        "pre_drop": 5,
+        "gray_area": 8
+      },
+      {
+        "tool": "re13_quality_filter.llm",
+        "batch_size": 8
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:02:11Z",
+    "elapsed_s": 5.604
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:02:11Z",
+    "input_summary": {
+      "n_candidates": 18,
+      "topic_len": 26,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 17,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:02:19Z",
+    "elapsed_s": 7.911
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:02:19Z",
+    "input_summary": {
+      "n_papers": 11,
+      "n_weak": 17,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:02:19Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-06T06:02:19Z",
+    "input_summary": {
+      "n_verified": 11,
+      "n_seeds": 5,
+      "seed_titles": [
+        "A lightweight vehicles detection network model based on YOLO",
+        "Safety Helmet Detection Based on YOLOv5",
+        "YOLOv5-LF: An Optimized YOLOv5 Algorithm for Real-Time Autom",
+        "GBS-YOLOv5: Improved Algorithm for UAV Intelligent Transport",
+        "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improve"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 45,
+      "n_surveys": 2,
+      "n_repos": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 45,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "per_seed": [
+      {
+        "seed_title": "A lightweight vehicles detection network model based on YOLO",
+        "n_references_plus_citations": 15,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Safety Helmet Detection Based on YOLOv5",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "YOLOv5-LF: An Optimized YOLOv5 Algorithm for Real-Time Autom",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "GBS-YOLOv5: Improved Algorithm for UAV Intelligent Transport",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improve",
+        "n_references_plus_citations": 15,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-06T06:02:53Z",
+    "elapsed_s": 33.702
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-06T06:02:53Z",
+    "input_summary": {
+      "n_candidates": 45,
+      "topic_len": 26,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 26,
+      "n_reject": 17
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:03:07Z",
+    "elapsed_s": 14.11
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-06T06:03:07Z",
+    "input_summary": {
+      "n_papers": 13,
+      "n_weak": 26,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:03:07Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-06T06:03:17Z",
+    "input_summary": {
+      "n_papers": 8
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:03:17Z",
+    "elapsed_s": 9.512
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-06T06:03:17Z",
+    "input_summary": {
+      "papers": 13
+    },
+    "output_summary": {
+      "nodes": 13,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:03:17Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-06T06:03:17Z",
+    "input_summary": {
+      "n_verified": 13
+    },
+    "output_summary": {
+      "n_baseline": 4,
+      "n_parallel": 9,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:03:17Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-06T06:03:22Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:03:22Z",
+    "elapsed_s": 5.143
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-06T06:03:32Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:03:32Z",
+    "elapsed_s": 10.21
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-06T06:03:44Z",
+    "input_summary": {
+      "n_baseline": 4,
+      "n_parallel": 9
+    },
+    "output_summary": {
+      "n_innovation": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:03:44Z",
+    "elapsed_s": 12.386
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-06T06:03:42Z",
+    "input_summary": {
+      "n_baseline": 4
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:03:42Z",
+    "elapsed_s": 9.769
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-06T06:03:55Z",
+    "input_summary": {
+      "n_innovation": 3
+    },
+    "output_summary": {
+      "nick_model_name": "CGB-YOLO"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:03:55Z",
+    "elapsed_s": 10.151
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-06T06:03:55Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:03:55Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-06T06:04:07Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:04:07Z",
+    "elapsed_s": 12.236
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-06T06:04:13Z",
+    "input_summary": {
+      "n_innovation": 3,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-06T06:04:13Z",
+    "elapsed_s": 6.471
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-06T06:04:13Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:04:13Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-06T06:04:13Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于改进YOLOv5的轻量化违禁物检测技术研究与实践",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "轻量化YOLOv5骨干网络设计及违禁物检测适应性研究",
+          "research_question": "如何借鉴已有轻量化YOLOv5改进方案（如YOLOv5s-GTB、GBS-YOLOv5）设计适用于安检违禁物检测的轻量化骨干网络？",
+          "baseline": "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improvements",
+          "improved_module_source": "YOLOv5s-GTB: light-weighted and improved YOLOv5s for bridge crack detection",
+          "data_source": null,
+          "experiment_metrics": "A lightweight safety helmet detection algorithm for complex underground mining environment",
+          "risk": "缺乏公开违禁物数据集，需自行采集或合成，可能影响泛化性验证",
+          "estimated_workload": "4人月"
+        },
+        {
+          "title": "基于注意力机制与特征融合的违禁物检测精度提升",
+          "research_question": "CBTi-YOLOv5中CBAM与BiFPN的融合策略能否迁移至违禁物检测场景，并保持轻量化？",
+          "baseline": "ultralytics/yolov5: v5.0 - YOLOv5-P6 1280 models, AWS, Supervise.ly and YouTube integrations",
+          "improved_module_source": "CBTi-YOLOv5: Improved YOLOv5 with CBAM, Transformer, and BiFPN for Real-Time Safety Helmet Detection",
+          "data_source": null,
+          "experiment_metrics": "A lightweight safety helmet detection algorithm for complex underground mining environment",
+          "risk": "Transformer模块可能增加参数量，需评估轻量化与精度的平衡",
+          "estimated_workload": "3人月"
+        },
+        {
+          "title": "面向安检场景的YOLOv5轻量化模型对比与消融实验",
+          "research_question": "在违禁物检测任务中，YOLOv5-LF、GBS-YOLOv5、YOLOv5s-GTB等轻量化变体与原始YOLOv5相比性能如何？",
+          "baseline": "ultralytics/yolov5: v3.1 - Bug Fixes and Performance Improvements",
+          "improved_module_source": "YOLOv5-LF: An Optimized YOLOv5 Algorithm for Real-Time Automatic Tracking",
+          "data_source": null,
+          "experiment_metrics": "A lightweight safety helmet detection algorithm for complex underground mining environment",
+          "risk": "不同改进方法针对不同场景，直接迁移至违禁物检测可能效果不佳",
+          "estimated_workload": "5人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-06T06:04:13Z",
+    "elapsed_s": 0.0
+  }
+]
