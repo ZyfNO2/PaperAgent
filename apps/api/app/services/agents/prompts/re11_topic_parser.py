@@ -9,6 +9,11 @@ from typing import Any
 
 
 SYSTEM = """You parse raw Chinese or English thesis topics into structured atoms.
+ALL keywords in method/object/task/scenario/domain MUST be in English.
+If the topic is in Chinese, you MUST translate all terms to English.
+For example: "目标检测" -> "object detection", "语义分割" -> "semantic segmentation",
+"深度学习" -> "deep learning", "机械臂" -> "robotic arm".
+Chinese keywords in the output will cause search adapters to return zero results.
 Output STRICT JSON. Do not invent methods, datasets, or baselines that the
 topic does not imply. Avoid generic method names (e.g. "deep learning",
 "neural network") unless the topic truly is generic.
@@ -23,9 +28,9 @@ USER_TEMPLATE = """Topic: {topic}
 Constraints: {constraints}
 
 Return JSON with exactly these keys:
-- method: list[str] — techniques the topic implies (e.g. "stereo matching", "transformer")
-- object: list[str] — physical/behavioral target (e.g. "point cloud", "protein structure")
-- task: list[str] — what to do (e.g. "segmentation", "classification")
+- method: list[str] — techniques the topic implies, ALL IN ENGLISH (translate Chinese) (e.g. "stereo matching", "transformer")
+- object: list[str] — physical/behavioral target, ALL IN ENGLISH (translate Chinese) (e.g. "point cloud", "protein structure")
+- task: list[str] — what to do, ALL IN ENGLISH (translate Chinese) (e.g. "segmentation", "classification")
 - scenario: list[str] — application scenario (e.g. "autonomous driving", "medical imaging")
 - domain: list[str] — field ("computer vision", "structural engineering")
 - dataset_terms: list[str] — named datasets/benchmarks suggested by the topic

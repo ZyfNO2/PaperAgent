@@ -266,12 +266,12 @@ graph LR
     end
 ```
 
-| 循环 | 路径 | 计数器 | 上限 | 环境变量 |
-|---|---|---|---|---|
-| 修复 | `targeted_repair → paper_retriever → ... → quality_gate` | `evidence_audit.repair_rounds` | 2 | `PAPERAGENT_MAX_REPAIR_ROUNDS` |
-| 引用展开 | `citation_expander → verify → quality_gate` | `citation_expansion_done` (bool) | 1 次 | — |
-| 叙事修订 | `devils_advocate → narrative_builder → ... → devils_advocate` | `narrative_revision_count` | 2 | `MAX_NARRATIVE_REVISIONS` |
-| BLOCK 重试 | `devils_advocate → optimization_advisor → devils_advocate` | `devils_advocate_block_count` | 1 | `MAX_BLOCK_RETRIES` |
+| 循环       | 路径                                                            | 计数器                              | 上限  | 环境变量                           |
+| -------- | ------------------------------------------------------------- | -------------------------------- | --- | ------------------------------ |
+| 修复       | `targeted_repair → paper_retriever → ... → quality_gate`      | `evidence_audit.repair_rounds`   | 2   | `PAPERAGENT_MAX_REPAIR_ROUNDS` |
+| 引用展开     | `citation_expander → verify → quality_gate`                   | `citation_expansion_done` (bool) | 1 次 | —                              |
+| 叙事修订     | `devils_advocate → narrative_builder → ... → devils_advocate` | `narrative_revision_count`       | 2   | `MAX_NARRATIVE_REVISIONS`      |
+| BLOCK 重试 | `devils_advocate → optimization_advisor → devils_advocate`    | `devils_advocate_block_count`    | 1   | `MAX_BLOCK_RETRIES`            |
 
 ## 5. LLM Provider 路由
 
@@ -343,37 +343,38 @@ def some_node(state: ResearchState) -> dict[str, Any]:
 ```
 
 核心原则：
+
 - **1 次 LLM 调用** — 每个节点最多 1 次
 - **确定性 fallback** — LLM 失败降级到规则逻辑
 - **partial patch 返回** — 不原地修改 state
-- **trace_event 记录** — 耗时 / 工具 / provider / state_keys
+- **trace\_event 记录** — 耗时 / 工具 / provider / state\_keys
 
 ## 7. 节点注册表 (22 个节点)
 
-| 节点名 | 模块 | 读取 | 写入 | 别名 |
-|---|---|---|---|---|
-| `intake` | `intake.py` | topic, user_papers | case_id | — |
-| `topic_parser` | `topic_parser.py` | topic | topic_atoms | — |
-| `search_planner` | `search_planner.py` | topic_atoms | search_plan | — |
-| `paper_retriever` | `search_agent.py` | search_plan, topic_atoms | raw_results, paper_candidates, repo_candidates, search_steps | `search_agent` |
-| `quality_filter` | `quality_filter.py` | paper_candidates | filter_results | — |
-| `verify` | `verify.py` | paper_candidates, topic_atoms | verified_papers, weak_papers | `paper_verifier` |
-| `quality_gate` | `quality_gate.py` | verified_papers, evidence_audit | evidence_audit | — |
-| `targeted_repair` | `targeted_repair.py` | evidence_audit, topic_atoms | search_plan (patch) | — |
-| `citation_expander` | `citation_expander.py` | verified_papers | seed_papers, expanded_papers, citation_expansion_done | — |
-| `dataset_repo_extractor` | `dataset_repo_extractor.py` | verified_papers | dataset_candidates, repo_candidates | `dataset_repo` |
-| `evidence_graph_builder` | `json_graph_builder.py` | verified_papers, baseline_candidates | evidence_graph | — |
-| `baseline_classifier` | `baseline_classifier.py` | verified_papers, topic_atoms | baseline_candidates, parallel_candidates | `evidence_auditor` |
-| `feasibility_assessor` | `feasibility_assessor.py` | baseline_candidates, dataset_candidates | feasibility_report | — |
-| `work_package` | `content.py` | baselines, datasets, repos | work_packages | `work_package_brainstorm` |
-| `innovation_extractor` | `innovation_extractor.py` | baselines, parallels | innovation_points, stitching_plan | — |
-| `sota_matcher` | `sota_matcher.py` | baselines, parallels | sota_comparison | — |
-| `narrative_builder` | `narrative_builder.py` | innovations, feasibility | research_narratives | — |
-| `low_bar_review` | `content.py` | work_packages, evidence_audit | low_bar_review | — |
-| `optimization_advisor` | `optimization_advisor.py` | parallels, feasibility | optimization_directions | — |
-| `devils_advocate` | `devils_advocate_node.py` | narrative, feasibility, innovations | review_report | — |
-| `human_gate` | `content.py` | review_report, final_recommendation | human_gate | — |
-| `final_recommendation` | `content.py` | all state | final_recommendation | — |
+| 节点名                      | 模块                          | 读取                                        | 写入                                                               | 别名                        |
+| ------------------------ | --------------------------- | ----------------------------------------- | ---------------------------------------------------------------- | ------------------------- |
+| `intake`                 | `intake.py`                 | topic, user\_papers                       | case\_id                                                         | —                         |
+| `topic_parser`           | `topic_parser.py`           | topic                                     | topic\_atoms                                                     | —                         |
+| `search_planner`         | `search_planner.py`         | topic\_atoms                              | search\_plan                                                     | —                         |
+| `paper_retriever`        | `search_agent.py`           | search\_plan, topic\_atoms                | raw\_results, paper\_candidates, repo\_candidates, search\_steps | `search_agent`            |
+| `quality_filter`         | `quality_filter.py`         | paper\_candidates                         | filter\_results                                                  | —                         |
+| `verify`                 | `verify.py`                 | paper\_candidates, topic\_atoms           | verified\_papers, weak\_papers                                   | `paper_verifier`          |
+| `quality_gate`           | `quality_gate.py`           | verified\_papers, evidence\_audit         | evidence\_audit                                                  | —                         |
+| `targeted_repair`        | `targeted_repair.py`        | evidence\_audit, topic\_atoms             | search\_plan (patch)                                             | —                         |
+| `citation_expander`      | `citation_expander.py`      | verified\_papers                          | seed\_papers, expanded\_papers, citation\_expansion\_done        | —                         |
+| `dataset_repo_extractor` | `dataset_repo_extractor.py` | verified\_papers                          | dataset\_candidates, repo\_candidates                            | `dataset_repo`            |
+| `evidence_graph_builder` | `json_graph_builder.py`     | verified\_papers, baseline\_candidates    | evidence\_graph                                                  | —                         |
+| `baseline_classifier`    | `baseline_classifier.py`    | verified\_papers, topic\_atoms            | baseline\_candidates, parallel\_candidates                       | `evidence_auditor`        |
+| `feasibility_assessor`   | `feasibility_assessor.py`   | baseline\_candidates, dataset\_candidates | feasibility\_report                                              | —                         |
+| `work_package`           | `content.py`                | baselines, datasets, repos                | work\_packages                                                   | `work_package_brainstorm` |
+| `innovation_extractor`   | `innovation_extractor.py`   | baselines, parallels                      | innovation\_points, stitching\_plan                              | —                         |
+| `sota_matcher`           | `sota_matcher.py`           | baselines, parallels                      | sota\_comparison                                                 | —                         |
+| `narrative_builder`      | `narrative_builder.py`      | innovations, feasibility                  | research\_narratives                                             | —                         |
+| `low_bar_review`         | `content.py`                | work\_packages, evidence\_audit           | low\_bar\_review                                                 | —                         |
+| `optimization_advisor`   | `optimization_advisor.py`   | parallels, feasibility                    | optimization\_directions                                         | —                         |
+| `devils_advocate`        | `devils_advocate_node.py`   | narrative, feasibility, innovations       | review\_report                                                   | —                         |
+| `human_gate`             | `content.py`                | review\_report, final\_recommendation     | human\_gate                                                      | —                         |
+| `final_recommendation`   | `content.py`                | all state                                 | final\_recommendation                                            | —                         |
 
 ## 8. 检索适配器层
 
@@ -400,7 +401,9 @@ graph TD
 ```
 
 规则：
+
 - 8 源共享 `search_planner` 生成的同一查询列表
 - 一个适配器 429/timeout 不阻塞 pipeline (circuit breaker + `failed_tools` 跳过)
 - GitHub 结果 → `repo_candidates`，不进入 `verified_papers`
-- 跨源去重: normalized title + DOI priority
+- 跨源去重: normalized title + DOI priorityh
+

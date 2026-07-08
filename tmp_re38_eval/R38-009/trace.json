@@ -1,0 +1,843 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T16:21:50Z",
+    "input_summary": {
+      "topic": "点云的三维重建与纹理映射"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:21:50Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T16:21:52Z",
+    "input_summary": {
+      "topic_len": 12
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 1,
+      "domain": "vision_3d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:21:52Z",
+    "elapsed_s": 1.933,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T16:21:52Z",
+    "input_summary": {
+      "topic_len": 12,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:21:52Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T16:21:52Z",
+    "input_summary": {
+      "topic_len": 12,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 52,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "openalex",
+        "github",
+        "arxiv",
+        "semantic_scholar"
+      ],
+      "per_adapter": {
+        "arxiv": 20,
+        "openalex": 36,
+        "github": 0,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 36
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 20
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T16:22:31Z",
+    "elapsed_s": 39.393
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T16:22:31Z",
+    "input_summary": {
+      "n_candidates": 52
+    },
+    "output_summary": {
+      "kept": 52,
+      "dropped": 0,
+      "pre_filter_keep": 52,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 52,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T16:22:31Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T16:22:31Z",
+    "input_summary": {
+      "n_candidates": 52,
+      "topic_len": 12,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 13,
+      "n_weak_reject": 30,
+      "n_reject": 8
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T16:22:41Z",
+    "elapsed_s": 9.794
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T16:22:41Z",
+    "input_summary": {
+      "n_papers": 13,
+      "n_weak": 30,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:22:41Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T16:22:41Z",
+    "input_summary": {
+      "n_verified": 13,
+      "n_seeds": 5,
+      "seed_titles": [
+        "3D Modeling of Building Indoor Spaces and Closed Doors from ",
+        "$PC^2$: Projection-Conditioned Point Cloud Diffusion for Sin",
+        "Parametric as-built model generation of complex shapes from ",
+        "Meshing Point Clouds Using Spherical Parameterization",
+        "A Model Development Approach Based on Point Cloud Reconstruc"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 75,
+      "n_surveys": 2,
+      "n_repos": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 75,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "3D Modeling of Building Indoor Spaces and Closed Doors from ",
+        "n_references_plus_citations": 30,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "$PC^2$: Projection-Conditioned Point Cloud Diffusion for Sin",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Parametric as-built model generation of complex shapes from ",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Meshing Point Clouds Using Spherical Parameterization",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "A Model Development Approach Based on Point Cloud Reconstruc",
+        "n_references_plus_citations": 15,
+        "relevance_score": 9
+      }
+    ],
+    "ended_at": "2026-07-08T16:22:44Z",
+    "elapsed_s": 2.598
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T16:22:44Z",
+    "input_summary": {
+      "n_candidates": 75,
+      "topic_len": 12,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 18,
+      "n_weak_reject": 32,
+      "n_reject": 25
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T16:22:58Z",
+    "elapsed_s": 14.033
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T16:22:58Z",
+    "input_summary": {
+      "n_papers": 31,
+      "n_weak": 62,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:22:58Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T16:34:58Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 1,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:34:58Z",
+    "elapsed_s": 719.866,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T16:34:58Z",
+    "input_summary": {
+      "papers": 31
+    },
+    "output_summary": {
+      "nodes": 32,
+      "edges": 1
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:34:58Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T16:35:01Z",
+    "input_summary": {
+      "n_verified": 31
+    },
+    "output_summary": {
+      "n_baseline": 6,
+      "n_parallel": 25,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": true
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier+llm_reclassify",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:35:01Z",
+    "elapsed_s": 3.627,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T16:35:05Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_dataset": 1,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:35:05Z",
+    "elapsed_s": 3.606,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T16:35:11Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 25
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:35:11Z",
+    "elapsed_s": 6.463,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T16:35:25Z",
+    "input_summary": {
+      "n_baseline": 6,
+      "n_parallel": 25
+    },
+    "output_summary": {
+      "n_innovation": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:35:25Z",
+    "elapsed_s": 13.567,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T16:35:19Z",
+    "input_summary": {
+      "n_baseline": 6
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:35:19Z",
+    "elapsed_s": 7.499,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T16:35:33Z",
+    "input_summary": {
+      "n_innovation": 5
+    },
+    "output_summary": {
+      "nick_model_name": "ProjTexNet"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:35:33Z",
+    "elapsed_s": 8.592,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T16:35:33Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:35:33Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T16:35:42Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:35:42Z",
+    "elapsed_s": 8.822,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T16:35:48Z",
+    "input_summary": {
+      "n_innovation": 5,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:35:48Z",
+    "elapsed_s": 5.621,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T16:35:57Z",
+    "input_summary": {
+      "n_innovation": 5
+    },
+    "output_summary": {
+      "nick_model_name": "ProjTexDiff"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:35:57Z",
+    "elapsed_s": 9.458,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T16:35:57Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:35:57Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T16:36:07Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:36:07Z",
+    "elapsed_s": 9.3,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T16:36:12Z",
+    "input_summary": {
+      "n_innovation": 5,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T16:36:12Z",
+    "elapsed_s": 5.012,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T16:36:12Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:36:12Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T16:36:12Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "点云的三维重建与纹理映射",
+      "n_papers": 31,
+      "n_baseline": 6,
+      "n_parallel": 25,
+      "n_dataset": 1,
+      "n_repo": 0,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "基于点云与图像融合的室内场景高精度三维重建与纹理映射",
+          "research_question": "如何结合点云与RGB图像，在存在遮挡和杂乱场景下，实现高精度的室内墙面三维重建与纹理映射？",
+          "baseline": "3D Reconstruction of Interior Wall Surfaces under Occlusion and Clutter",
+          "improved_module_source": "RGB-D mapping: Using Kinect-style depth cameras for dense 3D modeling of indoor environments",
+          "data_source": "AID",
+          "experiment_metrics": "Color map optimization for 3D reconstruction with consumer depth cameras",
+          "risk": "点云与图像配准精度不足可能导致纹理错位；室内场景的遮挡和光照变化可能影响重建完整性。",
+          "estimated_workload": "6人月"
+        },
+        {
+          "title": "面向工业设施的点云自动重建与纹理映射方法",
+          "research_question": "如何利用点云与图像数据自动重建工业设施（如管道、结构）的三维模型并实现纹理映射？",
+          "baseline": "Automatic reconstruction of industrial installations: Using point clouds and images",
+          "improved_module_source": "Parametric as-built model generation of complex shapes from point clouds",
+          "data_source": "AID",
+          "experiment_metrics": "An automated and accurate procedure for texture mapping from images",
+          "risk": "工业场景中复杂几何形状的参数化建模难度大；点云噪声可能影响纹理映射质量。",
+          "estimated_workload": "8人月"
+        },
+        {
+          "title": "基于单视图点云重建与纹理映射的模型开发方法",
+          "research_question": "如何从单张图像重建三维点云并生成纹理映射，以支持快速模型开发？",
+          "baseline": "A Model Development Approach Based on Point Cloud Reconstruction and Mapping Texture Enhancement",
+          "improved_module_source": "3D-ReConstnet: A Single-View 3D-Object Point Cloud Reconstruction Network",
+          "data_source": null,
+          "experiment_metrics": "Color map optimization for 3D reconstruction with consumer depth cameras",
+          "risk": "单视图重建存在歧义性，纹理映射可能因几何不准确而失真。",
+          "estimated_workload": "7人月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T16:36:12Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

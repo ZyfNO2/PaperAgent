@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import re
 import time
 from typing import Any
@@ -29,6 +30,26 @@ logger = logging.getLogger(__name__)
 _MAX_STEPS = 8  # max tool calls per search_agent invocation
 _MIN_PAPERS = 5  # target minimum papers before stopping
 _MIN_REPOS = 1   # target minimum repos before stopping (optional)
+
+# Re3.9: env var disable for S2/OpenAlex (Phase 5 验证用)
+_DISABLED_TOOLS: set[str] = set()
+if os.environ.get("PAPERAGENT_DISABLE_S2"):
+    _DISABLED_TOOLS.add("semantic_scholar")
+if os.environ.get("PAPERAGENT_DISABLE_OPENALEX"):
+    _DISABLED_TOOLS.add("openalex")
+
+
+def _get_domain_tools(domain: str) -> set[str]:
+    """Return domain-specific tools based on topic domain.
+
+    PubMed is only enabled for medical/biological/chemical topics.
+    """
+    domain_lower = (domain or "").lower()
+    medical_keywords = {"medical", "medicine", "biomedical", "health", "clinical",
+                        "bioinformatic", "biological", "lifestream", "medical_ai"}
+    if any(kw in domain_lower for kw in medical_keywords):
+        return {"pubmed"}
+    return set()
 
 
 class NodeError(RuntimeError):
@@ -62,6 +83,7 @@ _SYSTEM_PROMPT = """你是学术搜索策略师。根据题目、已有结果和
 - huggingface: 搜模型和数据集
 - core: 搜开放获取论文
 - datacite: 搜注册数据集
+- pubmed: 搜医学/生物论文（仅医学领域可用）
 
 判断标准:
 - 如果还没有论文 → 搜 method+object 组合
@@ -71,7 +93,7 @@ _SYSTEM_PROMPT = """你是学术搜索策略师。根据题目、已有结果和
 - 如果某个工具在 failed_tools_do_not_retry 列表中 → 不要再用它，换其他工具
 
 输出 JSON:
-{"action": "search" | "stop", "tool": "arxiv|openalex|crossref|github|semantic_scholar|huggingface|core|datacite", "query": "...", "reason": "..."}
+{"action": "search" | "stop", "tool": "arxiv|openalex|crossref|github|semantic_scholar|huggingface|core|datacite|pubmed", "query": "...", "reason": "..."}
 
 如果搜索结果已经足够，输出:
 {"action": "stop", "reason": "已有 N 篇论文 + M 个 repo，足够开始分析"}
@@ -220,6 +242,10 @@ def _fallback_decide(
 
 async def _run_tool(tool: str, query: str, top_k: int = 12) -> list[dict[str, Any]]:
     """Call a retrieval adapter by name."""
+    # Re3.9: check env var disable
+    if tool in _DISABLED_TOOLS:
+        logger.info("search_agent: tool %s disabled by env var", tool)
+        return []
     from apps.api.app.services.retrieval.adapters import REGISTRY
     if tool not in REGISTRY:
         logger.warning("search_agent: tool %s not in REGISTRY", tool)

@@ -6,8 +6,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added (Re3.8)
-- 50-paper extended regression: 12 R36 cases (12/12 PASS) + 30 R38 new cases (in progress)
-- scripts/re38_batch_run.py: batch runner for remaining R38 cases
+- 40-paper regression: 100% PASS rate (0 failures)
+- feasibility score anchoring: 9 distinct scores (was 75-clustered)
+- search_agent duplicate query prevention
+- devils_advocate 3-tier heuristic (ACCEPT/MINOR_REVISION/BLOCK)
+- 4× BaseException→Exception residual cleanup
+- citation_expander state_keys coverage
+
+### Fixed (Re3.8)
+- feasibility scoring: eliminated 75-score clustering via precise anchoring
+- search_agent: LLM duplicate queries now fallback to plan queries
+- devils_advocate heuristic: now returns MINOR_REVISION for thin evidence (was always ACCEPT)
+- dataset_extractor: abstract/snippet range expanded 800→2000 chars
+- dataset_extractor: known_dataset_names expanded with robotics/human-reconstruction/depth datasets
 - scripts/re38_batch_verify.py: 50-paper verification script
 - Plan/PaperAgent_Re3.8_完工报告.md
 - Plan/PaperAgent_Re3.x_收官报告.md
