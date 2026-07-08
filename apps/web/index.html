@@ -507,6 +507,11 @@ function connectSSE(caseId) {
     advanceProgress('expand');
   });
 
+  es.addEventListener('node_current', function(e) {
+    var d = JSON.parse(e.data);
+    if (d.node) markNodeCurrent(d.node);
+  });
+
   es.addEventListener('node_complete', function(e) {
     var d = JSON.parse(e.data);
     advanceProgress(d.node);

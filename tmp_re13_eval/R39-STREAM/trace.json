@@ -1,0 +1,841 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T21:35:42Z",
+    "input_summary": {
+      "topic": "基于yolo的农作物识别"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:35:42Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T21:35:49Z",
+    "input_summary": {
+      "topic_len": 12
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": "vision_2d"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:35:49Z",
+    "elapsed_s": 6.884,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T21:35:49Z",
+    "input_summary": {
+      "topic_len": 12,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:35:49Z",
+    "elapsed_s": 0.003,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T21:35:49Z",
+    "input_summary": {
+      "topic_len": 12,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 12,
+      "n_steps": 6,
+      "n_tool_calls": 5,
+      "raw_tools": [
+        "openalex",
+        "arxiv",
+        "semantic_scholar",
+        "crossref",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 0,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 12,
+        "semantic_scholar": 0
+      },
+      "failed_adapters": [
+        "arxiv",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 0
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T21:36:53Z",
+    "elapsed_s": 64.658
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T21:36:53Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 11,
+      "dropped": 1,
+      "pre_filter_keep": 11,
+      "pre_filter_drop": 1,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 11,
+        "pre_drop": 1,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T21:36:53Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T21:36:53Z",
+    "input_summary": {
+      "n_candidates": 11,
+      "topic_len": 12,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 3,
+      "n_weak_reject": 0,
+      "n_reject": 7
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T21:37:03Z",
+    "elapsed_s": 9.811
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T21:37:03Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:37:03Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T21:37:03Z",
+    "input_summary": {
+      "n_verified": 3,
+      "n_seeds": 3,
+      "seed_titles": [
+        "Advancing precision agriculture with computer vision: A comp",
+        "Advanced Image Recognition Techniques for Crop Pest Detectio",
+        "YOLO-based Recognition of some Crop Categories from Real-Wor"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 3,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "Advancing precision agriculture with computer vision: A comp",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "Advanced Image Recognition Techniques for Crop Pest Detectio",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      },
+      {
+        "seed_title": "YOLO-based Recognition of some Crop Categories from Real-Wor",
+        "n_references_plus_citations": 0,
+        "relevance_score": 11
+      }
+    ],
+    "ended_at": "2026-07-08T21:37:13Z",
+    "elapsed_s": 10.048
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T21:37:13Z",
+    "input_summary": {
+      "n_candidates": 3,
+      "topic_len": 12,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 1,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T21:37:21Z",
+    "elapsed_s": 8.2
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T21:37:21Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 0,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:37:21Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T21:37:29Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 12,
+      "used_fallback": true,
+      "llm_success_rate": "0/3"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 3,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:37:29Z",
+    "elapsed_s": 7.523,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T21:37:29Z",
+    "input_summary": {
+      "papers": 3
+    },
+    "output_summary": {
+      "nodes": 15,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:37:29Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T21:37:29Z",
+    "input_summary": {
+      "n_verified": 3
+    },
+    "output_summary": {
+      "n_baseline": 2,
+      "n_parallel": 1,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": false
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:37:29Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T21:37:34Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_dataset": 0,
+      "n_repo": 12
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 55
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:37:34Z",
+    "elapsed_s": 4.815,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T21:37:43Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_packages": 3,
+      "n_gap": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:37:43Z",
+    "elapsed_s": 9.271,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T21:37:55Z",
+    "input_summary": {
+      "n_baseline": 2
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:37:55Z",
+    "elapsed_s": 12.17,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T21:37:58Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 1
+    },
+    "output_summary": {
+      "n_innovation": 2,
+      "n_datasets_found": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:37:58Z",
+    "elapsed_s": 14.848,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "dataset_candidates",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T21:38:10Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "AgriYOLO-Adapt"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:38:10Z",
+    "elapsed_s": 12.457,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T21:38:10Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:38:10Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T21:38:39Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:38:39Z",
+    "elapsed_s": 29.164,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T21:38:49Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:38:49Z",
+    "elapsed_s": 9.506,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T21:39:01Z",
+    "input_summary": {
+      "n_innovation": 2
+    },
+    "output_summary": {
+      "nick_model_name": "CropFocus-YOLO"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:39:01Z",
+    "elapsed_s": 12.066,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T21:39:01Z",
+    "input_summary": {
+      "n_packages": 3
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:39:01Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T21:39:12Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:39:12Z",
+    "elapsed_s": 11.312,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T21:39:24Z",
+    "input_summary": {
+      "n_innovation": 2,
+      "n_packages": 3
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T21:39:24Z",
+    "elapsed_s": 11.351,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T21:39:24Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:39:24Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T21:39:24Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于yolo的农作物识别",
+      "n_papers": 3,
+      "n_baseline": 2,
+      "n_parallel": 1,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 3,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "Comparative evaluation of YOLO variants for weed and crop recognition in precision agriculture",
+          "research_question": "How do different YOLO architectures (e.g., YOLOv3, YOLOv5, YOLOv8) compare in accuracy and inference speed for joint weed and crop recognition in field images?",
+          "baseline": "Advancing precision agriculture with computer vision: A comparative study of YOLO models for weed and crop recognition",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "Advancing precision agriculture with computer vision: A comparative study of YOLO models for weed and crop recognition",
+          "risk": "The baseline paper may not provide a reproducible dataset or clear metrics; performance may vary across unseen crop types.",
+          "estimated_workload": "3 person-months"
+        },
+        {
+          "title": "Crop category recognition from real-world aerial images using YOLO",
+          "research_question": "Can a YOLO-based detector achieve robust recognition of multiple crop categories from low-altitude aerial imagery under varying lighting and occlusion?",
+          "baseline": "YOLO-based Recognition of some Crop Categories from Real-World Aerial Images",
+          "improved_module_source": null,
+          "data_source": null,
+          "experiment_metrics": "YOLO-based Recognition of some Crop Categories from Real-World Aerial Images",
+          "risk": "Aerial image datasets are scarce; the baseline may not release its dataset, requiring collection or synthetic generation.",
+          "estimated_workload": "4 person-months"
+        },
+        {
+          "title": "Modified YOLO-v3 for crop pest detection in agricultural images",
+          "research_question": "How can modifications to YOLO-v3 (e.g., attention mechanisms, feature pyramid adjustments) improve detection of small and occluded crop pests?",
+          "baseline": "Advanced Image Recognition Techniques for Crop Pest Detection Using Modified YOLO-v3",
+          "improved_module_source": "Advanced Image Recognition Techniques for Crop Pest Detection Using Modified YOLO-v3",
+          "data_source": null,
+          "experiment_metrics": "Advanced Image Recognition Techniques for Crop Pest Detection Using Modified YOLO-v3",
+          "risk": "The modifications described may be tightly coupled to a specific pest dataset; generalization to other crops/pests is uncertain.",
+          "estimated_workload": "5 person-months"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T21:39:24Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]
