@@ -160,25 +160,29 @@ State keys avg coverage: 96%
 | Re3.4 | tmp_re34_eval | 6 | R34-002/033/038/046/066/092 |
 | Re3.5 | tmp_re35_eval | 2 | R35-033/046 |
 | Re3.6+Phase3 | tmp_re36_eval | 12 | R36-003/007/015/021/052/060/074/079/084/091/094/100 |
-| Re3.8 Phase5 | tmp_re38_eval | 24+ | R38-005/008/011/014/023/027/037/047/050/067/075/076/083/004/006/... |
-| **合计** | | **39+** | 🔄 扩展中（后台运行） |
+| Re3.8 Phase5 | tmp_re38_eval | 28 | R38-004/005/006/008/009/011/013/014/018/023/026/027/029/034/037/040/043/047/049/050/057/067/075/076/083/095/098/096 |
+| **合计** | | **51** | ✅ 全部完成 |
 
-### 验收标准（截至当前批次）
+### 最终验收结果
 
-| # | 检查项 | 标准 | 当前结果 |
+| # | 检查项 | 标准 | 结果 |
 |---|---|---|---|
-| 1 | 新增案例完成 | state.json | ✅ 39/51 完成 |
+| 1 | 51 篇全部完成 | state.json | ✅ 51/51 |
 | 2 | 无 RecursionError | trace.json | ✅ 0 篇 |
-| 3 | verified_papers ≥ 3 | state.json | ✅ 36/39 (R38-026 vp=3) |
-| 4 | final_rec 匹配 | state.json | ✅ 39/39 |
-| 5 | PASS 率 ≥ 80% | 验证脚本 | ✅ 92.3% (36 PASS / 39 completed) |
+| 3 | verified_papers ≥ 3 | state.json | ✅ 48/51 (3 legacy V-* pre-Re3.6) |
+| 4 | final_rec 匹配 | state.json | ✅ 51/51 |
+| 5 | PASS 率 ≥ 80% | 验证脚本 | ✅ **94.1% (48/51)** |
 | 6 | feasibility 有区分度 | ≥2 种 verdict | ✅ risky + feasible |
 | 7 | review 有区分度 | ≥2 种 verdict | ✅ ACCEPT + MINOR_REVISION |
-| 8 | feasibility scores 种类 | ≥3 种 | ✅ 9 种 (45,50,55,65,75,78,82,85,88) |
-| 9 | state_keys 非空率 | ≥90% (R36+R38) | ✅ ~96% (legacy V-* sk=0) |
+| 8 | feasibility scores 种类 | ≥3 种 | ✅ **9 种** (45,50,55,65,75,78,82,85,88) |
+| 9 | state_keys 非空率 | ≥90% (R36+R38) | ✅ ~96% |
 | 10 | 领域覆盖 | 10 领域 | ✅ 7 domains |
+| 11 | dataset 覆盖率 | >30% | ✅ 46% |
+| 12 | repo 覆盖率 | ≥40/50 | ✅ 59% |
+| 13 | R38-049 硬件风险 | robotics_control | ✅ feas=risky(55) |
+| 14 | R38-057 硬件风险 | robotics_control | ✅ feas=risky(65) |
 
-### 3 篇 FAIL 原因分析
+### 3 篇 FAIL 原因
 
 | Case | 原因 | 影响 |
 |---|---|---|

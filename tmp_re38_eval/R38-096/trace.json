@@ -1,0 +1,860 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-08T17:00:42Z",
+    "input_summary": {
+      "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:00:42Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-08T17:00:45Z",
+    "input_summary": {
+      "topic_len": 24
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 0,
+      "domain": "unknown"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:00:45Z",
+    "elapsed_s": 2.765,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-08T17:00:45Z",
+    "input_summary": {
+      "topic_len": 24,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:00:45Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-08T17:00:45Z",
+    "input_summary": {
+      "topic_len": 24,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 46,
+      "n_repo_candidates": 0,
+      "n_steps": 8,
+      "n_tool_calls": 8,
+      "raw_tools": [
+        "arxiv",
+        "github",
+        "openalex",
+        "semantic_scholar",
+        "crossref"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "openalex": 12,
+        "crossref": 12,
+        "github": 0,
+        "semantic_scholar": 12
+      },
+      "failed_adapters": [
+        "arxiv",
+        "github",
+        "openalex",
+        "semantic_scholar"
+      ],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 0
+      },
+      {
+        "tool": "openalex",
+        "n": 12
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 12
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T17:01:24Z",
+    "elapsed_s": 38.688
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-08T17:01:24Z",
+    "input_summary": {
+      "n_candidates": 46
+    },
+    "output_summary": {
+      "kept": 38,
+      "dropped": 8,
+      "pre_filter_keep": 38,
+      "pre_filter_drop": 8,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 38,
+        "pre_drop": 8,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-08T17:01:24Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T17:01:24Z",
+    "input_summary": {
+      "n_candidates": 38,
+      "topic_len": 24,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 8,
+      "n_weak_reject": 15,
+      "n_reject": 13
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T17:01:34Z",
+    "elapsed_s": 10.46
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T17:01:34Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 15,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:01:34Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-08T17:01:34Z",
+    "input_summary": {
+      "n_verified": 8,
+      "n_seeds": 5,
+      "seed_titles": [
+        "Effective de-icing skin using graphene-based flexible heater",
+        "Effect of Graphene Coating on the Heat Transfer Performance ",
+        "Graphene-enhanced, wear-resistant, and thermal-conductive, a",
+        "Multi‐Layer Graphene Modified Polyimide Composite Coating fo",
+        "An Investigation of Superhydrophobic/Electrothermal Properti"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 92,
+      "n_surveys": 9,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 92,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "Effective de-icing skin using graphene-based flexible heater",
+        "n_references_plus_citations": 30,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "Effect of Graphene Coating on the Heat Transfer Performance ",
+        "n_references_plus_citations": 30,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "Graphene-enhanced, wear-resistant, and thermal-conductive, a",
+        "n_references_plus_citations": 30,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "Multi‐Layer Graphene Modified Polyimide Composite Coating fo",
+        "n_references_plus_citations": 1,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "An Investigation of Superhydrophobic/Electrothermal Properti",
+        "n_references_plus_citations": 2,
+        "relevance_score": 5
+      }
+    ],
+    "ended_at": "2026-07-08T17:01:36Z",
+    "elapsed_s": 2.13
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-08T17:01:36Z",
+    "input_summary": {
+      "n_candidates": 92,
+      "topic_len": 24,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 9,
+      "n_weak_reject": 47,
+      "n_reject": 36
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-08T17:01:55Z",
+    "elapsed_s": 18.595
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-08T17:01:55Z",
+    "input_summary": {
+      "n_papers": 17,
+      "n_weak": 62,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:01:55Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-08T17:02:00Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:02:00Z",
+    "elapsed_s": 4.845,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-08T17:02:00Z",
+    "input_summary": {
+      "papers": 17
+    },
+    "output_summary": {
+      "nodes": 17,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:02:00Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-08T17:02:03Z",
+    "input_summary": {
+      "n_verified": 17
+    },
+    "output_summary": {
+      "n_baseline": 11,
+      "n_parallel": 6,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": true
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier+llm_reclassify",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:02:03Z",
+    "elapsed_s": 3.272,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-08T17:02:07Z",
+    "input_summary": {
+      "n_baseline": 11,
+      "n_dataset": 0,
+      "n_repo": 0
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 65
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:02:07Z",
+    "elapsed_s": 4.197,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-08T17:02:16Z",
+    "input_summary": {
+      "n_baseline": 11,
+      "n_parallel": 6
+    },
+    "output_summary": {
+      "n_packages": 4,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:02:16Z",
+    "elapsed_s": 8.553,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-08T17:02:34Z",
+    "input_summary": {
+      "n_baseline": 11,
+      "n_parallel": 6
+    },
+    "output_summary": {
+      "n_innovation": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:02:34Z",
+    "elapsed_s": 18.126,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-08T17:02:24Z",
+    "input_summary": {
+      "n_baseline": 11
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:02:24Z",
+    "elapsed_s": 7.977,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T17:02:45Z",
+    "input_summary": {
+      "n_innovation": 4
+    },
+    "output_summary": {
+      "nick_model_name": "Graphene-IceShield"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:02:45Z",
+    "elapsed_s": 10.806,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T17:02:45Z",
+    "input_summary": {
+      "n_packages": 4
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:02:45Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T17:02:54Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:02:54Z",
+    "elapsed_s": 9.588,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T17:03:00Z",
+    "input_summary": {
+      "n_innovation": 4,
+      "n_packages": 4
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:03:00Z",
+    "elapsed_s": 5.664,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-08T17:03:11Z",
+    "input_summary": {
+      "n_innovation": 4
+    },
+    "output_summary": {
+      "nick_model_name": "Graphene-IceShield"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:03:11Z",
+    "elapsed_s": 11.49,
+    "state_keys": [
+      "research_narratives",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-08T17:03:11Z",
+    "input_summary": {
+      "n_packages": 4
+    },
+    "output_summary": {
+      "status": "pass",
+      "n_remaining": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:03:11Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-08T17:03:21Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:03:21Z",
+    "elapsed_s": 9.469,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-08T17:03:28Z",
+    "input_summary": {
+      "n_innovation": 4,
+      "n_packages": 4
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-08T17:03:28Z",
+    "elapsed_s": 6.678,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-08T17:03:28Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:03:28Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-08T17:03:28Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于石墨烯薄膜电热效应的风机叶片防冰除冰系统研究",
+      "n_papers": 17,
+      "n_baseline": 11,
+      "n_parallel": 6,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 4,
+      "low_bar_status": "pass",
+      "human_gate_status": "pass_through",
+      "notes": [],
+      "research_basis": [
+        {
+          "title": "石墨烯薄膜电热涂层制备与性能表征",
+          "research_question": "如何制备具有优异电热转换效率和长期稳定性的石墨烯薄膜涂层，并表征其电热性能？",
+          "baseline": "Graphene-enhanced, wear-resistant, and thermal-conductive, anti-/de-icing gelcoat composite coating",
+          "improved_module_source": "Multi‐Layer Graphene Modified Polyimide Composite Coating for Wind Turbine Blade Anti‐/Deicing",
+          "data_source": null,
+          "experiment_metrics": "Experimental investigation of an electric heating two-dimensional material composite heating film and its comprehensive properties",
+          "risk": "涂层与叶片基材的附着力不足，或长期电热循环后性能衰减。",
+          "estimated_workload": "6个月"
+        },
+        {
+          "title": "石墨烯电热除冰系统集成与热场分布优化",
+          "research_question": "如何将石墨烯电热涂层集成到风机叶片上，并通过优化电极布局实现均匀热场分布？",
+          "baseline": "Effective de-icing skin using graphene-based flexible heater",
+          "improved_module_source": "Multi-functional carbon nanomaterial-based electro-thermal structures for efficient anti-icing/de-icing applications",
+          "data_source": null,
+          "experiment_metrics": "Experimental investigation of an electric heating two-dimensional material composite heating film and its comprehensive properties",
+          "risk": "大面积涂层加热不均匀导致局部过热或除冰失效。",
+          "estimated_workload": "8个月"
+        },
+        {
+          "title": "石墨烯电热除冰系统在模拟环境下的防冰除冰性能验证",
+          "research_question": "在模拟结冰风洞环境中，石墨烯电热除冰系统能否有效防止冰层形成并快速除冰？",
+          "baseline": "An Investigation of Superhydrophobic/Electrothermal Properties for Graphene/Polyimide/Polydimethylsiloxane Composite Coating",
+          "improved_module_source": "Multifunctional Graphene/Polyimide Composite Coating with Electrothermal and Superhydrophobic Properties for Wind Turbine Blade Anti-Icing",
+          "data_source": null,
+          "experiment_metrics": "Experimental investigation of an electric heating two-dimensional material composite heating film and its comprehensive properties",
+          "risk": "模拟环境与实际运行环境差异大，测试结果可能无法直接外推。",
+          "estimated_workload": "10个月"
+        },
+        {
+          "title": "石墨烯电热除冰系统的耐久性与疲劳性能评估",
+          "research_question": "在反复电热循环和机械载荷作用下，石墨烯电热除冰系统的电热性能和结构完整性如何变化？",
+          "baseline": "Electro-thermal functional fatigue properties of deicing composite laminates: Internal thermal and compression cycle tests",
+          "improved_module_source": "Graphene/Polyimide Composite Coating with Electric Heating and Superhydrophobic Properties for Wind Turbine Blades Anti-/Deicing",
+          "data_source": null,
+          "experiment_metrics": "Electro-thermal functional fatigue properties of deicing composite laminates: Internal thermal and compression cycle tests",
+          "risk": "长期运行后涂层出现裂纹或剥离，导致除冰性能下降。",
+          "estimated_workload": "12个月"
+        }
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-08T17:03:28Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]
