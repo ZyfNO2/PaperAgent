@@ -386,9 +386,54 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
     failed_this_round: set[str] = set()  # tools that failed within this invocation
 
     try:
+        # Re3.9.1: Resolve domain-specific tools for injection
+        domain_str = str(atoms.get("domain", "unknown"))
+        if isinstance(atoms.get("domain"), list) and atoms["domain"]:
+            domain_str = str(atoms["domain"][0])
+        domain_tools = _get_domain_tools(domain_str)
+
         for step_idx in range(_MAX_STEPS):
             # 1. Think: LLM decides next action
             thought = _llm_decide(topic, atoms, all_papers, all_repos, steps, search_plan, failed_this_round)
+
+            # Re3.9.1: If LLM wants to stop but domain tool (e.g. pubmed) not yet tried,
+            # inject it before stopping — but only if we still have steps left
+            if thought.get("action") == "stop" and domain_tools:
+                used_tools = {s.get("tool") for s in steps if s.get("type") == "tool_call"}
+                unused_domain = domain_tools - used_tools - failed_this_round - skip_adapters
+                if unused_domain and step_idx < _MAX_STEPS - 1:
+                    inject_tool = sorted(unused_domain)[0]
+                    method_kws = atoms.get("method") or []
+                    obj_kws = atoms.get("object") or []
+                    inject_query = " ".join((method_kws + obj_kws)[:3])
+                    if inject_query:
+                        logger.info("search_agent: injecting domain tool %s before stop (domain=%s)",
+                                    inject_tool, domain_str)
+                        thought = {
+                            "action": "search",
+                            "tool": inject_tool,
+                            "query": inject_query,
+                            "reason": f"domain injection before stop: {domain_str} topic",
+                        }
+
+            # Re3.9.1: If LLM didn't stop, and domain tool not yet used, inject at step >= 2
+            if thought.get("action") != "stop" and domain_tools and len(steps) >= 2:
+                used_tools = {s.get("tool") for s in steps if s.get("type") == "tool_call"}
+                unused_domain = domain_tools - used_tools - failed_this_round - skip_adapters
+                if unused_domain:
+                    inject_tool = sorted(unused_domain)[0]
+                    method_kws = atoms.get("method") or []
+                    obj_kws = atoms.get("object") or []
+                    inject_query = " ".join((method_kws + obj_kws)[:3])
+                    if inject_query:
+                        logger.info("search_agent: injecting domain tool %s for %s domain",
+                                    inject_tool, domain_str)
+                        thought = {
+                            "action": "search",
+                            "tool": inject_tool,
+                            "query": inject_query,
+                            "reason": f"domain injection: {domain_str} topic, forced {inject_tool}",
+                        }
 
             if thought.get("action") == "stop":
                 steps.append({
@@ -448,7 +493,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
 
             # If all available tools have failed, stop early
             available_tools = {"arxiv", "openalex", "crossref", "github", "semantic_scholar",
-                               "huggingface", "core", "datacite"}
+                               "huggingface", "core", "datacite"} | domain_tools
             remaining = available_tools - skip_adapters - failed_this_round
             if not remaining and not all_papers:
                 steps.append({
@@ -476,7 +521,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                 seen_repo_keys.add(key)
                 unique_repos.append(r)
 
-        all_tool_order = [tool for tool in ("arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite") if tool in raw]
+        all_tool_order = [tool for tool in ("arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite", "pubmed") if tool in raw]
         failed_adapters = sorted(skip_adapters | failed_this_round)
         per_adapter = {tool: len(raw.get(tool, [])) for tool in all_tool_order}
 

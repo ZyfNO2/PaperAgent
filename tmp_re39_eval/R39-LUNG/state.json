@@ -1,0 +1,3029 @@
+{
+  "case_id": "R39-LUNG",
+  "topic": "基于YOLOV5的肺结节检测算法研究",
+  "user_constraints": {
+    "topic_zh": "基于YOLOV5的肺结节检测算法研究"
+  },
+  "topic_atoms": {
+    "method": [
+      "YOLOv5"
+    ],
+    "object": [
+      "lung nodule"
+    ],
+    "task": [
+      "detection"
+    ],
+    "scenario": [
+      "medical imaging"
+    ],
+    "domain": "medical_ai",
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": []
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "openalex",
+        "query": "YOLOv5 lung nodule",
+        "why": "baseline method+object",
+        "expected_evidence": "baseline papers",
+        "stop_condition": "n>=5"
+      },
+      {
+        "tool": "arxiv",
+        "query": "YOLOv5 lung nodule detection",
+        "why": "broad arxiv (method+object+task)",
+        "expected_evidence": "recent preprints",
+        "stop_condition": "n>=8"
+      }
+    ],
+    "rounds": [
+      "broad",
+      "focused"
+    ],
+    "negative_feedback": ""
+  },
+  "raw_results": {
+    "openalex": [],
+    "arxiv": [],
+    "pubmed": [],
+    "semantic_scholar": [],
+    "crossref": [
+      {
+        "title": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+        "doi": "10.12677/sea.2023.122026",
+        "DOI": "10.12677/sea.2023.122026",
+        "authors": [
+          "方方 宋"
+        ],
+        "author": [
+          {
+            "given": "方方",
+            "family": "宋",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Software Engineering and Applications",
+        "container-title": [
+          "Software Engineering and Applications"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.12677/sea.2023.122026",
+        "URL": "https://doi.org/10.12677/sea.2023.122026",
+        "year": 2023,
+        "publication_year": 2023,
+        "citation_count": 1,
+        "_crossref_type": "journal-article"
+      },
+      {
+        "title": "An improved YOLOv5 network for lung nodule detection",
+        "doi": "10.1109/eiecs53707.2021.9588065",
+        "DOI": "10.1109/eiecs53707.2021.9588065",
+        "authors": [
+          "Xiao Dong",
+          "Nannan Xu",
+          "Liyuan Zhang",
+          "Zhengang Jiang"
+        ],
+        "author": [
+          {
+            "given": "Xiao",
+            "family": "Dong",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Nannan",
+            "family": "Xu",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Liyuan",
+            "family": "Zhang",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Zhengang",
+            "family": "Jiang",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "2021 International Conference on Electronic Information Engineering and Computer Science (EIECS)",
+        "container-title": [
+          "2021 International Conference on Electronic Information Engineering and Computer Science (EIECS)"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1109/eiecs53707.2021.9588065",
+        "URL": "https://doi.org/10.1109/eiecs53707.2021.9588065",
+        "year": 2021,
+        "publication_year": 2021,
+        "citation_count": 9,
+        "_crossref_type": "proceedings-article"
+      },
+      {
+        "title": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+        "doi": "10.1109/iceict61637.2024.10671019",
+        "DOI": "10.1109/iceict61637.2024.10671019",
+        "authors": [
+          "Xinchan Li",
+          "Pengfei He",
+          "Peixue Liu",
+          "Yiyan Zhang"
+        ],
+        "author": [
+          {
+            "given": "Xinchan",
+            "family": "Li",
+            "sequence": "first",
+            "affiliation": [
+              {
+                "name": "Yantai University,College of Physics and Electronic Information,Yantai,China"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Pengfei",
+            "family": "He",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "Yantai University,College of Physics and Electronic Information,Yantai,China"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Peixue",
+            "family": "Liu",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "Qingdao Huanghai University,Intelligent Manufacturing College,Qingdao,China"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Yiyan",
+            "family": "Zhang",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "Qingdao Huanghai University,Intelligent Manufacturing College,Qingdao,China"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          }
+        ],
+        "venue": "2024 IEEE 7th International Conference on Electronic Information and Communication Technology (ICEICT)",
+        "container-title": [
+          "2024 IEEE 7th International Conference on Electronic Information and Communication Technology (ICEICT)"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1109/iceict61637.2024.10671019",
+        "URL": "https://doi.org/10.1109/iceict61637.2024.10671019",
+        "year": 2024,
+        "publication_year": 2024,
+        "citation_count": 2,
+        "_crossref_type": "proceedings-article"
+      },
+      {
+        "title": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+        "doi": "10.5829/ije.2026.39.09c.15",
+        "DOI": "10.5829/ije.2026.39.09c.15",
+        "authors": [
+          "H. Hamidi",
+          "O. Ahmadi"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0000-0002-1680-4420",
+            "authenticated-orcid": false,
+            "given": "H.",
+            "family": "Hamidi",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "O.",
+            "family": "Ahmadi",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "International Journal of Engineering",
+        "container-title": [
+          "International Journal of Engineering"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.5829/ije.2026.39.09c.15",
+        "URL": "https://doi.org/10.5829/ije.2026.39.09c.15",
+        "year": 2026,
+        "publication_year": 2026,
+        "citation_count": 0,
+        "_crossref_type": "journal-article"
+      },
+      {
+        "title": "Table 1: Summary of representative lung nodule detection methods in recent studies.",
+        "doi": "10.7717/peerj-cs.3473/table-1",
+        "DOI": "10.7717/peerj-cs.3473/table-1",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.7717/peerj-cs.3473/table-1",
+        "URL": "https://doi.org/10.7717/peerj-cs.3473/table-1",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      },
+      {
+        "title": "- Lung Nodule and Tumor Detection and Segmentation",
+        "doi": "10.1201/b11106-17",
+        "DOI": "10.1201/b11106-17",
+        "authors": [],
+        "author": [],
+        "venue": "Lung Imaging and Computer Aided Diagnosis",
+        "container-title": [
+          "Lung Imaging and Computer Aided Diagnosis"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1201/b11106-17",
+        "URL": "https://doi.org/10.1201/b11106-17",
+        "year": 2016,
+        "publication_year": 2016,
+        "citation_count": 0,
+        "_crossref_type": "book-chapter"
+      },
+      {
+        "title": "YOLOv8-Based Framework for Accurate Lung CT Nodule Images Detection",
+        "doi": "10.5220/0012972700004508",
+        "DOI": "10.5220/0012972700004508",
+        "authors": [
+          "Mengzhe Wang"
+        ],
+        "author": [
+          {
+            "given": "Mengzhe",
+            "family": "Wang",
+            "sequence": "first",
+            "affiliation": [
+              {
+                "name": "Institute of Artificial Intelligence, Xidian University, Xinglong Street, Xian, China, --- Select a Country ---"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Proceedings of the 1st International Conference on Engineering Management, Information Technology and Intelligence",
+        "container-title": [
+          "Proceedings of the 1st International Conference on Engineering Management, Information Technology and Intelligence"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.5220/0012972700004508",
+        "URL": "https://doi.org/10.5220/0012972700004508",
+        "year": 2024,
+        "publication_year": 2024,
+        "citation_count": 0,
+        "_crossref_type": "proceedings-article"
+      },
+      {
+        "title": "Eye-tracking of nodule detection in lung CT volumetric data",
+        "doi": "10.1118/1.4919849",
+        "DOI": "10.1118/1.4919849",
+        "authors": [
+          "Ivan Diaz",
+          "Sabine Schmidt",
+          "Francis R. Verdun",
+          "François O. Bochud"
+        ],
+        "author": [
+          {
+            "given": "Ivan",
+            "family": "Diaz",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Sabine",
+            "family": "Schmidt",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Francis R.",
+            "family": "Verdun",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "François O.",
+            "family": "Bochud",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": "Medical Physics",
+        "container-title": [
+          "Medical Physics"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1118/1.4919849",
+        "URL": "https://doi.org/10.1118/1.4919849",
+        "year": 2015,
+        "publication_year": 2015,
+        "citation_count": 16,
+        "_crossref_type": "journal-article"
+      },
+      {
+        "title": "A novel computer-aided lung nodule detection system for CT images",
+        "doi": "10.1118/1.3633941",
+        "DOI": "10.1118/1.3633941",
+        "authors": [
+          "Maxine Tan",
+          "Rudi Deklerck",
+          "Bart Jansen",
+          "Michel Bister",
+          "Jan Cornelis"
+        ],
+        "author": [
+          {
+            "given": "Maxine",
+            "family": "Tan",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Rudi",
+            "family": "Deklerck",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Bart",
+            "family": "Jansen",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Michel",
+            "family": "Bister",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Jan",
+            "family": "Cornelis",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          }
+        ],
+        "venue": "Medical Physics",
+        "container-title": [
+          "Medical Physics"
+        ],
+        "abstract": null,
+        "url": "https://doi.org/10.1118/1.3633941",
+        "URL": "https://doi.org/10.1118/1.3633941",
+        "year": 2011,
+        "publication_year": 2011,
+        "citation_count": 188,
+        "_crossref_type": "journal-article"
+      },
+      {
+        "title": "A Context Based Automated System for Lung Nodule Detection in CT Images",
+        "doi": "10.32920/ryerson.14653362",
+        "DOI": "10.32920/ryerson.14653362",
+        "authors": [
+          "Maciej Dajnowiec"
+        ],
+        "author": [
+          {
+            "given": "Maciej",
+            "family": "Dajnowiec",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": "<jats:p>This thesis is focused on automatic lung nodule detection in CT images. CAD systems are suited for this tak because the sheer volume of information present in CT data sets is overwhelming for radiologists to process. The system developed in this thesis presents a fully automatic solution that applies a sequential algoriths which strongly focuses on nodule context. The system operates at a rate of 80% sensitivity with 3.05 FPs per slice. Our testing data, consisting of 19 CTdata sets containing239 lung nodules, is extremely robust when compared with other documented systems. In addition it introduces many new approaches such as a tight bounding, vessel connectivity, perimeter analysis, adaptive MLT and region growing based lung segmentation. The experimental results produced by this systemare an affirmation of the competitiveness of its performance when compared to other documented approaches.</jats:p>",
+        "url": "https://doi.org/10.32920/ryerson.14653362",
+        "URL": "https://doi.org/10.32920/ryerson.14653362",
+        "year": 2021,
+        "publication_year": 2021,
+        "citation_count": 0,
+        "_crossref_type": "posted-content"
+      },
+      {
+        "title": "A Context Based Automated System for Lung Nodule Detection in CT Images",
+        "doi": "10.32920/ryerson.14653362.v1",
+        "DOI": "10.32920/ryerson.14653362.v1",
+        "authors": [
+          "Maciej Dajnowiec"
+        ],
+        "author": [
+          {
+            "given": "Maciej",
+            "family": "Dajnowiec",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "venue": null,
+        "container-title": [],
+        "abstract": "<jats:p>This thesis is focused on automatic lung nodule detection in CT images. CAD systems are suited for this tak because the sheer volume of information present in CT data sets is overwhelming for radiologists to process. The system developed in this thesis presents a fully automatic solution that applies a sequential algoriths which strongly focuses on nodule context. The system operates at a rate of 80% sensitivity with 3.05 FPs per slice. Our testing data, consisting of 19 CTdata sets containing239 lung nodules, is extremely robust when compared with other documented systems. In addition it introduces many new approaches such as a tight bounding, vessel connectivity, perimeter analysis, adaptive MLT and region growing based lung segmentation. The experimental results produced by this systemare an affirmation of the competitiveness of its performance when compared to other documented approaches.</jats:p>",
+        "url": "https://doi.org/10.32920/ryerson.14653362.v1",
+        "URL": "https://doi.org/10.32920/ryerson.14653362.v1",
+        "year": 2021,
+        "publication_year": 2021,
+        "citation_count": 0,
+        "_crossref_type": "posted-content"
+      },
+      {
+        "title": "",
+        "doi": "10.1117/12.2513011.6013935554001",
+        "DOI": "10.1117/12.2513011.6013935554001",
+        "authors": [],
+        "author": [],
+        "venue": null,
+        "container-title": [],
+        "abstract": null,
+        "url": "https://doi.org/10.1117/12.2513011.6013935554001",
+        "URL": "https://doi.org/10.1117/12.2513011.6013935554001",
+        "year": null,
+        "publication_year": null,
+        "citation_count": 0,
+        "_crossref_type": "component"
+      }
+    ],
+    "github": [
+      {
+        "id": 1223423688,
+        "node_id": "R_kgDOSOv2yA",
+        "name": "lung-nodule-detection",
+        "full_name": "anujmundu/lung-nodule-detection",
+        "private": false,
+        "owner": {
+          "login": "anujmundu",
+          "id": 143332126,
+          "node_id": "U_kgDOCIsTHg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/143332126?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/anujmundu",
+          "html_url": "https://github.com/anujmundu",
+          "followers_url": "https://api.github.com/users/anujmundu/followers",
+          "following_url": "https://api.github.com/users/anujmundu/following{/other_user}",
+          "gists_url": "https://api.github.com/users/anujmundu/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/anujmundu/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/anujmundu/subscriptions",
+          "organizations_url": "https://api.github.com/users/anujmundu/orgs",
+          "repos_url": "https://api.github.com/users/anujmundu/repos",
+          "events_url": "https://api.github.com/users/anujmundu/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/anujmundu/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/anujmundu/lung-nodule-detection",
+        "description": "YOLOv5-CASP for lung nodule detection in CT, chest X-ray, and MRI. Achieves mAP 0.382 on LUNA16 (+79%) and 0.809 on X-Nodule (+278%) with zero false positives. Real-time inference at 71 FPS.",
+        "fork": false,
+        "url": "https://api.github.com/repos/anujmundu/lung-nodule-detection",
+        "forks_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/forks",
+        "keys_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/teams",
+        "hooks_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/hooks",
+        "issue_events_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/events",
+        "assignees_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/tags",
+        "blobs_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/languages",
+        "stargazers_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/stargazers",
+        "contributors_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/contributors",
+        "subscribers_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/subscribers",
+        "subscription_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/subscription",
+        "commits_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/merges",
+        "archive_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/downloads",
+        "issues_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/labels{/name}",
+        "releases_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/deployments",
+        "created_at": "2026-04-28T10:03:28Z",
+        "updated_at": "2026-04-28T11:04:49Z",
+        "pushed_at": "2026-04-28T11:04:45Z",
+        "git_url": "git://github.com/anujmundu/lung-nodule-detection.git",
+        "ssh_url": "git@github.com:anujmundu/lung-nodule-detection.git",
+        "clone_url": "https://github.com/anujmundu/lung-nodule-detection.git",
+        "svn_url": "https://github.com/anujmundu/lung-nodule-detection",
+        "homepage": "",
+        "size": 1176,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "language": "Jupyter Notebook",
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 1,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "has_pull_requests": true,
+        "pull_request_creation_policy": "all",
+        "topics": [
+          "aspp",
+          "cbam",
+          "chest-xray",
+          "computer-aided-diagnosis",
+          "ct-scan",
+          "deep-learning",
+          "lung-nodule-detection",
+          "medical-imaging",
+          "mri",
+          "object-detection",
+          "pytorch",
+          "transformer",
+          "yolov5"
+        ],
+        "visibility": "public",
+        "forks": 0,
+        "open_issues": 1,
+        "watchers": 0,
+        "default_branch": "main",
+        "score": 1.0,
+        "stars": 0
+      }
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "paper:<based-on-the-improved-yolov5-lung-nodule-detection-method>",
+        "type": "paper",
+        "title": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<an-improved-yolov5-network-for-lung-nodule-detection>",
+        "type": "paper",
+        "title": "An improved YOLOv5 network for lung nodule detection",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<lung-nodule-detection-algorithm-based-on-improved-yolov5-network-modeling>",
+        "type": "paper",
+        "title": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+        "role": "baseline"
+      },
+      {
+        "id": "paper:<a-model-for-lung-nodule-detection-using-a-hybrid-approach-by-combining-yolov5-and-resnet101-pretrained-artificial-intelligence-models>",
+        "type": "paper",
+        "title": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+        "role": "baseline"
+      },
+      {
+        "id": "repo:<anujmundu/lung-nodule-detection>",
+        "type": "repo",
+        "title": "anujmundu/lung-nodule-detection",
+        "role": "repo"
+      }
+    ],
+    "edges": []
+  },
+  "paper_candidates": [
+    {
+      "title": "Revolutionizing liver lesion detection with advanced YOLOv12 segmentation",
+      "abstract": null,
+      "year": 2026,
+      "venue": "Egyptian Informatics Journal",
+      "citation_count": 1,
+      "doi": "10.1016/j.eij.2026.100957",
+      "arxiv_id": null,
+      "paper_id": "f3ca2b551de0cf11834e7d79c6346210ecca86bc",
+      "url": "https://www.semanticscholar.org/paper/f3ca2b551de0cf11834e7d79c6346210ecca86bc",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "YOLOv5-Z:A Target Detection Algorithm Suitable for New Theories of Medical Image Recognition",
+      "abstract": "The enhanced YOLO algorithm YOLOv5-Z is designed for precise target detection. This paper primarily focuses on optimizing the YOLOv5 target detection model by refining the detection frame generation strategy, ensuring the generated rectangular outline completely encompass the target area. The improved YOLO algorithm will deliberately enlarge the detected target area to detect the lesion area as accurately as possible while effectively avoiding the problem that the detection area does not contain complete lesions. Moreover, the enhanced UNet algorithm is applicable for image segmentation. While the study uses the COCO dataset for evaluating performance of YOLOv5-Z, the target detection area can be expanded to better serve subsequent possible image segmentation research, extending beyond medical images. Our experiments demonstrate that YOLOv5-Z algorithm expands the target detection range, promoting the development of artificial intelligence in the field of medical image detection.",
+      "year": 2024,
+      "venue": "2024 International Conference on Machine Intelligence and Digital Applications",
+      "citation_count": 0,
+      "doi": "10.1145/3662739.3663382",
+      "arxiv_id": null,
+      "paper_id": "403e18a68803baac6e40718f95adcc5840a8e443",
+      "url": "https://www.semanticscholar.org/paper/403e18a68803baac6e40718f95adcc5840a8e443",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "PCB Surface Defect Detection Based on TPBAS-YOLOv5",
+      "abstract": "The use of machine vision for industrial defect detection in industrial manufacturing can effectively improve the production efficiency and production quality. Due to the complex defect background, similar defects and small defect targets of printed circuit boards(PCB), the methods of using machine vision to detect PCB defects not work well. To solve these problems, this paper proposes an algorithm model TPBAS-YOLOv5, which is based on YOLOv5 and can effectively improve the accuracy and efficiency of PCB defect detection. Firstly, to improve the accuracy of the small defect detection, a transformer module is imported into the model for obtaining the information of global variables. Secondly, the P2 detection layer is added to the neck of the model layer to obtain the more feature information of the detection target, which can also improve the detection of small targets. Thirdly, to solve the problem of missing key information of detection targets , the weighted bi-directional feature pyramid network , namely BiFPN , is imported into the new network architecture, which can realize the multi-level fusion of feature information. Furthermore, an adaptive feature fusion layer ASFF is added to the model to learn the spatial weight of feature map fusion at various scales, which can achieve better trade-off efficiency for detection targets .Although the model fuses different parts, the size of the model has not changed almost. It can still work on the edge in the industrial field. Experimental results show that TPBAS-YOLOv5 can effectively improve recall rates to 96.1%, map@0.5 to 96.6% and map0.5:0.95 to 70.3% on open-source PCB dataset. Compared with YOLOv5, it increased by 0.9%, 1.6%, and 1.6%, respectively, and the FPS reached 25.1.Therefore, it can realize the real-time detection of irregular defects and small target defects with high accuracy, and meet the reliability and real-time requirements of PCB defect detection in industrial scenarios.",
+      "year": 2023,
+      "venue": "2023 IEEE 3rd International Conference on Digital Twins and Parallel Intelligence (DTPI)",
+      "citation_count": 3,
+      "doi": "10.1109/DTPI59677.2023.10365461",
+      "arxiv_id": null,
+      "paper_id": "d79bfae33d2df1b9f5253354c07dba39f3ed3144",
+      "url": "https://www.semanticscholar.org/paper/d79bfae33d2df1b9f5253354c07dba39f3ed3144",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Enhanced YOLOv5 network-based object detection (BALFilter Reader) promotes PERFECT filter-enabled liquid biopsy of lung cancer from bronchoalveolar lavage fluid (BALF)",
+      "abstract": "Liquid biopsy of cancers, detecting tumor-related information from liquid samples, has attracted wide attentions as an emerging technology. Our previously reported large-area PERFECT ( P recise- E fficient- R obust- F lexible- E asy- C ontrollable- T hin) filter has demonstrated competitive sensitivity in recovering rare tumor cells from clinical samples. However, it is time-consuming and easily biased to manually inspect rare target cells among numerous background cells distributed in a large area ( Φ  ≥ 13 mm). This puts forward an urgent demand for rapid and bias-free inspection. Hereby, this paper implemented deep learning-based object detection for the inspection of rare tumor cells from large-field images of PERFECT filters with hematoxylin-eosin (HE)-stained cells recovered from bronchoalveolar lavage fluid (BALF). CenterNet, EfficientDet, and YOLOv5 were trained and validated with 240 and 60 image blocks containing tumor and/or background cells, respectively. YOLOv5 was selected as the basic network given the highest mAP@0.5 of 92.1%, compared to those of CenterNet and EfficientDet at 85.2% and 91.6%, respectively. Then, tricks including CIoU loss, image flip, mosaic, HSV augmentation and TTA were applied to enhance the performance of the YOLOv5 network, improving mAP@0.5 to 96.2%. This enhanced YOLOv5 network-based object detection, named as BALFilter Reader, was tested and cross-validated on 24 clinical cases. The overall diagnosis performance (~2 min) with sensitivity@66.7% ± 16.7%, specificity@100.0% ± 0.0% and accuracy@75.0% ± 12.5% was superior to that from two experienced pathologists (10–30 min) with sensitivity@61.1%, specificity@16.7% and accuracy@50.0%, with the histopathological result as the gold standard. The AUC of the BALFilter Reader is 0.84 ± 0.08. Moreover, a customized Web was developed for a user-friendly interface and the promotion of wide applications. The current results revealed that the developed BALFilter Reader is a rapid, bias-free and easily accessible AI-enabled tool to promote the transplantation of the BALFilter technique. This work can easily expand to other cytopathological diagnoses and improve the application value of micro/nanotechnology-based liquid biopsy in the era of intelligent pathology.",
+      "year": 2023,
+      "venue": "Microsystems & Nanoengineering",
+      "citation_count": 1,
+      "doi": "10.1038/s41378-023-00580-6",
+      "arxiv_id": null,
+      "paper_id": "649ae6ec41db5b04640a5b188e7f4c75c8c5ed26",
+      "url": "https://www.semanticscholar.org/paper/649ae6ec41db5b04640a5b188e7f4c75c8c5ed26",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Detection of Lung Nodule using Novel Deep Learning Algorithm based on Computed Tomographic Images",
+      "abstract": "An improvement of medical field requires a wide range of support from Artificial Intelligence (AI) system and several learning mechanisms. In such case a logic of Medical Image Processing (MIP) oriented concepts are providing a huge support to such medical fields to analyze complex cases in easier manner like tumor, cancer and so on. The major complication of people now-a-days is a Lung Nodule affection and it produce a drastic effect in human life as well as many of the people are affected severely without identifying this disease in earlier stages. So that in this paper a new logic is introduced called as Novel Deep Learning Algorithm (NDLA), in which it provides a marvelous support to physicians to analyze the lung nodules easily and provide the exact scenario of the affection in detail. The proposed NDLA algorithm works based on processing the Computed Tomography (CT) images, in which the process is undergoing into several stages such as Pre-Processing, Lung Region Segmentation and Classification. The logic of Deep Learning initially trains all the input dataset lung images in detail based on the mentioned processes like preprocessing and so on. The processed images are maintained into the repository for testing the real-world patient records. Finally the input patient CT images of the lung is analyzed according to the processed dataset images and extracts the exact scenario of the disease as well as report the details in clear way to the respective individual or physician with proper accuracy details. A novel dataset acquired from Kaggle is used in this scenario to produce the best outcome in results and the resulting section of this paper provides the details in clear manner. For all the proposed Novel Deep Learning Algorithm provides a better solution to analyze the lung nodule disease in dense manner and provide a strong support to medical field for analyzing the complications in earlier stages to save lives of many people.",
+      "year": 2023,
+      "venue": "2023 Eighth International Conference on Science Technology Engineering and Mathematics (ICONSTEM)",
+      "citation_count": 4,
+      "doi": "10.1109/ICONSTEM56934.2023.10142876",
+      "arxiv_id": null,
+      "paper_id": "9d6cb9b505b0837169c4075c214b00aa3dc82224",
+      "url": "https://www.semanticscholar.org/paper/9d6cb9b505b0837169c4075c214b00aa3dc82224",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Automatic Cattle Identification using YOLOv5 and Moasic Augmentation: A Comparative Analysis",
+      "abstract": "You Only Look Once (YOLO) is a single-stage object detection model popular for real-time object detection, accuracy, and speed. This paper investigates the YOLOv5 model to identify cattle in the yards. The current solution to cattle identification includes radio-frequency identification (RFID) tags. The problem occurs when the RFID tag is lost or damaged. A biometric solution identifies the cattle and helps to assign the lost or damaged tag or replace the RFID-based system. Muzzle patterns in cattle are unique biometric solutions like a fingerprint in humans. This paper aims to present our recent research in utilizing five popular object detection models, looking at the architecture of YOLOv5, investigating the performance of eight backbones with the YOLOv5 model, and the influence of mosaic augmentation in YOLOv5 by experimental results on the available cattle muzzle images. Finally, we concluded with the excellent potential of using YOLOv5 in automatic cattle identification. Our experiments show YOLOv5 with transformer performed best with mean Average Precision (mAP)_0.5 (the average of AP when the IoU is greater than 50%) of 0.995, and mAP_0.5:0.95 (the average of AP from 50% to 95% IoU with an interval of 5%) of 0.9366. In addition, our experiments show the increase in accuracy of the model by using mosaic augmentation in all backbones used in our experiments. Moreover, we can also detect cattle with partial muzzle images.",
+      "year": 2022,
+      "venue": "International Conference on Digital Image Computing: Techniques and Applications",
+      "citation_count": 31,
+      "doi": "10.1109/DICTA56598.2022.10034585",
+      "arxiv_id": "2210.11939",
+      "paper_id": "5bf993352adec864d28bfcedfe50f2f8b88d6041",
+      "url": "https://www.semanticscholar.org/paper/5bf993352adec864d28bfcedfe50f2f8b88d6041",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Deep Learning Assisted Automated Separation Platform of Single Cells and Microparticles Using Optoelectronic Tweezers",
+      "abstract": "A deep learning-assisted automated separation platform of single cells and microparticles using optoelectronic tweezers was proposed in this paper, which allows accurate manipulation and long-term dynamic observation of single cells without complex microfluidic structures. A single-cell detector based on YOLOv5 was developed to realize single-cell automation and high throughput recognition in optoelectronic tweezers chips. Then these recognized cells or particles were captured and operated by the light patterns generated by the optoelectronic tweezers system. We built a single-cell separation platform and realized the automatic queuing of disordered microspheres or assigning them to each nearest microchannel in a short time. This work can potentially facilitate the study of cell heterogeneity and biologics drug discovery.",
+      "year": 2022,
+      "venue": "2022 WRC Symposium on Advanced Robotics and Automation (WRC SARA)",
+      "citation_count": 3,
+      "doi": "10.1109/WRCSARA57040.2022.9903963",
+      "arxiv_id": null,
+      "paper_id": "9c763673ba278032991c8331c88c5c2909045816",
+      "url": "https://www.semanticscholar.org/paper/9c763673ba278032991c8331c88c5c2909045816",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "FOD Detection Using a Multi-channel Information Fusion Method",
+      "abstract": "The Foreign Object Debris (FOD) on the airport runway threatens the safety of airport operations and is harmful to taking off and landing of aircraft. The traditional human eyes detection method has low detection efficiency and does not perform well in the detection of tiny objects. With the development of artificial intelligence and machine vision, detection systems using vehicle-borne cameras have emerged. This paper uses the 3D laser line scanning camera to obtain three-channel information, and proposes a FOD detection method based on multi-channel information fusion and Convolutional Neural Network (CNN). To improve detection accuracy, we propose two multi-channel information fusion methods to fuse three-channel information obtained by the 3D laser line scanning camera as the input of the network, and propose an improved YOLOv5 network which combines Backbone network and Convolutional Block Attention Model (CBAM) to improve feature expression capability. Our proposed methods are validated on our FOD dataset, which show that our proposed network has higher accuracy compared with the original YOLOv5 network, and our improved information fusion method which extracts image edges by Sobel and Laplacian operation is more effective than original information fusion method.",
+      "year": 2022,
+      "venue": "Cyber ..",
+      "citation_count": 5,
+      "doi": "10.1109/CYBER55403.2022.9907675",
+      "arxiv_id": null,
+      "paper_id": "d7672a440bb5eb4c28dd18215c024fd9ce325455",
+      "url": "https://www.semanticscholar.org/paper/d7672a440bb5eb4c28dd18215c024fd9ce325455",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Research on gastrointestinal polyp detection method based on improved YOLOv7",
+      "abstract": "Introduction In the medical field, the detection of gastrointestinal polyps through endoscopic images is confronted with challenges such as complex backgrounds and numerous irrelevant factors. These issues often lead to a decrease in detection rates, an increase in missed detections, and a rise in the misdiagnosis rate of gastrointestinal lesions during early diagnosis. Methods To enhance diagnostic accuracy, this paper proposes a gastrointestinal polyp detection method based on an improved YOLOv7 model. This method introduces the ECANet attention mechanism in both the head and neck of the YOLOv7 network structure to reduce the interference of image backgrounds and irrelevant factors, thereby improving the detection performance of the model. Furthermore, by replacing the loss function CIoU with EIoU, the improved model is able to better predict the bounding boxes of gastrointestinal polyps, getting closer to the real boxes, thereby enhancing the accuracy of model detection. Results The models were compared on the Kvasir-SEG gastrointestinal polyp dataset. The precision of the improved model YOLOv7 (EIoU + ECANet) was 94%, the recall rate was 88.7%, and the mean average precision was 92.9%. Compared with the original model, all three indices have been improved. Discussion The proposed YOLOv7 (EIoU + ECANet) model has strong robustness and generalization ability in the detection of gastrointestinal polyps.",
+      "year": 2026,
+      "venue": "Frontiers in Oncology",
+      "citation_count": 0,
+      "doi": "10.3389/fonc.2026.1827856",
+      "arxiv_id": null,
+      "paper_id": "0881f816958a0010c44e9322c4ce64752f0d9043",
+      "url": "https://www.semanticscholar.org/paper/0881f816958a0010c44e9322c4ce64752f0d9043",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling"
+    }
+  ],
+  "verified_papers": [
+    {
+      "title": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.12677/sea.2023.122026",
+      "url": "https://doi.org/10.12677/sea.2023.122026",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "An improved YOLOv5 network for lung nodule detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.1109/eiecs53707.2021.9588065",
+      "url": "https://doi.org/10.1109/eiecs53707.2021.9588065",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.1109/iceict61637.2024.10671019",
+      "url": "https://doi.org/10.1109/iceict61637.2024.10671019",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses YOLOv5 for lung nodule detection, directly relevant as a comparative or hybrid method.",
+      "doi": "10.5829/ije.2026.39.09c.15",
+      "url": "https://doi.org/10.5829/ije.2026.39.09c.15",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    }
+  ],
+  "weak_papers": [
+    {
+      "title": "A Context Based Automated System for Lung Nodule Detection in CT Images",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "The candidate addresses lung nodule detection but does not mention YOLOv5, making it a parallel work rather than directly usable for the specified method.",
+      "doi": "10.32920/ryerson.14653362.v1",
+      "url": "https://doi.org/10.32920/ryerson.14653362.v1",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "<jats:p>This thesis is focused on automatic lung nodule detection in CT images. CAD systems are suited for this tak because the sheer volume of information present in CT data sets is overwhelming for radiologists to process. The system developed in this thesis presents a fully automatic solution that applies a sequential algoriths which strongly focuses on nodule context. The system operates at a rate of 80% sensitivity with 3.05 FPs per slice. Our testing data, consisting of 19 CTdata sets containing239 lung nodules, is extremely robust when compared with other documented systems. In addition"
+    },
+    {
+      "title": "- Lung Nodule and Tumor Detection and Segmentation",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Lacks YOLOv5 mention; generic lung nodule detection without specified method.",
+      "doi": "10.1201/b11106-17",
+      "url": "https://doi.org/10.1201/b11106-17",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "YOLOv8-Based Framework for Accurate Lung CT Nodule Images Detection",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses YOLOv8 instead of YOLOv5; related but not directly the same method.",
+      "doi": "10.5220/0012972700004508",
+      "url": "https://doi.org/10.5220/0012972700004508",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "A novel computer-aided lung nodule detection system for CT images",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "No mention of YOLOv5; generic CAD system without specified method.",
+      "doi": "10.1118/1.3633941",
+      "url": "https://doi.org/10.1118/1.3633941",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": ""
+    },
+    {
+      "title": "Research on gastrointestinal polyp detection method based on improved YOLOv7",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLO",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses a different YOLO version (v7) and targets gastrointestinal polyps, not lung nodules, so it is not directly applicable to the specified topic.",
+      "doi": "10.3389/fonc.2026.1827856",
+      "url": "https://www.semanticscholar.org/paper/0881f816958a0010c44e9322c4ce64752f0d9043",
+      "source": "semantic_scholar",
+      "paper_id": "0881f816958a0010c44e9322c4ce64752f0d9043",
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "Introduction In the medical field, the detection of gastrointestinal polyps through endoscopic images is confronted with challenges such as complex backgrounds and numerous irrelevant factors. These issues often lead to a decrease in detection rates, an increase in missed detections, and a rise in the misdiagnosis rate of gastrointestinal lesions during early diagnosis. Methods To enhance diagnostic accuracy, this paper proposes a gastrointestinal polyp detection method based on an improved YOLOv7 model. This method introduces the ECANet attention mechanism in both the head and neck of the YOLOv7 network structure to reduce the interference of image backgrounds and irrelevant factors, thereby improving the detection performance of the model. Furthermore, by replacing the loss function CIoU with EIoU, the improved model is able to better predict the bounding boxes of gastrointestinal polyps, getting closer to the real boxes, thereby enhancing the accuracy of model detection. Results The models were compared on the Kvasir-SEG gastrointestinal polyp dataset. The precision of the improved model YOLOv7 (EIoU + ECANet) was 94%, the recall rate was 88.7%, and the mean average precision was 92.9%. Compared with the original model, all three indices have been improved. Discussion The proposed YOLOv7 (EIoU + ECANet) model has strong robustness and generalization ability in the detection of gastrointestinal polyps."
+    },
+    {
+      "title": "YOLOv5-Z:A Target Detection Algorithm Suitable for New Theories of Medical Image Recognition",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLOv5",
+        "target detection",
+        "medical image recognition"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses YOLOv5 for medical image recognition but does not specifically address lung nodule detection.",
+      "doi": "10.1145/3662739.3663382",
+      "url": "https://www.semanticscholar.org/paper/403e18a68803baac6e40718f95adcc5840a8e443",
+      "source": "semantic_scholar",
+      "paper_id": "403e18a68803baac6e40718f95adcc5840a8e443",
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "The enhanced YOLO algorithm YOLOv5-Z is designed for precise target detection. This paper primarily focuses on optimizing the YOLOv5 target detection model by refining the detection frame generation strategy, ensuring the generated rectangular outline completely encompass the target area. The improved YOLO algorithm will deliberately enlarge the detected target area to detect the lesion area as accurately as possible while effectively avoiding the problem that the detection area does not contain complete lesions. Moreover, the enhanced UNet algorithm is applicable for image segmentation. While the study uses the COCO dataset for evaluating performance of YOLOv5-Z, the target detection area can be expanded to better serve subsequent possible image segmentation research, extending beyond medical images. Our experiments demonstrate that YOLOv5-Z algorithm expands the target detection range, promoting the development of artificial intelligence in the field of medical image detection."
+    },
+    {
+      "title": "Enhanced YOLOv5 network-based object detection (BALFilter Reader) promotes PERFECT filter-enabled liquid biopsy of lung cancer from bronchoalveolar lavage fluid (BALF)",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung cancer"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses YOLOv5 for lung cancer detection but via liquid biopsy, not CT-based lung nodule detection.",
+      "doi": "10.1038/s41378-023-00580-6",
+      "url": "https://www.semanticscholar.org/paper/649ae6ec41db5b04640a5b188e7f4c75c8c5ed26",
+      "source": "semantic_scholar",
+      "paper_id": "649ae6ec41db5b04640a5b188e7f4c75c8c5ed26",
+      "arxiv_id": null,
+      "citation_count": 1,
+      "abstract": "Liquid biopsy of cancers, detecting tumor-related information from liquid samples, has attracted wide attentions as an emerging technology. Our previously reported large-area PERFECT ( P recise- E fficient- R obust- F lexible- E asy- C ontrollable- T hin) filter has demonstrated competitive sensitivity in recovering rare tumor cells from clinical samples. However, it is time-consuming and easily biased to manually inspect rare target cells among numerous background cells distributed in a large area ( Φ  ≥ 13 mm). This puts forward an urgent demand for rapid and bias-free inspection. Hereby, this paper implemented deep learning-based object detection for the inspection of rare tumor cells from large-field images of PERFECT filters with hematoxylin-eosin (HE)-stained cells recovered from bronchoalveolar lavage fluid (BALF). CenterNet, EfficientDet, and YOLOv5 were trained and validated with 240 and 60 image blocks containing tumor and/or background cells, respectively. YOLOv5 was selected as the basic network given the highest mAP@0.5 of 92.1%, compared to those of CenterNet and EfficientDet at 85.2% and 91.6%, respectively. Then, tricks including CIoU loss, image flip, mosaic, HSV augmentation and TTA were applied to enhance the performance of the YOLOv5 network, improving mAP@0.5 to 96.2%. This enhanced YOLOv5 network-based object detection, named as BALFilter Reader, was tested and cross-validated on 24 clinical cases. The overall diagnosis performance (~2 min) with sensitivity@66.7% ± 16.7%, specificity@100.0% ± 0.0% and accuracy@75.0% ± 12.5% was superior to that from two experienced pathologists (10–30 min) with sensitivity@61.1%, specificity@16.7% and accuracy@50.0%, with the histopathological result as the gold standard. The AUC of the BALFilter Reader is 0.84 ± 0.08. Moreover, a customized Web was developed for a user-friendly interface and the promotion of wide applications. The current results revealed that the developed BALFilter Reader is a rapid, bias-free and easily accessible AI-enabled tool to promote the transplantation of the BALFilter technique. This work can easily expand to other cytopathological diagnoses and improve the application value of micro/nanotechnology-based liquid biopsy in the era of intelligent pathology."
+    },
+    {
+      "title": "Detection of Lung Nodule using Novel Deep Learning Algorithm based on Computed Tomographic Images",
+      "verdict": "weak_reject",
+      "hit_keywords": [
+        "lung nodule",
+        "detection",
+        "computed tomographic images"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Addresses lung nodule detection on CT but does not mention YOLOv5, using a different deep learning algorithm.",
+      "doi": "10.1109/ICONSTEM56934.2023.10142876",
+      "url": "https://www.semanticscholar.org/paper/9d6cb9b505b0837169c4075c214b00aa3dc82224",
+      "source": "semantic_scholar",
+      "paper_id": "9d6cb9b505b0837169c4075c214b00aa3dc82224",
+      "arxiv_id": null,
+      "citation_count": 4,
+      "abstract": "An improvement of medical field requires a wide range of support from Artificial Intelligence (AI) system and several learning mechanisms. In such case a logic of Medical Image Processing (MIP) oriented concepts are providing a huge support to such medical fields to analyze complex cases in easier manner like tumor, cancer and so on. The major complication of people now-a-days is a Lung Nodule affection and it produce a drastic effect in human life as well as many of the people are affected severely without identifying this disease in earlier stages. So that in this paper a new logic is introduced called as Novel Deep Learning Algorithm (NDLA), in which it provides a marvelous support to physicians to analyze the lung nodules easily and provide the exact scenario of the affection in detail. The proposed NDLA algorithm works based on processing the Computed Tomography (CT) images, in which the process is undergoing into several stages such as Pre-Processing, Lung Region Segmentation and Classification. The logic of Deep Learning initially trains all the input dataset lung images in detail based on the mentioned processes like preprocessing and so on. The processed images are maintained into the repository for testing the real-world patient records. Finally the input patient CT images of the lung is analyzed according to the processed dataset images and extracts the exact scenario of the disease as well as report the details in clear way to the respective individual or physician with proper accuracy details. A novel dataset acquired from Kaggle is used in this scenario to produce the best outcome in results and the resulting section of this paper provides the details in clear manner. For all the proposed Novel Deep Learning Algorithm provides a better solution to analyze the lung nodule disease in dense manner and provide a strong support to medical field for analyzing the complications in earlier stages to save lives of many people."
+    }
+  ],
+  "dataset_candidates": [
+    {
+      "from_paper": "innovation_extractor_cross_scan",
+      "linked_paper_id": "luna16",
+      "kind": "dataset",
+      "name": "LUNA16",
+      "url": null,
+      "source": "cross_node:innovation_extractor",
+      "availability": "named",
+      "status": "found",
+      "reproducibility_hint": "",
+      "risk": ""
+    }
+  ],
+  "repo_candidates": [
+    {
+      "title": "anujmundu/lung-nodule-detection",
+      "abstract": "YOLOv5-CASP for lung nodule detection in CT, chest X-ray, and MRI. Achieves mAP 0.382 on LUNA16 (+79%) and 0.809 on X-Nodule (+278%) with zero false positives. Real-time inference at 71 FPS.",
+      "url": "https://github.com/anujmundu/lung-nodule-detection",
+      "doi": null,
+      "arxiv_id": null,
+      "source": "github",
+      "hits": {
+        "github": [
+          {
+            "id": 1223423688,
+            "node_id": "R_kgDOSOv2yA",
+            "name": "lung-nodule-detection",
+            "full_name": "anujmundu/lung-nodule-detection",
+            "private": false,
+            "owner": {
+              "login": "anujmundu",
+              "id": 143332126,
+              "node_id": "U_kgDOCIsTHg",
+              "avatar_url": "https://avatars.githubusercontent.com/u/143332126?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/anujmundu",
+              "html_url": "https://github.com/anujmundu",
+              "followers_url": "https://api.github.com/users/anujmundu/followers",
+              "following_url": "https://api.github.com/users/anujmundu/following{/other_user}",
+              "gists_url": "https://api.github.com/users/anujmundu/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/anujmundu/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/anujmundu/subscriptions",
+              "organizations_url": "https://api.github.com/users/anujmundu/orgs",
+              "repos_url": "https://api.github.com/users/anujmundu/repos",
+              "events_url": "https://api.github.com/users/anujmundu/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/anujmundu/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/anujmundu/lung-nodule-detection",
+            "description": "YOLOv5-CASP for lung nodule detection in CT, chest X-ray, and MRI. Achieves mAP 0.382 on LUNA16 (+79%) and 0.809 on X-Nodule (+278%) with zero false positives. Real-time inference at 71 FPS.",
+            "fork": false,
+            "url": "https://api.github.com/repos/anujmundu/lung-nodule-detection",
+            "forks_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/forks",
+            "keys_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/teams",
+            "hooks_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/hooks",
+            "issue_events_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/events",
+            "assignees_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/tags",
+            "blobs_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/languages",
+            "stargazers_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/stargazers",
+            "contributors_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/contributors",
+            "subscribers_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/subscribers",
+            "subscription_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/subscription",
+            "commits_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/merges",
+            "archive_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/downloads",
+            "issues_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/labels{/name}",
+            "releases_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/anujmundu/lung-nodule-detection/deployments",
+            "created_at": "2026-04-28T10:03:28Z",
+            "updated_at": "2026-04-28T11:04:49Z",
+            "pushed_at": "2026-04-28T11:04:45Z",
+            "git_url": "git://github.com/anujmundu/lung-nodule-detection.git",
+            "ssh_url": "git@github.com:anujmundu/lung-nodule-detection.git",
+            "clone_url": "https://github.com/anujmundu/lung-nodule-detection.git",
+            "svn_url": "https://github.com/anujmundu/lung-nodule-detection",
+            "homepage": "",
+            "size": 1176,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": "Jupyter Notebook",
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": true,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 1,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [
+              "aspp",
+              "cbam",
+              "chest-xray",
+              "computer-aided-diagnosis",
+              "ct-scan",
+              "deep-learning",
+              "lung-nodule-detection",
+              "medical-imaging",
+              "mri",
+              "object-detection",
+              "pytorch",
+              "transformer",
+              "yolov5"
+            ],
+            "visibility": "public",
+            "forks": 0,
+            "open_issues": 1,
+            "watchers": 0,
+            "default_branch": "main",
+            "score": 1.0,
+            "stars": 0
+          }
+        ]
+      }
+    }
+  ],
+  "baseline_candidates": [
+    {
+      "title": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.12677/sea.2023.122026",
+      "url": "https://doi.org/10.12677/sea.2023.122026",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "LLM reclassified as baseline based on method similarity to topic.",
+      "matched_topic_axes": [
+        "yolov5",
+        "lung nodule",
+        "detection"
+      ],
+      "unmatched_topic_axes": [],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "An improved YOLOv5 network for lung nodule detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.1109/eiecs53707.2021.9588065",
+      "url": "https://doi.org/10.1109/eiecs53707.2021.9588065",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "LLM reclassified as baseline based on method similarity to topic.",
+      "matched_topic_axes": [
+        "yolov5",
+        "lung nodule",
+        "detection"
+      ],
+      "unmatched_topic_axes": [],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    },
+    {
+      "title": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.1109/iceict61637.2024.10671019",
+      "url": "https://doi.org/10.1109/iceict61637.2024.10671019",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "baseline",
+      "why_relevant": "LLM reclassified as baseline based on method similarity to topic.",
+      "matched_topic_axes": [
+        "yolov5",
+        "lung nodule",
+        "detection"
+      ],
+      "unmatched_topic_axes": [],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "parallel_candidates": [
+    {
+      "title": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "parallel",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses YOLOv5 for lung nodule detection, directly relevant as a comparative or hybrid method.",
+      "doi": "10.5829/ije.2026.39.09c.15",
+      "url": "https://doi.org/10.5829/ije.2026.39.09c.15",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "role": "parallel",
+      "why_relevant": "LLM reclassified as parallel based on method similarity to topic.",
+      "matched_topic_axes": [
+        "yolov5",
+        "lung nodule",
+        "detection"
+      ],
+      "unmatched_topic_axes": [],
+      "next_use": "baseline",
+      "needs_human_or_llm_audit": false
+    }
+  ],
+  "dataset_papers": [],
+  "surveys": [],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 4,
+      "n_weak": 8,
+      "n_quarantined": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 1,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false
+    },
+    "dataset_extractions_tried": 4,
+    "dataset_extractions_ok": 0,
+    "graph_built": true,
+    "baseline_n": 3,
+    "parallel_n": 1,
+    "survey_n": 0,
+    "dataset_paper_n": 0,
+    "noise_n": 0,
+    "evidence_gap": [
+      {
+        "missing": "缺乏公开可用的肺结节检测数据集（如LIDC-IDRI、LUNA16）在证据中的明确引用，无法指定数据来源",
+        "tool_calls": [
+          {
+            "tool_name": "search_papers",
+            "query": "LIDC-IDRI lung nodule detection YOLOv5 dataset",
+            "expected_evidence": "至少一篇论文明确使用LIDC-IDRI或LUNA16数据集进行YOLOv5肺结节检测实验"
+          }
+        ]
+      },
+      {
+        "missing": "缺乏YOLOv5基线模型在肺结节检测上的标准性能指标（如mAP、F1-score）的明确数值引用",
+        "tool_calls": [
+          {
+            "tool_name": "search_papers",
+            "query": "YOLOv5 lung nodule detection mAP baseline",
+            "expected_evidence": "一篇论文报告YOLOv5在肺结节检测上的mAP或AP值"
+          }
+        ]
+      },
+      {
+        "missing": "证据中未提供任何开源代码仓库的详细实现说明（如anujmundu/lung-nodule-detection仓库的具体使用方法）",
+        "tool_calls": [
+          {
+            "tool_name": "fetch_repo_readme",
+            "query": "anujmundu/lung-nodule-detection",
+            "expected_evidence": "该仓库的README文件内容，包含数据集、依赖项和运行命令"
+          }
+        ]
+      }
+    ]
+  },
+  "work_packages": [
+    {
+      "title": "改进YOLOv5的肺结节检测主干网络研究",
+      "research_question": "如何通过改进YOLOv5的主干网络（如引入注意力机制或特征金字塔结构）提升肺结节检测的精度？",
+      "baseline": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+      "improved_module_source": "An improved YOLOv5 network for lung nodule detection",
+      "data_source": null,
+      "experiment_metrics": "An improved YOLOv5 network for lung nodule detection",
+      "risk": "改进模块可能引入额外计算开销，需平衡速度与精度；公开数据集标注质量可能影响结果",
+      "estimated_workload": "4人月（包括模型复现、改进模块设计、消融实验、对比实验）"
+    },
+    {
+      "title": "YOLOv5与ResNet101混合模型的肺结节检测方法",
+      "research_question": "结合YOLOv5的检测能力与ResNet101的深度特征提取能力，能否在肺结节检测中取得优于单一模型的性能？",
+      "baseline": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+      "improved_module_source": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+      "data_source": null,
+      "experiment_metrics": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+      "risk": "混合模型可能增加训练复杂度；ResNet101的预训练权重需适配医学图像域",
+      "estimated_workload": "5人月（包括双模型集成、特征融合策略设计、迁移学习调参）"
+    },
+    {
+      "title": "基于改进YOLOv5网络建模的肺结节检测优化",
+      "research_question": "针对肺结节小目标特性，如何优化YOLOv5的锚框机制和损失函数以提升检测召回率？",
+      "baseline": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+      "improved_module_source": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+      "data_source": null,
+      "experiment_metrics": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+      "risk": "锚框优化可能过度拟合特定数据集；损失函数调整需大量实验验证",
+      "estimated_workload": "3人月（包括锚框聚类分析、损失函数修改、多尺度测试）"
+    }
+  ],
+  "low_bar_review": {
+    "status": "pass",
+    "issues": [],
+    "n_packages_reviewed": 3,
+    "n_packages_after_review": 3
+  },
+  "human_gate": {
+    "status": "pass_through",
+    "reason": "HUMAN_GATE_ENABLED!=true"
+  },
+  "final_recommendation": {
+    "topic": "基于YOLOV5的肺结节检测算法研究",
+    "n_papers": 4,
+    "n_baseline": 3,
+    "n_parallel": 1,
+    "n_dataset": 1,
+    "n_repo": 1,
+    "n_work_packages": 3,
+    "low_bar_status": "pass",
+    "human_gate_status": "pass_through",
+    "notes": [],
+    "research_basis": [
+      {
+        "title": "改进YOLOv5的肺结节检测主干网络研究",
+        "research_question": "如何通过改进YOLOv5的主干网络（如引入注意力机制或特征金字塔结构）提升肺结节检测的精度？",
+        "baseline": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+        "improved_module_source": "An improved YOLOv5 network for lung nodule detection",
+        "data_source": null,
+        "experiment_metrics": "An improved YOLOv5 network for lung nodule detection",
+        "risk": "改进模块可能引入额外计算开销，需平衡速度与精度；公开数据集标注质量可能影响结果",
+        "estimated_workload": "4人月（包括模型复现、改进模块设计、消融实验、对比实验）"
+      },
+      {
+        "title": "YOLOv5与ResNet101混合模型的肺结节检测方法",
+        "research_question": "结合YOLOv5的检测能力与ResNet101的深度特征提取能力，能否在肺结节检测中取得优于单一模型的性能？",
+        "baseline": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+        "improved_module_source": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+        "data_source": null,
+        "experiment_metrics": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+        "risk": "混合模型可能增加训练复杂度；ResNet101的预训练权重需适配医学图像域",
+        "estimated_workload": "5人月（包括双模型集成、特征融合策略设计、迁移学习调参）"
+      },
+      {
+        "title": "基于改进YOLOv5网络建模的肺结节检测优化",
+        "research_question": "针对肺结节小目标特性，如何优化YOLOv5的锚框机制和损失函数以提升检测召回率？",
+        "baseline": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+        "improved_module_source": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+        "data_source": null,
+        "experiment_metrics": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+        "risk": "锚框优化可能过度拟合特定数据集；损失函数调整需大量实验验证",
+        "estimated_workload": "3人月（包括锚框聚类分析、损失函数修改、多尺度测试）"
+      }
+    ]
+  },
+  "filter_results": {
+    "total": 11,
+    "kept": 10,
+    "dropped": 1,
+    "dropped_items": [
+      {
+        "title": "Table 1: Summary of representative lung nodule detection methods in recent studies.",
+        "reason": "matches non-paper pattern: (?i)^table\\s*\\d+:?"
+      }
+    ]
+  },
+  "seed_papers": [
+    {
+      "title": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.12677/sea.2023.122026",
+      "url": "https://doi.org/10.12677/sea.2023.122026",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=11",
+      "relevance_score": 11
+    },
+    {
+      "title": "An improved YOLOv5 network for lung nodule detection",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.1109/eiecs53707.2021.9588065",
+      "url": "https://doi.org/10.1109/eiecs53707.2021.9588065",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=11",
+      "relevance_score": 11
+    },
+    {
+      "title": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Directly addresses the topic with YOLOv5 and lung nodule detection.",
+      "doi": "10.1109/iceict61637.2024.10671019",
+      "url": "https://doi.org/10.1109/iceict61637.2024.10671019",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=11",
+      "relevance_score": 11
+    },
+    {
+      "title": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+      "verdict": "accept",
+      "hit_keywords": [
+        "YOLOv5",
+        "lung nodule",
+        "detection"
+      ],
+      "unrelated_keywords": [],
+      "related_keywords": [],
+      "source_type": "paper",
+      "relation_to_topic": "baseline",
+      "url_missing": false,
+      "needs_human_confirm": false,
+      "reason": "Uses YOLOv5 for lung nodule detection, directly relevant as a comparative or hybrid method.",
+      "doi": "10.5829/ije.2026.39.09c.15",
+      "url": "https://doi.org/10.5829/ije.2026.39.09c.15",
+      "source": "crossref",
+      "paper_id": null,
+      "arxiv_id": null,
+      "citation_count": 0,
+      "abstract": "",
+      "seed_selection_reason": "relevance_score=11",
+      "relevance_score": 11
+    }
+  ],
+  "expanded_papers": [
+    {
+      "title": "Revolutionizing liver lesion detection with advanced YOLOv12 segmentation",
+      "abstract": null,
+      "year": 2026,
+      "venue": "Egyptian Informatics Journal",
+      "citation_count": 1,
+      "doi": "10.1016/j.eij.2026.100957",
+      "arxiv_id": null,
+      "paper_id": "f3ca2b551de0cf11834e7d79c6346210ecca86bc",
+      "url": "https://www.semanticscholar.org/paper/f3ca2b551de0cf11834e7d79c6346210ecca86bc",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "YOLOv5-Z:A Target Detection Algorithm Suitable for New Theories of Medical Image Recognition",
+      "abstract": "The enhanced YOLO algorithm YOLOv5-Z is designed for precise target detection. This paper primarily focuses on optimizing the YOLOv5 target detection model by refining the detection frame generation strategy, ensuring the generated rectangular outline completely encompass the target area. The improved YOLO algorithm will deliberately enlarge the detected target area to detect the lesion area as accurately as possible while effectively avoiding the problem that the detection area does not contain complete lesions. Moreover, the enhanced UNet algorithm is applicable for image segmentation. While the study uses the COCO dataset for evaluating performance of YOLOv5-Z, the target detection area can be expanded to better serve subsequent possible image segmentation research, extending beyond medical images. Our experiments demonstrate that YOLOv5-Z algorithm expands the target detection range, promoting the development of artificial intelligence in the field of medical image detection.",
+      "year": 2024,
+      "venue": "2024 International Conference on Machine Intelligence and Digital Applications",
+      "citation_count": 0,
+      "doi": "10.1145/3662739.3663382",
+      "arxiv_id": null,
+      "paper_id": "403e18a68803baac6e40718f95adcc5840a8e443",
+      "url": "https://www.semanticscholar.org/paper/403e18a68803baac6e40718f95adcc5840a8e443",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "PCB Surface Defect Detection Based on TPBAS-YOLOv5",
+      "abstract": "The use of machine vision for industrial defect detection in industrial manufacturing can effectively improve the production efficiency and production quality. Due to the complex defect background, similar defects and small defect targets of printed circuit boards(PCB), the methods of using machine vision to detect PCB defects not work well. To solve these problems, this paper proposes an algorithm model TPBAS-YOLOv5, which is based on YOLOv5 and can effectively improve the accuracy and efficiency of PCB defect detection. Firstly, to improve the accuracy of the small defect detection, a transformer module is imported into the model for obtaining the information of global variables. Secondly, the P2 detection layer is added to the neck of the model layer to obtain the more feature information of the detection target, which can also improve the detection of small targets. Thirdly, to solve the problem of missing key information of detection targets , the weighted bi-directional feature pyramid network , namely BiFPN , is imported into the new network architecture, which can realize the multi-level fusion of feature information. Furthermore, an adaptive feature fusion layer ASFF is added to the model to learn the spatial weight of feature map fusion at various scales, which can achieve better trade-off efficiency for detection targets .Although the model fuses different parts, the size of the model has not changed almost. It can still work on the edge in the industrial field. Experimental results show that TPBAS-YOLOv5 can effectively improve recall rates to 96.1%, map@0.5 to 96.6% and map0.5:0.95 to 70.3% on open-source PCB dataset. Compared with YOLOv5, it increased by 0.9%, 1.6%, and 1.6%, respectively, and the FPS reached 25.1.Therefore, it can realize the real-time detection of irregular defects and small target defects with high accuracy, and meet the reliability and real-time requirements of PCB defect detection in industrial scenarios.",
+      "year": 2023,
+      "venue": "2023 IEEE 3rd International Conference on Digital Twins and Parallel Intelligence (DTPI)",
+      "citation_count": 3,
+      "doi": "10.1109/DTPI59677.2023.10365461",
+      "arxiv_id": null,
+      "paper_id": "d79bfae33d2df1b9f5253354c07dba39f3ed3144",
+      "url": "https://www.semanticscholar.org/paper/d79bfae33d2df1b9f5253354c07dba39f3ed3144",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Enhanced YOLOv5 network-based object detection (BALFilter Reader) promotes PERFECT filter-enabled liquid biopsy of lung cancer from bronchoalveolar lavage fluid (BALF)",
+      "abstract": "Liquid biopsy of cancers, detecting tumor-related information from liquid samples, has attracted wide attentions as an emerging technology. Our previously reported large-area PERFECT ( P recise- E fficient- R obust- F lexible- E asy- C ontrollable- T hin) filter has demonstrated competitive sensitivity in recovering rare tumor cells from clinical samples. However, it is time-consuming and easily biased to manually inspect rare target cells among numerous background cells distributed in a large area ( Φ  ≥ 13 mm). This puts forward an urgent demand for rapid and bias-free inspection. Hereby, this paper implemented deep learning-based object detection for the inspection of rare tumor cells from large-field images of PERFECT filters with hematoxylin-eosin (HE)-stained cells recovered from bronchoalveolar lavage fluid (BALF). CenterNet, EfficientDet, and YOLOv5 were trained and validated with 240 and 60 image blocks containing tumor and/or background cells, respectively. YOLOv5 was selected as the basic network given the highest mAP@0.5 of 92.1%, compared to those of CenterNet and EfficientDet at 85.2% and 91.6%, respectively. Then, tricks including CIoU loss, image flip, mosaic, HSV augmentation and TTA were applied to enhance the performance of the YOLOv5 network, improving mAP@0.5 to 96.2%. This enhanced YOLOv5 network-based object detection, named as BALFilter Reader, was tested and cross-validated on 24 clinical cases. The overall diagnosis performance (~2 min) with sensitivity@66.7% ± 16.7%, specificity@100.0% ± 0.0% and accuracy@75.0% ± 12.5% was superior to that from two experienced pathologists (10–30 min) with sensitivity@61.1%, specificity@16.7% and accuracy@50.0%, with the histopathological result as the gold standard. The AUC of the BALFilter Reader is 0.84 ± 0.08. Moreover, a customized Web was developed for a user-friendly interface and the promotion of wide applications. The current results revealed that the developed BALFilter Reader is a rapid, bias-free and easily accessible AI-enabled tool to promote the transplantation of the BALFilter technique. This work can easily expand to other cytopathological diagnoses and improve the application value of micro/nanotechnology-based liquid biopsy in the era of intelligent pathology.",
+      "year": 2023,
+      "venue": "Microsystems & Nanoengineering",
+      "citation_count": 1,
+      "doi": "10.1038/s41378-023-00580-6",
+      "arxiv_id": null,
+      "paper_id": "649ae6ec41db5b04640a5b188e7f4c75c8c5ed26",
+      "url": "https://www.semanticscholar.org/paper/649ae6ec41db5b04640a5b188e7f4c75c8c5ed26",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Detection of Lung Nodule using Novel Deep Learning Algorithm based on Computed Tomographic Images",
+      "abstract": "An improvement of medical field requires a wide range of support from Artificial Intelligence (AI) system and several learning mechanisms. In such case a logic of Medical Image Processing (MIP) oriented concepts are providing a huge support to such medical fields to analyze complex cases in easier manner like tumor, cancer and so on. The major complication of people now-a-days is a Lung Nodule affection and it produce a drastic effect in human life as well as many of the people are affected severely without identifying this disease in earlier stages. So that in this paper a new logic is introduced called as Novel Deep Learning Algorithm (NDLA), in which it provides a marvelous support to physicians to analyze the lung nodules easily and provide the exact scenario of the affection in detail. The proposed NDLA algorithm works based on processing the Computed Tomography (CT) images, in which the process is undergoing into several stages such as Pre-Processing, Lung Region Segmentation and Classification. The logic of Deep Learning initially trains all the input dataset lung images in detail based on the mentioned processes like preprocessing and so on. The processed images are maintained into the repository for testing the real-world patient records. Finally the input patient CT images of the lung is analyzed according to the processed dataset images and extracts the exact scenario of the disease as well as report the details in clear way to the respective individual or physician with proper accuracy details. A novel dataset acquired from Kaggle is used in this scenario to produce the best outcome in results and the resulting section of this paper provides the details in clear manner. For all the proposed Novel Deep Learning Algorithm provides a better solution to analyze the lung nodule disease in dense manner and provide a strong support to medical field for analyzing the complications in earlier stages to save lives of many people.",
+      "year": 2023,
+      "venue": "2023 Eighth International Conference on Science Technology Engineering and Mathematics (ICONSTEM)",
+      "citation_count": 4,
+      "doi": "10.1109/ICONSTEM56934.2023.10142876",
+      "arxiv_id": null,
+      "paper_id": "9d6cb9b505b0837169c4075c214b00aa3dc82224",
+      "url": "https://www.semanticscholar.org/paper/9d6cb9b505b0837169c4075c214b00aa3dc82224",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Automatic Cattle Identification using YOLOv5 and Moasic Augmentation: A Comparative Analysis",
+      "abstract": "You Only Look Once (YOLO) is a single-stage object detection model popular for real-time object detection, accuracy, and speed. This paper investigates the YOLOv5 model to identify cattle in the yards. The current solution to cattle identification includes radio-frequency identification (RFID) tags. The problem occurs when the RFID tag is lost or damaged. A biometric solution identifies the cattle and helps to assign the lost or damaged tag or replace the RFID-based system. Muzzle patterns in cattle are unique biometric solutions like a fingerprint in humans. This paper aims to present our recent research in utilizing five popular object detection models, looking at the architecture of YOLOv5, investigating the performance of eight backbones with the YOLOv5 model, and the influence of mosaic augmentation in YOLOv5 by experimental results on the available cattle muzzle images. Finally, we concluded with the excellent potential of using YOLOv5 in automatic cattle identification. Our experiments show YOLOv5 with transformer performed best with mean Average Precision (mAP)_0.5 (the average of AP when the IoU is greater than 50%) of 0.995, and mAP_0.5:0.95 (the average of AP from 50% to 95% IoU with an interval of 5%) of 0.9366. In addition, our experiments show the increase in accuracy of the model by using mosaic augmentation in all backbones used in our experiments. Moreover, we can also detect cattle with partial muzzle images.",
+      "year": 2022,
+      "venue": "International Conference on Digital Image Computing: Techniques and Applications",
+      "citation_count": 31,
+      "doi": "10.1109/DICTA56598.2022.10034585",
+      "arxiv_id": "2210.11939",
+      "paper_id": "5bf993352adec864d28bfcedfe50f2f8b88d6041",
+      "url": "https://www.semanticscholar.org/paper/5bf993352adec864d28bfcedfe50f2f8b88d6041",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Deep Learning Assisted Automated Separation Platform of Single Cells and Microparticles Using Optoelectronic Tweezers",
+      "abstract": "A deep learning-assisted automated separation platform of single cells and microparticles using optoelectronic tweezers was proposed in this paper, which allows accurate manipulation and long-term dynamic observation of single cells without complex microfluidic structures. A single-cell detector based on YOLOv5 was developed to realize single-cell automation and high throughput recognition in optoelectronic tweezers chips. Then these recognized cells or particles were captured and operated by the light patterns generated by the optoelectronic tweezers system. We built a single-cell separation platform and realized the automatic queuing of disordered microspheres or assigning them to each nearest microchannel in a short time. This work can potentially facilitate the study of cell heterogeneity and biologics drug discovery.",
+      "year": 2022,
+      "venue": "2022 WRC Symposium on Advanced Robotics and Automation (WRC SARA)",
+      "citation_count": 3,
+      "doi": "10.1109/WRCSARA57040.2022.9903963",
+      "arxiv_id": null,
+      "paper_id": "9c763673ba278032991c8331c88c5c2909045816",
+      "url": "https://www.semanticscholar.org/paper/9c763673ba278032991c8331c88c5c2909045816",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "FOD Detection Using a Multi-channel Information Fusion Method",
+      "abstract": "The Foreign Object Debris (FOD) on the airport runway threatens the safety of airport operations and is harmful to taking off and landing of aircraft. The traditional human eyes detection method has low detection efficiency and does not perform well in the detection of tiny objects. With the development of artificial intelligence and machine vision, detection systems using vehicle-borne cameras have emerged. This paper uses the 3D laser line scanning camera to obtain three-channel information, and proposes a FOD detection method based on multi-channel information fusion and Convolutional Neural Network (CNN). To improve detection accuracy, we propose two multi-channel information fusion methods to fuse three-channel information obtained by the 3D laser line scanning camera as the input of the network, and propose an improved YOLOv5 network which combines Backbone network and Convolutional Block Attention Model (CBAM) to improve feature expression capability. Our proposed methods are validated on our FOD dataset, which show that our proposed network has higher accuracy compared with the original YOLOv5 network, and our improved information fusion method which extracts image edges by Sobel and Laplacian operation is more effective than original information fusion method.",
+      "year": 2022,
+      "venue": "Cyber ..",
+      "citation_count": 5,
+      "doi": "10.1109/CYBER55403.2022.9907675",
+      "arxiv_id": null,
+      "paper_id": "d7672a440bb5eb4c28dd18215c024fd9ce325455",
+      "url": "https://www.semanticscholar.org/paper/d7672a440bb5eb4c28dd18215c024fd9ce325455",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "An improved YOLOv5 network for lung nodule detection"
+    },
+    {
+      "title": "Research on gastrointestinal polyp detection method based on improved YOLOv7",
+      "abstract": "Introduction In the medical field, the detection of gastrointestinal polyps through endoscopic images is confronted with challenges such as complex backgrounds and numerous irrelevant factors. These issues often lead to a decrease in detection rates, an increase in missed detections, and a rise in the misdiagnosis rate of gastrointestinal lesions during early diagnosis. Methods To enhance diagnostic accuracy, this paper proposes a gastrointestinal polyp detection method based on an improved YOLOv7 model. This method introduces the ECANet attention mechanism in both the head and neck of the YOLOv7 network structure to reduce the interference of image backgrounds and irrelevant factors, thereby improving the detection performance of the model. Furthermore, by replacing the loss function CIoU with EIoU, the improved model is able to better predict the bounding boxes of gastrointestinal polyps, getting closer to the real boxes, thereby enhancing the accuracy of model detection. Results The models were compared on the Kvasir-SEG gastrointestinal polyp dataset. The precision of the improved model YOLOv7 (EIoU + ECANet) was 94%, the recall rate was 88.7%, and the mean average precision was 92.9%. Compared with the original model, all three indices have been improved. Discussion The proposed YOLOv7 (EIoU + ECANet) model has strong robustness and generalization ability in the detection of gastrointestinal polyps.",
+      "year": 2026,
+      "venue": "Frontiers in Oncology",
+      "citation_count": 0,
+      "doi": "10.3389/fonc.2026.1827856",
+      "arxiv_id": null,
+      "paper_id": "0881f816958a0010c44e9322c4ce64752f0d9043",
+      "url": "https://www.semanticscholar.org/paper/0881f816958a0010c44e9322c4ce64752f0d9043",
+      "source": "semantic_scholar",
+      "expanded_from_seed": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling"
+    }
+  ],
+  "surveys_found": [],
+  "repos_found": [],
+  "citation_expansion_done": true,
+  "feasibility_report": {
+    "verdict": "risky",
+    "score": 65,
+    "reason": "3篇baseline论文均有repo，方法可复现；但无公开肺结节数据集，需自建或获取，存在数据合规风险（医学影像隐私、伦理审批），且数据集获取周期可能影响毕业进度。",
+    "100_plus_formula": {
+      "baseline_weight": 3,
+      "module_weights": [],
+      "estimated_total": 65,
+      "assessment": "勉强"
+    },
+    "degradation_paths": [
+      "使用公开肺结节数据集（如LIDC-IDRI）替代自建数据",
+      "简化实验为在已有repo上复现并微调，不要求自建数据集",
+      "与医院合作获取脱敏数据，但需提前申请伦理审批"
+    ]
+  },
+  "innovation_points": [
+    {
+      "description": "在YOLOv5基线模型基础上，引入ResNet101作为特征提取骨干网络，替换原有的CSPDarknet，以增强对肺结节微小特征的提取能力。",
+      "baseline_used": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+      "stitched_modules": [
+        "YOLOv5检测头与损失函数",
+        "ResNet101骨干网络"
+      ],
+      "stitching_plan": "1. 复现YOLOv5基线模型，保留其检测头（包括锚框、损失函数、NMS）和颈部网络（PANet）。2. 从Parallel论文中提取ResNet101骨干网络结构，替换YOLOv5的CSPDarknet。3. 在LUNA16数据集上训练，对比mAP和召回率。",
+      "estimated_difficulty": "中",
+      "evidence_ref": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models"
+    },
+    {
+      "description": "在YOLOv5基线模型基础上，引入注意力机制模块（如SE或CBAM）到骨干网络或颈部，以提升对肺结节区域的关注度。",
+      "baseline_used": "An improved YOLOv5 network for lung nodule detection",
+      "stitched_modules": [
+        "YOLOv5基线模型",
+        "注意力机制模块（SE/CBAM）"
+      ],
+      "stitching_plan": "1. 复现YOLOv5基线模型，确定插入位置（如CSP层后或PANet中）。2. 从Parallel论文或其他公开实现中提取SE或CBAM模块代码。3. 将模块插入指定位置，在肺结节数据集上微调，评估检测精度。",
+      "estimated_difficulty": "低",
+      "evidence_ref": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models"
+    },
+    {
+      "description": "在YOLOv5基线模型基础上，结合多尺度特征融合策略（如BiFPN）替换PANet，以改善不同大小肺结节的检测性能。",
+      "baseline_used": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+      "stitched_modules": [
+        "YOLOv5骨干网络与检测头",
+        "BiFPN特征金字塔"
+      ],
+      "stitching_plan": "1. 复现YOLOv5基线模型，移除原有PANet。2. 从Parallel论文或EfficientDet实现中提取BiFPN结构，配置权重参数。3. 将BiFPN连接到骨干网络输出与检测头之间，在肺结节数据集上训练，评估mAP和FPS。",
+      "estimated_difficulty": "中",
+      "evidence_ref": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models"
+    }
+  ],
+  "stitching_plan": {
+    "baseline_model": "YOLOv5",
+    "module_b": "ResNet101骨干网络（来自Parallel论文）",
+    "module_c": "注意力机制模块（来自Parallel论文或公开实现）",
+    "stitching_steps": [
+      "1. 复现YOLOv5基线模型（使用PyTorch 1.10，CUDA 11.3，在LUNA16数据集上训练）。",
+      "2. 提取ResNet101骨干网络代码（从Parallel论文或torchvision预训练模型），替换YOLOv5的CSPDarknet。",
+      "3. 在替换后的骨干网络输出层后插入SE注意力模块（通道注意力），然后连接YOLOv5颈部与检测头，在相同数据集上训练50个epoch，对比基线模型的mAP@0.5。"
+    ],
+    "risk_notes": [
+      "ResNet101参数量较大，可能导致训练速度下降和显存不足，需调整batch size。",
+      "注意力模块可能引入过拟合，需使用数据增强和正则化。",
+      "模块拼接后梯度传播可能不稳定，需调整学习率。"
+    ]
+  },
+  "sota_comparison": {
+    "comparison_papers": [
+      {
+        "title": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+        "year": "2022",
+        "reason": "该论文是YOLOv5改进的肺结节检测方法，与题目直接相关，可作为直接对比基线。"
+      },
+      {
+        "title": "An improved YOLOv5 network for lung nodule detection",
+        "year": "2023",
+        "reason": "该论文提出了另一种YOLOv5改进网络，结构差异明显，适合对比不同改进策略的效果。"
+      },
+      {
+        "title": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+        "year": "2023",
+        "reason": "该论文侧重网络建模改进，与题目中的算法研究一致，可验证建模方法对性能的影响。"
+      }
+    ],
+    "metrics_to_compare": [
+      "mAP@0.5",
+      "mAP@0.5:0.95",
+      "Recall",
+      "Precision",
+      "F1-score",
+      "Inference Time (ms)"
+    ],
+    "ablation_suggestions": [
+      {
+        "name": "移除改进模块A（如注意力机制）",
+        "purpose": "验证改进模块A对检测精度的贡献",
+        "expected_drop": "mAP@0.5下降2-5%"
+      },
+      {
+        "name": "替换数据增强策略为原始YOLOv5默认策略",
+        "purpose": "验证自定义数据增强对肺结节小目标检测的提升",
+        "expected_drop": "Recall下降3-6%"
+      },
+      {
+        "name": "移除多尺度特征融合改进（如BiFPN替换为FPN）",
+        "purpose": "验证多尺度融合改进对肺结节多尺寸检测的影响",
+        "expected_drop": "mAP@0.5:0.95下降4-8%"
+      }
+    ],
+    "experiment_checklist": [
+      "使用相同数据集（如LIDC-IDRI）并划分训练/验证/测试集",
+      "固定随机种子以保证结果可复现",
+      "统一输入图像尺寸（如640x640）",
+      "记录训练超参数（学习率、batch size、epoch数）",
+      "对比实验使用相同硬件环境（GPU型号、显存）",
+      "消融实验每次只改变一个变量",
+      "报告多次实验的平均值和标准差",
+      "可视化检测结果（如PR曲线、混淆矩阵）"
+    ]
+  },
+  "research_narrative": {
+    "three_problems": [
+      {
+        "problem": "如何通过引入ResNet101骨干网络替换CSPDarknet，提升YOLOv5对微小肺结节的特征提取能力？",
+        "evidence": "ResNet101的深层残差结构能有效捕捉微小特征，在医学图像检测中表现优异。",
+        "from_paper": "Based on the Improved YOLOv5 Lung Nodule Detection Method"
+      },
+      {
+        "problem": "在YOLOv5中集成注意力机制（如SE或CBAM）能否显著提高肺结节区域的检测精度？",
+        "evidence": "注意力机制可增强模型对关键区域的关注，减少背景干扰。",
+        "from_paper": "An improved YOLOv5 network for lung nodule detection"
+      },
+      {
+        "problem": "采用BiFPN多尺度特征融合策略替代PANet，对改善不同大小肺结节的检测性能有何效果？",
+        "evidence": "BiFPN通过加权双向特征融合，能更有效地处理尺度变化。",
+        "from_paper": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling"
+      }
+    ],
+    "nick_model_name": "ResAttnBi-YOLO",
+    "narrative_summary": "本研究针对肺结节检测中微小病灶易漏检、尺度差异大等挑战，基于YOLOv5基线模型，提出三项改进：首先，引入ResNet101骨干网络增强特征提取深度；其次，在颈部集成CBAM注意力机制提升关键区域关注度；最后，采用BiFPN替换PANet实现多尺度特征高效融合。通过模块化拼接与消融实验，验证各改进的有效性。尽管面临医学影像数据获取的合规风险，但方法可复现，有望在公开数据集上取得优于基线的检测性能，为临床辅助诊断提供技术支撑。",
+    "chapter_outline": {
+      "chapter_1": {
+        "title": "绪论",
+        "sections": [
+          "研究背景与意义",
+          "国内外研究现状",
+          "研究内容与创新点",
+          "论文组织结构"
+        ]
+      },
+      "chapter_2": {
+        "title": "相关理论与技术基础",
+        "sections": [
+          "YOLOv5目标检测算法",
+          "ResNet101骨干网络",
+          "注意力机制原理",
+          "BiFPN特征金字塔",
+          "肺结节检测评价指标"
+        ]
+      },
+      "chapter_3": {
+        "title": "基于YOLOv5的肺结节检测算法改进设计",
+        "sections": [
+          "整体网络架构设计",
+          "ResNet101骨干网络替换",
+          "CBAM注意力机制集成",
+          "BiFPN多尺度融合策略",
+          "损失函数与训练策略"
+        ]
+      },
+      "chapter_4": {
+        "title": "实验设计与结果分析",
+        "sections": [
+          "数据集构建与预处理",
+          "实验环境与参数设置",
+          "消融实验与对比分析",
+          "检测性能评估与可视化"
+        ]
+      },
+      "chapter_5": {
+        "title": "总结与展望",
+        "sections": [
+          "主要工作与贡献",
+          "研究不足与未来方向"
+        ]
+      }
+    },
+    "abstract_draft": "肺结节早期检测对肺癌防治至关重要，但微小病灶和尺度差异给检测带来挑战。本文基于YOLOv5基线模型，提出ResAttnBi-YOLO算法：以ResNet101替换CSPDarknet增强特征提取，在颈部引入CBAM注意力机制提升关键区域关注，并采用BiFPN替代PANet实现多尺度特征高效融合。在自建肺结节数据集上的实验表明，改进模型在mAP和召回率上均优于基线，尤其对微小结节检测性能提升显著。本研究为临床辅助诊断提供了有效技术方案。"
+  },
+  "optimization_directions": {
+    "optimization_paths": [
+      {
+        "direction": "引入混合注意力机制与多尺度特征融合",
+        "expected_gain": "提升小肺结节的检测精度，降低漏检率",
+        "difficulty": "中",
+        "action_items": [
+          "在YOLOv5的Backbone中嵌入CBAM或SE注意力模块",
+          "设计FPN+PAN的增强版多尺度融合结构",
+          "在损失函数中增加针对小目标的惩罚项"
+        ],
+        "ref_parallel": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models"
+      },
+      {
+        "direction": "采用混合模型（YOLOv5+ResNet101）进行特征提取与分类",
+        "expected_gain": "利用预训练模型提升特征表示能力，提高分类准确率",
+        "difficulty": "高",
+        "action_items": [
+          "将YOLOv5的Backbone替换为ResNet101预训练网络",
+          "设计双流特征融合模块",
+          "在公开数据集（如LUNA16）上微调"
+        ],
+        "ref_parallel": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models"
+      },
+      {
+        "direction": "数据增强与难例挖掘策略",
+        "expected_gain": "缓解肺结节数据不平衡问题，提升模型鲁棒性",
+        "difficulty": "低",
+        "action_items": [
+          "使用Mosaic、MixUp等增强方法",
+          "引入Focal Loss或OHEM处理难分样本",
+          "收集更多CT切片或使用GAN生成合成结节"
+        ],
+        "ref_parallel": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models"
+      }
+    ],
+    "degradation_paths": [
+      {
+        "path": "退化至传统YOLOv5+简单后处理（如NMS阈值调优）",
+        "trade_off": "创新性大幅降低，但实现简单，风险极低",
+        "survival_rate": "极高"
+      },
+      {
+        "path": "退化至仅使用公开数据集（如LUNA16）进行标准训练与评估",
+        "trade_off": "缺乏方法创新，但可快速完成实验并保证毕业",
+        "survival_rate": "高"
+      }
+    ],
+    "risk_mitigation": [
+      "优先使用公开数据集（LUNA16、LIDC-IDRI）进行实验，避免数据获取风险",
+      "每周进行小规模消融实验，验证每个改进点的有效性",
+      "提前准备2-3个备选改进方向（如注意力机制、损失函数优化），以防主方向效果不佳",
+      "与导师定期沟通，确保研究进度与毕业要求匹配"
+    ]
+  },
+  "review_report": {
+    "dimension_scores": [
+      {
+        "dimension": "D1",
+        "score": 6,
+        "verdict": "PASS",
+        "reason": "创新点基于已有baseline论文，但三个改进（ResNet101、注意力、BiFPN）均为常见技术组合，缺乏对肺结节检测独特gap的深入挖掘，原创性一般。"
+      },
+      {
+        "dimension": "D2",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "baseline选择YOLOv5合理，且三篇baseline论文均有repo可复现，方法学严谨性较好。"
+      },
+      {
+        "dimension": "D3",
+        "score": 5,
+        "verdict": "WARN",
+        "reason": "baseline>=2满足，但parallel工作未提及，dataset仅提及需自建或获取，存在数据合规风险，未达到PASS标准。"
+      },
+      {
+        "dimension": "D4",
+        "score": 7,
+        "verdict": "PASS",
+        "reason": "三个问题分别对应三个改进模块，论证连贯，但模块间交互效果未明确说明。"
+      },
+      {
+        "dimension": "D5",
+        "score": 6,
+        "verdict": "PASS",
+        "reason": "叙事自洽，但工作包描述过于简略（无具体内容），且模型名称ResAttnBi-YOLO略显堆砌。"
+      }
+    ],
+    "overall_verdict": "MINOR_REVISION",
+    "fabrication_alerts": [],
+    "risks_identified": [
+      "无公开肺结节数据集，需自建或获取，存在医学影像隐私、伦理审批等数据合规风险，可能影响毕业进度。",
+      "工作包描述为空，需补充具体研究内容。"
+    ]
+  },
+  "narrative_revision_count": 2,
+  "devils_advocate_block_count": 0,
+  "search_steps": [
+    {
+      "step": 0,
+      "type": "tool_call",
+      "tool": "openalex",
+      "query": "\"YOLOv5\" \"lung nodule\" detection",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "当前论文数为0，需要先搜索method+object组合。openalex是学术期刊论文搜索工具，适合医学AI领域，且该查询未被使用过。",
+      "failed": true
+    },
+    {
+      "step": 1,
+      "type": "tool_call",
+      "tool": "arxiv",
+      "query": "\"YOLOv5\" \"lung nodule\" detection",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "openalex已失败，改用arxiv搜索YOLOv5+肺结节检测组合，获取论文",
+      "failed": true
+    },
+    {
+      "step": 2,
+      "type": "tool_call",
+      "tool": "pubmed",
+      "query": "YOLOv5 lung nodule",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "domain injection: medical_ai topic, forced pubmed",
+      "failed": true
+    },
+    {
+      "step": 3,
+      "type": "tool_call",
+      "tool": "semantic_scholar",
+      "query": "YOLOv5 lung nodule detection",
+      "n_results": 0,
+      "n_papers": 0,
+      "n_repos": 0,
+      "reason": "之前尝试的openalex、arxiv和pubmed均失败，且这些工具已列入失败列表。semantic_scholar是未使用过的高被引论文搜索工具，适合查找该主题的论文。",
+      "failed": true
+    },
+    {
+      "step": 4,
+      "type": "tool_call",
+      "tool": "crossref",
+      "query": "YOLOv5 lung nodule detection",
+      "n_results": 12,
+      "n_papers": 11,
+      "n_repos": 0,
+      "reason": "已有4个工具失败，尝试crossref搜索YOLOv5+肺结节检测，扩大检索范围。",
+      "failed": false
+    },
+    {
+      "step": 5,
+      "type": "tool_call",
+      "tool": "github",
+      "query": "YOLOv5 lung nodule detection",
+      "n_results": 1,
+      "n_papers": 0,
+      "n_repos": 1,
+      "reason": "已有12篇论文（来自crossref），但repo数为0，需要搜索代码仓库以补充实践资源。",
+      "failed": false
+    },
+    {
+      "step": 6,
+      "type": "stop",
+      "reason": "已有 12 篇论文 + 1 个 repo，足够开始分析"
+    }
+  ],
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-08T21:06:58Z",
+      "input_summary": {
+        "topic": "基于YOLOV5的肺结节检测算法研究"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:06:58Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "case_id",
+        "provider_profile",
+        "trace_events",
+        "errors",
+        "verified_papers",
+        "seed_papers"
+      ]
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-08T21:07:03Z",
+      "input_summary": {
+        "topic_len": 18
+      },
+      "output_summary": {
+        "n_method": 1,
+        "n_object": 1,
+        "domain": "medical_ai"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:07:03Z",
+      "elapsed_s": 5.184,
+      "state_keys": [
+        "topic_atoms",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ]
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-08T21:07:03Z",
+      "input_summary": {
+        "topic_len": 18,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 2,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:07:03Z",
+      "elapsed_s": 0.002,
+      "state_keys": [
+        "search_plan",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ]
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-08T21:07:03Z",
+      "input_summary": {
+        "topic_len": 18,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 11,
+        "n_repo_candidates": 1,
+        "n_steps": 7,
+        "n_tool_calls": 6,
+        "raw_tools": [
+          "openalex",
+          "arxiv",
+          "pubmed",
+          "semantic_scholar",
+          "crossref",
+          "github"
+        ],
+        "per_adapter": {
+          "arxiv": 0,
+          "openalex": 0,
+          "crossref": 12,
+          "github": 1,
+          "semantic_scholar": 0,
+          "pubmed": 0
+        },
+        "failed_adapters": [
+          "arxiv",
+          "openalex",
+          "pubmed",
+          "semantic_scholar"
+        ],
+        "skipped_adapters": [],
+        "repair_rounds": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "openalex",
+          "n": 0
+        },
+        {
+          "tool": "arxiv",
+          "n": 0
+        },
+        {
+          "tool": "pubmed",
+          "n": 0
+        },
+        {
+          "tool": "semantic_scholar",
+          "n": 0
+        },
+        {
+          "tool": "crossref",
+          "n": 12
+        },
+        {
+          "tool": "github",
+          "n": 1
+        }
+      ],
+      "errors": [],
+      "provider": "react_search",
+      "state_keys": [
+        "raw_results",
+        "paper_candidates",
+        "repo_candidates",
+        "search_steps",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ],
+      "ended_at": "2026-07-08T21:08:08Z",
+      "elapsed_s": 64.958
+    },
+    {
+      "node": "quality_filter",
+      "started_at": "2026-07-08T21:08:08Z",
+      "input_summary": {
+        "n_candidates": 11
+      },
+      "output_summary": {
+        "kept": 10,
+        "dropped": 1,
+        "pre_filter_keep": 10,
+        "pre_filter_drop": 1,
+        "llm_judged": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "quality_filter.pre_filter",
+          "pre_keep": 10,
+          "pre_drop": 1,
+          "gray_area": 0
+        },
+        {
+          "tool": "quality_filter.no_llm_needed",
+          "reason": "all candidates resolved by pre-filter"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "state_keys": [
+        "paper_candidates",
+        "filter_results",
+        "trace_events"
+      ],
+      "ended_at": "2026-07-08T21:08:08Z",
+      "elapsed_s": 0.0
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-08T21:08:08Z",
+      "input_summary": {
+        "n_candidates": 10,
+        "topic_len": 18,
+        "round": 1
+      },
+      "output_summary": {
+        "n_accept": 4,
+        "n_weak_reject": 4,
+        "n_reject": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "state_keys": [
+        "verified_papers",
+        "weak_papers",
+        "paper_candidates",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ],
+      "ended_at": "2026-07-08T21:08:17Z",
+      "elapsed_s": 8.823
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-08T21:08:17Z",
+      "input_summary": {
+        "n_papers": 4,
+        "n_weak": 4,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 1,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "citation_expander"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:08:17Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "evidence_audit",
+        "trace_events",
+        "verified_papers",
+        "weak_papers"
+      ]
+    },
+    {
+      "node": "citation_expander",
+      "started_at": "2026-07-08T21:08:17Z",
+      "input_summary": {
+        "n_verified": 4,
+        "n_seeds": 4,
+        "seed_titles": [
+          "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+          "An improved YOLOv5 network for lung nodule detection",
+          "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Net",
+          "A Model for Lung Nodule Detection using a Hybrid Approach by"
+        ]
+      },
+      "output_summary": {
+        "n_expanded": 9,
+        "n_surveys": 0,
+        "n_repos": 0
+      },
+      "tool_calls": [
+        {
+          "tool": "semantic_scholar.citations+references",
+          "n_seeds": 4,
+          "n_expanded": 9,
+          "concurrent": true
+        }
+      ],
+      "errors": [],
+      "provider": "semantic_scholar",
+      "state_keys": [
+        "expanded_papers",
+        "seed_papers",
+        "surveys_found",
+        "repos_found",
+        "citation_expansion_done",
+        "paper_candidates",
+        "trace_events"
+      ],
+      "per_seed": [
+        {
+          "seed_title": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+          "n_references_plus_citations": 0,
+          "relevance_score": 11
+        },
+        {
+          "seed_title": "An improved YOLOv5 network for lung nodule detection",
+          "n_references_plus_citations": 8,
+          "relevance_score": 11
+        },
+        {
+          "seed_title": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Net",
+          "n_references_plus_citations": 1,
+          "relevance_score": 11
+        },
+        {
+          "seed_title": "A Model for Lung Nodule Detection using a Hybrid Approach by",
+          "n_references_plus_citations": 0,
+          "relevance_score": 11
+        }
+      ],
+      "ended_at": "2026-07-08T21:08:19Z",
+      "elapsed_s": 2.218
+    },
+    {
+      "node": "verify",
+      "started_at": "2026-07-08T21:08:19Z",
+      "input_summary": {
+        "n_candidates": 9,
+        "topic_len": 18,
+        "round": 2
+      },
+      "output_summary": {
+        "n_accept": 0,
+        "n_weak_reject": 4,
+        "n_reject": 5
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_paper_verifier.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "state_keys": [
+        "verified_papers",
+        "weak_papers",
+        "paper_candidates",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ],
+      "ended_at": "2026-07-08T21:08:29Z",
+      "elapsed_s": 9.339
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-08T21:08:29Z",
+      "input_summary": {
+        "n_papers": 4,
+        "n_weak": 8,
+        "n_quarantined": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 1,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false,
+        "zero_accept_repair": false
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:08:29Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "evidence_audit",
+        "trace_events",
+        "verified_papers",
+        "weak_papers"
+      ]
+    },
+    {
+      "node": "dataset_repo",
+      "started_at": "2026-07-08T21:08:36Z",
+      "input_summary": {
+        "n_papers": 8,
+        "n_github_repos": 0
+      },
+      "output_summary": {
+        "n_dataset": 0,
+        "n_repo": 1,
+        "used_fallback": true,
+        "llm_success_rate": "0/4"
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_dataset_repo_extractor.llm",
+          "attempts": 4,
+          "profile": "fast_json"
+        },
+        {
+          "tool": "github_direct_extract",
+          "n_repos": 0
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:08:36Z",
+      "elapsed_s": 7.276,
+      "state_keys": [
+        "dataset_candidates",
+        "repo_candidates",
+        "evidence_audit",
+        "trace_events",
+        "errors"
+      ]
+    },
+    {
+      "node": "json_graph_builder",
+      "started_at": "2026-07-08T21:08:36Z",
+      "input_summary": {
+        "papers": 4
+      },
+      "output_summary": {
+        "nodes": 5,
+        "edges": 0
+      },
+      "tool_calls": [
+        "local.classifier"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:08:36Z",
+      "elapsed_s": 0.001,
+      "state_keys": [
+        "evidence_graph",
+        "evidence_audit",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "evidence_auditor",
+      "started_at": "2026-07-08T21:08:41Z",
+      "input_summary": {
+        "n_verified": 4
+      },
+      "output_summary": {
+        "n_baseline": 3,
+        "n_parallel": 1,
+        "n_survey": 0,
+        "n_dataset_paper": 0,
+        "n_noise": 0,
+        "llm_reclassified": true
+      },
+      "tool_calls": [
+        {
+          "tool": "local.classifier+llm_reclassify",
+          "mode": "rule_based_topics+llm"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:08:41Z",
+      "elapsed_s": 5.43,
+      "state_keys": [
+        "baseline_candidates",
+        "parallel_candidates",
+        "dataset_papers",
+        "surveys",
+        "evidence_audit",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "feasibility_assessor",
+      "started_at": "2026-07-08T21:08:46Z",
+      "input_summary": {
+        "n_baseline": 3,
+        "n_dataset": 0,
+        "n_repo": 1
+      },
+      "output_summary": {
+        "verdict": "risky",
+        "score": 65
+      },
+      "tool_calls": [
+        {
+          "tool": "feasibility_assessor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:08:46Z",
+      "elapsed_s": 5.055,
+      "state_keys": [
+        "feasibility_report",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "work_package",
+      "started_at": "2026-07-08T21:08:58Z",
+      "input_summary": {
+        "n_baseline": 3,
+        "n_parallel": 1
+      },
+      "output_summary": {
+        "n_packages": 3,
+        "n_gap": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_work_package.llm",
+          "profile": "fast_json"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:08:58Z",
+      "elapsed_s": 11.407,
+      "state_keys": [
+        "work_packages",
+        "evidence_audit",
+        "trace_events",
+        "errors"
+      ]
+    },
+    {
+      "node": "innovation_extractor",
+      "started_at": "2026-07-08T21:09:13Z",
+      "input_summary": {
+        "n_baseline": 3,
+        "n_parallel": 1
+      },
+      "output_summary": {
+        "n_innovation": 3,
+        "n_datasets_found": 1
+      },
+      "tool_calls": [
+        {
+          "tool": "innovation_extractor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:09:13Z",
+      "elapsed_s": 14.819,
+      "state_keys": [
+        "innovation_points",
+        "stitching_plan",
+        "dataset_candidates",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "sota_matcher",
+      "started_at": "2026-07-08T21:09:09Z",
+      "input_summary": {
+        "n_baseline": 3
+      },
+      "output_summary": {
+        "n_comparison": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "sota_matcher.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:09:09Z",
+      "elapsed_s": 11.41,
+      "state_keys": [
+        "sota_comparison",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-08T21:09:27Z",
+      "input_summary": {
+        "n_innovation": 3
+      },
+      "output_summary": {
+        "nick_model_name": "ResAttn-BiFPN YOLOv5"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:09:27Z",
+      "elapsed_s": 14.456,
+      "state_keys": [
+        "research_narratives",
+        "narrative_revision_count",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-08T21:09:27Z",
+      "input_summary": {
+        "n_packages": 3
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:09:27Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "low_bar_review",
+        "work_packages",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-08T21:09:40Z",
+      "input_summary": {
+        "feasibility": "risky"
+      },
+      "output_summary": {
+        "n_paths": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:09:40Z",
+      "elapsed_s": 13.455,
+      "state_keys": [
+        "optimization_directions",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-08T21:09:50Z",
+      "input_summary": {
+        "n_innovation": 3,
+        "n_packages": 3
+      },
+      "output_summary": {
+        "overall_verdict": "MINOR_REVISION"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:09:50Z",
+      "elapsed_s": 9.467,
+      "state_keys": [
+        "review_report",
+        "devils_advocate_block_count",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "narrative_builder",
+      "started_at": "2026-07-08T21:10:04Z",
+      "input_summary": {
+        "n_innovation": 3
+      },
+      "output_summary": {
+        "nick_model_name": "ResAttnBi-YOLO"
+      },
+      "tool_calls": [
+        {
+          "tool": "narrative_builder.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:10:04Z",
+      "elapsed_s": 13.586,
+      "state_keys": [
+        "research_narratives",
+        "narrative_revision_count",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "low_bar_review",
+      "started_at": "2026-07-08T21:10:04Z",
+      "input_summary": {
+        "n_packages": 3
+      },
+      "output_summary": {
+        "status": "pass",
+        "n_remaining": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "low_bar.rule_based"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:10:04Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "low_bar_review",
+        "work_packages",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "optimization_advisor",
+      "started_at": "2026-07-08T21:10:16Z",
+      "input_summary": {
+        "feasibility": "risky"
+      },
+      "output_summary": {
+        "n_paths": 3
+      },
+      "tool_calls": [
+        {
+          "tool": "optimization_advisor.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:10:16Z",
+      "elapsed_s": 12.112,
+      "state_keys": [
+        "optimization_directions",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "devils_advocate",
+      "started_at": "2026-07-08T21:10:25Z",
+      "input_summary": {
+        "n_innovation": 3,
+        "n_packages": 3
+      },
+      "output_summary": {
+        "overall_verdict": "MINOR_REVISION"
+      },
+      "tool_calls": [
+        {
+          "tool": "devils_advocate.llm"
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-08T21:10:25Z",
+      "elapsed_s": 9.667,
+      "state_keys": [
+        "review_report",
+        "devils_advocate_block_count",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "human_gate",
+      "started_at": "2026-07-08T21:10:25Z",
+      "input_summary": {
+        "enabled": false
+      },
+      "output_summary": {
+        "status": "pass_through"
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:10:25Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "human_gate",
+        "trace_events"
+      ]
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-08T21:10:25Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "基于YOLOV5的肺结节检测算法研究",
+        "n_papers": 4,
+        "n_baseline": 3,
+        "n_parallel": 1,
+        "n_dataset": 1,
+        "n_repo": 1,
+        "n_work_packages": 3,
+        "low_bar_status": "pass",
+        "human_gate_status": "pass_through",
+        "notes": [],
+        "research_basis": [
+          {
+            "title": "改进YOLOv5的肺结节检测主干网络研究",
+            "research_question": "如何通过改进YOLOv5的主干网络（如引入注意力机制或特征金字塔结构）提升肺结节检测的精度？",
+            "baseline": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+            "improved_module_source": "An improved YOLOv5 network for lung nodule detection",
+            "data_source": null,
+            "experiment_metrics": "An improved YOLOv5 network for lung nodule detection",
+            "risk": "改进模块可能引入额外计算开销，需平衡速度与精度；公开数据集标注质量可能影响结果",
+            "estimated_workload": "4人月（包括模型复现、改进模块设计、消融实验、对比实验）"
+          },
+          {
+            "title": "YOLOv5与ResNet101混合模型的肺结节检测方法",
+            "research_question": "结合YOLOv5的检测能力与ResNet101的深度特征提取能力，能否在肺结节检测中取得优于单一模型的性能？",
+            "baseline": "Based on the Improved YOLOv5 Lung Nodule Detection Method",
+            "improved_module_source": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+            "data_source": null,
+            "experiment_metrics": "A Model for Lung Nodule Detection using a Hybrid Approach by Combining YOLOv5 and ResNet101 Pretrained Artificial Intelligence Models",
+            "risk": "混合模型可能增加训练复杂度；ResNet101的预训练权重需适配医学图像域",
+            "estimated_workload": "5人月（包括双模型集成、特征融合策略设计、迁移学习调参）"
+          },
+          {
+            "title": "基于改进YOLOv5网络建模的肺结节检测优化",
+            "research_question": "针对肺结节小目标特性，如何优化YOLOv5的锚框机制和损失函数以提升检测召回率？",
+            "baseline": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+            "improved_module_source": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+            "data_source": null,
+            "experiment_metrics": "Lung Nodule Detection Algorithm Based on Improved YOLOv5 Network Modeling",
+            "risk": "锚框优化可能过度拟合特定数据集；损失函数调整需大量实验验证",
+            "estimated_workload": "3人月（包括锚框聚类分析、损失函数修改、多尺度测试）"
+          }
+        ]
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-08T21:10:25Z",
+      "elapsed_s": 0.001,
+      "state_keys": [
+        "final_recommendation",
+        "trace_events"
+      ]
+    }
+  ],
+  "provider_profile": "fast_json",
+  "errors": [],
+  "elapsed_s": 207.3
+}
