@@ -5,6 +5,23 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added (Re3.9)
+- PubMed E-utilities adapter (pubmed_search.py) — free, no key, 3 req/s
+- _get_domain_tools in search_agent — PubMed only enabled for medical/biological domains
+- PAPERAGENT_DISABLE_S2 / PAPERAGENT_DISABLE_OPENALEX env vars for search agent tool disable
+- Cross-node dataset scan in innovation_extractor — scans innovation_points text for dataset names
+  missed by dataset_repo_extractor, source=cross_node:innovation_extractor
+- Provenance analysis script (scripts/re39_provenance_analysis.py) — 95 cases analyzed
+- scripts/re39_disabled_link_run.py — Phase 5 disabled-link verification runner
+
+### Fixed (Re3.9)
+- topic_parser prompt now enforces ALL keywords MUST be in English (Re3.8 omission)
+- known_dataset_names renamed to known_dataset_names_fallback with FALLBACK ONLY annotation
+- Heuristic dataset source labels unified: heuristic_fallback:innovation_plan / heuristic_fallback:paper_title
+- LLM dataset source labeled: llm:dataset_repo_extractor (was: paper_abstract)
+- dataset_repo_extractor trace now includes used_fallback + llm_success_rate in output_summary
+- Frontend timeline shows orange warning when a node used heuristic fallback
+
 ### Added (Re3.8)
 - 40-paper regression: 100% PASS rate (0 failures)
 - feasibility score anchoring: 9 distinct scores (was 75-clustered)
