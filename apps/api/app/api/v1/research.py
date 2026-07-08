@@ -133,6 +133,16 @@ def list_cases() -> dict[str, Any]:
 def _run_case_sync(case_id: str, topic: str, extra: dict[str, Any]) -> None:
     """Synchronous wrapper for the research graph, executed in a thread."""
     t0 = time.time()
+    cd = _case_dir(case_id)
+    cd.mkdir(parents=True, exist_ok=True)
+
+    # Re3.9.2: pre-create trace.json so SSE polling detects file immediately
+    trace_path = cd / "trace.json"
+    trace_path.write_text("[]", encoding="utf-8")
+
+    all_trace_events: list[dict[str, Any]] = []
+    final_state: dict[str, Any] = {}
+
     try:
         from apps.api.app.services.agents.graph import research_graph as rg
         from apps.api.app.services.agents.graph.state import ResearchState
@@ -151,26 +161,60 @@ def _run_case_sync(case_id: str, topic: str, extra: dict[str, Any]) -> None:
         if user_papers:
             state_in["user_papers"] = user_papers
         g = rg.build_graph()
-        out = g.invoke(state_in, config={
-            "configurable": {"thread_id": case_id},
-            "recursion_limit": 100,
-        })
-        elapsed = round(time.time() - t0, 2)
-        out["elapsed_s"] = elapsed
 
-        cd = _case_dir(case_id)
-        cd.mkdir(parents=True, exist_ok=True)
+        # Re3.9.2: stream() instead of invoke() — each node yields a patch
+        for chunk in g.stream(
+            state_in,
+            config={
+                "configurable": {"thread_id": case_id},
+                "recursion_limit": 100,
+            },
+            stream_mode="updates",
+        ):
+            for node_name, patch in chunk.items():
+                if not isinstance(patch, dict):
+                    continue
+
+                # Collect trace_events (each node returns its own new events)
+                node_traces = patch.get("trace_events") or []
+                for t in node_traces:
+                    all_trace_events.append(t)
+
+                # Real-time write trace.json so SSE polling can pick it up
+                trace_path.write_text(
+                    json.dumps(all_trace_events, ensure_ascii=False,
+                               indent=2, default=str),
+                    encoding="utf-8",
+                )
+
+                # Merge patch into final_state
+                final_state.update(patch)
+
+                # Re3.9.2: update current_node for SSE node_current event
+                with _LOCK:
+                    _RUN_STATUS[case_id] = {
+                        **_RUN_STATUS.get(case_id, {"status": "running"}),
+                        "status": "running",
+                        "current_node": node_name,
+                        "n_trace_events": len(all_trace_events),
+                    }
+
+        elapsed = round(time.time() - t0, 2)
+        final_state["elapsed_s"] = elapsed
+        final_state["trace_events"] = all_trace_events
+
+        # Final writes
         (cd / "state.json").write_text(
-            json.dumps(out, ensure_ascii=False, indent=2, default=str),
+            json.dumps(final_state, ensure_ascii=False, indent=2, default=str),
             encoding="utf-8",
         )
-        (cd / "trace.json").write_text(
-            json.dumps(out.get("trace_events") or [], ensure_ascii=False,
+        trace_path.write_text(
+            json.dumps(all_trace_events, ensure_ascii=False,
                         indent=2, default=str),
             encoding="utf-8",
         )
         (cd / "evidence_graph.json").write_text(
-            json.dumps(out.get("evidence_graph") or {}, ensure_ascii=False,
+            json.dumps(final_state.get("evidence_graph") or {}, ensure_ascii=False,
                         indent=2, default=str),
             encoding="utf-8",
         )
@@ -178,11 +222,17 @@ def _run_case_sync(case_id: str, topic: str, extra: dict[str, Any]) -> None:
             _RUN_STATUS[case_id] = {
                 "status": "done",
                 "elapsed_s": elapsed,
-                "n_papers": len(out.get("verified_papers") or []),
-                "n_packages": len(out.get("work_packages") or []),
-                "n_nodes": len(out.get("trace_events") or []),
+                "n_papers": len(final_state.get("verified_papers") or []),
+                "n_packages": len(final_state.get("work_packages") or []),
+                "n_nodes": len(all_trace_events),
             }
     except Exception as exc:  # noqa: BLE001
+        # Preserve partial trace on failure
+        trace_path.write_text(
+            json.dumps(all_trace_events, ensure_ascii=False,
+                       indent=2, default=str),
+            encoding="utf-8",
+        )
         with _LOCK:
             _RUN_STATUS[case_id] = {
                 "status": "error",
@@ -530,12 +580,13 @@ async def case_stream(case_id: str):
 
     sent_events: int = 0
     last_trace_count: int = 0
-    poll_interval = 0.5
+    last_current_node: str = ""
+    poll_interval = 0.3  # Re3.9.2: faster polling
     max_wait = 600  # 10 min timeout
     waited = 0.0
 
     async def event_generator():
-        nonlocal sent_events, last_trace_count, waited
+        nonlocal sent_events, last_trace_count, waited, last_current_node
 
         # Send search_started immediately if case is running
         with _LOCK:
@@ -546,6 +597,12 @@ async def case_stream(case_id: str):
         while waited < max_wait:
             with _LOCK:
                 status = _RUN_STATUS.get(case_id, {}).get("status", "unknown")
+
+            # Re3.9.2: push node_current when the running node changes
+            current_node = _RUN_STATUS.get(case_id, {}).get("current_node", "")
+            if current_node and current_node != last_current_node:
+                yield _sse_event("node_current", {"node": current_node})
+                last_current_node = current_node
 
             # Check for new trace events
             trace_path = _case_dir(case_id) / "trace.json"
