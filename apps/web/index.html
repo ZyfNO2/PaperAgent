@@ -175,6 +175,7 @@ details.results-section[open] summary::before{transform:rotate(90deg);}
   <div class="tl-header">
     <span class="tl-title">⏱ 时间线调试器</span>
     <span class="tl-meta" id="tlMeta">— / —</span>
+    <button onclick="saveTrace()" style="font-size:10px;padding:2px 8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;color:#64748b;margin-left:8px;">💾 保存</button>
   </div>
   <div class="tl-scrubber">
     <div class="tl-track" id="tlTrack"></div>
@@ -201,7 +202,7 @@ details.results-section[open] summary::before{transform:rotate(90deg);}
 <!-- Panels row: connectivity + candidate counts -->
 <div class="panels-row">
   <div class="panel" style="flex:1;max-width:340px;">
-    <div class="panel-title">连通性</div>
+    <div class="panel-title">连通性 <button onclick="loadConnectivity()" style="float:right;font-size:10px;padding:2px 8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;color:#64748b;">↻ 刷新</button></div>
     <div id="connPanel">
       <div class="conn-item"><span class="conn-name"><span class="conn-dot pending"></span> DeepSeek</span><span class="conn-latency">—</span></div>
       <div class="conn-item"><span class="conn-name"><span class="conn-dot pending"></span> OpenAlex</span><span class="conn-latency">—</span></div>
@@ -1072,6 +1073,37 @@ function selectTimelineNode(idx) {
 
 // Init
 initStateMachine();
+function saveTrace() {
+  if (!currentCaseId) { alert('请先选择一个 Case'); return; }
+  Promise.all([
+    fetch('/api/v1/research/' + currentCaseId + '/trace').then(function(r) { return r.json(); }),
+    fetch('/api/v1/research/' + currentCaseId + '/state').then(function(r) { return r.json(); }),
+  ]).then(function(results) {
+    var trace = results[0], state = results[1];
+    var exportData = {
+      case_id: currentCaseId,
+      saved_at: new Date().toISOString(),
+      topic: state.topic,
+      trace: trace,
+      summary: {
+        n_verified_papers: (state.verified_papers || []).length,
+        n_repo_candidates: (state.repo_candidates || []).length,
+        n_dataset_candidates: (state.dataset_candidates || []).length,
+        feasibility: state.feasibility_report || {},
+        review: state.review_report || {},
+        final_recommendation: state.final_recommendation || {},
+      },
+    };
+    var blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = currentCaseId + '_trace_' + new Date().toISOString().slice(0,19).replace(/[:-]/g,'') + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }).catch(function(e) { alert('保存失败: ' + e); });
+}
+
 var graphTopology = null;
 var completedNodes = new Set();
 var currentNodeId = '';
@@ -1187,6 +1219,7 @@ function showHumanGateSearch() {
 }
 
 loadGraphTopology();
+loadConnectivity();
 loadHistory();
 renderUploadList();
 </script>
