@@ -202,8 +202,100 @@ def _has_chinese(s: str) -> bool:
     return any(ord(c) > 127 for c in str(s))
 
 
+# Re3.9.4: Heuristic CN→EN dictionary for common academic terms.
+# Used ONLY when LLM translation fails (fallback of fallback).
+_CN_EN_DICT: dict[str, str] = {
+    "深度学习": "deep learning", "卷积神经网络": "convolutional neural network",
+    "目标检测": "object detection", "语义分割": "semantic segmentation",
+    "实例分割": "instance segmentation", "图像分类": "image classification",
+    "机械臂": "robotic arm", "机器人": "robot", "无人机": "UAV",
+    "自动驾驶": "autonomous driving", "交通标志": "traffic sign",
+    "裂缝检测": "crack detection", "缺陷检测": "defect detection",
+    "表面缺陷": "surface defect", "钢结构": "steel structure",
+    "混凝土": "concrete", "桥梁": "bridge", "隧道": "tunnel",
+    "路面": "pavement", "建筑": "construction", "施工": "construction",
+    "安全预警": "safety warning", "预警": "early warning",
+    "预测": "prediction", "风险评估": "risk assessment",
+    "健康监测": "health monitoring", "结构健康": "structural health",
+    "医学": "medical", "医疗": "medical", "肺结节": "lung nodule",
+    "医学图像": "medical image", "图像分割": "image segmentation",
+    "瓦斯": "gas", "煤与瓦斯突出": "coal and gas outburst",
+    "突出": "outburst", "危险性": "risk", "灾害": "disaster",
+    "边坡": "slope", "滑坡": "landslide", "岩层": "rock layer",
+    "地质": "geological", "岩体": "rock mass",
+    "点云": "point cloud", "三维重建": "3D reconstruction",
+    "视觉SLAM": "visual SLAM", "同步定位与建图": "SLAM",
+    "遥感": "remote sensing", "航拍": "aerial",
+    "电力": "power", "巡检": "inspection", "绝缘子": "insulator",
+    "输电线路": "transmission line", "配电": "power distribution",
+    "风机": "wind turbine", "叶片": "blade", "故障诊断": "fault diagnosis",
+    "结冰": "icing", "防冰": "anti-icing", "除冰": "de-icing",
+    "SCADA": "SCADA", "传感器": "sensor", "振动": "vibration",
+    "沉桩": "pile driving", "桩": "pile", "周边环境": "surrounding environment",
+    "环境影响": "environmental impact", "噪声": "noise",
+    "农作物": "crop", "病虫害": "pest and disease",
+    "生成对抗网络": "GAN", "注意力机制": "attention mechanism",
+    "强化学习": "reinforcement learning", "知识蒸馏": "knowledge distillation",
+    "迁移学习": "transfer learning", "多模态": "multimodal",
+    "对抗攻击": "adversarial attack", "对抗防御": "adversarial defense",
+    "车道线": "lane line", "行人检测": "pedestrian detection",
+    "车辆检测": "vehicle detection", "交通": "traffic",
+    "钢材": "steel", "钢板": "steel plate", "焊缝": "weld",
+    "锂电池": "lithium battery", "PCB": "PCB", "织物": "fabric",
+    "板类": "plate", "堆叠": "stacking", "分拣": "sorting",
+    "安全": "safety", "监测": "monitoring", "识别": "recognition",
+    "方法": "method", "研究": "research", "系统": "system",
+    "平台": "platform", "算法": "algorithm", "模型": "model",
+    "基于": "based on", "的": "", "与": "and",
+}
+
+
+def _heuristic_translate(text: str) -> str:
+    """Re3.9.4: Heuristic CN→EN translation when LLM fails.
+
+    Strategy: longest-match dictionary lookup, then fall back to
+    splitting on common delimiters and translating parts.
+    """
+    if not _has_chinese(text):
+        return text
+
+    result = text
+    # Sort by length descending — longest match first
+    for cn, en in sorted(_CN_EN_DICT.items(), key=lambda x: -len(x[0])):
+        result = result.replace(cn, f" {en} ")
+
+    # Clean up extra spaces from replacements
+    result = re.sub(r'\s+', ' ', result).strip()
+    result = re.sub(r'\s*,\s*', ', ', result).strip(' ,')
+
+    # If still has Chinese after dictionary pass, try splitting on delimiters
+    if _has_chinese(result):
+        parts = re.split(r'[基于的了吗呢在以及和与的方法研究系统平台算法模型]', result)
+        parts = [p.strip() for p in parts if p.strip()]
+        translated_parts = []
+        for p in parts:
+            if _has_chinese(p):
+                # Try dictionary again on the part
+                for cn, en in sorted(_CN_EN_DICT.items(), key=lambda x: -len(x[0])):
+                    p = p.replace(cn, en)
+                if _has_chinese(p):
+                    # Still Chinese — use pinyin-like fallback (just drop it)
+                    p = re.sub(r'[\u4e00-\u9fff]+', '', p).strip()
+                    if not p:
+                        continue
+            translated_parts.append(p)
+        result = " ".join(translated_parts)
+
+    # Clean up extra spaces
+    result = re.sub(r'\s+', ' ', result).strip()
+    return result if result else text
+
+
 def _force_translate_keywords(atoms: dict[str, Any]) -> dict[str, Any]:
-    """Re3.9.4: Post-process — force-translate any non-ASCII keywords to English."""
+    """Re3.9.4: Post-process — force-translate any non-ASCII keywords to English.
+
+    Strategy: LLM translation first, heuristic dictionary fallback second.
+    """
     translated = dict(atoms)
 
     for key in ("method", "object", "task", "scenario", "domain"):
@@ -212,41 +304,53 @@ def _force_translate_keywords(atoms: dict[str, Any]) -> dict[str, Any]:
             vals = [vals]
         new_vals: list[str] = []
         for v in vals:
-            if _has_chinese(v):
-                try:
-                    prompt = (
-                        f"Translate the following Chinese academic term to English. "
-                        f"Output ONLY the English translation, no explanation.\n\n"
-                        f"Chinese: {v}\nEnglish:"
-                    )
-                    result = call_json(
-                        prompt,
-                        system="You are a translator. Output only the English term.",
-                        profile="fast_json",
-                        max_tokens=50,
-                        timeout=10,
-                        expected="dict",
-                    )
-                    if isinstance(result, dict):
-                        en = (
-                            result.get("translation", "")
-                            or result.get("english", "")
-                            or result.get("output", "")
-                            or str(result)
-                        )
-                    else:
-                        en = str(result)
-                    en = en.strip().strip('"').strip("'").strip()
-                    if en and not _has_chinese(en):
-                        new_vals.append(en)
-                        logger.info("topic_parser: force-translated '%s' -> '%s'", v, en)
-                    else:
-                        new_vals.append(v)
-                except Exception as exc:
-                    logger.warning("topic_parser: translate failed for '%s': %s", v, exc)
-                    new_vals.append(v)
-            else:
+            if not _has_chinese(v):
                 new_vals.append(v)
+                continue
+
+            # Strategy 1: LLM translation
+            en = ""
+            try:
+                prompt = (
+                    f"Translate the following Chinese academic term to English. "
+                    f"Output ONLY the English translation, no explanation.\n\n"
+                    f"Chinese: {v}\nEnglish:"
+                )
+                result = call_json(
+                    prompt,
+                    system="You are a translator. Output only the English term.",
+                    profile="fast_json",
+                    max_tokens=50,
+                    timeout=10,
+                    expected="dict",
+                )
+                if isinstance(result, dict):
+                    en = (
+                        result.get("translation", "")
+                        or result.get("english", "")
+                        or result.get("output", "")
+                        or str(result)
+                    )
+                else:
+                    en = str(result)
+                en = en.strip().strip('"').strip("'").strip()
+                if en and not _has_chinese(en):
+                    new_vals.append(en)
+                    logger.info("topic_parser: force-translated '%s' -> '%s' (LLM)", v, en)
+                    continue
+            except Exception as exc:
+                logger.warning("topic_parser: LLM translate failed for '%s': %s", v, exc)
+
+            # Strategy 2: Heuristic dictionary fallback
+            en = _heuristic_translate(v)
+            if en and not _has_chinese(en):
+                new_vals.append(en)
+                logger.info("topic_parser: force-translated '%s' -> '%s' (heuristic)", v, en)
+            else:
+                # Last resort: keep original (search will return 0, but graph won't crash)
+                new_vals.append(v)
+                logger.warning("topic_parser: could not translate '%s'", v)
+
         translated[key] = new_vals
 
     return translated
