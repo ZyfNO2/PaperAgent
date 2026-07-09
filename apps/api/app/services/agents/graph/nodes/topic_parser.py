@@ -198,6 +198,60 @@ def _heuristic_parse(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _has_chinese(s: str) -> bool:
+    return any(ord(c) > 127 for c in str(s))
+
+
+def _force_translate_keywords(atoms: dict[str, Any]) -> dict[str, Any]:
+    """Re3.9.4: Post-process — force-translate any non-ASCII keywords to English."""
+    translated = dict(atoms)
+
+    for key in ("method", "object", "task", "scenario", "domain"):
+        vals = translated.get(key) or []
+        if isinstance(vals, str):
+            vals = [vals]
+        new_vals: list[str] = []
+        for v in vals:
+            if _has_chinese(v):
+                try:
+                    prompt = (
+                        f"Translate the following Chinese academic term to English. "
+                        f"Output ONLY the English translation, no explanation.\n\n"
+                        f"Chinese: {v}\nEnglish:"
+                    )
+                    result = call_json(
+                        prompt,
+                        system="You are a translator. Output only the English term.",
+                        profile="fast_json",
+                        max_tokens=50,
+                        timeout=10,
+                        expected="dict",
+                    )
+                    if isinstance(result, dict):
+                        en = (
+                            result.get("translation", "")
+                            or result.get("english", "")
+                            or result.get("output", "")
+                            or str(result)
+                        )
+                    else:
+                        en = str(result)
+                    en = en.strip().strip('"').strip("'").strip()
+                    if en and not _has_chinese(en):
+                        new_vals.append(en)
+                        logger.info("topic_parser: force-translated '%s' -> '%s'", v, en)
+                    else:
+                        new_vals.append(v)
+                except Exception as exc:
+                    logger.warning("topic_parser: translate failed for '%s': %s", v, exc)
+                    new_vals.append(v)
+            else:
+                new_vals.append(v)
+        translated[key] = new_vals
+
+    return translated
+
+
 def topic_parser_node(state: ResearchState) -> dict[str, Any]:
     """Parse topic -> topic_atoms. Skips LLM call if atoms already present."""
     topic = state.get("topic") or ""
@@ -267,6 +321,9 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
         if atoms.get("method") or atoms.get("object") or atoms.get("task"):
             logger.info("topic_parser: heuristic fallback extracted atoms from topic (LLM returned %s)",
                         "garbage" if _method_is_garbage else "empty")
+
+    # Re3.9.4: Force-translate any remaining Chinese keywords to English
+    atoms = _force_translate_keywords(atoms)
 
     trace = _emit("topic_parser", t0,
                   {"topic_len": len(topic)},

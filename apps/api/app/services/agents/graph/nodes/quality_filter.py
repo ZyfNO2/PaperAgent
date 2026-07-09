@@ -262,11 +262,37 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
         kept = list(candidates)
         dropped = []
 
+    # Re3.9.4: Relevance filter — move papers with zero keyword overlap to weak_papers
+    atoms = state.get("topic_atoms") or {}
+    low_relevance: list[dict[str, Any]] = []
+    if atoms and kept:
+        topic_keywords: set[str] = set()
+        for akey in ("method", "object", "task", "scenario"):
+            for v in (atoms.get(akey) or []):
+                for word in str(v).lower().split():
+                    if len(word) >= 3:
+                        topic_keywords.add(word)
+        if topic_keywords:
+            relevant = []
+            for p in kept:
+                title = (p.get("title") or "").lower()
+                if any(kw in title for kw in topic_keywords):
+                    relevant.append(p)
+                else:
+                    p["relevance_flag"] = "low_relevance"
+                    low_relevance.append(p)
+            if relevant:
+                # Only move if we still have relevant papers left
+                kept = relevant
+                logger.info("quality_filter: %d papers moved to low_relevance (no keyword overlap)",
+                            len(low_relevance))
+
     trace["ended_at"] = _now_iso()
     trace["elapsed_s"] = round(time.time() - t0, 3)
     trace["output_summary"] = {
         "kept": len(kept),
         "dropped": len(dropped),
+        "low_relevance": len(low_relevance),
         "pre_filter_keep": n_pre_keep,
         "pre_filter_drop": n_pre_drop,
         "llm_judged": len(gray_indices),
@@ -276,11 +302,15 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
         "total": len(candidates),
         "kept": len(kept),
         "dropped": len(dropped),
+        "low_relevance": len(low_relevance),
         "dropped_items": dropped,
     }
 
-    return {
+    result_patch: dict[str, Any] = {
         "paper_candidates": kept,
         "filter_results": filter_results,
         "trace_events": [trace],
     }
+    if low_relevance:
+        result_patch["weak_papers"] = low_relevance
+    return result_patch

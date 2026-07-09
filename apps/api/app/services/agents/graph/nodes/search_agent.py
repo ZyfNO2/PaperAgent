@@ -201,6 +201,54 @@ def _llm_decide(
     return _fallback_decide(steps, search_plan, all_papers, all_repos, failed_tools, atoms)
 
 
+def _count_relevant_papers(papers: list[dict[str, Any]], atoms: dict[str, Any]) -> int:
+    """Re3.9.4: Count papers whose titles have keyword overlap with topic_atoms."""
+    topic_keywords: set[str] = set()
+    for key in ("method", "object", "task", "scenario"):
+        for v in (atoms.get(key) or []):
+            for word in str(v).lower().split():
+                if len(word) >= 3:
+                    topic_keywords.add(word)
+    if not topic_keywords:
+        return len(papers)
+    count = 0
+    for p in papers:
+        title = (p.get("title") or "").lower()
+        if any(kw in title for kw in topic_keywords):
+            count += 1
+    return count
+
+
+def _generate_reflection_query(
+    atoms: dict[str, Any],
+    steps: list[dict[str, Any]],
+    papers: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Re3.9.4: Generate a new search query using reflection strategies."""
+    used_queries = {
+        (s.get("tool"), s.get("query"))
+        for s in steps
+        if s.get("type") == "tool_call"
+    }
+    method = atoms.get("method") or []
+    obj = atoms.get("object") or []
+    domain = atoms.get("domain") or []
+
+    if obj:
+        q = " ".join(obj[:2])
+        if ("arxiv", q) not in used_queries:
+            return {"tool": "arxiv", "query": q, "strategy": "simplify:object_only"}
+    if domain and method:
+        q = f"{method[0]} {domain[0]}"
+        if ("crossref", q) not in used_queries:
+            return {"tool": "crossref", "query": q, "strategy": "broaden:method+domain"}
+    if method:
+        q = f"{method[0]} application"
+        if ("openalex", q) not in used_queries:
+            return {"tool": "openalex", "query": q, "strategy": "synonym:method+application"}
+    return None
+
+
 def _fallback_decide(
     steps: list[dict[str, Any]],
     search_plan: dict[str, Any] | None,
@@ -436,12 +484,49 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                         }
 
             if thought.get("action") == "stop":
-                steps.append({
-                    "step": step_idx,
-                    "type": "stop",
-                    "reason": thought.get("reason", "LLM decided to stop"),
-                })
-                break
+                # Re3.9.4: Relevance-aware stop — if papers have low relevance, try reflection
+                _atoms_for_rel = state.get("topic_atoms") or {}
+                if _atoms_for_rel and all_papers and step_idx < _MAX_STEPS - 2:
+                    _rel_count = _count_relevant_papers(all_papers, _atoms_for_rel)
+                    _total = len(all_papers)
+                    _ratio = _rel_count / _total if _total > 0 else 1.0
+                    if _ratio < 0.3 and _total < 15:
+                        _reflection = _generate_reflection_query(_atoms_for_rel, steps, all_papers)
+                        if _reflection:
+                            logger.info("search_agent: stop blocked, relevance=%d/%d=%.0f%%, reflecting",
+                                        _rel_count, _total, _ratio * 100)
+                            steps.append({
+                                "step": step_idx,
+                                "type": "reflection",
+                                "reason": f"relevance {_ratio:.0%}, {_reflection.get('strategy','')}",
+                            })
+                            thought = {
+                                "action": "search",
+                                "tool": _reflection.get("tool", "arxiv"),
+                                "query": _reflection.get("query", ""),
+                                "reason": f"reflection: low relevance ({_ratio:.0%})",
+                            }
+                        else:
+                            steps.append({
+                                "step": step_idx,
+                                "type": "stop",
+                                "reason": thought.get("reason", "LLM decided to stop"),
+                            })
+                            break
+                    else:
+                        steps.append({
+                            "step": step_idx,
+                            "type": "stop",
+                            "reason": thought.get("reason", "LLM decided to stop"),
+                        })
+                        break
+                else:
+                    steps.append({
+                        "step": step_idx,
+                        "type": "stop",
+                        "reason": thought.get("reason", "LLM decided to stop"),
+                    })
+                    break
 
             tool = thought.get("tool", "").strip().lower()
             query = thought.get("query", "").strip()
