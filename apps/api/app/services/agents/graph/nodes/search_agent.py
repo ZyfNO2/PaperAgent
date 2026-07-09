@@ -503,6 +503,38 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                 })
                 break
 
+            # Re3.9.3: incremental dedup + partial state write for real-time streaming
+            _seen_keys: set[str] = set()
+            _unique_papers: list[dict[str, Any]] = []
+            for p in all_papers:
+                key = _dedup_key(p)
+                if key and key not in _seen_keys:
+                    _seen_keys.add(key)
+                    _unique_papers.append(p)
+            _seen_repo_keys: set[str] = set()
+            _unique_repos: list[dict[str, Any]] = []
+            for r in all_repos:
+                key = _dedup_key(r)
+                if key and key not in _seen_repo_keys:
+                    _seen_repo_keys.add(key)
+                    _unique_repos.append(r)
+
+            case_id_for_partial = state.get("case_id", "")
+            if case_id_for_partial:
+                import pathlib as _pl
+                _partial_path = _pl.Path("tmp_re13_eval") / case_id_for_partial / "state_partial.json"
+                _partial_path.parent.mkdir(parents=True, exist_ok=True)
+                _partial = {
+                    "paper_candidates": _unique_papers,
+                    "repo_candidates": _unique_repos,
+                    "search_steps": steps,
+                    "last_update": _now_iso(),
+                }
+                _partial_path.write_text(
+                    json.dumps(_partial, ensure_ascii=False, default=str),
+                    encoding="utf-8",
+                )
+
         # Deduplicate papers — normalized title + DOI key
         seen_keys: set[str] = set()
         unique_papers: list[dict[str, Any]] = []

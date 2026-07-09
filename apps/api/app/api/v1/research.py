@@ -574,6 +574,66 @@ def _sse_event(event_type: str, data: dict[str, Any]) -> str:
     return f"event: {event_type}\ndata: {json.dumps(data, ensure_ascii=False, default=str)}\n\n"
 
 
+@router.get("/graph-topology")
+def graph_topology() -> dict[str, Any]:
+    """Return static graph topology for visualization (all cases share same structure)."""
+    return {
+        "nodes": [
+            {"id": "intake", "label": "intake", "x": 120, "y": 30, "group": "input"},
+            {"id": "topic_parser", "label": "parser", "x": 120, "y": 80, "group": "parse"},
+            {"id": "search_planner", "label": "planner", "x": 120, "y": 130, "group": "search"},
+            {"id": "search_agent", "label": "search", "x": 120, "y": 180, "group": "search"},
+            {"id": "quality_filter", "label": "filter", "x": 120, "y": 230, "group": "filter"},
+            {"id": "verify", "label": "verify", "x": 120, "y": 280, "group": "verify"},
+            {"id": "quality_gate", "label": "gate", "x": 120, "y": 330, "group": "verify"},
+            {"id": "targeted_repair", "label": "repair", "x": 250, "y": 280, "group": "repair"},
+            {"id": "citation_expander", "label": "citation", "x": 250, "y": 330, "group": "expand"},
+            {"id": "dataset_repo_extractor", "label": "dataset", "x": 120, "y": 380, "group": "extract"},
+            {"id": "evidence_graph_builder", "label": "graph", "x": 120, "y": 430, "group": "audit"},
+            {"id": "baseline_classifier", "label": "baseline", "x": 120, "y": 480, "group": "audit"},
+            {"id": "feasibility_assessor", "label": "feasibility", "x": 120, "y": 530, "group": "assess"},
+            {"id": "human_gate_search", "label": "Gate", "x": 120, "y": 580, "group": "gate"},
+            {"id": "work_package", "label": "work_pkg", "x": 120, "y": 630, "group": "analyze"},
+            {"id": "innovation_extractor", "label": "innovation", "x": 70, "y": 680, "group": "analyze"},
+            {"id": "sota_matcher", "label": "sota", "x": 170, "y": 680, "group": "analyze"},
+            {"id": "narrative_builder", "label": "narrative", "x": 120, "y": 730, "group": "analyze"},
+            {"id": "low_bar_review", "label": "low_bar", "x": 120, "y": 780, "group": "review"},
+            {"id": "optimization_advisor", "label": "optimize", "x": 120, "y": 830, "group": "review"},
+            {"id": "devils_advocate", "label": "devils", "x": 120, "y": 880, "group": "review"},
+            {"id": "human_gate", "label": "gate2", "x": 120, "y": 930, "group": "gate"},
+            {"id": "final_recommendation", "label": "final", "x": 120, "y": 980, "group": "output"},
+        ],
+        "edges": [
+            {"from": "intake", "to": "topic_parser"},
+            {"from": "topic_parser", "to": "search_planner"},
+            {"from": "search_planner", "to": "search_agent"},
+            {"from": "search_agent", "to": "quality_filter"},
+            {"from": "quality_filter", "to": "verify"},
+            {"from": "verify", "to": "quality_gate"},
+            {"from": "quality_gate", "to": "targeted_repair", "dashed": True},
+            {"from": "quality_gate", "to": "citation_expander", "dashed": True},
+            {"from": "quality_gate", "to": "dataset_repo_extractor", "dashed": True},
+            {"from": "targeted_repair", "to": "search_agent", "dashed": True, "label": "repair"},
+            {"from": "citation_expander", "to": "verify", "dashed": True, "label": "expand"},
+            {"from": "dataset_repo_extractor", "to": "evidence_graph_builder"},
+            {"from": "evidence_graph_builder", "to": "baseline_classifier"},
+            {"from": "baseline_classifier", "to": "feasibility_assessor"},
+            {"from": "feasibility_assessor", "to": "human_gate_search", "dashed": True},
+            {"from": "human_gate_search", "to": "work_package"},
+            {"from": "work_package", "to": "innovation_extractor"},
+            {"from": "work_package", "to": "sota_matcher"},
+            {"from": "innovation_extractor", "to": "narrative_builder"},
+            {"from": "sota_matcher", "to": "narrative_builder"},
+            {"from": "narrative_builder", "to": "low_bar_review"},
+            {"from": "low_bar_review", "to": "optimization_advisor", "dashed": True},
+            {"from": "optimization_advisor", "to": "devils_advocate"},
+            {"from": "devils_advocate", "to": "narrative_builder", "dashed": True, "label": "revision"},
+            {"from": "devils_advocate", "to": "human_gate", "dashed": True},
+            {"from": "human_gate", "to": "final_recommendation"},
+        ],
+    }
+
+
 @router.get("/{case_id}/stream")
 async def case_stream(case_id: str):
     """SSE stream of node progress for a running or completed case."""
@@ -581,12 +641,13 @@ async def case_stream(case_id: str):
     sent_events: int = 0
     last_trace_count: int = 0
     last_current_node: str = ""
+    last_partial_mtime: float = 0.0  # Re3.9.3: track partial state changes
     poll_interval = 0.3  # Re3.9.2: faster polling
     max_wait = 600  # 10 min timeout
     waited = 0.0
 
     async def event_generator():
-        nonlocal sent_events, last_trace_count, waited, last_current_node
+        nonlocal sent_events, last_trace_count, waited, last_current_node, last_partial_mtime
 
         # Send search_started immediately if case is running
         with _LOCK:
@@ -603,6 +664,28 @@ async def case_stream(case_id: str):
             if current_node and current_node != last_current_node:
                 yield _sse_event("node_current", {"node": current_node})
                 last_current_node = current_node
+
+            # Re3.9.3: push papers_update when state_partial.json changes
+            partial_path = _case_dir(case_id) / "state_partial.json"
+            if partial_path.exists():
+                try:
+                    partial_mtime = partial_path.stat().st_mtime
+                    if partial_mtime != last_partial_mtime:
+                        last_partial_mtime = partial_mtime
+                        partial = json.loads(partial_path.read_text(encoding="utf-8"))
+                        papers = partial.get("paper_candidates") or []
+                        repos = partial.get("repo_candidates") or []
+                        yield _sse_event("papers_update", {
+                            "papers": [{"title": (p.get("title") or "")[:80],
+                                        "source": p.get("source", ""),
+                                        "url": p.get("url", "")}
+                                       for p in papers[:20]],
+                            "n_papers": len(papers),
+                            "n_repos": len(repos),
+                            "search_step": (partial.get("search_steps") or [{}])[-1].get("step", 0),
+                        })
+                except Exception:
+                    pass
 
             # Check for new trace events
             trace_path = _case_dir(case_id) / "trace.json"

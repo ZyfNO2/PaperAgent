@@ -54,6 +54,7 @@ class ResearchState(TypedDict, total=False):
 
     # --- Human gate (Re1.1: pass-through unless HUMAN_GATE_ENABLED=true) ---
     human_gate: dict[str, Any]
+    human_gate_search: dict[str, Any]  # Re3.9.3: gate after search, before analysis
 
     # --- Final recommendation ---
     final_recommendation: dict[str, Any]

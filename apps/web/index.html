@@ -147,12 +147,28 @@ details.results-section[open] summary::before{transform:rotate(90deg);}
 </div>
 <div id="statusBar" class="status-bar"></div>
 <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+<div id="gateSearchContainer"></div>
 
 <!-- State machine panel -->
 <div class="state-machine">
-  <div class="sm-title">状态机 <span id="smProgress" style="float:right;font-weight:400">0/0</span></div>
-  <div class="state-track" id="stateTrack"></div>
+  <div class="sm-title">Graph 拓扑 <span id="smProgress" style="float:right;font-weight:400">—</span></div>
+  <div style="max-height:600px;overflow-y:auto;">
+    <svg id="graphSvg" width="340" height="1040" style="overflow:visible;"></svg>
+  </div>
 </div>
+<style>
+.graph-node{cursor:pointer;transition:all .3s}
+.graph-node-rect{fill:#f1f5f9;stroke:#e2e8f0;stroke-width:1.5;rx:6}
+.graph-node-rect.done{fill:#dcfce7;stroke:#86efac}
+.graph-node-rect.current{fill:#2563eb;stroke:#1d4ed8}
+.graph-node-rect.gate{fill:#fef3c7;stroke:#f59e0b}
+.graph-node-text{font-size:9px;text-anchor:middle;dominant-baseline:middle;fill:#475569;pointer-events:none}
+.graph-node-text.done{fill:#16a34a}
+.graph-node-text.current{fill:#fff;font-weight:600}
+.graph-edge{stroke:#cbd5e1;stroke-width:1.2;fill:none}
+.graph-edge.dashed{stroke-dasharray:4 2}
+.graph-edge-label{font-size:7px;fill:#94a3b8}
+</style>
 
 <!-- Timeline Debugger (Re3.5) -->
 <div class="timeline-debugger" id="timelineDebugger" style="display:none;">
@@ -291,12 +307,15 @@ function genCaseId() { return 're24-' + Date.now().toString(36); }
 
 function setProgress(n) {
   var pct = Math.min(100, Math.round(n / TOTAL_NODES * 100));
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('smProgress').textContent = n + '/' + TOTAL_NODES;
+  var pf = document.getElementById('progressFill');
+  if (pf) pf.style.width = pct + '%';
+  var sm = document.getElementById('smProgress');
+  if (sm) sm.textContent = n + '/' + TOTAL_NODES;
 }
 
 function initStateMachine() {
   var track = document.getElementById('stateTrack');
+  if (!track) return;  // Re3.9.3: stateTrack replaced by graphSvg
   var html = '';
   for (var i = 0; i < NODE_NAMES.length; i++) {
     if (i > 0) html += '<span class="state-arrow">›</span>';
@@ -308,8 +327,10 @@ function initStateMachine() {
 }
 
 function markNodeDone(nodeName) {
+  markGraphNodeDone(nodeName);
   var chip = _resolveNodeName(nodeName);
   var nodes = document.querySelectorAll('.state-node');
+  if (!nodes.length) return;
   for (var i = 0; i < nodes.length; i++) {
     var n = nodes[i];
     if (n.dataset.name === chip) {
@@ -320,8 +341,10 @@ function markNodeDone(nodeName) {
 }
 
 function markNodeCurrent(nodeName) {
+  markGraphNodeCurrent(nodeName);
   var chip = _resolveNodeName(nodeName);
   var nodes = document.querySelectorAll('.state-node');
+  if (!nodes.length) return;
   for (var i = 0; i < nodes.length; i++) {
     var n = nodes[i];
     if (n.dataset.name === chip) {
@@ -509,12 +532,39 @@ function connectSSE(caseId) {
 
   es.addEventListener('node_current', function(e) {
     var d = JSON.parse(e.data);
-    if (d.node) markNodeCurrent(d.node);
+    if (d.node) {
+      markNodeCurrent(d.node);
+      markGraphNodeCurrent(d.node);
+    }
+    if (d.node === 'human_gate_search') showHumanGateSearch();
+  });
+
+  es.addEventListener('papers_update', function(e) {
+    var d = JSON.parse(e.data);
+    var html = '';
+    var papers = d.papers || [];
+    for (var i = 0; i < papers.length; i++) {
+      var p = papers[i];
+      html += '<div class="paper-card" style="border-left-color:#3b82f6;">';
+      html += '<span class="verdict-icon" style="color:#3b82f6;">&#9203;</span>';
+      html += '<div class="paper-body">';
+      html += '<div class="paper-title">' + escapeHtml(p.title) + '</div>';
+      html += '<div class="paper-rel">' + p.source + '</div>';
+      html += '</div></div>';
+    }
+    if (papers.length === 0) {
+      html = '<div style="color:#94a3b8;font-size:13px;padding:8px;">搜索中...</div>';
+    }
+    var listEl = document.getElementById('paperList');
+    if (listEl) listEl.innerHTML = html;
+    setCount('cnt-papers', d.n_papers);
+    setCount('cnt-repos', d.n_repos);
   });
 
   es.addEventListener('node_complete', function(e) {
     var d = JSON.parse(e.data);
     advanceProgress(d.node);
+    markGraphNodeDone(d.node);
     var nextMap = {
       'dataset_repo_extractor': 'graph', 'evidence_graph_builder': 'classify',
       'baseline_classifier': 'feas', 'feasibility_assessor': 'workpkg',
@@ -846,8 +896,13 @@ function viewCase(caseId) {
   if (!caseId) return;
   initStateMachine();
   setProgress(TOTAL_NODES);
-  // Mark all nodes as done
+  // Mark all nodes as done (state-node chips if present)
   document.querySelectorAll('.state-node').forEach(function(n) { n.classList.add('done'); });
+  // Re3.9.3: mark all graph nodes done
+  if (graphTopology) {
+    (graphTopology.nodes || []).forEach(function(n) { completedNodes.add(n.id); });
+    renderGraph();
+  }
   fetchAndRenderAll(caseId);
   document.getElementById('statusBar').textContent = '查看历史: ' + caseId;
 }
@@ -1017,6 +1072,121 @@ function selectTimelineNode(idx) {
 
 // Init
 initStateMachine();
+var graphTopology = null;
+var completedNodes = new Set();
+var currentNodeId = '';
+
+async function loadGraphTopology() {
+  try {
+    var resp = await fetch('/api/v1/research/graph-topology');
+    if (!resp.ok) return;
+    graphTopology = await resp.json();
+    renderGraph();
+  } catch(e) { console.error('topology:', e); }
+}
+
+function _findNode(id) {
+  if (!graphTopology) return null;
+  var nodes = graphTopology.nodes || [];
+  for (var i = 0; i < nodes.length; i++) {
+    if (nodes[i].id === id) return nodes[i];
+  }
+  return null;
+}
+
+function _resolveNodeName(name) {
+  var m = {
+    'retrieve':'search_agent','paper_retriever':'search_agent',
+    'dataset_repo':'dataset_repo_extractor','graph':'evidence_graph_builder',
+    'classify':'baseline_classifier','feas':'feasibility_assessor',
+    'workpkg':'work_package','innov':'innovation_extractor','sota':'sota_matcher',
+    'narrative':'narrative_builder','review':'low_bar_review',
+    'optimize':'optimization_advisor','devils':'devils_advocate',
+    'human':'human_gate','final':'final_recommendation'
+  };
+  return m[name] || name;
+}
+
+function renderGraph() {
+  if (!graphTopology) return;
+  var svg = document.getElementById('graphSvg');
+  if (!svg) return;
+  var html = '';
+  var edges = graphTopology.edges || [];
+  for (var i = 0; i < edges.length; i++) {
+    var e = edges[i];
+    var fn = _findNode(e.from), tn = _findNode(e.to);
+    if (!fn || !tn) continue;
+    var cls = 'graph-edge' + (e.dashed ? ' dashed' : '');
+    html += '<line class="'+cls+'" x1="'+fn.x+'" y1="'+(fn.y+14)+'" x2="'+tn.x+'" y2="'+(tn.y-14)+'"/>';
+    if (e.label) {
+      var mx=(fn.x+tn.x)/2, my=(fn.y+tn.y)/2;
+      html += '<text class="graph-edge-label" x="'+(mx+4)+'" y="'+my+'">'+e.label+'</text>';
+    }
+  }
+  var nodes = graphTopology.nodes || [];
+  for (var i = 0; i < nodes.length; i++) {
+    var n = nodes[i];
+    var isDone = completedNodes.has(n.id);
+    var isCurrent = (n.id === currentNodeId);
+    var isGate = (n.group === 'gate');
+    var rc = 'graph-node-rect';
+    if (isCurrent) rc += ' current'; else if (isDone) rc += ' done';
+    if (isGate && !isCurrent) rc += ' gate';
+    var tc = 'graph-node-text';
+    if (isCurrent) tc += ' current'; else if (isDone) tc += ' done';
+    var w=90,h=24,x=n.x-w/2,y=n.y-h/2;
+    html += '<g class="graph-node" data-node="'+n.id+'">';
+    html += '<rect class="'+rc+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'"/>';
+    html += '<text class="'+tc+'" x="'+n.x+'" y="'+n.y+'">'+n.label+'</text>';
+    html += '</g>';
+  }
+  svg.innerHTML = html;
+  svg.querySelectorAll('.graph-node').forEach(function(el) {
+    el.onclick = function() {
+      var nid = el.getAttribute('data-node');
+      if (tlTraceData) {
+        for (var j=0; j<tlTraceData.length; j++) {
+          if (tlTraceData[j].node === nid || nid.includes(tlTraceData[j].node)) {
+            selectTimelineNode(j); break;
+          }
+        }
+      }
+    };
+  });
+}
+
+function markGraphNodeDone(nodeName) {
+  completedNodes.add(_resolveNodeName(nodeName));
+  completedNodes.add(nodeName);
+  renderGraph();
+}
+
+function markGraphNodeCurrent(nodeName) {
+  currentNodeId = _resolveNodeName(nodeName);
+  completedNodes.add(currentNodeId);
+  renderGraph();
+  var node = _findNode(currentNodeId);
+  if (node) {
+    var svg = document.getElementById('graphSvg');
+    if (svg && svg.parentElement) svg.parentElement.scrollTop = node.y - 80;
+  }
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showHumanGateSearch() {
+  var html = '<div style="background:#fef3c7;border-radius:8px;padding:12px;margin:10px 0;text-align:center;">';
+  html += '<span style="font-size:13px;color:#92400e;">搜索阶段完成，自动继续分析（调试模式）</span>';
+  html += '</div>';
+  var c = document.getElementById('gateSearchContainer');
+  if (c) { c.innerHTML = html; setTimeout(function() { c.innerHTML = ''; }, 3000); }
+}
+
+loadGraphTopology();
 loadHistory();
 renderUploadList();
 </script>

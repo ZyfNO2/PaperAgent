@@ -320,6 +320,45 @@ def human_gate_node(state: ResearchState) -> dict[str, Any]:
             "trace_events": [trace]}
 
 
+def human_gate_search_node(state: ResearchState) -> dict[str, Any]:
+    """Re3.9.3: Human gate after search+verify, before analysis.
+
+    Pauses execution to let user review search results.
+    In debug mode (HUMAN_GATE_ENABLED=false), passes through automatically.
+    """
+    import os
+    enabled = os.environ.get("HUMAN_GATE_ENABLED", "false").lower() == "true"
+    t0 = time.time()
+
+    vp = state.get("verified_papers") or []
+    feas = state.get("feasibility_report") or {}
+
+    if enabled:
+        from langgraph.types import interrupt
+        try:
+            decision = interrupt({
+                "kind": "human_gate_search",
+                "message": "搜索阶段完成，请确认是否继续分析",
+                "n_verified": len(vp),
+                "n_repos": len(state.get("repo_candidates") or []),
+                "n_datasets": len(state.get("dataset_candidates") or []),
+                "feasibility_verdict": feas.get("verdict", ""),
+                "feasibility_score": feas.get("score", 0),
+            })
+            gate = {"status": "confirmed", "decision": decision}
+        except RuntimeError:
+            gate = {"status": "pass_through_no_runtime", "reason": "no checkpointer"}
+    else:
+        gate = {"status": "pass_through", "reason": "debug mode (HUMAN_GATE_ENABLED!=true)"}
+
+    trace = _emit("human_gate_search", t0,
+                  {"enabled": enabled, "n_papers": len(vp)},
+                  {"status": gate["status"]}, [],
+                  "local", [],
+                  state_keys=["human_gate_search", "trace_events"])
+    return {"human_gate_search": gate, "trace_events": [trace]}
+
+
 # ---------------------------------------------------------------------------
 # Final recommendation — summarize evidence + work package + audit
 # ---------------------------------------------------------------------------

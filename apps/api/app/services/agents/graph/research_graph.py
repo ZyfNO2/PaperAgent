@@ -77,15 +77,16 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     graph.add_edge("dataset_repo_extractor", "evidence_graph_builder")
     graph.add_edge("evidence_graph_builder", "baseline_classifier")
     graph.add_edge("baseline_classifier", "feasibility_assessor")  # Re1.4
-    # Re2: conditional edge — feasibility_assessor → work_package / optimization_advisor
+    # Re3.9.3: Insert human_gate_search between feasibility_assessor and work_package
     graph.add_conditional_edges(
         "feasibility_assessor",
         _route_after_feasibility,
         {
-            "work_package": "work_package",
-            "optimization_advisor": "optimization_advisor",
+            "work_package": "human_gate_search",       # Re3.9.3: gate before analysis
+            "optimization_advisor": "optimization_advisor",  # risky/not_recommended skips gate
         },
     )
+    graph.add_edge("human_gate_search", "work_package")  # Re3.9.3: gate → work_package
     graph.add_edge("work_package", "innovation_extractor")         # Re2: parallel fan-out
     graph.add_edge("work_package", "sota_matcher")                 # Re2: parallel fan-out
     graph.add_edge("innovation_extractor", "narrative_builder")    # Re2: fan-in

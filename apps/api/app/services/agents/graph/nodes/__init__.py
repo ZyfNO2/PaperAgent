@@ -50,6 +50,7 @@ REGISTRY: dict[str, callable] = {
     "work_package": _content.work_package_node,             # Re1.1 compat alias
     "low_bar_review": _content.low_bar_review_node,
     "human_gate": _content.human_gate_node,
+    "human_gate_search": _content.human_gate_search_node,  # Re3.9.3
     "final_recommendation": _content.final_recommendation_node,
     # Re1.4 analysis nodes
     "feasibility_assessor": _feasibility.feasibility_assessor_node,
@@ -84,6 +85,7 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
                                 "trace_events", "errors"),
     "low_bar_review": ("low_bar_review", "work_packages", "trace_events"),
     "human_gate": ("human_gate", "trace_events"),
+    "human_gate_search": ("human_gate_search", "trace_events"),  # Re3.9.3
     "final_recommendation": ("final_recommendation", "trace_events"),
     # Re1.4 analysis nodes
     "feasibility_assessor": ("feasibility_report", "trace_events"),
