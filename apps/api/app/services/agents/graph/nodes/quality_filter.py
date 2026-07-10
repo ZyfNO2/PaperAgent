@@ -310,6 +310,7 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
         "paper_candidates": kept,
         "filter_results": filter_results,
         "trace_events": [trace],
+        "verify_scope": "search",  # Re6.1: explicit scope for verify_node routing
     }
     if low_relevance:
         result_patch["weak_papers"] = low_relevance

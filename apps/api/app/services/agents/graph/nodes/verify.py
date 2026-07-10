@@ -121,18 +121,35 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
     topic = state.get("topic") or ""
     atoms = state.get("topic_atoms") or {}
 
-    # Re1.3: support second-round verify for expanded papers
+    # Determine candidates based on verify_scope (explicit) or citation_done (legacy).
+    # verify_scope ∈ {"search", "expanded", "repair"} — set by the routing function
+    # to disambiguate the three call paths into verify_node:
+    #   search   → quality_filter → verify  (first round, candidates = paper_candidates)
+    #   expanded → citation_expander → verify when n_expanded > 0
+    #   repair  → paper_retriever → quality_filter → verify (repair loop)
+    verify_scope = state.get("verify_scope") or ""
     citation_done = state.get("citation_expansion_done", False)
-    if citation_done:
-        # After citation_expander: verify expanded_papers
-        # After repair loop (expanded_papers may be empty): fall back to paper_candidates
+
+    if verify_scope == "expanded":
+        # After citation_expander with n_expanded > 0: ONLY verify expanded papers.
+        # Never fall back to paper_candidates — that would wipe existing accepted.
+        candidates = list(state.get("expanded_papers") or [])
+    elif verify_scope == "repair":
+        # Repair loop: candidates are the freshly-repaired paper_candidates.
+        candidates = list(state.get("paper_candidates") or [])
+    elif verify_scope == "search" or not citation_done:
+        # First round: verify paper_candidates as-is.
+        candidates = list(state.get("paper_candidates") or [])
+    else:
+        # citation_done=True but verify_scope not "expanded": avoid re-verifying
+        # paper_candidates when expanded_papers is empty — this path should be
+        # prevented by the conditional edge route_after_citation_expander, but
+        # we guard here as well for defence in depth.
         expanded = list(state.get("expanded_papers") or [])
         if expanded:
             candidates = expanded
         else:
-            candidates = list(state.get("paper_candidates") or [])
-    else:
-        candidates = list(state.get("paper_candidates") or [])
+            candidates = []  # Guard: do not fall back to paper_candidates
 
     user_constraints = state.get("user_constraints") or {}
     if isinstance(user_constraints, dict):
@@ -145,13 +162,14 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
         "node": "verify",
         "started_at": _now_iso(),
         "input_summary": {"n_candidates": len(candidates), "topic_len": len(topic),
-                          "round": 2 if citation_done else 1},
+                          "verify_scope": verify_scope or ("expanded" if citation_done else "search"),
+                          "citation_done": citation_done},
         "output_summary": {},
         "tool_calls": [{"tool": "re11_paper_verifier.llm", "profile": "fast_json"}],
         "errors": [],
         "provider": "fast_json",
         "state_keys": ["verified_papers", "weak_papers", "paper_candidates",
-                        "trace_events", "errors", "provider_profile"],
+                        "trace_events", "errors", "provider_profile", "verify_scope"],
     }
     errors: list[dict[str, Any]] = []
     verified: list[dict[str, Any]] = []

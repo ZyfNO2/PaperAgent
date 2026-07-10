@@ -71,6 +71,11 @@ async def _expand_one_seed(seed: dict[str, Any], sem: asyncio.Semaphore) -> list
         semantic_scholar_citations,
         semantic_scholar_references,
     )
+    from apps.api.app.services.source_policy import get_source_policy
+
+    policy = get_source_policy()
+    if not policy.is_enabled("semantic_scholar"):
+        return []
 
     async with sem:
         try:
@@ -88,7 +93,9 @@ async def _expand_one_seed(seed: dict[str, Any], sem: asyncio.Semaphore) -> list
                     top_k=_CITS_PER_SEED,
                 ),
             )
+            policy.mark_ok("semantic_scholar")
         except Exception as exc:
+            policy.mark_failed("semantic_scholar")
             logger.warning("citation_expander S2 API failed for seed %r: %s",
                            seed.get("title", "??"), type(exc).__name__)
             return []
@@ -217,6 +224,7 @@ def citation_expander_node(state: ResearchState) -> dict[str, Any]:
             "surveys_found": [],
             "repos_found": [],
             "citation_expansion_done": True,
+            "verify_scope": "expanded",  # Re6.1 Fix B: explicit scope (even when empty)
             "trace_events": [trace],
         }
 
@@ -292,5 +300,6 @@ def citation_expander_node(state: ResearchState) -> dict[str, Any]:
         "repos_found": repos,
         "citation_expansion_done": True,
         "paper_candidates": new_candidates,
+        "verify_scope": "expanded",  # Re6.1 Fix B: explicit scope for verify_node
         "trace_events": [trace],
     }

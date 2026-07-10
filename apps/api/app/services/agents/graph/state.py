@@ -78,6 +78,20 @@ class ResearchState(TypedDict, total=False):
     # Citation expansion done flag (prevents infinite loop)
     citation_expansion_done: bool
 
+    # Re6.1: explicit verify scope to disambiguate verify_node call paths
+    #   "search"   → quality_filter → verify (first round / repair loop)
+    #   "expanded" → citation_expander → verify (second round)
+    #   "repair"   → targeted_repair repair-loop verify
+    verify_scope: str
+
+    # Re6.1: targeted_repair outcome for conditional routing
+    #   "queries_ready"  → n_queries > 0, proceed to paper_retriever
+    #   "no_query"       → n_queries == 0, route to quality_gate or final
+    #   "exhausted"      → repair round cap reached
+    repair_outcome: str
+    repair_no_query_reason: str
+    repair_query_ids: list[str]
+
     # === Re1.4 new fields ===
     feasibility_report: dict[str, Any]
     innovation_points: list[dict[str, Any]]
@@ -98,3 +112,7 @@ class ResearchState(TypedDict, total=False):
     trace_events: Annotated[list[dict[str, Any]], operator.add]
     provider_profile: str
     errors: Annotated[list[dict[str, Any]], operator.add]
+
+    # === Re4.3 new fields ===
+    narrative_revisions: list[dict[str, Any]]  # append-only revision history
+    binding_validation: dict[str, Any]  # last validation result

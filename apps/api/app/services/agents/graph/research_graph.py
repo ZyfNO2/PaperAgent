@@ -50,7 +50,15 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     graph.add_edge("intake", "topic_parser")
     graph.add_edge("topic_parser", "search_planner")
     graph.add_edge("search_planner", "paper_retriever")
-    graph.add_edge("paper_retriever", "quality_filter")     # Re1.3
+    # Conditional: skip filter+verify when 0 papers (go straight to quality_gate)
+    graph.add_conditional_edges(
+        "paper_retriever",
+        _route_after_search,
+        {
+            "filter": "quality_filter",
+            "skip": "quality_gate",
+        },
+    )
     graph.add_edge("quality_filter", "verify")              # Re1.3
     graph.add_edge("verify", "quality_gate")
 
@@ -67,10 +75,27 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
         },
     )
     # Re3.0: repair loop goes back to paper_retriever (now search_agent)
-    graph.add_edge("targeted_repair", "paper_retriever")     # loop back
+    # Re6.1 Fix A: conditional edge — route based on repair_outcome
+    graph.add_conditional_edges(
+        "targeted_repair",
+        _route_after_targeted_repair,
+        {
+            "paper_retriever": "paper_retriever",   # queries_ready → search
+            "quality_gate": "quality_gate",          # no_query / exhausted → gate decides
+            "final_recommendation": "final_recommendation",  # exhausted + no evidence
+        },
+    )
 
     # Re1.3: citation_expander → verify (second round) → quality_gate (second round)
-    graph.add_edge("citation_expander", "verify")
+    # Re6.1 Fix B: conditional edge — skip verify when n_expanded == 0
+    graph.add_conditional_edges(
+        "citation_expander",
+        _route_after_citation_expander,
+        {
+            "verify": "verify",
+            "skip": "quality_gate",
+        },
+    )
     # verify → quality_gate is already defined above (same edge, verify checks round internally)
 
     # Post-expansion linear spine (Re1.4: 6 analysis nodes inserted)
@@ -137,6 +162,14 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     return graph.compile(checkpointer=checkpointer)
 
 
+def _route_after_search(state: ResearchState) -> str:
+    """Route after paper_retriever: skip filter+verify if 0 papers found."""
+    n_candidates = len(state.get("paper_candidates") or [])
+    if n_candidates == 0:
+        return "skip"
+    return "filter"
+
+
 def _route_after_quality_gate(state: ResearchState) -> str:
     """Route after quality gate (Re1.3: adds citation_expander path).
 
@@ -180,6 +213,53 @@ def _route_after_quality_gate(state: ResearchState) -> str:
         if n_papers < 1:
             return "blocked"  # expansion didn't help
         return "continue"
+
+
+def _route_after_citation_expander(state: ResearchState) -> str:
+    """Route after citation_expander: skip verify when no papers were expanded.
+
+    Re6.1 Fix B: when n_expanded == 0, verify_node would fall back to
+    paper_candidates and re-verify already-accepted papers (wiping them out
+    if the LLM returns empty).  Route to quality_gate instead and set
+    verify_scope so any downstream consumer learns the expansion was empty.
+    """
+    expanded = list(state.get("expanded_papers") or [])
+    if len(expanded) > 0:
+        return "verify"
+    return "skip"
+
+
+def _route_after_targeted_repair(state: ResearchState) -> str:
+    """Route after targeted_repair based on repair_outcome (Re6.1 Fix A).
+
+    Reads ``repair_outcome`` from state and routes:
+
+    - ``queries_ready`` (n_queries > 0)  → paper_retriever (normal repair)
+    - ``no_query`` (n_queries == 0)      → quality_gate (let gate decide:
+                                            weak promote vs. blocked)
+    - ``exhausted`` (round cap reached)  → quality_gate or final
+                                            recommendation if no evidence
+    """
+    outcome = state.get("repair_outcome", "")
+    n_papers = len(state.get("verified_papers") or [])
+    n_weak = len(state.get("weak_papers") or [])
+    n_baseline = len(state.get("baseline_candidates") or [])
+    has_evidence = (n_papers + n_weak) > 0 or n_baseline > 0
+
+    if outcome == "queries_ready":
+        return "paper_retriever"
+
+    if outcome == "exhausted":
+        # Round cap: if we already have evidence, let gate handle it;
+        # otherwise send to final recommendation.
+        if has_evidence:
+            return "quality_gate"
+        return "final_recommendation"
+
+    # outcome == "no_query" (or any unexpected value)
+    # No new search intent — let quality_gate decide whether to promote
+    # weak papers or mark the case as blocked.
+    return "quality_gate"
 
 
 def _route_after_review(state: ResearchState) -> str:

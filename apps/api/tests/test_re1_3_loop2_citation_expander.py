@@ -151,7 +151,15 @@ def test_citation_expander_node_with_mocked_s2():
                side_effect=mock_refs_fn):
         with patch("apps.api.app.services.retrieval.adapters.semantic_scholar_search.semantic_scholar_citations",
                    side_effect=mock_cits_fn):
-            result = citation_expander_node(state)
+            with patch(
+                "apps.api.app.services.source_policy.get_source_policy",
+                return_value=type("_MockPolicy", (), {
+                    "is_enabled": classmethod(lambda cls, name: True),
+                    "mark_ok": classmethod(lambda cls, name: None),
+                    "mark_failed": classmethod(lambda cls, name: None),
+                })(),
+            ):
+                result = citation_expander_node(state)
 
     assert result["citation_expansion_done"] is True
     assert len(result["seed_papers"]) == 2

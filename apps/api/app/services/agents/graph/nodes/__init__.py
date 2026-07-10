@@ -62,19 +62,21 @@ REGISTRY: dict[str, callable] = {
 }
 
 NODE_FIELDS: dict[str, tuple[str, ...]] = {
-    "intake": ("case_id", "trace_events", "errors", "provider_profile"),
+    "intake": ("case_id", "topic", "trace_events", "errors", "provider_profile"),
     "topic_parser": ("topic_atoms", "trace_events", "errors", "provider_profile"),
     "search_planner": ("search_plan", "trace_events", "errors", "provider_profile"),
     "paper_retriever": ("raw_results", "paper_candidates", "repo_candidates",
                        "search_steps", "trace_events", "errors", "provider_profile"),
-    "quality_filter": ("paper_candidates", "filter_results", "trace_events", "errors"),
+    "quality_filter": ("paper_candidates", "filter_results", "trace_events", "errors",
+                      "verify_scope"),  # Re6.1 Fix B
     "paper_verifier": ("verified_papers", "paper_candidates", "trace_events",
                       "errors", "provider_profile"),
     "citation_expander": ("seed_papers", "expanded_papers", "surveys_found",
                          "repos_found", "citation_expansion_done", "paper_candidates",
-                         "trace_events", "errors"),
+                         "trace_events", "errors", "verify_scope"),  # Re6.1 Fix B
     "quality_gate": ("evidence_audit", "trace_events"),
-    "targeted_repair": ("search_plan", "evidence_audit", "trace_events", "errors"),
+    "targeted_repair": ("search_plan", "evidence_audit", "trace_events", "errors",
+                        "repair_outcome", "repair_no_query_reason", "repair_query_ids"),  # Re6.1 Fix A
     "dataset_repo_extractor": ("dataset_candidates", "repo_candidates",
                               "evidence_audit", "trace_events", "errors"),
     "evidence_graph_builder": ("evidence_graph", "evidence_audit", "trace_events"),
