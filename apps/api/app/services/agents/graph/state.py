@@ -116,3 +116,16 @@ class ResearchState(TypedDict, total=False):
     # === Re4.3 new fields ===
     narrative_revisions: list[dict[str, Any]]  # append-only revision history
     binding_validation: dict[str, Any]  # last validation result
+
+    # === Re6.4 new fields ===
+    novelty_review_verdict: str
+    novelty_review_score: float
+    pseudo_innovation_risks: list[str]
+    pressure_points: list[dict[str, Any]]
+    differentiation_matrix: list[dict[str, Any]]
+    required_repairs: list[str]
+    review_strengths: list[str]
+    review_risks: list[str]
+    novelty_review_error: str
+    falsifiable_propositions: list[dict[str, Any]]
+    novelty_evolution_log: list[dict[str, Any]]
