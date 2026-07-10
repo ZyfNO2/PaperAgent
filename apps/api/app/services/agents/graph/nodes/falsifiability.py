@@ -1,0 +1,92 @@
+"""Re6.4 Falsifiability Planner — converts Insights into falsifiable propositions.
+
+Each accepted Insight yields 1-3 falsifiable propositions with:
+  - scoped setting (where does this apply?)
+  - observable effect (what will we see?)
+  - support condition (which result supports?)
+  - refute condition (which result refutes?)
+  - required test (what experiment?)
+  - evidence_ids binding
+
+Status: verified | planned_not_verified | refuted
+"""
+from __future__ import annotations
+
+import json
+import logging
+from typing import Any
+
+from apps.api.app.services.agents.graph.state import ResearchState
+
+logger = logging.getLogger(__name__)
+
+FALSIFIABILITY_SYSTEM = (
+    "You are a scientific methodologist. Convert accepted insights into "
+    "falsifiable propositions. Each proposition MUST be testable — if you "
+    "cannot design a test, mark it as planned_not_verified. "
+    "Never present a planned test as verified. Output ONLY valid JSON."
+)
+
+FALSIFIABILITY_PROMPT = """Convert each accepted insight into 1-3 falsifiable propositions.
+
+Topic: {topic}
+
+Innovation Points:
+{innovation_json}
+
+For each insight that has status=accepted or status=verified, create propositions:
+
+Output JSON:
+{{
+  "propositions": [
+    {{
+      "proposition_id": "fp-001",
+      "proposition": "The precise mechanistic claim",
+      "scoped_setting": "applicable data/task conditions",
+      "observable_effect": "what measurable difference we expect",
+      "support_condition": "what result would support the claim",
+      "refute_condition": "what result would refute the claim",
+      "required_test": "specific experiment to run",
+      "evidence_ids": ["id1"],
+      "status": "planned_not_verified"
+    }}
+  ]
+}}
+
+Rules:
+- If a required_test cannot be executed with available resources → status=planned_not_verified
+- If evidence supports the claim → status=verified
+- If evidence contradicts → status=refuted
+- Default to planned_not_verified unless proven otherwise
+
+[OUTPUT CONTRACT] Reply ONLY with the JSON object."""
+
+
+def build_falsifiability_prompt(state: ResearchState) -> str:
+    topic = state.get("topic", "")
+    innovation_points = state.get("innovation_points", [])
+    binding_validation = state.get("binding_validation", {})
+
+    accepted = [
+        ip for ip in innovation_points
+        if isinstance(ip, dict) and ip.get("status") in ("accepted", "verified")
+    ]
+
+    if not accepted:
+        innovation_json = json.dumps(innovation_points[:5], ensure_ascii=False, default=str)
+    else:
+        innovation_json = json.dumps(accepted, ensure_ascii=False, default=str)
+
+    return FALSIFIABILITY_PROMPT.format(
+        topic=topic,
+        innovation_json=innovation_json[:4000],
+    )
+
+
+def parse_falsifiability_output(raw: dict[str, Any]) -> dict[str, Any]:
+    propositions = raw.get("propositions", [])
+    for p in propositions:
+        if p.get("status") == "verified" and not p.get("evidence_ids"):
+            p["status"] = "planned_not_verified"
+
+    return {"falsifiable_propositions": propositions}

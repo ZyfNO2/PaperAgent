@@ -130,3 +130,10 @@ def validate_valid_overall_verdict(data: dict[str, Any]) -> tuple[bool, str | No
     if verdict not in allowed:
         return False, f"overall_verdict must be one of {allowed}, got {verdict!r}"
     return True, None
+
+
+# ---------------------------------------------------------------------------
+# Re6.4: Import novelty validators to register them
+# ---------------------------------------------------------------------------
+
+from . import novelty_validators  # noqa: E402, F401
