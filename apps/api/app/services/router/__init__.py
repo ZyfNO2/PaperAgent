@@ -14,3 +14,17 @@ from .contracts import (
     get_contract_registry,
     reset_contract_registry,
 )
+from .repair import (
+    execute_repair_strategy,
+)
+from .snapshot import (
+    RunModelSnapshot,
+    SnapshotStore,
+    get_snapshot_store,
+    reset_snapshot_store,
+)
+from .unified_router import (
+    ContractResult,
+    call_with_contract,
+    call_json_contract,
+)
