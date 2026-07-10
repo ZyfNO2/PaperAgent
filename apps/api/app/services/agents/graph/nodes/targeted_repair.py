@@ -4,6 +4,10 @@ Targets a SINGLE failure slice and produces a new search_plan with
 rounds=["repair"]. Re3.0 adds strategy switching (synonym/broaden/switch_tool)
 inspired by ARS failure_paths F2/F8 and ARC's PIVOT/REFINE.
 
+Re6.1 Fix A: emits explicit `repair_outcome` so the conditional edge can
+route empty-repair cases to quality_gate (weak promote) or final
+recommendation instead of looping back to paper_retriever for nothing.
+
 Inputs from state:
   - baseline_candidates / dataset_candidates / repo_candidates (counts)
   - paper_candidates + verified_papers (for quarantine/quality ratio)
@@ -15,6 +19,9 @@ Patch fields:
   search_plan            replacement with a repair-round plan (includes strategy)
   evidence_audit         merged (repair_rounds+1, last_repair_type, repair_exhausted)
   repair_exhausted       set True when the round cap is reached
+  repair_outcome         "queries_ready" | "no_query" | "exhausted"
+  repair_no_query_reason human-readable explanation when no_query
+  repair_query_ids       deduplicated query identifier list
   trace_events           appended
   errors                 appended  (only on LLMUnavailable)
 """
@@ -43,7 +50,11 @@ REPAIR_TYPES = [
     "url_repair",
 ]
 
-_TOOLS = frozenset({"arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite"})
+_TOOLS = frozenset({"arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite", "pubmed"})
+
+# Re6.1 Fix A: feature flag for zero-accept weak promotion policy
+_ZERO_ACCEPT_WEAK_POLICY = os.environ.get("PAPERAGENT_ZERO_ACCEPT_WEAK_POLICY", "repair")
+_WEAK_PROMOTE_MIN = max(1, int(os.environ.get("PAPERAGENT_WEAK_PROMOTE_MIN", "3")))
 
 
 def _env_int(name: str, default: int) -> int:
@@ -120,8 +131,37 @@ def _normalize(raw: dict[str, Any], repair_type: str) -> dict[str, Any]:
     }
 
 
+def _dedup_queries(queries: list[dict[str, Any]],
+                   prior_queries: list[str] | None = None) -> list[dict[str, Any]]:
+    """Deduplicate queries by (tool, query) pair, excluding prior queries.
+
+    A query is dropped if its text (case-insensitive) matches any entry in
+    ``prior_queries`` — the LLM is explicitly told not to repeat, so any
+    overlap counts as "no new intent".
+    """
+    prior_normalized = {q.lower().strip() for q in (prior_queries or []) if q.strip()}
+    seen: set[tuple[str, str]] = set()
+    out: list[dict[str, Any]] = []
+    for q in queries:
+        text = q.get("query", "").lower().strip()
+        if text in prior_normalized:
+            continue  # Skip queries that were already tried
+        key = (q.get("tool", ""), text)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(q)
+    return out
+
+
 def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
-    """Produce a repair-round search_plan targeting the dominant evidence gap."""
+    """Produce a repair-round search_plan targeting the dominant evidence gap.
+
+    Re6.1 Fix A: emits repair_outcome so the conditional edge routes:
+      - queries_ready → paper_retriever (normal)
+      - no_query       → quality_gate (weak promote) or final_recommendation
+      - exhausted      → quality_gate (let gate decide: promote or block)
+    """
     t0 = time.time()
 
     existing_audit = dict(state.get("evidence_audit") or {})
@@ -142,6 +182,9 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
                                   "trace_events"])
         return {
             "repair_exhausted": True,
+            "repair_outcome": "exhausted",
+            "repair_no_query_reason": f"repair round cap ({MAX_REPAIR_ROUNDS}) reached",
+            "repair_query_ids": [],
             "evidence_audit": exhausted_audit,
             "trace_events": [trace],
         }
@@ -233,18 +276,44 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
         logger.warning("targeted_repair_node LLM call failed (%s); using empty repair plan", kind)
         errors_out.append({"node": "targeted_repair", "error": kind})
 
+    # Re6.1 Fix A: deduplicate + outcome classification
+    plan["queries"] = _dedup_queries(plan.get("queries") or [], prior_queries)
+    n_queries = len(plan.get("queries") or [])
+
+    # Build query ID list for traceability
+    repair_query_ids = [
+        f"{q.get('tool', '?')}:{q.get('query', '')[:60]}"
+        for q in plan.get("queries") or []
+    ]
+
+    if n_queries > 0:
+        repair_outcome = "queries_ready"
+        repair_no_query_reason = ""
+    else:
+        repair_outcome = "no_query"
+        repair_no_query_reason = (
+            "LLM returned 0 valid queries after normalization/dedup; "
+            "no new search intent to forward to paper_retriever"
+        )
+
     trace = _emit("targeted_repair", t0,
                   {"current_round": current_round, "repair_type": repair_type},
-                  {"n_queries": len(plan.get("queries") or []),
+                  {"n_queries": n_queries,
+                   "repair_outcome": repair_outcome,
                    "rounds": plan.get("rounds")},
                   [{"tool": "re12_repair.llm", "attempts": tries}],
                   "fast_json", errors_out,
                   state_keys=["search_plan", "evidence_audit",
-                              "trace_events", "errors", "provider_profile"])
+                              "trace_events", "errors", "provider_profile",
+                              "repair_outcome", "repair_no_query_reason",
+                              "repair_query_ids"])
 
     return {
         "search_plan": plan,
         "evidence_audit": new_audit,
+        "repair_outcome": repair_outcome,
+        "repair_no_query_reason": repair_no_query_reason,
+        "repair_query_ids": repair_query_ids,
         "trace_events": [trace],
         "errors": errors_out,
         "provider_profile": "fast_json",
