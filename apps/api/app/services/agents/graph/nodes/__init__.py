@@ -30,6 +30,9 @@ from . import devils_advocate_node as _devils
 # Re6.4 novelty nodes
 from . import novelty_review as _novelty_review
 from . import falsifiability as _falsifiability
+# Re7.6 new nodes
+from . import evidence_context as _evidence_context
+from . import claim_judge as _claim_judge
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
 REGISTRY: dict[str, callable] = {
@@ -65,6 +68,9 @@ REGISTRY: dict[str, callable] = {
     # Re6.4 novelty nodes
     "novelty_review": _novelty_review.novelty_review_node,
     "falsifiability": _falsifiability.falsifiability_node,
+    # Re7.6 new nodes
+    "evidence_context": _evidence_context.evidence_context_node,
+    "claim_judge": _claim_judge.claim_judge_node,
 }
 
 NODE_FIELDS: dict[str, tuple[str, ...]] = {
