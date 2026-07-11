@@ -15,6 +15,14 @@ from pydantic import BaseModel, Field
 JobStatus = Literal["pending", "running", "completed", "failed", "cancelled", "resumable"]
 
 
+class JobCancelledError(Exception):
+    """Raised when a cooperative probe detects the job was cancelled."""
+
+
+class BudgetExceededError(Exception):
+    """Raised when a cooperative probe detects the budget is exhausted."""
+
+
 class JobCreate(BaseModel):
     topic: str = ""
     idempotency_key: str = ""
@@ -247,6 +255,18 @@ class JobRepository:
 
     def cancel_job(self, job_id: str) -> bool:
         return self.update_status(job_id, "cancelled", "user requested cancellation")
+
+    def is_cancelled(self, job_id: str) -> bool:
+        """Check if the job has been cancelled (read-only probe)."""
+        record = self.get_job(job_id)
+        return record is not None and record.status == "cancelled"
+
+    def is_budget_exhausted(self, job_id: str) -> bool:
+        """Check if the job has exhausted its token budget (read-only probe)."""
+        record = self.get_job(job_id)
+        if record is None:
+            return False
+        return record.budget_tokens > 0 and record.tokens_used >= record.budget_tokens
 
     def _row_to_record(self, row: tuple) -> JobRecord:
         cols = [

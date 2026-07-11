@@ -15,6 +15,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `apps/api/app/services/feedback_bar.py`: `make_feedback_bar_for_final_recommendation` helper
 - `apps/api/app/services/feedback_store.py`: extended `ArtifactType` with `rag_answer`, `final_recommendation`, `innovation_card`; added `list_by_artifact`
 - `apps/api/app/services/rag/rag_contract.py`: Chinese instruction-injection patterns + `validate_citations_subset`
+- `apps/api/app/services/job_repository.py`: `is_cancelled` / `is_budget_exhausted` read-only probes; `JobCancelledError` / `BudgetExceededError` exceptions
+- `apps/api/app/services/job_worker.py`: graph-internal cooperative cancel/budget probe via `_util.probe_cancel_budget` before each node
+- `apps/api/app/services/agents/graph/nodes/_util.py`: `probe_cancel_budget` cooperative probe helper
 - `apps/api/tests/fixtures/generate_gold_fixtures.py`: Fixture generator script
 - `apps/api/tests/fixtures/eval_R6/hidden_ood/`: 48 hidden-OOD test fixtures (4 categories)
 - `apps/api/tests/fixtures/eval_R6/failure/`: 16 failure-injection fixtures
@@ -33,6 +36,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - NV Llama-3.1-8B → 100% coverage, 17.8s (backup provider)
 - RAG e2e: 27/27 tests pass (feedback_bar + citation_valid + fake-citation rejection + 19/20 irrelevant abstention + feedback write/read/aggregate + LLM fallback + Chinese injection)
 - final recommendation: verdict + feedback_bar tests pass
+- job worker: 17/17 tests pass (lifecycle + cancel/budget probe + idempotency)
 - ACP query_rag: missing-index error response now includes artifact_id + feedback_bar
 - 118 gold fixtures generated (48 OOD + 16 failure + 24 novelty + 30 RAG)
 - 5 holdout blind test cases created with stratified verdict sampling
