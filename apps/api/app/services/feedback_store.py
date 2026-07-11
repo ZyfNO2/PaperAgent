@@ -7,7 +7,10 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
-ArtifactType = Literal["paper", "repo", "dataset", "report"]
+ArtifactType = Literal[
+    "paper", "repo", "dataset", "report",
+    "rag_answer", "final_recommendation", "innovation_card",
+]
 FeedbackVerdict = Literal["supported", "unsupported", "incorrect", "incomplete", "unclear"]
 
 
@@ -84,6 +87,29 @@ class FeedbackStore:
                     import json
                     data = json.loads(line)
                     if data.get("case_id") == case_id:
+                        results.append(FeedbackRecord(**data))
+        except FileNotFoundError:
+            pass
+        return results
+
+    def list_by_artifact(
+        self, case_id: str, artifact_type: str, artifact_id: str
+    ) -> list[FeedbackRecord]:
+        """Return all feedback for a specific artifact binding."""
+        results = []
+        try:
+            with open(self._path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    import json
+                    data = json.loads(line)
+                    if (
+                        data.get("case_id") == case_id
+                        and data.get("artifact_type") == artifact_type
+                        and data.get("artifact_id") == artifact_id
+                    ):
                         results.append(FeedbackRecord(**data))
         except FileNotFoundError:
             pass
