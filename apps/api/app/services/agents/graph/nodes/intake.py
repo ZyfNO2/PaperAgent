@@ -52,6 +52,7 @@ def intake_node(state: ResearchState) -> dict[str, Any]:
 
     result = {
         "case_id": case_id,
+        "topic": topic,
         "provider_profile": "fast_json",
         "trace_events": [trace],
         "errors": [],

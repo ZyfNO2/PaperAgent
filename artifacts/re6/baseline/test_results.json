@@ -1,0 +1,26 @@
+{
+  "frozen_at": "2026-07-11T05:44:24Z",
+  "git_commit": "d601ea67ceb32ebae6307d82759f11831aa9678e",
+  "git_commit_short": "d601ea67",
+  "command": "python -m pytest apps/api/tests/ --ignore=apps/api/tests/test_one_topic_api.py --tb=short -q",
+  "summary": {
+    "passed": 514,
+    "failed": 35,
+    "skipped": 17,
+    "total": 566,
+    "pass_rate_pct": 90.81,
+    "duration_seconds": 198.54
+  },
+  "failure_categories": {
+    "citation_expand_struct_change": 5,
+    "minimax_disabled_heuristic_fallback": 15,
+    "llm_validation_schema": 3,
+    "graph_regression": 4,
+    "router_profile": 2,
+    "sse_endpoint": 2,
+    "parser_heuristic": 2,
+    "verifier": 1,
+    "degradation_chain": 1
+  },
+  "notes": "Baseline snapshot of R6.0. 14 failures are root-caused by MINIMAX_DISABLED=true routing to heuristic fallback that returns str instead of dict — expected in offline/CI env. 5 citation_expand failures stem from API struct change (dict returned instead of int). Remaining failures are known pre-existing regressions."
+}

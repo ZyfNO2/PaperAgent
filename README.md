@@ -171,6 +171,41 @@ PaperAgent **不会**：
 
 ---
 
+## Re4 工程升级（2026-07）
+
+### 新增能力
+
+- **ACP 能力层**：14 个 REST 能力，支持外部 AI 工具（Codex / Claude Code / Trae）统一调用
+- **RAG 全文检索**：PDF 入库 → TF-IDF 分块索引 → 检索增强问答 → 知识图谱
+- **React 前端**：Vite + TypeScript，首页 / 工作台 / RAG 页面，7 个结构化报告组件
+- **证据可追溯**：创新点 candidate_ids 绑定、叙事修订历史 + diff、工作包依赖 DAG
+- **工程控制面**：case_id 路径安全、SourcePolicy 统一开关、StageContract v1、原子写入
+
+### 启动方式
+
+```bash
+# 后端
+.venv\Scripts\python.exe -m uvicorn app.main:app --app-dir apps/api --host 127.0.0.1 --port 18181
+
+# React 前端 (dev)
+cd apps/web-react && npm run dev  # http://127.0.0.1:18183
+
+# ACP 能力清单
+curl http://127.0.0.1:18181/api/v1/acp/capabilities
+```
+
+### 测试
+
+```bash
+# 全量 (531 tests)
+.venv\Scripts\python.exe -m pytest
+
+# React e2e
+.venv\Scripts\python.exe -m pytest apps/web-react/e2e -v -m "react_web"
+```
+
+---
+
 ## 项目描述（简历用）
 
 详见 [docs/project/Resume_Project_Description.md](docs/project/Resume_Project_Description.md)。

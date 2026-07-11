@@ -1,0 +1,454 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-10T23:10:04Z",
+    "input_summary": {
+      "topic": "???? Transformer ?????????"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T23:10:04Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-10T23:10:25Z",
+    "input_summary": {
+      "topic_len": 26
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 0,
+      "domain": [
+        "unknown"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T23:10:25Z",
+    "elapsed_s": 21.249,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-10T23:10:25Z",
+    "input_summary": {
+      "topic_len": 26,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T23:10:25Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-10T23:10:25Z",
+    "input_summary": {
+      "topic_len": 26,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 0,
+      "n_repo_candidates": 0,
+      "n_steps": 1,
+      "n_tool_calls": 0,
+      "raw_tools": [],
+      "per_adapter": {},
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T23:10:54Z",
+    "elapsed_s": 28.089
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T23:10:54Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 0
+        },
+        "current_coverage": {
+          "core": 0,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 0
+        },
+        "gaps": [
+          "core",
+          "baseline"
+        ],
+        "budget_remaining": 2,
+        "decision": "reflect"
+      }
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T23:10:54Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-10T23:11:21Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "paper_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "repair_outcome": "queries_ready",
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T23:11:21Z",
+    "elapsed_s": 27.883,
+    "state_keys": [
+      "search_plan",
+      "evidence_audit",
+      "trace_events",
+      "errors",
+      "provider_profile",
+      "repair_outcome",
+      "repair_no_query_reason",
+      "repair_query_ids"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-10T23:11:21Z",
+    "input_summary": {
+      "topic_len": 26,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 0,
+      "n_repo_candidates": 0,
+      "n_steps": 1,
+      "n_tool_calls": 0,
+      "raw_tools": [],
+      "per_adapter": {},
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 1
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T23:11:40Z",
+    "elapsed_s": 18.534
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T23:11:40Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 1,
+      "weak_promoted": false,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 0
+        },
+        "current_coverage": {
+          "core": 0,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 0
+        },
+        "gaps": [
+          "core",
+          "baseline"
+        ],
+        "budget_remaining": 1,
+        "decision": "reflect"
+      }
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T23:11:40Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-10T23:12:07Z",
+    "input_summary": {
+      "current_round": 1,
+      "repair_type": "paper_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "repair_outcome": "queries_ready",
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T23:12:07Z",
+    "elapsed_s": 26.572,
+    "state_keys": [
+      "search_plan",
+      "evidence_audit",
+      "trace_events",
+      "errors",
+      "provider_profile",
+      "repair_outcome",
+      "repair_no_query_reason",
+      "repair_query_ids"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-10T23:12:07Z",
+    "input_summary": {
+      "topic_len": 26,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 0,
+      "n_repo_candidates": 0,
+      "n_steps": 1,
+      "n_tool_calls": 0,
+      "raw_tools": [],
+      "per_adapter": {},
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 2
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T23:12:28Z",
+    "elapsed_s": 21.666
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T23:12:28Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 2,
+      "weak_promoted": false,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 0
+        },
+        "current_coverage": {
+          "core": 0,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 0
+        },
+        "gaps": [
+          "core",
+          "baseline"
+        ],
+        "budget_remaining": 0,
+        "decision": "stop_with_gap"
+      }
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T23:12:28Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-10T23:12:28Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "???? Transformer ?????????",
+      "n_papers": 0,
+      "n_baseline": 0,
+      "n_parallel": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "low_bar_status": null,
+      "human_gate_status": null,
+      "notes": [
+        "human gate: None"
+      ],
+      "research_basis": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T23:12:28Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

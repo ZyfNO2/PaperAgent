@@ -1,0 +1,29 @@
+{
+  "nodes": [
+    {
+      "id": "paper:<exploring-depth-contribution-for-camouflaged-object-detection>",
+      "type": "paper",
+      "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+      "role": "parallel"
+    },
+    {
+      "id": "paper:<tju-dhd-a-diverse-high-resolution-dataset-for-object-detection>",
+      "type": "paper",
+      "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+      "role": "baseline"
+    },
+    {
+      "id": "dataset:<coco>",
+      "type": "dataset",
+      "title": "COCO",
+      "role": "dataset"
+    }
+  ],
+  "edges": [
+    {
+      "source": "paper:<tju-dhd-a-diverse-high-resolution-dataset-for-object-detection>",
+      "target": "dataset:<coco>",
+      "type": "uses_dataset"
+    }
+  ]
+}

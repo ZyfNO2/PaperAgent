@@ -1,0 +1,90 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-10T16:24:48Z",
+    "input_summary": {
+      "topic": "test for upload"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T16:24:48Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-10T16:25:02Z",
+    "input_summary": {
+      "topic_len": 15
+    },
+    "output_summary": {
+      "n_method": 2,
+      "n_object": 0,
+      "domain": [
+        "unknown"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [
+      {
+        "node": "topic_parser",
+        "error": "LLMUnavailable"
+      }
+    ],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T16:25:02Z",
+    "elapsed_s": 14.081,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-10T16:25:02Z",
+    "input_summary": {
+      "topic_len": 15,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 1,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T16:25:02Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  }
+]

@@ -1,11 +1,4 @@
-"""Re6.4 Novelty Review — The reviewer pressure-test adapter.
-
-Implements the 5-dimension reviewer test:
-  repetition, motivation, falsifiability, differentiation, story.
-
-Acts as an independent critic against NoveltyCandidate claims, bound to
-the contract 'novelty-review/v1'.
-"""
+"""Re6.4 Novelty Review — The reviewer pressure-test adapter."""
 from __future__ import annotations
 
 import json
@@ -78,34 +71,25 @@ Output JSON:
 
 
 def build_novelty_review_prompt(state: ResearchState) -> str:
-    """Build the novelty review prompt from state."""
     topic = state.get("topic", "")
     innovation_points = state.get("innovation_points", [])
     verified_papers = state.get("verified_papers", [])
     baseline_candidates = state.get("baseline_candidates", [])
-    parallel_candidates = state.get("parallel_candidates", [])
-    binding_validation = state.get("binding_validation", {})
 
-    # Build evidence context
     evidence_parts: list[str] = []
     for paper in verified_papers[:10]:
         evidence_parts.append(
             f"[{paper.get('candidate_id', 'unknown')}] {paper.get('title', '')} "
-            f"({paper.get('year', '')}) — {paper.get('abstract', '')[:200]}"
+            f"({paper.get('year', '')}) — {str(paper.get('abstract', ''))[:200]}"
         )
     for paper in (baseline_candidates or [])[:5]:
         evidence_parts.append(
             f"[{paper.get('id', 'unknown')}] {paper.get('title', '')} (baseline)"
         )
 
-    # Serialize novelty candidates
     novelty_json = json.dumps(
-        {
-            "innovation_points": innovation_points,
-            "binding_validation": binding_validation,
-        },
-        ensure_ascii=False,
-        default=str,
+        {"innovation_points": innovation_points},
+        ensure_ascii=False, default=str,
     )[:4000]
 
     return NOVELTY_REVIEW_PROMPT.format(
@@ -116,7 +100,6 @@ def build_novelty_review_prompt(state: ResearchState) -> str:
 
 
 def parse_novelty_review_output(raw: dict[str, Any]) -> dict[str, Any]:
-    """Parse and normalize the reviewer output."""
     return {
         "novelty_review_verdict": raw.get("verdict", "reject"),
         "novelty_review_score": raw.get("novelty_score", 0),
@@ -127,3 +110,53 @@ def parse_novelty_review_output(raw: dict[str, Any]) -> dict[str, Any]:
         "review_strengths": raw.get("strengths", []),
         "review_risks": raw.get("risks", []),
     }
+
+
+def novelty_review_node(state: ResearchState) -> dict[str, Any]:
+    """LangGraph node: run the novelty reviewer pressure test.
+
+    Reads innovation_points from state, calls LLM, returns parsed review.
+    If no innovation points, returns empty review without LLM call.
+    """
+    innovation_points = state.get("innovation_points", [])
+
+    if not innovation_points:
+        logger.info("novelty_review: no innovation points, skipping LLM call")
+        return {
+            "novelty_review_verdict": "reject",
+            "novelty_review_score": 0,
+            "pseudo_innovation_risks": ["no_innovation_points"],
+            "pressure_points": [],
+            "differentiation_matrix": [],
+            "required_repairs": [],
+        }
+
+    prompt = build_novelty_review_prompt(state)
+
+    try:
+        from apps.api.app.services.llm_router import call_json
+        raw = call_json(
+            prompt,
+            system=NOVELTY_REVIEW_SYSTEM,
+            profile="premium_review",
+            max_tokens=3000,
+            expected="dict",
+            timeout=60.0,
+        )
+        result = parse_novelty_review_output(raw)
+        logger.info("novelty_review: verdict=%s score=%s risks=%s",
+                     result["novelty_review_verdict"],
+                     result["novelty_review_score"],
+                     len(result["pseudo_innovation_risks"]))
+        return result
+    except Exception as exc:
+        logger.warning("novelty_review: LLM call failed: %s", exc)
+        return {
+            "novelty_review_verdict": "reject",
+            "novelty_review_score": 0,
+            "pseudo_innovation_risks": ["llm_unavailable"],
+            "pressure_points": [],
+            "differentiation_matrix": [],
+            "required_repairs": [],
+            "novelty_review_error": str(exc),
+        }

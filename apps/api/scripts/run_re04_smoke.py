@@ -118,7 +118,7 @@ async def main() -> int:
     cases = [json.loads(line) for line in
              Path(args.jsonl).read_text(encoding="utf-8").splitlines() if line.strip()]
     if args.ids:
-        ids = {l.strip() for l in Path(args.ids).read_text(encoding="utf-8").splitlines() if l.strip()}
+        ids = {line.strip() for line in Path(args.ids).read_text(encoding="utf-8").splitlines() if line.strip()}
         cases = [c for c in cases if c["id"] in ids]
     cases = cases[: args.max]
 

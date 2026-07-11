@@ -3,7 +3,114 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [0.4.0-dev] - 2026-07-10 (Re4.4)
+
+### Added
+- `services/acp/`: ACP 最小能力层
+  - `capabilities.py`: 14 个能力声明（8 read + 2 write + 4 declared）
+  - `registry.py`: CapabilityRegistry — 注册/查找/参数校验
+  - `server.py`: ACPServer — REST handler 路由 + 读写权限控制 + RunLedger 记录
+  - `errors.py`: 统一错误结构（UNKNOWN_CAPABILITY / PERMISSION_DENIED / INVALID_PARAMS / NOT_IMPLEMENTED / INTERNAL_ERROR）
+  - `examples.py`: Codex / Claude Code / Trae 调用示例
+- `api/v1/acp.py`: ACP REST 端点（GET /capabilities, POST /invoke, GET /examples）
+- `docs/project/THIRD_PARTY_NOTICES.md`: AutoResearchClaw MIT 许可证记录
+- `test_re44_acp.py`: 17 个集成测试（registry + read + write + errors + declared）
+
+### Changed
+- `research.py`: 提取 10 个 `_xxx_impl` 函数供 ACP server 调用（不改变现有端点行为）
+- `main.py`: 注册 acp_router
+
+### Verified
+- 端到端 case re44-verify-001 通过 ACP 层验证：提交 → 轮询 → 获取产物
+- 17 个集成测试全部 PASS
+- 4 个只读能力 + 2 个受控写能力通过测试
+- 未知能力/越权/缺参数/未实现返回统一错误结构
+- ACP 调用记录到 acp_ledger.jsonl（4 条事件）
+- THIRD_PARTY_NOTICES.md 已记录 MIT 许可证
+
+## [0.4.0-dev] - 2026-07-10 (Re4.3)
+
+### Added
+- `schemas/evidence_schema.py`: Pydantic v2 models for InnovationPoint (candidate_ids, evidence_snippets, scores),
+  NarrativeRevision (revision_id, parent_revision_id, diff), WorkPackage (objective, method, deliverable, prerequisite_ids)
+- `validators/binding_validator.py`: 证据链一致性验证器
+  - innovation → candidate_id 绑定检查
+  - work_package → evidence 绑定检查
+  - narrative → innovation 引用检查
+  - stale marking（上游 evidence 变化 → derived items 标记 stale）
+- `validators/dependency_dag.py`: 工作包依赖 DAG 构建
+  - 拓扑排序 + 循环检测 + 里程碑分层
+- API endpoint `GET /{case_id}/work-packages`: 返回工作包 + DAG
+- 5 个新测试文件：schema、binding validator、narrative revision、DAG、契约回归
+
+### Changed
+- `innovation_extractor.py`: prompt 追加 candidate_ids/evidence_snippets/scores 约束；validator 调用
+- `narrative_builder.py`: 追加 revision history + diff 计算
+- `devils_advocate_node.py`: prompt 追加 evidence_critiques；MINOR_REVISION 时传递 critique
+- `content.py` (low_bar_review): 追加 binding validation + DAG 构建
+- `stage_contract.py`: 3 个节点 contract 版本升级到 1.1
+- `state.py`: 追加 narrative_revisions, binding_validation 字段
+
+### Verified
+- 端到端 case re43-verify-001 验证：新 schema 字段在 state/trace/work-packages 产物中存在
+- innovation_points 3/3 有 candidate_ids（arXiv ID）+ novelty_score
+- narrative_revisions 2 个（rev-0→rev-1，diff 存在）
+- low_bar_review 包含 binding_validation + DAG
+- review_report 包含 evidence_critiques（4 条指向具体 target_id）
+- /work-packages API 返回 DAG（5 nodes, 1 milestone）
+- 3 个历史 case 契约回归全部 PASS（向后兼容）
+
+## [0.4.0-dev] - 2026-07-10 (Re4.2)
+
+### Added
+- `apps/web-react/`: 最小 React + Vite + TypeScript 前端 shell
+  - 首页：价值主张、三步引导、两个 Demo Case 入口、历史记录
+  - 工作台：题目输入、SSE 实时进度、论文列表、来源状态面板、报告折叠区
+  - RAG 占位路由
+  - 统一空状态、错误状态 + 中文建议、加载语义、键盘可达性
+  - 人话节点名映射（24 节点 → 中文描述 + 阶段分组）
+- `apps/web-react/e2e/test_re42_react_web.py`: Playwright 截图基线（home/workbench/error/report/mobile/keyboard）
+- `apps/web-react/src/types/api.ts`: 完整 API 类型定义（ResearchState + SSE + SourcePolicy + Trace）
+- `apps/web-react/src/lib/sse.ts`: SSE EventSource 封装（14 事件类型）
+- `apps/web-react/src/lib/nodeNames.ts`: 节点内部名 → 人话映射 + 阶段分组
+
+### Changed
+- `.gitignore`: 追加 web-react node_modules/dist
+- `apps/api/app/main.py`: 追加 /react 静态挂载（构建产物）
+- `pytest.ini`: 追加 apps/web-react/e2e testpaths、更新 react-web marker
+
+### Verified
+- 端到端 case 前端验证：提交题目 → SSE 进度 → 报告展示完整
+- 旧前端 /web/ 未受影响
+- 375px 窄屏可浏览
+- 键盘 Tab 导航可用
+- 8 个 Playwright e2e 测试全部 PASS
+- 7 张截图生成在 tmp_re42_screenshots/
+
+## [0.4.0-dev] - 2026-07-10 (Re4.1)
+
+### Added
+- `source_policy.py`: 统一 SourcePolicy，per-source 启停/并发/退避/状态
+- `run_state.py`: RunState 模型 + atomic_write_json + RunLedger
+- `stage_contract.py`: StageContract v1，7 核心节点 I/O 契约
+- `test_re40_case_id_security.py`: case_id 路径穿越防护测试
+- `test_re40_source_policy.py`: SourcePolicy 单元测试
+- `test_re40_stage_contract.py`: StageContract 注册与校验测试
+- `test_re40_run_state.py`: 原子写入与 RunLedger 测试
+
+### Changed
+- `research.py`: case_id 改为服务端 UUID 或受限 slug + 路径边界校验
+- `research.py`: atomic_write_json 替换直接 json.dump (state/trace/evidence_graph)
+- `main.py`: CORS 从环境变量读取；VERSION 更新为 0.4.0-dev；health 端点更新
+- `citation_expander.py`: 接入 SourcePolicy，禁用源零请求
+- `source_ledger.py`: 补充 `skipped` 状态
+- `.env.example`: 追加 SourcePolicy / CORS / TLS 配置
+- `pytest.ini`: markers 更新（端口修正、React 前端标注为未实现）
+- `Local_Runbook.md`: 完整重写，替换失效命令和版本号
+
+### Archived
+- `test_re04_main_entry.py` → `_archived_legacy_sessions/`
+- `test_re10_reflection_search.py` → `_archived_legacy_sessions/`
 
 ### Added (Re3.9)
 - PubMed E-utilities adapter (pubmed_search.py) — free, no key, 3 req/s

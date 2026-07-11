@@ -1,73 +1,32 @@
 # Known Limitations
 
-> v0.1.0-rc1 已知限制清单. 这些是**有意的边界**, 不是 bug.
+## Local Mode (current)
 
-## 1. 不生成完整毕业论文正文
+| Limitation | Impact | Workaround |
+|---|---|---|
+| No persistent provider storage | Provider configs lost on restart | Re-add via Settings wizard |
+| Single process API server | No horizontal scaling | Run one instance |
+| SQLite state storage | Case data lost if DB deleted | Export results to Markdown |
+| No multi-user isolation | All requests share provider configs | Dedicated instance per user |
+| API keys in environment variables | Keys in shell/process memory | Rotate keys regularly |
+| No TLS on local API | HTTP only (port 18181) | Use on trusted network only |
+| Rate limiting is client-side only | 429s from provider still possible | Lower `LLM_RPM_LIMIT` |
+| No automated retry on full failure | Must resubmit topic manually | Check Runbook §4 |
+| DeepSeek-v4-flash and big-pickle only | Two model whitelist | Cannot add third model |
+| Windows line ending drift | LF → CRLF on checkout | Cosmetic only, no functional impact |
 
-- 仅产出 **开题报告** (Markdown, 13 章节).
-- 不写绪论 / 文献综述 / 实验结果 / 结论正文.
-- 章节证据缺口在报告里以 `待补` / `⚠ 证据不足` 显式标注.
+## Single-User Server (planned, not implemented)
 
-## 2. 不做 DOCX / PPT 精排
+| Limitation | Impact |
+|---|---|
+| No authentication | Anyone on network can submit topics |
+| No per-user budgets | One user can exhaust provider quota |
+| No persistent session across restarts | Re-add providers after each restart |
 
-- 报告仅以 Markdown 形式输出 (`proposal_<project_id>.md`).
-- 排版 / 字号 / 表格 / 图片嵌入 由用户自行处理.
-- 学校模板适配仅到 **章节顺序 + 必要段落字段**, 不做样式精排.
+## Multi-User Server (not planned)
 
-## 3. 不做全文向量库
-
-- 当前仅做 **元数据检索** (标题 / 摘要 / 年份 / 关键词).
-- 不做 PDF / 网页全文片段 embedding / RAG.
-- 工作台引入的"全文资料"以卡片形式展示, 但不进入向量检索.
-
-## 4. 不做 OCR
-
-- PDF 中的扫描图 / 图片内文字不被识别.
-- 资料卡片仅显示文件名 / 标题 / URL, 不做内容抽取.
-
-## 5. 不做视频解析
-
-- 视频 / 音频文件不解析.
-- 仅文档类 (PDF / 网页 / Markdown) 可卡片化.
-
-## 6. 外部 API 真实网络不稳定
-
-- arXiv / Semantic Scholar / Kaggle 列表接口在某些网络环境可能超时.
-- 失败时自动 fallback 到 **heuristic** 路径, 不阻塞主流程.
-- 不保证拉取到的论文 / 数据集覆盖完整, 仅供"线索".
-
-## 7. Demo baseline 是结构合同, 不是自然语言黄金答案
-
-- Demo 演示数据用于 **冒烟测试 / 端到端演示**.
-- 实际响应 (Markdown 文案) 每次可能不同, 但 **结构字段** (verdict / 证据数 / 引用数) 应当稳定.
-
-## 8. LLM 路径可降级到 heuristic
-
-- 所有 LLM 路径 (`prefer=llm`) 在 API key 缺失 / 失败时回退 `heuristic`.
-- heuristic 输出更保守, 关键词提取与可读性逊于 LLM, 但服务不挂.
-
-## 9. 不保证 school 完整模板适配
-
-- 当前 3 个模板 (default / engineering / cv_ai) 是 **轻量骨架**.
-- 字段填法基于 evidence_summary, 部分专业字段 (实验设备 / 经费预算 / 指导教师) 由用户补.
-
-## 10. 上传文件不持久化到云端
-
-- 用户上传的 PDF / 图片 解析后仅存为 **元数据 + 卡片**.
-- 原始文件**不存储**在服务器 (MVP 不引入对象存储 / S3).
-- 重启后上传内容**不保留** (仅 evidence workspace 内的结构化数据保留).
-
-## 11. 不做用户系统 / 多租户
-
-- 当前是 **单用户本地工具**.
-- 无登录 / 无权限 / 无多 project 切换 (只有 project_id).
-- 多人协作版本不在 v0.x 范围.
-
-## 12. 不做 CI / CD / 部署自动化
-
-- 启动命令是 `uvicorn app.main:app`, 无 Docker / k8s / CI.
-- 部署文档见 `docs/deployment/` (人工脚本级别).
-
----
-
-**这些限制不视为缺陷, 而是有意为之的 MVP 边界. 后续 v0.2+ 再扩展.**
+| Limitation | Impact |
+|---|---|
+| No tenant isolation | Cross-user data leakage possible |
+| No role-based access control | All actions available to all users |
+| No usage metering or billing | Cannot track per-user costs |

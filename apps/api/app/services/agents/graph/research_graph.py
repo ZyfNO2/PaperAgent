@@ -114,7 +114,10 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     graph.add_edge("human_gate_search", "work_package")  # Re3.9.3: gate → work_package
     graph.add_edge("work_package", "innovation_extractor")         # Re2: parallel fan-out
     graph.add_edge("work_package", "sota_matcher")                 # Re2: parallel fan-out
-    graph.add_edge("innovation_extractor", "narrative_builder")    # Re2: fan-in
+    # Re6.4: Insert novelty review + falsifiability between innovation and narrative
+    graph.add_edge("innovation_extractor", "novelty_review")
+    graph.add_edge("novelty_review", "falsifiability")
+    graph.add_edge("falsifiability", "narrative_builder")  # Re6.4 fan-in
     graph.add_edge("sota_matcher", "narrative_builder")            # Re2: fan-in
     graph.add_edge("narrative_builder", "low_bar_review")
     # low_bar_review uses conditional edge (below), no static edge

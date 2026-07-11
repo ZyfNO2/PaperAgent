@@ -34,7 +34,7 @@ def validate_frontend(html_path: str) -> dict[str, Any]:
     else:
         report["failed"].append({"check": "has_topic_input", "issue": "no topic input found"})
 
-    sse_events = re.findall(r'addEventListener\(["\'](\w+)["\']', content)
+    _sse_events = re.findall(r'addEventListener\(["\'](\w+)["\']', content)
     expected_events = ["adapter_result", "verify_result", "node_complete", "done"]
     # Also accept generic event handling
     all_listeners = re.findall(r'addEventListener\(\s*["\']([^"\']+)["\']', content)

@@ -1,15 +1,4 @@
-"""Re6.4 Falsifiability Planner — converts Insights into falsifiable propositions.
-
-Each accepted Insight yields 1-3 falsifiable propositions with:
-  - scoped setting (where does this apply?)
-  - observable effect (what will we see?)
-  - support condition (which result supports?)
-  - refute condition (which result refutes?)
-  - required test (what experiment?)
-  - evidence_ids binding
-
-Status: verified | planned_not_verified | refuted
-"""
+"""Re6.4 Falsifiability Planner — converts Insights into falsifiable propositions."""
 from __future__ import annotations
 
 import json
@@ -22,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 FALSIFIABILITY_SYSTEM = (
     "You are a scientific methodologist. Convert accepted insights into "
-    "falsifiable propositions. Each proposition MUST be testable — if you "
-    "cannot design a test, mark it as planned_not_verified. "
+    "falsifiable propositions. Each proposition MUST be testable. "
+    "If you cannot design a test, mark it as planned_not_verified. "
     "Never present a planned test as verified. Output ONLY valid JSON."
 )
 
@@ -90,3 +79,42 @@ def parse_falsifiability_output(raw: dict[str, Any]) -> dict[str, Any]:
             p["status"] = "planned_not_verified"
 
     return {"falsifiable_propositions": propositions}
+
+
+def falsifiability_node(state: ResearchState) -> dict[str, Any]:
+    """LangGraph node: generate falsifiable propositions from innovation points.
+
+    Only generates propositions for accepted/verified innovation points.
+    If no innovation points, returns empty list.
+    """
+    innovation_points = state.get("innovation_points", [])
+
+    if not innovation_points:
+        return {"falsifiable_propositions": []}
+
+    has_accepted = any(
+        isinstance(ip, dict) and ip.get("status") in ("accepted", "verified")
+        for ip in innovation_points
+    )
+    if not has_accepted:
+        return {"falsifiable_propositions": []}
+
+    prompt = build_falsifiability_prompt(state)
+
+    try:
+        from apps.api.app.services.llm_router import call_json
+        raw = call_json(
+            prompt,
+            system=FALSIFIABILITY_SYSTEM,
+            profile="premium_review",
+            max_tokens=2000,
+            expected="dict",
+            timeout=45.0,
+        )
+        result = parse_falsifiability_output(raw)
+        logger.info("falsifiability: generated %d propositions",
+                     len(result.get("falsifiable_propositions", [])))
+        return result
+    except Exception as exc:
+        logger.warning("falsifiability: LLM call failed: %s", exc)
+        return {"falsifiable_propositions": []}

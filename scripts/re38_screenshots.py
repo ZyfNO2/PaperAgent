@@ -1,6 +1,5 @@
 """Re3.8 Phase 4: Take 8 timeline debugger screenshots via Playwright."""
 import asyncio
-import json
 from pathlib import Path
 
 from playwright.async_api import async_playwright

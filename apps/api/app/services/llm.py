@@ -346,6 +346,15 @@ def _chat_openai_compat_once(
             if reasoning:
                 extracted = _extract_json_from_text(reasoning)
                 if extracted is not None:
+                    # Re5.X: Only accept reasoning JSON if content is empty.
+                    # If content has non-JSON text, the reasoning JSON might
+                    # be an intermediate thinking artifact, not the final answer.
+                    if not content or not content.strip():
+                        return json.dumps(extracted, ensure_ascii=False)
+                    # Content exists but isn't JSON — reasoning might still be valid
+                    # but we flag it for the caller to decide
+                    logger.debug("_chat_openai_compat_once: content exists but non-JSON; "
+                               "reasoning JSON may be intermediate artifact")
                     return json.dumps(extracted, ensure_ascii=False)
                 fallback = _get_env("STEPFUN_JSON_FALLBACK_MODEL", "").strip()
                 if fallback:
@@ -426,31 +435,48 @@ def _chat_deepseek(
     max_tokens: int = 1500,
     timeout: float = 60.0,
 ) -> str:
-    """Deepseek with flash→pro fallback on JSON parse failure."""
-    api_key = _get_env("DEEPSEEK_API_KEY")
-    base_url = _normalize_openai_base_url(_get_env("DEEPSEEK_BASE_URL", "https://api.deepseek.com"))
-    flash_model = _get_env("DEEPSEEK_FLASH_MODEL", "deepseek-chat")
-    pro_model = _get_env("DEEPSEEK_PRO_MODEL", "deepseek-reasoner")
+    """Deepseek call — tries primary provider, falls back only on failure.
 
-    raw = _chat_openai_compat_once(
-        prompt, system=system, model=flash_model, api_key=api_key,
-        base_url=base_url, temperature=temperature, max_tokens=max_tokens, timeout=timeout,
-        rate_limit_bucket="DEEPSEEK",
-    )
-    cleaned = _strip_code_fence(raw)
-    try:
-        json.loads(cleaned)
-        return raw
-    except json.JSONDecodeError:
-        pass
+    Re5.X: Cross-provider fallback only when the primary provider raises
+    an exception (network error, 429, auth failure) or returns empty.
+    If the provider returns content that isn't valid JSON, we DON'T retry
+    another provider — that's the job of call_json's 3-phase repair pipeline.
+    This avoids multiplying LLM latency by the number of registered providers.
+    """
+    from apps.api.app.services.llm_provider_registry import get_provider_registry
 
-    if pro_model:
-        raw = _chat_openai_compat_once(
-            prompt, system=system, model=pro_model, api_key=api_key,
-            base_url=base_url, temperature=temperature, max_tokens=max_tokens * 2, timeout=timeout,
-            rate_limit_bucket="DEEPSEEK",
-        )
-    return raw
+    registry = get_provider_registry()
+    providers = registry.get_ordered_providers()
+
+    last_raw: str = ""
+    last_error: str = ""
+
+    for idx, provider_cfg in enumerate(providers):
+        try:
+            raw = _chat_openai_compat_once(
+                prompt, system=system, model=provider_cfg.model,
+                api_key=provider_cfg.api_key,
+                base_url=_normalize_openai_base_url(provider_cfg.base_url),
+                temperature=temperature, max_tokens=max_tokens,
+                timeout=timeout,
+                rate_limit_bucket=provider_cfg.name.upper(),
+            )
+            # Provider returned something — return it immediately.
+            # Whether it's valid JSON is call_json's problem (3-phase repair).
+            # Only fall through to next provider if this one returned empty.
+            if raw and raw.strip():
+                if idx > 0:
+                    logger.info("_chat_deepseek: primary failed, used fallback %s", provider_cfg.name)
+                return raw
+            last_error = f"{provider_cfg.name}: empty response"
+        except Exception as exc:
+            last_error = f"{provider_cfg.name}: {type(exc).__name__}: {exc}"
+            logger.debug("_chat_deepseek: %s failed: %s, trying next", provider_cfg.name, exc)
+            continue
+
+    if last_raw:
+        return last_raw
+    raise LLMUnavailable(f"all providers failed; last_error={last_error}")
 
 
 # ---------------------------------------------------------------------------

@@ -278,6 +278,22 @@ def low_bar_review_node(state: ResearchState) -> dict[str, Any]:
               "issues": issues, "n_packages_reviewed": len(packages),
               "n_packages_after_review": len(kept)}
 
+    # Re4.3: Binding validation + DAG
+    try:
+        from apps.api.app.services.agents.graph.validators.binding_validator import run_full_validation
+        from apps.api.app.services.agents.graph.validators.dependency_dag import build_dag
+        binding_result = run_full_validation(state)
+        if not binding_result.valid:
+            issues.extend([f"binding: {i['message']}" for i in binding_result.issues])
+        review["binding_validation"] = binding_result.model_dump()
+
+        dag = build_dag(kept)
+        review["dag"] = dag
+        if dag["has_cycle"]:
+            issues.append("work package dependency cycle detected")
+    except Exception:
+        pass
+
     trace = _emit("low_bar_review", t0,
                   {"n_packages": len(packages)},
                   {"status": review["status"], "n_remaining": len(kept)},
