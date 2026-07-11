@@ -120,13 +120,14 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
     domain = str(atoms.get("domain") or "unknown").strip().lower()
 
     queries: list[dict[str, str]] = []
-    seen: set[str] = set()
+    seen: set[tuple[str, str]] = set()
 
     def _add(tool: str, query: str, why: str, ev: str, stop: str) -> None:
         q = query.strip()
-        if not q or q.lower() in seen or len(q) < 2:
+        key = (tool.lower(), q.lower())
+        if not q or key in seen or len(q) < 2:
             return
-        seen.add(q.lower())
+        seen.add(key)
         queries.append(
             {
                 "tool": tool,
