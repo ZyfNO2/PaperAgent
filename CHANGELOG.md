@@ -18,6 +18,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `apps/api/app/services/job_repository.py`: `is_cancelled` / `is_budget_exhausted` read-only probes; `JobCancelledError` / `BudgetExceededError` exceptions
 - `apps/api/app/services/job_worker.py`: graph-internal cooperative cancel/budget probe via `_util.probe_cancel_budget` before each node
 - `apps/api/app/services/agents/graph/nodes/_util.py`: `probe_cancel_budget` cooperative probe helper
+- `scripts/re6_eval.py`: `--live` mode (calls real graph/RAG), `--round0` flag (10 cross-domain topics), `--holdout` code-freeze check, `--explain-calibration` flag
 - `apps/api/tests/fixtures/generate_gold_fixtures.py`: Fixture generator script
 - `apps/api/tests/fixtures/eval_R6/hidden_ood/`: 48 hidden-OOD test fixtures (4 categories)
 - `apps/api/tests/fixtures/eval_R6/failure/`: 16 failure-injection fixtures
@@ -37,6 +38,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - RAG e2e: 27/27 tests pass (feedback_bar + citation_valid + fake-citation rejection + 19/20 irrelevant abstention + feedback write/read/aggregate + LLM fallback + Chinese injection)
 - final recommendation: verdict + feedback_bar tests pass
 - job worker: 17/17 tests pass (lifecycle + cancel/budget probe + idempotency)
+- eval harness mock: 118/118 fixtures pass
 - ACP query_rag: missing-index error response now includes artifact_id + feedback_bar
 - 118 gold fixtures generated (48 OOD + 16 failure + 24 novelty + 30 RAG)
 - 5 holdout blind test cases created with stratified verdict sampling
