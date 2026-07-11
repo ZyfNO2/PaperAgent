@@ -1,4 +1,4 @@
-﻿"""LangGraph node: dataset_repo_extractor — extract dataset + repo links per paper.
+"""LangGraph node: dataset_repo_extractor — extract dataset + repo links per paper.
 
 Replaces content.dataset_repo_extractor_node (agent C wires it in via
 nodes/__init__). Same signature so a 1-line registry change picks it up.
@@ -29,6 +29,10 @@ def _env_int(name: str, default: int) -> int:
         return int(raw)
     except ValueError:
         return default
+
+
+def _use_unified(env_flag: str) -> bool:
+    return os.environ.get(env_flag, "1") == "1"
 
 
 
@@ -122,17 +126,17 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
     # LLM extraction for non-github papers
     target_papers = non_github_papers
 
-    def _extract_one(paper: dict[str, Any]) -> dict[str, Any]:
+    def _extract_one(paper: dict[str, Any], use_unified: bool) -> dict[str, Any]:
         """Extract datasets + repos from a single paper. Returns result dict."""
         title = (paper.get("title") or paper.get("name") or "").strip()
         if not title:
-            return {"tried": 0, "ok": 0, "datasets": [], "repos": []}
+            return {"tried": 0, "ok": 0, "datasets": [], "repos": [], "provider": "local"}
         paper_slug = _slug_of(title)
+        prov = "unified_router" if use_unified else "fast_json"
         try:
-            from apps.api.app.services import llm_router
             from apps.api.app.services.agents.prompts import re11_dataset_repo_extractor as P
+            from apps.api.app.services.router.model_policy import TaskRole
 
-            # Re3.1: fetch arXiv fulltext if available for deeper extraction
             fulltext = ""
             arxiv_id = paper.get("arxiv_id")
             if arxiv_id:
@@ -146,17 +150,48 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
 
             abstract = paper.get("abstract") or paper.get("snippet") or ""
             built = P.build(title, abstract, fulltext=fulltext)
-            out = llm_router.call_json(
-                built["user"], system=built["system"], profile="fast_json",
-                max_tokens=700,
-                timeout=max(5, _env_int("DATASET_REPO_TIMEOUT_S", 45)),
-                expected="list",
-                schema_hint=("list of one object with keys: dataset_name, "
-                             "benchmark_name, official_code_url, project_page_url, "
-                             "supplementary_url, paper_mentioned_repo, "
-                             "paper_used_baselines (list[str]), missing (list[str]), "
-                             "status (found|not_found_in_paper|url_missing_needs_repair)"),
-            )
+            out: list[dict[str, Any]] | None = None
+            if use_unified:
+                from apps.api.app.services.router import call_with_contract_list
+                from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
+                register_graph_contracts()
+                contract_result = call_with_contract_list(
+                    built["user"],
+                    system=built["system"],
+                    contract_id="dataset-repo-list/v1",
+                    task_role=TaskRole.structured_extract,
+                    max_tokens=700,
+                    timeout=max(5, _env_int("DATASET_REPO_TIMEOUT_S", 45)),
+                )
+                if contract_result.success and isinstance(contract_result.content, list):
+                    out = contract_result.content
+                else:
+                    logger.warning("dataset_repo_extractor unified_router failed: %s", contract_result.error)
+                    out = []
+            else:
+                from apps.api.app.services import llm_router
+                raw_out = llm_router.call_json(
+                    built["user"], system=built["system"], profile="fast_json",
+                    max_tokens=700,
+                    timeout=max(5, _env_int("DATASET_REPO_TIMEOUT_S", 45)),
+                    expected="list",
+                    schema_hint=("list of one object with keys: dataset_name, "
+                                 "benchmark_name, official_code_url, project_page_url, "
+                                 "supplementary_url, paper_mentioned_repo, "
+                                 "paper_used_baselines (list[str]), missing (list[str]), "
+                                 "status (found|not_found_in_paper|url_missing_needs_repair)"),
+                )
+                if isinstance(raw_out, list):
+                    out = raw_out
+                elif isinstance(raw_out, dict):
+                    for key in ("extractions", "results", "items"):
+                        if isinstance(raw_out.get(key), list):
+                            out = raw_out[key]
+                            break
+                    else:
+                        out = [raw_out]
+                else:
+                    out = []
             item: dict[str, Any]
             if isinstance(out, list):
                 item = out[0] if out else {}
@@ -219,26 +254,30 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
                 "ok": 1 if (ds_found or repo_found) else 0,
                 "datasets": ds_found,
                 "repos": repo_found,
+                "provider": prov,
             }
         except Exception as exc:
             logger.debug("dataset_repo extraction failed for %r: %s",
                          title, type(exc).__name__)
             errors.append({"node": "dataset_repo", "for_paper": title,
                            "error": type(exc).__name__})
-            return {"tried": 1, "ok": 0, "datasets": [], "repos": []}
+            return {"tried": 1, "ok": 0, "datasets": [], "repos": [], "provider": prov}
 
     # Parallel extraction across papers
     import concurrent.futures
     datasets: list[dict[str, Any]] = []
     repos: list[dict[str, Any]] = []
+    extraction_providers: set[str] = set()
+    use_unified = _use_unified("DATASET_REPO_USE_UNIFIED")
     max_workers = max(1, min(len(target_papers), _env_int("DATASET_REPO_MAX_WORKERS", 4)))
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(_extract_one, p): p for p in target_papers}
+        futures = {executor.submit(_extract_one, p, use_unified): p for p in target_papers}
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
                 tried += result.get("tried", 0)
                 ok_count += result.get("ok", 0)
+                extraction_providers.add(result.get("provider") or "fast_json")
                 for d in result.get("datasets", []):
                     k = ds_key(d)
                     if k and k not in ds_seen:
@@ -335,15 +374,16 @@ def dataset_repo_extractor_node(state: ResearchState) -> dict[str, Any]:
     merged_ds = existing_ds + datasets
     merged_repo = existing_repo + github_repos + repos
 
+    provider = "unified_router" if "unified_router" in extraction_providers else "fast_json"
     trace = _emit("dataset_repo", t0,
                   {"n_papers": limit, "n_github_repos": len(github_repos)},
                   {"n_dataset": len(merged_ds), "n_repo": len(merged_repo),
                    "used_fallback": ok_count < tried if tried else False,
                    "llm_success_rate": f"{ok_count}/{tried}" if tried else "n/a"},
-                  [{"tool": "re11_dataset_repo_extractor.llm", "attempts": tried,
-                    "profile": "fast_json"},
+                  [{"tool": "dataset-repo-list/v1" if provider == "unified_router" else "re11_dataset_repo_extractor.llm",
+                    "attempts": tried, "mode": provider},
                    {"tool": "github_direct_extract", "n_repos": len(github_repos)}],
-                  "fast_json", errors,
+                  provider, errors,
                   state_keys=["dataset_candidates", "repo_candidates",
                               "evidence_audit", "trace_events", "errors"])
 

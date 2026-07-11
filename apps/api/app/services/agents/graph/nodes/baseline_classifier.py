@@ -1,4 +1,4 @@
-﻿"""LangGraph node: evidence_auditor — classify verified papers.
+"""LangGraph node: evidence_auditor — classify verified papers.
 
 Replaces content.evidence_auditor_node (agent C wires it in). Signature
 `baseline_classifier_node(state) -> dict` so a registry change picks it up.
@@ -49,6 +49,10 @@ def _word_list(d: dict[str, Any], key: str) -> list[str]:
     return v if isinstance(v, list) else [str(v)] if v else []
 
 
+def _use_unified() -> bool:
+    return os.environ.get("BASELINE_CLASSIFIER_USE_UNIFIED_ROUTER", "1") == "1"
+
+
 def _llm_reclassify(
     papers: list[dict[str, Any]],
     topic: str,
@@ -62,8 +66,6 @@ def _llm_reclassify(
     """
     if len(papers) < 3:
         return None
-
-    from apps.api.app.services.llm_router import call_json
 
     # Build compact paper list for LLM
     paper_list = []
@@ -97,15 +99,36 @@ def _llm_reclassify(
         + "\n\nClassify each paper as 'baseline' or 'parallel'."
     )
 
+    result: dict[str, Any] | None = None
     try:
-        result = call_json(
-            user_prompt,
-            system=system_prompt,
-            profile="fast_json",
-            max_tokens=2000,
-            timeout=max(5, _env_int("BASELINE_CLASSIFIER_TIMEOUT_S", 30)),
-            expected="dict",
-        )
+        if _use_unified():
+            from apps.api.app.services.router import call_with_contract
+            from apps.api.app.services.router.model_policy import TaskRole
+            from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
+            register_graph_contracts()
+            contract_result = call_with_contract(
+                user_prompt,
+                system=system_prompt,
+                contract_id="baseline-classify/v1",
+                task_role=TaskRole.evidence_critic,
+                max_tokens=2000,
+                timeout=max(5, _env_int("BASELINE_CLASSIFIER_TIMEOUT_S", 30)),
+            )
+            if contract_result.success and isinstance(contract_result.content, dict):
+                result = contract_result.content
+            else:
+                logger.warning("baseline_classifier unified_router failed: %s", contract_result.error)
+                return None
+        else:
+            from apps.api.app.services.llm_router import call_json
+            result = call_json(
+                user_prompt,
+                system=system_prompt,
+                profile="fast_json",
+                max_tokens=2000,
+                timeout=max(5, _env_int("BASELINE_CLASSIFIER_TIMEOUT_S", 30)),
+                expected="dict",
+            )
         if not isinstance(result, dict):
             return None
         classifications = result.get("classifications") or []
@@ -305,6 +328,9 @@ def baseline_classifier_node(state: ResearchState) -> dict[str, Any]:
         else:
             noise.append(classified)
 
+    def _disable_llm_reclassify() -> bool:
+        return os.environ.get("BASELINE_CLASSIFIER_DISABLE_LLM_RECLASSIFY", "0") == "1"
+
     # Re3.4 fix: if ALL non-survey/non-noise papers ended up in a single bucket
     # (typically all baseline), use LLM to reclassify into baseline vs parallel.
     _classified_papers = baselines + parallels
@@ -313,7 +339,8 @@ def baseline_classifier_node(state: ResearchState) -> dict[str, Any]:
         and (len(baselines) == 0 or len(parallels) == 0)
     )
     llm_reclassified = False
-    if _all_same_bucket and _classified_papers:
+    reclassify_provider = "local"
+    if _all_same_bucket and _classified_papers and not _disable_llm_reclassify():
         topic = state.get("topic") or ""
         reclass = _llm_reclassify(
             _classified_papers, topic, method_terms, object_terms,
@@ -322,6 +349,7 @@ def baseline_classifier_node(state: ResearchState) -> dict[str, Any]:
             baselines = reclass["baseline"]
             parallels = reclass["parallel"]
             llm_reclassified = True
+            reclassify_provider = "unified_router" if _use_unified() else "fast_json"
             logger.info(
                 "baseline_classifier: LLM reclassified %d papers -> %d baseline, %d parallel",
                 len(_classified_papers), len(baselines), len(parallels),
@@ -334,7 +362,8 @@ def baseline_classifier_node(state: ResearchState) -> dict[str, Any]:
                    "n_noise": len(noise), "llm_reclassified": llm_reclassified},
                   [{"tool": "local.classifier" if not llm_reclassified
                     else "local.classifier+llm_reclassify",
-                    "mode": "rule_based_topics+llm"}],
+                    "mode": "rule_based_topics+llm",
+                    "provider": reclassify_provider}],
                     "local", [],
                     state_keys=["baseline_candidates", "parallel_candidates",
                                 "dataset_papers", "surveys", "evidence_audit",

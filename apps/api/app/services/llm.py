@@ -611,6 +611,53 @@ def _chat_opencode(
     )
 
 
+def _chat_mistral(
+    prompt: str,
+    *,
+    system: str | None = None,
+    temperature: float = 0.2,
+    max_tokens: int = 1500,
+    timeout: float = 60.0,
+) -> str:
+    """Mistral AI provider (Mistral Medium).
+
+    Uses the OpenAI-compatible surface at https://api.mistral.ai/v1.
+    """
+    api_key = _get_env("MISTRAL_API_KEY")
+    raw_base = _get_env("MISTRAL_BASE_URL", "https://api.mistral.ai").rstrip("/")
+    base_url = _normalize_openai_base_url(raw_base)
+    model = _get_env("MISTRAL_MODEL", "mistral-medium-latest")
+    if not api_key:
+        raise LLMUnavailable("MISTRAL_API_KEY not set")
+    return _chat_openai_compat_once(
+        prompt, system=system, model=model, api_key=api_key,
+        base_url=base_url, temperature=temperature, max_tokens=max_tokens,
+        timeout=timeout, rate_limit_bucket="MISTRAL",
+    )
+
+
+def _chat_nv(
+    prompt: str,
+    *,
+    system: str | None = None,
+    temperature: float = 0.2,
+    max_tokens: int = 1500,
+    timeout: float = 60.0,
+) -> str:
+    """NVIDIA NIM provider (OpenAI-compatible at integrate.api.nvidia.com)."""
+    api_key = _get_env("NV_API_KEY")
+    raw_base = _get_env("NV_BASE_URL", "https://integrate.api.nvidia.com").rstrip("/")
+    base_url = _normalize_openai_base_url(raw_base)
+    model = _get_env("NV_MODEL", "meta/llama-3.1-8b-instruct")
+    if not api_key:
+        raise LLMUnavailable("NV_API_KEY not set")
+    return _chat_openai_compat_once(
+        prompt, system=system, model=model, api_key=api_key,
+        base_url=base_url, temperature=temperature, max_tokens=max_tokens,
+        timeout=timeout, rate_limit_bucket="NV",
+    )
+
+
 def _chat_voapi(
     prompt: str,
     *,

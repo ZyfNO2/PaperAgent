@@ -27,19 +27,17 @@ def sota_matcher_node(state: ResearchState) -> dict[str, Any]:
     topic = state.get("topic") or ""
     baselines = state.get("baseline_candidates") or []
 
-    try:
-        from apps.api.app.services import llm_router
-        from apps.api.app.services.agents.prompts import sota_matcher as P
-        built = P.build(topic, baselines)
-        out = llm_router.call_json(built["user"], system=built["system"],
-                                   profile="fast_json", max_tokens=2000,
-                                   expected="dict", timeout=30)
-        result = out if isinstance(out, dict) else _heuristic(state)
-        prov = "fast_json"
-    except Exception as exc:
-        logger.warning("sota_matcher LLM failed: %s — heuristic fallback", exc)
-        result = _heuristic(state)
-        prov = "heuristic"
+    from apps.api.app.services.agents.prompts import sota_matcher as P
+    from apps.api.app.services.router.model_policy import TaskRole
+    from ._unified_migrate import call_structured
+    built = P.build(topic, baselines)
+    result, prov = call_structured(
+        prompt=built["user"], system=built["system"],
+        task_role=TaskRole.evidence_critic, contract_id="sota-comparison/v1",
+        env_flag="SOTA_USE_UNIFIED_ROUTER", fallback_fn=lambda: _heuristic(state),
+        validator_name="has_comparison_papers",
+        max_tokens=2000, timeout=30, expected="dict",
+    )
 
     trace = _emit("sota_matcher", t0,
                   {"n_baseline": len(baselines)},

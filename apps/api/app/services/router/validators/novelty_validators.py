@@ -138,3 +138,30 @@ def validate_differentiation_matrix(data: dict[str, Any]) -> tuple[bool, str | N
     if missing:
         return False, f"differentiation matrix missing: {missing}"
     return True, None
+
+
+def validate_claim_judge(data: dict[str, Any]) -> tuple[bool, str | None]:
+    """Semantic validation for claim-judge/v1 contract.
+
+    Rules:
+    - overall_verdict must be one of ACCEPT / REVISE / REJECT
+    - judgements must exist and be a list
+    - each judgement must have verdict ∈ {ACCEPT, REVISE, REJECT}
+    """
+    overall_verdict = data.get("overall_verdict", "")
+    allowed = {"ACCEPT", "REVISE", "REJECT"}
+    if overall_verdict not in allowed:
+        return False, f"overall_verdict must be one of {allowed}, got {overall_verdict!r}"
+
+    judgements = data.get("judgements", [])
+    if not isinstance(judgements, list):
+        return False, "judgements must be a list"
+
+    for i, j in enumerate(judgements):
+        if not isinstance(j, dict):
+            return False, f"judgements[{i}] must be a dict"
+        verdict = j.get("verdict", "")
+        if verdict not in allowed:
+            return False, f"judgements[{i}].verdict must be one of {allowed}, got {verdict!r}"
+
+    return True, None

@@ -47,9 +47,9 @@ _PROFILE_TABLE: dict[str, ProviderSpec] = {
     ),
     "premium_review": ProviderSpec(
         profile="premium_review",
-        provider="voapi",
+        provider="mistral",
         json_mode=True,
-        allow_fallback=False,
+        allow_fallback=True,
         purpose="final sampling review only",
     ),
 }
@@ -78,7 +78,12 @@ def _resolve_spec(profile: str | None) -> ProviderSpec:
         # chain, so here we just hand back the StepFun-capable leaf that is
         # known to be up when DeepSeek is unavailable.
         primary = _get_env("FAST_JSON_PRIMARY", "stepfun").lower()
-        if primary in ("deepseek", "stepfun", "voapi", "opencode"):
+        if primary in ("deepseek", "stepfun", "voapi", "opencode", "mistral", "nv"):
+            return ProviderSpec(
+                profile=p, provider=primary,
+                json_mode=(primary != "stepfun"),
+                purpose="topic parse / planner / verifier JSON",
+            )
             return ProviderSpec(
                 profile=p, provider=primary,
                 json_mode=(primary != "stepfun"),
@@ -192,6 +197,10 @@ def call_json(
             raw = _llm._chat_voapi(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
         elif spec.provider == "opencode":
             raw = _llm._chat_opencode(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
+        elif spec.provider == "mistral":
+            raw = _llm._chat_mistral(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
+        elif spec.provider == "nv":
+            raw = _llm._chat_nv(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
         elif spec.provider == "stepfun":
             raw = _llm._chat_stepfun(prompt, system=system, temperature=temperature, max_tokens=max_tokens, timeout=timeout)
         else:

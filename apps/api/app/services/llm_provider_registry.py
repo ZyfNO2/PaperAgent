@@ -187,6 +187,34 @@ def _load_from_env(registry: ProviderRegistry) -> None:
             source="env",
         ))
 
+    # Mistral AI (medium, primary for verifier)
+    mr_key = os.getenv("MISTRAL_API_KEY", "").strip()
+    if mr_key and mr_key != "YOUR_MISTRAL_KEY":
+        registry.register(ProviderConfig(
+            name="mistral",
+            api_key=mr_key,
+            base_url=os.getenv("MISTRAL_BASE_URL", "https://api.mistral.ai").strip(),
+            model=os.getenv("MISTRAL_MODEL", "mistral-medium-latest").strip(),
+            is_reasoner=False,
+            rpm_limit=_env_int("MISTRAL_RPM_LIMIT", 0),
+            label="Mistral Medium",
+            source="env",
+        ))
+
+    # NVIDIA NIM (NV)
+    nv_key = os.getenv("NV_API_KEY", "").strip()
+    if nv_key:
+        registry.register(ProviderConfig(
+            name="nv",
+            api_key=nv_key,
+            base_url=os.getenv("NV_BASE_URL", "https://integrate.api.nvidia.com").strip(),
+            model=os.getenv("NV_MODEL", "meta/llama-3.1-8b-instruct").strip(),
+            is_reasoner=False,
+            rpm_limit=_env_int("NV_RPM_LIMIT", 0),
+            label="NVIDIA NIM",
+            source="env",
+        ))
+
     # Set active: deepseek primary, opencode fallback
     providers = registry.list_providers()
     if providers:

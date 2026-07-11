@@ -1,15 +1,22 @@
-﻿"""LangGraph node: quality_filter — LLM-based paper authenticity filtering.
+"""LangGraph node: quality_filter — LLM-based paper authenticity filtering.
 
 Sits between paper_retriever and verify. Uses LLM to judge whether each
 candidate is a real academic paper (not a glossary/concept/figure entry).
 Heuristic regex fallback only when LLM is unavailable.
+
+Re7.6: optional unified_router path via QUALITY_FILTER_USE_UNIFIED=1.
 """
 from __future__ import annotations
 
 import logging
+import os
 import re
 import time
 from typing import Any
+
+
+def _use_unified(env_flag: str) -> bool:
+    return os.environ.get(env_flag, "1") == "1"
 
 from apps.api.app.services.agents.graph.state import ResearchState
 
@@ -70,13 +77,31 @@ def _heuristic_filter(candidates: list[dict[str, Any]]) -> list[tuple[int, bool,
     return results
 
 
-def _call_llm_batch(candidates: list[dict[str, Any]]) -> list[dict[str, Any]] | None:
-    """Call LLM for a batch. Returns list of {index, is_paper, reason} or None on failure."""
-    from apps.api.app.services import llm_router
+def _call_llm_batch(candidates: list[dict[str, Any]]) -> tuple[list[dict[str, Any]] | None, str]:
+    """Call LLM for a batch. Returns (list of {index, is_paper, reason} or None, provider_tag)."""
     from apps.api.app.services.agents.prompts import re13_quality_filter as P
+    from apps.api.app.services.router import call_with_contract_list
+    from apps.api.app.services.router.model_policy import TaskRole
+    from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
 
     built = P.build_batch(candidates)
     try:
+        if _use_unified("QUALITY_FILTER_USE_UNIFIED"):
+            register_graph_contracts()
+            result = call_with_contract_list(
+                built["user"],
+                system=built["system"],
+                contract_id="query-filter-batch/v1",
+                task_role=TaskRole.structured_extract,
+                max_tokens=2000,
+                timeout=30,
+            )
+            if result.success and isinstance(result.content, list):
+                return [v for v in result.content if isinstance(v, dict)], "unified_router"
+            logger.warning("quality_filter unified_router failed: %s", result.error)
+            return None, "unified_router"
+
+        from apps.api.app.services import llm_router
         out = llm_router.call_json(
             built["user"],
             system=built["system"],
@@ -86,18 +111,19 @@ def _call_llm_batch(candidates: list[dict[str, Any]]) -> list[dict[str, Any]] | 
             expected="list",
             schema_hint='JSON array of objects: [{"index": int, "is_paper": bool, "reason": str}]',
         )
+        prov = "fast_json"
         if isinstance(out, list):
-            return [v for v in out if isinstance(v, dict)]
+            return [v for v in out if isinstance(v, dict)], prov
         if isinstance(out, dict):
             # Maybe wrapped
             for key in ("results", "items", "papers"):
                 if isinstance(out.get(key), list):
-                    return [v for v in out[key] if isinstance(v, dict)]
-            return [out]
-        return None
+                    return [v for v in out[key] if isinstance(v, dict)], prov
+            return [out], prov
+        return None, prov
     except Exception as exc:
         logger.warning("quality_filter LLM call failed: %s", type(exc).__name__)
-        return None
+        return None, "fast_json"
 
 
 def _pre_filter(candidates: list[dict[str, Any]]) -> list[tuple[int, bool, str]]:
@@ -222,7 +248,7 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
         llm_failed = False
 
         for batch_idx, batch in enumerate(batches):
-            result = _call_llm_batch(batch)
+            result, prov = _call_llm_batch(batch)
             if result is None:
                 llm_failed = True
                 break
@@ -232,7 +258,11 @@ def quality_filter_node(state: ResearchState) -> dict[str, Any]:
                     global_idx = gray_indices[batch_idx * _BATCH_SIZE + idx_in_batch]
                     is_paper_map[global_idx] = bool(item.get("is_paper", True))
                     reason_map[global_idx] = item.get("reason", "LLM judged")
-            trace["tool_calls"].append({"tool": "re13_quality_filter.llm", "batch_size": len(batch)})
+            trace["tool_calls"].append({
+                "tool": "re13_quality_filter.llm",
+                "batch_size": len(batch),
+                "provider": prov,
+            })
 
         if llm_failed:
             logger.warning("quality_filter LLM failed for gray-area — using heuristic fallback")

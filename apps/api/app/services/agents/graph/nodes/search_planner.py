@@ -1,4 +1,4 @@
-﻿"""LangGraph node A2 - search_planner_node.
+"""LangGraph node A2 - search_planner_node.
 
 Produces `search_plan` defining broad / focused / repair rounds of tool
 calls. Idempotent when state already carries a non-empty search_plan AND no
@@ -13,6 +13,7 @@ Patch fields:
 from __future__ import annotations
 
 import logging
+import os
 import time
 from typing import Any
 
@@ -26,6 +27,20 @@ logger = logging.getLogger(__name__)
 
 _TOOLS = frozenset({"arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite", "pubmed"})
 _ROUNDS = frozenset({"broad", "focused", "repair", "seed_expansion"})
+
+
+def _use_unified() -> bool:
+    return os.environ.get("SEARCH_PLANNER_USE_UNIFIED_ROUTER", "1") == "1"
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
 
 
 def _emit(
@@ -280,22 +295,37 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
     errors_out: list[dict[str, Any]] = []
     plan: dict[str, Any] = {"queries": [], "rounds": ["broad"], "negative_feedback": ""}
     tries = 0
+    prov = "fast_json"
 
     try:
         built = P.build(topic, atoms, prior_rounds=prior_rounds)
         tries += 1
-        raw = call_json(
-            built["user"],
-            system=built["system"],
-            profile="fast_json",
-            max_tokens=4000,
-            expected="dict",
-            schema_hint=(
-                '{"queries":[{tool,query,why,expected_evidence,stop_condition}...],'
-                '"rounds":["broad"|"focused"|"repair"],'
-                '"negative_feedback":str}'
-            ),
-        )
+        if _use_unified():
+            from apps.api.app.services.router import call_json_contract
+            from apps.api.app.services.router.model_policy import TaskRole
+            from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
+            register_graph_contracts()
+            raw = call_json_contract(
+                built["user"],
+                system=built["system"],
+                task_role=TaskRole.search_control,
+                max_tokens=4000,
+                timeout=max(5, _env_int("SEARCH_PLANNER_TIMEOUT_S", 60)),
+            )
+            prov = "unified_router"
+        else:
+            raw = call_json(
+                built["user"],
+                system=built["system"],
+                profile="fast_json",
+                max_tokens=4000,
+                expected="dict",
+                schema_hint=(
+                    '{"queries":[{tool,query,why,expected_evidence,stop_condition}...],'
+                    '"rounds":["broad"|"focused"|"repair"],'
+                    '"negative_feedback":str}'
+                ),
+            )
         if isinstance(raw, dict):
             queries = _normalize_queries(raw.get("queries"))
             plan = {
@@ -313,8 +343,9 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
         t0,
         {"topic_len": len(topic), "has_prior": bool(prior_rounds)},
         {"n_queries": len(plan.get("queries") or []), "rounds": plan.get("rounds")},
-        [{"tool": "re11_planner.llm", "attempts": tries}],
-        "fast_json",
+        [{"tool": "re11_planner.llm" if prov == "fast_json" else "search-plan/v1",
+          "mode": prov, "attempts": tries}],
+        prov,
         errors_out,
         state_keys=["search_plan", "trace_events", "errors",
                     "provider_profile"],
@@ -324,5 +355,5 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
         "search_plan": plan,
         "trace_events": [trace],
         "errors": errors_out,
-        "provider_profile": "fast_json",
+        "provider_profile": prov,
     }

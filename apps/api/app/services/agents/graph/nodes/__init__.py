@@ -32,6 +32,7 @@ from . import novelty_review as _novelty_review
 from . import falsifiability as _falsifiability
 # Re7.6 new nodes
 from . import evidence_context as _evidence_context
+from . import novelty_draft as _novelty_draft
 from . import claim_judge as _claim_judge
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
@@ -70,6 +71,7 @@ REGISTRY: dict[str, callable] = {
     "falsifiability": _falsifiability.falsifiability_node,
     # Re7.6 new nodes
     "evidence_context": _evidence_context.evidence_context_node,
+    "novelty_draft": _novelty_draft.novelty_draft_node,
     "claim_judge": _claim_judge.claim_judge_node,
 }
 
@@ -108,4 +110,12 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "narrative_builder": ("research_narrative", "trace_events"),
     "optimization_advisor": ("optimization_directions", "trace_events"),
     "devils_advocate": ("review_report", "trace_events"),
+    # Re6.4 / Re7.6 novelty nodes
+    "novelty_review": ("novelty_review_verdict", "novelty_review_score",
+                       "pseudo_innovation_risks", "pressure_points",
+                       "differentiation_matrix", "required_repairs",
+                       "review_strengths", "review_risks", "trace_events"),
+    "falsifiability": ("falsifiable_propositions", "trace_events"),
+    "claim_judge": ("claim_judgements", "claim_judge_verdict",
+                    "blocked_items", "claim_judge_summary", "trace_events"),
 }

@@ -9,7 +9,6 @@ Re6.X global constraint: model_id MUST be one of {"deepseek-v4-flash", "big-pick
 from __future__ import annotations
 
 from enum import Enum
-from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -18,7 +17,7 @@ from pydantic import BaseModel, Field, model_validator
 # Global model whitelist (Re6.X constraint)
 # ---------------------------------------------------------------------------
 
-ALLOWED_MODEL_IDS: frozenset[str] = frozenset({"deepseek-v4-flash", "big-pickle"})
+ALLOWED_MODEL_IDS: frozenset[str] = frozenset({"deepseek-v4-flash", "big-pickle", "mistral-medium-latest", "meta/llama-3.1-8b-instruct", "mistral-small-latest", "stepfun-ai/step-3.7-flash", "deepseek-ai/deepseek-v3", "z-ai/glm-4.5-flash", "moonshotai/kimi-k2.6", "qwen/qwen3-8b", "google/gemma-3-12b-it"})
 
 
 # ---------------------------------------------------------------------------
@@ -172,17 +171,34 @@ class ModelPolicy(BaseModel):
 # Factory
 # ---------------------------------------------------------------------------
 
+_DEFAULT_FALLBACK_MAP: dict[str, str] = {
+    "deepseek-v4-flash": "big-pickle",
+    "big-pickle": "deepseek-v4-flash",
+    "mistral-small-latest": "meta/llama-3.1-8b-instruct",
+    "mistral-medium-latest": "mistral-small-latest",
+    "meta/llama-3.1-8b-instruct": "mistral-small-latest",
+}
+
+
+def _pick_fallback(primary_model: str) -> str:
+    """Deterministically pick a fallback model for a given primary."""
+    fb = _DEFAULT_FALLBACK_MAP.get(primary_model)
+    if fb and fb in ALLOWED_MODEL_IDS:
+        return fb
+    # Generic fallback: prefer big-pickle or deepseek-v4-flash
+    for candidate in ("big-pickle", "deepseek-v4-flash", "mistral-small-latest"):
+        if candidate != primary_model and candidate in ALLOWED_MODEL_IDS:
+            return candidate
+    return primary_model
+
+
 def create_default_policy(role: TaskRole, provider_id: str = "opencode") -> ModelPolicy:
     """Create a sensible default ModelPolicy for a given task role.
 
     Uses the role→model mapping from §3.2 of the R6.2 SOP.
     """
     primary_model = default_primary_for_role(role)
-    # Fallback: use the OTHER allowed model
-    fallback_model = next(
-        (m for m in ALLOWED_MODEL_IDS if m != primary_model),
-        primary_model,
-    )
+    fallback_model = _pick_fallback(primary_model)
 
     return ModelPolicy(
         role=role,

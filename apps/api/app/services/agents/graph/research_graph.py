@@ -117,7 +117,8 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     graph.add_edge("evidence_context", "innovation_extractor")
     graph.add_edge("work_package", "sota_matcher")                 # Re2: parallel fan-out
     # Re6.4: Insert novelty review + falsifiability between innovation and narrative
-    graph.add_edge("innovation_extractor", "novelty_review")
+    graph.add_edge("innovation_extractor", "novelty_draft")
+    graph.add_edge("novelty_draft", "novelty_review")
     graph.add_edge("novelty_review", "falsifiability")
     graph.add_edge("falsifiability", "claim_judge")                # Re7.6: judge claims
     graph.add_edge("claim_judge", "narrative_builder")             # Re7.6 fan-in
