@@ -1,0 +1,1090 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-10T17:43:26Z",
+    "input_summary": {
+      "topic": "基于图神经网络的社交网络社区发现算法研究"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:43:26Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-10T17:44:00Z",
+    "input_summary": {
+      "topic_len": 20
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 1,
+      "domain": [
+        "unknown"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:44:00Z",
+    "elapsed_s": 33.862,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-10T17:44:00Z",
+    "input_summary": {
+      "topic_len": 20,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:44:00Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-10T17:44:00Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 5,
+      "n_steps": 4,
+      "n_tool_calls": 3,
+      "raw_tools": [
+        "...",
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "github": 5
+      },
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "...",
+        "n": 0
+      },
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 5
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T17:46:09Z",
+    "elapsed_s": 128.722
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-10T17:46:09Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "low_relevance": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-10T17:46:09Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-10T17:46:09Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 2,
+      "n_reject": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T17:47:15Z",
+    "elapsed_s": 66.772
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T17:47:15Z",
+    "input_summary": {
+      "n_papers": 2,
+      "n_weak": 2,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 5,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 0
+        },
+        "current_coverage": {
+          "core": 0,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 5
+        },
+        "gaps": [
+          "core",
+          "baseline"
+        ],
+        "budget_remaining": 2,
+        "decision": "reflect"
+      }
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:47:15Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-10T17:47:50Z",
+    "input_summary": {
+      "current_round": 0,
+      "repair_type": "baseline_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:47:50Z",
+    "elapsed_s": 34.239,
+    "state_keys": [
+      "search_plan",
+      "evidence_audit",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-10T17:47:50Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 0,
+      "n_repo_candidates": 0,
+      "n_steps": 1,
+      "n_tool_calls": 0,
+      "raw_tools": [],
+      "per_adapter": {},
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 1
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T17:48:23Z",
+    "elapsed_s": 32.815
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-10T17:48:23Z",
+    "input_summary": {
+      "n_candidates": 0
+    },
+    "output_summary": {
+      "kept": 0,
+      "dropped": 0
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-10T17:48:23Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-10T17:48:23Z",
+    "input_summary": {
+      "n_candidates": 0,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 0,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T17:48:23Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T17:48:23Z",
+    "input_summary": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 1,
+      "weak_promoted": false,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 0
+        },
+        "current_coverage": {
+          "core": 0,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 0
+        },
+        "gaps": [
+          "core",
+          "baseline"
+        ],
+        "budget_remaining": 1,
+        "decision": "reflect"
+      }
+    },
+    "output_summary": {
+      "route": "repair"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:48:23Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "targeted_repair",
+    "started_at": "2026-07-10T17:49:06Z",
+    "input_summary": {
+      "current_round": 1,
+      "repair_type": "paper_gap_repair"
+    },
+    "output_summary": {
+      "n_queries": 2,
+      "rounds": [
+        "repair"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re12_repair.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:49:06Z",
+    "elapsed_s": 43.789,
+    "state_keys": [
+      "search_plan",
+      "evidence_audit",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-10T17:49:06Z",
+    "input_summary": {
+      "topic_len": 20,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 5,
+      "n_steps": 3,
+      "n_tool_calls": 2,
+      "raw_tools": [
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "github": 5
+      },
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 5
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T17:49:48Z",
+    "elapsed_s": 41.891
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-10T17:49:48Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "low_relevance": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-10T17:49:48Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-10T17:49:48Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 20,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 2,
+      "n_weak_reject": 6,
+      "n_reject": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T17:51:13Z",
+    "elapsed_s": 84.623
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T17:51:13Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 6,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 5,
+      "n_work_packages": 0,
+      "repair_rounds": 2,
+      "weak_promoted": true,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 0
+        },
+        "current_coverage": {
+          "core": 2,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 5
+        },
+        "gaps": [
+          "baseline"
+        ],
+        "budget_remaining": 0,
+        "decision": "stop_with_gap"
+      }
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:51:13Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-10T17:51:13Z",
+    "input_summary": {
+      "n_verified": 8,
+      "n_seeds": 5,
+      "seed_titles": [
+        "LabelRank: A Stabilized Label Propagation Algorithm for Comm",
+        "Combinations of Affinity Functions for Different Community D",
+        "Multi-layered Social Networks",
+        "Quantifying Social Network Dynamics",
+        "A Micro-foundation of Social Capital in Evolving Social Netw"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 5,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "LabelRank: A Stabilized Label Propagation Algorithm for Comm",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Combinations of Affinity Functions for Different Community D",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Multi-layered Social Networks",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "Quantifying Social Network Dynamics",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      },
+      {
+        "seed_title": "A Micro-foundation of Social Capital in Evolving Social Netw",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-10T17:51:14Z",
+    "elapsed_s": 1.351
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-10T17:51:14Z",
+    "input_summary": {
+      "n_candidates": 8,
+      "topic_len": 20,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 0,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T17:52:29Z",
+    "elapsed_s": 74.704
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T17:52:29Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_weak": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 5,
+      "n_work_packages": 0,
+      "repair_rounds": 2,
+      "weak_promoted": false,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 0
+        },
+        "current_coverage": {
+          "core": 2,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 5
+        },
+        "gaps": [
+          "baseline"
+        ],
+        "budget_remaining": 0,
+        "decision": "stop_with_gap"
+      }
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:52:29Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-10T17:54:37Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 5,
+      "used_fallback": true,
+      "llm_success_rate": "0/8"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 8,
+        "profile": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:54:37Z",
+    "elapsed_s": 127.909,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-10T17:54:37Z",
+    "input_summary": {
+      "papers": 8
+    },
+    "output_summary": {
+      "nodes": 13,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:54:37Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-10T17:54:37Z",
+    "input_summary": {
+      "n_verified": 8
+    },
+    "output_summary": {
+      "n_baseline": 2,
+      "n_parallel": 6,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 0,
+      "llm_reclassified": false
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics+llm"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:54:37Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-10T17:55:54Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_dataset": 0,
+      "n_repo": 5
+    },
+    "output_summary": {
+      "verdict": "accept",
+      "score": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:55:54Z",
+    "elapsed_s": 77.378,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate_search",
+    "started_at": "2026-07-10T17:55:54Z",
+    "input_summary": {
+      "enabled": false,
+      "n_papers": 8
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:55:54Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate_search",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-10T17:56:41Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 6
+    },
+    "output_summary": {
+      "n_packages": 0,
+      "n_gap": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:56:41Z",
+    "elapsed_s": 46.66,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-10T17:57:32Z",
+    "input_summary": {
+      "n_baseline": 2
+    },
+    "output_summary": {
+      "n_comparison": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:57:32Z",
+    "elapsed_s": 50.608,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-10T17:58:08Z",
+    "input_summary": {
+      "n_baseline": 2,
+      "n_parallel": 6
+    },
+    "output_summary": {
+      "n_innovation": 1,
+      "n_datasets_found": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:58:08Z",
+    "elapsed_s": 87.101,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "dataset_candidates",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-10T17:58:54Z",
+    "input_summary": {
+      "n_innovation": 1
+    },
+    "output_summary": {
+      "nick_model_name": ""
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T17:58:54Z",
+    "elapsed_s": 45.498,
+    "state_keys": [
+      "research_narrative",
+      "narrative_revisions",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-10T17:58:54Z",
+    "input_summary": {
+      "n_packages": 0
+    },
+    "output_summary": {
+      "status": "blocked",
+      "n_remaining": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:58:54Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-10T17:58:54Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "基于图神经网络的社交网络社区发现算法研究",
+      "n_papers": 8,
+      "n_baseline": 2,
+      "n_parallel": 6,
+      "n_dataset": 0,
+      "n_repo": 5,
+      "n_work_packages": 0,
+      "low_bar_status": "blocked",
+      "human_gate_status": null,
+      "notes": [
+        "low-bar review blocked the proposal",
+        "human gate: None"
+      ],
+      "research_basis": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T17:58:54Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "trace_events"
+    ]
+  }
+]

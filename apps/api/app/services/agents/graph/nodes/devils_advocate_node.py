@@ -44,12 +44,20 @@ def devils_advocate_node(state: ResearchState) -> dict[str, Any]:
     work_packages = state.get("work_packages") or []
 
     try:
-        from apps.api.app.services import llm_router
+        from apps.api.app.services.agents.graph.validators.llm_output_validator import (
+            call_json_with_validation,
+        )
         from apps.api.app.services.agents.prompts import devils_advocate_graph as P
         built = P.build(topic, feasibility, innovations, narrative, work_packages)
-        out = llm_router.call_json(built["user"], system=built["system"],
-                                   profile="fast_json", max_tokens=2000,
-                                   expected="dict", timeout=30)
+        out = call_json_with_validation(
+            built["user"],
+            system=built["system"],
+            node_name="devils_advocate",
+            profile="fast_json",
+            max_tokens=2000,
+            timeout=30,
+            fallback=_heuristic(state),
+        )
         result = out if isinstance(out, dict) else _heuristic(state)
         prov = "fast_json"
     except Exception as exc:
@@ -68,6 +76,17 @@ def devils_advocate_node(state: ResearchState) -> dict[str, Any]:
                   prov, [],
                   state_keys=["review_report", "devils_advocate_block_count",
                               "trace_events"])
-    return {"review_report": result,
-            "devils_advocate_block_count": block_count,
-            "trace_events": [trace]}
+
+    # Re4.3: Pass evidence_critiques to narrative_builder on MINOR_REVISION
+    patch: dict[str, Any] = {"review_report": result,
+                             "devils_advocate_block_count": block_count,
+                             "trace_events": [trace]}
+    if result.get("overall_verdict") == "MINOR_REVISION":
+        critiques = result.get("evidence_critiques") or []
+        critique_reasons = [
+            c.get("issue", "") for c in critiques if c.get("target_type") == "narrative"
+        ]
+        patch["_narrative_revision_reason"] = "; ".join(critique_reasons) or "MINOR_REVISION"
+        patch["_narrative_revision_source"] = "devils_advocate"
+
+    return patch

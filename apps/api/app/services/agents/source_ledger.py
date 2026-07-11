@@ -98,10 +98,13 @@ class SourceLedger:
         return out
 
     def stats(self) -> dict[str, dict[str, int]]:
-        """Aggregate ok/empty/error/rate_limited counts per adapter."""
+        """Aggregate ok/empty/error/rate_limited/skipped counts per adapter."""
         out: dict[str, dict[str, int]] = {}
         for r in self.records:
-            bucket = out.setdefault(r["adapter"], {"ok": 0, "empty": 0, "error": 0, "rate_limited": 0, "total": 0})
+            bucket = out.setdefault(
+                r["adapter"],
+                {"ok": 0, "empty": 0, "error": 0, "rate_limited": 0, "skipped": 0, "total": 0},
+            )
             bucket[r["status"]] = bucket.get(r["status"], 0) + 1
             bucket["total"] += 1
         return out

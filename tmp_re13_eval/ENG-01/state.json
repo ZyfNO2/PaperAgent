@@ -1,0 +1,560 @@
+{
+  "case_id": "ENG-01",
+  "topic": "Vision Transformer for steel surface defect detection",
+  "provider_profile": "react_search",
+  "trace_events": [
+    {
+      "node": "intake",
+      "started_at": "2026-07-10T23:25:31Z",
+      "input_summary": {
+        "topic": "Vision Transformer for steel surface defect detection"
+      },
+      "output_summary": {
+        "ok": true
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-10T23:25:31Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "case_id",
+        "provider_profile",
+        "trace_events",
+        "errors",
+        "verified_papers",
+        "seed_papers"
+      ]
+    },
+    {
+      "node": "topic_parser",
+      "started_at": "2026-07-10T23:25:51Z",
+      "input_summary": {
+        "topic_len": 53
+      },
+      "output_summary": {
+        "n_method": 1,
+        "n_object": 1,
+        "domain": [
+          "vision_2d"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re11_parser.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-10T23:25:51Z",
+      "elapsed_s": 20.089,
+      "state_keys": [
+        "topic_atoms",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ]
+    },
+    {
+      "node": "search_planner",
+      "started_at": "2026-07-10T23:25:51Z",
+      "input_summary": {
+        "topic_len": 53,
+        "mode": "template"
+      },
+      "output_summary": {
+        "n_queries": 2,
+        "rounds": [
+          "broad",
+          "focused"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "search_planner.template"
+        }
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-10T23:25:51Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "search_plan",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ]
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-10T23:25:51Z",
+      "input_summary": {
+        "topic_len": 53,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "n_repo_candidates": 0,
+        "n_steps": 1,
+        "n_tool_calls": 0,
+        "raw_tools": [],
+        "per_adapter": {},
+        "failed_adapters": [],
+        "skipped_adapters": [],
+        "repair_rounds": 0
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "react_search",
+      "state_keys": [
+        "raw_results",
+        "paper_candidates",
+        "repo_candidates",
+        "search_steps",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ],
+      "ended_at": "2026-07-10T23:26:15Z",
+      "elapsed_s": 24.031
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-10T23:26:15Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 0,
+        "weak_promoted": false,
+        "zero_accept_repair": false,
+        "coverage_gate": {
+          "required_roles": {
+            "core": 2,
+            "baseline": 1
+          },
+          "optional_roles": {
+            "parallel": 1,
+            "dataset": 1,
+            "repo": 1
+          },
+          "current_coverage": {
+            "core": 0,
+            "baseline": 0,
+            "parallel": 0,
+            "dataset": 0,
+            "repo": 0
+          },
+          "gaps": [
+            "core",
+            "baseline"
+          ],
+          "budget_remaining": 2,
+          "decision": "reflect"
+        }
+      },
+      "output_summary": {
+        "route": "repair"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-10T23:26:15Z",
+      "elapsed_s": 0.001,
+      "state_keys": [
+        "evidence_audit",
+        "trace_events",
+        "verified_papers",
+        "weak_papers"
+      ]
+    },
+    {
+      "node": "targeted_repair",
+      "started_at": "2026-07-10T23:27:29Z",
+      "input_summary": {
+        "current_round": 0,
+        "repair_type": "paper_gap_repair"
+      },
+      "output_summary": {
+        "n_queries": 0,
+        "repair_outcome": "no_query",
+        "rounds": [
+          "repair"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re12_repair.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-10T23:27:29Z",
+      "elapsed_s": 74.341,
+      "state_keys": [
+        "search_plan",
+        "evidence_audit",
+        "trace_events",
+        "errors",
+        "provider_profile",
+        "repair_outcome",
+        "repair_no_query_reason",
+        "repair_query_ids"
+      ]
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-10T23:27:29Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 1,
+        "weak_promoted": false,
+        "zero_accept_repair": false,
+        "coverage_gate": {
+          "required_roles": {
+            "core": 2,
+            "baseline": 1
+          },
+          "optional_roles": {
+            "parallel": 1,
+            "dataset": 1,
+            "repo": 1
+          },
+          "current_coverage": {
+            "core": 0,
+            "baseline": 0,
+            "parallel": 0,
+            "dataset": 0,
+            "repo": 0
+          },
+          "gaps": [
+            "core",
+            "baseline"
+          ],
+          "budget_remaining": 1,
+          "decision": "reflect"
+        }
+      },
+      "output_summary": {
+        "route": "repair"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-10T23:27:29Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "evidence_audit",
+        "trace_events",
+        "verified_papers",
+        "weak_papers"
+      ]
+    },
+    {
+      "node": "targeted_repair",
+      "started_at": "2026-07-10T23:27:56Z",
+      "input_summary": {
+        "current_round": 1,
+        "repair_type": "paper_gap_repair"
+      },
+      "output_summary": {
+        "n_queries": 4,
+        "repair_outcome": "queries_ready",
+        "rounds": [
+          "repair"
+        ]
+      },
+      "tool_calls": [
+        {
+          "tool": "re12_repair.llm",
+          "attempts": 1
+        }
+      ],
+      "errors": [],
+      "provider": "fast_json",
+      "ended_at": "2026-07-10T23:27:56Z",
+      "elapsed_s": 26.439,
+      "state_keys": [
+        "search_plan",
+        "evidence_audit",
+        "trace_events",
+        "errors",
+        "provider_profile",
+        "repair_outcome",
+        "repair_no_query_reason",
+        "repair_query_ids"
+      ]
+    },
+    {
+      "node": "search_agent",
+      "started_at": "2026-07-10T23:27:56Z",
+      "input_summary": {
+        "topic_len": 53,
+        "has_atoms": true,
+        "has_plan": true,
+        "provider": "react_search"
+      },
+      "output_summary": {
+        "n_paper_candidates": 0,
+        "n_repo_candidates": 0,
+        "n_steps": 1,
+        "n_tool_calls": 0,
+        "raw_tools": [],
+        "per_adapter": {},
+        "failed_adapters": [],
+        "skipped_adapters": [],
+        "repair_rounds": 2
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "react_search",
+      "state_keys": [
+        "raw_results",
+        "paper_candidates",
+        "repo_candidates",
+        "search_steps",
+        "trace_events",
+        "errors",
+        "provider_profile"
+      ],
+      "ended_at": "2026-07-10T23:28:14Z",
+      "elapsed_s": 17.791
+    },
+    {
+      "node": "quality_gate",
+      "started_at": "2026-07-10T23:28:14Z",
+      "input_summary": {
+        "n_papers": 0,
+        "n_weak": 0,
+        "n_baseline": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "repair_rounds": 2,
+        "weak_promoted": false,
+        "zero_accept_repair": false,
+        "coverage_gate": {
+          "required_roles": {
+            "core": 2,
+            "baseline": 1
+          },
+          "optional_roles": {
+            "parallel": 1,
+            "dataset": 1,
+            "repo": 1
+          },
+          "current_coverage": {
+            "core": 0,
+            "baseline": 0,
+            "parallel": 0,
+            "dataset": 0,
+            "repo": 0
+          },
+          "gaps": [
+            "core",
+            "baseline"
+          ],
+          "budget_remaining": 0,
+          "decision": "stop_with_gap"
+        }
+      },
+      "output_summary": {
+        "route": "continue"
+      },
+      "tool_calls": [
+        "quality_gate.rule_based"
+      ],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-10T23:28:14Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "evidence_audit",
+        "trace_events",
+        "verified_papers",
+        "weak_papers"
+      ]
+    },
+    {
+      "node": "final_recommendation",
+      "started_at": "2026-07-10T23:28:14Z",
+      "input_summary": {},
+      "output_summary": {
+        "topic": "Vision Transformer for steel surface defect detection",
+        "n_papers": 0,
+        "n_baseline": 0,
+        "n_parallel": 0,
+        "n_dataset": 0,
+        "n_repo": 0,
+        "n_work_packages": 0,
+        "low_bar_status": null,
+        "human_gate_status": null,
+        "notes": [
+          "human gate: None"
+        ],
+        "research_basis": []
+      },
+      "tool_calls": [],
+      "errors": [],
+      "provider": "local",
+      "ended_at": "2026-07-10T23:28:14Z",
+      "elapsed_s": 0.0,
+      "state_keys": [
+        "final_recommendation",
+        "trace_events"
+      ]
+    }
+  ],
+  "errors": [],
+  "topic_atoms": {
+    "method": [
+      "Vision Transformer"
+    ],
+    "object": [
+      "steel surface"
+    ],
+    "task": [
+      "defect detection"
+    ],
+    "scenario": [
+      "industrial inspection"
+    ],
+    "domain": [
+      "vision_2d"
+    ],
+    "dataset_terms": [],
+    "baseline_terms": [],
+    "avoid_terms": [
+      "3D vision",
+      "point cloud",
+      "natural language processing"
+    ]
+  },
+  "search_plan": {
+    "queries": [
+      {
+        "tool": "arxiv",
+        "query": "transformer steel surface defect detection",
+        "why": "Initial search query 'Vision Transformer for steel surface defect detection' returned zero results. This query broadens by using 'transformer' instead of 'vision transformer' to capture related papers employing general transformer architectures for the task.",
+        "expected_evidence": "At least one paper proposing a transformer-based model for steel surface defect detection, including baseline results or comparative evaluation.",
+        "stop_condition": "Stop if >=1 paper found with empirical results on a steel defect dataset."
+      },
+      {
+        "tool": "github",
+        "query": "steel defect detection transformer",
+        "why": "Missing repository evidence. This query searches GitHub for code repositories implementing transformer models for steel defects, filling the repo gap.",
+        "expected_evidence": "At least one GitHub repository with code (PyTorch/TensorFlow) for transformer-based steel defect detection, providing baseline implementations.",
+        "stop_condition": "Stop if >=1 repo found with relevant code and documentation."
+      },
+      {
+        "tool": "openalex",
+        "query": "Vision Transformer steel defect",
+        "why": "OpenAlex may index papers not elsewhere. This query uses 'Vision Transformer' and 'steel defect' to capture academic articles, replacing the paper gap from the initial search.",
+        "expected_evidence": "Academic papers referencing vision transformers in the context of steel defect detection, with abstracts indicating specific application.",
+        "stop_condition": "Stop if >=2 papers found with abstract mentioning both 'vision transformer' and 'steel defect detection'."
+      },
+      {
+        "tool": "crossref",
+        "query": "steel surface defect detection transformer",
+        "why": "CrossRef serves as a fallback for journal articles not in other tools. This query replaces the missing evidence from the initial search by targeting peer-reviewed content.",
+        "expected_evidence": "Journal articles or proceedings with 'steel surface defect detection' and 'transformer' in title or abstract, providing baseline results or dataset references.",
+        "stop_condition": "Stop if >=1 article with DOI found."
+      }
+    ],
+    "rounds": [
+      "repair"
+    ],
+    "negative_feedback": "Prior round failed because no evidence was found for any slice (baselines, datasets, repos, papers). This occurred likely because the initial search queries were too narrow (e.g., exact phrase 'Vision Transformer for steel surface defect detection') and returned zero results. This repair round broadens the search using synonyms (transformer instead of vision transformer) and switches tools to cover multiple sources (arXiv, web, GitHub, OpenAlex, Crossref) to ensure coverage of published papers, datasets, and code repositories.",
+    "strategy": "broaden"
+  },
+  "raw_results": {},
+  "paper_candidates": [],
+  "repo_candidates": [],
+  "search_steps": [
+    {
+      "step": 0,
+      "type": "stop",
+      "reason": "empty tool or query from LLM"
+    }
+  ],
+  "evidence_audit": {
+    "quality_gate_route": "continue",
+    "quality_gate_snapshot": {
+      "n_papers": 0,
+      "n_weak": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 0,
+      "repair_rounds": 2,
+      "weak_promoted": false,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 1
+        },
+        "current_coverage": {
+          "core": 0,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 0
+        },
+        "gaps": [
+          "core",
+          "baseline"
+        ],
+        "budget_remaining": 0,
+        "decision": "stop_with_gap"
+      }
+    },
+    "repair_rounds": 2,
+    "last_repair_type": "paper_gap_repair"
+  },
+  "repair_outcome": "queries_ready",
+  "repair_no_query_reason": "",
+  "repair_query_ids": [
+    "arxiv:transformer steel surface defect detection",
+    "github:steel defect detection transformer",
+    "openalex:Vision Transformer steel defect",
+    "crossref:steel surface defect detection transformer"
+  ],
+  "final_recommendation": {
+    "topic": "Vision Transformer for steel surface defect detection",
+    "n_papers": 0,
+    "n_baseline": 0,
+    "n_parallel": 0,
+    "n_dataset": 0,
+    "n_repo": 0,
+    "n_work_packages": 0,
+    "low_bar_status": null,
+    "human_gate_status": null,
+    "notes": [
+      "human gate: None"
+    ],
+    "research_basis": []
+  },
+  "elapsed_s": 162.92
+}

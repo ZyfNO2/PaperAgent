@@ -1,0 +1,32 @@
+{
+  "name": "vtsls",
+  "version": "0.1.0",
+  "description": "TypeScript and JavaScript language server integration (using vtsls)",
+  "author": {
+    "name": "Piebald LLC",
+    "email": "support@piebald.ai"
+  },
+  "repository": "https://github.com/yioneko/vtsls",
+  "license": "Apache-2.0 and MIT",
+  "lspServers": {
+    "typescript": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\ZYF\\AppData\\Roaming\\npm\\node_modules\\@vtsls\\language-server\\bin\\vtsls.js",
+        "--stdio"
+      ],
+      "transport": "stdio",
+      "extensionToLanguage": {
+        ".cjs": "javascript",
+        ".js": "javascript",
+        ".jsx": "javascriptreact",
+        ".mjs": "javascript",
+        ".ts": "typescript",
+        ".tsx": "typescriptreact"
+      },
+      "initializationOptions": {},
+      "settings": {},
+      "maxRestarts": 3
+    }
+  }
+}

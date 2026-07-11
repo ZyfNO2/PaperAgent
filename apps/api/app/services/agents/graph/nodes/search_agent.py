@@ -74,26 +74,20 @@ def _dedup_key(paper: dict[str, Any]) -> str:
 
 _SYSTEM_PROMPT = """你是学术搜索策略师。根据题目、已有结果和搜索历史，决定下一步搜索什么。
 
-可用工具:
-- arxiv: 搜预印本论文
-- openalex: 搜学术期刊论文
-- crossref: 搜DOI注册论文
-- github: 搜代码仓库
-- semantic_scholar: 搜高被引论文
-- huggingface: 搜模型和数据集
-- core: 搜开放获取论文
-- datacite: 搜注册数据集
-- pubmed: 搜医学/生物论文（仅医学领域可用，查看 available_extra_tools 确认是否可用）
+可用工具由 available_sources 字段动态提供；不得使用未在 available_sources 中列出的工具。
 
 判断标准:
 - 如果还没有论文 → 搜 method+object 组合
 - 如果论文太少 (<5) → 扩大范围或换关键词
-- 如果论文够多 (≥5) 但没 repo → 搜 github
+- 如果论文够多 (≥5) 但没 repo → 搜 github（仅在 available_sources 中有 github 时）
 - 如果论文够多 + 有 repo → 停止
 - 如果某个工具在 failed_tools_do_not_retry 列表中 → 不要再用它，换其他工具
 
+重要: source_status=empty 只表示该查询没有命中，不代表 source 失效；
+只有 failed、rate_limited、disabled 的 source 不可再选。
+
 输出 JSON:
-{"action": "search" | "stop", "tool": "arxiv|openalex|crossref|github|semantic_scholar|huggingface|core|datacite|pubmed", "query": "...", "reason": "..."}
+{"action": "search" | "stop", "tool": "必须来自 available_sources", "query": "...", "reason": "..."}
 
 如果搜索结果已经足够，输出:
 {"action": "stop", "reason": "已有 N 篇论文 + M 个 repo，足够开始分析"}
@@ -137,8 +131,12 @@ def _build_decision_prompt(
     # Failed tools to avoid
     failed_list = sorted(failed_tools) if failed_tools else []
 
-    # Re3.9: domain-specific available tools (e.g. pubmed for medical)
+    # Re5.X: inject sources from SourceCatalog instead of hardcoded list
+    from apps.api.app.services.search_catalog import get_source_catalog
+    catalog = get_source_catalog()
     domain_str = str(domain) if not isinstance(domain, list) else (domain[0] if domain else "unknown")
+    allowed_sources = catalog.allowed_source_names(domain_str)
+    source_list = catalog.source_list_for_prompt(domain_str)
     domain_tools = _get_domain_tools(domain_str)
 
     return json.dumps({
@@ -147,6 +145,8 @@ def _build_decision_prompt(
         "object_keywords": obj[:5],
         "task_keywords": task[:3],
         "domain": domain,
+        "available_sources": allowed_sources,
+        "source_descriptions": source_list,
         "available_extra_tools": sorted(domain_tools) if domain_tools else [],
         "current_paper_count": len(all_papers),
         "current_repo_count": len(all_repos),
@@ -217,6 +217,15 @@ def _count_relevant_papers(papers: list[dict[str, Any]], atoms: dict[str, Any]) 
         if any(kw in title for kw in topic_keywords):
             count += 1
     return count
+
+
+def _final_stop(steps: list, step_idx: int, thought: dict) -> None:
+    """Record a stop decision in steps."""
+    steps.append({
+        "step": step_idx,
+        "type": "stop",
+        "reason": thought.get("reason", "LLM decided to stop"),
+    })
 
 
 def _generate_reflection_query(
@@ -307,20 +316,27 @@ def _fallback_decide(
 
 
 async def _run_tool(tool: str, query: str, top_k: int = 12) -> list[dict[str, Any]]:
-    """Call a retrieval adapter by name."""
-    # Re3.9: check env var disable
-    if tool in _DISABLED_TOOLS:
-        logger.info("search_agent: tool %s disabled by env var", tool)
+    """Call a retrieval adapter by name.
+
+    Re5.X: empty results are NOT failures — they're query misses.
+    Only exceptions set failed_this_round.
+    """
+    from apps.api.app.services.search_catalog import get_source_catalog
+    catalog = get_source_catalog()
+    # Re5.X: check SourcePolicy (replaces old _DISABLED_TOOLS env vars)
+    if not catalog.is_available(tool):
+        logger.info("search_agent: tool %s not available (disabled or not in catalog)", tool)
         return []
     from apps.api.app.services.retrieval.adapters import REGISTRY
     if tool not in REGISTRY:
         logger.warning("search_agent: tool %s not in REGISTRY", tool)
         return []
     try:
-        return await REGISTRY[tool]([query], top_k)
+        results = await REGISTRY[tool]([query], top_k)
+        return results  # empty list = query miss, NOT failure
     except Exception as exc:
         logger.warning("search_agent: tool %s failed: %s", tool, type(exc).__name__)
-        return []
+        raise  # let caller handle — distinguishes failure from empty
 
 
 def _run_tool_sync(tool: str, query: str, top_k: int = 12) -> list[dict[str, Any]]:
@@ -484,49 +500,50 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                         }
 
             if thought.get("action") == "stop":
-                # Re3.9.4: Relevance-aware stop — if papers have low relevance, try reflection
-                _atoms_for_rel = state.get("topic_atoms") or {}
-                if _atoms_for_rel and all_papers and step_idx < _MAX_STEPS - 2:
-                    _rel_count = _count_relevant_papers(all_papers, _atoms_for_rel)
-                    _total = len(all_papers)
-                    _ratio = _rel_count / _total if _total > 0 else 1.0
-                    if _ratio < 0.3 and _total < 15:
-                        _reflection = _generate_reflection_query(_atoms_for_rel, steps, all_papers)
-                        if _reflection:
-                            logger.info("search_agent: stop blocked, relevance=%d/%d=%.0f%%, reflecting",
-                                        _rel_count, _total, _ratio * 100)
-                            steps.append({
-                                "step": step_idx,
-                                "type": "reflection",
-                                "reason": f"relevance {_ratio:.0%}, {_reflection.get('strategy','')}",
-                            })
-                            thought = {
-                                "action": "search",
-                                "tool": _reflection.get("tool", "arxiv"),
-                                "query": _reflection.get("query", ""),
-                                "reason": f"reflection: low relevance ({_ratio:.0%})",
-                            }
-                        else:
-                            steps.append({
-                                "step": step_idx,
-                                "type": "stop",
-                                "reason": thought.get("reason", "LLM decided to stop"),
-                            })
-                            break
+                # R6.7: when LLM stops with 0 papers, try unused plan queries before giving up
+                if not all_papers and search_plan and search_plan.get("queries"):
+                    used = {(s.get("tool"), s.get("query")) for s in steps if s.get("type") == "tool_call"}
+                    remaining = [q for q in search_plan["queries"]
+                                 if (q.get("tool"), q.get("query")) not in used]
+                    if remaining and step_idx < _MAX_STEPS - 1:
+                        next_q = remaining[0]
+                        logger.info("search_agent: overruling stop, %d queries remaining, forcing %s",
+                                     len(remaining), next_q.get("tool"))
+                        thought = {"action": "search", "tool": next_q.get("tool", ""),
+                                    "query": next_q.get("query", ""),
+                                    "reason": "forced: unused plan query"}
+                        # fall through to execution below
                     else:
-                        steps.append({
-                            "step": step_idx,
-                            "type": "stop",
-                            "reason": thought.get("reason", "LLM decided to stop"),
-                        })
+                        _final_stop(steps, step_idx, thought)
                         break
                 else:
-                    steps.append({
-                        "step": step_idx,
-                        "type": "stop",
-                        "reason": thought.get("reason", "LLM decided to stop"),
-                    })
-                    break
+                    # Re3.9.4: Relevance-aware stop
+                    _atoms_for_rel = state.get("topic_atoms") or {}
+                    if _atoms_for_rel and all_papers and step_idx < _MAX_STEPS - 2:
+                        _rel_count = _count_relevant_papers(all_papers, _atoms_for_rel)
+                        _total = len(all_papers)
+                        _ratio = _rel_count / _total if _total > 0 else 1.0
+                        if _ratio < 0.3 and _total < 15:
+                            _reflection = _generate_reflection_query(_atoms_for_rel, steps, all_papers)
+                            if _reflection:
+                                logger.info("search_agent: stop blocked, relevance=%d/%d=%.0f%%, reflecting",
+                                             _rel_count, _total, _ratio * 100)
+                                _final_stop(steps, step_idx, thought)
+                                thought = {
+                                    "action": "search",
+                                    "tool": _reflection.get("tool", "arxiv"),
+                                    "query": _reflection.get("query", ""),
+                                    "reason": f"reflection: low relevance ({_ratio:.0%})",
+                                }
+                            else:
+                                _final_stop(steps, step_idx, thought)
+                                break
+                        else:
+                            _final_stop(steps, step_idx, thought)
+                            break
+                    else:
+                        _final_stop(steps, step_idx, thought)
+                        break
 
             tool = thought.get("tool", "").strip().lower()
             query = thought.get("query", "").strip()
@@ -551,11 +568,26 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                 continue
 
             # 2. Call tool
-            results = _run_tool_sync(tool, query, 12)
-
-            # Track failed tools (returned empty due to error)
-            if not results:
+            try:
+                results = _run_tool_sync(tool, query, 12)
+            except Exception:
+                # Re5.X: actual failure (not empty) → mark as failed
                 failed_this_round.add(tool)
+                steps.append({
+                    "step": step_idx,
+                    "type": "tool_call",
+                    "tool": tool,
+                    "query": query,
+                    "n_results": 0,
+                    "n_papers": 0,
+                    "n_repos": 0,
+                    "reason": thought.get("reason", ""),
+                    "failed": True,
+                })
+                continue
+
+            # Re5.X: empty results are NOT failures — they're query misses
+            # Do NOT add to failed_this_round
 
             # 3. Observe
             new_papers, new_repos = _classify_results(tool, results)

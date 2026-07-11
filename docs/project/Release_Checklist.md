@@ -1,48 +1,46 @@
-# Release Checklist — v0.1.0-rc1
+# Release / No-Go Checklist — Re6.x
 
-> 每次发布前, 逐项核对. 全部 ✅ 才可标记 release 完成.
+## Hard No-Go Conditions
 
-## 1. 文档可读性
+All must be ✅ before production release.
 
-- [x] **README 可读** — 含项目简介 / 启动步骤 / 演示命令 / 边界声明
-- [x] **Runbook 可启动** — 端口 18181 / 18182, 命令在 CLAUDE.md
-- [x] **Demo Script 可跑** — `scripts/demo_smoke.py` + `scripts/full_smoke.py`
+- [ ] **NG-01: No raw API key in logs.** Grep for key patterns; all occurrences redacted.
+- [ ] **NG-02: No raw API key in trace.** All trace JSON files audited; keys replaced with `<REDACTED>`.
+- [ ] **NG-03: No raw API key in git.** `git log --all -p | grep -i api_key` returns 0 matches.
+- [ ] **NG-04: No raw API key in SSR/SSRF error pages.** Error responses only contain `"api_key_set": true`.
+- [ ] **NG-05: No false evidence generation.** 10-case cross-domain verification passes P0 (0 fabricated papers/repos/datasets).
+- [ ] **NG-06: All contracts pass L0 tests.** `python -m pytest apps/api/tests/test_re6/ -q` → 100% pass.
+- [ ] **NG-07: No regression on Re5 search.** 100-paper search regression: ≥90% completion, 0 crashes.
+- [ ] **NG-08: RAG citations traceable.** All RAG answers with `cited_chunks` must have `location_verified=True`.
 
-## 2. 测试通过
+## Soft Go Conditions
 
-- [x] **S17 baseline 通过** — `apps/api/tests/test_session17_demo_baseline.py`
-- [x] **后端全量测试通过** — `pytest apps/api/tests` 全绿
-- [x] **Playwright 主路径通过** — `apps/web/e2e/test_one_topic_*.py` 全绿
+Recommended but not blocking for MVP:
 
-## 3. 维护材料
+- [ ] **SG-01:** L2 replay: provider chain identical for same (prompt, contract, policy).
+- [ ] **SG-02:** L3 hidden-OOD: ≥60% verdict agreement across 12 cross-domain cases.
+- [ ] **SG-03:** Fallback ledger: all fallback events have error classification.
+- [ ] **SG-04:** Snapshot viewer displays run provenance (Settings → Snapshots).
+- [ ] **SG-05:** Role Routing Matrix save/persist works (Settings → Role Matrix).
+- [ ] **SG-06:** Evolution log tracks all novelty status changes.
 
-- [x] **VERSION 已更新** — `0.1.0-rc1`
-- [x] **CHANGELOG 已更新** — `CHANGELOG.md` 含本版本号
-- [x] **Known Limitations 完整** — `docs/project/Known_Limitations.md` (12 条)
-- [x] **Roadmap 已写** — `docs/project/Roadmap.md` (v0.1 ~ v1.0)
-- [x] **Release Checklist 存在** — 本文件
-- [x] **Architecture Overview 存在** — `docs/project/Architecture_Overview.md`
+## Security Pre-Release Audit
 
-## 4. 范围与合规
+| Check | Method | Result |
+|---|---|---|
+| API keys in log files | `rg -i 'sk-' logs/` | — |
+| API keys in git history | `git log -p \| rg 'sk-'` | — |
+| API keys in trace JSON | `rg 'api.key' tmp_re*/trace.json` | — |
+| SSRF: provider URL validated | Settings → Add Provider → Step 3 | — |
+| SSRF: PDF URL validated | RAG ingest rejects internal IPs | — |
+| XSS in error messages | `<script>` in query → escaped | — |
+| XSS in RAG answers | Ingested PDF with scripts → escaped | — |
 
-- [x] **Scope_And_Compliance 完整** — `docs/project/Scope_And_Compliance.md` 未过期
-- [x] **不自动代写论文** — 边界在 README / 报告抬头显式声明
-- [x] **不伪造引用** — 所有 EvidenceRef 必带 url_verified
-- [x] **Human Gate 保留** — Gate 1 (关键词) / Gate 2 (检索词) 不可绕过
+## Release Steps
 
-## 5. 隐私与安全
-
-- [x] **.runtime 不入 git** — `.gitignore` 已配
-- [x] **`.env` 不入 git** — `.gitignore` 已配
-- [x] **无敏感 key 泄露** — 无 `MINIMAX_API_KEY=*` 硬编码
-- [x] **无第三方上传** — 用户文件仅本地解析, 不发外网
-
-## 6. 验收报告
-
-- [x] **Session 20 验收报告** — `Plan/reports/Session_20_Release_Candidate_验收报告.md`
-
----
-
-## 不通过的处理
-
-任一项 ⛔ 即**不发布**. 修复后回到本清单重新核对.
+1. Run `python -m pytest apps/api/tests/test_re6/ -v` — all green
+2. Run smoke test with 3 topics (engineering, medical, NLP)
+3. Check Runbook covers all 9 scenarios
+4. Verify Known Limitations document is accurate
+5. Tag release: `git tag v0.4.0-re6`
+6. Update CHANGELOG.md

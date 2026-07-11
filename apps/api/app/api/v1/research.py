@@ -18,17 +18,38 @@ import asyncio
 import json
 import logging
 import os
+import re
 import threading
 import time
+import uuid
 from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from fastapi.responses import StreamingResponse
 
+from apps.api.app.services.run_state import atomic_write_json
+
 logger = logging.getLogger(__name__)
 
 OUT_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent.parent / "tmp_re13_eval"
+
+_CASE_ID_PATTERN = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_\-]{0,63}$")
+
+
+def _validate_case_id(case_id: str) -> str:
+    """Validate case_id: must be a safe slug or server-generated UUID.
+
+    Rejects path traversal, hidden files, overlength, and special chars.
+    """
+    if not case_id or len(case_id) > 64:
+        raise HTTPException(400, "case_id must be 1-64 characters")
+    if not _CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(400, "case_id contains invalid characters")
+    resolved = (OUT_DIR / case_id).resolve()
+    if not str(resolved).startswith(str(OUT_DIR.resolve())):
+        raise HTTPException(400, "case_id path traversal detected")
+    return case_id
 
 _RUN_STATUS: dict[str, dict[str, Any]] = {}
 _LOCK = threading.Lock()
@@ -103,8 +124,7 @@ def _case_dir(case_id: str) -> Path:
 # ---------------------------------------------------------------------------
 
 
-@router.get("/")
-def list_cases() -> dict[str, Any]:
+def _list_cases_impl() -> dict[str, Any]:
     """List case IDs that have at least a state.json on disk."""
     if not OUT_DIR.is_dir():
         return {"cases": []}
@@ -123,6 +143,11 @@ def list_cases() -> dict[str, Any]:
                 "status": status,
             })
     return {"cases": cases, "n": len(cases)}
+
+
+@router.get("/")
+def list_cases() -> dict[str, Any]:
+    return _list_cases_impl()
 
 
 # ---------------------------------------------------------------------------
@@ -190,6 +215,25 @@ def _run_case_sync(case_id: str, topic: str, extra: dict[str, Any]) -> None:
                 # Merge patch into final_state
                 final_state.update(patch)
 
+                # Write partial state for SSE streaming (papers, repos, datasets, verified_papers)
+                partial_path = cd / "state_partial.json"
+                try:
+                    _partial = {
+                        "paper_candidates": final_state.get("paper_candidates") or [],
+                        "repo_candidates": final_state.get("repo_candidates") or [],
+                        "verified_papers": final_state.get("verified_papers") or [],
+                        "weak_papers": final_state.get("weak_papers") or [],
+                        "dataset_candidates": final_state.get("dataset_candidates") or [],
+                        "search_steps": final_state.get("search_steps") or [],
+                        "last_update": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    }
+                    partial_path.write_text(
+                        json.dumps(_partial, ensure_ascii=False, default=str),
+                        encoding="utf-8",
+                    )
+                except Exception:
+                    pass
+
                 # Re3.9.2: update current_node for SSE node_current event
                 with _LOCK:
                     _RUN_STATUS[case_id] = {
@@ -203,21 +247,11 @@ def _run_case_sync(case_id: str, topic: str, extra: dict[str, Any]) -> None:
         final_state["elapsed_s"] = elapsed
         final_state["trace_events"] = all_trace_events
 
-        # Final writes
-        (cd / "state.json").write_text(
-            json.dumps(final_state, ensure_ascii=False, indent=2, default=str),
-            encoding="utf-8",
-        )
-        trace_path.write_text(
-            json.dumps(all_trace_events, ensure_ascii=False,
-                        indent=2, default=str),
-            encoding="utf-8",
-        )
-        (cd / "evidence_graph.json").write_text(
-            json.dumps(final_state.get("evidence_graph") or {}, ensure_ascii=False,
-                        indent=2, default=str),
-            encoding="utf-8",
-        )
+        # Final writes — atomic for crash safety
+        atomic_write_json(cd / "state.json", final_state)
+        atomic_write_json(cd / "trace.json", all_trace_events)
+        atomic_write_json(cd / "evidence_graph.json",
+                          final_state.get("evidence_graph") or {})
         with _LOCK:
             _RUN_STATUS[case_id] = {
                 "status": "done",
@@ -241,6 +275,31 @@ def _run_case_sync(case_id: str, topic: str, extra: dict[str, Any]) -> None:
             }
 
 
+def _submit_topic_impl(topic: str, case_id: str | None = None) -> dict[str, Any]:
+    """Submit a topic for background research graph execution."""
+    if not case_id:
+        case_id = uuid.uuid4().hex[:12]
+    else:
+        case_id = _validate_case_id(case_id)
+    if not topic:
+        raise HTTPException(400, "topic is required")
+
+    with _LOCK:
+        prev = _RUN_STATUS.get(case_id, {}).get("status")
+        if prev == "running":
+            return {"case_id": case_id, "status": "running", "message": "already running"}
+        _RUN_STATUS[case_id] = {"status": "running", "started_at": time.time(), "topic": topic}
+
+    import threading
+    thread = threading.Thread(
+        target=_run_case_sync,
+        args=(case_id, topic, {"topic_zh": ""}),
+        daemon=True,
+    )
+    thread.start()
+    return {"case_id": case_id, "status": "running"}
+
+
 @router.post("/")
 def submit_case(
     payload: dict[str, Any],
@@ -250,7 +309,9 @@ def submit_case(
     case_id = (payload.get("case_id") or "").strip()
     topic = (payload.get("topic") or "").strip()
     if not case_id:
-        raise HTTPException(400, "case_id is required")
+        case_id = uuid.uuid4().hex[:12]
+    else:
+        case_id = _validate_case_id(case_id)
     if not topic:
         raise HTTPException(400, "topic is required")
 
@@ -258,7 +319,7 @@ def submit_case(
         prev = _RUN_STATUS.get(case_id, {}).get("status")
         if prev == "running":
             return {"case_id": case_id, "status": "running", "message": "already running"}
-        _RUN_STATUS[case_id] = {"status": "running", "started_at": time.time()}
+        _RUN_STATUS[case_id] = {"status": "running", "started_at": time.time(), "topic": topic}
 
     background_tasks.add_task(_run_case_sync, case_id, topic,
                              {k: v for k, v in payload.items()
@@ -362,6 +423,7 @@ async def _enrich_paper(payload: dict[str, Any]) -> dict[str, Any]:
 
 @router.post("/{case_id}/papers")
 async def upload_paper(case_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     """Upload a user-known paper for a case.
 
     The paper is enriched from Crossref/arXiv if DOI/arXiv ID is provided,
@@ -428,6 +490,7 @@ async def upload_paper(case_id: str, payload: dict[str, Any]) -> dict[str, Any]:
 
 @router.get("/{case_id}/papers")
 def list_user_papers(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     """List user-uploaded papers for a case."""
     with _LOCK:
         papers = list(_USER_PAPERS.get(case_id, []))
@@ -449,8 +512,7 @@ def list_user_papers(case_id: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-@router.get("/{case_id}/status")
-def case_status(case_id: str) -> dict[str, Any]:
+def _get_status_impl(case_id: str) -> dict[str, Any]:
     with _LOCK:
         st = dict(_RUN_STATUS.get(case_id, {}))
     cd = _case_dir(case_id)
@@ -462,6 +524,12 @@ def case_status(case_id: str) -> dict[str, Any]:
     return st
 
 
+@router.get("/{case_id}/status")
+def case_status(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
+    return _get_status_impl(case_id)
+
+
 # ---------------------------------------------------------------------------
 # State result
 # ---------------------------------------------------------------------------
@@ -469,6 +537,7 @@ def case_status(case_id: str) -> dict[str, Any]:
 
 @router.get("/{case_id}/state")
 def case_state(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     """Return the full final ResearchState."""
     p = _case_dir(case_id) / "state.json"
     if not p.exists():
@@ -483,6 +552,7 @@ def case_state(case_id: str) -> dict[str, Any]:
 
 @router.get("/{case_id}/trace")
 def case_trace(case_id: str) -> list[dict[str, Any]]:
+    case_id = _validate_case_id(case_id)
     """Return the node trace_events list."""
     p = _case_dir(case_id) / "trace.json"
     if not p.exists():
@@ -496,6 +566,7 @@ def case_trace(case_id: str) -> list[dict[str, Any]]:
 
 @router.get("/{case_id}/timeline")
 def case_timeline(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     """Return trace events with progressive state counts for timeline debugger."""
     cd = _case_dir(case_id)
     trace_path = cd / "trace.json"
@@ -557,6 +628,7 @@ def case_timeline(case_id: str) -> dict[str, Any]:
 
 @router.get("/{case_id}/evidence-graph")
 def case_evidence_graph(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     """Return the evidence_graph ({nodes, edges}) for front-end consumption."""
     p = _case_dir(case_id) / "evidence_graph.json"
     if not p.exists():
@@ -636,6 +708,7 @@ def graph_topology() -> dict[str, Any]:
 
 @router.get("/{case_id}/stream")
 async def case_stream(case_id: str):
+    case_id = _validate_case_id(case_id)
     """SSE stream of node progress for a running or completed case."""
 
     sent_events: int = 0
@@ -652,8 +725,9 @@ async def case_stream(case_id: str):
         # Send search_started immediately if case is running
         with _LOCK:
             status = _RUN_STATUS.get(case_id, {}).get("status", "unknown")
+            topic = _RUN_STATUS.get(case_id, {}).get("topic", "")
 
-        yield _sse_event("search_started", {"case_id": case_id, "status": status})
+        yield _sse_event("search_started", {"case_id": case_id, "status": status, "topic": topic})
 
         while waited < max_wait:
             with _LOCK:
@@ -676,12 +750,24 @@ async def case_stream(case_id: str):
                         papers = partial.get("paper_candidates") or []
                         repos = partial.get("repo_candidates") or []
                         yield _sse_event("papers_update", {
-                            "papers": [{"title": (p.get("title") or "")[:80],
+                            "papers": [{"title": (p.get("title") or "")[:120],
                                         "source": p.get("source", ""),
-                                        "url": p.get("url", "")}
-                                       for p in papers[:20]],
+                                        "url": p.get("url", ""),
+                                        "year": p.get("year"),
+                                        "authors": (p.get("authors") or [])[:3],
+                                        "abstract": (p.get("abstract") or "")[:200],
+                                        "verdict": p.get("verdict"),
+                                        "relation_to_topic": p.get("relation_to_topic", ""),
+                                        "relevance_score": p.get("relevance_score")}
+                                       for p in papers[:50]],
                             "n_papers": len(papers),
                             "n_repos": len(repos),
+                            "repos": [{"full_name": r.get("full_name", r.get("url", "")),
+                                        "url": r.get("url", ""),
+                                        "stars": r.get("stars"),
+                                        "description": (r.get("description") or "")[:100],
+                                        "language": r.get("language", "")}
+                                       for r in repos[:20]],
                             "search_step": (partial.get("search_steps") or [{}])[-1].get("step", 0),
                         })
                 except Exception:
@@ -755,6 +841,32 @@ async def case_stream(case_id: str):
                         "weak": n_weak,
                         "reject": n_reject,
                     })
+                    # Send verified papers with verdicts for real-time display
+                    partial_path = _case_dir(case_id) / "state_partial.json"
+                    verified_papers: list = []
+                    weak_papers: list = []
+                    if partial_path.exists():
+                        try:
+                            partial = json.loads(partial_path.read_text(encoding="utf-8"))
+                            verified_papers = partial.get("verified_papers") or []
+                            weak_papers = partial.get("weak_papers") or []
+                        except Exception:
+                            pass
+                    if verified_papers or weak_papers:
+                        all_verified = verified_papers + weak_papers
+                        yield _sse_event("papers_verified", {
+                            "papers": [{"title": (p.get("title") or "")[:120],
+                                        "source": p.get("source", ""),
+                                        "url": p.get("url", ""),
+                                        "year": p.get("year"),
+                                        "verdict": p.get("verdict", "accept"),
+                                        "relation_to_topic": p.get("relation_to_topic", ""),
+                                        "relevance_score": p.get("relevance_score"),
+                                        "abstract": (p.get("abstract") or "")[:200]}
+                                       for p in all_verified[:50]],
+                            "n_verified": len(verified_papers),
+                            "n_weak": len(weak_papers),
+                        })
 
                 elif node == "citation_expander":
                     # Read state.json for seed details
@@ -782,6 +894,40 @@ async def case_stream(case_id: str):
                         "surveys": output_summary.get("n_surveys", 0),
                         "repos": output_summary.get("n_repos", 0),
                         "seeds": len(seeds),
+                    })
+
+                elif node == "dataset_repo_extractor":
+                    # Send repos and datasets for real-time display
+                    partial_path = _case_dir(case_id) / "state_partial.json"
+                    repos_data: list = []
+                    datasets_data: list = []
+                    if partial_path.exists():
+                        try:
+                            partial = json.loads(partial_path.read_text(encoding="utf-8"))
+                            repos_data = partial.get("repo_candidates") or []
+                            datasets_data = partial.get("dataset_candidates") or []
+                        except Exception:
+                            pass
+                    yield _sse_event("repos_update", {
+                        "repos": [{"full_name": r.get("full_name", r.get("url", "")),
+                                    "url": r.get("url", ""),
+                                    "stars": r.get("stars"),
+                                    "description": (r.get("description") or "")[:100],
+                                    "language": r.get("language", "")}
+                                   for r in repos_data[:30]],
+                        "n_repos": len(repos_data),
+                    })
+                    yield _sse_event("datasets_update", {
+                        "datasets": [{"name": d.get("name", ""),
+                                       "url": d.get("url", ""),
+                                       "source": d.get("source", ""),
+                                       "description": (d.get("description") or "")[:100]}
+                                      for d in datasets_data[:30]],
+                        "n_datasets": len(datasets_data),
+                    })
+                    yield _sse_event("candidate_count", {
+                        "repos": len(repos_data),
+                        "datasets": len(datasets_data),
                     })
 
                 else:
@@ -850,6 +996,7 @@ async def case_stream(case_id: str):
 
 @router.get("/{case_id}/expanded")
 def case_expanded(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     """Return citation expansion results (seeds, expanded papers, surveys, repos)."""
     p = _case_dir(case_id) / "state.json"
     if not p.exists():
@@ -878,13 +1025,113 @@ def _load_state(case_id: str) -> dict[str, Any]:
     return json.loads(p.read_text(encoding="utf-8"))
 
 
+def _get_evidence_graph_impl(case_id: str) -> dict[str, Any]:
+    p = _case_dir(case_id) / "evidence_graph.json"
+    if not p.exists():
+        return {"nodes": [], "edges": []}
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+def _list_user_papers_impl(case_id: str) -> dict[str, Any]:
+    with _LOCK:
+        papers = list(_USER_PAPERS.get(case_id, []))
+    state_path = _case_dir(case_id) / "state.json"
+    if state_path.exists():
+        try:
+            st = json.loads(state_path.read_text(encoding="utf-8"))
+            for p in st.get("verified_papers") or []:
+                if p.get("source") == "user_upload" and p not in papers:
+                    papers.append(p)
+        except Exception:
+            pass
+    return {"case_id": case_id, "papers": papers, "n": len(papers)}
+
+
+def _get_work_packages_impl(case_id: str) -> dict[str, Any]:
+    state = _load_state(case_id)
+    packages = state.get("work_packages") or []
+    from apps.api.app.services.agents.graph.validators.dependency_dag import build_dag
+    dag = build_dag(packages)
+    return {"case_id": case_id, "work_packages": packages, "dag": dag, "n": len(packages)}
+
+
+def _get_feasibility_impl(case_id: str) -> dict[str, Any]:
+    return _load_state(case_id).get("feasibility_report", {})
+
+
+def _get_review_impl(case_id: str) -> dict[str, Any]:
+    return _load_state(case_id).get("review_report", {})
+
+
+def _get_innovation_impl(case_id: str) -> dict[str, Any]:
+    st = _load_state(case_id)
+    return {"innovation_points": st.get("innovation_points", []),
+            "stitching_plan": st.get("stitching_plan", {})}
+
+
+def _upload_paper_impl(case_id: str, params: dict[str, Any]) -> dict[str, Any]:
+    """Upload a user-known paper (synchronous version for ACP)."""
+    title = (params.get("title") or "").strip()
+    doi = (params.get("doi") or "").strip()
+    arxiv_id = (params.get("arxiv_id") or "").strip()
+
+    if not title and not doi and not arxiv_id:
+        raise HTTPException(400, "at least one of title, doi, arxiv_id is required")
+
+    paper: dict[str, Any] = {
+        "title": title,
+        "doi": doi or None,
+        "arxiv_id": arxiv_id or None,
+        "url": params.get("url") or "",
+        "abstract": "",
+        "authors": [],
+        "year": None,
+        "role": params.get("role") or "baseline",
+    }
+
+    with _LOCK:
+        if case_id not in _USER_PAPERS:
+            _USER_PAPERS[case_id] = []
+        _USER_PAPERS[case_id].append(paper)
+
+    state_path = _case_dir(case_id) / "state.json"
+    if state_path.exists():
+        try:
+            st = json.loads(state_path.read_text(encoding="utf-8"))
+            vp = st.get("verified_papers") or []
+            vp.append({
+                "title": paper["title"],
+                "abstract": paper["abstract"],
+                "url": paper["url"],
+                "doi": paper.get("doi"),
+                "arxiv_id": paper.get("arxiv_id"),
+                "source": "user_upload",
+                "verdict": "accept",
+                "relation_to_topic": paper.get("role", "baseline"),
+                "relevance_score": 1.0,
+            })
+            st["verified_papers"] = vp
+            atomic_write_json(state_path, st)
+        except Exception as exc:
+            logger.warning("failed to append user paper to state.json: %s", exc)
+
+    return {
+        "case_id": case_id,
+        "paper": paper,
+        "stored": True,
+        "message": "paper will be injected into verified_papers when the case runs",
+    }
+
+
 @router.get("/{case_id}/feasibility")
 def case_feasibility(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     return _load_state(case_id).get("feasibility_report", {})
 
 
 @router.get("/{case_id}/innovation")
 def case_innovation(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     st = _load_state(case_id)
     return {"innovation_points": st.get("innovation_points", []),
             "stitching_plan": st.get("stitching_plan", {})}
@@ -892,19 +1139,34 @@ def case_innovation(case_id: str) -> dict[str, Any]:
 
 @router.get("/{case_id}/sota")
 def case_sota(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     return _load_state(case_id).get("sota_comparison", {})
 
 
 @router.get("/{case_id}/narrative")
 def case_narrative(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     return _load_state(case_id).get("research_narrative", {})
 
 
 @router.get("/{case_id}/optimization")
 def case_optimization(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     return _load_state(case_id).get("optimization_directions", {})
 
 
 @router.get("/{case_id}/review")
 def case_review(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
     return _load_state(case_id).get("review_report", {})
+
+
+@router.get("/{case_id}/work-packages")
+def get_work_packages(case_id: str) -> dict[str, Any]:
+    """Get work packages with dependency DAG."""
+    case_id = _validate_case_id(case_id)
+    state = _load_state(case_id)
+    packages = state.get("work_packages") or []
+    from apps.api.app.services.agents.graph.validators.dependency_dag import build_dag
+    dag = build_dag(packages)
+    return {"case_id": case_id, "work_packages": packages, "dag": dag, "n": len(packages)}

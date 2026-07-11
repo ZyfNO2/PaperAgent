@@ -32,9 +32,9 @@ def audit_case(case_id, sp, eval_dir):
     issues = []
     warnings = []
 
-    topic = s.get("topic", "")
+    _topic = s.get("topic", "")
     vp = s.get("verified_papers") or []
-    wp = s.get("weak_papers") or []
+    _wp = s.get("weak_papers") or []
     rc = s.get("repo_candidates") or []
     dc = s.get("dataset_candidates") or []
     bc = s.get("baseline_candidates") or []

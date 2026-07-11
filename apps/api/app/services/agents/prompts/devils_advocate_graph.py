@@ -39,7 +39,14 @@ verdict判定规则:
 {{"dimension_scores":[{{"dimension":"D1","score":0,"verdict":"PASS|WARN|BLOCK","reason":"具体原因"}}],
 "overall_verdict":"ACCEPT|MINOR_REVISION|BLOCK",
 "fabrication_alerts":["如有编造"],
-"risks_identified":["具体风险"]}}
+"risks_identified":["具体风险"],
+"evidence_critiques":[{{"target_type":"innovation|narrative|work_package","target_id":"innovation_0|wp-xxx|rev-0","issue":"具体问题描述","evidence_id":"引用的论文ID","severity":"critical|major|minor","suggested_fix":"具体修改建议"}}]}}
+
+重要约束:
+1. 每个 evidence_critique 必须指向具体的 target_id（innovation_序号 / wp-包名 / rev-版本号）
+2. 不允许泛泛评价（如"创新点不足"），必须指出具体哪条创新点有什么问题
+3. evidence_id 必须是实际存在的论文 ID
+4. suggested_fix 必须是可操作的修改建议
 
 [OUTPUT CONTRACT] Your ENTIRE final message must be exactly ONE valid JSON object — no prose, no fences."""
 

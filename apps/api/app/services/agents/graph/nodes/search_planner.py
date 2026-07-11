@@ -24,7 +24,7 @@ from ._util import now_iso as _now_iso
 logger = logging.getLogger(__name__)
 
 
-_TOOLS = frozenset({"arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite"})
+_TOOLS = frozenset({"arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite", "pubmed"})
 _ROUNDS = frozenset({"broad", "focused", "repair", "seed_expansion"})
 
 
@@ -237,7 +237,15 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
         )
         return {"trace_events": [trace]}
 
-    skip_llm = __import__("os").environ.get("PAPERAGENT_SKIP_SEARCH_PLANNER", "true").lower() == "true"
+    # Re5.X: tri-state config — "template" (default), "llm", "experiment"
+    _planner_mode = __import__("os").environ.get("PAPERAGENT_SEARCH_PLANNER", "template").lower().strip()
+    # Backward compat: PAPERAGENT_SKIP_SEARCH_PLANNER=true → "template"
+    _old_skip = __import__("os").environ.get("PAPERAGENT_SKIP_SEARCH_PLANNER", "")
+    if _old_skip.lower() == "true" and _planner_mode == "template":
+        pass  # default already
+    elif _old_skip.lower() == "false":
+        _planner_mode = "llm"
+    skip_llm = _planner_mode in ("template", "experiment")
     if skip_llm and atoms:
         plan = _template_plan(topic, atoms)
         trace = _emit(

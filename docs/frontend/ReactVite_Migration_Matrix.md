@@ -1,5 +1,8 @@
 # PaperAgent · React + Vite 迁移矩阵
 
+> ⚠️ Re4 事实修正：apps/web-react/ 未进入仓库。本矩阵的 "done" 状态为规划标记，
+> 非实际完成。Re4 Day 2 将新建最小 Vite shell。
+
 > Session 52 起始文档。来源: [PaperAgent_ReactVite前端重构_Session总规划](../../Plan/PaperAgent_ReactVite前端重构_Session总规划.md)
 > 原则: **并行迁移**, 不在第一阶段直接覆盖 `apps/web`。
 

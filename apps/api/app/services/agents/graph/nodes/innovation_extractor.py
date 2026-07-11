@@ -71,11 +71,19 @@ def _heuristic(state):
     baselines = state.get("baseline_candidates") or []
     parallels = state.get("parallel_candidates") or []
     b_title = (baselines[0].get("title", "") if baselines else "未知baseline")
+    b_id = (baselines[0].get("paper_id") or baselines[0].get("doi") or b_title) if baselines else ""
     p_title = (parallels[0].get("title", "") if parallels else "未知parallel")
     return {
         "innovation_points": [{"description": f"在{b_title}基础上借鉴{p_title}的模块",
                                 "baseline_used": b_title, "stitched_modules": [p_title],
-                                "stitching_plan": "待LLM生成", "estimated_difficulty": "中"}],
+                                "stitching_plan": "待LLM生成", "estimated_difficulty": "中",
+                                "evidence_ref": b_title,
+                                "candidate_ids": [b_id] if b_id else [],
+                                "evidence_snippets": [],
+                                "novelty_score": 5.0,
+                                "feasibility_score": 5.0,
+                                "evidence_score": 5.0 if b_id else 0.0,
+                                "status": "pending" if b_id else "needs_evidence"}],
         "stitching_plan": {"baseline_model": b_title, "module_b": p_title, "module_c": "",
                            "stitching_steps": ["1. 复现baseline", "2. 提取parallel模块", "3. 拼接测试"],
                            "risk_notes": ["heuristic fallback，需人工确认"]}
@@ -88,13 +96,21 @@ def innovation_extractor_node(state: ResearchState) -> dict[str, Any]:
     parallels = state.get("parallel_candidates") or []
 
     try:
-        from apps.api.app.services import llm_router
+        from apps.api.app.services.agents.graph.validators.llm_output_validator import (
+            call_json_with_validation,
+        )
         from apps.api.app.services.agents.prompts import innovation_extractor as P
         built = P.build(topic, baselines, parallels)
-        out = llm_router.call_json(built["user"], system=built["system"],
-                                   profile="fast_json", max_tokens=2000,
-                                   expected="dict", timeout=30)
-        if isinstance(out, dict):
+        out = call_json_with_validation(
+            built["user"],
+            system=built["system"],
+            node_name="innovation_extractor",
+            profile="fast_json",
+            max_tokens=2000,
+            timeout=30,
+            fallback=_heuristic(state),
+        )
+        if isinstance(out, dict) and ("innovation_points" in out or "stitching_plan" in out):
             result_inn = out.get("innovation_points", [])
             result_plan = out.get("stitching_plan", {})
         else:
@@ -107,11 +123,22 @@ def innovation_extractor_node(state: ResearchState) -> dict[str, Any]:
         result_inn, result_plan = h["innovation_points"], h["stitching_plan"]
         prov = "heuristic"
 
-    # Re3.9: Cross-node dataset补全——scan innovation_points text for dataset names
-    # that dataset_repo_extractor missed. This is cross-node info passing, not heuristic fallback.
+    # Re3.9: Cross-node dataset补全
     existing_ds = list(state.get("dataset_candidates") or [])
     new_ds = _cross_node_dataset_scan(result_inn, result_plan, existing_ds)
     merged_ds = existing_ds + new_ds
+
+    # Re4.3: Binding validator — mark needs_evidence for innovations without evidence
+    try:
+        from apps.api.app.services.agents.graph.validators.binding_validator import (
+            _build_evidence_index,
+            validate_innovations,
+        )
+        evidence_index = _build_evidence_index(state)
+        validated_inns, _inn_issues = validate_innovations(result_inn, evidence_index)
+        result_inn = [ip.model_dump() for ip in validated_inns]
+    except Exception as exc:
+        logger.debug("innovation_extractor binding validator skipped: %s", exc)
 
     trace = _emit("innovation_extractor", t0,
                   {"n_baseline": len(baselines), "n_parallel": len(parallels)},

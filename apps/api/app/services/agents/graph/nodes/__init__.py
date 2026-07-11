@@ -27,6 +27,9 @@ from . import sota_matcher as _sota
 from . import narrative_builder as _narrative
 from . import optimization_advisor as _optimization
 from . import devils_advocate_node as _devils
+# Re6.4 novelty nodes
+from . import novelty_review as _novelty_review
+from . import falsifiability as _falsifiability
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
 REGISTRY: dict[str, callable] = {
@@ -59,6 +62,9 @@ REGISTRY: dict[str, callable] = {
     "narrative_builder": _narrative.narrative_builder_node,
     "optimization_advisor": _optimization.optimization_advisor_node,
     "devils_advocate": _devils.devils_advocate_node,
+    # Re6.4 novelty nodes
+    "novelty_review": _novelty_review.novelty_review_node,
+    "falsifiability": _falsifiability.falsifiability_node,
 }
 
 NODE_FIELDS: dict[str, tuple[str, ...]] = {

@@ -1,0 +1,1253 @@
+warning: in the working copy of '.codely-cli/settings.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'CODELY.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/app/api/v1/research.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/app/main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/app/services/agents/graph/research_graph.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/app/services/agents/graph/state.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/app/services/agents/prompts/devils_advocate_graph.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/app/services/agents/prompts/innovation_extractor.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/app/services/agents/source_ledger.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/app/services/llm.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/scripts/run_re04_smoke.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/deployment/Local_Runbook.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/frontend/ReactVite_Migration_Matrix.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/re38_screenshots.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/re39_final_audit.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'start_frontend.bat', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/self_test/frontend_validator.py', LF will be replaced by CRLF the next time Git touches it
+Saved working directory and index state WIP on master: 398b8f61 fix(re3.9.4): R39-GAS修复 — 启发式CN→EN词典fallback, LLM翻译失败时100+术语自动翻译
+F
+================================== FAILURES ===================================
+_____________ test_citation_expand_adds_pool_rows_from_seed_refs ______________
+
+    @pytest.mark.asyncio
+    async def test_citation_expand_adds_pool_rows_from_seed_refs():
+        raw = {
+            "arxiv": [{"title": "Seed A", "arxiv_id": "2103.00020"}],
+        }
+        pool = CandidatePool()
+        ledger = SourceLedger()
+        fetch = await _fake_fetch_refs_factory(["W100", "W200"])
+        added = await citation_expand(raw, pool, fetch=fetch, ledger=ledger)
+>       assert added == 2
+E       AssertionError: assert {'seeds_total': 1, 'seeds_eligible': 0, 'seeds_rejected': 1, 'refs_added': 0, ...} == 2
+
+apps\api\tests\test_re02_citation_expand.py:124: AssertionError
+=========================== short test summary info ===========================
+FAILED apps/api/tests/test_re02_citation_expand.py::test_citation_expand_adds_pool_rows_from_seed_refs
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 0.28s
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+  (commit or discard the untracked or modified content in submodules)
+	modified:   .codely-cli/extensions/pua (untracked content)
+	modified:   .codely-cli/settings.json
+	deleted:    .codely/clipboard/clipboard-1783557666032.png
+	deleted:    .codely/clipboard/clipboard-1783557726788.png
+	deleted:    .codely/clipboard/clipboard-1783558349316.png
+	modified:   .env.example
+	modified:   .gitignore
+	modified:   CHANGELOG.md
+	modified:   CODELY.md
+	deleted:    "Plan/PaperAgent_Re3.0_Batch20_\346\210\220\345\212\237\347\273\223\346\236\234\344\270\216\346\240\207\347\255\224.md"
+	deleted:    "Plan/PaperAgent_Re3.0_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.1_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.2_Re3.3_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.2_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.4_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.5_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.6_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.7_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.8_Re3.9_50\347\257\207\345\233\236\345\275\222\347\273\223\346\236\234\344\270\216\346\240\207\347\255\224.md"
+	deleted:    "Plan/PaperAgent_Re3.8_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.8_\346\224\266\345\260\276\346\270\205\347\220\206\344\270\21650\347\257\207\345\233\236\345\275\222_SOP.md"
+	deleted:    "Plan/PaperAgent_Re3.8_\347\263\273\347\273\237\346\200\247\351\227\256\351\242\230\344\277\256\345\244\215_SOP.md"
+	deleted:    "Plan/PaperAgent_Re3.9.1_PubMed\345\274\272\345\210\266\346\263\250\345\205\245\344\277\256\345\244\215_SOP.md"
+	deleted:    "Plan/PaperAgent_Re3.9.2_SSE\346\265\201\345\274\217\346\216\250\351\200\201\344\277\256\345\244\215_SOP.md"
+	deleted:    "Plan/PaperAgent_Re3.9.3_\345\256\236\346\227\266\350\256\272\346\226\207Graph\345\217\257\350\247\206\345\214\226HumanGate_SOP.md"
+	deleted:    "Plan/PaperAgent_Re3.9.4_3\347\257\207\346\265\213\350\257\225\347\273\223\346\236\234\344\270\216\346\240\207\347\255\224.md"
+	deleted:    "Plan/PaperAgent_Re3.9.4_\345\205\263\351\224\256\350\257\215\347\277\273\350\257\221\347\233\270\345\205\263\346\200\247\346\213\246\346\210\252\350\277\236\351\200\232\346\200\247Trace\344\277\235\345\255\230_SOP.md"
+	deleted:    "Plan/PaperAgent_Re3.9_Fallback\346\240\207\346\263\250\344\270\216Dataset\350\267\250\350\212\202\347\202\271\350\241\245\345\205\250_SOP.md"
+	deleted:    "Plan/PaperAgent_Re3.9_\345\256\214\345\267\245\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_Re3.x_\346\224\266\345\256\230\346\212\245\345\221\212.md"
+	deleted:    "Plan/PaperAgent_\345\205\250\351\207\217\345\233\236\345\275\222\346\212\245\345\221\212.md"
+	modified:   README.md
+	modified:   apps/api/app/api/v1/research.py
+	modified:   apps/api/app/main.py
+	modified:   apps/api/app/services/agents/graph/nodes/citation_expander.py
+	modified:   apps/api/app/services/agents/graph/nodes/content.py
+	modified:   apps/api/app/services/agents/graph/nodes/devils_advocate_node.py
+	modified:   apps/api/app/services/agents/graph/nodes/feasibility_assessor.py
+	modified:   apps/api/app/services/agents/graph/nodes/innovation_extractor.py
+	modified:   apps/api/app/services/agents/graph/nodes/narrative_builder.py
+	modified:   apps/api/app/services/agents/graph/nodes/quality_gate.py
+	modified:   apps/api/app/services/agents/graph/nodes/search_agent.py
+	modified:   apps/api/app/services/agents/graph/nodes/search_planner.py
+	modified:   apps/api/app/services/agents/graph/nodes/targeted_repair.py
+	modified:   apps/api/app/services/agents/graph/research_graph.py
+	modified:   apps/api/app/services/agents/graph/state.py
+	modified:   apps/api/app/services/agents/prompts/devils_advocate_graph.py
+	modified:   apps/api/app/services/agents/prompts/innovation_extractor.py
+	modified:   apps/api/app/services/agents/source_ledger.py
+	modified:   apps/api/app/services/llm.py
+	modified:   apps/api/scripts/run_re04_smoke.py
+	deleted:    apps/api/tests/test_re04_main_entry.py
+	deleted:    apps/api/tests/test_re10_reflection_search.py
+	modified:   docs/deployment/Local_Runbook.md
+	modified:   docs/frontend/ReactVite_Migration_Matrix.md
+	deleted:    docs/project/Architecture_Overview.md
+	deleted:    docs/project/Error_Handling_And_Observability.md
+	deleted:    docs/project/Known_Limitations.md
+	deleted:    docs/project/Release_Checklist.md
+	deleted:    docs/project/Resume_Project_Description.md
+	deleted:    docs/project/Roadmap.md
+	deleted:    docs/project/Scope_And_Compliance.md
+	modified:   pytest.ini
+	modified:   scripts/re38_screenshots.py
+	modified:   scripts/re39_final_audit.py
+	modified:   start_frontend.bat
+	modified:   tests/self_test/frontend_validator.py
+	deleted:    tmp_check_cons.py
+	deleted:    tmp_re11_eval/loop1/probes.json
+	deleted:    tmp_re11_eval/loop2/re11-loop2-smoke-001.json
+	deleted:    tmp_re11_eval/loop3/_work/gen_report.py
+	deleted:    tmp_re11_eval/loop3/candidates_ctx.json
+	deleted:    tmp_re11_eval/loop3/re11-l3-medical-llm.json
+	deleted:    tmp_re11_eval/loop3/re11-l3-semantic-slam.json
+	deleted:    tmp_re11_eval/loop3/re11-l3-steel-yolov5.json
+	deleted:    tmp_re11_eval/loop3/summary.json
+	deleted:    tmp_re11_eval/loop4/re11-l4-mono-recon.json
+	deleted:    tmp_re11_eval/loop4/re11-l4-rag-qa.json
+	deleted:    tmp_re11_eval/loop4/re11-l4-road-crack.json
+	deleted:    tmp_re11_eval/loop4/re11-l4-steel-monitor.json
+	deleted:    tmp_re11_eval/loop4/re11-l4-uav-crop.json
+	deleted:    tmp_re11_eval/loop4/summary.json
+	deleted:    tmp_re12_eval/re12-l3-medical-llm/evidence_graph.json
+	deleted:    tmp_re12_eval/re12-l3-medical-llm/state.json
+	deleted:    tmp_re12_eval/re12-l3-medical-llm/trace.json
+	deleted:    tmp_re12_eval/re12-l3-semantic-slam/evidence_graph.json
+	deleted:    tmp_re12_eval/re12-l3-semantic-slam/state.json
+	deleted:    tmp_re12_eval/re12-l3-semantic-slam/trace.json
+	deleted:    tmp_re12_eval/re12-l3-steel-yolov5/evidence_graph.json
+	deleted:    tmp_re12_eval/re12-l3-steel-yolov5/state.json
+	deleted:    tmp_re12_eval/re12-l3-steel-yolov5/trace.json
+	deleted:    tmp_re12_eval/re12-l5-mono-recon/evidence_graph.json
+	deleted:    tmp_re12_eval/re12-l5-mono-recon/state.json
+	deleted:    tmp_re12_eval/re12-l5-mono-recon/trace.json
+	deleted:    tmp_re12_eval/re12-l5-rag-qa/evidence_graph.json
+	deleted:    tmp_re12_eval/re12-l5-rag-qa/state.json
+	deleted:    tmp_re12_eval/re12-l5-rag-qa/trace.json
+	deleted:    tmp_re12_eval/re12-l5-road-crack/evidence_graph.json
+	deleted:    tmp_re12_eval/re12-l5-road-crack/state.json
+	deleted:    tmp_re12_eval/re12-l5-road-crack/trace.json
+	deleted:    tmp_re12_eval/re12-l5-steel-monitor/evidence_graph.json
+	deleted:    tmp_re12_eval/re12-l5-steel-monitor/state.json
+	deleted:    tmp_re12_eval/re12-l5-steel-monitor/trace.json
+	deleted:    tmp_re12_eval/re12-l5-uav-crop/evidence_graph.json
+	deleted:    tmp_re12_eval/re12-l5-uav-crop/state.json
+	deleted:    tmp_re12_eval/re12-l5-uav-crop/trace.json
+	deleted:    tmp_re12_eval/verify_strictness_test.jsonl
+	deleted:    tmp_re13_e2e.py
+	deleted:    tmp_re13_eval/R36-003/state.json
+	deleted:    tmp_re13_eval/R36-003/trace.json
+	deleted:    tmp_re13_eval/R39-CONS/evidence_graph.json
+	deleted:    tmp_re13_eval/R39-CONS/state.json
+	deleted:    tmp_re13_eval/R39-CONS/state_partial.json
+	deleted:    tmp_re13_eval/R39-CONS/trace.json
+	deleted:    tmp_re13_eval/R39-GAS/evidence_graph.json
+	deleted:    tmp_re13_eval/R39-GAS/state.json
+	deleted:    tmp_re13_eval/R39-GAS/state_partial.json
+	deleted:    tmp_re13_eval/R39-GAS/trace.json
+	deleted:    tmp_re13_eval/R39-GAS2/evidence_graph.json
+	deleted:    tmp_re13_eval/R39-GAS2/state.json
+	deleted:    tmp_re13_eval/R39-GAS2/state_partial.json
+	deleted:    tmp_re13_eval/R39-GAS2/trace.json
+	deleted:    tmp_re13_eval/R39-PILE/evidence_graph.json
+	deleted:    tmp_re13_eval/R39-PILE/state.json
+	deleted:    tmp_re13_eval/R39-PILE/state_partial.json
+	deleted:    tmp_re13_eval/R39-PILE/trace.json
+	deleted:    tmp_re13_eval/R39-STREAM/evidence_graph.json
+	deleted:    tmp_re13_eval/R39-STREAM/state.json
+	deleted:    tmp_re13_eval/R39-STREAM/trace.json
+	deleted:    tmp_re13_eval/R39-UI/evidence_graph.json
+	deleted:    tmp_re13_eval/R39-UI/state.json
+	deleted:    tmp_re13_eval/R39-UI/state_partial.json
+	deleted:    tmp_re13_eval/R39-UI/trace.json
+	deleted:    tmp_re13_eval/V-MED-32/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32/state.json
+	deleted:    tmp_re13_eval/V-MED-32/trace.json
+	deleted:    tmp_re13_eval/V-MED-32b/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32b/state.json
+	deleted:    tmp_re13_eval/V-MED-32b/trace.json
+	deleted:    tmp_re13_eval/V-MED-32c/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32c/state.json
+	deleted:    tmp_re13_eval/V-MED-32c/trace.json
+	deleted:    tmp_re13_eval/V-MED-32d/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32d/state.json
+	deleted:    tmp_re13_eval/V-MED-32d/trace.json
+	deleted:    tmp_re13_eval/V-MED-32e/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32e/state.json
+	deleted:    tmp_re13_eval/V-MED-32e/trace.json
+	deleted:    tmp_re13_eval/V-MED-32f/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32f/state.json
+	deleted:    tmp_re13_eval/V-MED-32f/trace.json
+	deleted:    tmp_re13_eval/V-MED-32g/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32g/state.json
+	deleted:    tmp_re13_eval/V-MED-32g/trace.json
+	deleted:    tmp_re13_eval/V-MED-32h/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32h/state.json
+	deleted:    tmp_re13_eval/V-MED-32h/trace.json
+	deleted:    tmp_re13_eval/V-MED-32i/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32i/state.json
+	deleted:    tmp_re13_eval/V-MED-32i/trace.json
+	deleted:    tmp_re13_eval/V-MED-32j/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32j/state.json
+	deleted:    tmp_re13_eval/V-MED-32j/trace.json
+	deleted:    tmp_re13_eval/V-MED-32k/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-32k/state.json
+	deleted:    tmp_re13_eval/V-MED-32k/trace.json
+	deleted:    tmp_re13_eval/V-MED-33/evidence_graph.json
+	deleted:    tmp_re13_eval/V-MED-33/state.json
+	deleted:    tmp_re13_eval/V-MED-33/trace.json
+	deleted:    tmp_re13_eval/V-SLAM-32/evidence_graph.json
+	deleted:    tmp_re13_eval/V-SLAM-32/state.json
+	deleted:    tmp_re13_eval/V-SLAM-32/trace.json
+	deleted:    tmp_re13_eval/V-SLAM-33/evidence_graph.json
+	deleted:    tmp_re13_eval/V-SLAM-33/state.json
+	deleted:    tmp_re13_eval/V-SLAM-33/trace.json
+	deleted:    tmp_re13_eval/V-YOLO-32/evidence_graph.json
+	deleted:    tmp_re13_eval/V-YOLO-32/state.json
+	deleted:    tmp_re13_eval/V-YOLO-32/trace.json
+	deleted:    tmp_re13_eval/V-YOLO-33/evidence_graph.json
+	deleted:    tmp_re13_eval/V-YOLO-33/state.json
+	deleted:    tmp_re13_eval/V-YOLO-33/trace.json
+	deleted:    tmp_re13_eval/re13-medical-llm-v2/evidence_graph.json
+	deleted:    tmp_re13_eval/re13-medical-llm-v2/state.json
+	deleted:    tmp_re13_eval/re13-medical-llm-v2/stderr.txt
+	deleted:    tmp_re13_eval/re13-medical-llm-v2/stdout.txt
+	deleted:    tmp_re13_eval/re13-medical-llm-v2/trace.json
+	deleted:    tmp_re13_eval/re13-medical-llm-v3/state.json
+	deleted:    tmp_re13_eval/re13-medical-llm-v3/stderr.txt
+	deleted:    tmp_re13_eval/re13-medical-llm-v3/stdout.txt
+	deleted:    tmp_re13_eval/re13-medical-llm-v3/trace.json
+	deleted:    tmp_re13_eval/re13-medical-llm/evidence_graph.json
+	deleted:    tmp_re13_eval/re13-medical-llm/state.json
+	deleted:    tmp_re13_eval/re13-medical-llm/stderr.txt
+	deleted:    tmp_re13_eval/re13-medical-llm/stdout.txt
+	deleted:    tmp_re13_eval/re13-medical-llm/trace.json
+	deleted:    tmp_re13_eval/re13-semantic-slam-v2/evidence_graph.json
+	deleted:    tmp_re13_eval/re13-semantic-slam-v2/state.json
+	deleted:    tmp_re13_eval/re13-semantic-slam-v2/stderr.txt
+	deleted:    tmp_re13_eval/re13-semantic-slam-v2/stdout.txt
+	deleted:    tmp_re13_eval/re13-semantic-slam-v2/trace.json
+	deleted:    tmp_re13_eval/re13-semantic-slam-v3/state.json
+	deleted:    tmp_re13_eval/re13-semantic-slam-v3/stderr.txt
+	deleted:    tmp_re13_eval/re13-semantic-slam-v3/stdout.txt
+	deleted:    tmp_re13_eval/re13-semantic-slam-v3/trace.json
+	deleted:    tmp_re13_eval/re13-semantic-slam/evidence_graph.json
+	deleted:    tmp_re13_eval/re13-semantic-slam/state.json
+	deleted:    tmp_re13_eval/re13-semantic-slam/stderr.txt
+	deleted:    tmp_re13_eval/re13-semantic-slam/stdout.txt
+	deleted:    tmp_re13_eval/re13-semantic-slam/trace.json
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v2/evidence_graph.json
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v2/state.json
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v2/stderr.txt
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v2/stdout.txt
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v2/trace.json
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v3/state.json
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v3/stderr.txt
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v3/stdout.txt
+	deleted:    tmp_re13_eval/re13-steel-yolov5-v3/trace.json
+	deleted:    tmp_re13_eval/re13-steel-yolov5/evidence_graph.json
+	deleted:    tmp_re13_eval/re13-steel-yolov5/state.json
+	deleted:    tmp_re13_eval/re13-steel-yolov5/stderr.txt
+	deleted:    tmp_re13_eval/re13-steel-yolov5/stdout.txt
+	deleted:    tmp_re13_eval/re13-steel-yolov5/trace.json
+	deleted:    tmp_re13_eval/re14-medical-llm/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-medical-llm/state.json
+	deleted:    tmp_re13_eval/re14-medical-llm/trace.json
+	deleted:    tmp_re13_eval/re14-mr88l77j/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-mr88l77j/state.json
+	deleted:    tmp_re13_eval/re14-mr88l77j/trace.json
+	deleted:    tmp_re13_eval/re14-mr88ov9y/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-mr88ov9y/state.json
+	deleted:    tmp_re13_eval/re14-mr88ov9y/trace.json
+	deleted:    tmp_re13_eval/re14-mr8bwumy/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-mr8bwumy/state.json
+	deleted:    tmp_re13_eval/re14-mr8bwumy/trace.json
+	deleted:    tmp_re13_eval/re14-mr8bwva4/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-mr8bwva4/state.json
+	deleted:    tmp_re13_eval/re14-mr8bwva4/trace.json
+	deleted:    tmp_re13_eval/re14-mr8c0q2p/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-mr8c0q2p/state.json
+	deleted:    tmp_re13_eval/re14-mr8c0q2p/trace.json
+	deleted:    tmp_re13_eval/re14-mr8c4lm4/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-mr8c4lm4/state.json
+	deleted:    tmp_re13_eval/re14-mr8c4lm4/trace.json
+	deleted:    tmp_re13_eval/re14-mr8c8oc7/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-mr8c8oc7/state.json
+	deleted:    tmp_re13_eval/re14-mr8c8oc7/trace.json
+	deleted:    tmp_re13_eval/re14-mr8cci1x/evidence_graph.json
+	deleted:    tmp_re13_eval/re14-mr8cci1x/state.json
+	deleted:    tmp_re13_eval/re14-mr8cci1x/trace.json
+	deleted:    tmp_re13_eval/re15-p0-test2/evidence_graph.json
+	deleted:    tmp_re13_eval/re15-p0-test2/state.json
+	deleted:    tmp_re13_eval/re15-p0-test2/trace.json
+	deleted:    tmp_re13_eval/re24-mr9ax9x0/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9ax9x0/state.json
+	deleted:    tmp_re13_eval/re24-mr9ax9x0/trace.json
+	deleted:    tmp_re13_eval/re24-mr9axdb6/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9axdb6/state.json
+	deleted:    tmp_re13_eval/re24-mr9axdb6/trace.json
+	deleted:    tmp_re13_eval/re24-mr9b00cf/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9b00cf/state.json
+	deleted:    tmp_re13_eval/re24-mr9b00cf/trace.json
+	deleted:    tmp_re13_eval/re24-mr9b2n98/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9b2n98/state.json
+	deleted:    tmp_re13_eval/re24-mr9b2n98/trace.json
+	deleted:    tmp_re13_eval/re24-mr9b2q6n/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9b2q6n/state.json
+	deleted:    tmp_re13_eval/re24-mr9b2q6n/trace.json
+	deleted:    tmp_re13_eval/re24-mr9b97ob/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9b97ob/state.json
+	deleted:    tmp_re13_eval/re24-mr9b97ob/trace.json
+	deleted:    tmp_re13_eval/re24-mr9b99uh/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9b99uh/state.json
+	deleted:    tmp_re13_eval/re24-mr9b99uh/trace.json
+	deleted:    tmp_re13_eval/re24-mr9b9bth/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9b9bth/state.json
+	deleted:    tmp_re13_eval/re24-mr9b9bth/trace.json
+	deleted:    tmp_re13_eval/re24-mr9bap2y/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9bap2y/state.json
+	deleted:    tmp_re13_eval/re24-mr9bap2y/trace.json
+	deleted:    tmp_re13_eval/re24-mr9bbeho/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9bbeho/state.json
+	deleted:    tmp_re13_eval/re24-mr9bbeho/trace.json
+	deleted:    tmp_re13_eval/re24-mr9behia/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9behia/state.json
+	deleted:    tmp_re13_eval/re24-mr9behia/trace.json
+	deleted:    tmp_re13_eval/re24-mr9nx60n/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mr9nx60n/state.json
+	deleted:    tmp_re13_eval/re24-mr9nx60n/trace.json
+	deleted:    tmp_re13_eval/re24-mrcl06bi/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mrcl06bi/state.json
+	deleted:    tmp_re13_eval/re24-mrcl06bi/trace.json
+	deleted:    tmp_re13_eval/re24-mrcr0o6a/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mrcr0o6a/state.json
+	deleted:    tmp_re13_eval/re24-mrcr0o6a/trace.json
+	deleted:    tmp_re13_eval/re24-mrcs5plz/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mrcs5plz/state.json
+	deleted:    tmp_re13_eval/re24-mrcs5plz/trace.json
+	deleted:    tmp_re13_eval/re24-mrcsa4xa/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mrcsa4xa/state.json
+	deleted:    tmp_re13_eval/re24-mrcsa4xa/trace.json
+	deleted:    tmp_re13_eval/re24-mrcsbztj/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mrcsbztj/state.json
+	deleted:    tmp_re13_eval/re24-mrcsbztj/trace.json
+	deleted:    tmp_re13_eval/re24-mrcsjz64/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-mrcsjz64/state.json
+	deleted:    tmp_re13_eval/re24-mrcsjz64/trace.json
+	deleted:    tmp_re13_eval/re24-screenshot-v4/evidence_graph.json
+	deleted:    tmp_re13_eval/re24-screenshot-v4/state.json
+	deleted:    tmp_re13_eval/re24-screenshot-v4/trace.json
+	deleted:    tmp_re14_eval/re14-medical-llm/state.json
+	deleted:    tmp_re14_eval/re14-medical-llm/stderr.txt
+	deleted:    tmp_re14_eval/re14-medical-llm/stdout.txt
+	deleted:    tmp_re14_eval/re14-medical-llm/trace.json
+	deleted:    tmp_re14_eval/re14-semantic-slam-r2/state.json
+	deleted:    tmp_re14_eval/re14-semantic-slam-r2/stderr.txt
+	deleted:    tmp_re14_eval/re14-semantic-slam-r2/stdout.txt
+	deleted:    tmp_re14_eval/re14-semantic-slam-r2/trace.json
+	deleted:    tmp_re14_eval/re14-steel-yolov5/state.json
+	deleted:    tmp_re14_eval/re14-steel-yolov5/stderr.txt
+	deleted:    tmp_re14_eval/re14-steel-yolov5/stdout.txt
+	deleted:    tmp_re14_eval/re14-steel-yolov5/trace.json
+	deleted:    tmp_re14_screenshots/01_page_load.png
+	deleted:    tmp_re14_screenshots/02_topic_input.png
+	deleted:    tmp_re14_screenshots/03_submit_progress.png
+	deleted:    tmp_re14_screenshots/04_adapter_results.png
+	deleted:    tmp_re14_screenshots/05_filter_result.png
+	deleted:    tmp_re14_screenshots/11_complete.png
+	deleted:    tmp_re14_screenshots/12_paper_list.png
+	deleted:    tmp_re14_screenshots/13_evidence_graph.png
+	deleted:    tmp_re14_screenshots/14_work_packages.png
+	deleted:    tmp_re14_screenshots/15_final_report.png
+	deleted:    tmp_re14_screenshots/16_history_dropdown.png
+	deleted:    tmp_re14_screenshots/17_history_case_load.png
+	deleted:    tmp_re14_screenshots/loop3_evidence_graph.png
+	deleted:    tmp_re14_screenshots/loop3_papers.png
+	deleted:    tmp_re14_screenshots/loop3_work_packages.png
+	deleted:    tmp_re15_eval/ENG-THESIS-015/evidence_graph.json
+	deleted:    tmp_re15_eval/ENG-THESIS-015/state.json
+	deleted:    tmp_re15_eval/ENG-THESIS-015/trace.json
+	deleted:    tmp_re15_eval/ENG-THESIS-016/evidence_graph.json
+	deleted:    tmp_re15_eval/ENG-THESIS-016/state.json
+	deleted:    tmp_re15_eval/ENG-THESIS-016/trace.json
+	deleted:    tmp_re15_eval/ENG-THESIS-046/evidence_graph.json
+	deleted:    tmp_re15_eval/ENG-THESIS-046/state.json
+	deleted:    tmp_re15_eval/ENG-THESIS-046/trace.json
+	deleted:    tmp_re15_eval/ENG-THESIS-074/evidence_graph.json
+	deleted:    tmp_re15_eval/ENG-THESIS-074/state.json
+	deleted:    tmp_re15_eval/ENG-THESIS-074/trace.json
+	deleted:    tmp_re15_eval/analysis.json
+	deleted:    tmp_re15_eval/changelog.md
+	deleted:    tmp_re15_eval/check_state.py
+	deleted:    tmp_re15_eval/gather_data.py
+	deleted:    tmp_re15_eval/gen_summary.py
+	deleted:    tmp_re15_eval/model_comparison/summary_opencode.json
+	deleted:    tmp_re15_eval/model_comparison/summary_stepfun.json
+	deleted:    tmp_re15_eval/quick_check.py
+	deleted:    tmp_re15_eval/self_test_report.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-015/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-015/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-015/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-016/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-016/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-016/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-018/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-018/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-018/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-024/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-024/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-024/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-027/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-027/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-027/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-028/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-028/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-028/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-032/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-032/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-032/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-033/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-033/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-033/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-043/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-043/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-043/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-046/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-046/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-046/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-050/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-050/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-050/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-063/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-063/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-063/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-066/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-066/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-066/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-074/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-074/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-074/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-075/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-075/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-075/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-080/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-080/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-080/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-091/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-091/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-091/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-092/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-092/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-092/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-093/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-093/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-093/trace.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-096/evidence_graph.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-096/state.json
+	deleted:    tmp_re15_eval/smoke_20/ENG-THESIS-096/trace.json
+	deleted:    tmp_re15_eval/smoke_20/summary_deepseek.json
+	deleted:    tmp_re15_eval/summary_deepseek.json
+	deleted:    tmp_re15_screenshots/01_page_load.png
+	deleted:    tmp_re15_screenshots/02_topic_input.png
+	deleted:    tmp_re15_screenshots/03_submit.png
+	deleted:    tmp_re15_screenshots/04_wait_complete.png
+	deleted:    tmp_re15_screenshots/05_paper_list.png
+	deleted:    tmp_re15_screenshots/06_evidence_graph.png
+	deleted:    tmp_re15_screenshots/07_work_packages.png
+	deleted:    tmp_re15_screenshots/08_final_report.png
+	deleted:    tmp_re15_screenshots/09_history_dropdown.png
+	deleted:    tmp_re15_screenshots/10_history_load.png
+	deleted:    tmp_re21_eval/V-CRACK/state.json
+	deleted:    tmp_re21_eval/V-CRACK/trace.json
+	deleted:    tmp_re21_eval/V-MED/state.json
+	deleted:    tmp_re21_eval/V-MED/trace.json
+	deleted:    tmp_re21_eval/V-SLAM/state.json
+	deleted:    tmp_re21_eval/V-SLAM/trace.json
+	deleted:    tmp_re21_eval/changelog.md
+	deleted:    tmp_re21_eval/check_innovation.py
+	deleted:    tmp_re21_eval/comparison.json
+	deleted:    tmp_re21_eval/debug_compare.py
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-004/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-004/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-010/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-010/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-015/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-015/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-033/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-033/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-046/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-046/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-063/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-063/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-066/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-066/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-079/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-079/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-092/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-092/trace.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-096/state.json
+	deleted:    tmp_re21_eval/selected_10/ENG-THESIS-096/trace.json
+	deleted:    tmp_re21_eval/selected_10/summary_deepseek.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-015/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-015/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-016/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-016/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-018/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-018/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-024/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-024/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-027/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-027/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-028/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-028/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-032/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-032/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-033/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-033/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-043/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-043/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-046/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-046/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-050/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-050/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-063/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-063/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-066/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-066/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-074/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-074/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-075/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-075/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-080/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-080/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-091/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-091/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-092/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-092/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-093/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-093/trace.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-096/state.json
+	deleted:    tmp_re21_eval/smoke_20/ENG-THESIS-096/trace.json
+	deleted:    tmp_re21_eval/smoke_20/summary_deepseek.json
+	deleted:    tmp_re21_eval/verify/verify_20260706_075256_phase1-s2.json
+	deleted:    tmp_re21_eval/verify/verify_20260706_080357_phase1-s2-fixed.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-001/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-001/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-002/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-002/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-003/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-003/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-004/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-004/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-005/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-005/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-006/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-006/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-007/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-007/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-008/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-008/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-009/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-009/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-010/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-010/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-011/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-011/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-012/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-012/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-013/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-013/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-014/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-014/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-015/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-015/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-016/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-016/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-017/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-017/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-018/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-018/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-019/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-019/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-020/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-020/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-021/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-021/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-022/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-022/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-023/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-023/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-024/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-024/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-025/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-025/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-026/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-026/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-027/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-027/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-028/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-028/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-029/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-029/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-030/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-030/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-031/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-031/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-032/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-032/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-033/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-033/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-034/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-034/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-035/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-035/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-036/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-036/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-037/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-037/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-038/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-038/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-039/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-039/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-040/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-040/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-041/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-041/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-042/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-042/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-043/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-043/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-044/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-044/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-045/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-045/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-046/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-046/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-047/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-047/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-048/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-048/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-049/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-049/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-050/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-050/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-051/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-051/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-052/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-052/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-053/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-053/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-054/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-054/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-055/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-055/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-056/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-056/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-057/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-057/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-058/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-058/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-059/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-059/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-060/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-060/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-061/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-061/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-062/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-062/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-063/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-063/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-064/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-064/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-065/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-065/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-066/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-066/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-067/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-067/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-068/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-068/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-069/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-069/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-070/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-070/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-071/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-071/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-072/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-072/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-073/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-073/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-074/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-074/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-075/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-075/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-076/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-076/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-077/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-077/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-078/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-078/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-079/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-079/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-080/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-080/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-081/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-081/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-082/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-082/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-083/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-083/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-084/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-084/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-085/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-085/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-086/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-086/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-087/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-087/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-088/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-088/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-089/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-089/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-090/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-090/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-091/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-091/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-092/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-092/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-093/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-093/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-094/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-094/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-095/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-095/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-096/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-096/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-097/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-097/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-098/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-098/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-099/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-099/trace.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-100/state.json
+	deleted:    tmp_re22_eval/all_100/ENG-THESIS-100/trace.json
+	deleted:    tmp_re22_eval/all_100/summary_deepseek.json
+	deleted:    tmp_re22_eval/analysis.json
+	deleted:    tmp_re22_eval/check_github.py
+	deleted:    tmp_re22_eval/check_pollution.py
+	deleted:    tmp_re22_eval/debug_vslam.py
+	deleted:    tmp_re22_eval/deep_check.py
+	deleted:    tmp_re22_eval/fix2_V-CRACK/state.json
+	deleted:    tmp_re22_eval/fix2_V-MED/state.json
+	deleted:    tmp_re22_eval/fix2_V-SLAM/state.json
+	deleted:    tmp_re22_eval/fix_test_FIX-022/state.json
+	deleted:    tmp_re22_eval/fix_test_FIX-048/state.json
+	deleted:    tmp_re22_eval/progress.log
+	deleted:    tmp_re22_eval/run_fix_test.py
+	deleted:    tmp_re22_eval/self_test_report.json
+	deleted:    tmp_re23_eval/V-CRACK/state.json
+	deleted:    tmp_re23_eval/V-MED/state.json
+	deleted:    tmp_re23_eval/V-SLAM/state.json
+	deleted:    tmp_re23_eval/changelog.md
+	deleted:    tmp_re23_eval/debug_errors.py
+	deleted:    tmp_re23_eval/debug_vslam2.py
+	deleted:    tmp_re23_eval/verify_run.log
+	deleted:    tmp_re23_eval/verify_run_f56.log
+	deleted:    tmp_re24_eval/changelog.md
+	deleted:    tmp_re24_eval/debug_direct.py
+	deleted:    tmp_re24_eval/debug_retrieve.py
+	deleted:    tmp_re24_eval/frontend_new_run.png
+	deleted:    tmp_re24_eval/frontend_new_run_v2.png
+	deleted:    tmp_re24_eval/frontend_v3_with_papers.png
+	deleted:    tmp_re24_eval/frontend_v4_with_papers.png
+	deleted:    tmp_re24_eval/frontend_with_papers.png
+	deleted:    tmp_re24_eval/inspect_atoms.py
+	deleted:    tmp_re24_eval/inspect_state.py
+	deleted:    tmp_re24_eval/inspect_v2.py
+	deleted:    tmp_re24_eval/inspect_v3.py
+	deleted:    tmp_re24_eval/playwright_03_05.log
+	deleted:    tmp_re24_eval/playwright_graph_tests.log
+	deleted:    tmp_re24_eval/playwright_retry.log
+	deleted:    tmp_re24_eval/screenshot_hist.py
+	deleted:    tmp_re24_eval/screenshot_new_run.py
+	deleted:    tmp_re24_eval/screenshot_new_run_v2.py
+	deleted:    tmp_re24_eval/screenshot_v3.py
+	deleted:    tmp_re24_eval/screenshot_v4.py
+	deleted:    tmp_re24_eval/server.log
+	deleted:    tmp_re24_eval/uvicorn.log
+	deleted:    tmp_re24_eval/uvicorn2.log
+	deleted:    tmp_re24_eval/uvicorn3.log
+	deleted:    tmp_re24_eval/uvicorn4.log
+	deleted:    tmp_re24_eval/verify_run_p1.log
+	deleted:    tmp_re24_screenshots/01_page_load.png
+	deleted:    tmp_re24_screenshots/02_connectivity.png
+	deleted:    tmp_re24_screenshots/03_state_machine_start.png
+	deleted:    tmp_re24_screenshots/04_search_results.png
+	deleted:    tmp_re24_screenshots/05_filter_verify.png
+	deleted:    tmp_re24_screenshots/06_expansion.png
+	deleted:    tmp_re24_screenshots/07_analysis.png
+	deleted:    tmp_re24_screenshots/08_complete.png
+	deleted:    tmp_re24_screenshots/09_paper_list_full.png
+	deleted:    tmp_re24_screenshots/10_evidence_graph.png
+	deleted:    tmp_re24_screenshots/11_work_packages.png
+	deleted:    tmp_re24_screenshots/12_final_report.png
+	deleted:    tmp_re24_screenshots/13_history_dropdown.png
+	deleted:    tmp_re24_screenshots/14_history_load.png
+	deleted:    tmp_re24_screenshots/15_console_clean.png
+	deleted:    tmp_re2_eval/ENG-THESIS-016/state.json
+	deleted:    tmp_re2_eval/ENG-THESIS-016/trace.json
+	deleted:    tmp_re2_eval/ENG-THESIS-046/state.json
+	deleted:    tmp_re2_eval/ENG-THESIS-046/trace.json
+	deleted:    tmp_re2_eval/ENG-THESIS-074/state.json
+	deleted:    tmp_re2_eval/ENG-THESIS-074/trace.json
+	deleted:    tmp_re2_eval/analyze.py
+	deleted:    tmp_re2_eval/analyze_phase1.py
+	deleted:    tmp_re2_eval/check_parallel.py
+	deleted:    tmp_re2_eval/check_s2.py
+	deleted:    tmp_re2_eval/re2-innovation-test/state.json
+	deleted:    tmp_re2_eval/re2-innovation-test/trace.json
+	deleted:    tmp_re2_eval/re2-parallel-test/state.json
+	deleted:    tmp_re2_eval/re2-parallel-test/trace.json
+	deleted:    tmp_re2_eval/run_innovation_test.py
+	deleted:    tmp_re2_eval/run_parallel_test.py
+	deleted:    tmp_re2_eval/run_phase3.py
+	deleted:    tmp_re2_eval/run_validators.py
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-002/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-002/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-004/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-004/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-010/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-010/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-016/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-016/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-022/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-022/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-027/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-027/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-028/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-028/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-033/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-033/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-034/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-034/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-038/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-038/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-046/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-046/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-048/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-048/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-063/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-063/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-066/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-066/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-074/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-074/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-079/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-079/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-092/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-092/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-093/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-093/trace.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-096/state.json
+	deleted:    tmp_re30_eval/batch20/ENG-THESIS-096/trace.json
+	deleted:    tmp_re30_eval/batch20/V-YOLO/state.json
+	deleted:    tmp_re30_eval/batch20/V-YOLO/trace.json
+	deleted:    tmp_re30_eval/batch20/summary.json
+	deleted:    tmp_re30_eval/changelog.md
+	deleted:    tmp_re30_eval/extract_results.py
+	deleted:    tmp_re30_eval/fix_test/CUSTOM-1/state.json
+	deleted:    tmp_re30_eval/fix_test/CUSTOM-1/trace.json
+	deleted:    tmp_re30_eval/fix_test/summary.json
+	deleted:    tmp_re30_eval/ground_truth/verified_ground_truth.json
+	deleted:    tmp_re30_eval/parser_err.txt
+	deleted:    tmp_re30_eval/parser_out.txt
+	deleted:    tmp_re30_eval/parser_test.txt
+	deleted:    tmp_re30_eval/parser_test2.txt
+	deleted:    tmp_re30_eval/parser_test_output.txt
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-010/state.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-010/trace.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-022/state.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-022/trace.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-028/state.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-028/trace.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-033/state.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-033/trace.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-074/state.json
+	deleted:    tmp_re30_eval/progressive5/ENG-THESIS-074/trace.json
+	deleted:    tmp_re30_eval/progressive5/summary.json
+	deleted:    tmp_re30_eval/translations.py
+	deleted:    tmp_re30_eval/verify/V-MED/state.json
+	deleted:    tmp_re30_eval/verify/V-MED/trace.json
+	deleted:    tmp_re30_eval/verify/V-SLAM/state.json
+	deleted:    tmp_re30_eval/verify/V-SLAM/trace.json
+	deleted:    tmp_re30_eval/verify/V-YOLO/state.json
+	deleted:    tmp_re30_eval/verify/V-YOLO/trace.json
+	deleted:    tmp_re30_eval/verify/summary.json
+	deleted:    tmp_re30_eval/verify2/V-SLAM/state.json
+	deleted:    tmp_re30_eval/verify2/V-SLAM/trace.json
+	deleted:    tmp_re30_eval/verify2/V-YOLO/state.json
+	deleted:    tmp_re30_eval/verify2/V-YOLO/trace.json
+	deleted:    tmp_re30_eval/verify2/summary.json
+	deleted:    tmp_re30_eval/verify3/V-MED/state.json
+	deleted:    tmp_re30_eval/verify3/V-MED/trace.json
+	deleted:    tmp_re30_eval/verify3/V-SLAM/state.json
+	deleted:    tmp_re30_eval/verify3/V-SLAM/trace.json
+	deleted:    tmp_re30_eval/verify3/V-YOLO/state.json
+	deleted:    tmp_re30_eval/verify3/V-YOLO/trace.json
+	deleted:    tmp_re30_eval/verify3/summary.json
+	deleted:    tmp_re31_eval/changelog.md
+	deleted:    tmp_re31_eval/test_minimal.py
+	deleted:    tmp_re31_eval/test_re31_phases.py
+	deleted:    tmp_re32_eval/V-MED-32_state.json
+	deleted:    tmp_re32_eval/V-MED-32_trace.json
+	deleted:    tmp_re32_eval/V-MED-32i_state.json
+	deleted:    tmp_re32_eval/V-MED-32j_check.txt
+	deleted:    tmp_re32_eval/V-MED-32k_check.txt
+	deleted:    tmp_re32_eval/V-SLAM-32_state.json
+	deleted:    tmp_re32_eval/V-SLAM-32_trace.json
+	deleted:    tmp_re32_eval/V-YOLO-32_state.json
+	deleted:    tmp_re32_eval/V-YOLO-32_trace.json
+	deleted:    tmp_re32_eval/actual_prompt_test.txt
+	deleted:    tmp_re32_eval/atoms_check.txt
+	deleted:    tmp_re32_eval/changelog.md
+	deleted:    tmp_re32_eval/check_atoms.py
+	deleted:    tmp_re32_eval/check_vmed32j.py
+	deleted:    tmp_re32_eval/debug_actual_prompt.py
+	deleted:    tmp_re32_eval/debug_encoding.py
+	deleted:    tmp_re32_eval/encoding_debug.txt
+	deleted:    tmp_re32_eval/submit_vmed.py
+	deleted:    tmp_re32_eval/test_re32_phases.py
+	deleted:    tmp_re33_eval/V-MED-33_state.json
+	deleted:    tmp_re33_eval/V-MED-33_trace.json
+	deleted:    tmp_re33_eval/V-SLAM-33_state.json
+	deleted:    tmp_re33_eval/V-SLAM-33_trace.json
+	deleted:    tmp_re33_eval/V-YOLO-33R/error.txt
+	deleted:    tmp_re33_eval/V-YOLO-33R/state.json
+	deleted:    tmp_re33_eval/V-YOLO-33R/trace.json
+	deleted:    tmp_re33_eval/V-YOLO-33_state.json
+	deleted:    tmp_re33_eval/V-YOLO-33_trace.json
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/01_overview.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/02_state_machine.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/03_papers.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/04_evidence_graph.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/05_work_packages.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/06_narrative.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/07_innovation.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/08_sota.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/09_optimization.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/10_trace.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/11_final.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/12_full_page.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/13_upload_ui.png
+	deleted:    tmp_re33_eval/screenshots/V-MED-33/14_connectivity_counts.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/01_overview.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/02_state_machine.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/03_papers.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/04_evidence_graph.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/05_work_packages.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/06_narrative.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/07_innovation.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/08_sota.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/09_optimization.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/10_trace.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/11_final.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/12_full_page.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/13_upload_ui.png
+	deleted:    tmp_re33_eval/screenshots/V-SLAM-33/14_connectivity_counts.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/01_overview.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/02_state_machine.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/03_papers.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/04_evidence_graph.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/05_work_packages.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/06_narrative.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/07_innovation.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/08_sota.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/09_optimization.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/10_trace.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/11_final.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/12_full_page.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/13_upload_ui.png
+	deleted:    tmp_re33_eval/screenshots/V-YOLO-33/14_connectivity_counts.png
+	deleted:    tmp_re34_eval/R34-002/state.json
+	deleted:    tmp_re34_eval/R34-002/trace.json
+	deleted:    tmp_re34_eval/R34-033/state.json
+	deleted:    tmp_re34_eval/R34-033/trace.json
+	deleted:    tmp_re34_eval/R34-038/state.json
+	deleted:    tmp_re34_eval/R34-038/trace.json
+	deleted:    tmp_re34_eval/R34-046/state.json
+	deleted:    tmp_re34_eval/R34-046/trace.json
+	deleted:    tmp_re34_eval/R34-066/state.json
+	deleted:    tmp_re34_eval/R34-066/trace.json
+	deleted:    tmp_re34_eval/R34-092/state.json
+	deleted:    tmp_re34_eval/R34-092/trace.json
+	deleted:    tmp_re34_eval/R34-S01/state.json
+	deleted:    tmp_re34_eval/R34-S01/trace.json
+	deleted:    tmp_re34_eval/R34-S02/state.json
+	deleted:    tmp_re34_eval/R34-S02/trace.json
+	deleted:    tmp_re34_eval/R34-S03/state.json
+	deleted:    tmp_re34_eval/R34-S03/trace.json
+	deleted:    tmp_re34_eval/R34-S03R/state.json
+	deleted:    tmp_re34_eval/R34-S03R/trace.json
+	deleted:    tmp_re34_eval/R34-S04/state.json
+	deleted:    tmp_re34_eval/R34-S04/trace.json
+	deleted:    tmp_re34_supplemental.py
+	deleted:    tmp_re35_eval/R35-033/state.json
+	deleted:    tmp_re35_eval/R35-033/trace.json
+	deleted:    tmp_re35_eval/R35-046/state.json
+	deleted:    tmp_re35_eval/R35-046/trace.json
+	deleted:    tmp_re36_eval/R36-003/state.json
+	deleted:    tmp_re36_eval/R36-003/trace.json
+	deleted:    tmp_re36_eval/R36-007/state.json
+	deleted:    tmp_re36_eval/R36-007/trace.json
+	deleted:    tmp_re36_eval/R36-015/state.json
+	deleted:    tmp_re36_eval/R36-015/trace.json
+	deleted:    tmp_re36_eval/R36-021/state.json
+	deleted:    tmp_re36_eval/R36-021/trace.json
+	deleted:    tmp_re36_eval/R36-052/state.json
+	deleted:    tmp_re36_eval/R36-052/trace.json
+	deleted:    tmp_re36_eval/R36-060/state.json
+	deleted:    tmp_re36_eval/R36-060/trace.json
+	deleted:    tmp_re36_eval/R36-074/state.json
+	deleted:    tmp_re36_eval/R36-074/trace.json
+	deleted:    tmp_re36_eval/R36-079/state.json
+	deleted:    tmp_re36_eval/R36-079/trace.json
+	deleted:    tmp_re36_eval/R36-084/state.json
+	deleted:    tmp_re36_eval/R36-084/trace.json
+	deleted:    tmp_re36_eval/R36-091/state.json
+	deleted:    tmp_re36_eval/R36-091/trace.json
+	deleted:    tmp_re36_eval/R36-094/state.json
+	deleted:    tmp_re36_eval/R36-094/trace.json
+	deleted:    tmp_re36_eval/R36-100/state.json
+	deleted:    tmp_re36_eval/R36-100/trace.json
+	deleted:    tmp_re38_dc_check.py
+	deleted:    tmp_re38_eval/R38-004/state.json
+	deleted:    tmp_re38_eval/R38-004/trace.json
+	deleted:    tmp_re38_eval/R38-005/state.json
+	deleted:    tmp_re38_eval/R38-005/trace.json
+	deleted:    tmp_re38_eval/R38-006/state.json
+	deleted:    tmp_re38_eval/R38-006/trace.json
+	deleted:    tmp_re38_eval/R38-008/state.json
+	deleted:    tmp_re38_eval/R38-008/trace.json
+	deleted:    tmp_re38_eval/R38-009/state.json
+	deleted:    tmp_re38_eval/R38-009/trace.json
+	deleted:    tmp_re38_eval/R38-011/state.json
+	deleted:    tmp_re38_eval/R38-011/trace.json
+	deleted:    tmp_re38_eval/R38-013/state.json
+	deleted:    tmp_re38_eval/R38-013/trace.json
+	deleted:    tmp_re38_eval/R38-014/state.json
+	deleted:    tmp_re38_eval/R38-014/trace.json
+	deleted:    tmp_re38_eval/R38-018/state.json
+	deleted:    tmp_re38_eval/R38-018/trace.json
+	deleted:    tmp_re38_eval/R38-023/state.json
+	deleted:    tmp_re38_eval/R38-023/trace.json
+	deleted:    tmp_re38_eval/R38-026/state.json
+	deleted:    tmp_re38_eval/R38-026/trace.json
+	deleted:    tmp_re38_eval/R38-027/state.json
+	deleted:    tmp_re38_eval/R38-027/trace.json
+	deleted:    tmp_re38_eval/R38-029/state.json
+	deleted:    tmp_re38_eval/R38-029/trace.json
+	deleted:    tmp_re38_eval/R38-034/state.json
+	deleted:    tmp_re38_eval/R38-034/trace.json
+	deleted:    tmp_re38_eval/R38-037/state.json
+	deleted:    tmp_re38_eval/R38-037/trace.json
+	deleted:    tmp_re38_eval/R38-040/state.json
+	deleted:    tmp_re38_eval/R38-040/trace.json
+	deleted:    tmp_re38_eval/R38-043/state.json
+	deleted:    tmp_re38_eval/R38-043/trace.json
+	deleted:    tmp_re38_eval/R38-047/state.json
+	deleted:    tmp_re38_eval/R38-047/trace.json
+	deleted:    tmp_re38_eval/R38-049/state.json
+	deleted:    tmp_re38_eval/R38-049/trace.json
+	deleted:    tmp_re38_eval/R38-050/state.json
+	deleted:    tmp_re38_eval/R38-050/trace.json
+	deleted:    tmp_re38_eval/R38-057/state.json
+	deleted:    tmp_re38_eval/R38-057/trace.json
+	deleted:    tmp_re38_eval/R38-067/state.json
+	deleted:    tmp_re38_eval/R38-067/trace.json
+	deleted:    tmp_re38_eval/R38-075/state.json
+	deleted:    tmp_re38_eval/R38-075/trace.json
+	deleted:    tmp_re38_eval/R38-076/state.json
+	deleted:    tmp_re38_eval/R38-076/trace.json
+	deleted:    tmp_re38_eval/R38-083/state.json
+	deleted:    tmp_re38_eval/R38-083/trace.json
+	deleted:    tmp_re38_eval/R38-095/state.json
+	deleted:    tmp_re38_eval/R38-095/trace.json
+	deleted:    tmp_re38_eval/R38-096/state.json
+	deleted:    tmp_re38_eval/R38-096/trace.json
+	deleted:    tmp_re38_eval/R38-098/state.json
+	deleted:    tmp_re38_eval/R38-098/trace.json
+	deleted:    tmp_re38_eval/screenshots/01_timeline_overview.png
+	deleted:    tmp_re38_eval/screenshots/02_timeline_search_agent.png
+	deleted:    tmp_re38_eval/screenshots/03_timeline_state_keys.png
+	deleted:    tmp_re38_eval/screenshots/04_timeline_verify.png
+	deleted:    tmp_re38_eval/screenshots/05_timeline_dragging.png
+	deleted:    tmp_re38_eval/screenshots/06_timeline_final.png
+	deleted:    tmp_re38_eval/screenshots/07_console_clean.png
+	deleted:    tmp_re38_eval/screenshots/07_console_clean.txt
+	deleted:    tmp_re38_eval/screenshots/08_timeline_devils.png
+	deleted:    tmp_re39_eval/R39-066/state.json
+	deleted:    tmp_re39_eval/R39-066/trace.json
+	deleted:    tmp_re39_eval/R39-CRACK/error.txt
+	deleted:    tmp_re39_eval/R39-CRACK/state.json
+	deleted:    tmp_re39_eval/R39-CRACK/trace.json
+	deleted:    tmp_re39_eval/R39-LUNG/error.txt
+	deleted:    tmp_re39_eval/R39-LUNG/state.json
+	deleted:    tmp_re39_eval/R39-LUNG/trace.json
+	deleted:    tmp_re39_eval/R39-MED/state.json
+	deleted:    tmp_re39_eval/R39-MED/trace.json
+	deleted:    tmp_re39_eval/provenance_report.json
+	deleted:    tmp_re39_eval/screenshots/01_connectivity_auto.png
+	deleted:    tmp_re39_eval/screenshots/01_papers_streaming.png
+	deleted:    tmp_re39_eval/screenshots/01_streaming_intake.png
+	deleted:    tmp_re39_eval/screenshots/02_graph_topology.png
+	deleted:    tmp_re39_eval/screenshots/02_relevant_papers.png
+	deleted:    tmp_re39_eval/screenshots/02_streaming_search.png
+	deleted:    tmp_re39_eval/screenshots/03_gate_search.png
+	deleted:    tmp_re39_eval/screenshots/03_graph_topology.png
+	deleted:    tmp_re39_eval/screenshots/03_streaming_verify.png
+	deleted:    tmp_re39_eval/screenshots/04_final_complete.png
+	deleted:    tmp_re39_eval/screenshots/04_reflection_gate.png
+	deleted:    tmp_re39_eval/screenshots/04_streaming_done.png
+	deleted:    tmp_re39_eval/screenshots/05_console_clean.png
+	deleted:    tmp_re39_eval/screenshots/05_console_clean.txt
+	deleted:    tmp_re39_test_cross.py
+	deleted:    tmp_test_translate.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.codely-cli/auto-saves/chat-auto-save-2026-07-09-11-00-05-678-explore-f7foen.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-10-18-48-41-869-explore-ysrh1v.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-10-18-48-50-624-explore-j9iw55.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-10-19-34-52-540-explore-eyv5wl.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-10-19-35-17-056-explore-lqnlnq.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-10-20-02-06-792-explore-28wjyy.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-10-20-03-18-157-explore-qyqyyx.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-10-20-08-49-706-explore-7s8fbs.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-11-00-47-55-691-explore-7zgp0b.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-11-01-32-15-655-explore-r9syeq.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-11-04-07-20-340-explore-i93shi.json
+	.codely-cli/auto-saves/chat-auto-save-2026-07-11-04-09-22-135-explore-cfyx67.json
+	.codely-cli/extensions/vtsls/
+	.codely/clipboard/clipboard-1783710661845.png
+	.codely/clipboard/clipboard-1783712789820.png
+	.codely/clipboard/clipboard-1783713308495.png
+	.codely/clipboard/clipboard-1783713475913.png
+	.codely/clipboard/clipboard-1783713738898.png
+	.codely/clipboard/clipboard-1783713814058.png
+	Plan/Arch/
+	"Plan/PaperAgent_Re4.1_\345\267\245\347\250\213\346\216\247\345\210\266\351\235\242\344\270\216\345\256\211\345\205\250\346\224\266\345\217\243_SOP.md"
+	"Plan/PaperAgent_Re4.2_\345\211\215\347\253\257\345\237\272\347\272\277\344\270\216\344\272\272\346\200\247\345\214\226\344\270\273\346\265\201\347\250\213_SOP.md"
+	"Plan/PaperAgent_Re4.3_\345\210\233\346\226\260\347\202\271\345\217\231\344\272\213\345\267\245\344\275\234\345\214\205\345\217\257\350\277\275\346\272\257\345\215\207\347\272\247_SOP.md"
+	"Plan/PaperAgent_Re4.4_ACP\346\234\200\345\260\217\350\203\275\345\212\233\345\261\202_SOP.md"
+	"Plan/PaperAgent_Re4.5_\345\205\250\346\226\207\345\205\245\345\272\223\344\270\216RAG\346\243\200\347\264\242_SOP.md"
+	"Plan/PaperAgent_Re4.6_\345\211\215\347\253\257\346\267\261\345\272\246\346\225\264\345\220\210\344\270\216\345\244\232\346\226\207\346\241\243RAG_SOP.md"
+	"Plan/PaperAgent_Re4.7_\345\205\250\351\223\276\350\267\257\351\252\214\346\224\266\344\270\216\346\226\207\346\241\243\346\224\266\345\217\243_SOP.md"
+	"Plan/PaperAgent_Re4_Re5_\347\253\257\345\210\260\347\253\257\346\265\213\350\257\225\347\273\223\346\236\234\344\270\216\346\240\207\347\255\224\346\261\207\346\200\273.md"
+	"Plan/PaperAgent_Re5.X_\346\243\200\347\264\242\345\217\215\346\200\235\351\223\276\350\267\257\350\277\201\347\247\273\346\200\247\345\215\207\347\272\247_SOP.md"
+	"Plan/PaperAgent_Re5.X_\347\253\257\345\210\260\347\253\257\346\265\213\350\257\225\347\273\223\346\236\234\344\270\216\346\240\207\347\255\224\346\261\207\346\200\273.md"
+	"Plan/PaperAgent_Re6.0_\345\237\272\347\272\277\345\206\273\347\273\223_SOP.md"
+	Plan/PaperAgent_Re6.1_Provider_Core_SOP.md
+	Plan/PaperAgent_Re6.2_Router_Unification_SOP.md
+	Plan/PaperAgent_Re6.3_React_Settings_SOP.md
+	"Plan/PaperAgent_Re6.4_\345\255\246\346\234\257\350\243\201\347\274\2352.0_SOP.md"
+	"Plan/PaperAgent_Re6.5_\351\262\201\346\243\222\346\200\247\345\256\236\351\252\214\345\256\244_SOP.md"
+	"Plan/PaperAgent_Re6.6_RAG\344\270\216\344\270\212\347\272\277\345\211\215\346\224\266\345\217\243_SOP.md"
+	"Plan/PaperAgent_Re6.X_\345\244\232\346\250\241\345\236\213\344\270\216\345\255\246\346\234\257\350\243\201\347\274\235\351\262\201\346\243\222\346\200\247\350\267\257\347\272\277\345\233\276.md"
+	"Plan/PaperAgent_Re6.X_\346\200\273\347\272\262_SOP.md"
+	"Plan/PaperAgent_Re6.X_\351\262\201\346\243\222\346\200\247_\350\267\250\345\237\237_RAG\344\270\212\347\272\277\351\252\214\346\224\266\350\247\204\350\214\203.md"
+	apps/api/app/api/v1/acp.py
+	apps/api/app/api/v1/llm.py
+	apps/api/app/services/acp/
+	apps/api/app/services/agents/graph/schemas/
+	apps/api/app/services/agents/graph/stage_contract.py
+	apps/api/app/services/agents/graph/validators/
+	apps/api/app/services/agents/prompts/experiment_a.py
+	apps/api/app/services/agents/prompts/experiment_b.py
+	apps/api/app/services/agents/prompts/experiment_c.py
+	apps/api/app/services/llm_provider_registry.py
+	apps/api/app/services/rag/
+	apps/api/app/services/run_state.py
+	apps/api/app/services/search_catalog.py
+	apps/api/app/services/source_policy.py
+	apps/api/tests/_archived_legacy_sessions/test_re04_main_entry.py
+	apps/api/tests/_archived_legacy_sessions/test_re10_reflection_search.py
+	apps/api/tests/test_re40_case_id_security.py
+	apps/api/tests/test_re40_run_state.py
+	apps/api/tests/test_re40_source_policy.py
+	apps/api/tests/test_re40_stage_contract.py
+	apps/api/tests/test_re43_binding_validator.py
+	apps/api/tests/test_re43_contract_regression.py
+	apps/api/tests/test_re43_dependency_dag.py
+	apps/api/tests/test_re43_narrative_revision.py
+	apps/api/tests/test_re43_schema.py
+	apps/api/tests/test_re44_acp.py
+	apps/api/tests/test_re45_acp_rag.py
+	apps/api/tests/test_re45_indexer.py
+	apps/api/tests/test_re45_knowledge_graph.py
+	apps/api/tests/test_re45_pdf_chunker.py
+	apps/api/tests/test_re45_retriever_qa.py
+	apps/api/tests/test_re46_merge_index.py
+	apps/api/tests/test_re5x_contract.py
+	apps/api/tests/test_re5x_coverage_experiments.py
+	apps/api/tests/test_re5x_llm_validator.py
+	apps/api/tests/test_re5x_provider_registry.py
+	apps/api/tests/test_re5x_replay.py
+	apps/api/tmp_re13_eval/6257bc5d51d4/
+	apps/api/tmp_re13_eval/8bf235aa1921/
+	apps/web-react/
+	docs/Prompts_AgentStages.md
+	docs/Prompts_Reflection_ReAct.md
+	docs/project/Re4_7Day_Development_Map.md
+	docs/project/THIRD_PARTY_NOTICES.md
+	docs/project/TODO.md
+	langgraph_architecture.excalidraw
+	langgraph_architecture.html
+	scripts/run_3cases_and_report.py
+	tmp_pages.json
+	tmp_re13_eval/5219c85c04f5/
+	tmp_re13_eval/6257bc5d51d4/
+	tmp_re13_eval/6a2dcd7bde88/
+	tmp_re13_eval/7f01f34e516a/
+	tmp_re13_eval/8bf235aa1921/
+	tmp_re13_eval/9e518882ba79/
+	tmp_re13_eval/c064ce3c5d58/
+	tmp_re13_eval/e88ea6e1ac6d/
+	tmp_re13_eval/re46-e2e/
+	tmp_re13_eval/re47-final/
+	tmp_re13_eval/re5-batch1/
+	tmp_re13_eval/re5-batch2/
+	tmp_re13_eval/re5-batch3/
+	tmp_re13_eval/re5-batch4/
+	tmp_re13_eval/re5-batch5/
+	tmp_re13_eval/re5-mimo1/
+	tmp_re13_eval/re5-mimo2/
+	tmp_re13_eval/re5-step37/
+	tmp_re13_eval/re5x-e2e/
+	tmp_re13_eval/re5x-fix/
+	tmp_re13_eval/re5x-fix2/
+	tmp_re13_eval/re5x-fix3/
+	tmp_re13_eval/test-nonexistent/
+	tmp_re13_eval/test/
+	tmp_re42_screenshots/
+	tmp_trace.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Dropped refs/stash@{0} (365546b9c5ed7d984f9616f6682abae82f6ed67b)

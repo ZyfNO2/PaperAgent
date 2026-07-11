@@ -1,0 +1,407 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-10T19:13:57Z",
+    "input_summary": {
+      "topic": "YOLO steel defect detection"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T19:13:57Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "verified_papers",
+      "seed_papers"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-10T19:14:19Z",
+    "input_summary": {
+      "topic_len": 27
+    },
+    "output_summary": {
+      "n_method": 1,
+      "n_object": 2,
+      "domain": [
+        "vision_2d"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-10T19:14:19Z",
+    "elapsed_s": 21.352,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-10T19:14:19Z",
+    "input_summary": {
+      "topic_len": 27,
+      "mode": "template"
+    },
+    "output_summary": {
+      "n_queries": 3,
+      "rounds": [
+        "broad",
+        "focused"
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.template"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T19:14:19Z",
+    "elapsed_s": 0.006,
+    "state_keys": [
+      "search_plan",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-10T19:14:19Z",
+    "input_summary": {
+      "topic_len": 27,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 12,
+      "n_repo_candidates": 12,
+      "n_steps": 3,
+      "n_tool_calls": 2,
+      "raw_tools": [
+        "arxiv",
+        "github"
+      ],
+      "per_adapter": {
+        "arxiv": 12,
+        "github": 12
+      },
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "arxiv",
+        "n": 12
+      },
+      {
+        "tool": "github",
+        "n": 12
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T19:15:11Z",
+    "elapsed_s": 52.593
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-10T19:15:11Z",
+    "input_summary": {
+      "n_candidates": 12
+    },
+    "output_summary": {
+      "kept": 12,
+      "dropped": 0,
+      "low_relevance": 0,
+      "pre_filter_keep": 12,
+      "pre_filter_drop": 0,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 12,
+        "pre_drop": 0,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-10T19:15:11Z",
+    "elapsed_s": 0.0
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-10T19:15:11Z",
+    "input_summary": {
+      "n_candidates": 12,
+      "topic_len": 27,
+      "round": 1
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 3,
+      "n_reject": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T19:16:25Z",
+    "elapsed_s": 73.503
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T19:16:25Z",
+    "input_summary": {
+      "n_papers": 4,
+      "n_weak": 3,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 1
+        },
+        "current_coverage": {
+          "core": 1,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 12
+        },
+        "gaps": [
+          "core",
+          "baseline"
+        ],
+        "budget_remaining": 2,
+        "decision": "reflect"
+      }
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T19:16:25Z",
+    "elapsed_s": 0.011,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-10T19:16:25Z",
+    "input_summary": {
+      "n_verified": 4,
+      "n_seeds": 4,
+      "seed_titles": [
+        "YOLO-Based Defect Detection for Metal Sheets",
+        "VR-YOLO: Enhancing PCB Defect Detection with Viewpoint Robus",
+        "Detecting and Classifying Defective Products in Images Using",
+        "Poly-YOLO: higher speed, more precise detection and instance"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 4,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "YOLO-Based Defect Detection for Metal Sheets",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "VR-YOLO: Enhancing PCB Defect Detection with Viewpoint Robus",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Detecting and Classifying Defective Products in Images Using",
+        "n_references_plus_citations": 0,
+        "relevance_score": 9
+      },
+      {
+        "seed_title": "Poly-YOLO: higher speed, more precise detection and instance",
+        "n_references_plus_citations": 0,
+        "relevance_score": 7
+      }
+    ],
+    "ended_at": "2026-07-10T19:16:25Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-10T19:16:25Z",
+    "input_summary": {
+      "n_candidates": 4,
+      "topic_len": 27,
+      "round": 2
+    },
+    "output_summary": {
+      "n_accept": 1,
+      "n_weak_reject": 2,
+      "n_reject": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ],
+    "ended_at": "2026-07-10T19:16:47Z",
+    "elapsed_s": 22.084
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-10T19:16:47Z",
+    "input_summary": {
+      "n_papers": 4,
+      "n_weak": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 12,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 1
+        },
+        "current_coverage": {
+          "core": 1,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 12
+        },
+        "gaps": [
+          "core",
+          "baseline"
+        ],
+        "budget_remaining": 2,
+        "decision": "reflect"
+      }
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-10T19:16:47Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  }
+]

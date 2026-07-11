@@ -1,0 +1,146 @@
+{
+  "nodes": [
+    {
+      "id": "paper:<ssa-yolo-an-improved-yolo-for-hot-rolled-strip-steel-surface-defect-detection>",
+      "type": "paper",
+      "title": "SSA-YOLO: An Improved YOLO for Hot-Rolled Strip Steel Surface Defect Detection",
+      "role": "parallel"
+    },
+    {
+      "id": "paper:<real-time-steel-surface-defect-detection-with-improved-multi-scale-yolo-v5>",
+      "type": "paper",
+      "title": "Real-Time Steel Surface Defect Detection with Improved Multi-Scale YOLO-v5",
+      "role": "parallel"
+    },
+    {
+      "id": "paper:<hsc-yolo-steel-surface-defect-detection-model-based-on-improved-yolov10n>",
+      "type": "paper",
+      "title": "HSC-YOLO: steel surface defect detection model based on improved YOLOv10n",
+      "role": "parallel"
+    },
+    {
+      "id": "paper:<efs-yolo-a-lightweight-network-based-on-steel-strip-surface-defect-detection>",
+      "type": "paper",
+      "title": "EFS-YOLO: a lightweight network based on steel strip surface defect detection",
+      "role": "parallel"
+    },
+    {
+      "id": "paper:<rdd-yolo-a-modified-yolo-for-detection-of-steel-surface-defects>",
+      "type": "paper",
+      "title": "RDD-YOLO: A modified YOLO for detection of steel surface defects",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<real-time-detection-of-steel-strip-surface-defects-based-on-improved-yolo-detection-network>",
+      "type": "paper",
+      "title": "Real-time Detection of Steel Strip Surface Defects Based on Improved YOLO Detection Network",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<msft-yolo-improved-yolov5-based-on-transformer-for-detecting-defects-of-steel-surface>",
+      "type": "paper",
+      "title": "MSFT-YOLO: Improved YOLOv5 Based on Transformer for Detecting Defects of Steel Surface",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<development-of-a-yolo-v3-based-model-for-detecting-defects-on-steel-strip-surface>",
+      "type": "paper",
+      "title": "Development of a YOLO-V3-based model for detecting defects on steel strip surface",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<efficient-detection-model-of-steel-strip-surface-defects-based-on-yolo-v7>",
+      "type": "paper",
+      "title": "Efficient Detection Model of Steel Strip Surface Defects Based on YOLO-V7",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<mpa-yolo-steel-surface-defect-detection-based-on-improved-yolov8-framework>",
+      "type": "paper",
+      "title": "MPA-YOLO: Steel surface defect detection based on improved YOLOv8 framework",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<wss-yolo-an-improved-industrial-defect-detection-network-for-steel-surface-defects>",
+      "type": "paper",
+      "title": "WSS-YOLO: An improved industrial defect detection network for steel surface defects",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<didw-yolov11-the-steel-surface-defect-detection-method-based-on-improved-yolov11-network>",
+      "type": "paper",
+      "title": "DIDW-YOLOv11: The Steel Surface Defect Detection Method Based on Improved YOLOv11 Network",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<yolov4-optimal-speed-and-accuracy-of-object-detection>",
+      "type": "paper",
+      "title": "YOLOv4: Optimal Speed and Accuracy of Object Detection",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<steel-surface-defect-detection-algorithm-based-on-dual-attention-mechanism-fusion-with-yolov12>",
+      "type": "paper",
+      "title": "Steel Surface Defect Detection Algorithm Based on Dual Attention Mechanism Fusion with YOLOv12",
+      "role": "baseline"
+    },
+    {
+      "id": "paper:<enhancing-moganet-with-defe-and-mwas-for-high-performance-steel-surface-defect-detection>",
+      "type": "paper",
+      "title": "Enhancing MogaNet with DeFE and MWAS for high-performance steel surface defect detection",
+      "role": "parallel"
+    },
+    {
+      "id": "paper:<mwyolo-a-mamba-enhanced-lightweight-yolo-framework-with-multi-frequency-attention-for-industrial-surface-defect-detection>",
+      "type": "paper",
+      "title": "MWYOLO: A Mamba-Enhanced Lightweight YOLO Framework with Multi-Frequency Attention for Industrial Surface Defect Detection",
+      "role": "baseline"
+    },
+    {
+      "id": "dataset:<neu-det>",
+      "type": "dataset",
+      "title": "NEU-DET",
+      "role": "dataset"
+    },
+    {
+      "id": "dataset:<gc10-det>",
+      "type": "dataset",
+      "title": "GC10-DET",
+      "role": "dataset"
+    },
+    {
+      "id": "dataset:<coco>",
+      "type": "dataset",
+      "title": "COCO",
+      "role": "dataset"
+    },
+    {
+      "id": "dataset:<aid>",
+      "type": "dataset",
+      "title": "AID",
+      "role": "dataset"
+    }
+  ],
+  "edges": [
+    {
+      "source": "paper:<didw-yolov11-the-steel-surface-defect-detection-method-based-on-improved-yolov11-network>",
+      "target": "dataset:<neu-det>",
+      "type": "uses_dataset"
+    },
+    {
+      "source": "paper:<didw-yolov11-the-steel-surface-defect-detection-method-based-on-improved-yolov11-network>",
+      "target": "dataset:<gc10-det>",
+      "type": "uses_dataset"
+    },
+    {
+      "source": "paper:<yolov4-optimal-speed-and-accuracy-of-object-detection>",
+      "target": "dataset:<coco>",
+      "type": "uses_dataset"
+    },
+    {
+      "source": "paper:<yolov4-optimal-speed-and-accuracy-of-object-detection>",
+      "target": "dataset:<aid>",
+      "type": "uses_dataset"
+    }
+  ]
+}

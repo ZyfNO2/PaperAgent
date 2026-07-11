@@ -33,7 +33,9 @@ def feasibility_assessor_node(state: ResearchState) -> dict[str, Any]:
     n_repo = len(state.get("repo_candidates") or [])
 
     try:
-        from apps.api.app.services import llm_router
+        from apps.api.app.services.agents.graph.validators.llm_output_validator import (
+            call_json_with_validation,
+        )
         from apps.api.app.services.agents.prompts import feasibility_assessor as P
         built = P.build(topic, baselines, parallels, n_dataset, n_repo)
         # Re3.5: pass domain hint to prompt context
@@ -41,10 +43,15 @@ def feasibility_assessor_node(state: ResearchState) -> dict[str, Any]:
         user_with_domain = built["user"]
         if domain and domain != "unknown":
             user_with_domain += f"\n\n[领域提示] domain={domain}，请务必评估该领域的特定风险。"
-        out = llm_router.call_json(user_with_domain, system=built["system"],
-                                   profile="fast_json", max_tokens=2000,
-                                   expected="dict", timeout=30)
-        result = out if isinstance(out, dict) else _heuristic(state)
+        result = call_json_with_validation(
+            user_with_domain,
+            system=built["system"],
+            node_name="feasibility_assessor",
+            profile="fast_json",
+            max_tokens=2000,
+            timeout=30,
+            fallback=_heuristic(state),
+        )
         prov = "fast_json"
     except Exception as exc:
         logger.warning("feasibility_assessor LLM failed: %s — heuristic fallback", exc)

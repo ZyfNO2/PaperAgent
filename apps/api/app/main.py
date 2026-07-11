@@ -26,31 +26,47 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.v1.research import router as research_v1_router
+from apps.api.app.api.v1.acp import router as acp_router
+from apps.api.app.api.v1.llm import router as llm_router
+from apps.api.app.api.v1.providers import router as providers_router
+from apps.api.app.api.v1.jobs import router as jobs_router
+from apps.api.app.api.v1.feedback import router as feedback_router
 
 app = FastAPI(
-    title="PaperAgent Re1.3",
-    version="1.3.0",
+    title="PaperAgent Re4",
+    version="0.4.0-dev",
     description="Frontend + citation expansion + quality filter",
 )
 
+_cors_origins = os.getenv("CORS_ORIGINS", "http://127.0.0.1:18181").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=_cors_origins,
+    allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
 # Re1.2/1.3 research graph result endpoints
 app.include_router(research_v1_router, prefix="/api/v1/research", tags=["research-v1"])
+app.include_router(acp_router)
+app.include_router(llm_router)
+app.include_router(providers_router)
+app.include_router(jobs_router)
+app.include_router(feedback_router)
 
 
 @app.get("/health", tags=["meta"])
 def health() -> dict[str, str]:
-    return {"status": "ok", "phase": "re13", "session": "66v"}
+    return {"status": "ok", "phase": "re40", "session": "day1"}
 
 
 # Re1.3: static frontend mount (must be last so it doesn't shadow API routes)
 _WEB_DIR = Path(__file__).resolve().parent.parent.parent / "web"
 if _WEB_DIR.is_dir():
     app.mount("/web", StaticFiles(directory=str(_WEB_DIR), html=True), name="web")
+
+# Re4.2: React frontend build (if dist exists)
+_REACT_DIST = Path(__file__).resolve().parent.parent.parent / "web-react" / "dist"
+if _REACT_DIST.is_dir():
+    app.mount("/react", StaticFiles(directory=str(_REACT_DIST), html=True), name="react")
