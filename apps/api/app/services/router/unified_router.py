@@ -433,3 +433,126 @@ def call_json_contract(
         )
 
     return None
+
+
+def call_with_contract_list(
+    prompt: str,
+    *,
+    system: str | None = None,
+    contract_id: str,
+    task_role: TaskRole | None = None,
+    temperature: float | None = None,
+    max_tokens: int = 4000,
+    timeout: float = 60.0,
+) -> ContractResult:
+    """Contract-driven call that expects a JSON array as the top-level output.
+
+    Use this for nodes (like the verifier) whose contract output is a list
+    of items rather than a single object. The flow mirrors call_with_contract
+    but the envelope extraction step accepts list-shaped JSON in addition to
+    dict-shaped JSON. The semantic validator receives the normalised list.
+    """
+    reg = get_contract_registry()
+    contract = reg.get_by_id(contract_id)
+    if contract is None:
+        raise ValueError(f"contract not found: {contract_id}")
+    if task_role is None:
+        task_role = contract.task_role
+
+    from .model_policy import create_default_policy
+    policy = create_default_policy(task_role)
+
+    temp = policy.temperature if temperature is None else temperature
+    call_id = str(uuid.uuid4())[:12]
+    provider_chain: list[str] = []
+    repair_count = 0
+    all_refs = policy.all_refs()
+    last_envelope: ResponseEnvelope | None = None
+    last_error: str | None = None
+
+    for attempt_idx, ref in enumerate(all_refs):
+        if attempt_idx >= policy.max_provider_attempts:
+            break
+        provider_chain.append(f"{ref.provider_id}/{ref.model_id}")
+        try:
+            envelope = _dispatch_call_via_registry(
+                prompt, system=system, ref=ref,
+                temperature=temp, max_tokens=max_tokens, timeout=timeout,
+            )
+            last_envelope = envelope
+        except Exception as exc:
+            last_error = str(exc)
+            continue
+
+        data = envelope.extract_json()
+        if data is None:
+            if repair_count < policy.max_format_repairs:
+                repaired = execute_repair_strategy(
+                    strategy="formatter_once",
+                    prompt=prompt, system=system, envelope=envelope,
+                    contract=contract, policy=policy,
+                    temperature=temp, max_tokens=max_tokens, timeout=timeout,
+                )
+                repair_count += 1
+                if repaired is not None:
+                    data = repaired
+            if data is None:
+                last_error = "JSON parse failed after repair"
+                continue
+
+        if isinstance(data, list):
+            pass
+        elif isinstance(data, dict):
+            unwrapped = None
+            for key in ("verdicts", "candidates", "results", "items", "data"):
+                if key in data and isinstance(data[key], list):
+                    unwrapped = data[key]
+                    break
+            if unwrapped is None:
+                unwrapped = [data]
+            data = unwrapped
+        else:
+            data = [data]
+
+        if contract.semantic_validator:
+            is_valid, err = _run_semantic_validator(data, contract)
+            if not is_valid:
+                if repair_count < contract.max_repairs:
+                    repaired = execute_repair_strategy(
+                        strategy=contract.repair_strategy,
+                        prompt=prompt, system=system, envelope=last_envelope,
+                        contract=contract, policy=policy,
+                        temperature=temp, max_tokens=max_tokens, timeout=timeout,
+                    )
+                    repair_count += 1
+                    if repaired is not None:
+                        if isinstance(repaired, dict):
+                            for key in ("verdicts", "candidates", "results", "items", "data"):
+                                if key in repaired and isinstance(repaired[key], list):
+                                    repaired = repaired[key]
+                                    break
+                            else:
+                                repaired = [repaired] if isinstance(repaired, dict) else repaired
+                        if isinstance(repaired, list):
+                            return ContractResult(
+                                success=True, content=repaired,
+                                envelope=last_envelope, contract_id=contract.contract_id,
+                                repair_count=repair_count, provider_chain=provider_chain,
+                                call_id=call_id,
+                            )
+                last_error = err or "semantic validation failed"
+                continue
+
+        return ContractResult(
+            success=True, content=data,
+            envelope=last_envelope, contract_id=contract.contract_id,
+            repair_count=repair_count, provider_chain=provider_chain,
+            call_id=call_id,
+        )
+
+    return ContractResult(
+        success=False, content=None,
+        envelope=last_envelope, contract_id=contract.contract_id,
+        repair_count=repair_count, provider_chain=provider_chain,
+        error=last_error or "all providers exhausted", call_id=call_id,
+    )

@@ -130,5 +130,6 @@ class ResearchState(TypedDict, total=False):
     falsifiable_propositions: list[dict[str, Any]]
     novelty_evolution_log: list[dict[str, Any]]
     evidence_contexts: list[dict[str, Any]]  # Re7.6
+    novelty_drafts: list[dict[str, Any]]  # Re7.6 D-09: P-M-I structured drafts
     claim_judgements: list[dict[str, Any]]  # Re7.6
     claim_judge_verdict: str  # Re7.6

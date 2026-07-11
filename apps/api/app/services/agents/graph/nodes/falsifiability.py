@@ -102,14 +102,18 @@ def falsifiability_node(state: ResearchState) -> dict[str, Any]:
     prompt = build_falsifiability_prompt(state)
 
     try:
-        from apps.api.app.services.llm_router import call_json
-        raw = call_json(
+        from apps.api.app.services.agents.graph.validators.llm_output_validator import (
+            call_json_with_validation,
+        )
+        raw = call_json_with_validation(
             prompt,
             system=FALSIFIABILITY_SYSTEM,
+            node_name="falsifiability",
             profile="premium_review",
+            contract_id="falsifiability-batch/v1",
             max_tokens=2000,
-            expected="dict",
             timeout=45.0,
+            fallback={"propositions": []},
         )
         result = parse_falsifiability_output(raw)
         logger.info("falsifiability: generated %d propositions",

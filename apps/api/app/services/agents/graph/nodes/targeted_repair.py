@@ -1,4 +1,4 @@
-﻿"""LangGraph node A3 — targeted_repair_node (Re3.0: Reflection strategy switch).
+"""LangGraph node A3 — targeted_repair_node (Re3.0: Reflection strategy switch).
 
 Targets a SINGLE failure slice and produces a new search_plan with
 rounds=["repair"]. Re3.0 adds strategy switching (synonym/broaden/switch_tool)
@@ -65,6 +65,10 @@ def _env_int(name: str, default: int) -> int:
         return int(raw)
     except ValueError:
         return default
+
+
+def _use_unified() -> bool:
+    return os.environ.get("TARGETED_REPAIR_USE_UNIFIED_ROUTER", "1") == "1"
 
 
 def _as_str(v: Any) -> str:
@@ -248,23 +252,44 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
         "last_repair_type": repair_type,
     }
 
+    prov = "fast_json"
     try:
         built = P.build(topic, gaps, rejected_titles, prior_queries)
         tries += 1
-        raw = call_json(
-            built["user"],
-            system=built["system"],
-            profile="fast_json",
-            max_tokens=4000,
-            timeout=max(5, _env_int("TARGETED_REPAIR_TIMEOUT_S", 60)),
-            expected="dict",
-            schema_hint=(
-                '{"queries":[{tool,query,why,expected_evidence,stop_condition}...],'
-                '"rounds":["repair"],'
-                '"negative_feedback":str,'
-                '"strategy":"synonym|broaden|switch_tool"}'
-            ),
-        )
+        if _use_unified():
+            from apps.api.app.services.router import call_with_contract
+            from apps.api.app.services.router.model_policy import TaskRole
+            from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
+            register_graph_contracts()
+            contract_result = call_with_contract(
+                built["user"],
+                system=built["system"],
+                contract_id="targeted-repair/v1",
+                task_role=TaskRole.search_control,
+                max_tokens=4000,
+                timeout=max(5, _env_int("TARGETED_REPAIR_TIMEOUT_S", 60)),
+            )
+            prov = "unified_router"
+            if contract_result.success and isinstance(contract_result.content, dict):
+                raw = contract_result.content
+            else:
+                logger.warning("targeted_repair unified_router failed: %s", contract_result.error)
+                raw = {}
+        else:
+            raw = call_json(
+                built["user"],
+                system=built["system"],
+                profile="fast_json",
+                max_tokens=4000,
+                timeout=max(5, _env_int("TARGETED_REPAIR_TIMEOUT_S", 60)),
+                expected="dict",
+                schema_hint=(
+                    '{"queries":[{tool,query,why,expected_evidence,stop_condition}...],'
+                    '"rounds":["repair"],'
+                    '"negative_feedback":str,'
+                    '"strategy":"synonym|broaden|switch_tool"}'
+                ),
+            )
         plan = _normalize(raw if isinstance(raw, dict) else {}, repair_type)
         # Re3.0: record strategy from LLM or infer from repair type
         if isinstance(raw, dict) and raw.get("strategy"):
@@ -301,8 +326,9 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
                   {"n_queries": n_queries,
                    "repair_outcome": repair_outcome,
                    "rounds": plan.get("rounds")},
-                  [{"tool": "re12_repair.llm", "attempts": tries}],
-                  "fast_json", errors_out,
+                  [{"tool": "targeted-repair/v1" if prov == "unified_router" else "re12_repair.llm",
+                    "attempts": tries, "mode": prov}],
+                  prov, errors_out,
                   state_keys=["search_plan", "evidence_audit",
                               "trace_events", "errors", "provider_profile",
                               "repair_outcome", "repair_no_query_reason",
@@ -316,5 +342,5 @@ def targeted_repair_node(state: ResearchState) -> dict[str, Any]:
         "repair_query_ids": repair_query_ids,
         "trace_events": [trace],
         "errors": errors_out,
-        "provider_profile": "fast_json",
+        "provider_profile": prov,
     }

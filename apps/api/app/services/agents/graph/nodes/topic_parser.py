@@ -1,4 +1,4 @@
-﻿"""LangGraph node A1 — topic_parser_node.
+"""LangGraph node A1 — topic_parser_node.
 
 Parses the topic string into structured `topic_atoms`. Idempotent: if state
 already carries a non-empty topic_atoms we return {} (no-op).
@@ -22,6 +22,10 @@ from apps.api.app.services.agents.prompts import re11_parser as P
 from apps.api.app.services.llm_router import call_json, LLMUnavailable
 
 logger = logging.getLogger(__name__)
+
+
+def _use_unified() -> bool:
+    return os.environ.get("TOPIC_PARSER_USE_UNIFIED_ROUTER", "1") == "1"
 
 
 def _env_int(name: str, default: int) -> int:
@@ -295,10 +299,11 @@ def _force_translate_keywords(atoms: dict[str, Any]) -> dict[str, Any]:
     """Re3.9.4: Post-process — force-translate any non-ASCII keywords to English.
 
     Strategy: LLM translation first, heuristic dictionary fallback second.
+    Domain is a single controlled string and must stay a string.
     """
     translated = dict(atoms)
 
-    for key in ("method", "object", "task", "scenario", "domain"):
+    for key in ("method", "object", "task", "scenario"):
         vals = translated.get(key) or []
         if isinstance(vals, str):
             vals = [vals]
@@ -378,22 +383,37 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
     atoms: dict[str, Any] = dict(_EMPTY_ATOMS)
     tries = 0
 
+    prov = "fast_json"
     try:
         built = P.build(topic)
         tries += 1
-        raw = call_json(
-            built["user"],
-            system=built["system"],
-            profile="fast_json",
-            max_tokens=2500,
-            timeout=max(5, _env_int("TOPIC_PARSER_TIMEOUT_S", 60)),
-            expected="dict",
-            schema_hint=(
-                'JSON object with keys: method/object/task/scenario/'
-                'domain/dataset_terms/baseline_terms/avoid_terms; '
-                'domain is a single string.'
-            ),
-        )
+        if _use_unified():
+            from apps.api.app.services.router import call_json_contract
+            from apps.api.app.services.router.model_policy import TaskRole
+            from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
+            register_graph_contracts()
+            raw = call_json_contract(
+                built["user"],
+                system=built["system"],
+                task_role=TaskRole.structured_extract,
+                max_tokens=2500,
+                timeout=max(5, _env_int("TOPIC_PARSER_TIMEOUT_S", 60)),
+            )
+            prov = "unified_router"
+        else:
+            raw = call_json(
+                built["user"],
+                system=built["system"],
+                profile="fast_json",
+                max_tokens=2500,
+                timeout=max(5, _env_int("TOPIC_PARSER_TIMEOUT_S", 60)),
+                expected="dict",
+                schema_hint=(
+                    'JSON object with keys: method/object/task/scenario/'
+                    'domain/dataset_terms/baseline_terms/avoid_terms; '
+                    'domain is a single string.'
+                ),
+            )
         atoms = _enforce_literal_topic_guards(
             topic,
             _normalize(raw if isinstance(raw, dict) else {}),

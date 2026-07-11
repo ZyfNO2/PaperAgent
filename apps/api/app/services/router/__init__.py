@@ -1,4 +1,4 @@
-"""Router unification package — Re6.2."""
+"""Router unification package — Re6.2 + Re7.6."""
 from .model_policy import (
     ModelPolicy,
     TaskRole,
@@ -27,4 +27,5 @@ from .unified_router import (
     ContractResult,
     call_with_contract,
     call_json_contract,
+    call_with_contract_list,
 )

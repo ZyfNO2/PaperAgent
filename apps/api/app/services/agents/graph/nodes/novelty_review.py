@@ -134,14 +134,27 @@ def novelty_review_node(state: ResearchState) -> dict[str, Any]:
     prompt = build_novelty_review_prompt(state)
 
     try:
-        from apps.api.app.services.llm_router import call_json
-        raw = call_json(
+        from apps.api.app.services.agents.graph.validators.llm_output_validator import (
+            call_json_with_validation,
+        )
+        raw = call_json_with_validation(
             prompt,
             system=NOVELTY_REVIEW_SYSTEM,
+            node_name="novelty_review",
             profile="premium_review",
+            contract_id="novelty-review/v1",
             max_tokens=3000,
-            expected="dict",
             timeout=60.0,
+            fallback={
+                "verdict": "reject",
+                "novelty_score": 0,
+                "pseudo_innovation_risks": ["llm_unavailable"],
+                "pressure_points": [],
+                "differentiation_matrix": [],
+                "required_repairs": [],
+                "strengths": [],
+                "risks": [],
+            },
         )
         result = parse_novelty_review_output(raw)
         logger.info("novelty_review: verdict=%s score=%s risks=%s",
@@ -158,5 +171,7 @@ def novelty_review_node(state: ResearchState) -> dict[str, Any]:
             "pressure_points": [],
             "differentiation_matrix": [],
             "required_repairs": [],
+            "review_strengths": [],
+            "review_risks": [],
             "novelty_review_error": str(exc),
         }

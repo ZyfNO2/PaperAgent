@@ -107,11 +107,23 @@ def claim_judge_node(state: ResearchState) -> dict[str, Any]:
     prompt = build_claim_judge_prompt(state)
 
     try:
-        from apps.api.app.services.llm_router import call_json
-        raw = call_json(
-            prompt, system=CLAIM_JUDGE_SYSTEM,
-            profile="premium_review", max_tokens=2000,
-            expected="dict", timeout=45.0,
+        from apps.api.app.services.agents.graph.validators.llm_output_validator import (
+            call_json_with_validation,
+        )
+        raw = call_json_with_validation(
+            prompt,
+            system=CLAIM_JUDGE_SYSTEM,
+            node_name="claim_judge",
+            profile="premium_review",
+            contract_id="claim-judge/v1",
+            max_tokens=2000,
+            timeout=45.0,
+            fallback={
+                "judgements": [],
+                "overall_verdict": "REJECT",
+                "blocked_items": [],
+                "summary": "judge unavailable",
+            },
         )
         result = parse_claim_judge_output(raw)
         logger.info("claim_judge: verdict=%s judgements=%d",
@@ -122,7 +134,7 @@ def claim_judge_node(state: ResearchState) -> dict[str, Any]:
         logger.warning("claim_judge: LLM call failed: %s", exc)
         return {
             "claim_judgements": [],
-            "claim_judge_verdict": "REVISE",
+            "claim_judge_verdict": "REJECT",
             "blocked_items": [],
             "claim_judge_summary": f"judge unavailable: {exc}",
         }

@@ -56,6 +56,20 @@ class NodeError(RuntimeError):
     pass
 
 
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
+
+
+def _use_unified() -> bool:
+    return os.environ.get("SEARCH_AGENT_USE_UNIFIED_ROUTER", "1") == "1"
+
+
 def _dedup_key(paper: dict[str, Any]) -> str:
     """Build a dedup key from normalized title + DOI.
 
@@ -166,20 +180,45 @@ def _llm_decide(
     steps: list[dict[str, Any]],
     search_plan: dict[str, Any] | None,
     failed_tools: set[str] | None = None,
-) -> dict[str, Any]:
-    """Call LLM to decide next action. Returns dict with action/tool/query/reason."""
-    from apps.api.app.services.llm_router import call_json
+) -> tuple[dict[str, Any], str]:
+    """Call LLM to decide next action.
 
+    Returns a tuple (decision_dict, provider_tag). Provider is one of
+    "unified_router", "fast_json", or "local" (fallback).
+    """
     user_prompt = _build_decision_prompt(topic, atoms, all_papers, all_repos, steps, search_plan, failed_tools)
+    result: dict[str, Any] | None = None
+    prov = "fast_json"
     try:
-        result = call_json(
-            user_prompt,
-            system=_SYSTEM_PROMPT,
-            profile="fast_json",
-            max_tokens=500,
-            expected="dict",
-            timeout=20,
-        )
+        if _use_unified():
+            from apps.api.app.services.router import call_with_contract
+            from apps.api.app.services.router.model_policy import TaskRole
+            from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
+            register_graph_contracts()
+            contract_result = call_with_contract(
+                user_prompt,
+                system=_SYSTEM_PROMPT,
+                contract_id="search-decision/v1",
+                task_role=TaskRole.search_control,
+                max_tokens=500,
+                timeout=max(5, _env_int("SEARCH_AGENT_TIMEOUT_S", 20)),
+            )
+            prov = "unified_router"
+            if contract_result.success and isinstance(contract_result.content, dict):
+                result = contract_result.content
+            else:
+                logger.warning("search_agent unified_router failed: %s", contract_result.error)
+        else:
+            from apps.api.app.services.llm_router import call_json
+            result = call_json(
+                user_prompt,
+                system=_SYSTEM_PROMPT,
+                profile="fast_json",
+                max_tokens=500,
+                expected="dict",
+                timeout=max(5, _env_int("SEARCH_AGENT_TIMEOUT_S", 20)),
+            )
+
         if isinstance(result, dict):
             tool = result.get("tool", "").strip().lower()
             query = result.get("query", "").strip()
@@ -192,13 +231,13 @@ def _llm_decide(
                 logger.info("search_agent: LLM returned duplicate query %s:%s, using fallback", tool, query[:50])
                 fallback = _fallback_decide(steps, search_plan, all_papers, all_repos, failed_tools, atoms)
                 if fallback.get("action") != "stop":
-                    return fallback
-            return result
+                    return fallback, "local"
+            return result, prov
     except Exception as exc:
         logger.warning("search_agent LLM decide failed: %s", exc)
 
     # Fallback: use plan queries in order, then stop
-    return _fallback_decide(steps, search_plan, all_papers, all_repos, failed_tools, atoms)
+    return _fallback_decide(steps, search_plan, all_papers, all_repos, failed_tools, atoms), "local"
 
 
 def _count_relevant_papers(papers: list[dict[str, Any]], atoms: dict[str, Any]) -> int:
@@ -342,21 +381,28 @@ async def _run_tool(tool: str, query: str, top_k: int = 12) -> list[dict[str, An
 def _run_tool_sync(tool: str, query: str, top_k: int = 12) -> list[dict[str, Any]]:
     """Synchronous wrapper for _run_tool, safe in threads with existing event loops.
 
-    In FastAPI BackgroundThreads, asyncio.run() crashes if an event loop is
-    already running. This wrapper detects that situation and falls back to
-    a ThreadPoolExecutor to run the coroutine in a fresh thread.
+    Uses asyncio.new_event_loop() instead of asyncio.run() to avoid crashes
+    when an event loop is already running in the current thread (e.g. inside
+    LangGraph's async streaming context).
     """
     try:
         loop = asyncio.get_event_loop()
         if loop.is_running():
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-                future = pool.submit(asyncio.run, _run_tool(tool, query, top_k))
-                return future.result()
+            # We're inside a running loop — use a fresh loop in this thread.
+            new_loop = asyncio.new_event_loop()
+            try:
+                return new_loop.run_until_complete(_run_tool(tool, query, top_k))
+            finally:
+                new_loop.close()
         else:
             return loop.run_until_complete(_run_tool(tool, query, top_k))
     except RuntimeError:
-        return asyncio.run(_run_tool(tool, query, top_k))
+        # No event loop at all — create one.
+        new_loop = asyncio.new_event_loop()
+        try:
+            return new_loop.run_until_complete(_run_tool(tool, query, top_k))
+        finally:
+            new_loop.close()
 
 
 def _classify_results(tool: str, results: list[dict[str, Any]]) -> tuple[list[dict], list[dict]]:
@@ -426,6 +472,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                         "search_steps", "trace_events", "errors",
                         "provider_profile"],
     }
+    decision_provider = "react_search"
     errors: list[dict[str, Any]] = []
 
     # Repair round detection (skip failed adapters)
@@ -458,7 +505,9 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
 
         for step_idx in range(_MAX_STEPS):
             # 1. Think: LLM decides next action
-            thought = _llm_decide(topic, atoms, all_papers, all_repos, steps, search_plan, failed_this_round)
+            thought, prov = _llm_decide(topic, atoms, all_papers, all_repos, steps, search_plan, failed_this_round)
+            if decision_provider == "react_search":
+                decision_provider = prov
 
             # Re3.9.1: If LLM wants to stop but domain tool (e.g. pubmed) not yet tried,
             # inject it before stopping — but only if we still have steps left
@@ -685,7 +734,12 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
             "skipped_adapters": list(skip_adapters),
             "repair_rounds": repair_rounds,
         }
+        trace["provider"] = decision_provider
+        trace["input_summary"]["provider"] = decision_provider
         trace["tool_calls"] = [
+            {"tool": "search-decision/v1" if decision_provider == "unified_router" else "llm_decide",
+             "mode": decision_provider},
+        ] + [
             {"tool": k, "n": len(v)} for k, v in raw.items()
         ]
 
@@ -717,5 +771,5 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         "search_steps": steps,
         "trace_events": [trace],
         "errors": errors,
-        "provider_profile": "react_search",
+        "provider_profile": decision_provider,
     }
