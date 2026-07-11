@@ -473,10 +473,12 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
             state.get("case_id") or "", recommendation
         )
     except Exception:
+        import hashlib
+        raw = f"{state.get('case_id') or ''}:final_recommendation:{artifact_id}"
         recommendation["feedback_bar"] = {
             "artifact_type": "final_recommendation",
             "artifact_id": artifact_id,
-            "idempotency_key": "",
+            "idempotency_key": hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24],
             "options": ["useful", "incorrect", "unsupported", "needs_more_evidence"],
         }
 

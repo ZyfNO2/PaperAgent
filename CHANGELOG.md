@@ -26,12 +26,14 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `apps/api/app/services/router/model_policy.py`: Expanded ALLOWED_MODEL_IDS with mistral-small-latest, stepfun-ai/step-3.7-flash, deepseek-ai/deepseek-v3, z-ai/glm-4.5-flash, moonshotai/kimi-k2.6, qwen/qwen3-8b, google/gemma-3-12b-it
 - `apps/api/app/services/agents/graph/nodes/search_agent.py`: `_run_tool_sync` now uses `asyncio.new_event_loop()` instead of `asyncio.run()` to avoid RuntimeWarning in LangGraph async context
 - `apps/api/scripts/run_round0.py`: Explicit `PYTHONPATH` in subprocess env
+- `apps/api/app/services/acp/server.py`: `_h_query_rag` missing-index response now includes artifact_id + feedback_bar + trace
 
 ### Verified
 - Real LLM verifier: Mistral Small 3.1 → 100% coverage (11/11), 5.0s
 - NV Llama-3.1-8B → 100% coverage, 17.8s (backup provider)
-- RAG e2e: 20/20 tests pass (feedback_bar + citation_valid + fake-citation rejection + 19/20 irrelevant abstention + feedback write/read/aggregate)
+- RAG e2e: 27/27 tests pass (feedback_bar + citation_valid + fake-citation rejection + 19/20 irrelevant abstention + feedback write/read/aggregate + LLM fallback + Chinese injection)
 - final recommendation: verdict + feedback_bar tests pass
+- ACP query_rag: missing-index error response now includes artifact_id + feedback_bar
 - 118 gold fixtures generated (48 OOD + 16 failure + 24 novelty + 30 RAG)
 - 5 holdout blind test cases created with stratified verdict sampling
 

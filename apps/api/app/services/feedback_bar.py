@@ -37,9 +37,7 @@ def make_feedback_bar_for_final_recommendation(
 ) -> dict[str, Any]:
     """Build a feedback bar for a final recommendation artifact."""
     artifact_id = recommendation.get("artifact_id") or _generate_artifact_id("rec")
-    bar = make_feedback_bar(case_id, "final_recommendation", artifact_id)
-    bar["options"] = ["useful", "incorrect", "unsupported", "needs_more_evidence"]
-    return bar
+    return make_feedback_bar(case_id, "final_recommendation", artifact_id)
 
 
 def _generate_artifact_id(prefix: str) -> str:
