@@ -47,6 +47,7 @@ def narrative_builder_node(state: ResearchState) -> dict[str, Any]:
             max_tokens=2000,
             timeout=30,
             fallback=_heuristic(state),
+            contract_id="narrative-build/v1",
         )
         result = out if isinstance(out, dict) else _heuristic(state)
         prov = "fast_json"

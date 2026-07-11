@@ -109,6 +109,7 @@ def innovation_extractor_node(state: ResearchState) -> dict[str, Any]:
             max_tokens=2000,
             timeout=30,
             fallback=_heuristic(state),
+            contract_id="innovation-extraction/v1",
         )
         if isinstance(out, dict) and ("innovation_points" in out or "stitching_plan" in out):
             result_inn = out.get("innovation_points", [])

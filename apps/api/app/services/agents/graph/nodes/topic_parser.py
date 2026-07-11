@@ -387,19 +387,25 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
     try:
         built = P.build(topic)
         tries += 1
+        raw: dict[str, Any] | None = None
         if _use_unified():
-            from apps.api.app.services.router import call_json_contract
+            prov = "unified_router"
+            from apps.api.app.services.router import call_with_contract
             from apps.api.app.services.router.model_policy import TaskRole
             from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
             register_graph_contracts()
-            raw = call_json_contract(
+            contract_result = call_with_contract(
                 built["user"],
                 system=built["system"],
+                contract_id="topic-parse/v1",
                 task_role=TaskRole.structured_extract,
                 max_tokens=2500,
                 timeout=max(5, _env_int("TOPIC_PARSER_TIMEOUT_S", 60)),
             )
-            prov = "unified_router"
+            if contract_result.success and isinstance(contract_result.content, dict):
+                raw = contract_result.content
+            else:
+                logger.warning("topic_parser unified_router failed: %s", contract_result.error)
         else:
             raw = call_json(
                 built["user"],
@@ -454,8 +460,9 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
                   {"n_method": len(atoms.get("method", [])),
                    "n_object": len(atoms.get("object", [])),
                    "domain": atoms.get("domain")},
-                  [{"tool": "re11_parser.llm", "attempts": tries}],
-                  "fast_json", errors_out,
+                  [{"tool": "topic-parse/v1" if prov == "unified_router" else "re11_parser.llm",
+                    "attempts": tries, "mode": prov}],
+                  prov, errors_out,
                   state_keys=["topic_atoms", "trace_events", "errors",
                               "provider_profile"])
 
@@ -463,5 +470,5 @@ def topic_parser_node(state: ResearchState) -> dict[str, Any]:
         "topic_atoms": atoms,
         "trace_events": [trace],
         "errors": errors_out,
-        "provider_profile": "fast_json",
+        "provider_profile": prov,
     }

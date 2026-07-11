@@ -38,6 +38,15 @@ app = FastAPI(
     description="Frontend + citation expansion + quality filter",
 )
 
+# Re7.6: Register graph-node contracts at startup so unified_router path
+# is active for all nodes that declare a contract_id.
+try:
+    from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
+    register_graph_contracts()
+except Exception as _exc:
+    import logging
+    logging.getLogger(__name__).warning("register_graph_contracts failed: %s", _exc)
+
 _cors_origins = os.getenv("CORS_ORIGINS", "http://127.0.0.1:18181").split(",")
 app.add_middleware(
     CORSMiddleware,

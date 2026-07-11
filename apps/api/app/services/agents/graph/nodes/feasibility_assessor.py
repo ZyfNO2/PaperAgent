@@ -51,6 +51,7 @@ def feasibility_assessor_node(state: ResearchState) -> dict[str, Any]:
             max_tokens=2000,
             timeout=30,
             fallback=_heuristic(state),
+            contract_id="feasibility-check/v1",
         )
         prov = "fast_json"
     except Exception as exc:

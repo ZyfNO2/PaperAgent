@@ -1,16 +1,23 @@
 """Re7.6 search_planner unified router migration tests."""
 from __future__ import annotations
 
-import os
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from apps.api.app.services.agents.graph.nodes import search_planner as sp
 
-PATCH_ROUTER = "apps.api.app.services.router.call_json_contract"
+PATCH_ROUTER = "apps.api.app.services.router.call_with_contract"
 PATCH_LEGACY = "apps.api.app.services.agents.graph.nodes.search_planner.call_json"
+
+
+def _make_contract_result(content: dict[str, Any]) -> MagicMock:
+    result = MagicMock()
+    result.success = True
+    result.content = content
+    result.error = None
+    return result
 
 
 @pytest.fixture
@@ -53,31 +60,32 @@ def test_default_template_path_skips_llm(minimal_state: dict[str, Any]) -> None:
 
 
 def test_llm_mode_uses_unified_router(minimal_state: dict[str, Any], monkeypatch: Any) -> None:
-    """PAPERAGENT_SEARCH_PLANNER=llm + unified router flag → call_json_contract."""
+    """PAPERAGENT_SEARCH_PLANNER=llm + unified router flag → call_with_contract."""
     monkeypatch.setenv("PAPERAGENT_SEARCH_PLANNER", "llm")
     monkeypatch.setenv("SEARCH_PLANNER_USE_UNIFIED_ROUTER", "1")
 
-    def fake_contract(*args, **kwargs):  # type: ignore[no-untyped-def]
-        return {
-            "queries": [
-                {
-                    "tool": "openalex",
-                    "query": "rag enterprise knowledge base",
-                    "why": "baseline",
-                    "expected_evidence": "papers",
-                    "stop_condition": "n>=5",
-                },
-            ],
-            "rounds": ["broad"],
-            "negative_feedback": "",
-        }
+    contract_response = {
+        "queries": [
+            {
+                "tool": "openalex",
+                "query": "rag enterprise knowledge base",
+                "why": "baseline",
+                "expected_evidence": "papers",
+                "stop_condition": "n>=5",
+            },
+        ],
+        "rounds": ["broad"],
+        "negative_feedback": "",
+    }
 
     with patch(PATCH_LEGACY) as mock_legacy, \
-         patch(PATCH_ROUTER, side_effect=fake_contract) as mock_unified:
+         patch(PATCH_ROUTER, return_value=_make_contract_result(contract_response)) as mock_unified:
         result = sp.search_planner_node(minimal_state)
 
     assert mock_unified.called
     assert not mock_legacy.called
+    _, kwargs = mock_unified.call_args
+    assert kwargs.get("contract_id") == "search-plan/v1"
     plan = result["search_plan"]
     assert any(q["tool"] == "openalex" for q in plan["queries"])
     assert result["provider_profile"] == "unified_router"
@@ -125,5 +133,26 @@ def test_unified_router_failure_records_error(minimal_state: dict[str, Any], mon
 
     errors = result.get("errors", [])
     assert any("search_planner" in e.get("node", "") for e in errors)
+    plan = result["search_plan"]
+    assert plan["queries"] == []
+
+
+def test_unified_router_unsuccessful_result_falls_back(minimal_state: dict[str, Any], monkeypatch: Any) -> None:
+    """Unified router returns unsuccessful ContractResult → empty plan, no exception."""
+    monkeypatch.setenv("PAPERAGENT_SEARCH_PLANNER", "llm")
+    monkeypatch.setenv("SEARCH_PLANNER_USE_UNIFIED_ROUTER", "1")
+
+    mock_result = MagicMock()
+    mock_result.success = False
+    mock_result.content = None
+    mock_result.error = "validation failed"
+
+    with patch(PATCH_ROUTER, return_value=mock_result) as mock_unified, \
+         patch(PATCH_LEGACY) as mock_legacy:
+        result = sp.search_planner_node(minimal_state)
+
+    assert mock_unified.called
+    assert not mock_legacy.called
+    assert result["provider_profile"] == "unified_router"
     plan = result["search_plan"]
     assert plan["queries"] == []

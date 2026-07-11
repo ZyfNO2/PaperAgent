@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def _use_unified(env_flag: str) -> bool:
-    return os.environ.get(env_flag, "0") == "1"
+    return os.environ.get(env_flag, "1") == "1"
 
 
 def register_contract_if_missing(
@@ -72,14 +72,18 @@ def call_structured(
     """
     if _use_unified(env_flag):
         try:
-            from apps.api.app.services.router import call_json_contract
+            from apps.api.app.services.router import call_with_contract
             register_contract_if_missing(contract_id, task_role, validator_name)
-            result = call_json_contract(
+            contract_result = call_with_contract(
                 prompt, system=system,
+                contract_id=contract_id,
                 task_role=task_role,
                 max_tokens=max_tokens, timeout=timeout,
             )
-            return result, "unified_router"
+            if contract_result.success:
+                return contract_result.content, "unified_router"
+            logger.warning("unified_router failed for %s: %s — fallback", contract_id, contract_result.error)
+            return fallback_fn(), "heuristic"
         except Exception as exc:
             logger.warning("unified_router failed for %s: %s — fallback", contract_id, exc)
             return fallback_fn(), "heuristic"

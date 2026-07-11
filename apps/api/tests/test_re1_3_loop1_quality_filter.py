@@ -79,7 +79,7 @@ def test_quality_filter_node_with_llm_mock():
     ]
 
     with patch("apps.api.app.services.agents.graph.nodes.quality_filter._call_llm_batch",
-               return_value=llm_response):
+               return_value=(llm_response, "unified_router")):
         result = quality_filter_node(_make_state(CANDIDATES))
 
     result["paper_candidates"]
@@ -107,7 +107,7 @@ def test_quality_filter_node_llm_failure_fallback():
     handles the case correctly even with LLM failure.
     """
     with patch("apps.api.app.services.agents.graph.nodes.quality_filter._call_llm_batch",
-               return_value=None):
+               return_value=(None, "unified_router")):
         result = quality_filter_node(_make_state(CANDIDATES))
 
     filter_results = result["filter_results"]
@@ -129,7 +129,7 @@ def test_quality_filter_never_drops_all():
         {"title": "Deep Learning Term Entry", "abstract": "", "url": "", "source": "openalex"},
     ]
     with patch("apps.api.app.services.agents.graph.nodes.quality_filter._call_llm_batch",
-               return_value=None):
+               return_value=(None, "unified_router")):
         result = quality_filter_node(_make_state(candidates))
 
     # Should keep all as safety
