@@ -30,7 +30,7 @@ _ROUNDS = frozenset({"broad", "focused", "repair", "seed_expansion"})
 
 
 def _use_unified() -> bool:
-    return os.environ.get("SEARCH_PLANNER_USE_UNIFIED_ROUTER", "1") == "1"
+    return os.environ.get("SEARCH_PLANNER_USE_UNIFIED_ROUTER", "0") == "1"
 
 
 def _env_int(name: str, default: int) -> int:

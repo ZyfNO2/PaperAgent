@@ -10,7 +10,7 @@ from apps.api.app.services.agents.graph.state import ResearchState
 
 
 def _use_unified() -> bool:
-    return os.environ.get("OPTIMIZATION_ADVISOR_USE_UNIFIED_ROUTER", "1") == "1"
+    return os.environ.get("OPTIMIZATION_ADVISOR_USE_UNIFIED_ROUTER", "0") == "1"
 
 logger = logging.getLogger(__name__)
 

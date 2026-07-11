@@ -16,7 +16,7 @@ from typing import Any
 
 
 def _use_unified(env_flag: str) -> bool:
-    return os.environ.get(env_flag, "1") == "1"
+    return os.environ.get(env_flag, "0") == "1"
 
 from apps.api.app.services.agents.graph.state import ResearchState
 

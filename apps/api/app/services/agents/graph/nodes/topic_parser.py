@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 def _use_unified() -> bool:
-    return os.environ.get("TOPIC_PARSER_USE_UNIFIED_ROUTER", "1") == "1"
+    return os.environ.get("TOPIC_PARSER_USE_UNIFIED_ROUTER", "0") == "1"
 
 
 def _env_int(name: str, default: int) -> int:

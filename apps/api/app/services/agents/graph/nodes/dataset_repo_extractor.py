@@ -32,7 +32,7 @@ def _env_int(name: str, default: int) -> int:
 
 
 def _use_unified(env_flag: str) -> bool:
-    return os.environ.get(env_flag, "1") == "1"
+    return os.environ.get(env_flag, "0") == "1"
 
 
 
