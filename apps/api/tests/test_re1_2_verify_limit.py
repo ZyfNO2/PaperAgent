@@ -15,7 +15,9 @@ def test_verify_node_respects_max_verify_candidates(monkeypatch) -> None:
 
     def fake_call_verifier(topic, atoms, candidates):  # type: ignore[no-untyped-def]
         called["n"] = len(candidates)
-        return []
+        return [], {"total_input": len(candidates), "total_resolved": 0, "coverage": 0.0,
+                    "unresolved_ids": [], "invalid_ids": [], "raw_lengths": [],
+                    "parse_stages": [], "batch_results": [], "provider": "", "model": ""}
 
     monkeypatch.setattr(verify_node, "_call_verifier", fake_call_verifier)
     verify_node.verify_node(

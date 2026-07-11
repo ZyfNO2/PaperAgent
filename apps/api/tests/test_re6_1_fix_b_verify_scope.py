@@ -142,7 +142,7 @@ def test_verify_search_scope_uses_paper_candidates():
     # Mock the LLM to avoid actual calls; just check candidates path
     with patch(
         "apps.api.app.services.agents.graph.nodes.verify._call_verifier",
-        return_value=[],  # LLM returns nothing
+        return_value=([], {"total_input": 7, "total_resolved": 0, "coverage": 0.0}),
     ):
         result = verify_node(state)
     # verify was called with candidates from paper_candidates
@@ -171,9 +171,16 @@ def test_verify_expanded_scope_only_verifies_expanded():
 
     # Mock LLM to accept the one expanded paper
     def _fake_verifier(topic, atoms, candidates):
-        return [{"title": c["title"], "verdict": "accept",
-                 "hit_keywords": ["YOLO"], "relation_to_topic": "baseline",
-                 "reason": "LLM stub"} for c in candidates]
+        verdicts = [{"title": c["title"], "verdict": "accept",
+                     "candidate_id": c.get("candidate_id", ""),
+                     "hit_keywords": ["YOLO"], "relation_to_topic": "baseline",
+                     "reason": "LLM stub"} for c in candidates]
+        diag = {"total_input": len(candidates), "total_resolved": len(verdicts),
+                "coverage": 1.0, "unresolved_ids": [], "invalid_ids": [],
+                "raw_lengths": [], "parse_stages": ["resolved"],
+                "batch_results": [], "provider": "", "model": "",
+                "verification_status": "full_coverage"}
+        return verdicts, diag
 
     with patch(
         "apps.api.app.services.agents.graph.nodes.verify._call_verifier",

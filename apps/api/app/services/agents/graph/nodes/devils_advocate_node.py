@@ -57,6 +57,7 @@ def devils_advocate_node(state: ResearchState) -> dict[str, Any]:
             max_tokens=2000,
             timeout=30,
             fallback=_heuristic(state),
+            contract_id="devils-advocate/v1",
         )
         result = out if isinstance(out, dict) else _heuristic(state)
         prov = "fast_json"

@@ -44,13 +44,17 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
         if not title:
             continue
         try:
-            from apps.api.app.services import llm_router
             from apps.api.app.services.agents.prompts import re11_dataset_repo_extractor as P
+            from ._unified_migrate import call_structured
+            from apps.api.app.services.router.model_policy import TaskRole
             built = P.build(title, p.get("abstract") or p.get("snippet") or "")
-            out = llm_router.call_json(
-                built["user"], system=built["system"], profile="fast_json",
-                max_tokens=700,
-                timeout=max(5, _env_int("DATASET_REPO_TIMEOUT_S", 45)),
+            out, _ = call_structured(
+                prompt=built["user"], system=built["system"],
+                task_role=TaskRole.structured_extract, contract_id="dataset-repo-extraction/v1",
+                env_flag="CONTENT_DATASET_REPO_USE_UNIFIED",
+                fallback_fn=lambda: {"status": "not_found_in_paper"},
+                validator_name="",
+                max_tokens=700, timeout=max(5, _env_int("DATASET_REPO_TIMEOUT_S", 45)),
                 expected="dict",
                 schema_hint='Top-level object with keys: dataset_name, official_code_url, project_page_url, status',
             )
@@ -166,26 +170,29 @@ def work_package_node(state: ResearchState) -> dict[str, Any]:
             ],
         })
     else:
-        try:
-            from apps.api.app.services import llm_router
-            from apps.api.app.services.agents.prompts import re11_work_package as P
-            built = P.build(topic, atoms, baselines=baselines, parallels=parallels,
-                            datasets=datasets, repos=repos, constraints=constraints)
-            out = llm_router.call_json(
-                built["user"], system=built["system"], profile="fast_json",
-                max_tokens=1800,
-                timeout=max(5, _env_int("WORK_PACKAGE_TIMEOUT_S", 45)),
-                expected="dict",
-                schema_hint='Top-level object with keys: work_packages (list), evidence_gap (list)',
-            )
-            packages = out.get("work_packages") or []
-            gap = out.get("evidence_gap") or []
-            if not isinstance(packages, list):
-                packages = []
-        except Exception as exc:
-            logger.exception("work_package llm call failed")
-            errors_out.append({"node": "work_package", "error": type(exc).__name__})
-            gap.append({"missing": "llm_unavailable", "tool_calls": []})
+        from apps.api.app.services.agents.prompts import re11_work_package as P
+        from ._unified_migrate import call_structured
+        from apps.api.app.services.router.model_policy import TaskRole
+        built = P.build(topic, atoms, baselines=baselines, parallels=parallels,
+                        datasets=datasets, repos=repos, constraints=constraints)
+        out, _prov = call_structured(
+            prompt=built["user"], system=built["system"],
+            task_role=TaskRole.evidence_critic, contract_id="work-package/v1",
+            env_flag="WORK_PACKAGE_USE_UNIFIED",
+            fallback_fn=lambda: {"work_packages": [], "evidence_gap": [{"missing": "llm_unavailable", "tool_calls": []}]},
+            validator_name="has_work_packages",
+            max_tokens=1800, timeout=max(5, _env_int("WORK_PACKAGE_TIMEOUT_S", 45)),
+            expected="dict",
+            schema_hint='Top-level object with keys: work_packages (list), evidence_gap (list)',
+        )
+        packages = out.get("work_packages") or []
+        gap = out.get("evidence_gap") or []
+        if not isinstance(packages, list):
+            packages = []
+        if not gap:
+            gap.append({"missing": "", "tool_calls": []})
+        if _prov == "heuristic":
+            errors_out.append({"node": "work_package", "error": "llm_unavailable"})
 
     trace = _emit("work_package", t0,
                   {"n_baseline": len(baselines), "n_parallel": len(parallels)},

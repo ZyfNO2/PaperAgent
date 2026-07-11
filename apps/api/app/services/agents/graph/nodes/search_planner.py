@@ -300,19 +300,25 @@ def search_planner_node(state: ResearchState) -> dict[str, Any]:
     try:
         built = P.build(topic, atoms, prior_rounds=prior_rounds)
         tries += 1
+        raw: dict[str, Any] | None = None
         if _use_unified():
-            from apps.api.app.services.router import call_json_contract
+            from apps.api.app.services.router import call_with_contract
             from apps.api.app.services.router.model_policy import TaskRole
             from apps.api.app.services.router.register_graph_contracts import register_graph_contracts
             register_graph_contracts()
-            raw = call_json_contract(
+            contract_result = call_with_contract(
                 built["user"],
                 system=built["system"],
+                contract_id="search-plan/v1",
                 task_role=TaskRole.search_control,
                 max_tokens=4000,
                 timeout=max(5, _env_int("SEARCH_PLANNER_TIMEOUT_S", 60)),
             )
             prov = "unified_router"
+            if contract_result.success and isinstance(contract_result.content, dict):
+                raw = contract_result.content
+            else:
+                logger.warning("search_planner unified_router failed: %s", contract_result.error)
         else:
             raw = call_json(
                 built["user"],
