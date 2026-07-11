@@ -3,6 +3,38 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.6-dev] - 2026-07-11 (Re7.6)
+
+### Added
+- `apps/api/scripts/run_round0.py`: Batch runner for 10 cross-domain topics via subprocess isolation
+- `apps/api/scripts/run_topic_async.py`: Single-topic async runner via LangGraph streaming
+- `apps/api/scripts/nv_model_compare.py`: NVIDIA multi-model comparison (7 models × verifier)
+- `apps/api/scripts/re76_real_llm_test.py`: Real LLM verifier coverage test (Mistral/NV)
+- `apps/api/tests/test_re7_rag_e2e.py`: RAG contract + feedback e2e tests (feedback_bar, citation_valid, fake-citation rejection, 19/20 irrelevant abstention, feedback write/read/aggregate)
+- `apps/api/tests/test_re7_final_recommendation.py`: final recommendation verdict + feedback_bar tests
+- `apps/api/app/services/feedback_bar.py`: `make_feedback_bar_for_final_recommendation` helper
+- `apps/api/app/services/feedback_store.py`: extended `ArtifactType` with `rag_answer`, `final_recommendation`, `innovation_card`; added `list_by_artifact`
+- `apps/api/app/services/rag/rag_contract.py`: Chinese instruction-injection patterns + `validate_citations_subset`
+- `apps/api/tests/fixtures/generate_gold_fixtures.py`: Fixture generator script
+- `apps/api/tests/fixtures/eval_R6/hidden_ood/`: 48 hidden-OOD test fixtures (4 categories)
+- `apps/api/tests/fixtures/eval_R6/failure/`: 16 failure-injection fixtures
+- `apps/api/tests/fixtures/eval_R6/novelty/`: 24 novelty-gold fixtures
+- `apps/api/tests/fixtures/eval_R6/rag/`: 30 RAG-gold Q&A fixtures
+- `apps/api/tests/fixtures/eval_H1/holdout_ids.json`: 5 holdout blind test case IDs
+
+### Changed
+- `apps/api/app/services/router/model_policy.py`: Expanded ALLOWED_MODEL_IDS with mistral-small-latest, stepfun-ai/step-3.7-flash, deepseek-ai/deepseek-v3, z-ai/glm-4.5-flash, moonshotai/kimi-k2.6, qwen/qwen3-8b, google/gemma-3-12b-it
+- `apps/api/app/services/agents/graph/nodes/search_agent.py`: `_run_tool_sync` now uses `asyncio.new_event_loop()` instead of `asyncio.run()` to avoid RuntimeWarning in LangGraph async context
+- `apps/api/scripts/run_round0.py`: Explicit `PYTHONPATH` in subprocess env
+
+### Verified
+- Real LLM verifier: Mistral Small 3.1 → 100% coverage (11/11), 5.0s
+- NV Llama-3.1-8B → 100% coverage, 17.8s (backup provider)
+- RAG e2e: 20/20 tests pass (feedback_bar + citation_valid + fake-citation rejection + 19/20 irrelevant abstention + feedback write/read/aggregate)
+- final recommendation: verdict + feedback_bar tests pass
+- 118 gold fixtures generated (48 OOD + 16 failure + 24 novelty + 30 RAG)
+- 5 holdout blind test cases created with stratified verdict sampling
+
 ## [0.4.0-dev] - 2026-07-10 (Re4.4)
 
 ### Added

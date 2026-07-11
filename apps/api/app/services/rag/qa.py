@@ -51,6 +51,7 @@ def answer_question(
             "retrieved_chunks": [],
             "case_id": case_id,
             "abstain_reason": "no_retrieved_chunks",
+            "trace": {"top_score": 0.0, "n_citations": 0, "n_valid_citations": 0, "n_retrieved_chunks": 0},
         }
 
     # Build context
@@ -75,13 +76,23 @@ def answer_question(
         logger.warning("RAG QA LLM failed: %s — fallback to retrieval only", exc)
         # Fallback: only return extractive citation from top chunk
         top = chunks[0]
+        artifact_id = _generate_rag_artifact_id()
         return {
             "answer": f"基于检索结果（LLM 不可用）：{top['text'][:200]}",
             "confidence": 0.3,
             "cited_chunks": [top["chunk_id"]],
             "retrieved_chunks": _format_chunks(chunks),
             "case_id": case_id,
+            "artifact_id": artifact_id,
             "abstain_reason": None,
+            "citation_valid": True,
+            "feedback_bar": _build_feedback_bar(case_id, artifact_id),
+            "trace": {
+                "top_score": round(top_score, 4),
+                "n_citations": 1,
+                "n_valid_citations": 1,
+                "n_retrieved_chunks": len(chunks),
+            },
         }
 
     # Re7.6: Validate citations via CitationValidator
@@ -114,6 +125,20 @@ def answer_question(
         )
         valid_citations.append(citation)
 
+    # Re7.6: Cited chunks must be a subset of retrieved chunks
+    retrieved_ids = set(chunk_map.keys())
+    subset_ok, subset_issues = validator.validate_citations_subset(
+        RAGAnswerContract(
+            query=question, answer=answer_text,
+            cited_chunks=valid_citations,
+            abstain_reason="pending_validation" if not valid_citations else None,
+        ),
+        retrieved_ids,
+    )
+    if not subset_ok:
+        invalid_count += len(subset_issues)
+        logger.warning("RAG QA citation subset violation: %s", subset_issues)
+
     # Re7.6: Abstention logic
     abstain_reason = None
     if invalid_count > 0 and not valid_citations:
@@ -125,16 +150,27 @@ def answer_question(
     elif top_score < 0.1:
         abstain_reason = "top retrieval score too low"
 
+    trace = {
+        "top_score": round(top_score, 4),
+        "n_citations": len(raw_cited),
+        "n_valid_citations": len(valid_citations),
+        "n_retrieved_chunks": len(chunks),
+    }
+
     if abstain_reason:
         logger.info("RAG QA: abstaining — %s", abstain_reason)
+        artifact_id = _generate_rag_artifact_id()
         return {
             "answer": answer_text or "无法提供有证据支持的答案",
             "confidence": min(confidence, 0.3),
             "cited_chunks": [c.chunk_id for c in valid_citations],
             "retrieved_chunks": _format_chunks(chunks),
             "case_id": case_id,
+            "artifact_id": artifact_id,
             "abstain_reason": abstain_reason,
             "citation_valid": False,
+            "feedback_bar": _build_feedback_bar(case_id, artifact_id),
+            "trace": trace,
         }
 
     # Check for instruction injection
@@ -142,25 +178,33 @@ def answer_question(
         query=question, answer=answer_text,
         cited_chunks=valid_citations, confidence="high",
     )):
+        artifact_id = _generate_rag_artifact_id()
         return {
             "answer": "检测到潜在的内容注入，已拒绝回答",
             "confidence": 0.0,
             "cited_chunks": [],
             "retrieved_chunks": _format_chunks(chunks),
             "case_id": case_id,
+            "artifact_id": artifact_id,
             "abstain_reason": "instruction_injection_detected",
             "citation_valid": False,
+            "feedback_bar": _build_feedback_bar(case_id, artifact_id),
+            "trace": trace,
         }
 
+    artifact_id = _generate_rag_artifact_id()
     return {
         "answer": answer_text,
         "confidence": confidence,
         "cited_chunks": [c.chunk_id for c in valid_citations],
         "retrieved_chunks": _format_chunks(chunks),
         "case_id": case_id,
+        "artifact_id": artifact_id,
         "abstain_reason": None,
         "citation_valid": len(valid_citations) > 0,
         "invalid_citation_count": invalid_count,
+        "feedback_bar": _build_feedback_bar(case_id, artifact_id),
+        "trace": trace,
     }
 
 
@@ -170,3 +214,21 @@ def _format_chunks(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
          "text": c.get("text", "")[:200], "source": c.get("source", "")}
         for c in chunks
     ]
+
+
+def _generate_rag_artifact_id() -> str:
+    import uuid
+    return f"rag-{uuid.uuid4().hex[:12]}"
+
+
+def _build_feedback_bar(case_id: str, artifact_id: str) -> dict[str, Any]:
+    try:
+        from apps.api.app.services.feedback_bar import make_feedback_bar
+        return make_feedback_bar(case_id, "rag_answer", artifact_id)
+    except ImportError:
+        return {
+            "artifact_type": "rag_answer",
+            "artifact_id": artifact_id,
+            "idempotency_key": "",
+            "options": ["useful", "incorrect", "unsupported", "needs_more_evidence"],
+        }

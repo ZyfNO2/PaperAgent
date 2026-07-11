@@ -1,4 +1,4 @@
-﻿"""LangGraph nodes: dataset/repo extractor + evidence auditor/baseline classifier
+"""LangGraph nodes: dataset/repo extractor + evidence auditor/baseline classifier
 + work package + low-bar review + human gate + final recommendation.
 
 Each node writes trace_events, never mutates state in place, and returns only
@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 import os
 import time
+import uuid
 from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
@@ -38,6 +39,7 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
     repos: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
     tried = 0
+    prov = "local"
 
     for p in papers[:8]:  # cap LLM calls so Re1.1 loop stays < 120s
         title = p.get("title") or ""
@@ -48,7 +50,7 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
             from ._unified_migrate import call_structured
             from apps.api.app.services.router.model_policy import TaskRole
             built = P.build(title, p.get("abstract") or p.get("snippet") or "")
-            out, _ = call_structured(
+            out, _prov = call_structured(
                 prompt=built["user"], system=built["system"],
                 task_role=TaskRole.structured_extract, contract_id="dataset-repo-extraction/v1",
                 env_flag="CONTENT_DATASET_REPO_USE_UNIFIED",
@@ -81,8 +83,9 @@ def dataset_repo_node(state: ResearchState) -> dict[str, Any]:
 
     trace = _emit("dataset_repo", t0,
                   {"n_papers": len(papers)}, {"n_dataset": len(datasets), "n_repo": len(repos)},
-                  [{"tool": "re11_dataset_repo_extractor.llm", "attempts": tried}],
-                  "fast_json", errors,
+                  [{"tool": "dataset-repo-extraction/v1" if prov == "unified_router" else "re11_dataset_repo_extractor.llm",
+                    "attempts": tried, "mode": prov}],
+                  prov, errors,
                   state_keys=["dataset_candidates", "repo_candidates",
                               "trace_events", "errors"])
     return {
@@ -386,6 +389,50 @@ def human_gate_search_node(state: ResearchState) -> dict[str, Any]:
 # Final recommendation — summarize evidence + work package + audit
 # ---------------------------------------------------------------------------
 
+def _compute_final_verdict(state: ResearchState) -> str:
+    """Compute GO / RISKY / STOP verdict from available node outputs."""
+    review = state.get("low_bar_review") or {}
+    gate = state.get("human_gate") or {}
+    claim_judge_verdict = (state.get("claim_judge_verdict") or "").upper()
+
+    if review.get("status") == "blocked":
+        return "STOP"
+    if claim_judge_verdict == "REJECT":
+        return "STOP"
+    gate_status = gate.get("status", "")
+    if gate_status not in ("pass_through", "pass_through_no_runtime"):
+        return "STOP"
+    if claim_judge_verdict == "REVISE":
+        return "RISKY"
+    blocked_items = state.get("blocked_items") or []
+    if blocked_items:
+        return "RISKY"
+    return "GO"
+
+
+def _compute_stop_reason(state: ResearchState) -> list[str]:
+    """Return human-readable reasons for STOP / RISKY verdicts."""
+    reasons: list[str] = []
+    review = state.get("low_bar_review") or {}
+    gate = state.get("human_gate") or {}
+    claim_judge_verdict = (state.get("claim_judge_verdict") or "").upper()
+    blocked_items = state.get("blocked_items") or []
+
+    if review.get("status") == "blocked":
+        reasons.append("low-bar review blocked the proposal")
+    if claim_judge_verdict == "REJECT":
+        reasons.append("claim judge rejected all novelty claims")
+    gate_status = gate.get("status", "")
+    if gate_status not in ("pass_through", "pass_through_no_runtime"):
+        reasons.append(f"human gate did not pass: {gate_status}")
+    if claim_judge_verdict == "REVISE":
+        reasons.append("claim judge requested revisions")
+    if blocked_items:
+        reasons.append(f"{len(blocked_items)} claim(s) blocked")
+
+    return reasons[:3]
+
+
 def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
     review = state.get("low_bar_review") or {}
     packages = state.get("work_packages") or []
@@ -398,6 +445,10 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
     if gate.get("status") not in ("pass_through", "pass_through_no_runtime"):
         notes.append(f"human gate: {gate.get('status')}")
 
+    verdict = _compute_final_verdict(state)
+    stop_reason = _compute_stop_reason(state)
+    artifact_id = f"rec-{uuid.uuid4().hex[:12]}"
+
     recommendation = {
         "topic": state.get("topic"),
         "n_papers": len(state.get("verified_papers") or []),
@@ -408,9 +459,27 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
         "n_work_packages": len(packages),
         "low_bar_status": review.get("status"),
         "human_gate_status": gate.get("status"),
+        "claim_judge_verdict": state.get("claim_judge_verdict"),
+        "verdict": verdict,
+        "stop_reason": stop_reason,
         "notes": notes,
         "research_basis": packages,
+        "artifact_id": artifact_id,
     }
+
+    try:
+        from apps.api.app.services.feedback_bar import make_feedback_bar_for_final_recommendation
+        recommendation["feedback_bar"] = make_feedback_bar_for_final_recommendation(
+            state.get("case_id") or "", recommendation
+        )
+    except Exception:
+        recommendation["feedback_bar"] = {
+            "artifact_type": "final_recommendation",
+            "artifact_id": artifact_id,
+            "idempotency_key": "",
+            "options": ["useful", "incorrect", "unsupported", "needs_more_evidence"],
+        }
+
     trace = _emit("final_recommendation", t0, {}, recommendation,
                   [], "local", [],
                   state_keys=["final_recommendation", "trace_events"])

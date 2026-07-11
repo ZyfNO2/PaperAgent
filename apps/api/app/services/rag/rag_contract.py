@@ -123,11 +123,34 @@ class CitationValidator:
     def detect_instruction_injection(self, answer: RAGAnswerContract) -> bool:
         """Detect if the answer contains potential prompt injection from ingested docs."""
         injection_patterns = [
+            # English patterns
             "ignore previous instructions",
             "system prompt:",
             "you are now",
             "forget all previous",
             "override:",
+            "disregard",
+            # Chinese patterns
+            "无视以上指令",
+            "忽略前述指令",
+            "忽略以上",
+            "系统提示",
+            "忽略之前的",
+            "忘记之前的",
+            "你现在是一个",
+            "覆盖以上",
         ]
         text = answer.answer.lower() + answer.query.lower()
         return any(pattern in text for pattern in injection_patterns)
+
+    def validate_citations_subset(
+        self, answer: RAGAnswerContract, retrieved_chunk_ids: set[str]
+    ) -> tuple[bool, list[str]]:
+        """Ensure every cited chunk_id is present in the retrieved set."""
+        issues: list[str] = []
+        for chunk in answer.cited_chunks:
+            if chunk.chunk_id not in retrieved_chunk_ids:
+                issues.append(
+                    f"chunk_id {chunk.chunk_id} is not in retrieved chunks"
+                )
+        return len(issues) == 0, issues
