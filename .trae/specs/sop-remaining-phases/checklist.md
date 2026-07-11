@@ -20,7 +20,7 @@
 
 - [x] F-1: unified_router 默认值修复（8 nodes），逐链路 31.9s 通过
 - [x] F-2: XD-01 完整 graph 36 nodes，verdict=STOP，per-node 计时已记录
-- [x] F-3: 2/10 跨域题验证（XD-01 980s, XD-09 771s），100% 通过率
+- [x] F-3: 10/10 跨域题完成，每题有 JSON 结果文件
 - [x] F-4: SOP 状态更新为 Round 0 基线已生成，PASS 条件全打勾
 
 ## 回归检查

@@ -73,11 +73,12 @@
   - 总耗时 980.7s (16.3min)，per-node 计时已记录
   - 主要瓶颈：verify(234s), paper_retriever(99s), innovation_extractor(91s), human_gate(98s)
 
-- [x] F-3: 跨域题验证 (2/10 completed)
-  - XD-01 (钢材): 980.7s, verdict=STOP, 36 nodes
-  - XD-09 (生物信息): 771.1s, verdict=STOP, 35 nodes
-  - 剩余 8 题因时间限制延后，当前 2/2 通过率 100%
-  - Per-node 耗时已记录，可产出各链路运行时长报告
+- [x] F-3: 10 跨域题全量执行
+  - 10/10 全部完成，无 crash，100% 完成率
+  - 全部 verdict=STOP（系统性偏保守），2/10 匹配 expected_verdict
+  - Per-node 耗时已记录到 artifacts/re7_6/round0/batch_*.json
+  - verify 节点是最大瓶颈（150-290s/题），repair loop 显著拉长耗时
+  - search_agent.py:405 有 RuntimeWarning（coroutine not awaited，非致命）
 
 - [x] F-4: 更新 SOP 状态
   - 更新 `Plan/PaperAgent_Re7.6_真实链路阻塞修复与风险前瞻SOP.md` §7.1 为 "Round 0 基线已生成"
