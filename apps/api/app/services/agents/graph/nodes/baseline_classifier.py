@@ -50,7 +50,7 @@ def _word_list(d: dict[str, Any], key: str) -> list[str]:
 
 
 def _use_unified() -> bool:
-    return os.environ.get("BASELINE_CLASSIFIER_USE_UNIFIED_ROUTER", "1") == "1"
+    return os.environ.get("BASELINE_CLASSIFIER_USE_UNIFIED_ROUTER", "0") == "1"
 
 
 def _llm_reclassify(

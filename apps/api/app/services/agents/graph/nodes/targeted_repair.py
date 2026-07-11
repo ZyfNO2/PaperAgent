@@ -68,7 +68,7 @@ def _env_int(name: str, default: int) -> int:
 
 
 def _use_unified() -> bool:
-    return os.environ.get("TARGETED_REPAIR_USE_UNIFIED_ROUTER", "1") == "1"
+    return os.environ.get("TARGETED_REPAIR_USE_UNIFIED_ROUTER", "0") == "1"
 
 
 def _as_str(v: Any) -> str:

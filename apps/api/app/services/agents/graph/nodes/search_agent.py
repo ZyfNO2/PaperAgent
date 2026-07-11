@@ -67,7 +67,7 @@ def _env_int(name: str, default: int) -> int:
 
 
 def _use_unified() -> bool:
-    return os.environ.get("SEARCH_AGENT_USE_UNIFIED_ROUTER", "1") == "1"
+    return os.environ.get("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0") == "1"
 
 
 def _dedup_key(paper: dict[str, Any]) -> str:

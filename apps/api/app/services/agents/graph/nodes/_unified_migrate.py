@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def _use_unified(env_flag: str) -> bool:
-    return os.environ.get(env_flag, "1") == "1"
+    return os.environ.get(env_flag, "0") == "1"
 
 
 def register_contract_if_missing(
