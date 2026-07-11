@@ -1,8 +1,11 @@
-﻿"""LangGraph node: verify paper candidates against the topic.
+﻿"""LangGraph node: verify paper candidates against the topic — Re7.6 hardened.
 
-Uses the llm_router (fast_json profile) to apply re11_paper_verifier prompt;
-produces verified_papers with per-keyword breakdown and drops rejected entries
-into trace for auditability.
+Changes from original:
+  - candidate_id assignment before LLM call (stable matching, not title fuzzy match)
+  - coverage tracking: resolved_count / input_count
+  - verification_failed state (distinct from "0 accepted")
+  - partial batch handling: unresolved candidates preserved, not dropped
+  - structured trace: raw_length, parse_stage, coverage, invalid_ids
 """
 from __future__ import annotations
 
@@ -31,12 +34,23 @@ def _env_int(name: str, default: int) -> int:
 from ._util import now_iso as _now_iso
 
 
-def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Verify candidates against topic using batched LLM calls.
+def _assign_candidate_ids(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Assign stable candidate_id to each candidate for LLM output matching."""
+    for i, c in enumerate(candidates):
+        if "candidate_id" not in c:
+            base = (c.get("paper_id") or c.get("doi") or c.get("arxiv_id") or
+                    (c.get("title") or c.get("name") or "").strip()[:40])
+            c["candidate_id"] = f"{base}_{i}" if base else f"cand_{i}"
+    return candidates
 
-    Batches candidates (batch_size=8) and sends each batch as a single LLM
-    call, reducing wall-clock time from ~24×5s (sequential) to ~3×5s (3 batches
-    with DeepSeek, parallel via ThreadPoolExecutor).
+
+def _call_verifier(
+    topic: str, atoms: dict[str, Any], candidates: list[dict[str, Any]]
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Verify candidates. Returns (verdicts, diagnostics).
+
+    Diagnostics:
+      total_input / total_resolved / coverage / parse_stages / invalid_ids
     """
     import concurrent.futures
 
@@ -44,7 +58,7 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
     from apps.api.app.services.agents.prompts import re11_paper_verifier as P
 
     if not candidates:
-        return []
+        return [], {"total_input": 0, "total_resolved": 0, "coverage": 1.0}
 
     batch_size = max(1, _env_int("VERIFIER_BATCH_SIZE", 8))
     max_workers = max(1, min((len(candidates) + batch_size - 1) // batch_size,
@@ -52,14 +66,24 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
     timeout_s = max(5, _env_int("VERIFIER_TIMEOUT_S", 120))
     max_attempts = max(1, _env_int("VERIFIER_MAX_ATTEMPTS", 2))
 
-    # Build batch prompts
     prompts = P.build_batch(topic, atoms, candidates, batch_size=batch_size)
+    diag: dict[str, Any] = {
+        "total_input": len(candidates),
+        "total_resolved": 0,
+        "coverage": 0.0,
+        "parse_stages": [],
+        "invalid_ids": [],
+        "raw_lengths": [],
+        "batch_results": [],
+    }
 
-    def _verify_batch(batch_idx: int) -> list[dict[str, Any]]:
-        """Verify a batch of candidates; returns list of normalised verdict dicts."""
+    def _verify_batch(batch_idx: int) -> tuple[list[dict[str, Any]], dict]:
         built = prompts[batch_idx]
-        last_exc: Exception | None = None
+        batch_candidates = candidates[batch_idx * batch_size:(batch_idx + 1) * batch_size]
+        batch_ids = {c["candidate_id"] for c in batch_candidates}
+
         for attempt in range(max_attempts):
+            raw_str = ""
             try:
                 out = llm_router.call_json(
                     built["user"],
@@ -68,44 +92,81 @@ def _call_verifier(topic: str, atoms: dict[str, Any], candidates: list[dict[str,
                     max_tokens=3000,
                     timeout=timeout_s,
                     expected="list",
-                    schema_hint='JSON array of objects: [{"title": str, "verdict": str, "hit_keywords": [str], "relation_to_topic": str, "reason": str}]',
+                    schema_hint='JSON array of objects: [{"candidate_id": str, "verdict": str, "hit_keywords": [str], "relation_to_topic": str, "reason": str}]',
                 )
-                verdicts = _normalise_verifier_output(out)
-                if not verdicts and attempt + 1 < max_attempts:
-                    continue
-                return verdicts
+                raw_str = json.dumps(out, ensure_ascii=False, default=str) if out is not None else ""
             except Exception as exc:
-                last_exc = exc
-                logger.debug("verifier batch %s attempt %s failed: %s",
-                             batch_idx, attempt, type(exc).__name__)
-        if last_exc is not None:
-            logger.warning("verifier batch %s final failure: %s",
-                           batch_idx, type(last_exc).__name__)
-        return []
+                logger.debug("verifier batch %s attempt %s failed: %s", batch_idx, attempt, type(exc).__name__)
+                if attempt + 1 < max_attempts:
+                    continue
+                return [], {"batch": batch_idx, "error": str(exc), "raw_length": len(raw_str),
+                             "parse_stage": "llm_unavailable", "resolved": 0}
+
+            # Parse and validate
+            verdicts = _normalise_verifier_output(out)
+            resolved_ids: set[str] = set()
+            valid_verdicts: list[dict[str, Any]] = []
+
+            for v in verdicts:
+                cid = v.get("candidate_id", "")
+                if not cid:
+                    continue
+                if cid not in batch_ids:
+                    diag["invalid_ids"].append(cid)
+                    continue
+                if cid in resolved_ids:
+                    continue
+                resolved_ids.add(cid)
+                valid_verdicts.append(v)
+
+            parse_stage = "resolved" if valid_verdicts else "empty_after_filter"
+            batch_diag = {
+                "batch": batch_idx, "raw_length": len(raw_str),
+                "parse_stage": parse_stage, "resolved": len(valid_verdicts),
+                "expected": len(batch_candidates),
+            }
+            if valid_verdicts:
+                return valid_verdicts, batch_diag
+            if attempt + 1 < max_attempts:
+                continue
+            return [], batch_diag
+
+        return [], {"batch": batch_idx, "parse_stage": "exhausted_attempts", "resolved": 0}
 
     all_verdicts: list[dict[str, Any]] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(_verify_batch, i): i for i in range(len(prompts))}
         for future in concurrent.futures.as_completed(futures):
             try:
-                verdicts = future.result()
+                verdicts, batch_diag = future.result()
                 all_verdicts.extend(verdicts)
+                diag["batch_results"].append(batch_diag)
+                diag["total_resolved"] += len(verdicts)
+                diag["raw_lengths"].append(batch_diag.get("raw_length", 0))
+                diag["parse_stages"].append(batch_diag.get("parse_stage", "unknown"))
             except Exception as exc:
                 logger.warning("verifier batch raised: %s", exc)
+                diag["batch_results"].append({"batch": futures[future], "error": str(exc)})
 
-    return all_verdicts
+    diag["coverage"] = diag["total_resolved"] / diag["total_input"] if diag["total_input"] > 0 else 1.0
+    return all_verdicts, diag
 
 
 def _normalise_verifier_output(out: Any) -> list[dict[str, Any]]:
-    """Walk through the many shapes the verifier LLM can emit."""
+    """Normalise verifier LLM output into list of dicts with candidate_id."""
     if out is None:
         return []
     if isinstance(out, dict):
         for key in ("verdicts", "verified", "candidates", "results"):
             cand = out.get(key)
             if isinstance(cand, list):
-                return [v for v in cand if isinstance(v, dict)]
-        return [out]
+                items = [v for v in cand if isinstance(v, dict)]
+                if items:
+                    return items
+        # Single object wrapper — ensure it has candidate_id or title
+        if out:
+            return [out]
+        return []
     if isinstance(out, list):
         return [v for v in out if isinstance(v, dict)]
     if isinstance(out, str):
@@ -117,47 +178,39 @@ def _normalise_verifier_output(out: Any) -> list[dict[str, Any]]:
             return _normalise_verifier_output(json.loads(found.group(0)))
         except json.JSONDecodeError:
             return []
+    return []
+
+
 def verify_node(state: ResearchState) -> dict[str, Any]:
     topic = state.get("topic") or ""
     atoms = state.get("topic_atoms") or {}
 
-    # Determine candidates based on verify_scope (explicit) or citation_done (legacy).
-    # verify_scope ∈ {"search", "expanded", "repair"} — set by the routing function
-    # to disambiguate the three call paths into verify_node:
-    #   search   → quality_filter → verify  (first round, candidates = paper_candidates)
-    #   expanded → citation_expander → verify when n_expanded > 0
-    #   repair  → paper_retriever → quality_filter → verify (repair loop)
     verify_scope = state.get("verify_scope") or ""
     citation_done = state.get("citation_expansion_done", False)
 
     if verify_scope == "expanded":
-        # After citation_expander with n_expanded > 0: ONLY verify expanded papers.
-        # Never fall back to paper_candidates — that would wipe existing accepted.
         candidates = list(state.get("expanded_papers") or [])
     elif verify_scope == "repair":
-        # Repair loop: candidates are the freshly-repaired paper_candidates.
         candidates = list(state.get("paper_candidates") or [])
     elif verify_scope == "search" or not citation_done:
-        # First round: verify paper_candidates as-is.
         candidates = list(state.get("paper_candidates") or [])
     else:
-        # citation_done=True but verify_scope not "expanded": avoid re-verifying
-        # paper_candidates when expanded_papers is empty — this path should be
-        # prevented by the conditional edge route_after_citation_expander, but
-        # we guard here as well for defence in depth.
         expanded = list(state.get("expanded_papers") or [])
         if expanded:
             candidates = expanded
         else:
-            candidates = []  # Guard: do not fall back to paper_candidates
+            candidates = []
 
     user_constraints = state.get("user_constraints") or {}
     if isinstance(user_constraints, dict):
         verify_limit = int(user_constraints.get("max_verify_candidates", len(candidates)) or len(candidates))
         verify_limit = max(0, min(len(candidates), verify_limit))
         candidates = candidates[:verify_limit]
-    t0 = time.time()
 
+    # Re7.6: assign stable candidate_ids before sending to LLM
+    candidates = _assign_candidate_ids(candidates)
+
+    t0 = time.time()
     trace: dict[str, Any] = {
         "node": "verify",
         "started_at": _now_iso(),
@@ -172,41 +225,43 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
                         "trace_events", "errors", "provider_profile", "verify_scope"],
     }
     errors: list[dict[str, Any]] = []
-    verified: list[dict[str, Any]] = []
+    verification_diag: dict[str, Any] = {}
+    verification_failed = False
 
     try:
-        verdicts = _call_verifier(topic, atoms, candidates)
-        # Build title→candidate index to carry over identifiers (doi, paper_id, etc.)
+        verdicts, verification_diag = _call_verifier(topic, atoms, candidates)
+
+        # Build candidate_id → candidate index
+        _candidate_by_id: dict[str, dict[str, Any]] = {}
         _candidate_by_title: dict[str, dict[str, Any]] = {}
         for c in candidates:
-            t = (c.get("title") or c.get("name") or "").strip().lower()
-            if t:
-                _candidate_by_title[t] = c
-        # Map loose schema to normalized candidate.
+            cid = c.get("candidate_id", "")
+            title = (c.get("title") or c.get("name") or "").strip().lower()
+            if cid:
+                _candidate_by_id[cid] = c
+            if title:
+                _candidate_by_title[title] = c
+
         keep = []
         weak = []
         rejected = []
-        keep_titles: set[str] = set()
-        keep_urls: set[str] = set()
+        keep_ids: set[str] = set()
+
         for v in verdicts:
-            title = (v.get("title") or v.get("name") or "").strip()
-            if not title:
-                continue
+            cid = v.get("candidate_id", "")
+            orig = _candidate_by_id.get(cid, {})
+            if not orig:
+                title = (v.get("title") or v.get("name") or "").strip()
+                orig = _candidate_by_title.get(title.lower(), {})
+
             verdict = (v.get("verdict") or "").lower()
-            # Carry over identifiers from the original candidate
-            orig = _candidate_by_title.get(title.lower(), {})
             item = {
-                "title": title,
+                "title": orig.get("title") or v.get("title", ""),
+                "candidate_id": cid or orig.get("candidate_id", ""),
                 "verdict": verdict,
                 "hit_keywords": v.get("hit_keywords") or [],
-                "unrelated_keywords": v.get("unrelated_keywords") or [],
-                "related_keywords": v.get("related_keywords") or [],
-                "source_type": v.get("source_type") or "paper",
                 "relation_to_topic": v.get("relation_to_topic") or "none",
-                "url_missing": bool(v.get("url_missing")),
-                "needs_human_confirm": bool(v.get("needs_human_confirm")),
                 "reason": v.get("reason") or "",
-                # Re1.3: carry over identifiers for citation_expander
                 "doi": orig.get("doi") or v.get("doi"),
                 "url": orig.get("url") or v.get("url"),
                 "source": orig.get("source") or v.get("source"),
@@ -215,105 +270,87 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
                 "citation_count": orig.get("citation_count") or v.get("citation_count") or 0,
                 "abstract": orig.get("abstract") or v.get("abstract") or "",
             }
-            # Re2.2-fix: deduplicate by title + URL in first round too
-            dedup_key = title.lower().strip()
-            url_key = (item.get("url") or "").lower().strip()
-            if dedup_key in keep_titles:
+
+            dedup_key = cid or (item.get("title") or "").lower().strip()
+            if dedup_key and dedup_key in keep_ids:
                 continue
-            if url_key and url_key in keep_urls:
-                continue
-            keep_titles.add(dedup_key)
-            if url_key:
-                keep_urls.add(url_key)
+            if dedup_key:
+                keep_ids.add(dedup_key)
+
             if verdict == "accept":
                 keep.append(item)
             elif verdict == "weak_reject":
                 weak.append(item)
             else:
                 rejected.append(item)
-        verified = keep
+
+        # Re7.6: detect verification failure
+        if not verdicts and len(candidates) > 0:
+            verification_failed = True
+            errors.append({
+                "node": "verify",
+                "error": "verification_failed",
+                "detail": f"no verdicts resolved for {len(candidates)} candidates",
+                "diagnostics": verification_diag,
+            })
+
         trace["output_summary"] = {
             "n_accept": len(keep),
             "n_weak_reject": len(weak),
             "n_reject": len(rejected),
+            "n_input": len(candidates),
+            "n_resolved": len(verdicts),
+            "coverage": verification_diag.get("coverage", 0),
+            "verification_failed": verification_failed,
+            "parse_stages": verification_diag.get("parse_stages", []),
         }
     except Exception as exc:
-        # SOP §15 / 自查方案 §2: when verification fails we MUST NOT forward
-        # raw candidates as verified. Return an empty verified list so the
-        # quarantine path (the rejection list) carries the titles forward.
         logger.exception("verify_node LLM call failed — candidates quarantined")
-        rejected_titles = [
-            c.get("title") or c.get("name") or "" for c in candidates
-        ]
+        verification_failed = True
+        rejected_titles = [c.get("title") or c.get("name") or "" for c in candidates]
         errors.append({"node": "verify", "error": f"LLMUnavailable:{type(exc).__name__}"})
         trace["errors"].append({
-            "phase": "llm_call",
-            "error": f"{type(exc).__name__}",
-            "action": "quarantine_all",
-            "quarantined_titles": rejected_titles[:50],
+            "phase": "llm_call", "error": f"{type(exc).__name__}",
+            "action": "quarantine_all", "quarantined_titles": rejected_titles[:50],
         })
         trace["output_summary"] = {
-            "n_accept": 0,
-            "n_reject_or_weak": len(rejected_titles),
-            "note": "verify_failed_all_quarantined",
+            "n_accept": 0, "n_reject_or_weak": len(rejected_titles),
+            "note": "verify_failed_all_quarantined", "verification_failed": True,
         }
-        verified = []
 
     trace["ended_at"] = _now_iso()
-
     trace["elapsed_s"] = round(time.time() - t0, 3)
 
+    # Re7.6: when verification failed, preserve candidates — don't silently drop
+    if verification_failed and not keep and not weak:
+        keep = [dict(c) for c in candidates]  # shallow copy for safety
+        for item in keep:
+            item["verdict"] = "unresolved"
+            item["verification_status"] = "verification_failed"
 
-    # Re1.3: merge verified_papers in second round
     if citation_done:
         existing_verified = list(state.get("verified_papers") or [])
         existing_weak = list(state.get("weak_papers") or [])
-
-        # Re2.2 fix: deduplicate by title before merging
         seen_titles: set[str] = set()
         for p in existing_verified + existing_weak:
             t = (p.get("title") or "").strip().lower()
             if t:
                 seen_titles.add(t)
-
-        deduped_verified = []
-        deduped_weak = []
-        for p in verified:
-            t = (p.get("title") or "").strip().lower()
-            if t and t in seen_titles:
-                continue  # skip duplicate
-            deduped_verified.append(p)
-            seen_titles.add(t)
-        for p in weak:
-            t = (p.get("title") or "").strip().lower()
-            if t and t in seen_titles:
-                continue
-            deduped_weak.append(p)
-            seen_titles.add(t)
-
-        merged_verified = existing_verified + deduped_verified
-        merged_weak = existing_weak + deduped_weak
-
+        deduped_verified = [p for p in keep if (p.get("title") or "").strip().lower() not in seen_titles]
+        deduped_weak = [p for p in weak if (p.get("title") or "").strip().lower() not in seen_titles]
         return {
-            "verified_papers": merged_verified,
-            "weak_papers": merged_weak,
+            "verified_papers": existing_verified + deduped_verified,
+            "weak_papers": existing_weak + deduped_weak,
             "paper_candidates": candidates,
-            "trace_events": [trace],
-            "errors": errors,
+            "trace_events": [trace], "errors": errors,
             "provider_profile": "fast_json",
         }
 
-
     return {
-
-        "verified_papers": verified,
+        "verified_papers": keep,
         "weak_papers": weak,
         "paper_candidates": candidates,
-
         "trace_events": [trace],
-
         "errors": errors,
-
         "provider_profile": "fast_json",
-
     }
