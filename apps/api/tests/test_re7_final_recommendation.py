@@ -10,7 +10,7 @@ from apps.api.app.services.agents.graph.nodes.content import (
 
 def test_compute_verdict_go():
     assert _compute_final_verdict({
-        "low_bar_review": {"status": "passed"},
+        "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "ACCEPT",
     }) == "GO"
@@ -26,7 +26,7 @@ def test_compute_verdict_stop_low_bar():
 
 def test_compute_verdict_stop_claim_reject():
     assert _compute_final_verdict({
-        "low_bar_review": {"status": "passed"},
+        "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "REJECT",
     }) == "STOP"
@@ -34,7 +34,7 @@ def test_compute_verdict_stop_claim_reject():
 
 def test_compute_verdict_stop_human_gate_blocked():
     assert _compute_final_verdict({
-        "low_bar_review": {"status": "passed"},
+        "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "blocked"},
         "claim_judge_verdict": "ACCEPT",
     }) == "STOP"
@@ -42,7 +42,7 @@ def test_compute_verdict_stop_human_gate_blocked():
 
 def test_compute_verdict_risky_revise():
     assert _compute_final_verdict({
-        "low_bar_review": {"status": "passed"},
+        "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "REVISE",
     }) == "RISKY"
@@ -50,7 +50,7 @@ def test_compute_verdict_risky_revise():
 
 def test_compute_verdict_risky_blocked_items():
     assert _compute_final_verdict({
-        "low_bar_review": {"status": "passed"},
+        "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "ACCEPT",
         "blocked_items": ["nd-001: missing evidence"],
@@ -71,7 +71,7 @@ def test_stop_reason_collects_reasons():
 def test_final_recommendation_includes_verdict():
     result = final_recommendation_node({
         "topic": "test",
-        "low_bar_review": {"status": "passed"},
+        "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "ACCEPT",
     })
@@ -85,7 +85,7 @@ def test_final_recommendation_has_feedback_bar():
     result = final_recommendation_node({
         "case_id": "case-42",
         "topic": "test",
-        "low_bar_review": {"status": "passed"},
+        "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "ACCEPT",
     })

@@ -44,6 +44,7 @@ def answer_question(
     chunks = retrieve(question, index, top_k=top_k)
 
     if not chunks:
+        artifact_id = _generate_rag_artifact_id()
         return {
             "answer": "未在已索引文档中找到相关信息",
             "confidence": 0.0,
@@ -51,6 +52,8 @@ def answer_question(
             "retrieved_chunks": [],
             "case_id": case_id,
             "abstain_reason": "no_retrieved_chunks",
+            "artifact_id": artifact_id,
+            "feedback_bar": _build_feedback_bar(case_id, artifact_id),
             "trace": {"top_score": 0.0, "n_citations": 0, "n_valid_citations": 0, "n_retrieved_chunks": 0},
         }
 
@@ -76,6 +79,7 @@ def answer_question(
         logger.warning("RAG QA LLM failed: %s — fallback to retrieval only", exc)
         # Fallback: only return extractive citation from top chunk
         top = chunks[0]
+        fallback_top_score = top.get("score", 0)
         artifact_id = _generate_rag_artifact_id()
         return {
             "answer": f"基于检索结果（LLM 不可用）：{top['text'][:200]}",
@@ -88,7 +92,7 @@ def answer_question(
             "citation_valid": True,
             "feedback_bar": _build_feedback_bar(case_id, artifact_id),
             "trace": {
-                "top_score": round(top_score, 4),
+                "top_score": round(fallback_top_score, 4),
                 "n_citations": 1,
                 "n_valid_citations": 1,
                 "n_retrieved_chunks": len(chunks),
@@ -225,10 +229,16 @@ def _build_feedback_bar(case_id: str, artifact_id: str) -> dict[str, Any]:
     try:
         from apps.api.app.services.feedback_bar import make_feedback_bar
         return make_feedback_bar(case_id, "rag_answer", artifact_id)
-    except ImportError:
+    except Exception:
         return {
             "artifact_type": "rag_answer",
             "artifact_id": artifact_id,
-            "idempotency_key": "",
+            "idempotency_key": _fallback_feedback_key(case_id, "rag_answer", artifact_id),
             "options": ["useful", "incorrect", "unsupported", "needs_more_evidence"],
         }
+
+
+def _fallback_feedback_key(case_id: str, artifact_type: str, artifact_id: str) -> str:
+    import hashlib
+    raw = f"{case_id}:{artifact_type}:{artifact_id}"
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]

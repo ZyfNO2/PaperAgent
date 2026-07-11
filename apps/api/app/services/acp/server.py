@@ -163,14 +163,21 @@ class ACPServer:
 
     def _h_query_rag(self, params: dict[str, Any]) -> dict[str, Any]:
         from apps.api.app.services.rag.indexer import load_index
-        from apps.api.app.services.rag.qa import answer_question
+        from apps.api.app.services.rag.qa import answer_question, _generate_rag_artifact_id, _build_feedback_bar
 
         case_id = params.get("case_id", "global")
         question = params["question"]
 
         index = load_index(case_id)
         if index is None:
-            return {"error": "no RAG index found", "case_id": case_id}
+            artifact_id = _generate_rag_artifact_id()
+            return {
+                "error": "no RAG index found",
+                "case_id": case_id,
+                "artifact_id": artifact_id,
+                "feedback_bar": _build_feedback_bar(case_id, artifact_id),
+                "trace": {"top_score": 0.0, "n_citations": 0, "n_valid_citations": 0, "n_retrieved_chunks": 0},
+            }
 
         return answer_question(question, index, case_id)
 
