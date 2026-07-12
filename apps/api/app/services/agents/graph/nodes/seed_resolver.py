@@ -49,8 +49,19 @@ logger = logging.getLogger(__name__)
 
 # ── Identifier normalisation ────────────────────────────────────────────────
 
-_DOI_RE = __import__("re").compile(r"10\.\d{4,9}/\S+$")
-_ARXIV_RE = __import__("re").compile(r"^\d{4}\.\d{4,5}(v\d+)?$|^[a-z\-]+/\d{7}$")
+import re as _re
+
+_DOI_RE = _re.compile(r"10\.\d{4,9}/\S+$")
+# Anchored pattern for validating a standalone arXiv ID
+_ARXIV_RE = _re.compile(r"^\d{4}\.\d{4,5}(v\d+)?$|^[a-z\-]+(?:\.[a-z\-]+)?/\d{7}$",
+                         _re.IGNORECASE)
+# Unanchored pattern for extracting an arXiv ID from a URL (Re8.0 P1-1 fix:
+# ^...$ anchoring + .search() never matched URLs like https://arxiv.org/abs/2401.00001).
+# P1-1b: also match old-style subject-class IDs like cs.LG/0703001, math.AT/0701001
+# (subject class may contain dots, hyphens, and mixed case).
+_ARXIV_URL_RE = _re.compile(
+    r"(\d{4}\.\d{4,5}(?:v\d+)?|[a-z\-.]+/\d{7})", _re.IGNORECASE,
+)
 
 
 def _classify_input(payload: dict[str, Any]) -> tuple[str, str | None]:
@@ -67,10 +78,11 @@ def _classify_input(payload: dict[str, Any]) -> tuple[str, str | None]:
         return "arxiv", arxiv
     url = (payload.get("url") or "").strip()
     if url:
-        # Try to extract arxiv id from URL
-        m = _ARXIV_RE.search(url)
-        if m and "arxiv.org" in url.lower():
-            return "arxiv", m.group(0)
+        # Try to extract arxiv id from URL (P1-1: use unanchored pattern)
+        if "arxiv.org" in url.lower():
+            m = _ARXIV_URL_RE.search(url)
+            if m:
+                return "arxiv", m.group(1)
         return "url", url
     # PDF is a stronger signal than title — check before title so a
     # candidate carrying both pdf_path and title is treated as a PDF.
@@ -284,11 +296,11 @@ async def _resolve_one_seed(
     elif input_form == "arxiv":
         fetched = await _fetch_arxiv(identifier)
     elif input_form == "url":
-        # Try arxiv pattern first
+        # Try arxiv pattern first (P1-1: use unanchored _ARXIV_URL_RE)
         if "arxiv.org" in (identifier or "").lower():
-            m = _ARXIV_RE.search(identifier)
+            m = _ARXIV_URL_RE.search(identifier)
             if m:
-                fetched = await _fetch_arxiv(m.group(0))
+                fetched = await _fetch_arxiv(m.group(1))
         # Else fall through — URL-only is metadata_only ambiguous unless
         # caller also supplied a DOI/arxiv that we already tried above.
 

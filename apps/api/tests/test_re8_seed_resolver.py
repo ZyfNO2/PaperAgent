@@ -6,6 +6,8 @@ pool (verified_papers). This is the core safety contract of Re8.0 §6.2.
 """
 from __future__ import annotations
 
+import os
+
 import pytest
 from unittest.mock import AsyncMock, patch
 
@@ -474,3 +476,195 @@ class TestSeedResolverMultipleSeeds:
         assert result["verified_papers"][0]["seed_id"] == "real"
         # 3 ledger entries
         assert len(result["reasoning_ledger"]) == 3
+
+
+# ---------------------------------------------------------------------------
+# P1-1 regression: arXiv URL extraction (unanchored pattern)
+# ---------------------------------------------------------------------------
+
+class TestArxivUrlExtraction:
+    """P1-1 fix: _ARXIV_URL_RE must extract arxiv ID from full URLs."""
+
+    def test_arxiv_url_classified_as_arxiv(self):
+        form, ident = _classify_input({"url": "https://arxiv.org/abs/2401.00001"})
+        assert form == "arxiv"
+        assert ident == "2401.00001"
+
+    def test_arxiv_url_with_version(self):
+        form, ident = _classify_input({"url": "https://arxiv.org/abs/2401.00001v2"})
+        assert form == "arxiv"
+        assert ident == "2401.00001v2"
+
+    def test_old_style_arxiv_url(self):
+        form, ident = _classify_input({"url": "https://arxiv.org/abs/cs.LG/0703001"})
+        assert form == "arxiv"
+        assert ident == "cs.LG/0703001"
+
+    def test_non_arxiv_url_still_url(self):
+        form, ident = _classify_input({"url": "https://example.com/paper"})
+        assert form == "url"
+
+
+# ---------------------------------------------------------------------------
+# P1-5: seed_resolver → verify integration (existing_verified merge)
+# ---------------------------------------------------------------------------
+
+class TestSeedResolverVerifyIntegration:
+    """P1-5: verify that verify_node's first-round existing_verified merge
+    correctly preserves seed_resolver-promoted papers."""
+
+    @pytest.fixture(autouse=True)
+    def _enable_contract_path(self, monkeypatch):
+        """Force the unified-router contract path so the mocked
+        ``call_with_contract_list`` is actually invoked. Without this,
+        ``_call_verifier`` defaults to the legacy ``llm_router.call_json``
+        path (USE_CONTRACT_PATH=0) and the patch never fires — the mock
+        verdicts would never reach ``keep``."""
+        monkeypatch.setenv("USE_CONTRACT_PATH", "1")
+
+    def _make_contract_result(self, verdicts: list):
+        from apps.api.app.services.router.unified_router import ContractResult
+        return ContractResult(
+            success=True,
+            content=verdicts,
+            contract_id="verification-batch/v1",
+            provider_chain=["mock", "mock-model"],
+            heuristic_fallback=False,
+            error=None,
+        )
+
+    def _make_verify_state(self, existing_verified, n_candidates=2):
+        return {
+            "topic": "Test topic",
+            "topic_atoms": {"method": ["test"], "object": ["x"], "task": ["y"],
+                           "dataset_terms": ["Z"]},
+            "paper_candidates": [
+                {
+                    "title": f"Candidate {i}",
+                    "candidate_id": f"cand_{i}",
+                    "abstract": f"Abstract {i}",
+                    "source": "arxiv",
+                    "url": f"https://arxiv.org/abs/2601.{i:04d}",
+                }
+                for i in range(n_candidates)
+            ],
+            "verified_papers": existing_verified,
+            "verify_scope": "search",
+            "citation_expansion_done": False,
+            "trace_events": [],
+            "errors": [],
+        }
+
+    def test_seed_paper_preserved_through_verify(self):
+        """Seed_resolver promoted a paper; verify_node must not overwrite it."""
+        from apps.api.app.services.agents.graph.nodes.verify import verify_node
+
+        seed_paper = {
+            "title": "Seed Paper From Resolver",
+            "doi": "10.1000/seed",
+            "source": "user_seed_verified",
+            "verdict": "accept",
+            "seed_id": "seed-1",
+        }
+        state = self._make_verify_state(existing_verified=[seed_paper], n_candidates=2)
+
+        # Mock LLM returns 1 accept + 1 reject
+        verdicts = [
+            {"candidate_id": "cand_0", "verdict": "accept",
+             "relation_to_topic": "baseline", "reason": "ok"},
+            {"candidate_id": "cand_1", "verdict": "reject",
+             "relation_to_topic": "none", "reason": "unrelated"},
+        ]
+        with patch(
+            "apps.api.app.services.router.call_with_contract_list",
+            return_value=self._make_contract_result(verdicts),
+        ):
+            result = verify_node(state)
+
+        verified = result.get("verified_papers", [])
+        # Should have seed_paper + 1 new accept = 2
+        assert len(verified) == 2
+        titles = [p.get("title") for p in verified]
+        assert "Seed Paper From Resolver" in titles
+        assert "Candidate 0" in titles
+
+    def test_dedup_when_verify_accepts_same_title_as_seed(self):
+        """If verify's accept candidate has the same title as a seed paper,
+        dedup should prevent duplication (P1-4 fix)."""
+        from apps.api.app.services.agents.graph.nodes.verify import verify_node
+
+        seed_paper = {
+            "title": "Duplicate Title",
+            "doi": "10.1000/seed",
+            "source": "user_seed_verified",
+            "verdict": "accept",
+        }
+        state = self._make_verify_state(existing_verified=[seed_paper], n_candidates=1)
+        # Override candidate to have same title as seed
+        state["paper_candidates"][0]["title"] = "Duplicate Title"
+
+        verdicts = [
+            {"candidate_id": "cand_0", "verdict": "accept",
+             "relation_to_topic": "baseline", "reason": "ok"},
+        ]
+        with patch(
+            "apps.api.app.services.router.call_with_contract_list",
+            return_value=self._make_contract_result(verdicts),
+        ):
+            result = verify_node(state)
+
+        verified = result.get("verified_papers", [])
+        # Should dedup by title → only 1 paper, not 2
+        titles = [p.get("title") for p in verified]
+        assert titles.count("Duplicate Title") == 1
+
+    def test_dedup_by_doi_when_title_empty(self):
+        """P1-4: dedup by DOI when title is empty."""
+        from apps.api.app.services.agents.graph.nodes.verify import verify_node
+
+        seed_paper = {
+            "title": "",
+            "doi": "10.1000/seed-doi",
+            "source": "user_seed_verified",
+            "verdict": "accept",
+        }
+        state = self._make_verify_state(existing_verified=[seed_paper], n_candidates=1)
+        state["paper_candidates"][0]["title"] = ""
+        state["paper_candidates"][0]["doi"] = "10.1000/seed-doi"
+
+        verdicts = [
+            {"candidate_id": "cand_0", "verdict": "accept",
+             "relation_to_topic": "baseline", "reason": "ok"},
+        ]
+        with patch(
+            "apps.api.app.services.router.call_with_contract_list",
+            return_value=self._make_contract_result(verdicts),
+        ):
+            result = verify_node(state)
+
+        verified = result.get("verified_papers", [])
+        # Same DOI → dedup → only 1
+        dois = [p.get("doi") for p in verified if p.get("doi")]
+        assert dois.count("10.1000/seed-doi") == 1
+
+    def test_topic_only_no_existing_verified_unchanged(self):
+        """topic_only path: no existing_verified → verify behaves as before."""
+        from apps.api.app.services.agents.graph.nodes.verify import verify_node
+
+        state = self._make_verify_state(existing_verified=[], n_candidates=2)
+        verdicts = [
+            {"candidate_id": "cand_0", "verdict": "accept",
+             "relation_to_topic": "baseline", "reason": "ok"},
+            {"candidate_id": "cand_1", "verdict": "reject",
+             "relation_to_topic": "none", "reason": "unrelated"},
+        ]
+        with patch(
+            "apps.api.app.services.router.call_with_contract_list",
+            return_value=self._make_contract_result(verdicts),
+        ):
+            result = verify_node(state)
+
+        verified = result.get("verified_papers", [])
+        # No existing → just 1 new accept
+        assert len(verified) == 1
+        assert verified[0]["title"] == "Candidate 0"

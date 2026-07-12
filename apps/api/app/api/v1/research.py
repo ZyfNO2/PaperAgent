@@ -1054,15 +1054,31 @@ def _get_evidence_graph_impl(case_id: str) -> dict[str, Any]:
 
 
 def _list_user_papers_impl(case_id: str) -> dict[str, Any]:
+    """List user-uploaded papers (ACP version). Re8.0: reads from
+    candidate_seeds + seed_cards, same logic as HTTP list_user_papers."""
     with _LOCK:
         papers = list(_USER_PAPERS.get(case_id, []))
     state_path = _case_dir(case_id) / "state.json"
     if state_path.exists():
         try:
             st = json.loads(state_path.read_text(encoding="utf-8"))
-            for p in st.get("verified_papers") or []:
-                if p.get("source") == "user_upload" and p not in papers:
+            for p in st.get("candidate_seeds") or []:
+                if p not in papers:
                     papers.append(p)
+            for card in st.get("seed_cards") or []:
+                papers.append({
+                    "title": card.get("resolved_title") or card.get("raw_input", {}).get("title", ""),
+                    "doi": card.get("doi"),
+                    "arxiv_id": card.get("arxiv_id"),
+                    "url": card.get("canonical_url") or card.get("raw_input", {}).get("url", ""),
+                    "authors": card.get("authors", []),
+                    "year": card.get("year"),
+                    "abstract": card.get("raw_input", {}).get("abstract", ""),
+                    "role": card.get("role", "unknown"),
+                    "existence_status": card.get("existence_status", "unknown"),
+                    "seed_id": card.get("seed_id"),
+                    "audited": True,
+                })
         except Exception:
             pass
     return {"case_id": case_id, "papers": papers, "n": len(papers)}
@@ -1091,7 +1107,11 @@ def _get_innovation_impl(case_id: str) -> dict[str, Any]:
 
 
 def _upload_paper_impl(case_id: str, params: dict[str, Any]) -> dict[str, Any]:
-    """Upload a user-known paper (synchronous version for ACP)."""
+    """Upload a user-known paper (synchronous version for ACP).
+
+    Re8.0: staged as candidate_seed — seed_resolver audits before promotion.
+    NO LONGER auto-accepts into verified_papers (closes fabricated-DOI loophole).
+    """
     title = (params.get("title") or "").strip()
     doi = (params.get("doi") or "").strip()
     arxiv_id = (params.get("arxiv_id") or "").strip()
@@ -1115,23 +1135,27 @@ def _upload_paper_impl(case_id: str, params: dict[str, Any]) -> dict[str, Any]:
             _USER_PAPERS[case_id] = []
         _USER_PAPERS[case_id].append(paper)
 
+    # Re8.0: stage as candidate_seed, NOT verified_papers
     state_path = _case_dir(case_id) / "state.json"
     if state_path.exists():
         try:
             st = json.loads(state_path.read_text(encoding="utf-8"))
-            vp = st.get("verified_papers") or []
-            vp.append({
+            cs = st.get("candidate_seeds") or []
+            cs.append({
+                "seed_id": f"user-seed-{len(cs)}",
                 "title": paper["title"],
-                "abstract": paper["abstract"],
-                "url": paper["url"],
                 "doi": paper.get("doi"),
                 "arxiv_id": paper.get("arxiv_id"),
-                "source": "user_upload",
-                "verdict": "accept",
-                "relation_to_topic": paper.get("role", "baseline"),
-                "relevance_score": 1.0,
+                "url": paper["url"],
+                "authors": paper.get("authors", []),
+                "year": paper.get("year"),
+                "abstract": paper.get("abstract", ""),
+                "role": paper.get("role", "unknown"),
+                "raw_input": paper,
             })
-            st["verified_papers"] = vp
+            st["candidate_seeds"] = cs
+            if st.get("entry_mode", "topic_only") == "topic_only":
+                st["entry_mode"] = "seeded_research"
             atomic_write_json(state_path, st)
         except Exception as exc:
             logger.warning("failed to append user paper to state.json: %s", exc)
@@ -1140,7 +1164,7 @@ def _upload_paper_impl(case_id: str, params: dict[str, Any]) -> dict[str, Any]:
         "case_id": case_id,
         "paper": paper,
         "stored": True,
-        "message": "paper will be injected into verified_papers when the case runs",
+        "message": "paper staged as candidate_seed; seed_resolver will audit before promotion",
     }
 
 
