@@ -33,7 +33,15 @@ def _slugify(text: str) -> str:
 
 
 def intake_node(state: ResearchState) -> dict[str, Any]:
-    """Initialise intake; returns {} if trace_events already present."""
+    """Initialise intake; returns {} if trace_events already present.
+
+    Re8.0: user-uploaded papers are NO LONGER auto-accepted into
+    ``verified_papers``. Instead they are staged as ``candidate_seeds``
+    and the downstream ``seed_resolver_node`` audits them (Crossref /
+    arXiv authenticity check) before any promotion to evidence.
+    Existing ``topic_only`` callers without ``user_papers`` see no
+    behaviour change.
+    """
     t0 = time.time()
 
     # Idempotency guard: trust existing trace.
@@ -48,41 +56,54 @@ def intake_node(state: ResearchState) -> dict[str, Any]:
                   {"ok": True},
                   [], "local", [],
                   state_keys=["case_id", "provider_profile", "trace_events",
-                              "errors", "verified_papers", "seed_papers"])
+                              "errors", "candidate_seeds",
+                              "entry_mode", "run_mode",
+                              "network_policy", "reasoning_policy"])
 
-    result = {
+    # Re8.0: default policy fields when caller did not specify
+    from apps.api.app.services.agents.graph.re80_schema import default_re80_state
+    re80_defaults = default_re80_state(
+        entry_mode=state.get("entry_mode") or "topic_only",
+        run_mode=state.get("run_mode") or "lite_chain",
+        network_policy=state.get("network_policy") or "online",
+        reasoning_policy=state.get("reasoning_policy") or "chain_only",
+    )
+
+    result: dict[str, Any] = {
         "case_id": case_id,
         "topic": topic,
         "provider_profile": "fast_json",
         "trace_events": [trace],
         "errors": [],
     }
+    # Only set Re8.0 policy fields if caller did not specify them, so we
+    # don't clobber explicit overrides passed via state.
+    for k, v in re80_defaults.items():
+        if k not in state or state.get(k) is None:
+            result[k] = v
 
-    # Re3.1: inject user-uploaded papers into verified_papers + seed_papers
+    # Re8.0: stage user-uploaded papers as candidate_seeds (NOT verified).
+    # The seed_resolver_node is responsible for authenticity audit and
+    # promotion. This closes the "fabricated DOI auto-accepts" loophole.
     user_papers = state.get("user_papers") or []
     if user_papers:
-        verified = []
-        seeds = []
-        for p in user_papers:
-            entry = {
+        candidate_seeds: list[dict[str, Any]] = []
+        for i, p in enumerate(user_papers):
+            candidate_seeds.append({
+                "seed_id": p.get("seed_id") or f"user-seed-{i}",
                 "title": p.get("title", ""),
-                "abstract": p.get("abstract", ""),
-                "url": p.get("url", ""),
                 "doi": p.get("doi"),
                 "arxiv_id": p.get("arxiv_id"),
-                "source": "user_upload",
-                "verdict": "accept",
-                "relation_to_topic": p.get("role", "baseline"),
-                "relevance_score": 1.0,
-            }
-            verified.append(entry)
-            seeds.append({
-                "title": entry["title"],
-                "url": entry["url"],
-                "doi": entry.get("doi"),
-                "relevance_score": 1.0,
+                "url": p.get("url", ""),
+                "authors": p.get("authors", []),
+                "year": p.get("year"),
+                "abstract": p.get("abstract", ""),
+                "role": p.get("role", "unknown"),
+                "raw_input": p,
             })
-        result["verified_papers"] = verified
-        result["seed_papers"] = seeds
+        result["candidate_seeds"] = candidate_seeds
+        # Force entry_mode to seeded_research so seed_resolver runs
+        if result.get("entry_mode", state.get("entry_mode")) == "topic_only":
+            result["entry_mode"] = "seeded_research"
 
     return result

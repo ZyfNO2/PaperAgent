@@ -34,10 +34,13 @@ from . import falsifiability as _falsifiability
 from . import evidence_context as _evidence_context
 from . import novelty_draft as _novelty_draft
 from . import claim_judge as _claim_judge
+# Re8.0 new nodes
+from . import seed_resolver as _seed_resolver
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
 REGISTRY: dict[str, callable] = {
     "intake": _intake.intake_node,
+    "seed_resolver": _seed_resolver.seed_resolver_node,  # Re8.0
     "topic_parser": _topic_parser.topic_parser_node,
     "search_planner": _search_planner.search_planner_node,
     "paper_retriever": _search_agent.search_agent_node,  # Re3.0: React search agent
@@ -77,6 +80,8 @@ REGISTRY: dict[str, callable] = {
 
 NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "intake": ("case_id", "topic", "trace_events", "errors", "provider_profile"),
+    "seed_resolver": ("seed_cards", "verified_papers", "seed_papers",
+                     "reasoning_ledger", "trace_events", "errors"),  # Re8.0
     "topic_parser": ("topic_atoms", "trace_events", "errors", "provider_profile"),
     "search_planner": ("search_plan", "trace_events", "errors", "provider_profile"),
     "paper_retriever": ("raw_results", "paper_candidates", "repo_candidates",

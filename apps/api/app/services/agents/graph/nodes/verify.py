@@ -548,6 +548,22 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
             "provider_profile": "fast_json",
         }
 
+    # Re8.0: preserve seed_resolver-promoted verified papers on first round.
+    # Before Re8.0, state.verified_papers was always empty at this point
+    # (intake no longer auto-accepts user papers), so this is a no-op for
+    # topic_only callers. For seeded_research callers, seed_resolver may
+    # have promoted verified seeds into verified_papers — we must keep them.
+    existing_verified = list(state.get("verified_papers") or [])
+    if existing_verified:
+        seen_titles: set[str] = set()
+        for p in existing_verified:
+            t = (p.get("title") or "").strip().lower()
+            if t:
+                seen_titles.add(t)
+        deduped_keep = [p for p in keep
+                        if (p.get("title") or "").strip().lower() not in seen_titles]
+        keep = existing_verified + deduped_keep
+
     return {
         "verified_papers": keep,
         "weak_papers": weak,
