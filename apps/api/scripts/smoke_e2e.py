@@ -54,6 +54,8 @@ for case in cases:
     node_timings = []
     last_t = t0
     verdict = ""
+    final_state: dict = {}
+    all_trace_events: list = []
 
     try:
         for chunk in g.stream(
@@ -68,6 +70,11 @@ for case in cases:
                 elapsed = round(now - last_t, 2)
                 node_timings.append({"node": node_name, "elapsed_s": elapsed})
                 last_t = now
+                final_state.update(patch)
+                # trace_events uses operator.add reducer; accumulate separately
+                te = patch.get("trace_events")
+                if isinstance(te, list):
+                    all_trace_events.extend(te)
                 fr = patch.get("final_recommendation", {})
                 if isinstance(fr, dict) and fr.get("verdict"):
                     verdict = fr["verdict"]
@@ -75,6 +82,27 @@ for case in cases:
     except Exception as exc:
         print(f"  ERROR: {type(exc).__name__}: {exc}", flush=True)
         verdict = f"ERROR:{type(exc).__name__}"
+
+    final_state["trace_events"] = all_trace_events
+
+    # Extract attribution fields from the final graph state
+    stop_reason = final_state.get("stop_reason", [])
+    if not isinstance(stop_reason, list):
+        stop_reason = [str(stop_reason)] if stop_reason else []
+    claim_judge_verdict = final_state.get("claim_judge_verdict", "") or ""
+    low_bar_status = (final_state.get("low_bar_review") or {}).get("status", "") if isinstance(final_state.get("low_bar_review"), dict) else ""
+    human_gate_status = (final_state.get("human_gate") or {}).get("status", "") if isinstance(final_state.get("human_gate"), dict) else ""
+
+    provider_chain = []
+    for ev in all_trace_events:
+        if isinstance(ev, dict) and ev.get("provider"):
+            provider_chain.append({
+                "node": ev.get("node", ""),
+                "provider": ev.get("provider", ""),
+                "model": ev.get("model", ""),
+                "contract_id": ev.get("contract_id", ""),
+                "elapsed_s": ev.get("elapsed_s"),
+            })
 
     total = time.time() - t0
     result = {
@@ -86,6 +114,11 @@ for case in cases:
         "total_s": round(total, 1),
         "n_nodes": len(node_timings),
         "node_timings": node_timings,
+        "stop_reason": stop_reason,
+        "claim_judge_verdict": claim_judge_verdict,
+        "low_bar_status": low_bar_status,
+        "human_gate_status": human_gate_status,
+        "provider_chain": provider_chain,
     }
     results.append(result)
     print(f"  => verdict={verdict}, total={total:.1f}s, nodes={len(node_timings)}", flush=True)

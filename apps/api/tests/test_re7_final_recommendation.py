@@ -48,11 +48,41 @@ def test_compute_verdict_risky_revise():
     }) == "RISKY"
 
 
-def test_compute_verdict_risky_blocked_items():
+def test_compute_verdict_conditional_accept_with_blocked_items():
+    """Re7.7: ACCEPT + blocked_items → CONDITIONAL (not RISKY)."""
     assert _compute_final_verdict({
         "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "ACCEPT",
+        "blocked_items": ["nd-001: missing evidence"],
+    }) == "CONDITIONAL"
+
+
+def test_compute_verdict_risky_unavailable():
+    """Re7.7: claim judge UNAVAILABLE → RISKY (not STOP)."""
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "pass"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "UNAVAILABLE",
+    }) == "RISKY"
+
+
+def test_compute_verdict_pivot_revise_with_fundamental_flaw():
+    """Re7.7: REVISE + devils_advocate fundamental_flaw → PIVOT."""
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "pass"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "REVISE",
+        "devils_advocate": {"fundamental_flaw": True},
+    }) == "PIVOT"
+
+
+def test_compute_verdict_risky_blocked_items_no_accept():
+    """blocked_items with non-ACCEPT verdict (and not REJECT/UNAVAILABLE/REVISE) → RISKY."""
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "pass"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "",
         "blocked_items": ["nd-001: missing evidence"],
     }) == "RISKY"
 

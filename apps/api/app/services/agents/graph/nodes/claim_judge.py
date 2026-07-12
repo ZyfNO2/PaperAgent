@@ -120,9 +120,9 @@ def claim_judge_node(state: ResearchState) -> dict[str, Any]:
             timeout=45.0,
             fallback={
                 "judgements": [],
-                "overall_verdict": "REJECT",
+                "overall_verdict": "UNAVAILABLE",
                 "blocked_items": [],
-                "summary": "judge unavailable",
+                "summary": "judge unavailable (fallback dict)",
             },
         )
         result = parse_claim_judge_output(raw)
@@ -134,7 +134,7 @@ def claim_judge_node(state: ResearchState) -> dict[str, Any]:
         logger.warning("claim_judge: LLM call failed: %s", exc)
         return {
             "claim_judgements": [],
-            "claim_judge_verdict": "REJECT",
+            "claim_judge_verdict": "UNAVAILABLE",
             "blocked_items": [],
             "claim_judge_summary": f"judge unavailable: {exc}",
         }
