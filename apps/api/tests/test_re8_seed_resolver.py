@@ -27,8 +27,10 @@ from apps.api.app.services.agents.graph.re80_schema import (
     validate_seed_card,
 )
 from apps.api.app.services.agents.graph.nodes.seed_resolver import (
+    _author_lastname,
     _classify_input,
     _decide_existence,
+    _normalize_seed_payload,
     _titles_agree,
     seed_resolver_node,
 )
@@ -174,6 +176,254 @@ class TestClassifyInput:
         form, ident = _classify_input({})
         assert form == "citation"
         assert ident is None
+
+
+# ---------------------------------------------------------------------------
+# Re8.0 P0-1: CandidateSeed input contract normalisation
+# (raw_input nested fields → top-level flatten)
+# ---------------------------------------------------------------------------
+
+class TestSeedPayloadNormalization:
+    """Re8.0 P0-1: ``_normalize_seed_payload`` + ``_classify_input`` must
+    accept both flat top-level fields and nested ``raw_input`` dict, with
+    top-level winning on conflicts. Covers all 4 spec scenarios:
+
+    1. nested raw_input only (no top-level doi) → extract doi from raw_input
+    2. top-level only (no raw_input) → existing behaviour unchanged
+    3. both present → top-level wins (or they agree)
+    4. neither → fall back to "citation" or "title"
+    """
+
+    def test_normalize_extracts_doi_from_raw_input(self):
+        """Scenario 1: nested raw_input only → doi flattened up."""
+        payload = {
+            "seed_id": "S1",
+            "raw_input": {"doi": "10.18653/v1/N19-1423", "title": "BERT"},
+        }
+        normalized = _normalize_seed_payload(payload)
+        assert normalized["doi"] == "10.18653/v1/N19-1423"
+        assert normalized["title"] == "BERT"
+        # raw_input preserved verbatim on the normalized payload
+        assert normalized["raw_input"] == {
+            "doi": "10.18653/v1/N19-1423", "title": "BERT",
+        }
+        # Original payload not mutated
+        assert "doi" not in payload
+
+    def test_normalize_top_level_wins_over_raw_input(self):
+        """Scenario 3: both present → top-level value wins, raw_input ignored."""
+        payload = {
+            "doi": "10.1000/top-level",
+            "raw_input": {"doi": "10.1000/raw-only"},
+        }
+        normalized = _normalize_seed_payload(payload)
+        assert normalized["doi"] == "10.1000/top-level"
+
+    def test_normalize_no_raw_input_returns_copy(self):
+        """Scenario 2: no raw_input → payload returned as shallow copy."""
+        payload = {"doi": "10.1/x", "title": "T"}
+        normalized = _normalize_seed_payload(payload)
+        assert normalized == payload
+        assert normalized is not payload  # not aliased
+
+    def test_normalize_empty_raw_input_no_op(self):
+        """raw_input={} → no fields to flatten."""
+        payload = {"doi": "10.1/x", "raw_input": {}}
+        normalized = _normalize_seed_payload(payload)
+        assert normalized["doi"] == "10.1/x"
+
+    def test_normalize_non_dict_payload_returns_empty(self):
+        """Defensive: non-dict payload → empty dict (no crash)."""
+        assert _normalize_seed_payload(None) == {}
+        assert _normalize_seed_payload("not a dict") == {}
+
+    def test_normalize_does_not_overwrite_empty_list_with_raw(self):
+        """An empty list at top-level is treated as 'unset' and refilled
+        from raw_input — matches the 'top-level wins only if truthy'
+        contract for authors lists."""
+        payload = {
+            "authors": [],
+            "raw_input": {"authors": ["Devlin", "Chang"]},
+        }
+        normalized = _normalize_seed_payload(payload)
+        assert normalized["authors"] == ["Devlin", "Chang"]
+
+    def test_classify_nested_doi_via_raw_input(self):
+        """Scenario 1 end-to-end: raw_input has doi, top-level does not →
+        _classify_input classifies as 'doi' with the nested identifier."""
+        form, ident = _classify_input({
+            "seed_id": "S1",
+            "raw_input": {"doi": "10.18653/v1/N19-1423", "title": "BERT"},
+        })
+        assert form == "doi"
+        assert ident == "10.18653/v1/N19-1423"
+
+    def test_classify_nested_arxiv_url_via_raw_input(self):
+        """Nested arxiv URL → still classified as arxiv (P1-1 extraction
+        works post-normalisation)."""
+        form, ident = _classify_input({
+            "raw_input": {"url": "https://arxiv.org/abs/1911.02116"},
+        })
+        assert form == "arxiv"
+        assert ident == "1911.02116"
+
+    def test_classify_top_level_only_unchanged(self):
+        """Scenario 2: flat top-level fields (no raw_input) → unchanged."""
+        form, ident = _classify_input({"doi": "10.1000/test"})
+        assert form == "doi"
+        assert ident == "10.1000/test"
+
+        form, ident = _classify_input({"title": "Just a Title"})
+        assert form == "title"
+        assert ident is None
+
+    def test_classify_both_present_top_level_wins(self):
+        """Scenario 3: both carry doi but disagree → top-level identifier used."""
+        form, ident = _classify_input({
+            "doi": "10.1000/top",
+            "raw_input": {"doi": "10.1000/raw"},
+        })
+        assert form == "doi"
+        assert ident == "10.1000/top"
+
+    def test_classify_neither_top_nor_raw_falls_to_title_or_citation(self):
+        """Scenario 4: no identifier anywhere → fall back to title (if
+        present in raw_input) or citation (when nothing usable at all)."""
+        # Title only in raw_input
+        form, ident = _classify_input({"raw_input": {"title": "Some Title"}})
+        assert form == "title"
+        assert ident is None
+
+        # Nothing useful at all
+        form, ident = _classify_input({
+            "seed_id": "S1",
+            "raw_input": {"role": "classic_anchor"},
+        })
+        assert form == "citation"
+        assert ident is None
+
+
+class TestSeedResolverNestedRawInputIntegration:
+    """Re8.0 P0-1 integration: ``seed_resolver_node`` receives a seed whose
+    identifier lives ONLY in ``raw_input``. The Resolver must normalise it
+    up, fetch metadata, and verify the seed — NOT silently mark it
+    ambiguous (which was the pre-fix bug).
+    """
+
+    def test_nested_doi_seed_gets_verified(self):
+        """Mock Crossref returns matching metadata for the nested DOI →
+        card becomes verified + promoted to evidence."""
+        state = {
+            "entry_mode": "seeded_research",
+            "network_policy": "online",
+            "candidate_seeds": [
+                {
+                    "seed_id": "S1",
+                    "raw_input": {
+                        "doi": "10.18653/v1/N19-1423",
+                        "title": "BERT",
+                        "role": "classic_anchor",
+                    },
+                    "role": "classic_anchor",
+                },
+            ],
+        }
+        fetched = {
+            "title": "BERT",
+            "authors": ["Devlin"],
+            "year": 2019,
+            "doi": "10.18653/v1/N19-1423",
+            "canonical_url": "https://doi.org/10.18653/v1/N19-1423",
+        }
+        with patch(
+            "apps.api.app.services.agents.graph.nodes.seed_resolver._fetch_crossref",
+            new_callable=AsyncMock,
+            return_value=fetched,
+        ):
+            result = seed_resolver_node(state)
+
+        cards = result["seed_cards"]
+        assert len(cards) == 1
+        # Critical: must NOT be ambiguous — DOI was in raw_input, normalised up
+        assert cards[0]["existence_status"] == "verified"
+        assert cards[0]["doi"] == "10.18653/v1/N19-1423"
+        assert cards[0]["input_form"] == "doi"
+        # Promoted to evidence
+        assert len(result["verified_papers"]) == 1
+        # raw_input preserved on the card for audit: the original payload
+        # is stored verbatim, so the user-supplied nested raw_input dict
+        # is still accessible at card["raw_input"]["raw_input"].
+        assert cards[0]["raw_input"]["raw_input"]["doi"] == "10.18653/v1/N19-1423"
+
+    def test_nested_arxiv_url_seed_gets_verified(self):
+        """Nested arxiv URL → normalised up → classified as arxiv → verified."""
+        state = {
+            "entry_mode": "seeded_research",
+            "network_policy": "online",
+            "candidate_seeds": [
+                {
+                    "seed_id": "S1",
+                    "raw_input": {
+                        "url": "https://arxiv.org/abs/1911.02116",
+                        "title": "XLM-R",
+                        "role": "current_sota_candidate",
+                    },
+                    "role": "current_sota_candidate",
+                },
+            ],
+        }
+        fetched = {
+            "title": "XLM-R",
+            "authors": ["Conneau"],
+            "year": 2020,
+            "arxiv_id": "1911.02116",
+            "canonical_url": "https://arxiv.org/abs/1911.02116",
+        }
+        with patch(
+            "apps.api.app.services.agents.graph.nodes.seed_resolver._fetch_arxiv",
+            new_callable=AsyncMock,
+            return_value=fetched,
+        ):
+            result = seed_resolver_node(state)
+
+        cards = result["seed_cards"]
+        assert len(cards) == 1
+        assert cards[0]["existence_status"] == "verified"
+        assert cards[0]["input_form"] == "arxiv"
+        assert len(result["verified_papers"]) == 1
+
+
+class TestAuthorLastname:
+    """Re8.0 P0-B: ``_author_lastname`` normalises both ``"Devlin, J."``
+    (surname-first) and ``"Jacob Devlin"`` (given-first) forms to the
+    same lower-cased surname. Without this, the existence check rejects
+    papers whose authors are actually identical (Crossref returns
+    ``"given family"`` while user seeds often carry ``"Family, G."``).
+    """
+
+    def test_author_lastname_surname_first_format(self):
+        """``"Devlin, J."`` -> ``"devlin"`` (user seed surname-first style)."""
+        assert _author_lastname("Devlin, J.") == "devlin"
+
+    def test_author_lastname_given_first_format(self):
+        """``"Jacob Devlin"`` -> ``"devlin"`` (Crossref given-first style)."""
+        assert _author_lastname("Jacob Devlin") == "devlin"
+
+    def test_author_lastname_empty(self):
+        """Empty string -> empty string (no crash)."""
+        assert _author_lastname("") == ""
+
+    def test_author_lastname_none(self):
+        """None -> empty string (defensive null handling)."""
+        assert _author_lastname(None) == ""
+
+    def test_author_lastname_single_name(self):
+        """``"Devlin"`` -> ``"devlin"`` (single token, no comma)."""
+        assert _author_lastname("Devlin") == "devlin"
+
+    def test_author_lastname_multiple_commas(self):
+        """``"Smith, John, Jr."`` -> ``"smith"`` (first comma-split segment wins)."""
+        assert _author_lastname("Smith, John, Jr.") == "smith"
 
 
 class TestTitlesAgree:

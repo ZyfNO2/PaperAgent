@@ -972,6 +972,69 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
     trace["ended_at"] = _now_iso()
     trace["elapsed_s"] = round(time.time() - t0, 3)
 
+    # Re8.0 P1-7: write gap resolution back to state["evidence_gaps"].
+    # Previously search_agent computed resolved_gaps / unresolved_gaps
+    # locally but never updated the gap status in state, so every gap
+    # stayed "open" forever — causing quality_pass to always fail on
+    # "evidence gaps exist but none satisfied" and _has_open_critical_gap
+    # to always return True.
+    #
+    # Strategy: upsert by gap_id. Gaps in resolved_gaps → "satisfied".
+    # Gaps in unresolved_gaps that received SOME results (n_papers>0 or
+    # n_repos>0 across all steps for that gap) → "partially_satisfied".
+    # Gaps not addressed by this search_plan stay unchanged.
+    #
+    # P1-7b fallback: when the LLM-driven ReAct loop uses queries that
+    # don't exactly match the gap-bound plan queries (gap_lookup miss),
+    # step_entry won't carry gap_id and the per-gap partial_gaps set
+    # stays empty. In that case, if search_agent DID find papers/repos,
+    # mark all "open" gaps as "partially_satisfied" — the search
+    # produced evidence even though we can't attribute it to a specific
+    # gap. This is more accurate than leaving them "open" forever.
+    updated_gaps: list[dict[str, Any]] = []
+    existing_gaps = state.get("evidence_gaps") or []
+    # Collect gap_ids that got partial results (non-zero papers/repos
+    # in any step) but didn't meet the success_condition threshold.
+    partial_gaps: set[str] = set()
+    for s in steps:
+        gid = s.get("gap_id")
+        if not gid or gid in resolved_gaps:
+            continue
+        delta = s.get("evidence_delta") or {}
+        if delta.get("n_new_papers", 0) > 0 or delta.get("n_new_repos", 0) > 0:
+            partial_gaps.add(gid)
+
+    # P1-7b: gap_lookup miss fallback. If no gap was explicitly resolved
+    # or partially-satisfied via the (tool, query) lookup, but the
+    # search_agent found papers or repos, attribute partial satisfaction
+    # to all "open" gaps. This handles the common case where the LLM
+    # reformulates plan queries (e.g. adds keywords, changes word order)
+    # and breaks the exact-match lookup.
+    if not resolved_gaps and not partial_gaps and (paper_candidates or unique_repos):
+        for gap in existing_gaps:
+            gid = gap.get("gap_id", "")
+            current_status = gap.get("status", "open")
+            if gid and current_status == "open":
+                partial_gaps.add(gid)
+        if partial_gaps:
+            logger.info(
+                "search_agent P1-7b: gap_lookup miss fallback — "
+                "marking %d open gap(s) as partially_satisfied "
+                "(found %d papers, %d repos but no step-level gap_id match)",
+                len(partial_gaps), len(paper_candidates), len(unique_repos),
+            )
+
+    for gap in existing_gaps:
+        g = dict(gap)  # shallow copy — don't mutate state in-place
+        gid = g.get("gap_id", "")
+        if gid in resolved_gaps:
+            g["status"] = "satisfied"
+        elif gid in partial_gaps:
+            g["status"] = "partially_satisfied"
+        # else: leave status unchanged (may be "open" from creation,
+        # or "blocked" from a previous round)
+        updated_gaps.append(g)
+
     return {
         "raw_results": raw,
         "paper_candidates": paper_candidates,
@@ -981,4 +1044,5 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         "errors": errors,
         "provider_profile": decision_provider,
         "react_actions": react_actions_log,  # Re8.0 WP6 (P2-3): audit trail
+        "evidence_gaps": updated_gaps,  # Re8.0 P1-7: gap status writeback
     }

@@ -13,6 +13,11 @@ import uuid
 from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
+from apps.api.app.services.agents.graph.nodes.reflection_gates import (
+    GATE_FINAL_REVIEW,
+    GATE_SEED_AUDIT,
+    GATE_TAILOR,
+)
 from ._util import emit_trace as _emit
 
 logger = logging.getLogger(__name__)
@@ -520,6 +525,316 @@ def _compute_stop_reason(state: ResearchState) -> list[str]:
     return reasons[:3]
 
 
+# ---------------------------------------------------------------------------
+# Re8.0 P1-2: Decision Fusion — combine 3 Reflection Gate verdicts + novelty
+# review + critical evidence gaps into a single fused_verdict. This is a PURE
+# function (no side effects): takes state, returns (verdict, rationale).
+# ---------------------------------------------------------------------------
+
+# Critical gap types — gaps of these types block a clean GO when their status
+# is "open" (Plan §8.7 / Re8.0 P1-2). repo / environment / counter_evidence /
+# existence gaps are important but not load-bearing for the core claim, so
+# they do NOT block GO on their own.
+_CRITICAL_GAP_TYPES = frozenset({
+    "current_baseline",
+    "competing_method",
+    "dataset",
+    "mechanism",
+})
+
+
+def _gate_verdict(state: dict, gate_name: str) -> str:
+    """Return the last verdict emitted by ``gate_name``.
+
+    A gate with no entries (wasn't run, e.g. Lite Chain / Offline Replay
+    short-circuit) is treated as ``"pass"`` — missing gates do not block
+    (Re8.0 P1-2). A malformed verdict is also treated as ``"pass"`` so a
+    noisy gate result never silently hard-stops the pipeline.
+    """
+    results = (state.get("reflection_gate_results") or {}).get(gate_name, [])
+    if not results:
+        return "pass"
+    last = results[-1]
+    if not isinstance(last, dict):
+        return "pass"
+    verdict = str(last.get("verdict") or "").strip().lower()
+    if verdict not in ("pass", "revise", "unresolved"):
+        return "pass"
+    return verdict
+
+
+def _has_open_critical_gap(state: dict) -> bool:
+    """True iff any evidence gap with a critical gap_type has status='open'."""
+    for gap in (state.get("evidence_gaps") or []):
+        if not isinstance(gap, dict):
+            continue
+        if gap.get("gap_type") in _CRITICAL_GAP_TYPES and gap.get("status") == "open":
+            return True
+    return False
+
+
+def _compute_fused_verdict(state: dict) -> tuple[str, str]:
+    """Compute fused verdict from all upstream signals.
+
+    Returns (fused_verdict, rationale).
+
+    fused_verdict is one of: "GO", "CONDITIONAL", "RISKY", "BLOCKED"
+
+    Rules (evaluated in order, first match wins):
+    1. Seed Audit gate verdict="unresolved" → ("BLOCKED", "seed audit unresolved")
+    2. Tailor gate verdict="unresolved" → ("BLOCKED", "tailor unresolved")
+    3. Final Review gate verdict="unresolved" → ("BLOCKED", "final review unresolved")
+    4. Novelty review verdict="reject" AND tailor verdict="GO" → ("RISKY", "novelty rejected but engineering viable")
+    5. Any gate verdict="revise" → ("CONDITIONAL", "gates requested revision")
+    6. Any critical evidence gap with status="open" → ("CONDITIONAL", "critical gaps open")
+    7. All gates="pass" + novelty="accepted" + no open critical gaps → ("GO", "all checks passed")
+    8. Default → ("CONDITIONAL", "insufficient signals for GO")
+
+    Sources:
+      - Gate verdicts: state["reflection_gate_results"][gate_name][-1]["verdict"]
+        (last entry wins; missing gate → "pass").
+      - Novelty: state["novelty_review_verdict"] ∈ {"accepted","weak_reject","reject"}.
+      - Tailor skill verdict: state["tailored_method"]["verdict"] ∈
+        {"GO","NO-GO","CONDITIONAL",""}.
+      - Gaps: state["evidence_gaps"][*]["gap_type"] / ["status"].
+    """
+    seed_audit = _gate_verdict(state, GATE_SEED_AUDIT)
+    tailor_gate = _gate_verdict(state, GATE_TAILOR)
+    final_review = _gate_verdict(state, GATE_FINAL_REVIEW)
+
+    novelty = str(state.get("novelty_review_verdict") or "").strip().lower()
+    tailor_verdict = str(
+        (state.get("tailored_method") or {}).get("verdict", "")
+    ).strip().upper()
+
+    # Rules 1-3: unresolved gate → BLOCKED (hard stop, in declaration order).
+    if seed_audit == "unresolved":
+        return ("BLOCKED", "seed audit unresolved")
+    if tailor_gate == "unresolved":
+        return ("BLOCKED", "tailor unresolved")
+    if final_review == "unresolved":
+        return ("BLOCKED", "final review unresolved")
+
+    # Rule 4: novelty rejected but engineering method viable → RISKY.
+    if novelty == "reject" and tailor_verdict == "GO":
+        return ("RISKY", "novelty rejected but engineering viable")
+
+    # Rule 5: any gate requested revision → cap at CONDITIONAL (not GO).
+    if "revise" in (seed_audit, tailor_gate, final_review):
+        return ("CONDITIONAL", "gates requested revision")
+
+    # Rule 6: open critical evidence gap → cannot be GO.
+    if _has_open_critical_gap(state):
+        return ("CONDITIONAL", "critical gaps open")
+
+    # Rule 7: all clear → GO. (Gates are guaranteed "pass" here since
+    # revise/unresolved were handled above; the explicit check is kept for
+    # clarity and to defend against future rule reordering.)
+    if (
+        seed_audit == "pass"
+        and tailor_gate == "pass"
+        and final_review == "pass"
+        and novelty == "accepted"
+        and not _has_open_critical_gap(state)
+    ):
+        return ("GO", "all checks passed")
+
+    # Rule 8: insufficient positive signals for a clean GO.
+    return ("CONDITIONAL", "insufficient signals for GO")
+
+
+# ---------------------------------------------------------------------------
+# Re8.0 P1-3: Final Research Package — assemble a single auditable object
+# that carries the 7 sections required by spec §"Final Research Package":
+#   1. seed_audit_summary   — key fields from each SeedPaperCard
+#   2. tailor_summary       — key fields from tailored_method + contribution_type
+#   3. gate_results         — LAST verdict of each of the 3 Reflection Gates
+#   4. ledger_entries       — key fields from each ReasoningLedgerEntry
+#   5. evidence_gap_status  — counts by status + list of open gap summaries
+#   6. falsifiable_hypothesis — hypothesis string (or "unspecified")
+#   7. fused_verdict        — verdict + rationale from _compute_fused_verdict
+#
+# This is a PURE function: takes a state dict, returns a package dict. It
+# never raises on missing/empty source data — every section degrades to an
+# empty list / dict / "unspecified" instead. All values are JSON-serializable
+# (str/int/float/bool/list/dict/None); non-serializable values are str()-cast.
+# ---------------------------------------------------------------------------
+
+# Section field names (single source of truth — kept in sync with spec).
+_GATE_RESULT_FIELDS = ("verdict", "round_idx", "rationale", "re_search_requests")
+_LEDGER_FIELDS = ("decision_id", "stage", "decision", "status", "confidence")
+_SEED_AUDIT_FIELDS = ("seed_id", "resolved_title", "existence_status", "role", "fulltext_status")
+_GAP_STATUS_BUCKETS = ("open", "satisfied", "partially_satisfied", "blocked")
+
+
+def _safe_str(value: Any) -> str:
+    """Coerce any value to a JSON-safe string (None → '')."""
+    if value is None:
+        return ""
+    return str(value)
+
+
+def _assemble_final_research_package(state: dict) -> dict:
+    """Assemble the Final Research Package from all pipeline stages.
+
+    Returns a dict with 7 sections:
+    1. seed_audit_summary: seed_cards with key fields (seed_id, resolved_title, existence_status, role, fulltext_status)
+    2. tailor_summary: tailored_method with key fields (verdict, core_method, baseline_model, ablation_matrix count, contribution_type)
+    3. gate_results: dict mapping each of 3 gate names to its last verdict/round_idx/rationale/re_search_requests
+    4. ledger_entries: list of reasoning_ledger entries (decision_id, stage, decision, status, confidence)
+    5. evidence_gap_status: dict with counts by status (open/satisfied/partially_satisfied/blocked) + list of open gap summaries
+    6. falsifiable_hypothesis: the hypothesis string (or "unspecified" if missing)
+    7. fused_verdict: the fused_verdict and its rationale (from _compute_fused_verdict)
+
+    Pure function: no side effects, no I/O, never raises on missing data.
+    All returned values are JSON-serializable.
+    """
+    # ── 1. seed_audit_summary ─────────────────────────────────────────────
+    seed_cards = state.get("seed_cards") or []
+    if not isinstance(seed_cards, list):
+        seed_cards = []
+    seed_audit_summary: list[dict[str, Any]] = []
+    for card in seed_cards:
+        if not isinstance(card, dict):
+            continue
+        seed_audit_summary.append({
+            "seed_id": _safe_str(card.get("seed_id")),
+            "resolved_title": _safe_str(card.get("resolved_title")),
+            "existence_status": _safe_str(card.get("existence_status") or "ambiguous"),
+            "role": _safe_str(card.get("role") or "unknown"),
+            "fulltext_status": _safe_str(card.get("fulltext_status") or "metadata_only"),
+        })
+
+    # ── 2. tailor_summary ─────────────────────────────────────────────────
+    tailored = state.get("tailored_method") or {}
+    if not isinstance(tailored, dict):
+        tailored = {}
+    primary_baseline = tailored.get("primary_baseline") or {}
+    if not isinstance(primary_baseline, dict):
+        primary_baseline = {}
+    assembly_plan = tailored.get("assembly_plan") or {}
+    if not isinstance(assembly_plan, dict):
+        assembly_plan = {}
+    ablation_matrix = tailored.get("ablation_matrix") or []
+    if not isinstance(ablation_matrix, list):
+        ablation_matrix = []
+    # core_method derivation: prefer explicit field (test fixtures), fall
+    # back to assembly_plan.description (production schema from tailor_skill_adapter).
+    core_method = tailored.get("core_method")
+    if core_method is None:
+        core_method = assembly_plan.get("description", "")
+    tailor_summary: dict[str, Any] = {
+        "verdict": _safe_str(tailored.get("verdict")),
+        "core_method": _safe_str(core_method),
+        "baseline_model": _safe_str(primary_baseline.get("title")),
+        "ablation_matrix_count": len(ablation_matrix),
+        "contribution_type": _safe_str(state.get("contribution_type") or "unknown"),
+    }
+
+    # ── 3. gate_results (LAST entry of each gate) ─────────────────────────
+    gate_results_raw = state.get("reflection_gate_results") or {}
+    if not isinstance(gate_results_raw, dict):
+        gate_results_raw = {}
+    gate_results: dict[str, dict[str, Any]] = {}
+    for gate_name in (GATE_SEED_AUDIT, GATE_TAILOR, GATE_FINAL_REVIEW):
+        entries = gate_results_raw.get(gate_name) or []
+        if isinstance(entries, list) and entries:
+            last = entries[-1]
+            if not isinstance(last, dict):
+                last = {}
+            try:
+                round_idx = int(last.get("round_idx") or 0)
+            except (TypeError, ValueError):
+                round_idx = 0
+            re_search = last.get("re_search_requests") or []
+            if not isinstance(re_search, list):
+                re_search = []
+            gate_results[gate_name] = {
+                "verdict": _safe_str(last.get("verdict")),
+                "round_idx": round_idx,
+                "rationale": _safe_str(last.get("rationale")),
+                "re_search_requests": [_safe_str(r) for r in re_search],
+            }
+        else:
+            gate_results[gate_name] = {
+                "verdict": "",
+                "round_idx": 0,
+                "rationale": "",
+                "re_search_requests": [],
+            }
+
+    # ── 4. ledger_entries ─────────────────────────────────────────────────
+    ledger = state.get("reasoning_ledger") or []
+    if not isinstance(ledger, list):
+        ledger = []
+    ledger_entries: list[dict[str, Any]] = []
+    for entry in ledger:
+        if not isinstance(entry, dict):
+            continue
+        try:
+            confidence = float(entry.get("confidence") or 0.0)
+        except (TypeError, ValueError):
+            confidence = 0.0
+        ledger_entries.append({
+            "decision_id": _safe_str(entry.get("decision_id")),
+            "stage": _safe_str(entry.get("stage")),
+            "decision": _safe_str(entry.get("decision")),
+            "status": _safe_str(entry.get("status") or "proposed"),
+            "confidence": confidence,
+        })
+
+    # ── 5. evidence_gap_status ────────────────────────────────────────────
+    gaps = state.get("evidence_gaps") or []
+    if not isinstance(gaps, list):
+        gaps = []
+    counts: dict[str, int] = {s: 0 for s in _GAP_STATUS_BUCKETS}
+    open_gaps: list[dict[str, Any]] = []
+    for gap in gaps:
+        if not isinstance(gap, dict):
+            continue
+        status = _safe_str(gap.get("status") or "open")
+        if status in counts:
+            counts[status] += 1
+        else:
+            # Unknown status — bucket under "open" conservatively so the
+            # total still adds up; never silently drop a gap.
+            counts["open"] += 1
+        if status == "open":
+            open_gaps.append({
+                "gap_id": _safe_str(gap.get("gap_id")),
+                "question": _safe_str(gap.get("question")),
+                "gap_type": _safe_str(gap.get("gap_type") or "existence"),
+            })
+    evidence_gap_status: dict[str, Any] = {
+        "counts": counts,
+        "open_gaps": open_gaps,
+    }
+
+    # ── 6. falsifiable_hypothesis ─────────────────────────────────────────
+    hypothesis = state.get("falsifiable_hypothesis")
+    if not isinstance(hypothesis, str) or not hypothesis.strip():
+        falsifiable_hypothesis = "unspecified"
+    else:
+        falsifiable_hypothesis = hypothesis
+
+    # ── 7. fused_verdict ──────────────────────────────────────────────────
+    fused_verdict, fused_rationale = _compute_fused_verdict(state)
+    fused_verdict_section: dict[str, Any] = {
+        "verdict": _safe_str(fused_verdict),
+        "rationale": _safe_str(fused_rationale),
+    }
+
+    return {
+        "seed_audit_summary": seed_audit_summary,
+        "tailor_summary": tailor_summary,
+        "gate_results": gate_results,
+        "ledger_entries": ledger_entries,
+        "evidence_gap_status": evidence_gap_status,
+        "falsifiable_hypothesis": falsifiable_hypothesis,
+        "fused_verdict": fused_verdict_section,
+    }
+
+
 def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
     review = state.get("low_bar_review") or {}
     packages = state.get("work_packages") or []
@@ -534,6 +849,11 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
 
     verdict = _compute_final_verdict(state)
     stop_reason = _compute_stop_reason(state)
+    fused_verdict, fused_rationale = _compute_fused_verdict(state)
+    # Re8.0 P1-3: assemble the Final Research Package (7 sections) from all
+    # upstream stages. Pure call — degrades to empty/default sections when
+    # source data is missing.
+    research_package = _assemble_final_research_package(state)
     artifact_id = f"rec-{uuid.uuid4().hex[:12]}"
 
     recommendation = {
@@ -552,6 +872,15 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
         "notes": notes,
         "research_basis": packages,
         "artifact_id": artifact_id,
+        # Re8.0 P1-2: fused verdict from 3 Reflection Gates + novelty +
+        # critical evidence gaps. Kept alongside the legacy verdict so
+        # downstream consumers can migrate incrementally.
+        "fused_verdict": fused_verdict,
+        "fused_verdict_rationale": fused_rationale,
+        # Re8.0 P1-3: full research package (7 sections) for downstream
+        # consumers / WP7 frontend export. Same object is also written to
+        # the top-level ``final_research_package`` state field.
+        "research_package": research_package,
     }
 
     try:
@@ -571,7 +900,17 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
 
     trace = _emit("final_recommendation", t0, {}, recommendation,
                   [], "local", [],
-                  state_keys=["final_recommendation", "trace_events"])
+                  state_keys=["final_recommendation", "final_research_package",
+                              "fused_verdict", "fused_verdict_rationale",
+                              "trace_events"])
+    # Re8.0 P0-A fixup: also surface fused_verdict at the state top level
+    # (not just nested inside final_recommendation). Several diagnostic
+    # scripts and the Three-Tier PASS checker read state["fused_verdict"]
+    # directly; without this they see null even when final_rec carries the
+    # correct value.
     return {"final_recommendation": recommendation,
+            "final_research_package": research_package,
+            "fused_verdict": fused_verdict,
+            "fused_verdict_rationale": fused_rationale,
             "stop_reason": stop_reason,
             "trace_events": [trace]}
