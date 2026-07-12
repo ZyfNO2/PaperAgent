@@ -1,0 +1,124 @@
+{
+  "xlm_r": {
+    "case_key": "xlm_r",
+    "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+    "description": "NLP: multilingual transformers for low-resource language NLP",
+    "n_seeds_input": 2,
+    "mode": "seeded_research + full_agent + react_reflection",
+    "status": "PASS",
+    "elapsed_s": 477.0,
+    "error": null,
+    "runtime_pass": true,
+    "contract_pass": true,
+    "contract_pass_reasons": [],
+    "quality_pass": false,
+    "quality_pass_reasons": [
+      "evidence gaps exist but none satisfied/partially_satisfied"
+    ],
+    "final_rec": {
+      "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+      "n_papers": 39,
+      "n_baseline": 12,
+      "n_parallel": 27,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 4,
+      "low_bar_status": "pass"
+    },
+    "seed_cards": [
+      {
+        "seed_id": "S1",
+        "resolved_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "existence_status": "ambiguous",
+        "role": "classic_anchor"
+      },
+      {
+        "seed_id": "S2",
+        "resolved_title": "Unsupervised Cross-lingual Representation Learning at Scale",
+        "existence_status": "verified",
+        "role": "current_sota_candidate"
+      }
+    ],
+    "n_trace_events": 87,
+    "n_gate_traces": 18,
+    "providers_used": {
+      "local": 34,
+      "premium_review": 9,
+      "n/a": 2,
+      "httpx": 1,
+      "fast_json": 39,
+      "semantic_scholar": 1,
+      "none": 1
+    },
+    "gate_seed_audit_gate": {
+      "verdict": "unresolved",
+      "generated_by": "rule",
+      "round_idx": 2,
+      "rationale": "cap reached: 2/2",
+      "re_search_requests": [],
+      "unresolved_gaps": []
+    },
+    "gate_tailor_gate": {
+      "verdict": "unresolved",
+      "generated_by": "rule",
+      "round_idx": 2,
+      "rationale": "cap reached: 2/2",
+      "re_search_requests": [],
+      "unresolved_gaps": []
+    },
+    "gate_final_review_gate": {
+      "verdict": "revise",
+      "generated_by": "llm",
+      "round_idx": 0,
+      "rationale": "Critical pressure points (repetition, motivation, falsifiability, differentiation) remain unresolved per evidence_ids 2602.05599v1_9, 10.18653/v1/2023.emnlp-main.207_14, 2111.06230v1_4, 2310.09917v3_5, 10.1109/icicnct66124.2025.11232923_13, and 10.1109/netact65906.2025.11188922_15 require targeted r",
+      "re_search_requests": [
+        "gap-S1-task_definition_for_family",
+        "gap-S2-task_definition_for_family"
+      ],
+      "unresolved_gaps": []
+    },
+    "n_ledger_entries": 87,
+    "n_react_actions": 24,
+    "n_errors": 2,
+    "error_samples": [
+      "partial_coverage",
+      "partial_coverage"
+    ],
+    "n_verified_papers": 39,
+    "n_search_steps": 8,
+    "tailored_verdict": "GO",
+    "tailored_ablation_rows": 4,
+    "tailored_method_summary": {
+      "contribution_type": null,
+      "core_method": "",
+      "baseline_model": null
+    },
+    "novelty_review_verdict": "weak_reject",
+    "has_falsifiable_hypothesis": true,
+    "hypothesis_preview": "The proposed stitched model will outperform LoRAD by at least 5% F1-score on AI-generated text detection tasks for at least three low-resource African",
+    "n_evidence_gaps": 2,
+    "gap_statuses": {
+      "open": 2
+    },
+    "fused_verdict": "BLOCKED",
+    "fused_verdict_rationale": "seed audit unresolved",
+    "final_research_package_sections": [
+      "evidence_gap_status",
+      "falsifiable_hypothesis",
+      "fused_verdict",
+      "gate_results",
+      "ledger_entries",
+      "seed_audit_summary",
+      "tailor_summary"
+    ],
+    "final_research_package_section_count": 7,
+    "final_research_package_missing_sections": [],
+    "final_rec_fused_verdict": "BLOCKED",
+    "final_rec_has_research_package": true,
+    "repair_cycles_detected": [
+      "seed_audit_gate:round_idx=2(cap-reached,implicit)",
+      "tailor_gate:round_idx=2(cap-reached,implicit)"
+    ],
+    "n_repair_cycles": 2
+  }
+}

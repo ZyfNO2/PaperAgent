@@ -1,0 +1,202 @@
+{
+  "xlm_r": {
+    "case_key": "xlm_r",
+    "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+    "description": "NLP: multilingual transformers for low-resource language NLP",
+    "n_seeds_input": 2,
+    "mode": "seeded_research + full_agent + react_reflection",
+    "status": "PASS",
+    "elapsed_s": 598.1,
+    "error": null,
+    "runtime_pass": true,
+    "contract_pass": true,
+    "contract_pass_reasons": [],
+    "quality_pass": true,
+    "quality_pass_reasons": [],
+    "final_rec": {
+      "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+      "n_papers": 27,
+      "n_baseline": 12,
+      "n_parallel": 15,
+      "n_dataset": 0,
+      "n_repo": 0,
+      "n_work_packages": 4,
+      "low_bar_status": "pass"
+    },
+    "seed_cards": [
+      {
+        "seed_id": "S1",
+        "resolved_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "existence_status": "ambiguous",
+        "role": "classic_anchor"
+      },
+      {
+        "seed_id": "S2",
+        "resolved_title": "Unsupervised Cross-lingual Representation Learning at Scale",
+        "existence_status": "verified",
+        "role": "current_sota_candidate"
+      }
+    ],
+    "n_trace_events": 83,
+    "n_gate_traces": 18,
+    "providers_used": {
+      "local": 33,
+      "premium_review": 9,
+      "n/a": 2,
+      "httpx": 1,
+      "fast_json": 36,
+      "semantic_scholar": 1,
+      "none": 1
+    },
+    "gate_seed_audit_gate": {
+      "verdict": "unresolved",
+      "generated_by": "rule",
+      "round_idx": 2,
+      "rationale": "cap reached: 2/2",
+      "re_search_requests": [],
+      "unresolved_gaps": []
+    },
+    "gate_tailor_gate": {
+      "verdict": "unresolved",
+      "generated_by": "rule",
+      "round_idx": 2,
+      "rationale": "cap reached: 2/2",
+      "re_search_requests": [],
+      "unresolved_gaps": []
+    },
+    "gate_final_review_gate": {
+      "verdict": "revise",
+      "generated_by": "llm",
+      "round_idx": 0,
+      "rationale": "Critical pressure points remain: repetition (evidence_ids: 2204.06487v3_0, 2005.00052v3_17), differentiation (evidence_ids: 2005.00052v3_17, 2204.06487v3_0), and falsifiability gaps persist despite partial hypothesis definition.",
+      "re_search_requests": [
+        "gap-S1-task_definition_for_family",
+        "gap-S2-task_definition_for_family"
+      ],
+      "unresolved_gaps": []
+    },
+    "n_ledger_entries": 87,
+    "n_react_actions": 24,
+    "n_errors": 2,
+    "error_samples": [
+      "partial_coverage",
+      "partial_coverage"
+    ],
+    "n_verified_papers": 27,
+    "n_search_steps": 8,
+    "tailored_verdict": "GO",
+    "tailored_ablation_rows": 4,
+    "tailored_method_summary": {
+      "contribution_type": null,
+      "core_method": "",
+      "baseline_model": null
+    },
+    "novelty_review_verdict": "weak_reject",
+    "has_falsifiable_hypothesis": true,
+    "hypothesis_preview": "Our stitched adapter framework with robust training will achieve at least 5% higher F1 score than MAD-X on zero-shot NER for low-resource African lang",
+    "n_evidence_gaps": 2,
+    "gap_statuses": {
+      "partially_satisfied": 2
+    },
+    "evidence_gaps_debug": [
+      {
+        "gap_id": "gap-S1-task_definition_for_family",
+        "status": "partially_satisfied",
+        "description": "",
+        "lane_id": ""
+      },
+      {
+        "gap_id": "gap-S2-task_definition_for_family",
+        "status": "partially_satisfied",
+        "description": "",
+        "lane_id": ""
+      }
+    ],
+    "search_steps_debug": [
+      {
+        "step": 0,
+        "type": "tool_call",
+        "gap_id": null,
+        "evidence_delta": null,
+        "tool": "arxiv",
+        "n_results": 12
+      },
+      {
+        "step": 1,
+        "type": "tool_call",
+        "gap_id": null,
+        "evidence_delta": null,
+        "tool": "github",
+        "n_results": 0
+      },
+      {
+        "step": 2,
+        "type": "tool_call",
+        "gap_id": null,
+        "evidence_delta": null,
+        "tool": "crossref",
+        "n_results": 12
+      },
+      {
+        "step": 3,
+        "type": "tool_call",
+        "gap_id": null,
+        "evidence_delta": null,
+        "tool": "huggingface",
+        "n_results": 0
+      },
+      {
+        "step": 4,
+        "type": "tool_call",
+        "gap_id": null,
+        "evidence_delta": null,
+        "tool": "core",
+        "n_results": 12
+      },
+      {
+        "step": 5,
+        "type": "tool_call",
+        "gap_id": null,
+        "evidence_delta": null,
+        "tool": "github",
+        "n_results": 0
+      },
+      {
+        "step": 6,
+        "type": "tool_call",
+        "gap_id": null,
+        "evidence_delta": null,
+        "tool": "github",
+        "n_results": 0
+      },
+      {
+        "step": 7,
+        "type": "tool_call",
+        "gap_id": null,
+        "evidence_delta": null,
+        "tool": "arxiv",
+        "n_results": 12
+      }
+    ],
+    "fused_verdict": "BLOCKED",
+    "fused_verdict_rationale": "seed audit unresolved",
+    "final_research_package_sections": [
+      "evidence_gap_status",
+      "falsifiable_hypothesis",
+      "fused_verdict",
+      "gate_results",
+      "ledger_entries",
+      "seed_audit_summary",
+      "tailor_summary"
+    ],
+    "final_research_package_section_count": 7,
+    "final_research_package_missing_sections": [],
+    "final_rec_fused_verdict": "BLOCKED",
+    "final_rec_has_research_package": true,
+    "repair_cycles_detected": [
+      "seed_audit_gate:round_idx=2(cap-reached,implicit)",
+      "tailor_gate:round_idx=2(cap-reached,implicit)"
+    ],
+    "n_repair_cycles": 2
+  }
+}
