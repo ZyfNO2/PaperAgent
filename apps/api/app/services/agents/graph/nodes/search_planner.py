@@ -20,6 +20,10 @@ from typing import Any
 from apps.api.app.services.agents.graph.state import ResearchState
 from apps.api.app.services.agents.prompts import re11_planner as P
 from apps.api.app.services.llm_router import LLMUnavailable, call_json
+from apps.api.app.services.agents.graph.re80_schema import (
+    make_evidence_gap,
+    validate_evidence_gap,
+)
 from ._util import now_iso as _now_iso
 
 logger = logging.getLogger(__name__)
@@ -27,6 +31,42 @@ logger = logging.getLogger(__name__)
 
 _TOOLS = frozenset({"arxiv", "openalex", "crossref", "github", "semantic_scholar", "huggingface", "core", "datacite", "pubmed"})
 _ROUNDS = frozenset({"broad", "focused", "repair", "seed_expansion"})
+
+# Re8.0 WP4: lane → (gap_type, [tools], success_condition, expected_evidence)
+# Each Search Lane is bound to an EvidenceGap so the search_agent can record
+# evidence_delta and resolve the gap when results arrive.
+_LANE_GAP_SPEC: dict[str, tuple[str, tuple[str, ...], str, str]] = {
+    "anchor_reference": (
+        "existence",
+        ("openalex", "crossref"),
+        "find 1+ origin or citation-chain paper",
+        "anchor / origin papers",
+    ),
+    "competing_baseline": (
+        "competing_method",
+        ("arxiv", "semantic_scholar"),
+        "find 2+ competing baseline papers",
+        "same-task baseline papers",
+    ),
+    "mechanism_module": (
+        "mechanism",
+        ("arxiv", "openalex"),
+        "find 1+ mechanism or module paper",
+        "mechanism / module papers",
+    ),
+    "resource": (
+        "repo",
+        ("github", "huggingface"),
+        "find 1+ repo or dataset",
+        "code repos or datasets",
+    ),
+    "counter_evidence": (
+        "counter_evidence",
+        ("arxiv", "openalex"),
+        "find 1+ counter-evidence or limitation paper",
+        "counter-evidence papers",
+    ),
+}
 
 
 def _use_unified() -> bool:
@@ -86,15 +126,20 @@ def _normalize_queries(queries: Any) -> list[dict[str, str]]:
         query = _as_str(q.get("query"))
         if not query:
             continue
-        out.append(
-            {
-                "tool": tool,
-                "query": query,
-                "why": _as_str(q.get("why")),
-                "expected_evidence": _as_str(q.get("expected_evidence")),
-                "stop_condition": _as_str(q.get("stop_condition")),
-            },
-        )
+        entry: dict[str, str] = {
+            "tool": tool,
+            "query": query,
+            "why": _as_str(q.get("why")),
+            "expected_evidence": _as_str(q.get("expected_evidence")),
+            "stop_condition": _as_str(q.get("stop_condition")),
+        }
+        # Re8.0 WP4: preserve gap-binding fields if present
+        gap_id = _as_str(q.get("gap_id"))
+        if gap_id:
+            entry["gap_id"] = gap_id
+            entry["success_condition"] = _as_str(q.get("success_condition"))
+            entry["lane_id"] = _as_str(q.get("lane_id"))
+        out.append(entry)
     return out
 
 
@@ -232,12 +277,150 @@ def _template_plan(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+# ── Re8.0 WP4: Evidence Gap driven search plan ─────────────────────────────
+
+def _create_lane_gaps(
+    lanes: list[dict[str, Any]],
+    seed_id: str,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Create EvidenceGap objects for lanes that don't have a gap_id yet.
+
+    Returns ``(updated_lanes, new_gaps)``. Lanes that already carry a
+    ``gap_id`` are left untouched; lanes with ``gap_id=None`` get a new
+    gap created and their ``gap_id`` field populated.
+    """
+    new_gaps: list[dict[str, Any]] = []
+    updated: list[dict[str, Any]] = []
+    for idx, lane in enumerate(lanes):
+        lane_id = lane.get("lane_id", f"lane_{idx}")
+        existing_gid = lane.get("gap_id")
+        if existing_gid:
+            updated.append(lane)
+            continue
+        spec = _LANE_GAP_SPEC.get(lane_id)
+        if not spec:
+            # Unknown lane — skip gap creation, keep lane as-is
+            updated.append(lane)
+            continue
+        gap_type, _tools, success_cond, _ev = spec
+        gid = f"gap-{seed_id}-{lane_id}"
+        gap = make_evidence_gap(
+            gap_id=gid,
+            question=f"Search Lane '{lane_id}': {lane.get('description', '')}",
+            gap_type=gap_type,
+            why_needed=(
+                f"WP3 Search Lane for seed '{seed_id}' — "
+                f"queries: {lane.get('queries', [])[:2]}"
+            ),
+            success_condition=success_cond,
+            status="open",
+        )
+        errs = validate_evidence_gap(gap)
+        if errs:
+            logger.warning("lane gap validation failed for %s: %s", gid, errs)
+        new_gaps.append(gap)
+        new_lane = dict(lane)
+        new_lane["gap_id"] = gid
+        updated.append(new_lane)
+    return updated, new_gaps
+
+
+def _seeded_plan(
+    lanes: list[dict[str, Any]],
+    seed_id: str,
+) -> dict[str, Any]:
+    """Build a gap-bound search plan from Re8.0 Search Lanes.
+
+    Each lane's queries are expanded into one or more search_plan query
+    entries, each carrying ``gap_id``, ``success_condition``, and
+    ``lane_id`` so the search_agent can record evidence_delta per gap.
+    """
+    queries: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for lane in lanes:
+        lane_id = lane.get("lane_id", "unknown")
+        gap_id = lane.get("gap_id") or f"gap-{seed_id}-{lane_id}"
+        spec = _LANE_GAP_SPEC.get(lane_id)
+        if not spec:
+            continue
+        gap_type, lane_tools, success_cond, expected_ev = spec
+        for qtext in (lane.get("queries") or []):
+            qtext = (qtext or "").strip()
+            if not qtext:
+                continue
+            # Distribute query across the lane's tools (max 2 to keep
+            # the plan compact). Each (tool, query) pair is one entry.
+            for tool in lane_tools[:2]:
+                key = (tool.lower(), qtext.lower())
+                if key in seen:
+                    continue
+                seen.add(key)
+                queries.append({
+                    "tool": tool,
+                    "query": qtext,
+                    "why": f"{lane_id}: {lane.get('description', '')[:60]}",
+                    "expected_evidence": expected_ev,
+                    "stop_condition": "n>=1",
+                    "gap_id": gap_id,
+                    "success_condition": success_cond,
+                    "lane_id": lane_id,
+                })
+    # Cap at 12 queries to keep the search budget reasonable
+    return {
+        "queries": queries[:12],
+        "rounds": ["broad", "focused"],
+        "negative_feedback": "",
+        "gap_bound": True,  # flag for search_agent
+    }
+
+
 def search_planner_node(state: ResearchState) -> dict[str, Any]:
     """Produce search_plan. Skips LLM call when a valid plan already exists."""
     topic = state.get("topic") or ""
     atoms = state.get("topic_atoms") or {}
     existing_plan = state.get("search_plan") or {}
     t0 = time.time()
+
+    # Re8.0 WP4: seeded_research path — build gap-bound plan from Search Lanes.
+    # This takes priority over template/LLM paths when entry_mode is
+    # "seeded_research" and search_lanes are present. The plan binds each
+    # query to an EvidenceGap so search_agent can record evidence_delta.
+    entry_mode = state.get("entry_mode", "topic_only")
+    search_lanes: list[dict[str, Any]] = list(state.get("search_lanes") or [])
+    if entry_mode == "seeded_research" and search_lanes:
+        # Determine seed_id from first seed card (for gap_id namespacing)
+        seed_cards = state.get("seed_cards") or []
+        seed_id = (seed_cards[0].get("seed_id", "seed") if seed_cards else "seed")
+        # Fill in gap_ids on lanes that don't have them yet
+        updated_lanes, new_gaps = _create_lane_gaps(search_lanes, seed_id)
+        plan = _seeded_plan(updated_lanes, seed_id)
+        result: dict[str, Any] = {
+            "search_plan": plan,
+            "trace_events": [_emit(
+                "search_planner",
+                t0,
+                {"topic_len": len(topic), "mode": "seeded_gap_bound",
+                 "entry_mode": entry_mode, "n_lanes": len(search_lanes)},
+                {"n_queries": len(plan.get("queries") or []),
+                 "rounds": plan.get("rounds"), "gap_bound": True,
+                 "n_new_gaps": len(new_gaps)},
+                [{"tool": "search_planner.seeded_gap_bound"}],
+                "local",
+                [],
+                state_keys=["search_plan", "search_lanes", "evidence_gaps",
+                            "trace_events", "errors", "provider_profile"],
+            )],
+            "errors": [],
+            "provider_profile": "local",
+        }
+        # Update lanes with gap_ids + emit new gaps so search_agent can
+        # track resolution.
+        if updated_lanes != search_lanes:
+            result["search_lanes"] = updated_lanes
+        if new_gaps:
+            existing_gaps = list(state.get("evidence_gaps") or [])
+            result["evidence_gaps"] = existing_gaps + new_gaps
+        return result
 
     has_plan = bool(existing_plan.get("queries")) and bool(existing_plan.get("rounds"))
     if has_plan and not _needs_repair(state):

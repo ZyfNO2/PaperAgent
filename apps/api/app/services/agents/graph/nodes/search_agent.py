@@ -39,6 +39,55 @@ if os.environ.get("PAPERAGENT_DISABLE_OPENALEX"):
     _DISABLED_TOOLS.add("openalex")
 
 
+# ── Re8.0 WP4: Evidence Gap tracking helpers ──────────────────────────────
+
+def _build_gap_lookup(
+    search_plan: dict[str, Any],
+) -> dict[tuple[str, str], dict[str, str]]:
+    """Build a lookup from (tool, query) → gap metadata.
+
+    Only gap-bound queries (carrying ``gap_id``) are included. Used by
+    the search_agent loop to record evidence_delta per gap.
+    """
+    lookup: dict[tuple[str, str], dict[str, str]] = {}
+    for q in (search_plan.get("queries") or []):
+        gap_id = q.get("gap_id") or ""
+        if not gap_id:
+            continue
+        tool = (q.get("tool") or "").strip().lower()
+        query = (q.get("query") or "").strip()
+        if tool and query:
+            lookup[(tool, query)] = {
+                "gap_id": gap_id,
+                "success_condition": q.get("success_condition", ""),
+                "lane_id": q.get("lane_id", ""),
+            }
+    return lookup
+
+
+def _check_gap_resolved(
+    success_condition: str,
+    n_papers: int,
+    n_repos: int,
+) -> bool:
+    """Heuristic: check if a gap's success_condition is met.
+
+    Parses patterns like "find 2+ competing baseline papers" or
+    "find 1+ repo or dataset". Falls back to ``n_papers >= 1`` if the
+    condition can't be parsed.
+    """
+    if not success_condition:
+        return n_papers >= 1
+    cond_lower = success_condition.lower()
+    # Extract the number after "find N+"
+    m = re.search(r"find\s+(\d+)\+", cond_lower)
+    threshold = int(m.group(1)) if m else 1
+    # Resource lane checks repos; everything else checks papers
+    if "repo" in cond_lower or "dataset" in cond_lower:
+        return n_repos >= threshold
+    return n_papers >= threshold
+
+
 def _get_domain_tools(domain: str) -> set[str]:
     """Return domain-specific tools based on topic domain.
 
@@ -496,6 +545,13 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
     steps: list[dict[str, Any]] = []
     failed_this_round: set[str] = set()  # tools that failed within this invocation
 
+    # Re8.0 WP4: Evidence Gap tracking — only active for gap-bound plans
+    gap_lookup = _build_gap_lookup(search_plan)
+    is_gap_bound = bool(search_plan.get("gap_bound")) and bool(gap_lookup)
+    resolved_gaps: set[str] = set()
+    unresolved_gaps: set[str] = set()
+    all_bound_gaps: set[str] = {v["gap_id"] for v in gap_lookup.values()}
+
     try:
         # Re3.9.1: Resolve domain-specific tools for injection
         domain_str = str(atoms.get("domain", "unknown"))
@@ -645,7 +701,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
             raw.setdefault(tool, []).extend(results)
 
             n_results = len(results)
-            steps.append({
+            step_entry: dict[str, Any] = {
                 "step": step_idx,
                 "type": "tool_call",
                 "tool": tool,
@@ -655,7 +711,46 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                 "n_repos": len(new_repos),
                 "reason": thought.get("reason", ""),
                 "failed": n_results == 0,
-            })
+            }
+
+            # Re8.0 WP4: record evidence_delta + gap resolution for
+            # gap-bound queries. This lets the trace answer "why did we
+            # search and what did the results change?"
+            if is_gap_bound:
+                gap_meta = gap_lookup.get((tool, query))
+                if gap_meta:
+                    gap_id = gap_meta["gap_id"]
+                    success_cond = gap_meta["success_condition"]
+                    resolved = _check_gap_resolved(
+                        success_cond, len(new_papers), len(new_repos),
+                    )
+                    step_entry["gap_id"] = gap_id
+                    step_entry["lane_id"] = gap_meta.get("lane_id", "")
+                    step_entry["success_condition"] = success_cond
+                    step_entry["evidence_delta"] = {
+                        "n_new_papers": len(new_papers),
+                        "n_new_repos": len(new_repos),
+                        "gap_resolved": resolved,
+                    }
+                    if resolved:
+                        resolved_gaps.add(gap_id)
+                        unresolved_gaps.discard(gap_id)
+                    elif n_results == 0:
+                        # 0 results → gap stays unresolved (not failed)
+                        unresolved_gaps.add(gap_id)
+
+            steps.append(step_entry)
+
+            # Re8.0 WP4: early exit when ALL bound gaps are resolved.
+            # This implements the "early exit" requirement — once every
+            # gap has evidence, there's no need to keep searching.
+            if is_gap_bound and all_bound_gaps and resolved_gaps >= all_bound_gaps:
+                steps.append({
+                    "step": step_idx,
+                    "type": "stop",
+                    "reason": f"all {len(all_bound_gaps)} evidence gaps resolved",
+                })
+                break
 
             # If all available tools have failed, stop early
             available_tools = {"arxiv", "openalex", "crossref", "github", "semantic_scholar",
@@ -734,6 +829,17 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
             "skipped_adapters": list(skip_adapters),
             "repair_rounds": repair_rounds,
         }
+        # Re8.0 WP4: gap resolution summary — lets the trace answer
+        # "which gaps were satisfied, which remain open?"
+        if is_gap_bound:
+            trace["output_summary"]["gap_resolution"] = {
+                "gap_bound": True,
+                "n_bound_gaps": len(all_bound_gaps),
+                "n_resolved": len(resolved_gaps),
+                "n_unresolved": len(unresolved_gaps),
+                "resolved_gap_ids": sorted(resolved_gaps),
+                "unresolved_gap_ids": sorted(unresolved_gaps),
+            }
         trace["provider"] = decision_provider
         trace["input_summary"]["provider"] = decision_provider
         trace["tool_calls"] = [
