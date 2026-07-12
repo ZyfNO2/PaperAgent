@@ -553,15 +553,22 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
     # (intake no longer auto-accepts user papers), so this is a no-op for
     # topic_only callers. For seeded_research callers, seed_resolver may
     # have promoted verified seeds into verified_papers — we must keep them.
+    # P1-4 fix: dedup by title OR doi OR arxiv_id, not title alone, so
+    # seeds with empty title but valid DOI are still deduplicated.
     existing_verified = list(state.get("verified_papers") or [])
     if existing_verified:
-        seen_titles: set[str] = set()
+        def _dedup_key(p: dict[str, Any]) -> str:
+            for k in ("title", "doi", "arxiv_id"):
+                v = (p.get(k) or "").strip().lower()
+                if v:
+                    return v
+            return ""
+        seen_keys: set[str] = set()
         for p in existing_verified:
-            t = (p.get("title") or "").strip().lower()
-            if t:
-                seen_titles.add(t)
-        deduped_keep = [p for p in keep
-                        if (p.get("title") or "").strip().lower() not in seen_titles]
+            k = _dedup_key(p)
+            if k:
+                seen_keys.add(k)
+        deduped_keep = [p for p in keep if _dedup_key(p) not in seen_keys]
         keep = existing_verified + deduped_keep
 
     return {
