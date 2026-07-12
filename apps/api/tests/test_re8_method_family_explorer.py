@@ -658,3 +658,44 @@ class TestIntegrationWithUpstream:
         assert result["method_families"]
         assert len(result["search_lanes"]) == 5
         assert result["reasoning_ledger"]
+
+
+# ---------------------------------------------------------------------------
+# State schema validation (P1-1 regression test)
+# ---------------------------------------------------------------------------
+
+class TestStateSchemaCompliance:
+    """P1-1 regression: search_lanes must be declared in ResearchState.
+
+    Without this declaration, LangGraph may silently drop the field
+    during state merging, making the five Search Lanes invisible to
+    downstream nodes.
+    """
+
+    def test_search_lanes_in_research_state(self):
+        """Verify search_lanes is a declared field in ResearchState."""
+        from apps.api.app.services.agents.graph.state import ResearchState
+        # TypedDict.__annotations__ lists all declared fields
+        annotations = ResearchState.__annotations__
+        assert "search_lanes" in annotations, (
+            "search_lanes must be declared in ResearchState — otherwise "
+            "LangGraph state merging may silently drop the field"
+        )
+
+    def test_method_families_in_research_state(self):
+        """Verify method_families is declared (existed before, sanity check)."""
+        from apps.api.app.services.agents.graph.state import ResearchState
+        assert "method_families" in ResearchState.__annotations__
+
+    def test_node_fields_match_state_schema(self):
+        """NODE_FIELDS for method_family_explorer must reference fields
+        that actually exist in ResearchState."""
+        from apps.api.app.services.agents.graph.nodes import NODE_FIELDS
+        from apps.api.app.services.agents.graph.state import ResearchState
+        state_annotations = ResearchState.__annotations__
+        node_fields = NODE_FIELDS["method_family_explorer"]
+        for field in node_fields:
+            assert field in state_annotations, (
+                f"NODE_FIELDS 'method_family_explorer' references '{field}' "
+                f"but it is not in ResearchState"
+            )

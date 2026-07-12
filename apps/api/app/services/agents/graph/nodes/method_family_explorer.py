@@ -524,7 +524,7 @@ def _generate_gaps_for_missing_task(
             "should fill task_definition."
         ),
         related_claim_ids=[sid],
-        success_condition="seed_card.task_definition is non-null",
+        success_condition="seed_card.task_definition or method_summary is non-null",
     )
     if not validate_evidence_gap(gap):
         return [gap]
@@ -657,6 +657,11 @@ def method_family_explorer_node(state: ResearchState) -> dict[str, Any]:
     ledger_errs = validate_ledger_entry(ledger_entry)
     if ledger_errs:
         logger.warning("ledger entry validation failed: %s", ledger_errs)
+        errors.append({
+            "seed_id": sid,
+            "error": "ledger_validation_failed",
+            "detail": "; ".join(ledger_errs),
+        })
 
     # ── Step 5: emit trace ─────────────────────────────────────────────
     n_direct = sum(1 for f in families if f["relation_to_seed"] == "direct_competitor")
