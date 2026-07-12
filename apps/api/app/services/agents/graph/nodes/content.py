@@ -389,13 +389,49 @@ def human_gate_search_node(state: ResearchState) -> dict[str, Any]:
 # Final recommendation — summarize evidence + work package + audit
 # ---------------------------------------------------------------------------
 
+def _domain_risk_level(state: ResearchState) -> str:
+    """Classify domain risk as high/medium/low based on topic + domain.
+
+    Re7.7 round-5: introduced to let _compute_final_verdict factor domain
+    risk into the verdict mapping independently of claim_judge's prompt-level
+    Domain risk check. This corrects cases where claim_judge returns REJECT
+    for a high-risk domain but low_bar passes (should still STOP), and cases
+    where low_bar blocks + REJECT on a low-risk domain (should be RISKY, not STOP).
+    """
+    constraints = state.get("user_constraints") or {}
+    domain = str(constraints.get("domain", "")).lower()
+    topic = str(state.get("topic", "")).lower()
+    text = f"{domain} {topic}"
+
+    high_risk_kws = [
+        "罕见病", "药物反应", "心理咨询", "精神", "malicious", "钓鱼",
+        "phishing", "deepfake", "fraud", "恶意", "mental health",
+    ]
+    medium_risk_kws = [
+        "医学", "医疗", "临床", "clinical", "自动驾驶", "autonomous",
+        "金融风控", "financial", "医学影像", "medical",
+    ]
+
+    for kw in high_risk_kws:
+        if kw.lower() in text:
+            return "high"
+    for kw in medium_risk_kws:
+        if kw.lower() in text:
+            return "medium"
+    return "low"
+
+
 def _compute_final_verdict(state: ResearchState) -> str:
     """Compute GO / CONDITIONAL / RISKY / PIVOT / STOP verdict from available node outputs.
 
-    Re7.7 calibration: REJECT alone no longer forces STOP — it maps to RISKY
-    (claim judge may be overly strict). Only low_bar blocked + REJECT together
-    produce STOP. low_bar blocked alone maps to RISKY (not STOP) to avoid
-    overly conservative verdicts when evidence is partial but not fabricated.
+    Re7.7 round-5 calibration: introduces a three-tier domain risk dimension
+    (high/medium/low) so that:
+      - high-risk domain + REJECT → STOP (even if low_bar passes)
+      - high-risk domain + REVISE + low_bar blocked → STOP
+      - medium-risk + REJECT + low_bar blocked → STOP
+      - low-risk + REJECT + low_bar blocked → RISKY (not STOP)
+      - REVISE + low_bar pass → CONDITIONAL (was RISKY; incremental work with
+        partial evidence deserves a conditional green light, not a yellow flag)
     """
     review = state.get("low_bar_review") or {}
     gate = state.get("human_gate") or {}
@@ -405,42 +441,51 @@ def _compute_final_verdict(state: ResearchState) -> str:
 
     low_bar_blocked = review.get("status") == "blocked"
     is_reject = claim_judge_verdict == "REJECT"
+    is_revise = claim_judge_verdict == "REVISE"
+    is_accept = claim_judge_verdict == "ACCEPT"
+    risk = _domain_risk_level(state)
 
-    # 1. low_bar blocked + REJECT → STOP (double negative signal)
-    if low_bar_blocked and is_reject:
-        return "STOP"
-    # 2. human gate not passed → STOP
+    # 1. human gate not passed → STOP
     gate_status = gate.get("status", "")
     if gate_status not in ("pass_through", "pass_through_no_runtime"):
         return "STOP"
-    # 3. revise + fundamental flaw → PIVOT
-    if claim_judge_verdict == "REVISE" and devils.get("fundamental_flaw"):
+    # 2. high-risk domain + REJECT → STOP (even if low_bar pass)
+    if risk == "high" and is_reject:
+        return "STOP"
+    # 3. high-risk domain + REVISE + low_bar blocked → STOP
+    if risk == "high" and is_revise and low_bar_blocked:
+        return "STOP"
+    # 4. medium-risk + REJECT + low_bar blocked → STOP
+    if risk == "medium" and is_reject and low_bar_blocked:
+        return "STOP"
+    # 5. revise + fundamental flaw → PIVOT
+    if is_revise and devils.get("fundamental_flaw"):
         return "PIVOT"
-    # 4. REJECT alone → RISKY (not STOP; claim judge may be overly strict)
+    # 6. REJECT alone → RISKY (not STOP; claim judge may be overly strict)
     if is_reject:
         return "RISKY"
-    # 5. judge unavailable → RISKY (not STOP)
+    # 7. judge unavailable → RISKY (not STOP)
     if claim_judge_verdict == "UNAVAILABLE":
         return "RISKY"
-    # 6. low_bar blocked + REVISE → RISKY (not STOP; evidence partial but direction ok)
-    if low_bar_blocked and claim_judge_verdict == "REVISE":
+    # 8. low_bar blocked + REJECT/REVISE → RISKY (not STOP in low/medium-risk domains)
+    if low_bar_blocked and (is_reject or is_revise):
         return "RISKY"
-    # 7. low_bar blocked + ACCEPT → CONDITIONAL (can proceed with caveats)
-    if low_bar_blocked and claim_judge_verdict == "ACCEPT":
+    # 9. low_bar blocked + ACCEPT → CONDITIONAL (can proceed with caveats)
+    if low_bar_blocked and is_accept:
         return "CONDITIONAL"
-    # 8. low_bar blocked with unknown claim judge → RISKY
+    # 10. low_bar blocked with unknown claim judge → RISKY
     if low_bar_blocked:
         return "RISKY"
-    # 9. revise → RISKY
-    if claim_judge_verdict == "REVISE":
-        return "RISKY"
-    # 10. accepted but blocked items → CONDITIONAL
-    if claim_judge_verdict == "ACCEPT" and blocked_items:
+    # 11. REVISE + low_bar pass → CONDITIONAL (round-5: was RISKY)
+    if is_revise:
         return "CONDITIONAL"
-    # 11. blocked items → RISKY
+    # 12. ACCEPT + blocked items → CONDITIONAL
+    if is_accept and blocked_items:
+        return "CONDITIONAL"
+    # 13. blocked items → RISKY
     if blocked_items:
         return "RISKY"
-    # 12. all clear → GO
+    # 14. all clear → GO
     return "GO"
 
 

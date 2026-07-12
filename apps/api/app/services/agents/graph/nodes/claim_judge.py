@@ -48,14 +48,21 @@ For each candidate, judge:
    - Autonomous driving safety-critical decisions
    When the topic is high-stakes AND evidence is insufficient to ground the claims, the verdict MUST be REJECT (not REVISE) — the proposal is too risky to proceed without stronger grounding.
 
-Verdict calibration (Re7.7):
-- ACCEPT: claim has reasonable evidence, clear gap, and falsifiable test. Does NOT require perfect evidence.
-- REVISE: claim has potential but needs more evidence, sharper gap, or better differentiation. This is the DEFAULT when evidence is partial and the domain is NOT high-stakes.
+Verdict calibration (Re7.7 round-5):
+- ACCEPT: claim has reasonable evidence (even if partial), a specific gap, and a falsifiable test.
+  For engineering/applied domains (industrial vision, remote sensing, energy, robotics, NLP,
+  structural engineering, acoustics), ACCEPT if the approach is grounded in real papers and
+  the gap is specific — do NOT over-demand theoretical novelty. Incremental but well-grounded
+  work deserves ACCEPT, not REVISE.
+- REVISE: claim has potential but the gap is vague, evidence is thin, or differentiation is unclear.
+  This is the DEFAULT only when the gap is NOT specific enough or evidence is clearly insufficient
+  (not just "incomplete"). Do not use REVISE as a catch-all for "could be better".
 - REJECT: when ANY of the following hold:
   (a) claim is fabricated, has zero evidence basis, or is fundamentally flawed;
   (b) topic is high-stakes (medical/psychological/malicious/autonomy) AND evidence is insufficient to ground the claims;
   (c) topic is purely malicious (phishing/fraud/deepfake) regardless of evidence quality.
   Do NOT reject just because evidence is incomplete in non-high-stakes domains.
+  Do NOT reject engineering/applied work just because it lacks theoretical breakthroughs.
 
 Output JSON:
 {{

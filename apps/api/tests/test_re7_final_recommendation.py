@@ -35,11 +35,49 @@ def test_compute_verdict_stop_claim_reject():
 
 
 def test_compute_verdict_stop_low_bar_and_reject():
-    """Re7.7: low_bar blocked + REJECT → STOP (double negative signal)."""
+    """Re7.7 round-5: low_bar blocked + REJECT in LOW-risk domain → RISKY (not STOP).
+
+    Only medium/high-risk domains escalate REJECT+blocked to STOP.
+    """
     assert _compute_final_verdict({
         "low_bar_review": {"status": "blocked"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "REJECT",
+        "user_constraints": {"domain": "工业视觉"},
+        "topic": "钢材缺陷检测",
+    }) == "RISKY"
+
+
+def test_compute_verdict_stop_medium_risk_reject_blocked():
+    """Re7.7 round-5: medium-risk domain + REJECT + low_bar blocked → STOP."""
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "blocked"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "REJECT",
+        "user_constraints": {"domain": "医学AI"},
+        "topic": "医学影像分割",
+    }) == "STOP"
+
+
+def test_compute_verdict_stop_high_risk_reject_pass():
+    """Re7.7 round-5: high-risk domain + REJECT + low_bar pass → STOP."""
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "pass"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "REJECT",
+        "user_constraints": {"domain": "高风险对话"},
+        "topic": "心理咨询辅助问答",
+    }) == "STOP"
+
+
+def test_compute_verdict_stop_high_risk_revise_blocked():
+    """Re7.7 round-5: high-risk domain + REVISE + low_bar blocked → STOP."""
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "blocked"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "REVISE",
+        "user_constraints": {"domain": "生物信息"},
+        "topic": "罕见病药物反应预测",
     }) == "STOP"
 
 
@@ -61,11 +99,15 @@ def test_compute_verdict_stop_human_gate_blocked():
 
 
 def test_compute_verdict_risky_revise():
+    """Re7.7 round-5: REVISE + low_bar pass → CONDITIONAL (was RISKY).
+
+    Incremental work with partial evidence deserves a conditional green light.
+    """
     assert _compute_final_verdict({
         "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "REVISE",
-    }) == "RISKY"
+    }) == "CONDITIONAL"
 
 
 def test_compute_verdict_conditional_accept_with_blocked_items():
