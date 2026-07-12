@@ -390,38 +390,57 @@ def human_gate_search_node(state: ResearchState) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 def _compute_final_verdict(state: ResearchState) -> str:
-    """Compute GO / RISKY / STOP verdict from available node outputs."""
+    """Compute GO / CONDITIONAL / RISKY / PIVOT / STOP verdict from available node outputs."""
     review = state.get("low_bar_review") or {}
     gate = state.get("human_gate") or {}
     claim_judge_verdict = (state.get("claim_judge_verdict") or "").upper()
+    blocked_items = state.get("blocked_items") or []
+    devils = state.get("devils_advocate") or {}
 
+    # 1. low_bar blocked → STOP
     if review.get("status") == "blocked":
         return "STOP"
+    # 2. genuine rejection → STOP
     if claim_judge_verdict == "REJECT":
         return "STOP"
+    # 3. judge unavailable → RISKY (not STOP)
+    if claim_judge_verdict == "UNAVAILABLE":
+        return "RISKY"
+    # 4. human gate not passed → STOP
     gate_status = gate.get("status", "")
     if gate_status not in ("pass_through", "pass_through_no_runtime"):
         return "STOP"
+    # 5. revise + fundamental flaw → PIVOT
+    if claim_judge_verdict == "REVISE" and devils.get("fundamental_flaw"):
+        return "PIVOT"
+    # 6. revise → RISKY
     if claim_judge_verdict == "REVISE":
         return "RISKY"
-    blocked_items = state.get("blocked_items") or []
+    # 7. accepted but blocked items → CONDITIONAL
+    if claim_judge_verdict == "ACCEPT" and blocked_items:
+        return "CONDITIONAL"
+    # 8. blocked items → RISKY
     if blocked_items:
         return "RISKY"
+    # 9. all clear → GO
     return "GO"
 
 
 def _compute_stop_reason(state: ResearchState) -> list[str]:
-    """Return human-readable reasons for STOP / RISKY verdicts."""
+    """Return human-readable reasons for STOP / RISKY / CONDITIONAL / PIVOT verdicts."""
     reasons: list[str] = []
     review = state.get("low_bar_review") or {}
     gate = state.get("human_gate") or {}
     claim_judge_verdict = (state.get("claim_judge_verdict") or "").upper()
     blocked_items = state.get("blocked_items") or []
+    verdict = _compute_final_verdict(state)
 
     if review.get("status") == "blocked":
         reasons.append("low-bar review blocked the proposal")
     if claim_judge_verdict == "REJECT":
         reasons.append("claim judge rejected all novelty claims")
+    if claim_judge_verdict == "UNAVAILABLE":
+        reasons.append("claim judge unavailable, cannot assess novelty")
     gate_status = gate.get("status", "")
     if gate_status not in ("pass_through", "pass_through_no_runtime"):
         reasons.append(f"human gate did not pass: {gate_status}")
@@ -429,6 +448,10 @@ def _compute_stop_reason(state: ResearchState) -> list[str]:
         reasons.append("claim judge requested revisions")
     if blocked_items:
         reasons.append(f"{len(blocked_items)} claim(s) blocked")
+    if verdict == "CONDITIONAL":
+        reasons.append(f"{len(blocked_items)} claim(s) blocked but core claims accepted")
+    if verdict == "PIVOT":
+        reasons.append("fundamental flaw identified by devils_advocate, pivot recommended")
 
     return reasons[:3]
 
