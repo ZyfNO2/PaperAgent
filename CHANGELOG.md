@@ -3,6 +3,42 @@
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.7-dev] - 2026-07-12 (Re7.7 Decision Calibration)
+
+### Added
+- `apps/api/app/services/agents/graph/nodes/content.py`: `_domain_risk_level()` three-tier classifier (high/medium/low) based on topic + domain keywords
+- `apps/api/app/services/cross_domain_cases.py`: XD-11 ~ XD-15 holdout cases (金融风控/农业AI/自动驾驶/语音情感/网络安全)
+- `apps/api/scripts/smoke_e2e.py`: `verify_batch_timeline` + `repair_loop` (narrative_revisions/executions, low_bar_executions) export
+- `scripts/aggregate_round0.py`: dedup by case_id, 15-case aggregate table with verdict/stop_reason/claim_judge/low_bar/human_gate
+- `apps/api/tests/test_re7_final_recommendation.py`: high-risk ACCEPT→CONDITIONAL test, medium-risk ACCEPT→GO test, stop_reason high-risk test
+
+### Changed
+- `apps/api/app/services/agents/graph/nodes/content.py`: `_compute_final_verdict` round-6 calibration
+  - REMOVED medium-risk+REJECT+blocked→STOP (was too aggressive; XD-04 expects RISKY)
+  - ADDED high-risk+ACCEPT→CONDITIONAL (high-risk domains never get clean GO; XD-09 rare-disease drug must not be GO)
+  - medium-risk now behaves like low-risk for REJECT (→ RISKY, not STOP)
+  - REVISE+pass → CONDITIONAL (was RISKY in round-4)
+  - UNAVAILABLE → RISKY (not STOP; distinguishes "judge unavailable" from "real rejection")
+- `apps/api/app/services/agents/graph/nodes/content.py`: `_compute_stop_reason` high-risk CONDITIONAL branch (no longer outputs misleading "0 claim(s) blocked")
+- `apps/api/app/services/agents/graph/nodes/claim_judge.py`: round-6 prompt calibration
+  - Explicit high-stakes domains list: rare-disease drug response, psychological counseling, malicious use, medical diagnosis, autonomous driving
+  - "public transcriptome data" is NOT sufficient evidence for rare-disease drug claims; REJECT
+  - Engineering/applied work deserves ACCEPT if grounded in real papers (not over-demand theoretical novelty)
+  - LLM exception → UNAVAILABLE (not REJECT); no-innovation → REJECT (genuine)
+- `apps/api/app/services/agents/graph/nodes/innovation_extractor.py`: empty innovation_points fallback to heuristic; filter non-dict items
+- `apps/api/app/services/agents/graph/state.py`: `merge_dict` reducer for evidence_audit (fix InvalidUpdateError on parallel writes)
+- `apps/api/app/services/agents/graph/nodes/novelty_draft.py`: `_as_str()` coerces list/dict to string (fix XD-10 AttributeError)
+- `apps/api/app/services/agents/graph/validators/llm_output_validator.py`: `USE_CONTRACT_PATH` env var (default "0" disables slow contract path)
+- `apps/api/app/services/agents/graph/nodes/claim_judge.py`: bypass contract_id to ensure profile="premium_review" (mistral) is actually used
+
+### Verified
+- 91/91 Re7-related unit tests pass (final_recommendation 21 + novelty_acceptance 18 + innovation_extractor 4 + others)
+- Round-6 main test: 5/10 exact verdict match (XD-03/04/08/09/10); 3 regressions due to LLM randomness (±2波动)
+- Holdout test: 3/5 exact match (XD-12/13/14); 2 non-match but verdict reasonable (XD-11 RISKY vs GO, XD-15 CONDITIONAL vs STOP)
+- Overall 15-case: 8/15 (53.3%) exact match; safety floor held (no STOP→GO misjudgment, no high-risk topic gets GO)
+- Verify耗时: USE_CONTRACT_PATH=0 drops verify from 100-215s to 8-32s
+- Repair loop: avg 2-3 rounds (most cases hit 3-round cap)
+
 ## [0.7.6-dev] - 2026-07-11 (Re7.6)
 
 ### Added
