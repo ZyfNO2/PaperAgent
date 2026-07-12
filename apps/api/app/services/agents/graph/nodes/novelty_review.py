@@ -1,4 +1,4 @@
-"""Re6.4 Novelty Review — The reviewer pressure-test adapter.
+"""Re6.4 / Re8.0 WP5 Novelty Review — The reviewer pressure-test adapter.
 
 Re8.0 WP5 enhancement: adds Problem-Method-Insight (P-M-I) structure,
 multi-granularity contributions, falsifiable hypothesis, minimum key
@@ -13,9 +13,11 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
+from ._util import emit_trace as _emit
 
 logger = logging.getLogger(__name__)
 
@@ -295,15 +297,33 @@ def novelty_review_node(state: ResearchState) -> dict[str, Any]:
     the prompt includes it so the reviewer can pressure-test the tailored
     assembly, not just the raw innovation points. Falls back gracefully
     when ``tailored_method`` is absent (topic_only path).
+
+    Re8.0 WP5 fixup (P1-1): all three return paths now emit a trace_events
+    entry with provider / verdict / generated_by for debuggability, parity
+    with tailor_skill_adapter_node.
     """
+    t0 = time.time()
     innovation_points = state.get("innovation_points", [])
 
     if not innovation_points:
         logger.info("novelty_review: no innovation points, skipping LLM call")
-        return _empty_review(generated_by="fallback",
-                             risks=["no_innovation_points"])
+        result = _empty_review(generated_by="fallback",
+                               risks=["no_innovation_points"])
+        trace = _emit(
+            "novelty_review", t0,
+            {"n_innovation_points": 0},
+            {"verdict": result["novelty_review_verdict"],
+             "generated_by": result["review_generated_by"],
+             "score": result["novelty_review_score"]},
+            [], "n/a", [],
+            state_keys=["novelty_review_verdict", "novelty_review_score",
+                        "review_generated_by", "trace_events"],
+        )
+        result["trace_events"] = [trace]
+        return result
 
     prompt = build_novelty_review_prompt(state)
+    prov = "premium_review"
 
     try:
         from apps.api.app.services.agents.graph.validators.llm_output_validator import (
@@ -337,19 +357,41 @@ def novelty_review_node(state: ResearchState) -> dict[str, Any]:
         generated_by = "llm"
         if not isinstance(raw, dict):
             logger.warning("novelty_review: LLM returned non-dict, using empty review")
-            return _empty_review(generated_by="fallback", risks=["llm_unavailable"])
-        # Detect the fallback dict shape (LLMUnavailable path)
-        if raw.get("pseudo_innovation_risks") == ["llm_unavailable"]:
-            generated_by = "fallback"
-        result = normalize_review_output(raw, generated_by=generated_by)
+            result = _empty_review(generated_by="fallback", risks=["llm_unavailable"])
+            prov = "fallback"
+        else:
+            # Detect the fallback dict shape (LLMUnavailable path)
+            if raw.get("pseudo_innovation_risks") == ["llm_unavailable"]:
+                generated_by = "fallback"
+                prov = "fallback"
+            result = normalize_review_output(raw, generated_by=generated_by)
         logger.info("novelty_review: verdict=%s score=%s type=%s generated_by=%s",
                      result["novelty_review_verdict"],
                      result["novelty_review_score"],
                      result["contribution_type"],
                      result["review_generated_by"])
-        return result
     except Exception as exc:
         logger.warning("novelty_review: LLM call failed: %s", exc)
-        return _empty_review(generated_by="fallback",
-                             risks=["llm_unavailable"],
-                             error=str(exc))
+        result = _empty_review(generated_by="fallback",
+                               risks=["llm_unavailable"],
+                               error=str(exc))
+        prov = "fallback"
+
+    trace = _emit(
+        "novelty_review", t0,
+        {"n_innovation_points": len(innovation_points),
+         "has_tailored_method": bool(state.get("tailored_method"))},
+        {"verdict": result["novelty_review_verdict"],
+         "generated_by": result["review_generated_by"],
+         "score": result["novelty_review_score"],
+         "contribution_type": result["contribution_type"]},
+        [{"tool": "novelty-review/v1" if prov != "fallback" else "rule-fallback"}],
+        prov, [],
+        state_keys=["novelty_review_verdict", "novelty_review_score",
+                    "problem_method_insight", "contributions",
+                    "falsifiable_hypothesis", "minimum_key_experiment",
+                    "contribution_type", "review_generated_by",
+                    "trace_events"],
+    )
+    result["trace_events"] = [trace]
+    return result
