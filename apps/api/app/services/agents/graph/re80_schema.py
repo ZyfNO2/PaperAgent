@@ -35,7 +35,17 @@ REASONING_POLICIES = ("react_reflection", "chain_only")
 
 SEED_INPUT_FORMS = ("title", "doi", "arxiv", "url", "pdf", "citation")
 SEED_EXISTENCE_STATUS = ("verified", "ambiguous", "not_found")
-SEED_FULLTEXT_STATUS = ("downloaded", "metadata_only", "parse_failed")
+# Re8.0 P1-1: fulltext acquisition three-state progression
+#   metadata_only → fulltext_available → fulltext_parsed
+# "downloaded" is the legacy value written by paper_understanding (WP2);
+# "parse_failed" remains a terminal failure state.
+SEED_FULLTEXT_STATUS = (
+    "downloaded",        # legacy: paper_understanding parsed a local PDF
+    "metadata_only",     # initial: only title/authors/year known
+    "parse_failed",      # PDF parse failed
+    "fulltext_available",  # P1-1: PDF bytes downloaded, not yet parsed
+    "fulltext_parsed",     # P1-1: fulltext parsed into structured fields
+)
 SEED_ROLES = (
     "classic_anchor",
     "current_sota_candidate",
@@ -61,6 +71,7 @@ GAP_TYPES = (
     "repo",
     "environment",
     "counter_evidence",
+    "fulltext",  # Re8.0 P1-1: PDF fulltext could not be downloaded (paywall/403/timeout)
 )
 GAP_STATUS = ("open", "satisfied", "partially_satisfied", "blocked")
 

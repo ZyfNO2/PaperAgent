@@ -21,6 +21,8 @@ from typing import Any
 
 from .._http import HttpError, fetch_with_timeout
 
+from apps.api.app.services.network_guard import NetworkPolicyGuard
+
 
 HF_API = "https://huggingface.co/api/datasets"
 
@@ -66,7 +68,7 @@ async def huggingface_search(
     Returns dataset-normalized rows (``title=id``,
     ``evidence_type="dataset"``, ``source="huggingface"``).
     """
-
+    NetworkPolicyGuard.assert_online("huggingface")
     results: list[dict] = []
     qs = list(queries[:HF_QUERIES_PER_ROUND]) if queries else []
     seen_ids: set[str] = set()

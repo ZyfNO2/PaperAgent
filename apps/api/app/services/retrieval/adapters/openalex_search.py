@@ -18,6 +18,8 @@ from typing import Any
 
 from .._http import HttpError, fetch_with_timeout
 
+from apps.api.app.services.network_guard import NetworkPolicyGuard
+
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,7 @@ async def openalex_search(
     ``_openalex_backup_tried`` attribute attached to this coroutine via
     ``openalex_last_backup_empty()`` (testable).
     """
-
+    NetworkPolicyGuard.assert_online("openalex")
     per_page = per_page or top_k
     headers = {
         "User-Agent": "PaperAgent/1.0 (mailto:[email protected])",

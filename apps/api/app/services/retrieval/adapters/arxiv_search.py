@@ -10,6 +10,7 @@ from xml.etree import ElementTree as ET
 
 from .._http import HttpError, fetch_with_timeout
 from . import _cache
+from apps.api.app.services.network_guard import NetworkPolicyGuard
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +91,7 @@ async def arxiv_search(
 
     Runs up to 3 queries with URL encoding + relevance sort, dedupes by arxiv_id.
     """
+    NetworkPolicyGuard.assert_online("arxiv")
     qs = [q.strip() for q in (queries or []) if q and q.strip()][:3]
     if not qs:
         return []

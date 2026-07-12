@@ -19,6 +19,7 @@ from typing import Any
 
 from .._http import HttpError, fetch_with_timeout
 from . import _cache
+from apps.api.app.services.network_guard import NetworkPolicyGuard
 
 
 CROSSREF_API = "https://api.crossref.org/works"
@@ -46,6 +47,7 @@ async def crossref_search(
 ) -> list[dict]:
     """Search Crossref for academic papers. Returns OpenAlex-shaped dicts."""
 
+    NetworkPolicyGuard.assert_online("crossref")
     headers = {
         "User-Agent": "PaperAgent/1.0 (mailto:[email protected])",
         "Accept": "application/json",

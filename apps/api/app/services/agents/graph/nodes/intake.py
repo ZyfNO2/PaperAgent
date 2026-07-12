@@ -14,6 +14,7 @@ import time
 from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
+from apps.api.app.services.network_guard import NetworkPolicyGuard
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,11 @@ def intake_node(state: ResearchState) -> dict[str, Any]:
     Existing ``topic_only`` callers without ``user_papers`` see no
     behaviour change.
     """
+    # Re8.0 P0-3: configure the global network guard from state so that
+    # retrieval adapters enforce offline mode globally. Runs before the
+    # idempotency guard so re-entry also reconfigures.
+    NetworkPolicyGuard.configure(state.get("network_policy", "online"))
+
     t0 = time.time()
 
     # Idempotency guard: trust existing trace.
