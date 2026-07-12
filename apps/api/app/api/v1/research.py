@@ -426,9 +426,11 @@ async def upload_paper(case_id: str, payload: dict[str, Any]) -> dict[str, Any]:
     case_id = _validate_case_id(case_id)
     """Upload a user-known paper for a case.
 
-    The paper is enriched from Crossref/arXiv if DOI/arXiv ID is provided,
-    then stored. When the case runs, uploaded papers go directly into
-    verified_papers (verdict=accept) and seed_papers.
+    Re8.0: the paper is enriched from Crossref/arXiv if DOI/arXiv ID is
+    provided, then staged as a ``candidate_seed``. It is NO LONGER
+    auto-accepted into ``verified_papers`` — the ``seed_resolver_node``
+    audits authenticity (Crossref/arXiv match) before any promotion to
+    evidence. This closes the "fabricated DOI auto-accepts" loophole.
     """
     title = (payload.get("title") or "").strip()
     doi = (payload.get("doi") or "").strip()
@@ -447,32 +449,31 @@ async def upload_paper(case_id: str, payload: dict[str, Any]) -> dict[str, Any]:
             _USER_PAPERS[case_id] = []
         _USER_PAPERS[case_id].append(enriched)
 
-    # If the case already has a state.json, also append to it
+    # Re8.0: If the case already has a state.json, append as candidate_seed.
+    # The seed_resolver_node audits authenticity before any promotion to
+    # verified_papers / seed_papers. We deliberately do NOT touch
+    # verified_papers here — that was the fabricated-DOI loophole.
     state_path = _case_dir(case_id) / "state.json"
     if state_path.exists():
         try:
             st = json.loads(state_path.read_text(encoding="utf-8"))
-            vp = st.get("verified_papers") or []
-            sp = st.get("seed_papers") or []
-            vp.append({
+            cs = st.get("candidate_seeds") or []
+            cs.append({
+                "seed_id": f"user-seed-{len(cs)}",
                 "title": enriched["title"],
-                "abstract": enriched["abstract"],
-                "url": enriched["url"],
                 "doi": enriched.get("doi"),
                 "arxiv_id": enriched.get("arxiv_id"),
-                "source": "user_upload",
-                "verdict": "accept",
-                "relation_to_topic": enriched.get("role", "baseline"),
-                "relevance_score": 1.0,
-            })
-            sp.append({
-                "title": enriched["title"],
                 "url": enriched["url"],
-                "doi": enriched.get("doi"),
-                "relevance_score": 1.0,
+                "authors": enriched.get("authors", []),
+                "year": enriched.get("year"),
+                "abstract": enriched.get("abstract", ""),
+                "role": enriched.get("role", "unknown"),
+                "raw_input": enriched,
             })
-            st["verified_papers"] = vp
-            st["seed_papers"] = sp
+            st["candidate_seeds"] = cs
+            # Force entry_mode to seeded_research so seed_resolver runs
+            if st.get("entry_mode", "topic_only") == "topic_only":
+                st["entry_mode"] = "seeded_research"
             state_path.write_text(
                 json.dumps(st, ensure_ascii=False, indent=2, default=str),
                 encoding="utf-8",
@@ -484,24 +485,44 @@ async def upload_paper(case_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         "case_id": case_id,
         "paper": enriched,
         "stored": True,
-        "message": "paper will be injected into verified_papers when the case runs",
+        "message": "paper staged as candidate_seed; seed_resolver will audit before promotion",
     }
 
 
 @router.get("/{case_id}/papers")
 def list_user_papers(case_id: str) -> dict[str, Any]:
     case_id = _validate_case_id(case_id)
-    """List user-uploaded papers for a case."""
+    """List user-uploaded papers for a case.
+
+    Re8.0: papers are staged as ``candidate_seeds`` and, after the
+    ``seed_resolver_node`` runs, audited cards appear in ``seed_cards``.
+    We surface both so the caller can see audit status.
+    """
     with _LOCK:
         papers = list(_USER_PAPERS.get(case_id, []))
-    # Also check state.json for papers already merged
+    # Re8.0: read from candidate_seeds (pre-audit) + seed_cards (post-audit)
     state_path = _case_dir(case_id) / "state.json"
     if state_path.exists():
         try:
             st = json.loads(state_path.read_text(encoding="utf-8"))
-            for p in st.get("verified_papers") or []:
-                if p.get("source") == "user_upload" and p not in papers:
+            for p in st.get("candidate_seeds") or []:
+                if p not in papers:
                     papers.append(p)
+            for card in st.get("seed_cards") or []:
+                # seed_cards are the audited form; expose a paper-like view
+                papers.append({
+                    "title": card.get("resolved_title") or card.get("raw_input", {}).get("title", ""),
+                    "doi": card.get("doi"),
+                    "arxiv_id": card.get("arxiv_id"),
+                    "url": card.get("canonical_url") or card.get("raw_input", {}).get("url", ""),
+                    "authors": card.get("authors", []),
+                    "year": card.get("year"),
+                    "abstract": card.get("raw_input", {}).get("abstract", ""),
+                    "role": card.get("role", "unknown"),
+                    "existence_status": card.get("existence_status", "unknown"),
+                    "seed_id": card.get("seed_id"),
+                    "audited": True,
+                })
         except Exception:
             pass
     return {"case_id": case_id, "papers": papers, "n": len(papers)}

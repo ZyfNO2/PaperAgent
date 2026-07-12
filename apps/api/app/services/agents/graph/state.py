@@ -148,3 +148,30 @@ class ResearchState(TypedDict, total=False):
     claim_judgements: list[dict[str, Any]]  # Re7.6
     claim_judge_verdict: str  # Re7.6
     stop_reason: list[str]  # Re7.7: auditable STOP/RISKY/CONDITIONAL/PIVOT attribution
+
+    # === Re8.0 new fields (Seeded Research) ===
+    # Entry / run / network / reasoning policy (WP0 contract)
+    entry_mode: str  # "topic_only" | "seeded_research"
+    run_mode: str  # "full_agent" | "lite_chain" | "offline_replay"
+    network_policy: str  # "online" | "cache_first" | "offline"
+    reasoning_policy: str  # "react_reflection" | "chain_only"
+
+    # Seed paper cards (post-verification). Re8.0 replaces the legacy
+    # `user_papers` auto-accept path with audited SeedPaperCard objects.
+    # Each card carries existence_status, role, and reproduction metadata.
+    seed_cards: list[dict[str, Any]]
+    # Candidate seeds prior to resolution (raw user input, never enters
+    # verified_papers without passing SeedResolver).
+    candidate_seeds: list[dict[str, Any]]
+
+    # Method family cards (WP3) — 2-4 alternative method routes per topic
+    method_families: list[dict[str, Any]]
+
+    # Evidence gaps (WP4) — every external search must bind to a gap_id
+    evidence_gaps: list[dict[str, Any]]
+
+    # Research reasoning ledger (WP6) — auditable structured decisions
+    reasoning_ledger: Annotated[list[dict[str, Any]], operator.add]
+
+    # Budget / search caps (WP0 contract)
+    search_budget: dict[str, Any]
