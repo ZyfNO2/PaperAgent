@@ -38,6 +38,7 @@ from . import claim_judge as _claim_judge
 from . import seed_resolver as _seed_resolver
 from . import paper_understanding as _paper_understanding
 from . import method_family_explorer as _method_family_explorer
+from . import tailor_skill_adapter as _tailor_skill_adapter  # Re8.0 WP5
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
 REGISTRY: dict[str, callable] = {
@@ -45,6 +46,7 @@ REGISTRY: dict[str, callable] = {
     "seed_resolver": _seed_resolver.seed_resolver_node,  # Re8.0
     "paper_understanding": _paper_understanding.paper_understanding_node,  # Re8.0 WP2
     "method_family_explorer": _method_family_explorer.method_family_explorer_node,  # Re8.0 WP3
+    "tailor_skill_adapter": _tailor_skill_adapter.tailor_skill_adapter_node,  # Re8.0 WP5
     "topic_parser": _topic_parser.topic_parser_node,
     "search_planner": _search_planner.search_planner_node,
     "paper_retriever": _search_agent.search_agent_node,  # Re3.0: React search agent
@@ -90,6 +92,8 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
                            "trace_events"),  # Re8.0 WP2
     "method_family_explorer": ("method_families", "search_lanes", "evidence_gaps",
                               "reasoning_ledger", "trace_events"),  # Re8.0 WP3
+    "tailor_skill_adapter": ("tailored_method", "reasoning_ledger",
+                            "trace_events"),  # Re8.0 WP5
     "topic_parser": ("topic_atoms", "trace_events", "errors", "provider_profile"),
     "search_planner": ("search_plan", "search_lanes", "evidence_gaps",
                        "trace_events", "errors", "provider_profile"),  # Re8.0 WP4: +lanes/gaps
@@ -128,7 +132,11 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "novelty_review": ("novelty_review_verdict", "novelty_review_score",
                        "pseudo_innovation_risks", "pressure_points",
                        "differentiation_matrix", "required_repairs",
-                       "review_strengths", "review_risks", "trace_events"),
+                       "review_strengths", "review_risks",
+                       "problem_method_insight", "contributions",
+                       "falsifiable_hypothesis", "minimum_key_experiment",
+                       "contribution_type", "review_generated_by",
+                       "novelty_review_error", "trace_events"),  # Re8.0 WP5: +P-M-I fields
     "falsifiability": ("falsifiable_propositions", "trace_events"),
     "claim_judge": ("claim_judgements", "claim_judge_verdict",
                     "blocked_items", "claim_judge_summary", "trace_events"),

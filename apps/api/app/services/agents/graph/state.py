@@ -177,5 +177,9 @@ class ResearchState(TypedDict, total=False):
     # Research reasoning ledger (WP6) — auditable structured decisions
     reasoning_ledger: Annotated[list[dict[str, Any]], operator.add]
 
+    # Re8.0 WP5: Tailored method card produced by tailor_skill_adapter.
+    # Only populated for entry_mode == "seeded_research"; absent for topic_only.
+    tailored_method: dict[str, Any]
+
     # Budget / search caps (WP0 contract)
     search_budget: dict[str, Any]
