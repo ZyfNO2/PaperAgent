@@ -12,6 +12,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="navbar-links">
           <Link to="/" className={isActive('/') && location.pathname === '/' ? 'active' : ''}>首页</Link>
           <Link to="/workbench" className={isActive('/workbench') ? 'active' : ''}>工作台</Link>
+          <Link to="/seeded-research" className={isActive('/seeded-research') ? 'active' : ''}>Seeded Research</Link>
           <Link to="/rag" className={isActive('/rag') ? 'active' : 'disabled'}>RAG</Link>
           <Link to="/settings" className={isActive('/settings') ? 'active' : ''}>Settings</Link>
         </div>

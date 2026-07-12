@@ -1,8 +1,8 @@
-"""Re7.6 FeedbackBar React component.
-
-Renders inline feedback controls on final recommendation, innovation card,
-and RAG answer sections. Feedback is append-only; never enters LLM context.
-"""
+/** Re7.6 FeedbackBar React component.
+ *
+ * Renders inline feedback controls on final recommendation, innovation card,
+ * and RAG answer sections. Feedback is append-only; never enters LLM context.
+ */
 import { useState } from "react";
 
 interface FeedbackBarProps {

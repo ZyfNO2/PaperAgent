@@ -726,3 +726,118 @@ input, textarea {
 .security-notice h3 { font-size: 0.9rem; margin-bottom: 8px; color: var(--color-text); }
 .security-notice ul { list-style: disc; padding-left: 20px; }
 .security-notice li { margin-bottom: 4px; }
+
+/* ================================================================
+   pa-* 基础 utility class（TopicIntake / SeededResearch 共用）
+   ================================================================ */
+.pa-form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.pa-form-row label { font-size: 0.85rem; }
+.pa-input {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+}
+.pa-input:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+.pa-textarea { resize: vertical; min-height: 60px; }
+.pa-small { font-size: 0.8rem; }
+.pa-muted { color: var(--color-text-secondary); }
+.pa-interview-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+/* ================================================================
+   Seeded Research 页面
+   ================================================================ */
+.seeded-research-page { padding: 0 0 24px; }
+
+/* 种子录入行 */
+.pa-seed-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+.pa-seed-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  flex-wrap: wrap;
+}
+.pa-seed-id {
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 28px;
+  text-align: center;
+  background: #dbeafe;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.pa-seed-select { width: auto; min-width: 110px; }
+.pa-seed-identifier { flex: 1; min-width: 180px; }
+
+/* radio group */
+.pa-radio-group { display: flex; flex-direction: column; gap: 6px; }
+.pa-radio-label { display: flex; align-items: flex-start; gap: 8px; font-size: 0.9rem; cursor: pointer; }
+.pa-radio-label input { margin-top: 3px; width: auto; }
+.pa-radio-text { display: flex; flex-direction: column; }
+
+/* 结果区 */
+.pa-result-area { margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+
+/* 三层 PASS 摘要 */
+.pa-pass-tiers {
+  display: flex;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.pa-pass-tier { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+.pa-pass-icon { font-size: 1rem; }
+.pa-pass-label { font-weight: 600; font-family: monospace; }
+
+/* Gate 卡片 */
+.pa-gate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.pa-gate-card { border: 1px solid var(--color-border); border-radius: var(--radius); padding: 12px; background: var(--color-surface); }
+.pa-gate-card.verdict-pass { border-left: 3px solid var(--color-success); }
+.pa-gate-card.verdict-revise { border-left: 3px solid var(--color-warning); }
+.pa-gate-card.verdict-unresolved { border-left: 3px solid var(--color-error); }
+.pa-gate-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.pa-gate-icon { font-size: 1rem; }
+.pa-gate-title { font-weight: 600; font-size: 0.9rem; flex: 1; }
+.pa-gate-verdict {
+  font-size: 0.75rem;
+  font-family: monospace;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.pa-gate-rationale { font-size: 0.85rem; margin-top: 4px; line-height: 1.5; }
+
+/* Fused Verdict 大字 */
+.pa-fused-verdict {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-family: monospace;
+}
+
+/* checklist */
+.pa-checklist { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.pa-checklist-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .pa-seed-row { flex-direction: column; align-items: stretch; }
+  .pa-seed-select, .pa-seed-identifier { width: 100%; }
+  .pa-gate-grid { grid-template-columns: 1fr; }
+  .pa-pass-tiers { flex-direction: column; gap: 8px; }
+}
