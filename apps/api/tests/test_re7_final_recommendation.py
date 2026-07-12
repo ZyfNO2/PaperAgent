@@ -115,6 +115,34 @@ def test_compute_verdict_conditional_high_risk_accept():
     }) == "CONDITIONAL"
 
 
+def test_compute_verdict_go_medium_risk_accept_pass():
+    """Re7.7 round-6: medium-risk + ACCEPT + low_bar pass → GO (not CONDITIONAL).
+
+    Ensures Rule 13 (high-risk+ACCEPT→CONDITIONAL) does NOT accidentally catch
+    medium-risk domains. Medium-risk still gets GO when all is clear.
+    """
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "pass"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "ACCEPT",
+        "user_constraints": {"domain": "医学AI"},
+        "topic": "医学影像分割",
+    }) == "GO"
+
+
+def test_stop_reason_high_risk_conditional():
+    """Re7.7 round-6: high-risk+ACCEPT CONDITIONAL must not say '0 claim(s) blocked'."""
+    reasons = _compute_stop_reason({
+        "low_bar_review": {"status": "pass"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "ACCEPT",
+        "user_constraints": {"domain": "生物信息"},
+        "topic": "利用公开转录组数据预测罕见病药物反应",
+    })
+    assert not any("0 claim(s) blocked" in r for r in reasons), reasons
+    assert any("high-risk" in r for r in reasons), reasons
+
+
 def test_compute_verdict_risky_low_bar_blocked_revise():
     """Re7.7: low_bar blocked + REVISE → RISKY (not STOP; evidence partial but direction ok)."""
     assert _compute_final_verdict({
