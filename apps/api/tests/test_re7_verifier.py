@@ -150,9 +150,20 @@ def _make_contract_result(content: list | None, *, success: bool = True,
 
 
 class TestVerifyNodeEmulator:
-    """Re7.6 §2.4: verify_node must classify failures correctly under emulator conditions."""
+    """Re7.6 §2.4: verify_node must classify failures correctly under emulator conditions.
+
+    Re7.7 disabled USE_CONTRACT_PATH by default (default="0"). These tests
+    mock call_with_contract_list, so they MUST opt-in to the contract path
+    via the autouse fixture below — otherwise the mock is bypassed and the
+    real llm_router.call_json is called, producing non-deterministic results.
+    """
 
     PATCH_TARGET = "apps.api.app.services.router.call_with_contract_list"
+
+    @pytest.fixture(autouse=True)
+    def _enable_contract_path(self, monkeypatch):
+        """Force USE_CONTRACT_PATH=1 so the mocked contract path is actually used."""
+        monkeypatch.setenv("USE_CONTRACT_PATH", "1")
 
     def _make_state(self, n_candidates: int = 4) -> dict:
         """Create a minimal ResearchState for verify_node."""

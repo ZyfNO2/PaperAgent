@@ -34,8 +34,12 @@ def _make_unified_result(decision: dict[str, Any]) -> MagicMock:
 
 
 def test_llm_decide_uses_unified_router_by_default(monkeypatch: Any) -> None:
-    """SEARCH_AGENT_USE_UNIFIED_ROUTER default=1 -> call_with_contract."""
-    monkeypatch.delenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", raising=False)
+    """SEARCH_AGENT_USE_UNIFIED_ROUTER=1 -> call_with_contract.
+
+    Re7.7 changed the default from "1" to "0" (disabled). This test now
+    explicitly opts in to the unified router to test that code path.
+    """
+    monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "1")
     decision = {"action": "search", "tool": "arxiv", "query": "rag qa", "reason": "test"}
 
     with patch(PATCH_CATALOG, return_value=_make_catalog()), \
