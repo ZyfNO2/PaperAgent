@@ -13,6 +13,20 @@ import operator
 from typing import Annotated, Any, TypedDict
 
 
+def merge_dict(left: dict[str, Any] | None, right: dict[str, Any] | None) -> dict[str, Any]:
+    """LangGraph reducer for dict state keys that may be written by multiple
+    nodes in the same super-step (e.g. evidence_audit during fan-out / repair
+    loops). Later writes win on key conflicts; both sides are merged otherwise.
+
+    Re7.7: fixes ``InvalidUpdateError: At key 'evidence_audit': Can receive
+    only one value per step`` observed intermittently on XD-09.
+    """
+    out: dict[str, Any] = dict(left or {})
+    if right:
+        out.update(right)
+    return out
+
+
 class ResearchState(TypedDict, total=False):
     # --- Intake ---
     case_id: str
@@ -46,7 +60,7 @@ class ResearchState(TypedDict, total=False):
     parallel_candidates: list[dict[str, Any]]
     dataset_papers: list[dict[str, Any]]
     surveys: list[dict[str, Any]]
-    evidence_audit: dict[str, Any]
+    evidence_audit: Annotated[dict[str, Any], merge_dict]
 
     # --- Work package + low-bar review ---
     work_packages: list[dict[str, Any]]
