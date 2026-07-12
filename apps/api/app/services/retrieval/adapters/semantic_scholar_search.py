@@ -35,6 +35,8 @@ from urllib.parse import urlencode
 
 from .._http import HttpError, fetch_with_timeout
 
+from apps.api.app.services.network_guard import NetworkPolicyGuard
+
 logger = logging.getLogger(__name__)
 
 # Public Graph API. No key required for low-volume search; key unlocks
@@ -104,6 +106,7 @@ async def semantic_scholar_search(
     [] on any failure. Caller should record a SourceLedger status based
     on whether results came back empty.
     """
+    NetworkPolicyGuard.assert_online("semantic_scholar")
     qs = [q.strip() for q in (queries or []) if q and q.strip()][:3]
     if not qs:
         return []
@@ -191,6 +194,7 @@ async def semantic_scholar_citations(
     client: Any | None = None,
 ) -> list[dict]:
     """Papers that cite the given paper. Returns [] on any failure."""
+    NetworkPolicyGuard.assert_online("semantic_scholar_citations")
     pref = _extract_paper_id(paper_id, doi, arxiv_id)
     if not pref:
         return []
@@ -207,6 +211,7 @@ async def semantic_scholar_references(
     client: Any | None = None,
 ) -> list[dict]:
     """Papers that the given paper references. Returns [] on any failure."""
+    NetworkPolicyGuard.assert_online("semantic_scholar_references")
     pref = _extract_paper_id(paper_id, doi, arxiv_id)
     if not pref:
         return []

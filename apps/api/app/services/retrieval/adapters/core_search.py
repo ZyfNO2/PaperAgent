@@ -10,6 +10,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from apps.api.app.services.network_guard import NetworkPolicyGuard
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +30,7 @@ async def core_search(
     /evidence_type='paper'.  401/403 → retry with limit=3.  429/5xx
     → return ``[]`` (don't raise).
     """
-
+    NetworkPolicyGuard.assert_online("core")
     qs = [q for q in (queries or []) if q and q.strip()][:1]
     if not qs:
         return []

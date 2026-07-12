@@ -40,12 +40,14 @@ from . import paper_understanding as _paper_understanding
 from . import method_family_explorer as _method_family_explorer
 from . import tailor_skill_adapter as _tailor_skill_adapter  # Re8.0 WP5
 from . import reflection_gates as _reflection_gates  # Re8.0 WP6
+from . import fulltext_acquisition as _fulltext_acquisition  # Re8.0 P1-1
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
 REGISTRY: dict[str, callable] = {
     "intake": _intake.intake_node,
     "seed_resolver": _seed_resolver.seed_resolver_node,  # Re8.0
     "paper_understanding": _paper_understanding.paper_understanding_node,  # Re8.0 WP2
+    "fulltext_acquisition": _fulltext_acquisition.fulltext_acquisition_node,  # Re8.0 P1-1
     "method_family_explorer": _method_family_explorer.method_family_explorer_node,  # Re8.0 WP3
     "tailor_skill_adapter": _tailor_skill_adapter.tailor_skill_adapter_node,  # Re8.0 WP5
     "seed_audit_gate": _reflection_gates.seed_audit_gate_node,  # Re8.0 WP6
@@ -94,6 +96,8 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
                      "reasoning_ledger", "trace_events", "errors"),  # Re8.0
     "paper_understanding": ("seed_cards", "evidence_gaps",
                            "trace_events"),  # Re8.0 WP2
+    "fulltext_acquisition": ("seed_cards", "evidence_gaps", "errors",
+                            "trace_events"),  # Re8.0 P1-1
     "method_family_explorer": ("method_families", "search_lanes", "evidence_gaps",
                               "reasoning_ledger", "trace_events"),  # Re8.0 WP3
     "tailor_skill_adapter": ("tailored_method", "reasoning_ledger",

@@ -19,6 +19,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 
 from apps.api.app.services.agents.graph import nodes as graph_nodes
+from apps.api.app.services.agents.graph.nodes.reflection_gates import route_after_gate
 from apps.api.app.services.agents.graph.state import ResearchState
 
 logger = logging.getLogger(__name__)
@@ -58,8 +59,27 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     # Re8.0 WP2: paper_understanding parses seed PDFs and fills understanding
     # fields (method_summary, dataset_and_metrics, ...) on SeedPaperCards.
     # No-op when no seed card has a PDF, so topic_only callers see no change.
-    graph.add_edge("seed_audit_gate", "paper_understanding")
-    graph.add_edge("paper_understanding", "method_family_explorer")
+    #
+    # Re8.0 P0-2: conditional repair routing — when seed_audit_gate emits
+    # verdict=revise and round_idx < REFLECTION_GATE_MAX_ROUNDS, route
+    # back to seed_resolver (re-resolve seeds with repair hints).
+    # verdict=pass / unresolved / cap-reached → forward to
+    # paper_understanding. Lite Chain / Offline Replay always emit pass
+    # (generated_by=skip), so they route forward — no behavior change.
+    graph.add_conditional_edges(
+        "seed_audit_gate",
+        lambda state: route_after_gate(state, "seed_audit_gate"),
+        {
+            "paper_understanding": "paper_understanding",  # forward
+            "seed_resolver": "seed_resolver",              # repair
+        },
+    )
+    graph.add_edge("paper_understanding", "fulltext_acquisition")
+    # Re8.0 P1-1: fulltext_acquisition downloads PDF bytes for verified
+    # DOI/arXiv seeds that paper_understanding couldn't parse (it only
+    # reads local PDFs). No-op for topic_only / offline / no verified
+    # metadata_only cards, so existing callers see no change.
+    graph.add_edge("fulltext_acquisition", "method_family_explorer")
     graph.add_edge("method_family_explorer", "topic_parser")
     graph.add_edge("topic_parser", "search_planner")
     graph.add_edge("search_planner", "paper_retriever")
@@ -133,7 +153,19 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     # for topic_only (activation gate on entry_mode == "seeded_research").
     graph.add_edge("evidence_context", "tailor_skill_adapter")
     graph.add_edge("tailor_skill_adapter", "tailor_gate")
-    graph.add_edge("tailor_gate", "innovation_extractor")
+    # Re8.0 P0-2: conditional repair routing — when tailor_gate emits
+    # verdict=revise and round_idx < REFLECTION_GATE_MAX_ROUNDS, route
+    # back to search_planner (targeted re-search based on
+    # re_search_requests). verdict=pass / unresolved / cap-reached →
+    # forward to innovation_extractor.
+    graph.add_conditional_edges(
+        "tailor_gate",
+        lambda state: route_after_gate(state, "tailor_gate"),
+        {
+            "innovation_extractor": "innovation_extractor",  # forward
+            "search_planner": "search_planner",              # repair
+        },
+    )
     graph.add_edge("work_package", "sota_matcher")                 # Re2: parallel fan-out
     # Re6.4: Insert novelty review + falsifiability between innovation and narrative
     graph.add_edge("innovation_extractor", "novelty_draft")
@@ -142,7 +174,18 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     # hypothesis + pressure points (narrative vs evidence / similar work /
     # need extra evidence). Short-circuits for non-react-reflection modes.
     graph.add_edge("novelty_review", "final_review_gate")
-    graph.add_edge("final_review_gate", "falsifiability")
+    # Re8.0 P0-2: conditional repair routing — when final_review_gate
+    # emits verdict=revise and round_idx < REFLECTION_GATE_MAX_ROUNDS,
+    # route back to evidence_context (compile more evidence).
+    # verdict=pass / unresolved / cap-reached → forward to falsifiability.
+    graph.add_conditional_edges(
+        "final_review_gate",
+        lambda state: route_after_gate(state, "final_review_gate"),
+        {
+            "falsifiability": "falsifiability",  # forward
+            "evidence_context": "evidence_context",  # repair
+        },
+    )
     graph.add_edge("falsifiability", "claim_judge")                # Re7.6: judge claims
     graph.add_edge("claim_judge", "narrative_builder")             # Re7.6 fan-in
     graph.add_edge("sota_matcher", "narrative_builder")            # Re2: fan-in

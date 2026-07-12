@@ -9,6 +9,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from apps.api.app.services.network_guard import NetworkPolicyGuard
+
 logger = logging.getLogger(__name__)
 
 DATACITE_API = "https://api.datacite.org/dois"
@@ -25,6 +27,7 @@ async def datacite_search(
     Returns normalized dicts with title/abstract/year/doi/source='datacite'
     /evidence_type='dataset'. 429/5xx -> return [] (don't raise).
     """
+    NetworkPolicyGuard.assert_online("datacite")
     qs = [q for q in (queries or []) if q and q.strip()][:1]
     if not qs:
         return []

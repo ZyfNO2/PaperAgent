@@ -15,6 +15,8 @@ from typing import Any
 
 from .._http import HttpError, fetch_with_timeout
 
+from apps.api.app.services.network_guard import NetworkPolicyGuard
+
 logger = logging.getLogger(__name__)
 
 PUBMED_ESEARCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
@@ -32,6 +34,7 @@ async def pubmed_search(
     Two-step: esearch (get PMIDs) → esummary (get metadata).
     No API key required. 429/5xx → return [].
     """
+    NetworkPolicyGuard.assert_online("pubmed")
     qs = [q for q in (queries or []) if q and q.strip()][:2]
     if not qs:
         return []

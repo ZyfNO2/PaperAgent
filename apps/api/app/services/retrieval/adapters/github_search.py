@@ -6,6 +6,8 @@ from typing import Any
 
 from .._http import HttpError, fetch_with_timeout
 
+from apps.api.app.services.network_guard import NetworkPolicyGuard
+
 
 GITHUB_API = "https://api.github.com/search/repositories"
 
@@ -21,7 +23,7 @@ async def github_search(
     返回字段: ``full_name / html_url / description / stargazers_count /
     forks_count / language / license / updated_at / topics``.
     """
-
+    NetworkPolicyGuard.assert_online("github")
     headers = {
         "Accept": "application/vnd.github+json",
         "User-Agent": "PaperAgent/1.0",
