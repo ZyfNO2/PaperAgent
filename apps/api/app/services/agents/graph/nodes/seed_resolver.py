@@ -263,7 +263,7 @@ async def _resolve_one_seed(
             existence_status="verified",
             fulltext_status="metadata_only",
             role=payload.get("role", "unknown"),
-            raw_input={k: v for k, v in payload.items() if k != "pdf_bytes"},
+            raw_input=dict(payload),  # preserve pdf_bytes for paper_understanding
         )
         card["repair_hint"] = "local PDF; fulltext parse pending (WP2)"
         return card
