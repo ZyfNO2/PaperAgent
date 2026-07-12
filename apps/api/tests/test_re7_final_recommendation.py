@@ -81,6 +81,21 @@ def test_compute_verdict_stop_high_risk_revise_blocked():
     }) == "STOP"
 
 
+def test_compute_verdict_medium_risk_reject_pass():
+    """Re7.7 round-5: medium-risk + REJECT + low_bar pass → RISKY (not STOP).
+
+    This is XD-04's core path: medical AI domain, claim judge rejects,
+    but low_bar passes. Should stay RISKY, not escalate to STOP.
+    """
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "pass"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "REJECT",
+        "user_constraints": {"domain": "医学AI"},
+        "topic": "医学影像分割模型在跨医院数据上的可信评估",
+    }) == "RISKY"
+
+
 def test_compute_verdict_risky_low_bar_blocked_revise():
     """Re7.7: low_bar blocked + REVISE → RISKY (not STOP; evidence partial but direction ok)."""
     assert _compute_final_verdict({
