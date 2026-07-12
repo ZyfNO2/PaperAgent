@@ -118,6 +118,15 @@ def innovation_extractor_node(state: ResearchState) -> dict[str, Any]:
             result_plan = out.get("stitching_plan", {})
             if not isinstance(result_plan, dict):
                 result_plan = {}
+            # Re7.7: if innovation_points is empty (e.g. LLM returned only
+            # stitching_plan without innovation_points), fallback to heuristic
+            # so claim_judge has input. Without this, claim_judge short-circuits
+            # to REJECT → all verdicts become RISKY.
+            if not result_inn:
+                h = _heuristic(state)
+                result_inn = h["innovation_points"]
+                if not result_plan:
+                    result_plan = h["stitching_plan"]
         else:
             h = _heuristic(state)
             result_inn, result_plan = h["innovation_points"], h["stitching_plan"]
