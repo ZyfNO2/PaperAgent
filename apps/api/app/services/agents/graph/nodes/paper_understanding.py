@@ -317,12 +317,21 @@ _GAP_QUESTIONS = {
     "limitations": "What are the stated or implied limitations of this method?",
 }
 
+# Map each WP2 field to its semantically correct gap_type (Re8.0 §5.4 GAP_TYPES)
+_GAP_TYPE_FOR_FIELD = {
+    "method_summary": "mechanism",
+    "dataset_and_metrics": "dataset",
+    "reproduction_environment": "environment",
+    "limitations": "mechanism",  # limitations are method-level
+}
+
 
 def _generate_gaps_for_missing_fields(
     card: dict[str, Any],
 ) -> list[dict[str, Any]]:
     """Generate EvidenceGap objects for unfilled WP2 fields."""
     gaps: list[dict[str, Any]] = []
+    seed_id = card.get("seed_id", "unknown")
     for field, question in _GAP_QUESTIONS.items():
         val = card.get(field)
         is_empty = (
@@ -333,12 +342,12 @@ def _generate_gaps_for_missing_fields(
         )
         if is_empty:
             gap = make_evidence_gap(
-                gap_id=f"gap-{card['seed_id']}-{field}",
+                gap_id=f"gap-{seed_id}-{field}",
                 question=question,
-                gap_type="mechanism" if field == "method_summary" else "environment",
+                gap_type=_GAP_TYPE_FOR_FIELD.get(field, "mechanism"),
                 why_needed=f"Field '{field}' could not be extracted from the PDF; "
                            f"downstream reasoning needs this to assess compatibility.",
-                related_claim_ids=[card["seed_id"]],
+                related_claim_ids=[seed_id],
                 success_condition=f"Paper understanding fills '{field}' with non-null value",
             )
             errs = validate_evidence_gap(gap)
@@ -376,12 +385,12 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
         )
         return {"trace_events": [trace]}
 
-    # Filter to cards with PDF input
+    # Filter to cards with PDF input (P3-1: defensive against raw_input=None)
     pdf_cards = [
         c for c in seed_cards
         if c.get("input_form") == "pdf"
-        or (c.get("raw_input", {}).get("pdf_path"))
-        or (c.get("raw_input", {}).get("pdf_bytes"))
+        or ((c.get("raw_input") or {}).get("pdf_path"))
+        or ((c.get("raw_input") or {}).get("pdf_bytes"))
     ]
 
     if not pdf_cards:
@@ -397,6 +406,7 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
 
     updated_cards: list[dict[str, Any]] = []
     all_gaps: list[dict[str, Any]] = []
+    errors: list[dict[str, Any]] = []  # P2-6: collect errors for trace
     n_parsed = 0
     n_failed = 0
 
@@ -404,6 +414,7 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
         raw = card.get("raw_input") or {}
         pdf_path = raw.get("pdf_path")
         pdf_bytes = raw.get("pdf_bytes")
+        sid = card.get("seed_id", "unknown")
 
         # Read PDF bytes
         if pdf_bytes and isinstance(pdf_bytes, (bytes, bytearray)):
@@ -416,6 +427,8 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
                 logger.warning("failed to read PDF %s: %s", pdf_path, exc)
                 card["fulltext_status"] = "parse_failed"
                 card["repair_hint"] = f"PDF read error: {exc}"
+                errors.append({"seed_id": sid, "error": "pdf_read_failed",
+                               "detail": str(exc)})
                 updated_cards.append(card)
                 all_gaps.extend(_generate_gaps_for_missing_fields(card))
                 n_failed += 1
@@ -430,9 +443,11 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
             sections = extract_sections(pdf_bytes)
             tables = extract_tables(pdf_bytes)
         except Exception as exc:
-            logger.warning("PDF parsing failed for %s: %s", card.get("seed_id"), exc)
+            logger.warning("PDF parsing failed for %s: %s", sid, exc)
             card["fulltext_status"] = "parse_failed"
             card["repair_hint"] = f"PDF parse error: {exc}"
+            errors.append({"seed_id": sid, "error": "pdf_parse_failed",
+                           "detail": str(exc)})
             updated_cards.append(card)
             all_gaps.extend(_generate_gaps_for_missing_fields(card))
             n_failed += 1
@@ -441,6 +456,8 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
         if not sections:
             card["fulltext_status"] = "parse_failed"
             card["repair_hint"] = "no text extracted from PDF"
+            errors.append({"seed_id": sid, "error": "empty_pdf",
+                           "detail": "no text extracted"})
             updated_cards.append(card)
             all_gaps.extend(_generate_gaps_for_missing_fields(card))
             n_failed += 1
@@ -467,6 +484,8 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
         else:
             card["fulltext_status"] = "parse_failed"
             card["repair_hint"] = "LLM extraction returned no result"
+            errors.append({"seed_id": sid, "error": "llm_extraction_empty",
+                           "detail": "LLM returned None"})
             n_failed += 1
 
         # Generate gaps for any remaining empty fields
@@ -482,7 +501,7 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
         [{"tool": "pdf.extract_sections", "engine": "pymupdf"},
          {"tool": "pdf.extract_tables", "engine": "pdfplumber"},
          {"tool": "llm_router.call_json", "profile": "fast_json"}],
-        "llm_router", [],
+        "llm_router", errors,
         state_keys=["seed_cards", "evidence_gaps", "trace_events"],
     )
 
@@ -490,6 +509,8 @@ def paper_understanding_node(state: ResearchState) -> dict[str, Any]:
         "seed_cards": updated_cards,
         "trace_events": [trace],
     }
+    if errors:
+        result["errors"] = errors
     if all_gaps:
         result["evidence_gaps"] = list(state.get("evidence_gaps") or []) + all_gaps
     return result

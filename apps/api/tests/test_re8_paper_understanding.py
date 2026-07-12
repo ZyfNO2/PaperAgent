@@ -197,9 +197,11 @@ class TestGenerateGapsForMissingFields:
         card = make_seed_card(seed_id="s1")
         gaps = _generate_gaps_for_missing_fields(card)
         by_field = {g["gap_id"].split("-")[-1]: g["gap_type"] for g in gaps}
-        # method_summary → mechanism, others → environment
+        # P2-2 fix: each field maps to its semantically correct gap_type
         assert by_field["method_summary"] == "mechanism"
-        assert by_field["dataset_and_metrics"] == "environment"
+        assert by_field["dataset_and_metrics"] == "dataset"
+        assert by_field["reproduction_environment"] == "environment"
+        assert by_field["limitations"] == "mechanism"
 
 
 # ---------------------------------------------------------------------------
@@ -389,3 +391,122 @@ class TestUnderstandingPromptContract:
             _UNDERSTANDING_USER_TEMPLATE,
         )
         assert "{title}" in _UNDERSTANDING_USER_TEMPLATE
+
+
+# ---------------------------------------------------------------------------
+# P2-6: trace errors collection
+# ---------------------------------------------------------------------------
+
+class TestTraceErrorsCollection:
+    """P2-6: trace.errors must be populated on parse failures (not always [])."""
+
+    def test_invalid_pdf_records_error(self):
+        card = make_seed_card(
+            seed_id="s1",
+            input_form="pdf",
+            raw_input={"pdf_bytes": b"not a pdf"},
+        )
+        state = {"entry_mode": "seeded_research", "seed_cards": [card]}
+        result = paper_understanding_node(state)
+        trace = result["trace_events"][0]
+        assert len(trace["errors"]) >= 1
+        assert trace["errors"][0]["seed_id"] == "s1"
+        assert "error" in trace["errors"][0]
+
+    def test_llm_none_records_error(self, monkeypatch):
+        pdf = _make_test_pdf()
+        card = make_seed_card(
+            seed_id="s2", input_form="pdf",
+            raw_input={"pdf_bytes": pdf},
+        )
+        state = {"entry_mode": "seeded_research", "seed_cards": [card]}
+        monkeypatch.setattr(
+            "apps.api.app.services.agents.graph.nodes.paper_understanding._call_understanding_llm",
+            lambda title, sections, tables: None,
+        )
+        result = paper_understanding_node(state)
+        trace = result["trace_events"][0]
+        assert len(trace["errors"]) == 1
+        assert trace["errors"][0]["error"] == "llm_extraction_empty"
+
+    def test_success_no_errors(self, monkeypatch):
+        pdf = _make_test_pdf()
+        card = make_seed_card(
+            seed_id="s3", input_form="pdf",
+            raw_input={"pdf_bytes": pdf},
+        )
+        state = {"entry_mode": "seeded_research", "seed_cards": [card]}
+        monkeypatch.setattr(
+            "apps.api.app.services.agents.graph.nodes.paper_understanding._call_understanding_llm",
+            lambda title, sections, tables: {"method_summary": "x"},
+        )
+        result = paper_understanding_node(state)
+        trace = result["trace_events"][0]
+        assert trace["errors"] == []
+
+
+# ---------------------------------------------------------------------------
+# P1-1: seed_resolver → paper_understanding integration
+# ---------------------------------------------------------------------------
+
+class TestSeedResolverPaperUnderstandingIntegration:
+    """P1-1: verify pdf_bytes survives seed_resolver → paper_understanding."""
+
+    def test_pdf_bytes_preserved_through_seed_resolver(self):
+        """seed_resolver must NOT strip pdf_bytes from raw_input."""
+        from apps.api.app.services.agents.graph.nodes.seed_resolver import (
+            seed_resolver_node,
+        )
+        pdf = _make_test_pdf()
+        state = {
+            "entry_mode": "seeded_research",
+            "candidate_seeds": [
+                {"seed_id": "s1", "pdf_bytes": pdf, "title": "Test",
+                 "role": "reproduction_target"},
+            ],
+        }
+        result = seed_resolver_node(state)
+        card = result["seed_cards"][0]
+        # pdf_bytes must survive for paper_understanding to read
+        assert card["raw_input"].get("pdf_bytes") is not None
+        assert card["raw_input"]["pdf_bytes"] == pdf
+
+    def test_end_to_end_seed_resolver_to_paper_understanding(self, monkeypatch):
+        """Full integration: seed_resolver resolves PDF seed, then
+        paper_understanding parses it and fills understanding fields."""
+        from apps.api.app.services.agents.graph.nodes.seed_resolver import (
+            seed_resolver_node,
+        )
+        pdf = _make_test_pdf()
+
+        # Step 1: seed_resolver resolves the candidate seed
+        state = {
+            "entry_mode": "seeded_research",
+            "candidate_seeds": [
+                {"seed_id": "s1", "pdf_bytes": pdf, "title": "Test Paper",
+                 "role": "reproduction_target"},
+            ],
+        }
+        sr_result = seed_resolver_node(state)
+        assert sr_result["seed_cards"][0]["existence_status"] == "verified"
+
+        # Step 2: paper_understanding parses the resolved card
+        mock_result = {
+            "method_summary": "A transformer model.",
+            "dataset_and_metrics": {"datasets": ["CIFAR-10"]},
+        }
+        monkeypatch.setattr(
+            "apps.api.app.services.agents.graph.nodes.paper_understanding._call_understanding_llm",
+            lambda title, sections, tables: mock_result,
+        )
+        state2 = {
+            "entry_mode": "seeded_research",
+            "seed_cards": sr_result["seed_cards"],
+        }
+        pu_result = paper_understanding_node(state2)
+        updated = pu_result["seed_cards"][0]
+        assert updated["fulltext_status"] == "downloaded"
+        assert updated["method_summary"] == "A transformer model."
+        # 2 fields still empty → 2 gaps
+        assert "evidence_gaps" in pu_result
+        assert len(pu_result["evidence_gaps"]) == 2
