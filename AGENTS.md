@@ -85,6 +85,12 @@ else:
    - 是否保持向后兼容（保留旧调用路径、不删除 public API）
    - 文档（SOP / plan / README）是否需要同步更新
 3. **Review 结果处理**：子代理返回后，由主线程汇总 review 结论；若发现阻塞问题，在当前 Phase 内修复后重新 commit；非阻塞问题记录到交接包或 TODO。
+4. **SOP 完成度自检 (Re7.6 起新增)**：AI 在宣布"当前 SOP 已完成"或准备结束 SOP 工作流前，必须运行 SOP 完成度检查 hook：
+   - 命令：`python .claude/hooks/sop_completion_check.py`（或 opencode 侧 `python .opencode/hooks/sop_completion_check.py`）
+   - 该 hook 会扫当前 SOP 文档所有 `- [ ]` checkbox + 查 `artifacts/reN_M/` 交接包产物齐备性
+   - AI 必须把 hook 输出贴给用户，并明确回答：剩余多少项未勾选、哪些交接包不齐、是否可以宣布完成
+   - 若 hook 报告"仍有 N 项未勾选"，AI 不得宣称 SOP 全量完成；必须先补齐或明确标注"剩余项为已知阻塞，下一位执行者处理"
+   - 非 SOP 上下文下 hook 静默退出，不会污染普通回合
 
 ## 用户能力提升
 
