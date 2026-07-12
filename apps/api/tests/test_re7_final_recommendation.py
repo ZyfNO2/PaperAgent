@@ -17,19 +17,39 @@ def test_compute_verdict_go():
 
 
 def test_compute_verdict_stop_low_bar():
+    """Re7.7: low_bar blocked + ACCEPT → CONDITIONAL (not STOP; can proceed with caveats)."""
     assert _compute_final_verdict({
         "low_bar_review": {"status": "blocked"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "ACCEPT",
-    }) == "STOP"
+    }) == "CONDITIONAL"
 
 
 def test_compute_verdict_stop_claim_reject():
+    """Re7.7: REJECT alone → RISKY (not STOP; claim judge may be overly strict)."""
     assert _compute_final_verdict({
         "low_bar_review": {"status": "pass"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "REJECT",
+    }) == "RISKY"
+
+
+def test_compute_verdict_stop_low_bar_and_reject():
+    """Re7.7: low_bar blocked + REJECT → STOP (double negative signal)."""
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "blocked"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "REJECT",
     }) == "STOP"
+
+
+def test_compute_verdict_risky_low_bar_blocked_revise():
+    """Re7.7: low_bar blocked + REVISE → RISKY (not STOP; evidence partial but direction ok)."""
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "blocked"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "REVISE",
+    }) == "RISKY"
 
 
 def test_compute_verdict_stop_human_gate_blocked():

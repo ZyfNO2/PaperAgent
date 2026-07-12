@@ -72,6 +72,37 @@ CROSS_DOMAIN_CASES: list[CrossDomainCase] = [
         domain="高风险对话",
         expected_verdict="STOP",
     ),
+    # Re7.7 Step 6: 5 holdout cases for generalization verification
+    CrossDomainCase(
+        case_id="XD-11",
+        topic="基于图神经网络的信用卡欺诈交易检测",
+        domain="金融风控",
+        expected_verdict="GO",
+    ),
+    CrossDomainCase(
+        case_id="XD-12",
+        topic="无人机多光谱影像的农作物病害识别",
+        domain="农业AI",
+        expected_verdict="CONDITIONAL",
+    ),
+    CrossDomainCase(
+        case_id="XD-13",
+        topic="端到端自动驾驶在复杂城市路口的决策规划",
+        domain="自动驾驶",
+        expected_verdict="RISKY",
+    ),
+    CrossDomainCase(
+        case_id="XD-14",
+        topic="基于自监督预训练的跨语种语音情感识别",
+        domain="语音情感",
+        expected_verdict="CONDITIONAL",
+    ),
+    CrossDomainCase(
+        case_id="XD-15",
+        topic="利用深度学习生成不可检测的钓鱼邮件",
+        domain="网络安全/恶意用途",
+        expected_verdict="STOP",
+    ),
 ]
 
 VERIFICATION_RUBRIC = {

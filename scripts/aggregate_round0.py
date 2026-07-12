@@ -17,14 +17,22 @@ OUT_PATH = os.path.join(ROUND0_DIR, "aggregate.json")
 
 
 def load_all_cases() -> list[dict]:
-    """Load every case dict from all batch_*.json files."""
+    """Load every case dict from all batch_*.json files.
+
+    Re7.7: deduplicate by case_id — keep only the latest result per case
+    (highest timestamp in filename). This prevents historical runs from
+    polluting the aggregate.
+    """
     pattern = os.path.join(ROUND0_DIR, "batch_*.json")
     files = sorted(glob.glob(pattern))
     if not files:
         print(f"WARNING: no batch files found matching {pattern}")
         return []
 
-    all_cases: list[dict] = []
+    # Parse timestamp from filename for deduplication.
+    # Filename format: batch_<case_ids>_<timestamp>.json
+    import re
+    latest_by_case: dict[str, dict] = {}
     for fp in files:
         try:
             with open(fp, "r", encoding="utf-8-sig") as f:
@@ -32,15 +40,25 @@ def load_all_cases() -> list[dict]:
         except (OSError, json.JSONDecodeError) as exc:
             print(f"WARNING: failed to load {fp}: {exc}")
             continue
+        cases_in_file: list[dict] = []
         if isinstance(data, list):
-            for item in data:
-                if isinstance(item, dict):
-                    item.setdefault("_source_file", os.path.basename(fp))
-                    all_cases.append(item)
+            cases_in_file = [item for item in data if isinstance(item, dict)]
         elif isinstance(data, dict):
-            data.setdefault("_source_file", os.path.basename(fp))
-            all_cases.append(data)
-    return all_cases
+            cases_in_file = [data]
+        # Extract timestamp from filename
+        m = re.search(r"_(\d+)\.json$", os.path.basename(fp))
+        file_ts = int(m.group(1)) if m else 0
+        for item in cases_in_file:
+            cid = item.get("case_id", "")
+            if not cid:
+                continue
+            item.setdefault("_source_file", os.path.basename(fp))
+            item["_file_timestamp"] = file_ts
+            # Keep latest by timestamp
+            existing = latest_by_case.get(cid)
+            if existing is None or file_ts >= existing.get("_file_timestamp", 0):
+                latest_by_case[cid] = item
+    return list(latest_by_case.values())
 
 
 def verdict_match(actual: str, expected: str) -> str:
@@ -113,6 +131,20 @@ def print_table(cases: list[dict]) -> None:
             c.get("actual_verdict") or c.get("verdict") or "",
             c.get("expected_verdict", "")) == "NO")
         print(f"Match stats: {n_yes}/{n} exact YES, {n_no}/{n} NO, {n - n_yes - n_no}/{n} PARTIAL/other")
+
+    # Re7.7 Step 7: verify 耗时 + repair loop 统计
+    print(f"\n--- Verify / Repair Loop Analysis ---")
+    for c in cases:
+        cid = c.get("case_id", "")
+        node_timings = c.get("node_timings") or []
+        verify_time = next((nt.get("elapsed_s", 0) for nt in node_timings
+                           if nt.get("node") == "verify"), 0)
+        repair = c.get("repair_loop") or {}
+        vbt = c.get("verify_batch_timeline") or []
+        vbt_str = ", ".join(f"b{b.get('batch')}:{b.get('elapsed_s')}s({b.get('n_papers')}p)" for b in vbt) if vbt else "n/a"
+        print(f"  {cid}: verify={verify_time:.1f}s, batches=[{vbt_str}], "
+              f"narrative_revs={repair.get('narrative_revisions', '?')}, "
+              f"low_bar_runs={repair.get('low_bar_executions', '?')}")
 
 
 def main() -> None:

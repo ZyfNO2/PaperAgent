@@ -120,6 +120,11 @@ def _call_verifier(
         "model": "",
     }
 
+    # Re7.7: USE_CONTRACT_PATH env (default "0") — when disabled, skip the
+    # contract path entirely and go straight to legacy llm_router.call_json
+    # so the profile (fast_json → mistral) actually controls the provider.
+    _use_contract = os.environ.get("USE_CONTRACT_PATH", "0").strip().lower() in ("1", "true", "yes")
+
     def _verify_batch(batch_idx: int) -> tuple[list[dict[str, Any]], dict]:
         built = prompts[batch_idx]
         batch_candidates = candidates[batch_idx * batch_size:(batch_idx + 1) * batch_size]
@@ -130,11 +135,13 @@ def _call_verifier(
             if t:
                 title_to_id[t] = c["candidate_id"]
 
+        # Re7.7 Step 7: per-batch timeline for verify 耗时根因分析
+        batch_t0 = time.time()
         for attempt in range(max_attempts):
             raw_str = ""
             out: Any = None
             try:
-                if attempt == 0:
+                if attempt == 0 and _use_contract:
                     from apps.api.app.services.router import call_with_contract_list
                     contract_result = call_with_contract_list(
                         built["user"],
@@ -157,10 +164,14 @@ def _call_verifier(
                         if not valid_now:
                             return [], {"batch": batch_idx, "parse_stage": "zero_coverage",
                                          "resolved": 0, "raw_length": len(raw_str),
-                                         "expected": len(batch_candidates)}
+                                         "expected": len(batch_candidates),
+                                         "elapsed_s": round(time.time() - batch_t0, 2),
+                                         "n_papers": len(batch_candidates)}
                     elif contract_result.heuristic_fallback:
                         return [], {"batch": batch_idx, "parse_stage": "heuristic_fallback",
-                                     "resolved": 0, "raw_length": 0, "error": contract_result.error}
+                                     "resolved": 0, "raw_length": 0, "error": contract_result.error,
+                                     "elapsed_s": round(time.time() - batch_t0, 2),
+                                     "n_papers": len(batch_candidates)}
                     else:
                         raise RuntimeError(f"verification contract failed: {contract_result.error}")
                 else:
@@ -182,7 +193,9 @@ def _call_verifier(
                 if attempt + 1 < max_attempts:
                     continue
                 return [], {"batch": batch_idx, "error": str(exc), "raw_length": len(raw_str),
-                             "parse_stage": "llm_unavailable", "resolved": 0}
+                             "parse_stage": "llm_unavailable", "resolved": 0,
+                             "elapsed_s": round(time.time() - batch_t0, 2),
+                             "n_papers": len(batch_candidates)}
 
             # Parse and validate
             verdicts = _normalise_verifier_output(out)
@@ -194,6 +207,11 @@ def _call_verifier(
                 "parse_stage": parse_stage, "resolved": len(valid_verdicts),
                 "expected": len(batch_candidates),
                 "title_matched": title_matched,
+                "elapsed_s": round(time.time() - batch_t0, 2),
+                "attempt": attempt,
+                "n_papers": len(batch_candidates),
+                "provider": diag.get("provider", ""),
+                "contract_id": diag.get("contract_id", ""),
             }
             if valid_verdicts:
                 return valid_verdicts, batch_diag
@@ -201,7 +219,9 @@ def _call_verifier(
                 continue
             return [], batch_diag
 
-        return [], {"batch": batch_idx, "parse_stage": "exhausted_attempts", "resolved": 0}
+        return [], {"batch": batch_idx, "parse_stage": "exhausted_attempts", "resolved": 0,
+                    "elapsed_s": round(time.time() - batch_t0, 2),
+                    "n_papers": len(batch_candidates)}
 
     all_verdicts: list[dict[str, Any]] = []
     resolved_ids: set[str] = set()

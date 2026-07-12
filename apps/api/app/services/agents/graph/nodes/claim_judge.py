@@ -17,9 +17,10 @@ from apps.api.app.services.agents.graph.state import ResearchState
 logger = logging.getLogger(__name__)
 
 CLAIM_JUDGE_SYSTEM = (
-    "You are a research integrity judge. Evaluate novelty claims against "
-    "strict evidence and methodological standards. Reject claims that "
-    "are not backed by verifiable evidence. Output ONLY valid JSON."
+    "You are a research integrity judge. Evaluate novelty claims with a "
+    "calibrated standard: ACCEPT claims with reasonable evidence, REVISE "
+    "claims that need more evidence or refinement, REJECT only when claims "
+    "are fabricated or have zero evidence basis. Output ONLY valid JSON."
 )
 
 CLAIM_JUDGE_PROMPT = """Evaluate each novelty claim candidate against the P-M-I framework.
@@ -40,6 +41,11 @@ For each candidate, judge:
 5. **Evidence binding**: Does each claim have problem/method/insight evidence_ids?
 6. **First claim**: If first, is it downgraded to needs_literature_verification?
 7. **Falsifiability**: Are support/refute conditions and required test defined?
+
+Verdict calibration (Re7.7):
+- ACCEPT: claim has reasonable evidence, clear gap, and falsifiable test. Does NOT require perfect evidence.
+- REVISE: claim has potential but needs more evidence, sharper gap, or better differentiation. This is the DEFAULT when evidence is partial.
+- REJECT: ONLY when claim is fabricated, has zero evidence basis, or is fundamentally flawed. Do NOT reject just because evidence is incomplete.
 
 Output JSON:
 {{
