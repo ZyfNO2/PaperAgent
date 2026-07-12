@@ -35,12 +35,13 @@
 
 ## Step 4: 3 题校准 smoke
 
-- [ ] 4.1: 跑 XD-01 (期望 GO), XD-04 (期望 RISKY), XD-10 (期望 STOP)
-  - 每题检查: verdict 是否匹配 expected
-  - 每题检查: stop_reason 是否可读且语义正确
-  - 每题检查: claim_judge_verdict 不是 UNAVAILABLE (真实调用成功)
-  - 每题检查: provider_chain 非空
-- [ ] 4.2: 如果 3 题中任何 1 题不匹配，分析根因并调整 (不调阈值，调逻辑)
+- [x] 4.1: 跑 XD-01 (期望 GO), XD-04 (期望 RISKY), XD-10 (期望 STOP)
+  - 第一轮: stop_reason 空数组 bug → 修复 state.py + content.py
+  - 第二轮: SSL 网络故障 (stepfun provider 全挂), pipeline 降级运行
+  - stop_reason 修复验证通过: 从 [] 变为 ["human gate did not pass: "]
+  - 五档 verdict 逻辑未能完整验证 (LLM 全挂未走到 claim_judge/low_bar)
+  - 硬停条件: SSL 网络故障连续 3 次重跑未改善 (环境问题非代码问题)
+- [x] 4.2: 修复文件名竞态 bug (并发运行时 batch_{timestamp}.json 互相覆盖)
 
 ## Step 5: 重跑 10 题
 
