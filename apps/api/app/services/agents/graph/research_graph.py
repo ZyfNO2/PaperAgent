@@ -51,10 +51,14 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     # promotion to verified_papers. No-op when entry_mode == "topic_only"
     # or candidate_seeds is empty, so topic_only callers see no change.
     graph.add_edge("intake", "seed_resolver")
+    # Re8.0 WP6: seed_audit_gate reviews seed cards (real? role-correct?
+    # info-sufficient?) before any downstream consumption. Short-circuits
+    # to "pass" for topic_only / non-react-reflection modes (no-op).
+    graph.add_edge("seed_resolver", "seed_audit_gate")
     # Re8.0 WP2: paper_understanding parses seed PDFs and fills understanding
     # fields (method_summary, dataset_and_metrics, ...) on SeedPaperCards.
     # No-op when no seed card has a PDF, so topic_only callers see no change.
-    graph.add_edge("seed_resolver", "paper_understanding")
+    graph.add_edge("seed_audit_gate", "paper_understanding")
     graph.add_edge("paper_understanding", "method_family_explorer")
     graph.add_edge("method_family_explorer", "topic_parser")
     graph.add_edge("topic_parser", "search_planner")
@@ -123,12 +127,22 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     graph.add_edge("human_gate_search", "work_package")  # Re3.9.3: gate → work_package
     # Re7.6: compile evidence before generating innovations
     graph.add_edge("work_package", "evidence_context")
-    graph.add_edge("evidence_context", "innovation_extractor")
+    # Re8.0 WP5+WP6: tailor_skill_adapter produces tailored_method from
+    # evidence_context + method_families; tailor_gate reviews it (module
+    # compatibility / simpler route / falsifiability). Both are no-ops
+    # for topic_only (activation gate on entry_mode == "seeded_research").
+    graph.add_edge("evidence_context", "tailor_skill_adapter")
+    graph.add_edge("tailor_skill_adapter", "tailor_gate")
+    graph.add_edge("tailor_gate", "innovation_extractor")
     graph.add_edge("work_package", "sota_matcher")                 # Re2: parallel fan-out
     # Re6.4: Insert novelty review + falsifiability between innovation and narrative
     graph.add_edge("innovation_extractor", "novelty_draft")
     graph.add_edge("novelty_draft", "novelty_review")
-    graph.add_edge("novelty_review", "falsifiability")
+    # Re8.0 WP6: final_review_gate reviews novelty verdict + falsifiable
+    # hypothesis + pressure points (narrative vs evidence / similar work /
+    # need extra evidence). Short-circuits for non-react-reflection modes.
+    graph.add_edge("novelty_review", "final_review_gate")
+    graph.add_edge("final_review_gate", "falsifiability")
     graph.add_edge("falsifiability", "claim_judge")                # Re7.6: judge claims
     graph.add_edge("claim_judge", "narrative_builder")             # Re7.6 fan-in
     graph.add_edge("sota_matcher", "narrative_builder")            # Re2: fan-in
