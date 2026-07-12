@@ -167,6 +167,10 @@ class ResearchState(TypedDict, total=False):
     # Method family cards (WP3) — 2-4 alternative method routes per topic
     method_families: list[dict[str, Any]]
 
+    # Five Search Lanes (WP3 §7.3) — Anchor/Competing/Mechanism/Resource/
+    # Counter-evidence. Each lane carries queries + gap_id reference.
+    search_lanes: list[dict[str, Any]]
+
     # Evidence gaps (WP4) — every external search must bind to a gap_id
     evidence_gaps: list[dict[str, Any]]
 
