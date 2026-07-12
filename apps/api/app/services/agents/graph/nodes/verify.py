@@ -492,6 +492,8 @@ def verify_node(state: ResearchState) -> dict[str, Any]:
             "provider": verification_diag.get("provider", ""),
             "model": verification_diag.get("model", ""),
             "contract_id": verification_diag.get("contract_id", ""),
+            # Re7.7 Step 7: expose per-batch timeline for smoke_e2e export
+            "batch_results": verification_diag.get("batch_results", []),
         }
     except Exception as exc:
         logger.exception("verify_node LLM call failed — candidates quarantined")
