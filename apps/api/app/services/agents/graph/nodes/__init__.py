@@ -37,12 +37,14 @@ from . import claim_judge as _claim_judge
 # Re8.0 new nodes
 from . import seed_resolver as _seed_resolver
 from . import paper_understanding as _paper_understanding
+from . import method_family_explorer as _method_family_explorer
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
 REGISTRY: dict[str, callable] = {
     "intake": _intake.intake_node,
     "seed_resolver": _seed_resolver.seed_resolver_node,  # Re8.0
     "paper_understanding": _paper_understanding.paper_understanding_node,  # Re8.0 WP2
+    "method_family_explorer": _method_family_explorer.method_family_explorer_node,  # Re8.0 WP3
     "topic_parser": _topic_parser.topic_parser_node,
     "search_planner": _search_planner.search_planner_node,
     "paper_retriever": _search_agent.search_agent_node,  # Re3.0: React search agent
@@ -86,6 +88,8 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
                      "reasoning_ledger", "trace_events", "errors"),  # Re8.0
     "paper_understanding": ("seed_cards", "evidence_gaps",
                            "trace_events"),  # Re8.0 WP2
+    "method_family_explorer": ("method_families", "search_lanes", "evidence_gaps",
+                              "reasoning_ledger", "trace_events"),  # Re8.0 WP3
     "topic_parser": ("topic_atoms", "trace_events", "errors", "provider_profile"),
     "search_planner": ("search_plan", "trace_events", "errors", "provider_profile"),
     "paper_retriever": ("raw_results", "paper_candidates", "repo_candidates",

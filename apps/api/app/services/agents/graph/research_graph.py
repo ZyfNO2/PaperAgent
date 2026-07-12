@@ -55,7 +55,8 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     # fields (method_summary, dataset_and_metrics, ...) on SeedPaperCards.
     # No-op when no seed card has a PDF, so topic_only callers see no change.
     graph.add_edge("seed_resolver", "paper_understanding")
-    graph.add_edge("paper_understanding", "topic_parser")
+    graph.add_edge("paper_understanding", "method_family_explorer")
+    graph.add_edge("method_family_explorer", "topic_parser")
     graph.add_edge("topic_parser", "search_planner")
     graph.add_edge("search_planner", "paper_retriever")
     # Conditional: skip filter+verify when 0 papers (go straight to quality_gate)
