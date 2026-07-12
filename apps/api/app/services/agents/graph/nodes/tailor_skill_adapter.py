@@ -395,7 +395,7 @@ def tailor_skill_adapter_node(state: ResearchState) -> dict[str, Any]:
         return {"trace_events": [_emit(
             "tailor_skill_adapter", t0,
             {"entry_mode": entry_mode, "activated": False},
-            {"skipped": True},
+            {"skipped": True, "verdict": "skipped", "generated_by": "n/a"},
             [], "n/a", [],
             state_keys=["tailored_method", "trace_events", "reasoning_ledger"],
         )]}

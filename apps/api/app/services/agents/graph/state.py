@@ -181,5 +181,15 @@ class ResearchState(TypedDict, total=False):
     # Only populated for entry_mode == "seeded_research"; absent for topic_only.
     tailored_method: dict[str, Any]
 
+    # Re8.0 WP5: Novelty Review P-M-I enhancement fields (additive).
+    # All default to empty/"unspecified" when LLM omits them; see
+    # normalize_review_output in novelty_review.py for the schema chokepoint.
+    problem_method_insight: dict[str, Any]
+    contributions: dict[str, Any]
+    falsifiable_hypothesis: str
+    minimum_key_experiment: str
+    contribution_type: str
+    review_generated_by: str
+
     # Budget / search caps (WP0 contract)
     search_budget: dict[str, Any]

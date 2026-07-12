@@ -732,3 +732,99 @@ class TestIntegrationTailorToReview:
         assert tailor_result["tailored_method"]["verdict"] == "GO"
         assert review_result["novelty_review_verdict"] == "accepted"
         assert review_result["review_generated_by"] == "llm"
+
+
+# ---------------------------------------------------------------------------
+# P1-1 fixup: novelty_review must emit trace_events on all paths
+# ---------------------------------------------------------------------------
+
+class TestReviewTraceVisibility:
+    """P1-1 regression: novelty_review_node must emit trace_events with
+    provider / verdict / generated_by on ALL return paths, for parity
+    with tailor_skill_adapter_node (Plan §11.3 "trace 路径真实")."""
+
+    def test_no_innovation_path_emits_trace(self):
+        state = _make_seeded_state()
+        state["innovation_points"] = []
+        result = novelty_review_node(state)
+        assert "trace_events" in result
+        trace = result["trace_events"][0]
+        assert trace["node"] == "novelty_review"
+        assert trace["output_summary"]["verdict"] == "reject"
+        assert trace["output_summary"]["generated_by"] == "fallback"
+        assert trace["provider"] == "n/a"
+
+    def test_llm_success_path_emits_trace(self):
+        state = _make_seeded_state()
+        with patch(PATCH_CALL_JSON, return_value=_MODEL_D_REVIEW_FULL):
+            result = novelty_review_node(state)
+        assert "trace_events" in result
+        trace = result["trace_events"][0]
+        assert trace["output_summary"]["verdict"] == "accepted"
+        assert trace["output_summary"]["generated_by"] == "llm"
+        assert trace["output_summary"]["contribution_type"] == "methodological"
+        assert trace["provider"] == "premium_review"
+
+    def test_llm_failure_path_emits_trace(self):
+        state = _make_seeded_state()
+        with patch(PATCH_CALL_JSON, side_effect=Exception("LLM down")):
+            result = novelty_review_node(state)
+        assert "trace_events" in result
+        trace = result["trace_events"][0]
+        assert trace["output_summary"]["generated_by"] == "fallback"
+        assert trace["provider"] == "fallback"
+
+    def test_fallback_dict_path_emits_trace(self):
+        state = _make_seeded_state()
+        fallback_dict = {
+            "verdict": "reject", "novelty_score": 0,
+            "pseudo_innovation_risks": ["llm_unavailable"],
+        }
+        with patch(PATCH_CALL_JSON, return_value=fallback_dict):
+            result = novelty_review_node(state)
+        assert "trace_events" in result
+        trace = result["trace_events"][0]
+        assert trace["output_summary"]["generated_by"] == "fallback"
+        assert trace["provider"] == "fallback"
+
+
+# ---------------------------------------------------------------------------
+# P2-3 fixup: tailor topic_only trace must have verdict/generated_by
+# ---------------------------------------------------------------------------
+
+class TestTailorSkipTraceFields:
+    def test_topic_only_trace_has_verdict_and_generated_by(self):
+        """P2-3: topic_only skip trace must include verdict + generated_by
+        for trace schema consistency with activated path."""
+        state = _make_seeded_state()
+        state["entry_mode"] = "topic_only"
+        result = tailor_skill_adapter_node(state)
+        trace = result["trace_events"][0]
+        assert trace["output_summary"]["skipped"] is True
+        assert "verdict" in trace["output_summary"]
+        assert "generated_by" in trace["output_summary"]
+
+
+# ---------------------------------------------------------------------------
+# P2-6: parse_novelty_review_output backward-compat shim smoke test
+# ---------------------------------------------------------------------------
+
+class TestParseNoveltyReviewOutputShim:
+    def test_shim_delegates_to_normalize(self):
+        """P2-6: parse_novelty_review_output must equal
+        normalize_review_output(raw, generated_by='llm')."""
+        from apps.api.app.services.agents.graph.nodes.novelty_review import (
+            parse_novelty_review_output,
+        )
+        raw = _MODEL_D_REVIEW_FULL
+        via_shim = parse_novelty_review_output(raw)
+        via_normalize = normalize_review_output(raw, generated_by="llm")
+        assert via_shim == via_normalize
+
+    def test_shim_handles_empty_dict(self):
+        from apps.api.app.services.agents.graph.nodes.novelty_review import (
+            parse_novelty_review_output,
+        )
+        out = parse_novelty_review_output({})
+        assert "novelty_review_verdict" in out
+        assert "problem_method_insight" in out
