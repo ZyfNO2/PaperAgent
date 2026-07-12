@@ -474,10 +474,7 @@ async def upload_paper(case_id: str, payload: dict[str, Any]) -> dict[str, Any]:
             # Force entry_mode to seeded_research so seed_resolver runs
             if st.get("entry_mode", "topic_only") == "topic_only":
                 st["entry_mode"] = "seeded_research"
-            state_path.write_text(
-                json.dumps(st, ensure_ascii=False, indent=2, default=str),
-                encoding="utf-8",
-            )
+            atomic_write_json(state_path, st)
         except Exception as exc:
             logger.warning("failed to append user paper to state.json: %s", exc)
 
@@ -489,28 +486,50 @@ async def upload_paper(case_id: str, payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-@router.get("/{case_id}/papers")
-def list_user_papers(case_id: str) -> dict[str, Any]:
-    case_id = _validate_case_id(case_id)
-    """List user-uploaded papers for a case.
+def _paper_dedup_keys(p: dict[str, Any]) -> set[str]:
+    """All non-empty identifier keys for multi-field dedup.
 
-    Re8.0: papers are staged as ``candidate_seeds`` and, after the
-    ``seed_resolver_node`` runs, audited cards appear in ``seed_cards``.
-    We surface both so the caller can see audit status.
+    Re8.0 P1-7: a paper may have seed_id (post-staging) but no seed_id
+    (pre-staging in _USER_PAPERS). Using a single key misses duplicates
+    across lifecycle stages. We collect ALL identifiers (seed_id, doi,
+    arxiv_id, title) and match if ANY overlap.
+    """
+    keys: set[str] = set()
+    for k in ("seed_id", "doi", "arxiv_id"):
+        v = (p.get(k) or "").strip().lower()
+        if v:
+            keys.add(v)
+    t = (p.get("title") or "").strip().lower()
+    if t:
+        keys.add(t)
+    return keys
+
+
+def _collect_user_papers(case_id: str) -> dict[str, Any]:
+    """Shared logic for HTTP + ACP list_user_papers (P1-7 fix).
+
+    Merges _USER_PAPERS (in-memory pre-run), candidate_seeds (state.json
+    pre-audit), and seed_cards (state.json post-audit) with multi-field
+    dedup so a paper never appears more than once.
     """
     with _LOCK:
         papers = list(_USER_PAPERS.get(case_id, []))
-    # Re8.0: read from candidate_seeds (pre-audit) + seed_cards (post-audit)
+    seen_keys: set[str] = set()
+    for p in papers:
+        seen_keys |= _paper_dedup_keys(p)
+
     state_path = _case_dir(case_id) / "state.json"
     if state_path.exists():
         try:
             st = json.loads(state_path.read_text(encoding="utf-8"))
             for p in st.get("candidate_seeds") or []:
-                if p not in papers:
-                    papers.append(p)
+                p_keys = _paper_dedup_keys(p)
+                if p_keys & seen_keys:
+                    continue
+                seen_keys |= p_keys
+                papers.append(p)
             for card in st.get("seed_cards") or []:
-                # seed_cards are the audited form; expose a paper-like view
-                papers.append({
+                card_view = {
                     "title": card.get("resolved_title") or card.get("raw_input", {}).get("title", ""),
                     "doi": card.get("doi"),
                     "arxiv_id": card.get("arxiv_id"),
@@ -522,10 +541,27 @@ def list_user_papers(case_id: str) -> dict[str, Any]:
                     "existence_status": card.get("existence_status", "unknown"),
                     "seed_id": card.get("seed_id"),
                     "audited": True,
-                })
+                }
+                c_keys = _paper_dedup_keys(card_view)
+                if c_keys & seen_keys:
+                    continue
+                seen_keys |= c_keys
+                papers.append(card_view)
         except Exception:
             pass
     return {"case_id": case_id, "papers": papers, "n": len(papers)}
+
+
+@router.get("/{case_id}/papers")
+def list_user_papers(case_id: str) -> dict[str, Any]:
+    case_id = _validate_case_id(case_id)
+    """List user-uploaded papers for a case.
+
+    Re8.0: papers are staged as ``candidate_seeds`` and, after the
+    ``seed_resolver_node`` runs, audited cards appear in ``seed_cards``.
+    We surface both so the caller can see audit status.
+    """
+    return _collect_user_papers(case_id)
 
 
 # ---------------------------------------------------------------------------
@@ -1056,32 +1092,7 @@ def _get_evidence_graph_impl(case_id: str) -> dict[str, Any]:
 def _list_user_papers_impl(case_id: str) -> dict[str, Any]:
     """List user-uploaded papers (ACP version). Re8.0: reads from
     candidate_seeds + seed_cards, same logic as HTTP list_user_papers."""
-    with _LOCK:
-        papers = list(_USER_PAPERS.get(case_id, []))
-    state_path = _case_dir(case_id) / "state.json"
-    if state_path.exists():
-        try:
-            st = json.loads(state_path.read_text(encoding="utf-8"))
-            for p in st.get("candidate_seeds") or []:
-                if p not in papers:
-                    papers.append(p)
-            for card in st.get("seed_cards") or []:
-                papers.append({
-                    "title": card.get("resolved_title") or card.get("raw_input", {}).get("title", ""),
-                    "doi": card.get("doi"),
-                    "arxiv_id": card.get("arxiv_id"),
-                    "url": card.get("canonical_url") or card.get("raw_input", {}).get("url", ""),
-                    "authors": card.get("authors", []),
-                    "year": card.get("year"),
-                    "abstract": card.get("raw_input", {}).get("abstract", ""),
-                    "role": card.get("role", "unknown"),
-                    "existence_status": card.get("existence_status", "unknown"),
-                    "seed_id": card.get("seed_id"),
-                    "audited": True,
-                })
-        except Exception:
-            pass
-    return {"case_id": case_id, "papers": papers, "n": len(papers)}
+    return _collect_user_papers(case_id)
 
 
 def _get_work_packages_impl(case_id: str) -> dict[str, Any]:
