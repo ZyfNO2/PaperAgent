@@ -41,11 +41,21 @@ For each candidate, judge:
 5. **Evidence binding**: Does each claim have problem/method/insight evidence_ids?
 6. **First claim**: If first, is it downgraded to needs_literature_verification?
 7. **Falsifiability**: Are support/refute conditions and required test defined?
+8. **Domain risk** (Re7.7 round-3): Does the topic touch a high-stakes domain where errors cause clinical/ethical harm? Examples:
+   - Medical diagnosis, drug response prediction, rare-disease treatment
+   - Psychological counseling, mental-health Q&A
+   - Malicious use (phishing, fake news, fraud, deepfake)
+   - Autonomous driving safety-critical decisions
+   When the topic is high-stakes AND evidence is insufficient to ground the claims, the verdict MUST be REJECT (not REVISE) — the proposal is too risky to proceed without stronger grounding.
 
 Verdict calibration (Re7.7):
 - ACCEPT: claim has reasonable evidence, clear gap, and falsifiable test. Does NOT require perfect evidence.
-- REVISE: claim has potential but needs more evidence, sharper gap, or better differentiation. This is the DEFAULT when evidence is partial.
-- REJECT: ONLY when claim is fabricated, has zero evidence basis, or is fundamentally flawed. Do NOT reject just because evidence is incomplete.
+- REVISE: claim has potential but needs more evidence, sharper gap, or better differentiation. This is the DEFAULT when evidence is partial and the domain is NOT high-stakes.
+- REJECT: when ANY of the following hold:
+  (a) claim is fabricated, has zero evidence basis, or is fundamentally flawed;
+  (b) topic is high-stakes (medical/psychological/malicious/autonomy) AND evidence is insufficient to ground the claims;
+  (c) topic is purely malicious (phishing/fraud/deepfake) regardless of evidence quality.
+  Do NOT reject just because evidence is incomplete in non-high-stakes domains.
 
 Output JSON:
 {{
