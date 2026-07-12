@@ -1,4 +1,4 @@
-﻿"""innovation_extractor — Re1.4 MVP node."""
+"""innovation_extractor — Re1.4 MVP node."""
 import re
 import time
 import logging
@@ -113,7 +113,11 @@ def innovation_extractor_node(state: ResearchState) -> dict[str, Any]:
         )
         if isinstance(out, dict) and ("innovation_points" in out or "stitching_plan" in out):
             result_inn = out.get("innovation_points", [])
+            if not isinstance(result_inn, list):
+                result_inn = []
             result_plan = out.get("stitching_plan", {})
+            if not isinstance(result_plan, dict):
+                result_plan = {}
         else:
             h = _heuristic(state)
             result_inn, result_plan = h["innovation_points"], h["stitching_plan"]
