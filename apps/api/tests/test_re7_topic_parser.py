@@ -28,8 +28,12 @@ def _base_state() -> dict[str, Any]:
 
 
 def test_unified_router_used_by_default(monkeypatch: Any) -> None:
-    """TOPIC_PARSER_USE_UNIFIED_ROUTER default=1 -> call_with_contract."""
-    monkeypatch.delenv("TOPIC_PARSER_USE_UNIFIED_ROUTER", raising=False)
+    """TOPIC_PARSER_USE_UNIFIED_ROUTER=1 -> call_with_contract.
+
+    Re7.7 changed the default from "1" to "0" (disabled). This test now
+    explicitly opts in to the unified router to test that code path.
+    """
+    monkeypatch.setenv("TOPIC_PARSER_USE_UNIFIED_ROUTER", "1")
     atoms = {
         "method": ["retrieval-augmented generation"],
         "object": ["knowledge base"],

@@ -136,10 +136,15 @@ def validate_node_output(
             )
 
     # Special: allow "innovation_points" node to have stitching_plan instead
-    if node_name == "innovation_extractor" and not missing:
-        pass  # has innovation_points
-    elif node_name == "innovation_extractor" and "stitching_plan" in data and "innovation_points" not in data:
-        missing = []  # stitching_plan is acceptable
+    # P3-2 fix: innovation_extractor accepts EITHER innovation_points OR
+    # stitching_plan (the node has its own empty-list fallback at line 125).
+    # Previously, LLM returning only stitching_plan triggered a confusing
+    # "missing required fields: ['innovation_points']" warning + LLM repair.
+    if node_name == "innovation_extractor":
+        if not missing:
+            pass  # has innovation_points
+        elif "stitching_plan" in data:
+            missing = []  # stitching_plan alone is acceptable
     elif missing and node_name == "narrative_builder":
         # narrative needs at least one of nick_model_name, narrative_summary, three_problems
         if any(k in data for k in ("nick_model_name", "narrative_summary", "three_problems")):
