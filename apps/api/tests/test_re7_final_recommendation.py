@@ -49,14 +49,18 @@ def test_compute_verdict_stop_low_bar_and_reject():
 
 
 def test_compute_verdict_stop_medium_risk_reject_blocked():
-    """Re7.7 round-5: medium-risk domain + REJECT + low_bar blocked → STOP."""
+    """Re7.7 round-6: medium-risk domain + REJECT + low_bar blocked → RISKY (not STOP).
+
+    Round-5 incorrectly escalated to STOP; XD-04 (medical AI) expects RISKY.
+    Only high-risk domains escalate REJECT to STOP; medium-risk behaves like low-risk.
+    """
     assert _compute_final_verdict({
         "low_bar_review": {"status": "blocked"},
         "human_gate": {"status": "pass_through"},
         "claim_judge_verdict": "REJECT",
         "user_constraints": {"domain": "医学AI"},
         "topic": "医学影像分割",
-    }) == "STOP"
+    }) == "RISKY"
 
 
 def test_compute_verdict_stop_high_risk_reject_pass():
@@ -94,6 +98,21 @@ def test_compute_verdict_medium_risk_reject_pass():
         "user_constraints": {"domain": "医学AI"},
         "topic": "医学影像分割模型在跨医院数据上的可信评估",
     }) == "RISKY"
+
+
+def test_compute_verdict_conditional_high_risk_accept():
+    """Re7.7 round-6: high-risk domain + ACCEPT + low_bar pass → CONDITIONAL (not GO).
+
+    High-risk domains (rare-disease, mental health, malicious use) never get a
+    clean GO even if claim_judge ACCEPTs — XD-09 must not be GO.
+    """
+    assert _compute_final_verdict({
+        "low_bar_review": {"status": "pass"},
+        "human_gate": {"status": "pass_through"},
+        "claim_judge_verdict": "ACCEPT",
+        "user_constraints": {"domain": "生物信息"},
+        "topic": "利用公开转录组数据预测罕见病药物反应",
+    }) == "CONDITIONAL"
 
 
 def test_compute_verdict_risky_low_bar_blocked_revise():
