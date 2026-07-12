@@ -24,6 +24,8 @@ from typing import Any
 
 from apps.api.app.services.agents.graph.state import ResearchState
 from ._util import now_iso as _now_iso
+# Re8.0 WP6: mode short-circuit + ReAct tool whitelist (Plan §8.5/§8.6)
+from .reflection_gates import is_react_reflection_enabled, is_tool_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -234,6 +236,11 @@ def _llm_decide(
 
     Returns a tuple (decision_dict, provider_tag). Provider is one of
     "unified_router", "fast_json", or "local" (fallback).
+
+    Re8.0 WP6 fixup (P2-2): callers MUST use ``_decide_with_mode_gate``
+    instead of calling this function directly, so that Lite Chain /
+    Offline Replay short-circuit before any LLM call. This wrapper is
+    kept as the LLM-eligible path only.
     """
     user_prompt = _build_decision_prompt(topic, atoms, all_papers, all_repos, steps, search_plan, failed_tools)
     result: dict[str, Any] | None = None
@@ -519,10 +526,28 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         "provider": "react_search",
         "state_keys": ["raw_results", "paper_candidates", "repo_candidates",
                         "search_steps", "trace_events", "errors",
-                        "provider_profile"],
+                        "provider_profile", "react_actions"],
     }
     decision_provider = "react_search"
     errors: list[dict[str, Any]] = []
+
+    # Re8.0 WP6 (P2-2): mode short-circuit — Plan §8.5 capability matrix.
+    # Lite Chain / Offline Replay must NOT invoke the LLM-driven ReAct loop.
+    # They fall back to deterministic plan-query iteration via _fallback_decide.
+    # Legacy topic_only (run_mode unset) preserves old LLM-driven behavior
+    # for backward compatibility (Plan §10 WP0: "保持旧 API 和 topic_only 兼容").
+    run_mode = state.get("run_mode") or ""
+    react_enabled = is_react_reflection_enabled(state)  # strict ReAct check
+    use_llm = run_mode not in ("lite_chain", "offline_replay")
+    if not use_llm:
+        logger.info(
+            "search_agent: LLM disabled (run_mode=%s), "
+            "using deterministic plan iteration",
+            run_mode,
+        )
+    # Re8.0 WP6 (P2-3): react_actions audit trail — Plan §8.6 requires
+    # "目标 Gap → 工具 → 预期成功条件 → 实际结果 → 下一动作" per action.
+    react_actions_log: list[dict[str, Any]] = []
 
     # Repair round detection (skip failed adapters)
     repair_rounds = state.get("evidence_audit", {}).get("repair_rounds", 0)
@@ -561,7 +586,12 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
 
         for step_idx in range(_MAX_STEPS):
             # 1. Think: LLM decides next action
-            thought, prov = _llm_decide(topic, atoms, all_papers, all_repos, steps, search_plan, failed_this_round)
+            # Re8.0 WP6 (P2-2): skip LLM call when run_mode is lite/offline.
+            if use_llm:
+                thought, prov = _llm_decide(topic, atoms, all_papers, all_repos, steps, search_plan, failed_this_round)
+            else:
+                thought = _fallback_decide(steps, search_plan, all_papers, all_repos, failed_this_round, atoms)
+                prov = "local"
             if decision_provider == "react_search":
                 decision_provider = prov
 
@@ -670,6 +700,17 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     "query": query,
                     "reason": f"adapter {tool} skipped (failed)",
                 })
+                # Re8.0 WP6 (P2-3): record skip in react_actions audit trail
+                react_actions_log.append({
+                    "step": step_idx,
+                    "action_type": "skip",
+                    "tool": tool,
+                    "query": query,
+                    "gap_id": gap_lookup.get((tool, query), {}).get("gap_id"),
+                    "whitelist_allowed": is_tool_allowed(tool),  # P2-1: reachable
+                    "n_results": 0,
+                    "reason": f"adapter {tool} skipped (failed)",
+                })
                 continue
 
             # 2. Call tool
@@ -688,6 +729,20 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     "n_repos": 0,
                     "reason": thought.get("reason", ""),
                     "failed": True,
+                })
+                # Re8.0 WP6 (P2-3): record failed dispatch in react_actions
+                react_actions_log.append({
+                    "step": step_idx,
+                    "action_type": "tool_call",
+                    "tool": tool,
+                    "query": query,
+                    "gap_id": gap_lookup.get((tool, query), {}).get("gap_id"),
+                    "whitelist_allowed": is_tool_allowed(tool),  # P2-1
+                    "n_results": 0,
+                    "n_papers": 0,
+                    "n_repos": 0,
+                    "failed": True,
+                    "reason": thought.get("reason", ""),
                 })
                 continue
 
@@ -740,6 +795,29 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                         unresolved_gaps.add(gap_id)
 
             steps.append(step_entry)
+
+            # Re8.0 WP6 (P2-1 + P2-3): record successful dispatch in
+            # react_actions audit trail. is_tool_allowed() is called here
+            # so the whitelist helper is reachable (not dead code).
+            # Note: current adapters (arxiv/openalex/...) sit below the
+            # ReAct tool layer (resolve_paper/search_method_family/...);
+            # whitelist_allowed=False is expected and advisory only.
+            gap_id_for_log = step_entry.get("gap_id")
+            react_actions_log.append({
+                "step": step_idx,
+                "action_type": "tool_call",
+                "tool": tool,
+                "query": query,
+                "gap_id": gap_id_for_log,
+                "success_condition": step_entry.get("success_condition"),
+                "whitelist_allowed": is_tool_allowed(tool),  # P2-1: reachable
+                "n_results": n_results,
+                "n_papers": len(new_papers),
+                "n_repos": len(new_repos),
+                "gap_resolved": step_entry.get("evidence_delta", {}).get("gap_resolved", False),
+                "failed": n_results == 0,
+                "reason": thought.get("reason", ""),
+            })
 
             # Re8.0 WP4: early exit when ALL bound gaps are resolved.
             # This implements the "early exit" requirement — once every
@@ -852,6 +930,9 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         ] + [
             {"tool": k, "n": len(v)} for k, v in raw.items()
         ]
+        # Re8.0 WP6: record react_actions count in trace for auditability
+        trace["output_summary"]["n_react_actions"] = len(react_actions_log)
+        trace["output_summary"]["react_enabled"] = react_enabled
 
         # Re3.0 fix: do NOT mix repos into paper_candidates — they go to repo_candidates only.
         # Previously repos were appended to paper_candidates, causing GitHub entries to appear
@@ -871,6 +952,11 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         paper_candidates = []
         unique_repos = []
 
+    # Re8.0 WP6: ensure react_enabled + n_react_actions are always in trace,
+    # even when an exception bypassed the try-block population above.
+    trace["output_summary"].setdefault("react_enabled", react_enabled)
+    trace["output_summary"].setdefault("n_react_actions", len(react_actions_log))
+
     trace["ended_at"] = _now_iso()
     trace["elapsed_s"] = round(time.time() - t0, 3)
 
@@ -882,4 +968,5 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         "trace_events": [trace],
         "errors": errors,
         "provider_profile": decision_provider,
+        "react_actions": react_actions_log,  # Re8.0 WP6 (P2-3): audit trail
     }

@@ -108,7 +108,8 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "search_planner": ("search_plan", "search_lanes", "evidence_gaps",
                        "trace_events", "errors", "provider_profile"),  # Re8.0 WP4: +lanes/gaps
     "paper_retriever": ("raw_results", "paper_candidates", "repo_candidates",
-                       "search_steps", "trace_events", "errors", "provider_profile"),
+                       "search_steps", "trace_events", "errors", "provider_profile",
+                       "react_actions"),  # Re8.0 WP6: +react_actions audit trail
     "quality_filter": ("paper_candidates", "filter_results", "trace_events", "errors",
                       "verify_scope"),  # Re6.1 Fix B
     "paper_verifier": ("verified_papers", "paper_candidates", "trace_events",
