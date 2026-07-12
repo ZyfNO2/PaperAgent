@@ -133,3 +133,4 @@ class ResearchState(TypedDict, total=False):
     novelty_drafts: list[dict[str, Any]]  # Re7.6 D-09: P-M-I structured drafts
     claim_judgements: list[dict[str, Any]]  # Re7.6
     claim_judge_verdict: str  # Re7.6
+    stop_reason: list[str]  # Re7.7: auditable STOP/RISKY/CONDITIONAL/PIVOT attribution

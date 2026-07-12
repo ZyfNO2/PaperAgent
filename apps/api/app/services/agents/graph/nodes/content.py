@@ -509,4 +509,5 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
                   [], "local", [],
                   state_keys=["final_recommendation", "trace_events"])
     return {"final_recommendation": recommendation,
+            "stop_reason": stop_reason,
             "trace_events": [trace]}
