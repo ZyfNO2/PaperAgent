@@ -509,7 +509,11 @@ def _compute_stop_reason(state: ResearchState) -> list[str]:
     if blocked_items:
         reasons.append(f"{len(blocked_items)} claim(s) blocked")
     if verdict == "CONDITIONAL":
-        reasons.append(f"{len(blocked_items)} claim(s) blocked but core claims accepted")
+        if blocked_items:
+            reasons.append(f"{len(blocked_items)} claim(s) blocked but core claims accepted")
+        elif _domain_risk_level(state) == "high":
+            reasons.append("high-risk domain requires conditional review (never clean GO)")
+        # else: REVISE already added its own reason above
     if verdict == "PIVOT":
         reasons.append("fundamental flaw identified by devils_advocate, pivot recommended")
 
