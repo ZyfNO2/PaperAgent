@@ -668,3 +668,77 @@ class TestSeedResolverVerifyIntegration:
         # No existing → just 1 new accept
         assert len(verified) == 1
         assert verified[0]["title"] == "Candidate 0"
+
+
+# ---------------------------------------------------------------------------
+# P1-7: list_user_papers triple-count fix
+# ---------------------------------------------------------------------------
+
+class TestListUserPapersDedup:
+    """P1-7: _paper_dedup_keys + _collect_user_papers must not triple-count
+    a paper that exists in _USER_PAPERS, candidate_seeds, AND seed_cards."""
+
+    def test_dedup_keys_collects_all_identifiers(self):
+        from apps.api.app.api.v1.research import _paper_dedup_keys
+        p = {"seed_id": "s1", "doi": "10.1/x", "title": "T"}
+        keys = _paper_dedup_keys(p)
+        assert "s1" in keys
+        assert "10.1/x" in keys
+        assert "t" in keys
+
+    def test_dedup_keys_handles_missing_fields(self):
+        from apps.api.app.api.v1.research import _paper_dedup_keys
+        assert _paper_dedup_keys({}) == set()
+        assert _paper_dedup_keys({"title": "My Paper"}) == {"my paper"}
+
+    def test_dedup_keys_overlapping_doi(self):
+        """Two papers with same DOI but different seed_ids must dedup."""
+        from apps.api.app.api.v1.research import _paper_dedup_keys
+        a = {"doi": "10.1/x", "title": "A"}
+        b = {"seed_id": "s1", "doi": "10.1/x", "title": "B"}
+        # Intersection on doi → duplicate
+        assert _paper_dedup_keys(a) & _paper_dedup_keys(b) == {"10.1/x"}
+
+    def test_collect_no_triple_count(self, monkeypatch):
+        """Same paper in _USER_PAPERS + candidate_seeds + seed_cards → 1 entry."""
+        import json
+        from pathlib import Path
+        from apps.api.app.api.v1 import research as R
+
+        case_id = "test-p17"
+        # Simulate _USER_PAPERS entry (pre-run, no seed_id)
+        paper = {"title": "Triple Threat", "doi": "10.1000/triple",
+                 "url": "https://example.com/p"}
+        monkeypatch.setattr(R, "_USER_PAPERS", {case_id: [paper]})
+
+        # Write state.json to a project-local temp dir (avoids Windows
+        # pytest tmp_path permission issues)
+        state = {
+            "candidate_seeds": [{
+                "seed_id": "user-seed-0",
+                "title": "Triple Threat",
+                "doi": "10.1000/triple",
+                "raw_input": paper,
+            }],
+            "seed_cards": [{
+                "seed_id": "user-seed-0",
+                "doi": "10.1000/triple",
+                "resolved_title": "Triple Threat",
+                "existence_status": "verified",
+                "raw_input": paper,
+            }],
+        }
+        fake_dir = Path("g:/PaperAgent/.pytest_tmp/test_p17")
+        fake_dir.mkdir(parents=True, exist_ok=True)
+        (fake_dir / "state.json").write_text(
+            json.dumps(state), encoding="utf-8")
+
+        monkeypatch.setattr(R, "_case_dir", lambda cid: fake_dir)
+
+        result = R._collect_user_papers(case_id)
+        # Must NOT be 3 — should be 1 (deduped by doi)
+        assert result["n"] == 1, f"expected 1, got {result['n']}: {result['papers']}"
+
+        # Cleanup
+        (fake_dir / "state.json").unlink(missing_ok=True)
+        fake_dir.rmdir()
