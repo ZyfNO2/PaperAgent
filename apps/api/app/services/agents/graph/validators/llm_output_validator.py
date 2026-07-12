@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -229,8 +230,14 @@ def call_json_with_validation(
     Re6.2: Delegates to call_json_contract when a contract is registered
     for the node's task_role. Falls back to legacy call_json otherwise.
 
+    Re7.7: USE_CONTRACT_PATH env var (default "0") globally controls whether
+    the contract path is attempted. When "0" (default), contract_id is
+    ignored and all calls go through the legacy call_json(profile=...) path
+    so that profile="fast_json"/"premium_review" → mistral is actually used.
+    Set USE_CONTRACT_PATH=1 to re-enable the Re6.2 unified router.
+
     Flow:
-      1. If contract_id provided → use call_json_contract (Re6.2 unified router)
+      1. If contract_id provided AND USE_CONTRACT_PATH=1 → contract path
       2. Else → legacy call_json + schema validation + repair
       3. If invalid → send to LLM repair
       4. If repair fails → use fallback (heuristic) or raise
@@ -249,7 +256,11 @@ def call_json_with_validation(
         Validated LLM output, or fallback, or raises LLMUnavailable
     """
     # Re6.2: Try contract-driven path first
-    if contract_id:
+    # Re7.7: USE_CONTRACT_PATH env (default "0") controls whether contract
+    # path is used at all. When disabled, all calls go through legacy
+    # call_json(profile=...) so the profile actually controls the provider.
+    _use_contract = os.environ.get("USE_CONTRACT_PATH", "0").strip().lower() in ("1", "true", "yes")
+    if contract_id and _use_contract:
         try:
             from apps.api.app.services.router import call_with_contract, TaskRole
             result = call_with_contract(
