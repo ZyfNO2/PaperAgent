@@ -701,14 +701,21 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     "reason": f"adapter {tool} skipped (failed)",
                 })
                 # Re8.0 WP6 (P2-3): record skip in react_actions audit trail
+                _gap_meta_skip = gap_lookup.get((tool, query), {})
                 react_actions_log.append({
                     "step": step_idx,
                     "action_type": "skip",
                     "tool": tool,
                     "query": query,
-                    "gap_id": gap_lookup.get((tool, query), {}).get("gap_id"),
+                    "gap_id": _gap_meta_skip.get("gap_id"),
+                    "success_condition": _gap_meta_skip.get("success_condition"),
                     "whitelist_allowed": is_tool_allowed(tool),  # P2-1: reachable
                     "n_results": 0,
+                    "n_papers": 0,
+                    "n_repos": 0,
+                    "gap_resolved": False,
+                    "failed": False,
+                    "next_action": "continue",
                     "reason": f"adapter {tool} skipped (failed)",
                 })
                 continue
@@ -731,17 +738,21 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     "failed": True,
                 })
                 # Re8.0 WP6 (P2-3): record failed dispatch in react_actions
+                _gap_meta_fail = gap_lookup.get((tool, query), {})
                 react_actions_log.append({
                     "step": step_idx,
                     "action_type": "tool_call",
                     "tool": tool,
                     "query": query,
-                    "gap_id": gap_lookup.get((tool, query), {}).get("gap_id"),
+                    "gap_id": _gap_meta_fail.get("gap_id"),
+                    "success_condition": _gap_meta_fail.get("success_condition"),
                     "whitelist_allowed": is_tool_allowed(tool),  # P2-1
                     "n_results": 0,
                     "n_papers": 0,
                     "n_repos": 0,
+                    "gap_resolved": False,
                     "failed": True,
+                    "next_action": "continue",
                     "reason": thought.get("reason", ""),
                 })
                 continue
@@ -816,6 +827,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                 "n_repos": len(new_repos),
                 "gap_resolved": step_entry.get("evidence_delta", {}).get("gap_resolved", False),
                 "failed": n_results == 0,
+                "next_action": "continue",
                 "reason": thought.get("reason", ""),
             })
 
