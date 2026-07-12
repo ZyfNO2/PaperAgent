@@ -10,6 +10,7 @@
 | `UserPromptSubmit` 提示 | `settings.json` → `echo` | 通过 `instructions:` 系统 prompt 提示 |
 | `PreToolUse(Write)` 完工报告审计 | `pre_report_audit.py` | **暂未自动激活**（见下方） |
 | `Stop` 自检对话完成度 | `user_completion_check.py` | **暂未自动激活**（见下方） |
+| `Stop` SOP 完成度自检 | `sop_completion_check.py` | **暂未自动激活**（见下方） |
 | Skill 自动加载 | `~/.claude/skills/`、`~/.agents/skills/` | `~/.agents/skills/`（同左） |
 
 ## 2. 哪些 hook **不**会自动跑
@@ -21,6 +22,7 @@ opencode 的 `PreToolUse` / `Stop` 钩子机制跟 Claude Code 不同：
 - 三个 Python 文件被快照在 `.opencode/hooks/`：
   - `pre_report_audit.py` — 完工报告写盘前审计
   - `user_completion_check.py` — Stop 时跑 git log + trace diff + 用户消息关键词匹配
+  - `sop_completion_check.py` — Stop 时扫当前 SOP checkbox + 交接包产物齐备性
   - `test_write_payload.py` — 前者的手工测试桩
 
 ## 3. 想要真正触发怎么办
