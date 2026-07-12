@@ -104,6 +104,33 @@ for case in cases:
                 "elapsed_s": ev.get("elapsed_s"),
             })
 
+    # Re7.7 Step 7: extract verify batch timeline + repair loop counts
+    verify_trace = None
+    for ev in all_trace_events:
+        if isinstance(ev, dict) and ev.get("node") == "verify":
+            verify_trace = ev
+            break
+    verify_batch_timeline = []
+    if verify_trace and isinstance(verify_trace.get("output_summary"), dict):
+        os_obj = verify_trace["output_summary"]
+        # batch_results may be in output_summary or in the trace itself
+        batch_results = os_obj.get("batch_results") or verify_trace.get("batch_results") or []
+        for br in batch_results:
+            if isinstance(br, dict):
+                verify_batch_timeline.append({
+                    "batch": br.get("batch"),
+                    "elapsed_s": br.get("elapsed_s"),
+                    "n_papers": br.get("n_papers") or br.get("expected"),
+                    "resolved": br.get("resolved"),
+                    "parse_stage": br.get("parse_stage"),
+                    "attempt": br.get("attempt"),
+                })
+
+    narrative_revision_count = final_state.get("narrative_revision_count", 0)
+    # Count low_bar_review executions from node_timings
+    low_bar_executions = sum(1 for nt in node_timings if nt.get("node") == "low_bar_review")
+    narrative_executions = sum(1 for nt in node_timings if nt.get("node") == "narrative_builder")
+
     total = time.time() - t0
     result = {
         "case_id": case.case_id,
@@ -119,6 +146,12 @@ for case in cases:
         "low_bar_status": low_bar_status,
         "human_gate_status": human_gate_status,
         "provider_chain": provider_chain,
+        "verify_batch_timeline": verify_batch_timeline,
+        "repair_loop": {
+            "narrative_revisions": narrative_revision_count,
+            "narrative_executions": narrative_executions,
+            "low_bar_executions": low_bar_executions,
+        },
     }
     results.append(result)
     print(f"  => verdict={verdict}, total={total:.1f}s, nodes={len(node_timings)}", flush=True)

@@ -390,39 +390,57 @@ def human_gate_search_node(state: ResearchState) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 def _compute_final_verdict(state: ResearchState) -> str:
-    """Compute GO / CONDITIONAL / RISKY / PIVOT / STOP verdict from available node outputs."""
+    """Compute GO / CONDITIONAL / RISKY / PIVOT / STOP verdict from available node outputs.
+
+    Re7.7 calibration: REJECT alone no longer forces STOP — it maps to RISKY
+    (claim judge may be overly strict). Only low_bar blocked + REJECT together
+    produce STOP. low_bar blocked alone maps to RISKY (not STOP) to avoid
+    overly conservative verdicts when evidence is partial but not fabricated.
+    """
     review = state.get("low_bar_review") or {}
     gate = state.get("human_gate") or {}
     claim_judge_verdict = (state.get("claim_judge_verdict") or "").upper()
     blocked_items = state.get("blocked_items") or []
     devils = state.get("devils_advocate") or {}
 
-    # 1. low_bar blocked → STOP
-    if review.get("status") == "blocked":
+    low_bar_blocked = review.get("status") == "blocked"
+    is_reject = claim_judge_verdict == "REJECT"
+
+    # 1. low_bar blocked + REJECT → STOP (double negative signal)
+    if low_bar_blocked and is_reject:
         return "STOP"
-    # 2. genuine rejection → STOP
-    if claim_judge_verdict == "REJECT":
-        return "STOP"
-    # 3. judge unavailable → RISKY (not STOP)
-    if claim_judge_verdict == "UNAVAILABLE":
-        return "RISKY"
-    # 4. human gate not passed → STOP
+    # 2. human gate not passed → STOP
     gate_status = gate.get("status", "")
     if gate_status not in ("pass_through", "pass_through_no_runtime"):
         return "STOP"
-    # 5. revise + fundamental flaw → PIVOT
+    # 3. revise + fundamental flaw → PIVOT
     if claim_judge_verdict == "REVISE" and devils.get("fundamental_flaw"):
         return "PIVOT"
-    # 6. revise → RISKY
+    # 4. REJECT alone → RISKY (not STOP; claim judge may be overly strict)
+    if is_reject:
+        return "RISKY"
+    # 5. judge unavailable → RISKY (not STOP)
+    if claim_judge_verdict == "UNAVAILABLE":
+        return "RISKY"
+    # 6. low_bar blocked + REVISE → RISKY (not STOP; evidence partial but direction ok)
+    if low_bar_blocked and claim_judge_verdict == "REVISE":
+        return "RISKY"
+    # 7. low_bar blocked + ACCEPT → CONDITIONAL (can proceed with caveats)
+    if low_bar_blocked and claim_judge_verdict == "ACCEPT":
+        return "CONDITIONAL"
+    # 8. low_bar blocked with unknown claim judge → RISKY
+    if low_bar_blocked:
+        return "RISKY"
+    # 9. revise → RISKY
     if claim_judge_verdict == "REVISE":
         return "RISKY"
-    # 7. accepted but blocked items → CONDITIONAL
+    # 10. accepted but blocked items → CONDITIONAL
     if claim_judge_verdict == "ACCEPT" and blocked_items:
         return "CONDITIONAL"
-    # 8. blocked items → RISKY
+    # 11. blocked items → RISKY
     if blocked_items:
         return "RISKY"
-    # 9. all clear → GO
+    # 12. all clear → GO
     return "GO"
 
 
