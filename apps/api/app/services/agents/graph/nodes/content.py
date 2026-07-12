@@ -424,14 +424,11 @@ def _domain_risk_level(state: ResearchState) -> str:
 def _compute_final_verdict(state: ResearchState) -> str:
     """Compute GO / CONDITIONAL / RISKY / PIVOT / STOP verdict from available node outputs.
 
-    Re7.7 round-5 calibration: introduces a three-tier domain risk dimension
-    (high/medium/low) so that:
-      - high-risk domain + REJECT → STOP (even if low_bar passes)
-      - high-risk domain + REVISE + low_bar blocked → STOP
-      - medium-risk + REJECT + low_bar blocked → STOP
-      - low-risk + REJECT + low_bar blocked → RISKY (not STOP)
-      - REVISE + low_bar pass → CONDITIONAL (was RISKY; incremental work with
-        partial evidence deserves a conditional green light, not a yellow flag)
+    Re7.7 round-6 calibration:
+      - REMOVED medium-risk+REJECT+blocked→STOP (was too aggressive; XD-04 expects RISKY)
+      - ADDED high-risk+ACCEPT→CONDITIONAL (high-risk domains never get a clean GO;
+        XD-09 rare-disease drug response must not be GO even if claim_judge ACCEPTs)
+      - medium-risk now behaves like low-risk for REJECT (→ RISKY, not STOP)
     """
     review = state.get("low_bar_review") or {}
     gate = state.get("human_gate") or {}
@@ -455,36 +452,36 @@ def _compute_final_verdict(state: ResearchState) -> str:
     # 3. high-risk domain + REVISE + low_bar blocked → STOP
     if risk == "high" and is_revise and low_bar_blocked:
         return "STOP"
-    # 4. medium-risk + REJECT + low_bar blocked → STOP
-    if risk == "medium" and is_reject and low_bar_blocked:
-        return "STOP"
-    # 5. revise + fundamental flaw → PIVOT
+    # 4. revise + fundamental flaw → PIVOT
     if is_revise and devils.get("fundamental_flaw"):
         return "PIVOT"
-    # 6. REJECT alone → RISKY (not STOP; claim judge may be overly strict)
+    # 5. REJECT alone → RISKY (not STOP; claim judge may be overly strict)
     if is_reject:
         return "RISKY"
-    # 7. judge unavailable → RISKY (not STOP)
+    # 6. judge unavailable → RISKY (not STOP)
     if claim_judge_verdict == "UNAVAILABLE":
         return "RISKY"
-    # 8. low_bar blocked + REJECT/REVISE → RISKY (not STOP in low/medium-risk domains)
+    # 7. low_bar blocked + REJECT/REVISE → RISKY (not STOP in low/medium-risk domains)
     if low_bar_blocked and (is_reject or is_revise):
         return "RISKY"
-    # 9. low_bar blocked + ACCEPT → CONDITIONAL (can proceed with caveats)
+    # 8. low_bar blocked + ACCEPT → CONDITIONAL (can proceed with caveats)
     if low_bar_blocked and is_accept:
         return "CONDITIONAL"
-    # 10. low_bar blocked with unknown claim judge → RISKY
+    # 9. low_bar blocked with unknown claim judge → RISKY
     if low_bar_blocked:
         return "RISKY"
-    # 11. REVISE + low_bar pass → CONDITIONAL (round-5: was RISKY)
+    # 10. REVISE + low_bar pass → CONDITIONAL
     if is_revise:
         return "CONDITIONAL"
-    # 12. ACCEPT + blocked items → CONDITIONAL
+    # 11. ACCEPT + blocked items → CONDITIONAL
     if is_accept and blocked_items:
         return "CONDITIONAL"
-    # 13. blocked items → RISKY
+    # 12. blocked items → RISKY
     if blocked_items:
         return "RISKY"
+    # 13. high-risk domain + ACCEPT → CONDITIONAL (never clean GO for high-risk)
+    if risk == "high" and is_accept:
+        return "CONDITIONAL"
     # 14. all clear → GO
     return "GO"
 

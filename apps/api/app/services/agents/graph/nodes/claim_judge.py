@@ -59,7 +59,16 @@ Verdict calibration (Re7.7 round-5):
   (not just "incomplete"). Do not use REVISE as a catch-all for "could be better".
 - REJECT: when ANY of the following hold:
   (a) claim is fabricated, has zero evidence basis, or is fundamentally flawed;
-  (b) topic is high-stakes (medical/psychological/malicious/autonomy) AND evidence is insufficient to ground the claims;
+  (b) topic is high-stakes AND evidence is insufficient to ground the claims.
+      High-stakes domains (REJECT unless evidence is exceptionally strong — multiple
+      peer-reviewed papers + clinical/experimental validation):
+      - Rare-disease drug response prediction (e.g., predicting drug reactions from
+        transcriptome/public omics data) — "public transcriptome data" is NOT sufficient
+        evidence for rare-disease drug claims; REJECT.
+      - Psychological counseling / mental-health Q&A
+      - Malicious use (phishing, fraud, deepfake, fake news)
+      - Medical diagnosis / clinical decision-making
+      - Autonomous driving safety-critical decisions
   (c) topic is purely malicious (phishing/fraud/deepfake) regardless of evidence quality.
   Do NOT reject just because evidence is incomplete in non-high-stakes domains.
   Do NOT reject engineering/applied work just because it lacks theoretical breakthroughs.
