@@ -81,6 +81,22 @@ def _normalize(raw: dict[str, Any]) -> dict[str, Any]:
     if isinstance(dom, list):
         dom = next((str(x).strip().lower() for x in dom if str(x).strip()), "unknown")
     dom = str(dom).strip().lower()
+    # P3-1 fix: map common LLM-returned domain variants to canonical values
+    # so that "nlp" / "translation" / "text" → "nlp_llm" instead of "unknown".
+    _DOMAIN_ALIASES = {
+        "nlp": "nlp_llm",
+        "translation": "nlp_llm",
+        "text": "nlp_llm",
+        "language": "nlp_llm",
+        "linguistics": "nlp_llm",
+        "cv": "vision_2d",
+        "computer_vision": "vision_2d",
+        "image": "vision_2d",
+        "civil": "civil_infra",
+        "construction": "civil_infra",
+        "structural": "civil_infra",
+    }
+    dom = _DOMAIN_ALIASES.get(dom, dom)
     out["domain"] = dom if dom in _ALLOWED_DOMAINS else "unknown"
     return out
 
@@ -176,6 +192,15 @@ def _heuristic_parse(topic: str, atoms: dict[str, Any]) -> dict[str, Any]:
         out["method"] = list(out.get("method") or [])
         if not any("large language model" in str(m).lower() for m in out["method"]):
             out["method"].append("large language model")
+    # P3-1 fix: detect NLP/translation/cross-lingual topics so domain isn't "unknown"
+    _nlp_keywords = (
+        "translation", "cross-lingual", "cross lingual", "machine translation",
+        "language model", "nlp", "natural language", "text classification",
+        "sentiment", "question answering", "summarization", "named entity",
+        "token classification", "bert", "transformer",
+    )
+    if out.get("domain") == "unknown" and any(kw in lowered for kw in _nlp_keywords):
+        out["domain"] = "nlp_llm"
 
     # Extract English technical terms (sequences of ASCII letters, >=2 chars)
     en_terms = re.findall(r'[A-Za-z][A-Za-z0-9\-]{1,}', text)
