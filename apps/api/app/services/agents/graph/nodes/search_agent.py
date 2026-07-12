@@ -831,14 +831,18 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         }
         # Re8.0 WP4: gap resolution summary — lets the trace answer
         # "which gaps were satisfied, which remain open?"
+        # P2-1 fix: compute final unresolved as set difference to avoid
+        # missing gaps that had partial results but didn't meet the
+        # success_condition threshold.
         if is_gap_bound:
+            final_unresolved = all_bound_gaps - resolved_gaps
             trace["output_summary"]["gap_resolution"] = {
                 "gap_bound": True,
                 "n_bound_gaps": len(all_bound_gaps),
                 "n_resolved": len(resolved_gaps),
-                "n_unresolved": len(unresolved_gaps),
+                "n_unresolved": len(final_unresolved),
                 "resolved_gap_ids": sorted(resolved_gaps),
-                "unresolved_gap_ids": sorted(unresolved_gaps),
+                "unresolved_gap_ids": sorted(final_unresolved),
             }
         trace["provider"] = decision_provider
         trace["input_summary"]["provider"] = decision_provider

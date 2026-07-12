@@ -481,6 +481,52 @@ class TestSearchAgentGapTracking:
         assert "resolved_gap_ids" in gr
         assert "unresolved_gap_ids" in gr
 
+    def test_partial_results_counted_as_unresolved(self, monkeypatch):
+        """P2-1 regression: a gap with partial results (n>0 but below
+        threshold) must appear in unresolved_gap_ids, not vanish.
+
+        competing_baseline needs 2+ papers. We return only 1, so the
+        gap should be unresolved in the trace summary.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # Build plan with only competing_baseline (needs 2+ papers)
+        lanes = [
+            {
+                "lane_id": "competing_baseline",
+                "description": "baselines",
+                "queries": ["Faster R-CNN detection"],
+                "gap_id": None,
+            },
+        ]
+        updated_lanes, _ = _create_lane_gaps(lanes, seed_id="s1")
+        plan = _seeded_plan(updated_lanes, seed_id="s1")
+        first_q = plan["queries"][0]
+        decisions = [
+            {"action": "search", "tool": first_q["tool"],
+             "query": first_q["query"], "reason": "partial"},
+            {"action": "stop", "reason": "done"},
+        ]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Only 1 paper", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        trace = result["trace_events"][0]
+        gr = trace["output_summary"]["gap_resolution"]
+        # The gap needs 2+ papers but only got 1 → unresolved
+        assert gr["n_resolved"] == 0
+        assert gr["n_unresolved"] == gr["n_bound_gaps"]
+        # Invariant: n_resolved + n_unresolved == n_bound_gaps
+        assert gr["n_resolved"] + gr["n_unresolved"] == gr["n_bound_gaps"]
+
 
 # ---------------------------------------------------------------------------
 # WP4 acceptance: trace answers "why search + what changed"
