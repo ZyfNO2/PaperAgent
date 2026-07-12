@@ -97,3 +97,61 @@ class TestCallJsonWithValidation:
         )
         assert result["verdict"] == "risky"
         assert result["score"] == 50
+
+
+class TestP13InnovationExtractorFallback:
+    """Re8.0 P1-3: innovation_extractor "两字段皆无" fallback.
+
+    The validator accepts innovation_extractor output when:
+      - innovation_points field is present (normal case), OR
+      - stitching_plan field is present (P3-2 fix), OR
+      - NEITHER field is present (P1-3 fix: let node-level heuristic
+        at innovation_extractor.py:130-132 handle it)
+
+    Covers llm_output_validator.py lines 149-156:
+        if node_name == "innovation_extractor":
+            if not missing:
+                pass  # has innovation_points
+            elif "stitching_plan" in data:
+                missing = []  # stitching_plan alone is acceptable
+            else:
+                # Neither field present — let node-level heuristic handle it.
+                missing = []
+
+    Blocking at the validator layer only wastes an LLM repair call that
+    cannot reconstruct missing content from an uninformative raw dict.
+    """
+
+    def test_innovation_extractor_neither_field_present_is_valid(self):
+        """LLM 返回既无 innovation_points 也无 stitching_plan → validator 接受.
+
+        P1-3: When both fields are absent, the validator defers to the
+        node-level heuristic fallback rather than triggering an LLM repair
+        call that cannot reconstruct the missing content.
+        """
+        data = {"some_other_field": "value"}
+        is_valid, error = validate_node_output("innovation_extractor", data)
+        assert is_valid is True
+        assert error is None
+
+    def test_innovation_extractor_stitching_plan_only_is_valid(self):
+        """LLM 返回只有 stitching_plan → validator 接受.
+
+        P3-2 fix: innovation_extractor accepts stitching_plan alone because
+        the node has its own empty-list fallback for innovation_points.
+        """
+        data = {"stitching_plan": {"step1": "do something"}}
+        is_valid, error = validate_node_output("innovation_extractor", data)
+        assert is_valid is True
+        assert error is None
+
+    def test_innovation_extractor_with_innovation_points_is_valid(self):
+        """LLM 返回有 innovation_points → validator 接受.
+
+        Normal case: innovation_points present and is a list. The schema
+        requires innovation_points: list, so this is the canonical path.
+        """
+        data = {"innovation_points": [{"description": "novel insight"}]}
+        is_valid, error = validate_node_output("innovation_extractor", data)
+        assert is_valid is True
+        assert error is None

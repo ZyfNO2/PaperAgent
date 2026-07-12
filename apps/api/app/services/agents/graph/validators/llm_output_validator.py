@@ -140,11 +140,20 @@ def validate_node_output(
     # stitching_plan (the node has its own empty-list fallback at line 125).
     # Previously, LLM returning only stitching_plan triggered a confusing
     # "missing required fields: ['innovation_points']" warning + LLM repair.
+    # Re8.0 P1-3: also accept the case where LLM returns NEITHER field.
+    # innovation_extractor_node has a complete heuristic fallback
+    # (innovation_extractor.py:130-132) that produces a valid innovation
+    # point from state when both fields are absent. Blocking at the
+    # validator layer only wastes an LLM repair call that cannot
+    # reconstruct missing content from an uninformative raw dict.
     if node_name == "innovation_extractor":
         if not missing:
             pass  # has innovation_points
         elif "stitching_plan" in data:
             missing = []  # stitching_plan alone is acceptable
+        else:
+            # Neither field present — let node-level heuristic handle it.
+            missing = []
     elif missing and node_name == "narrative_builder":
         # narrative needs at least one of nick_model_name, narrative_summary, three_problems
         if any(k in data for k in ("nick_model_name", "narrative_summary", "three_problems")):

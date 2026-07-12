@@ -72,6 +72,18 @@ class ResearchState(TypedDict, total=False):
 
     # --- Final recommendation ---
     final_recommendation: dict[str, Any]
+    # Re8.0 P1-3: Final Research Package — 7-section auditable object
+    # (seed_audit_summary / tailor_summary / gate_results / ledger_entries /
+    # evidence_gap_status / falsifiable_hypothesis / fused_verdict). Also
+    # mirrored at final_recommendation["research_package"] for convenience.
+    final_research_package: dict[str, Any]
+    # Re8.0 P0-A: fused verdict surfaced at the state top level so that
+    # diagnostic scripts and the Three-Tier PASS checker can read it
+    # directly without diving into final_recommendation. Written by
+    # final_recommendation_node alongside final_rec.fused_verdict.
+    # Values: "GO" | "CONDITIONAL" | "RISKY" | "BLOCKED" | None (pre-pipeline)
+    fused_verdict: str | None
+    fused_verdict_rationale: str
 
     # === Re1.3 new fields ===
     # Quality filter results

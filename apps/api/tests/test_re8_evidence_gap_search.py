@@ -27,6 +27,7 @@ from apps.api.app.services.agents.graph.nodes.search_planner import (
     search_planner_node,
 )
 from apps.api.app.services.agents.graph.re80_schema import (
+    make_evidence_gap,
     make_seed_card,
     validate_evidence_gap,
 )
@@ -674,3 +675,160 @@ class TestIntegrationPlannerToAgent:
         tool_steps = [s for s in result["search_steps"] if s.get("type") == "tool_call"]
         assert len(tool_steps) >= 1
         assert tool_steps[0].get("gap_id") == first_q["gap_id"]
+
+
+# ---------------------------------------------------------------------------
+# P1-7b: gap_lookup miss fallback (search_agent.py lines 1007-1025)
+# ---------------------------------------------------------------------------
+
+class TestP17bGapLookupMissFallback:
+    """P1-7b: gap_lookup miss fallback.
+
+    When the LLM-driven ReAct loop uses queries that don't exactly match
+    the gap-bound plan queries (gap_lookup miss), step_entry won't carry
+    gap_id and the per-gap partial_gaps set stays empty. In that case,
+    if search_agent DID find papers/repos, mark all "open" gaps as
+    "partially_satisfied".
+
+    Covers search_agent.py lines 1007-1025:
+        if not resolved_gaps and not partial_gaps and (paper_candidates or unique_repos):
+            for gap in existing_gaps:
+                gid = gap.get("gap_id", "")
+                current_status = gap.get("status", "open")
+                if gid and current_status == "open":
+                    partial_gaps.add(gid)
+    """
+
+    def _make_state_with_open_gaps(
+        self, *, n_gaps: int = 2, gap_status: str = "open",
+    ) -> dict[str, Any]:
+        """Build state with n gaps (default open) + gap-bound plan."""
+        plan = _make_gap_bound_plan(seed_id="s1")
+        gaps = [
+            make_evidence_gap(
+                gap_id=f"G-{gap_status}-{i}",
+                question=f"q{i}",
+                status=gap_status,
+            )
+            for i in range(n_gaps)
+        ]
+        return {
+            "topic": "detection",
+            "topic_atoms": {
+                "method": ["YOLO"], "object": ["detection"], "domain": "cv",
+            },
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+
+    def test_p1_7b_gap_lookup_miss_with_papers_marks_partial(self, monkeypatch):
+        """gap_lookup miss + paper_candidates 非空 → open gaps 被标记为 partially_satisfied."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        state = self._make_state_with_open_gaps(n_gaps=2, gap_status="open")
+        # LLM uses a query NOT in the plan → gap_lookup miss
+        decisions = [
+            {"action": "search", "tool": "arxiv",
+             "query": "TOTALLY DIFFERENT QUERY NOT IN PLAN",
+             "reason": "llm reformulated"},
+            {"action": "stop", "reason": "done"},
+        ]
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper One", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        # All open gaps should be marked partially_satisfied
+        for gap in result["evidence_gaps"]:
+            assert gap["status"] == "partially_satisfied", (
+                f"gap {gap['gap_id']} status={gap['status']}"
+            )
+        # Sanity: papers were indeed found
+        assert len(result["paper_candidates"]) >= 1
+
+    def test_p1_7b_gap_lookup_miss_with_repos_only_triggers(self, monkeypatch):
+        """gap_lookup miss + unique_repos 非空但 paper_candidates 为空 → fallback 触发."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        state = self._make_state_with_open_gaps(n_gaps=2, gap_status="open")
+        # LLM uses github + a query NOT in plan → gap_lookup miss + repo result
+        decisions = [
+            {"action": "search", "tool": "github",
+             "query": "TOTALLY DIFFERENT REPO QUERY NOT IN PLAN",
+             "reason": "llm reformulated"},
+            {"action": "stop", "reason": "done"},
+        ]
+
+        def _fake_run_tool(tool, query, top_k=12):
+            if tool == "github":
+                return [{
+                    "full_name": "owner/repo",
+                    "html_url": "https://github.com/owner/repo",
+                }]
+            return []
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, side_effect=_fake_run_tool):
+            result = search_agent_node(state)
+
+        for gap in result["evidence_gaps"]:
+            assert gap["status"] == "partially_satisfied", (
+                f"gap {gap['gap_id']} status={gap['status']}"
+            )
+        # paper_candidates empty, repo_candidates non-empty
+        assert len(result["paper_candidates"]) == 0
+        assert len(result["repo_candidates"]) >= 1
+
+    def test_p1_7b_empty_existing_gaps_safe_skip(self, monkeypatch):
+        """gap_lookup miss + existing_gaps 为空 → fallback 安全跳过,不报错."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {
+                "method": ["YOLO"], "object": ["detection"], "domain": "cv",
+            },
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": [],  # empty — fallback should skip safely
+        }
+        decisions = [
+            {"action": "search", "tool": "arxiv",
+             "query": "NOT IN PLAN", "reason": "go"},
+            {"action": "stop", "reason": "done"},
+        ]
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper One", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        # No error, evidence_gaps still empty
+        assert result["evidence_gaps"] == []
+        # Sanity: papers were found (fallback condition met but no gaps to mark)
+        assert len(result["paper_candidates"]) >= 1
+
+    def test_p1_7b_no_open_gaps_no_change(self, monkeypatch):
+        """gap_lookup miss + 所有 gap status 不是 "open" → 不标记任何 gap."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        state = self._make_state_with_open_gaps(n_gaps=2, gap_status="blocked")
+        decisions = [
+            {"action": "search", "tool": "arxiv",
+             "query": "NOT IN PLAN", "reason": "go"},
+            {"action": "stop", "reason": "done"},
+        ]
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper One", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        # Gaps should remain "blocked" (P1-7b only touches "open" gaps)
+        for gap in result["evidence_gaps"]:
+            assert gap["status"] == "blocked", (
+                f"gap {gap['gap_id']} status={gap['status']} "
+                f"(should remain blocked — P1-7b only marks open gaps)"
+            )
+        # Sanity: papers were found (fallback condition met but no open gaps)
+        assert len(result["paper_candidates"]) >= 1

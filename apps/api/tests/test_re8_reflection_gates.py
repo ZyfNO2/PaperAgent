@@ -1100,3 +1100,284 @@ class TestSearchAgentReactActions:
                     "whitelist_allowed", "n_results", "gap_resolved",
                     "failed", "next_action", "reason"}
         assert required.issubset(first_keys)
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# 15. Conditional repair routing — route_after_gate (Re8.0 P0-2)
+# ────────────────────────────────────────────────────────────────────────────
+
+
+# Forward / repair targets per gate — single source of truth for the
+# parametrized tests below. Mirrors _GATE_FORWARD_TARGETS /
+# _GATE_REPAIR_TARGETS in reflection_gates.py.
+_GATE_ROUTING_TARGETS = [
+    (rg.GATE_SEED_AUDIT,   "paper_understanding",  "seed_resolver"),
+    (rg.GATE_TAILOR,       "innovation_extractor", "search_planner"),
+    (rg.GATE_FINAL_REVIEW, "falsifiability",       "evidence_context"),
+]
+
+
+class TestRouteAfterGate:
+    """Re8.0 P0-2: route_after_gate drives the conditional repair edges.
+
+    Each gate has a forward target (linear spine) and a repair target
+    (upstream node that can fix the gap). The router reads the gate's
+    last result from state["reflection_gate_results"][gate_name][-1]
+    and routes based on verdict + round_idx.
+
+    Covers SubTasks 2.5 (pass / revise / unresolved routing for all 3
+    gates) and 2.6 (round_idx at cap → forward).
+    """
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_verdict_pass_routes_forward(self, gate_name, forward, repair):
+        """verdict=pass → forward target (gate satisfied)."""
+        state = _full_state(reflection_gate_results={
+            gate_name: [
+                make_reflection_gate_result(
+                    gate_name=gate_name, verdict="pass", round_idx=0,
+                ),
+            ],
+        })
+        assert rg.route_after_gate(state, gate_name) == forward
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_verdict_revise_round_0_routes_repair(self, gate_name, forward, repair):
+        """verdict=revise + round_idx=0 → repair target (loop back)."""
+        state = _full_state(reflection_gate_results={
+            gate_name: [
+                make_reflection_gate_result(
+                    gate_name=gate_name, verdict="revise", round_idx=0,
+                    re_search_requests=["G1"],
+                ),
+            ],
+        })
+        assert rg.route_after_gate(state, gate_name) == repair
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_verdict_revise_at_cap_routes_forward(self, gate_name, forward, repair):
+        """SubTask 2.6: verdict=revise + round_idx=2 (cap) → forward.
+
+        The gate normally emits ``unresolved`` once the cap is reached
+        (see TestRoundCapEnforcement), but the router must also defend
+        against a revise leaking past the cap. This guarantees the
+        repair loop terminates even if a future change to the gate
+        forgets the cap check.
+        """
+        state = _full_state(reflection_gate_results={
+            gate_name: [
+                make_reflection_gate_result(
+                    gate_name=gate_name, verdict="revise",
+                    round_idx=REFLECTION_GATE_MAX_ROUNDS,
+                ),
+            ],
+        })
+        assert rg.route_after_gate(state, gate_name) == forward
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_verdict_unresolved_routes_forward(self, gate_name, forward, repair):
+        """verdict=unresolved → forward target (cap reached / hard failure)."""
+        state = _full_state(reflection_gate_results={
+            gate_name: [
+                make_reflection_gate_result(
+                    gate_name=gate_name, verdict="unresolved", round_idx=1,
+                ),
+            ],
+        })
+        assert rg.route_after_gate(state, gate_name) == forward
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_verdict_revise_round_1_still_routes_repair(self, gate_name, forward, repair):
+        """verdict=revise + round_idx=1 (one round left) → repair target.
+
+        MAX_ROUNDS=2 means round_idx 0 and 1 are both eligible for
+        repair; only round_idx >= 2 forces forward.
+        """
+        state = _full_state(reflection_gate_results={
+            gate_name: [
+                make_reflection_gate_result(
+                    gate_name=gate_name, verdict="revise", round_idx=0,
+                ),
+                make_reflection_gate_result(
+                    gate_name=gate_name, verdict="revise", round_idx=1,
+                ),
+            ],
+        })
+        assert rg.route_after_gate(state, gate_name) == repair
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_lite_chain_pass_routes_forward(self, gate_name, forward, repair):
+        """Backward compat: Lite Chain emits pass (generated_by=skip) → forward.
+
+        This is the critical backward-compat guarantee — topic_only /
+        lite_chain / offline_replay callers see no behavior change
+        because their gates always emit pass via the mode short-circuit.
+        """
+        state = _lite_state(reflection_gate_results={
+            gate_name: [
+                make_reflection_gate_result(
+                    gate_name=gate_name, verdict="pass", round_idx=0,
+                    generated_by="skip",
+                ),
+            ],
+        })
+        assert rg.route_after_gate(state, gate_name) == forward
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_empty_log_routes_forward(self, gate_name, forward, repair):
+        """Defensive: empty gate log (no result yet) → forward.
+
+        Shouldn't normally happen (the gate node runs before this
+        router), but the router must not crash — it routes forward
+        when there's no signal to act on.
+        """
+        state = _full_state(reflection_gate_results={})
+        assert rg.route_after_gate(state, gate_name) == forward
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_missing_reflection_gate_results_key_routes_forward(self, gate_name, forward, repair):
+        """Defensive: state missing reflection_gate_results entirely → forward."""
+        state = _full_state()
+        del state["reflection_gate_results"]
+        assert rg.route_after_gate(state, gate_name) == forward
+
+    @pytest.mark.parametrize("gate_name,forward,repair", _GATE_ROUTING_TARGETS)
+    def test_revise_with_round_idx_over_cap_routes_forward(self, gate_name, forward, repair):
+        """round_idx well over MAX_ROUNDS (e.g. 99) → forward regardless of revise."""
+        state = _full_state(reflection_gate_results={
+            gate_name: [
+                make_reflection_gate_result(
+                    gate_name=gate_name, verdict="revise", round_idx=99,
+                ),
+            ],
+        })
+        assert rg.route_after_gate(state, gate_name) == forward
+
+    def test_unknown_gate_raises_value_error(self):
+        """Unknown gate_name is a programming error — fail fast, do not silently misroute."""
+        state = _full_state()
+        with pytest.raises(ValueError, match="unknown gate_name"):
+            rg.route_after_gate(state, "totally_fake_gate")
+
+    def test_all_three_gates_have_distinct_targets(self):
+        """Sanity: no two gates share the same forward or repair target."""
+        forwards = [f for _, f, _ in _GATE_ROUTING_TARGETS]
+        repairs = [r for _, _, r in _GATE_ROUTING_TARGETS]
+        assert len(set(forwards)) == 3, "forward targets must be distinct"
+        assert len(set(repairs)) == 3, "repair targets must be distinct"
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# 16. P1-1: _is_gate_capped + _GATE_REPAIR_PATH_DOWNSTREAM_GATES
+# ────────────────────────────────────────────────────────────────────────────
+
+
+class TestP11IsGateCapped:
+    """Re8.0 P1-1: _is_gate_capped + repair-path downstream gate dependencies.
+
+    When a gate emits verdict=revise and routes to its repair target, the
+    repair path may re-trigger a DIFFERENT gate that has already hit its
+    round cap. route_after_gate must forward instead of repair when the
+    downstream gate is capped, because the downstream gate will immediately
+    re-emit unresolved and we would loop back with inflated round_idx.
+
+    Covers reflection_gates.py lines 672-708 (_is_gate_capped +
+    _GATE_REPAIR_PATH_DOWNSTREAM_GATES) and lines 778-795 (route_after_gate
+    P1-1 downstream-cap check).
+
+    _GATE_REPAIR_PATH_DOWNSTREAM_GATES = {
+        GATE_FINAL_REVIEW: [GATE_TAILOR],
+    }
+
+    _is_gate_capped(state, gate_name) returns True when:
+      - last verdict == "unresolved", OR
+      - round_idx >= REFLECTION_GATE_MAX_ROUNDS
+    Returns False when the gate has no logged entries.
+    """
+
+    def test_final_review_revise_when_tailor_capped_routes_forward(self):
+        """final_review_gate verdict=revise 且 tailor_gate 已 capped → forward.
+
+        _GATE_REPAIR_PATH_DOWNSTREAM_GATES[GATE_FINAL_REVIEW] = [GATE_TAILOR].
+        When tailor_gate's last verdict is unresolved, the repair path
+        (evidence_context → tailor_skill_adapter → tailor_gate) cannot
+        produce new signal, so route_after_gate must forward to
+        "falsifiability" instead of repairing to "evidence_context".
+        """
+        state = _full_state(reflection_gate_results={
+            "tailor_gate": [
+                make_reflection_gate_result(
+                    gate_name="tailor_gate", verdict="unresolved", round_idx=2,
+                ),
+            ],
+            "final_review_gate": [
+                make_reflection_gate_result(
+                    gate_name="final_review_gate", verdict="revise", round_idx=0,
+                ),
+            ],
+        })
+        # forward target for final_review_gate is "falsifiability"
+        assert rg.route_after_gate(state, rg.GATE_FINAL_REVIEW) == "falsifiability"
+
+    def test_final_review_revise_when_tailor_not_capped_routes_repair(self):
+        """final_review_gate verdict=revise 且 tailor_gate 未 capped → repair.
+
+        When tailor_gate is NOT capped (verdict=pass), the repair path is
+        still viable, so route_after_gate returns the repair target
+        "evidence_context".
+        """
+        state = _full_state(reflection_gate_results={
+            "tailor_gate": [
+                make_reflection_gate_result(
+                    gate_name="tailor_gate", verdict="pass", round_idx=0,
+                ),
+            ],
+            "final_review_gate": [
+                make_reflection_gate_result(
+                    gate_name="final_review_gate", verdict="revise", round_idx=0,
+                ),
+            ],
+        })
+        # repair target for final_review_gate is "evidence_context"
+        assert rg.route_after_gate(state, rg.GATE_FINAL_REVIEW) == "evidence_context"
+
+    def test_is_gate_capped_unresolved_verdict(self):
+        """_is_gate_capped 对 verdict=unresolved 返回 True.
+
+        Even with round_idx=0 (below cap), an unresolved verdict means the
+        gate has hard-failed and cannot produce new signal on re-entry.
+        """
+        state = _full_state(reflection_gate_results={
+            "tailor_gate": [
+                make_reflection_gate_result(
+                    gate_name="tailor_gate", verdict="unresolved", round_idx=0,
+                ),
+            ],
+        })
+        assert rg._is_gate_capped(state, rg.GATE_TAILOR) is True
+
+    def test_is_gate_capped_round_idx_at_cap(self):
+        """_is_gate_capped 对 round_idx >= REFLECTION_GATE_MAX_ROUNDS 返回 True.
+
+        A revise verdict at the round cap means the gate has exhausted its
+        repair budget — re-entering the repair path is futile.
+        """
+        state = _full_state(reflection_gate_results={
+            "tailor_gate": [
+                make_reflection_gate_result(
+                    gate_name="tailor_gate", verdict="revise",
+                    round_idx=REFLECTION_GATE_MAX_ROUNDS,
+                ),
+            ],
+        })
+        assert rg._is_gate_capped(state, rg.GATE_TAILOR) is True
+
+    def test_is_gate_capped_no_entries(self):
+        """_is_gate_capped 对空 entries 返回 False.
+
+        Defensive: a gate with no logged results is not capped (it simply
+        hasn't run yet). This avoids spurious forwarding on the first
+        invocation.
+        """
+        state = _full_state(reflection_gate_results={})
+        assert rg._is_gate_capped(state, rg.GATE_TAILOR) is False

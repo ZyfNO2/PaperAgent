@@ -649,6 +649,152 @@ def final_review_gate_node(state: ResearchState) -> dict[str, Any]:
     return _run_gate(state, gate_name=GATE_FINAL_REVIEW)
 
 
+# ── Conditional repair routing (Plan §8.7 close-the-loop) ──────────────────
+#
+# Re8.0 P0-2: when a gate emits ``verdict=revise`` and the round cap has
+# not been reached, the graph must route BACK to the upstream node that
+# can fix the gap (seed_resolver / search_planner / evidence_context).
+# When the gate passes, is unresolved, or has hit the round cap, the
+# graph continues forward to the next node in the linear spine.
+
+_GATE_FORWARD_TARGETS = {
+    GATE_SEED_AUDIT: "paper_understanding",
+    GATE_TAILOR: "innovation_extractor",
+    GATE_FINAL_REVIEW: "falsifiability",
+}
+
+_GATE_REPAIR_TARGETS = {
+    GATE_SEED_AUDIT: "seed_resolver",
+    GATE_TAILOR: "search_planner",
+    GATE_FINAL_REVIEW: "evidence_context",
+}
+
+# Re8.0 P1-1: Repair-path gate dependencies.
+# When a gate emits verdict=revise and routes to its repair target, the
+# repair path may re-trigger a DIFFERENT gate that has already hit its
+# round cap. Continuing to route into such a path produces an ineffective
+# loop: the downstream gate immediately re-emits unresolved (cap reached),
+# the graph routes forward, and we are back where we started — but with
+# inflated round_idx values on the downstream gate (observed: tailor_gate
+# round_idx=4 when MAX_ROUNDS=2).
+#
+# Mapping: gate → list of OTHER gates whose cap status must be checked
+# before allowing repair routing. If any listed gate is already capped
+# (last verdict == unresolved OR round_idx >= MAX_ROUNDS), the current
+# gate forwards instead of repairing, because the repair path cannot
+# produce new signal.
+_GATE_REPAIR_PATH_DOWNSTREAM_GATES = {
+    GATE_FINAL_REVIEW: [GATE_TAILOR],  # evidence_context → tailor_skill_adapter → tailor_gate
+}
+
+
+def _is_gate_capped(state: ResearchState, gate_name: str) -> bool:
+    """Return True if ``gate_name`` has hit its round cap or is unresolved.
+
+    A gate is "capped" when its last logged verdict is ``unresolved`` or
+    its round_idx has reached ``REFLECTION_GATE_MAX_ROUNDS``. In either
+    case, re-entering the gate's repair path cannot produce new signal —
+    the gate will immediately re-emit unresolved.
+    """
+    results = (state.get("reflection_gate_results") or {}).get(gate_name, [])
+    if not results:
+        return False
+    last = results[-1]
+    verdict = last.get("verdict", "unresolved")
+    try:
+        round_idx = int(last.get("round_idx", 0))
+    except (TypeError, ValueError):
+        round_idx = 0
+    return verdict == "unresolved" or round_idx >= REFLECTION_GATE_MAX_ROUNDS
+
+
+def route_after_gate(state: ResearchState, gate_name: str) -> str:
+    """Return the next node name after a Reflection Gate.
+
+    Used by ``graph.add_conditional_edges`` to wire the close-the-loop
+    repair routing (Re8.0 P0-2). The returned string MUST be a key in
+    the conditional-edge mapping dict in ``research_graph.py``.
+
+    Decision table (Plan §8.7):
+
+      verdict=pass        → forward target (gate satisfied)
+      verdict=unresolved  → forward target (cap reached / hard failure;
+                            downstream must accept open gaps)
+      verdict=revise + round_idx < MAX_ROUNDS → repair target
+      verdict=revise + round_idx >= MAX_ROUNDS → forward target
+                            (defensive: gate normally emits unresolved
+                            at the cap, but guard against any path that
+                            leaks a revise past the cap)
+
+    Repair targets:
+        - seed_audit_gate   → ``seed_resolver`` (re-resolve seeds)
+        - tailor_gate       → ``search_planner`` (targeted re-search)
+        - final_review_gate → ``evidence_context`` (compile more evidence)
+
+    Forward targets:
+        - seed_audit_gate   → ``paper_understanding``
+        - tailor_gate       → ``innovation_extractor``
+        - final_review_gate → ``falsifiability``
+
+    Raises:
+        ValueError: if ``gate_name`` is not one of the 3 known gates.
+        This is a programming error (the graph only wires 3 gates), so
+        we fail fast rather than silently route to a wrong node.
+    """
+    forward = _GATE_FORWARD_TARGETS.get(gate_name)
+    repair = _GATE_REPAIR_TARGETS.get(gate_name)
+    if forward is None or repair is None:
+        raise ValueError(
+            f"route_after_gate: unknown gate_name={gate_name!r}; "
+            f"expected one of {_GATE_NAMES}"
+        )
+
+    # Read the gate's last result. The gate node always runs before this
+    # router, so the log should be non-empty; we defend against an empty
+    # log by routing forward (no signal to act on).
+    results = (state.get("reflection_gate_results") or {}).get(gate_name, [])
+    if not results:
+        logger.debug(
+            "route_after_gate: no result logged for %s — routing forward to %s",
+            gate_name, forward,
+        )
+        return forward
+
+    last = results[-1]
+    verdict = last.get("verdict", "unresolved")
+    try:
+        round_idx = int(last.get("round_idx", 0))
+    except (TypeError, ValueError):
+        round_idx = 0
+
+    # Cap reached OR pass OR unresolved → forward
+    if (
+        verdict == "pass"
+        or verdict == "unresolved"
+        or round_idx >= REFLECTION_GATE_MAX_ROUNDS
+    ):
+        return forward
+
+    # verdict == "revise" and under cap → would normally repair.
+    # Re8.0 P1-1: but if the repair path re-triggers a downstream gate
+    # that is already capped, repairing is futile — the downstream gate
+    # will immediately re-emit unresolved and we will loop back here with
+    # inflated round_idx on the downstream gate. Forward instead.
+    downstream_gates = _GATE_REPAIR_PATH_DOWNSTREAM_GATES.get(gate_name, [])
+    for dg in downstream_gates:
+        if _is_gate_capped(state, dg):
+            logger.info(
+                "route_after_gate: %s verdict=revise but downstream gate "
+                "%s is capped (unresolved/round cap reached) — forwarding "
+                "to %s to avoid ineffective repair loop",
+                gate_name, dg, forward,
+            )
+            return forward
+
+    # verdict == "revise" and under cap → repair
+    return repair
+
+
 __all__ = [
     # Constants
     "GATE_SEED_AUDIT",
@@ -658,11 +804,12 @@ __all__ = [
     # Helpers
     "is_react_reflection_enabled",
     "is_tool_allowed",
-    "is_react_reflection_enabled",
     "_normalize_gate_output",
     "_clamp_verdict",
     "_get_gate_rounds",
     "_make_gate_ledger",
+    # Routing
+    "route_after_gate",
     # Nodes
     "seed_audit_gate_node",
     "tailor_gate_node",

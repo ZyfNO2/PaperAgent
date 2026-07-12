@@ -64,12 +64,63 @@ _ARXIV_URL_RE = _re.compile(
 )
 
 
+# Fields that may live either at the top-level of a candidate seed payload
+# or nested inside its ``raw_input`` dict. Used by ``_normalize_seed_payload``
+# to flatten the nested form onto the top-level so downstream classification
+# + metadata fetch always see a canonical flat payload.
+_SEED_NORMALIZE_FIELDS = (
+    "doi", "arxiv_id", "url", "title",
+    "pdf_path", "pdf_bytes",
+    "authors", "year", "abstract",
+)
+
+
+def _normalize_seed_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    """Flatten ``raw_input`` fields onto the top-level of a seed payload.
+
+    Re8.0 accepts candidate seeds in two equivalent forms:
+
+    1. Flat top-level fields (``doi``, ``arxiv_id``, ``url``, ``title``,
+       ``pdf_path``) — the canonical Resolver contract.
+    2. Nested ``raw_input`` dict carrying the same fields — the form
+       emitted by ``re80_seeded_demo.py`` and several API callers.
+
+    This helper returns a new dict where any identifier / metadata field
+    that is missing (or empty) at the top-level is filled in from the
+    matching ``raw_input`` entry. Top-level fields always win: an explicit
+    top-level value is never overwritten by ``raw_input``. The original
+    ``raw_input`` dict itself is preserved verbatim so that audit trails
+    and ``pdf_bytes`` consumers keep working.
+
+    The input dict is not mutated.
+    """
+    if not isinstance(payload, dict):
+        return {}
+    normalized = dict(payload)
+    raw = normalized.get("raw_input")
+    if not isinstance(raw, dict):
+        return normalized
+    for field in _SEED_NORMALIZE_FIELDS:
+        top_val = normalized.get(field)
+        if top_val in (None, "", [], {}):
+            raw_val = raw.get(field)
+            if raw_val not in (None, "", [], {}):
+                normalized[field] = raw_val
+    return normalized
+
+
 def _classify_input(payload: dict[str, Any]) -> tuple[str, str | None]:
     """Return (input_form, identifier) for a candidate seed payload.
 
     input_form is one of SEED_INPUT_FORMS. identifier is the canonical
     DOI / arXiv id when available, else None.
+
+    The payload is normalized first via ``_normalize_seed_payload`` so
+    that identifier fields nested inside ``raw_input`` are visible to
+    the classifier. This makes the Resolver tolerant of both the flat
+    top-level contract and the nested ``raw_input`` form (Re8.0 P0-1).
     """
+    payload = _normalize_seed_payload(payload)
     doi = (payload.get("doi") or "").strip()
     if doi:
         return "doi", doi
@@ -203,6 +254,24 @@ def _titles_agree(a: str, b: str) -> bool:
     return na == nb or na in nb or nb in na
 
 
+def _author_lastname(author: str) -> str:
+    """Extract a normalised surname from an author string.
+
+    Handles both ``"Devlin, J."`` (surname first) and ``"Jacob Devlin"``
+    (given first) forms. Crossref returns ``"given family"`` while user
+    seeds often carry ``"Family, G."`` — without this normalisation the
+    existence check rejects papers whose authors are actually identical
+    (Re8.0 P0-B fix).
+    """
+    a = (author or "").strip().lower()
+    if not a:
+        return ""
+    if "," in a:
+        return a.split(",", 1)[0].strip()
+    parts = a.split()
+    return parts[-1] if parts else ""
+
+
 def _decide_existence(
     candidate: dict[str, Any],
     fetched: dict[str, Any] | None,
@@ -228,9 +297,22 @@ def _decide_existence(
         # user-supplied DOI's fetched title shares any token with user title.
         return "ambiguous", f"title mismatch: user='{user_title[:60]}' vs fetched='{fetched_title[:60]}'"
 
-    user_authors = {a.lower() for a in (candidate.get("authors") or []) if a}
-    fetched_authors = {a.lower() for a in (fetched.get("authors") or []) if a}
-    if user_authors and fetched_authors and not (user_authors & fetched_authors):
+    # Re8.0 P0-B: compare authors by normalised LAST NAME only.
+    # User seeds typically carry ``"Devlin, J."`` (surname first) while
+    # Crossref returns ``"Jacob Devlin"`` (given first). A strict full-
+    # string set intersection rejects these identical authors, leaving
+    # every DOI-verified seed stuck at existence_status=ambiguous.
+    user_lastnames = {
+        _author_lastname(a) for a in (candidate.get("authors") or []) if a
+    }
+    fetched_lastnames = {
+        _author_lastname(a) for a in (fetched.get("authors") or []) if a
+    }
+    if (
+        user_lastnames
+        and fetched_lastnames
+        and not (user_lastnames & fetched_lastnames)
+    ):
         return "ambiguous", "author set does not intersect; possible identifier_mismatch"
 
     return "verified", None
@@ -250,7 +332,12 @@ async def _resolve_one_seed(
     network fetches and mark the card as ``ambiguous`` with a note. This
     keeps Offline Replay mode hermetic (Re8.0 §8.4).
     """
-    input_form, identifier = _classify_input(payload)
+    # Flatten raw_input onto top-level so identifier / metadata fields
+    # nested by the demo or API callers are visible to classification
+    # and card construction (Re8.0 P0-1). The original ``payload`` is
+    # preserved as ``raw_input`` on the emitted card for audit.
+    flat = _normalize_seed_payload(payload)
+    input_form, identifier = _classify_input(flat)
     if input_form not in SEED_INPUT_FORMS:
         input_form = "citation"
 
@@ -259,10 +346,10 @@ async def _resolve_one_seed(
         card = make_seed_card(
             seed_id=seed_id,
             input_form="pdf",
-            resolved_title=payload.get("title"),
+            resolved_title=flat.get("title"),
             existence_status="verified",
             fulltext_status="metadata_only",
-            role=payload.get("role", "unknown"),
+            role=flat.get("role", "unknown"),
             raw_input=dict(payload),  # preserve pdf_bytes for paper_understanding
         )
         card["repair_hint"] = "local PDF; fulltext parse pending (WP2)"
@@ -273,14 +360,14 @@ async def _resolve_one_seed(
         card = make_seed_card(
             seed_id=seed_id,
             input_form=input_form,
-            resolved_title=payload.get("title"),
-            authors=list(payload.get("authors") or []),
-            year=payload.get("year"),
-            doi=payload.get("doi"),
-            canonical_url=payload.get("url"),
+            resolved_title=flat.get("title"),
+            authors=list(flat.get("authors") or []),
+            year=flat.get("year"),
+            doi=flat.get("doi"),
+            canonical_url=flat.get("url"),
             existence_status="ambiguous",
             fulltext_status="metadata_only",
-            role=payload.get("role", "unknown"),
+            role=flat.get("role", "unknown"),
             raw_input=payload,
         )
         if offline:
@@ -304,20 +391,20 @@ async def _resolve_one_seed(
         # Else fall through — URL-only is metadata_only ambiguous unless
         # caller also supplied a DOI/arxiv that we already tried above.
 
-    status, hint = _decide_existence(payload, fetched)
+    status, hint = _decide_existence(flat, fetched)
 
     # Merge fetched metadata into card (fetched wins on conflicts)
     card = make_seed_card(
         seed_id=seed_id,
         input_form=input_form,
-        resolved_title=(fetched or {}).get("title") or payload.get("title"),
-        authors=(fetched or {}).get("authors") or list(payload.get("authors") or []),
-        year=(fetched or {}).get("year") or payload.get("year"),
-        doi=(fetched or {}).get("doi") or payload.get("doi"),
-        canonical_url=(fetched or {}).get("canonical_url") or payload.get("url"),
+        resolved_title=(fetched or {}).get("title") or flat.get("title"),
+        authors=(fetched or {}).get("authors") or list(flat.get("authors") or []),
+        year=(fetched or {}).get("year") or flat.get("year"),
+        doi=(fetched or {}).get("doi") or flat.get("doi"),
+        canonical_url=(fetched or {}).get("canonical_url") or flat.get("url"),
         existence_status=status,
         fulltext_status="metadata_only",
-        role=payload.get("role", "unknown"),
+        role=flat.get("role", "unknown"),
         raw_input=payload,
     )
     if hint:
