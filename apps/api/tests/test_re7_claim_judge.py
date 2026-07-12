@@ -76,6 +76,8 @@ def test_node_returns_reject_when_no_innovation_points():
 
 
 def test_node_falls_back_on_llm_failure():
+    """Re7.7: LLM failure returns UNAVAILABLE (not REJECT) to distinguish
+    'judge unavailable' from 'genuine rejection'."""
     state = {
         "topic": "test",
         "innovation_points": [{"description": "innovation"}],
@@ -86,7 +88,7 @@ def test_node_falls_back_on_llm_failure():
         side_effect=RuntimeError("unified router unavailable"),
     ):
         result = claim_judge_node(state)
-    assert result["claim_judge_verdict"] == "REJECT"
+    assert result["claim_judge_verdict"] == "UNAVAILABLE"
 
 
 def test_validate_claim_judge_rejects_invalid_verdict():

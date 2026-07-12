@@ -84,9 +84,16 @@ def build_claim_judge_prompt(state: ResearchState) -> str:
 
 
 def parse_claim_judge_output(raw: dict[str, Any]) -> dict[str, Any]:
+    # Re7.7: ensure overall_verdict is one of ACCEPT/REVISE/REJECT — if the
+    # LLM returned something else (empty, "UNAVAILABLE", lowercase, etc.),
+    # default to REVISE so downstream _compute_final_verdict stays well-behaved.
+    allowed = {"ACCEPT", "REVISE", "REJECT"}
+    verdict = str(raw.get("overall_verdict", "REVISE")).upper().strip()
+    if verdict not in allowed:
+        verdict = "REVISE"
     return {
         "claim_judgements": raw.get("judgements", []),
-        "claim_judge_verdict": raw.get("overall_verdict", "REVISE"),
+        "claim_judge_verdict": verdict,
         "blocked_items": raw.get("blocked_items", []),
         "claim_judge_summary": raw.get("summary", ""),
     }
@@ -110,12 +117,16 @@ def claim_judge_node(state: ResearchState) -> dict[str, Any]:
         from apps.api.app.services.agents.graph.validators.llm_output_validator import (
             call_json_with_validation,
         )
+        # Re7.7: do NOT pass contract_id — the claim-judge/v1 contract maps to
+        # TaskRole.evidence_critic whose default policy uses opencode/big-pickle,
+        # which ignores the profile="premium_review" (mistral) we requested and
+        # produces unreliable JSON. Going through the legacy call_json path
+        # ensures profile="premium_review" → mistral is actually used.
         raw = call_json_with_validation(
             prompt,
             system=CLAIM_JUDGE_SYSTEM,
             node_name="claim_judge",
             profile="premium_review",
-            contract_id="claim-judge/v1",
             max_tokens=2000,
             timeout=45.0,
             fallback={
