@@ -191,5 +191,19 @@ class ResearchState(TypedDict, total=False):
     contribution_type: str
     review_generated_by: str
 
+    # Re8.0 WP6: Reflection Gate results keyed by gate_name
+    # ("seed_audit_gate" / "tailor_gate" / "final_review_gate"). Each
+    # value is a make_reflection_gate_result() dict. Lite Chain and
+    # Offline Replay emit a single "pass" entry per gate without LLM
+    # calls; Full Agent may emit up to REFLECTION_GATE_MAX_ROUNDS+1
+    # entries per gate (initial + 2 revise rounds + final unresolved).
+    reflection_gate_results: dict[str, list[dict[str, Any]]]
+
+    # Re8.0 WP6: ReAct action log — append-only audit trail of every
+    # tool call attempted by the Full Agent ReAct loop. Each entry:
+    #   {gap_id, tool, query, expected_success, actual_result, next_action}
+    # Lite Chain / Offline Replay leave this empty (no ReAct invocations).
+    react_actions: Annotated[list[dict[str, Any]], operator.add]
+
     # Budget / search caps (WP0 contract)
     search_budget: dict[str, Any]

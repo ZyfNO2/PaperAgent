@@ -70,6 +70,12 @@ LEDGER_STAGES = (
     "search",
     "tailor",
     "review",
+    # Re8.0 WP6: Reflection Gate stages — each emits a ledger entry so
+    # downstream consumers can audit why a gate passed / triggered
+    # re-search / emitted unresolved.
+    "seed_audit_gate",
+    "tailor_gate",
+    "final_review_gate",
 )
 LEDGER_STATUS = (
     "proposed",
@@ -78,6 +84,77 @@ LEDGER_STATUS = (
     "refuted",
     "unresolved",
 )
+
+# Re8.0 WP6 §8.7: each Reflection Gate may run at most 2 rounds. After
+# the cap is reached the gate must emit ``unresolved`` rather than
+# self-loop.
+REFLECTION_GATE_MAX_ROUNDS = 2
+
+# Re8.0 WP6 §8.6: tools the Full Agent ReAct loop is allowed to call.
+# Any tool outside this whitelist is a hard reject. Lite Chain and
+# Offline Replay never reach this list because they short-circuit before
+# the ReAct loop is entered.
+REACT_TOOL_WHITELIST = (
+    "resolve_paper",
+    "fetch_metadata",
+    "fetch_or_parse_pdf",
+    "search_reference_chain",
+    "search_method_family",
+    "search_repo",
+    "search_dataset",
+    "extract_reproduction_environment",
+    "compile_evidence",
+    "request_tailor_review",
+)
+
+
+def make_reflection_gate_result(
+    *,
+    gate_name: str,
+    verdict: str = "unresolved",
+    round_idx: int = 0,
+    re_search_requests: list[str] | None = None,
+    unresolved_gaps: list[str] | None = None,
+    rationale: str = "",
+    generated_by: str = "llm",
+) -> dict[str, Any]:
+    """Construct a Reflection Gate result with safe defaults.
+
+    ``verdict`` is one of ``pass`` / ``revise`` / ``unresolved``:
+      - pass        → gate is satisfied, no re-search needed
+      - revise      → re-search requested; bound to a gap_id; round < cap
+      - unresolved  → round cap reached; downstream must accept gaps
+
+    The result is consumed by both the graph router (to decide re-search)
+    and the trace_events / ledger fields (for auditability).
+    """
+    if verdict not in ("pass", "revise", "unresolved"):
+        verdict = "unresolved"
+    return {
+        "gate_name": gate_name,
+        "verdict": verdict,
+        "round_idx": int(round_idx),
+        "re_search_requests": list(re_search_requests or []),
+        "unresolved_gaps": list(unresolved_gaps or []),
+        "rationale": rationale,
+        "generated_by": generated_by,
+    }
+
+
+def validate_reflection_gate_result(result: dict[str, Any]) -> list[str]:
+    """Return validation errors for a Reflection Gate result (empty = valid)."""
+    errs: list[str] = []
+    if not result.get("gate_name"):
+        errs.append("gate_name is required")
+    if result.get("verdict") not in ("pass", "revise", "unresolved"):
+        errs.append("verdict must be one of (pass, revise, unresolved)")
+    if not isinstance(result.get("round_idx"), int):
+        errs.append("round_idx must be int")
+    if not isinstance(result.get("re_search_requests"), list):
+        errs.append("re_search_requests must be list")
+    if not isinstance(result.get("unresolved_gaps"), list):
+        errs.append("unresolved_gaps must be list")
+    return errs
 
 
 # ── SeedPaperCard ───────────────────────────────────────────────────────────
