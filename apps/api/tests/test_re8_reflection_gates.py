@@ -827,3 +827,222 @@ class TestGateLedgerTraceConsistency:
         ("tailor_gate", rg.tailor_gate_node),
         ("final_review_gate", rg.final_review_gate_node),
     ]
+
+
+# ── P2 fixup: search_agent.py integration (WP6 follow-up) ──────────────────
+
+
+class TestSearchAgentModeShortCircuit:
+    """P2-2: search_agent.py must short-circuit LLM in Lite/Offline mode.
+
+    Plan §8.5 capability matrix: Lite Chain and Offline Replay must NOT
+    invoke the LLM-driven ReAct loop. They fall back to deterministic
+    plan-query iteration. Legacy topic_only (run_mode unset) preserves
+    old LLM-driven behavior for backward compatibility.
+    """
+
+    def test_lite_chain_uses_fallback_not_llm(self, monkeypatch):
+        """Lite Chain mode → search_agent uses _fallback_decide, not _llm_decide."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": [{"tool": "arxiv", "query": "rag qa"}]},
+            "trace_events": [],
+            "run_mode": "lite_chain",
+            "reasoning_policy": "chain_only",
+        }
+        with patch.object(sa, "_llm_decide", side_effect=AssertionError("LLM must not be called in lite_chain")) as mock_llm, \
+             patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        assert not mock_llm.called
+        assert result["provider_profile"] == "local"
+
+    def test_offline_replay_uses_fallback_not_llm(self, monkeypatch):
+        """Offline Replay mode → search_agent uses _fallback_decide."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": [{"tool": "arxiv", "query": "rag qa"}]},
+            "trace_events": [],
+            "run_mode": "offline_replay",
+            "reasoning_policy": "chain_only",
+        }
+        with patch.object(sa, "_llm_decide", side_effect=AssertionError("LLM must not be called in offline_replay")) as mock_llm, \
+             patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        assert not mock_llm.called
+        assert result["provider_profile"] == "local"
+
+    def test_legacy_no_run_mode_uses_llm(self, monkeypatch):
+        """Legacy topic_only (run_mode unset) → LLM-driven (backward compat)."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        decisions = [
+            {"action": "search", "tool": "arxiv", "query": "rag", "reason": "go"},
+            {"action": "stop", "reason": "enough"},
+        ]
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": []},
+            "trace_events": [],
+        }
+        with patch.object(sa, "_llm_decide") as mock_llm, \
+             patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            decision_iter = iter(decisions)
+            mock_llm.side_effect = lambda *a, **k: (next(decision_iter), "fast_json")
+            result = sa.search_agent_node(state)
+        assert mock_llm.called
+        assert result["provider_profile"] == "fast_json"
+
+    def test_full_agent_uses_llm(self, monkeypatch):
+        """Full Agent + react_reflection → LLM-driven ReAct."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        decisions = [
+            {"action": "search", "tool": "arxiv", "query": "rag", "reason": "go"},
+            {"action": "stop", "reason": "enough"},
+        ]
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": []},
+            "trace_events": [],
+            "run_mode": "full_agent",
+            "reasoning_policy": "react_reflection",
+        }
+        decision_iter = iter(decisions)
+        with patch.object(sa, "_llm_decide", side_effect=lambda *a, **k: (next(decision_iter), "fast_json")) as mock_llm, \
+             patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        assert mock_llm.called
+        assert result["provider_profile"] == "fast_json"
+
+
+class TestSearchAgentReactActions:
+    """P2-3: search_agent.py must write react_actions audit trail.
+
+    Plan §8.6: "每次动作必须记录：目标 Gap → 工具 → 预期成功条件 →
+    实际结果 → 下一动作."
+    """
+
+    def test_react_actions_in_return_patch(self, monkeypatch):
+        """search_agent_node return must include react_actions key."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": [{"tool": "arxiv", "query": "rag qa"}]},
+            "trace_events": [],
+            "run_mode": "lite_chain",
+            "reasoning_policy": "chain_only",
+        }
+        with patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        assert "react_actions" in result
+        assert isinstance(result["react_actions"], list)
+        assert len(result["react_actions"]) > 0
+
+    def test_react_actions_has_whitelist_field(self, monkeypatch):
+        """P2-1: each react_actions entry must have whitelist_allowed field."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": [{"tool": "arxiv", "query": "rag qa"}]},
+            "trace_events": [],
+            "run_mode": "lite_chain",
+            "reasoning_policy": "chain_only",
+        }
+        with patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        for entry in result["react_actions"]:
+            assert "whitelist_allowed" in entry
+            assert isinstance(entry["whitelist_allowed"], bool)
+
+    def test_react_actions_records_gap_id_when_gap_bound(self, monkeypatch):
+        """react_actions entries must carry gap_id for gap-bound queries."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {
+                "queries": [{
+                    "tool": "arxiv", "query": "rag qa",
+                    "gap_id": "G1", "success_condition": "find 1+ paper",
+                    "lane_id": "competing",
+                }],
+                "gap_bound": True,
+            },
+            "trace_events": [],
+            "run_mode": "lite_chain",
+            "reasoning_policy": "chain_only",
+        }
+        with patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        gap_entries = [e for e in result["react_actions"] if e.get("gap_id")]
+        assert len(gap_entries) > 0
+        assert gap_entries[0]["gap_id"] == "G1"
+
+    def test_trace_records_react_enabled_flag(self, monkeypatch):
+        """Trace output_summary must record react_enabled for auditability."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": [{"tool": "arxiv", "query": "rag qa"}]},
+            "trace_events": [],
+            "run_mode": "full_agent",
+            "reasoning_policy": "react_reflection",
+        }
+        decision_iter = iter([
+            {"action": "search", "tool": "arxiv", "query": "rag qa", "reason": "go"},
+            {"action": "stop", "reason": "enough"},
+        ])
+        with patch.object(sa, "_llm_decide", side_effect=lambda *a, **k: (next(decision_iter), "fast_json")), \
+             patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        trace = result["trace_events"][0]
+        assert "react_enabled" in trace["output_summary"]
+        assert trace["output_summary"]["react_enabled"] is True
+        assert "n_react_actions" in trace["output_summary"]
