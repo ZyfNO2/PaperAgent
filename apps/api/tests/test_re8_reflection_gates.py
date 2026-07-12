@@ -1046,3 +1046,57 @@ class TestSearchAgentReactActions:
         assert "react_enabled" in trace["output_summary"]
         assert trace["output_summary"]["react_enabled"] is True
         assert "n_react_actions" in trace["output_summary"]
+
+    def test_react_actions_records_failed_dispatch(self, monkeypatch):
+        """react_actions must record entry when _run_tool_sync raises exception."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": [{"tool": "arxiv", "query": "rag qa"}]},
+            "trace_events": [],
+            "run_mode": "lite_chain",
+            "reasoning_policy": "chain_only",
+        }
+        with patch.object(sa, "_run_tool_sync", side_effect=RuntimeError("network error")), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        failed_entries = [e for e in result["react_actions"] if e.get("failed")]
+        assert len(failed_entries) > 0
+        assert failed_entries[0]["n_results"] == 0
+        assert failed_entries[0]["gap_resolved"] is False
+        assert "next_action" in failed_entries[0]
+
+    def test_react_actions_schema_consistent_across_paths(self, monkeypatch):
+        """All react_actions entries must have the same set of keys (Plan §8.6)."""
+        from apps.api.app.services.agents.graph.nodes import search_agent as sa
+
+        state = {
+            "topic": "test topic",
+            "topic_atoms": {"method": ["rag"], "object": ["qa"], "domain": "nlp"},
+            "search_plan": {"queries": [{"tool": "arxiv", "query": "rag qa"}]},
+            "trace_events": [],
+            "run_mode": "lite_chain",
+            "reasoning_policy": "chain_only",
+        }
+        with patch.object(sa, "_run_tool_sync", return_value=[{"title": "paper", "abstract": "abs"}]), \
+             patch.object(sa, "_get_domain_tools", return_value=set()), \
+             patch("apps.api.app.services.search_catalog.get_source_catalog") as mock_cat:
+            mock_cat.return_value.allowed_source_names.return_value = ["arxiv"]
+            mock_cat.return_value.source_list_for_prompt.return_value = []
+            result = sa.search_agent_node(state)
+        # All entries must have the same key set
+        key_sets = [set(e.keys()) for e in result["react_actions"]]
+        assert len(key_sets) > 0
+        first_keys = key_sets[0]
+        for ks in key_sets[1:]:
+            assert ks == first_keys, f"Schema inconsistency: {first_keys} vs {ks}"
+        # Verify required Plan §8.6 fields are present
+        required = {"step", "tool", "gap_id", "success_condition",
+                    "whitelist_allowed", "n_results", "gap_resolved",
+                    "failed", "next_action", "reason"}
+        assert required.issubset(first_keys)
