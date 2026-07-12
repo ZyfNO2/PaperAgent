@@ -132,8 +132,9 @@ for r in results:
     print(f"{r['case_id']:<8} {r['actual_verdict']:<12} {r['expected_verdict']:<14} {r['total_s']:>7.1f}s {r['n_nodes']:>6}", flush=True)
 print(f"{'='*60}", flush=True)
 
-# Save results JSON
-out_path = os.path.join("artifacts", "re7_6", "round0", f"batch_{int(time.time())}.json")
+# Save results JSON — include case_ids in filename to avoid concurrent overwrite
+case_tag = "_".join(c.case_id for c in cases)
+out_path = os.path.join("artifacts", "re7_6", "round0", f"batch_{case_tag}_{int(time.time())}.json")
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 with open(out_path, "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2)
