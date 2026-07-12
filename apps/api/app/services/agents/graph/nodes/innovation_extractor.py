@@ -128,6 +128,11 @@ def innovation_extractor_node(state: ResearchState) -> dict[str, Any]:
         result_inn, result_plan = h["innovation_points"], h["stitching_plan"]
         prov = "heuristic"
 
+    # Re7.7: ensure all innovation items are dicts (LLM may return strings)
+    if not isinstance(result_inn, list):
+        result_inn = []
+    result_inn = [ip for ip in result_inn if isinstance(ip, dict)]
+
     # Re3.9: Cross-node dataset补全
     existing_ds = list(state.get("dataset_candidates") or [])
     new_ds = _cross_node_dataset_scan(result_inn, result_plan, existing_ds)
