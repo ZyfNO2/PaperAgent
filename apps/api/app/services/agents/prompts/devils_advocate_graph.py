@@ -56,9 +56,10 @@ def build(topic: str, feasibility: dict[str, Any], innovations: list[dict[str, A
     feas_slim = {"verdict": feasibility.get("verdict", ""),
                  "score": feasibility.get("score", 0),
                  "reason": feasibility.get("reason", "")}
+    # Re7.7: defensive filter — LLM or replay may inject non-dict items
     inn_slim = [{"description": i.get("description", ""),
                  "baseline_used": i.get("baseline_used", "")}
-                for i in innovations[:3]]
+                for i in innovations[:3] if isinstance(i, dict)]
     nar_slim = {"three_problems": narrative.get("three_problems", []),
                 "nick_model_name": narrative.get("nick_model_name", ""),
                 "narrative_summary": narrative.get("narrative_summary", "")}
