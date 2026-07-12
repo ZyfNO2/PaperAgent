@@ -30,10 +30,11 @@ USER_TEMPLATE = """题目: {topic}
 
 
 def build(topic: str, innovations: list[dict[str, Any]], feasibility: dict[str, Any]) -> dict[str, str]:
+    # Re7.7: defensive filter — LLM or replay may inject non-dict items
     inn_slim = [{"description": i.get("description", ""),
                  "baseline_used": i.get("baseline_used", ""),
                  "stitched_modules": i.get("stitched_modules", [])}
-                for i in innovations[:3]]
+                for i in innovations[:3] if isinstance(i, dict)]
     return {"system": SYSTEM, "user": USER_TEMPLATE.format(
         topic=topic[:200],
         innovations_json=_json.dumps(inn_slim, ensure_ascii=False),
