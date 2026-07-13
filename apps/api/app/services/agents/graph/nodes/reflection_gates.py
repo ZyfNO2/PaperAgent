@@ -351,6 +351,36 @@ _GATE_SYSTEM = (
     "Output ONLY valid JSON."
 )
 
+# Re8.1 WP1-E: tailor_gate gets a dedicated system prompt that instructs
+# the LLM to consume evidence_gap_status. The default _GATE_SYSTEM does
+# not mention gap status, so the LLM treats every cited gap as "missing"
+# regardless of its actual status (round 3 verification root cause).
+# Kept under 100 tokens per CLAUDE.md §1 (reasoner model budget rule).
+_TAILOR_GATE_SYSTEM = (
+    "You are a research Reflection Gate (Tailor). Decide pass / revise "
+    "/ unresolved. Every criticism MUST cite a gap_id. The "
+    "evidence_gap_status field shows each gap's current status. A "
+    "status=satisfied gap already has enough evidence — do NOT cite it "
+    "as 'missing'. Only cite status=open or partially_satisfied gaps. "
+    "Citing a satisfied gap as missing is an error. Output ONLY JSON."
+)
+
+# Per-gate system prompt selector. Gates not listed here use the
+# default _GATE_SYSTEM. This keeps the change backward-compatible —
+# seed_audit_gate and final_review_gate are unaffected.
+_GATE_SYSTEMS: dict[str, str] = {
+    GATE_TAILOR: _TAILOR_GATE_SYSTEM,
+}
+
+
+def _get_gate_system(gate_name: str) -> str:
+    """Return the system prompt for ``gate_name``.
+
+    Falls back to the default ``_GATE_SYSTEM`` for gates without a
+    dedicated override (currently seed_audit_gate and final_review_gate).
+    """
+    return _GATE_SYSTEMS.get(gate_name, _GATE_SYSTEM)
+
 _SEED_AUDIT_PROMPT = """Reflection Gate: Seed Audit (Plan §8.7 #1)
 
 Evaluate whether the seed cards are real, role-correct, and information-
@@ -388,6 +418,26 @@ Tailored method:
 
 Open evidence gaps:
 {evidence_gaps_json}
+
+Evidence gap status (current satisfaction state per gap):
+{evidence_gap_status_json}
+
+IMPORTANT — how to use evidence_gap_status:
+- status=satisfied            → this gap ALREADY has enough evidence.
+                                 Do NOT cite it as "missing" in your
+                                 rationale. Citing a satisfied gap as
+                                 missing is an error in judgment.
+- status=open                 → this gap still needs evidence. You MAY
+                                 cite it as missing and request re-search.
+- status=partially_satisfied  → this gap has partial evidence. Judge
+                                 whether the current evidence is
+                                 sufficient for the claim being made.
+- The evidence_found field summarises how many papers / repos were
+  attributed to this gap (when available).
+
+Before returning verdict=revise, check each gap_id you plan to cite in
+the rationale against evidence_gap_status. If a cited gap_id has
+status=satisfied, remove it from your rationale — it is not missing.
 
 Note on method specification:
 - The method description lives in `assembly_plan.description` (there is
@@ -457,11 +507,39 @@ def _build_tailor_prompt(state: ResearchState) -> str:
     import json as _json
     tailored = state.get("tailored_method") or {}
     gaps = state.get("evidence_gaps") or []
+    # Re8.1 WP1-E: inject evidence_gap status so the LLM can see which
+    # gaps are already satisfied. Without this, the LLM keeps returning
+    # revise for gaps that are actually satisfied (round 3 verification
+    # showed xlm_r had 5/5 gaps satisfied but LLM still cited
+    # gap-S1-competing_baseline as "missing").
+    gap_status_summary: list[dict[str, Any]] = []
+    for gap in gaps[:10]:
+        gap_id = gap.get("gap_id", "?")
+        status = gap.get("status", "open")
+        lane_id = gap.get("lane_id", "?")
+        delta = gap.get("evidence_delta")
+        if isinstance(delta, dict):
+            # Defensive: evidence_delta may use n_papers/n_repos or
+            # n_new_papers/n_new_repos depending on the producer.
+            n_papers = delta.get("n_papers", delta.get("n_new_papers", 0))
+            n_repos = delta.get("n_repos", delta.get("n_new_repos", 0))
+        else:
+            n_papers = 0
+            n_repos = 0
+        gap_status_summary.append({
+            "gap_id": gap_id,
+            "status": status,
+            "lane_id": lane_id,
+            "evidence_found": f"{n_papers} papers, {n_repos} repos",
+        })
     return _TAILOR_PROMPT.format(
         tailored_json=_json.dumps(tailored, ensure_ascii=False, default=str)[:3000],
         evidence_gaps_json=_json.dumps(
             [{"gap_id": g.get("gap_id", ""), "question": g.get("question", "")} for g in gaps[:10]],
             ensure_ascii=False, default=str,
+        )[:2000],
+        evidence_gap_status_json=_json.dumps(
+            gap_status_summary, ensure_ascii=False, default=str,
         )[:2000],
     )
 
@@ -586,7 +664,7 @@ def _run_gate(
         )
         raw = call_json_with_validation(
             prompt,
-            system=_GATE_SYSTEM,
+            system=_get_gate_system(gate_name),
             node_name=gate_name,
             profile=profile,
             contract_id=contract_id,

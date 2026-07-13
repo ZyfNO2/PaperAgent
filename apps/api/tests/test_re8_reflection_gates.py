@@ -415,6 +415,172 @@ class TestTailorPromptCoreMethodCleanup:
         assert "no top-level `core_method` field" in rendered
 
 
+class TestTailorPromptGapStatusInjection:
+    """Re8.1 WP1-E: tailor_gate prompt must inject evidence_gap status.
+
+    Round 3 verification root cause: tailor_gate LLM does not see gap
+    status, so it keeps returning revise for gaps that are actually
+    satisfied. xlm_r had 5/5 gaps satisfied but LLM still cited
+    gap-S1-competing_baseline as "missing".
+
+    Fix: _build_tailor_prompt now injects a evidence_gap_status section
+    with gap_id / status / lane_id / evidence_found per gap. The tailor
+    system prompt also instructs the LLM not to cite satisfied gaps as
+    missing.
+    """
+
+    def _gap_with_status(
+        self,
+        gap_id: str = "gap-S1-competing_baseline",
+        status: str = "satisfied",
+        lane_id: str = "competing_baseline",
+        evidence_delta: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        gap: dict[str, Any] = {
+            "gap_id": gap_id,
+            "question": f"find evidence for {gap_id}",
+            "status": status,
+            "lane_id": lane_id,
+        }
+        if evidence_delta is not None:
+            gap["evidence_delta"] = evidence_delta
+        return gap
+
+    def test_tailor_prompt_includes_gap_status(self):
+        """_build_tailor_prompt output must contain the evidence_gap_status
+        section header and the rendered gap status JSON. The template
+        placeholder {evidence_gap_status_json} must be replaced with
+        actual content (not left as a raw placeholder)."""
+        state = _full_state(
+            tailored_method={"verdict": "GO", "assembly_plan": {"description": "x"}},
+            evidence_gaps=[self._gap_with_status()],
+        )
+        prompt = rg._build_tailor_prompt(state)
+        assert "Evidence gap status" in prompt
+        assert "{evidence_gap_status_json}" not in prompt  # placeholder rendered
+        assert "gap-S1-competing_baseline" in prompt
+
+    def test_tailor_prompt_gap_status_satisfied(self):
+        """A gap with status=satisfied must have 'satisfied' rendered in
+        the prompt so the LLM can see it is already resolved."""
+        state = _full_state(
+            tailored_method={"verdict": "GO", "assembly_plan": {"description": "x"}},
+            evidence_gaps=[
+                self._gap_with_status(
+                    gap_id="gap-S1-resource",
+                    status="satisfied",
+                    lane_id="resource",
+                ),
+            ],
+        )
+        prompt = rg._build_tailor_prompt(state)
+        assert "gap-S1-resource" in prompt
+        assert "satisfied" in prompt
+
+    def test_tailor_prompt_gap_status_open(self):
+        """A gap with status=open must have 'open' rendered in the prompt
+        so the LLM can see it still needs evidence."""
+        state = _full_state(
+            tailored_method={"verdict": "GO", "assembly_plan": {"description": "x"}},
+            evidence_gaps=[
+                self._gap_with_status(
+                    gap_id="gap-S2-fulltext",
+                    status="open",
+                    lane_id="anchor_reference",
+                ),
+            ],
+        )
+        prompt = rg._build_tailor_prompt(state)
+        assert "gap-S2-fulltext" in prompt
+        assert "open" in prompt
+
+    def test_tailor_prompt_gap_status_evidence_delta(self):
+        """evidence_delta summary (n_papers, n_repos) must be rendered in
+        the evidence_found field of the gap status section."""
+        state = _full_state(
+            tailored_method={"verdict": "GO", "assembly_plan": {"description": "x"}},
+            evidence_gaps=[
+                self._gap_with_status(
+                    gap_id="gap-S1-mechanism_module",
+                    status="satisfied",
+                    lane_id="mechanism_module",
+                    evidence_delta={"n_papers": 3, "n_repos": 1},
+                ),
+            ],
+        )
+        prompt = rg._build_tailor_prompt(state)
+        assert "3 papers" in prompt
+        assert "1 repos" in prompt
+
+    def test_tailor_prompt_gap_status_evidence_delta_alt_fields(self):
+        """evidence_delta may use n_new_papers / n_new_repos (search_agent
+        convention) instead of n_papers / n_repos. Both must be read."""
+        state = _full_state(
+            tailored_method={"verdict": "GO", "assembly_plan": {"description": "x"}},
+            evidence_gaps=[
+                self._gap_with_status(
+                    gap_id="gap-S1-counter_evidence",
+                    status="satisfied",
+                    lane_id="counter_evidence",
+                    evidence_delta={"n_new_papers": 5, "n_new_repos": 2},
+                ),
+            ],
+        )
+        prompt = rg._build_tailor_prompt(state)
+        assert "5 papers" in prompt
+        assert "2 repos" in prompt
+
+    def test_tailor_prompt_gap_status_missing_evidence_delta(self):
+        """When a gap has no evidence_delta field (common case —
+        search_agent only writes status, not evidence_delta, to the gap
+        object), evidence_found must default to '0 papers, 0 repos'
+        without crashing."""
+        # _gap_with_status omits evidence_delta key when evidence_delta=None,
+        # which is the real-world scenario after search_agent updates gap status.
+        gap = {
+            "gap_id": "gap-S1-anchor_reference",
+            "question": "find anchor",
+            "status": "satisfied",
+            "lane_id": "anchor_reference",
+        }
+        state = _full_state(
+            tailored_method={"verdict": "GO", "assembly_plan": {"description": "x"}},
+            evidence_gaps=[gap],
+        )
+        prompt = rg._build_tailor_prompt(state)
+        assert "gap-S1-anchor_reference" in prompt
+        assert "satisfied" in prompt
+        assert "0 papers, 0 repos" in prompt
+
+    def test_tailor_prompt_empty_gaps_renders_empty_status(self):
+        """Backward compat: when evidence_gaps is empty, the prompt must
+        still render (empty list) without crashing."""
+        state = _full_state(
+            tailored_method={"verdict": "GO", "assembly_plan": {"description": "x"}},
+            evidence_gaps=[],
+        )
+        prompt = rg._build_tailor_prompt(state)
+        assert "Evidence gap status" in prompt
+        assert "[]" in prompt  # empty list rendered
+
+    def test_tailor_system_prompt_mentions_gap_status(self):
+        """_TAILOR_GATE_SYSTEM must mention evidence_gap_status and
+        instruct the LLM not to cite satisfied gaps as missing."""
+        sys_prompt = rg._TAILOR_GATE_SYSTEM
+        assert "evidence_gap_status" in sys_prompt
+        assert "satisfied" in sys_prompt
+        assert "missing" in sys_prompt
+
+    def test_get_gate_system_returns_tailor_override(self):
+        """_get_gate_system('tailor_gate') must return _TAILOR_GATE_SYSTEM."""
+        assert rg._get_gate_system(rg.GATE_TAILOR) is rg._TAILOR_GATE_SYSTEM
+
+    def test_get_gate_system_falls_back_for_other_gates(self):
+        """_get_gate_system for non-tailor gates must return default _GATE_SYSTEM."""
+        assert rg._get_gate_system(rg.GATE_SEED_AUDIT) is rg._GATE_SYSTEM
+        assert rg._get_gate_system(rg.GATE_FINAL_REVIEW) is rg._GATE_SYSTEM
+
+
 class TestRuleFallbackFinalReview:
     def test_accepted_with_hypothesis_pass(self):
         state = _full_state(
