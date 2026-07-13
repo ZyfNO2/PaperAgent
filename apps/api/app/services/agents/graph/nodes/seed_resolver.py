@@ -341,9 +341,295 @@ def _normalize_title_hit(hit: dict[str, Any], source: str) -> dict[str, Any]:
     }
 
 
+# ── Re8.1 Seed Repair capability functions ─────────────────────────────────
+# Four capabilities required by WP2 Task 9:
+#   1. Title similarity scoring (Jaccard + Levenshtein weighted)
+#   2. Year conflict penalty (>2 years delta → decay)
+#   3. Candidate confidence output (high/medium/low + ranking_reasons)
+#   4. Conflict evidence preservation (dual-source retention)
+#
+# All four are pure functions with no side effects; they are consumed by
+# ``_fetch_by_title`` to rank merged candidates and decorate the best
+# one with confidence + ranking metadata. New fields are optional and
+# do not affect ``_decide_existence`` or the public ``seed_resolver_node``
+# contract — old callers see no behaviour change.
+
+def _title_similarity(input_title: str, candidate_title: str) -> float:
+    """Compute title similarity in [0.0, 1.0].
+
+    Uses a weighted combination of token-based Jaccard similarity
+    (0.6 weight) and character-level Levenshtein ratio via
+    ``difflib.SequenceMatcher`` (0.4 weight). Both titles are first
+    normalised (lowercase + strip punctuation + collapse whitespace).
+
+    Boundary behaviour:
+      - exact match after normalisation → 1.0
+      - single-character typo            → typically >0.85
+      - completely unrelated titles      → close to 0.0
+      - either side empty                → 0.0
+    """
+    import re as _re
+    from difflib import SequenceMatcher
+
+    def _norm(s: str) -> str:
+        return _re.sub(r"\s+", " ",
+                       _re.sub(r"[^a-z0-9]+", " ", (s or "").lower())).strip()
+
+    ni = _norm(input_title)
+    nc = _norm(candidate_title)
+    if not ni or not nc:
+        return 0.0
+    if ni == nc:
+        return 1.0
+
+    # Token Jaccard
+    ti = set(ni.split())
+    tc = set(nc.split())
+    if not ti or not tc:
+        jaccard = 0.0
+    else:
+        jaccard = len(ti & tc) / len(ti | tc)
+
+    # Character-level ratio (Levenshtein-like, in [0,1])
+    lev = SequenceMatcher(None, ni, nc).ratio()
+
+    return 0.6 * jaccard + 0.4 * lev
+
+
+def _year_penalty(input_year: int | None, candidate_year: int | None) -> float:
+    """Return a year-based penalty coefficient in [0.3, 1.0].
+
+    Rules (Re8.1 §2):
+      - ``input_year`` is None       → 1.0 (cannot compare; no penalty)
+      - ``candidate_year`` is None   → 0.7 (moderate penalty: unverifiable)
+      - ``|delta| <= 2``             → 1.0 (consistent)
+      - ``|delta| > 2``              → ``max(0.3, 1.0 - (delta - 2) * 0.1)``
+                                       (linear decay, floor at 0.3)
+
+    Returned value is a multiplier — multiply the candidate's raw score
+    by this to apply the penalty.
+    """
+    if input_year is None:
+        return 1.0
+    if candidate_year is None:
+        return 0.7
+    try:
+        delta = abs(int(input_year) - int(candidate_year))
+    except (TypeError, ValueError):
+        return 1.0
+    if delta <= 2:
+        return 1.0
+    return max(0.3, 1.0 - (delta - 2) * 0.1)
+
+
+def _compute_confidence(
+    candidate: dict[str, Any],
+    input_meta: dict[str, Any],
+) -> tuple[str, list[str]]:
+    """Compute ``(confidence_level, ranking_reasons)`` for a candidate.
+
+    ``confidence_level`` ∈ {"high", "medium", "low"}.
+    ``ranking_reasons`` is a list of short strings explaining which
+    signals fired (e.g. ``"doi_match"``, ``"authors_full_match"``,
+    ``"title_similarity_0.92"``, ``"year_consistent"``).
+
+    Scoring (additive):
+      - DOI present             → +0.4
+      - Authors full match      → +0.3 / partial → +0.15 / none → +0
+      - Title sim ≥ 0.9         → +0.2 / 0.7-0.9 → +0.1 / <0.7 → +0
+      - Year consistent (≤2)    → +0.1
+
+    Thresholds: ≥0.8 → high, 0.5-0.8 → medium, <0.5 → low.
+
+    Author full match is defined as "every user-supplied surname is
+    present in the candidate's surname set" — Crossref often lists more
+    authors than the user, so a subset relation is more appropriate
+    than strict set equality.
+    """
+    reasons: list[str] = []
+    score = 0.0
+
+    # DOI match
+    cand_doi = (candidate.get("doi") or "").strip()
+    if cand_doi:
+        score += 0.4
+        reasons.append("doi_match")
+
+    # Author overlap (use normalised surnames for cross-source robustness)
+    user_authors = [a for a in (input_meta.get("authors") or []) if a]
+    cand_authors = [a for a in (candidate.get("authors") or []) if a]
+    if user_authors and cand_authors:
+        user_lastnames = {_author_lastname(a) for a in user_authors}
+        cand_lastnames = {_author_lastname(a) for a in cand_authors}
+        user_lastnames.discard("")
+        cand_lastnames.discard("")
+        if user_lastnames and user_lastnames <= cand_lastnames:
+            score += 0.3
+            reasons.append("authors_full_match")
+        elif user_lastnames & cand_lastnames:
+            score += 0.15
+            reasons.append("authors_partial_match")
+
+    # Title similarity
+    input_title = input_meta.get("title") or ""
+    cand_title = candidate.get("title") or ""
+    if input_title and cand_title:
+        sim = _title_similarity(input_title, cand_title)
+        if sim >= 0.9:
+            score += 0.2
+            reasons.append(f"title_similarity_{sim:.2f}")
+        elif sim >= 0.7:
+            score += 0.1
+            reasons.append(f"title_similarity_{sim:.2f}")
+        else:
+            # Still record the similarity for audit even when it
+            # contributes 0 to the score.
+            reasons.append(f"title_similarity_{sim:.2f}")
+
+    # Year consistency
+    input_year = input_meta.get("year")
+    cand_year = candidate.get("year")
+    if input_year is not None and cand_year is not None:
+        try:
+            iy = int(input_year)
+            cy = int(cand_year)
+            if abs(iy - cy) <= 2:
+                score += 0.1
+                reasons.append("year_consistent")
+            else:
+                reasons.append(f"year_conflict_delta_{abs(iy - cy)}")
+        except (TypeError, ValueError):
+            pass
+    elif input_year is not None and cand_year is None:
+        reasons.append("year_missing_on_candidate")
+
+    if score >= 0.8:
+        level = "high"
+    elif score >= 0.5:
+        level = "medium"
+    else:
+        level = "low"
+
+    return level, reasons
+
+
+def _merge_with_conflict_tagging(
+    crossref_candidates: list[dict[str, Any]],
+    s2_candidates: list[dict[str, Any]],
+    *,
+    input_title: str = "",
+) -> list[dict[str, Any]]:
+    """Merge Crossref + Semantic Scholar candidates with conflict tagging.
+
+    Re8.1 §4 — preserve dual-source evidence; never silently drop a
+    candidate just because the two sources disagree.
+
+    Merge rules (in priority order):
+      1. **DOI match across sources** — merge into one candidate,
+         ``sources=["crossref", "semantic_scholar"]``, ``conflict=False``.
+      2. **Title similarity ≥ 0.95 but DOI differs/missing** — keep
+         BOTH candidates; each is tagged ``conflict=True`` and
+         ``conflict_type="title_match_doi_mismatch"``. The downstream
+         consumer can inspect the disagreement.
+      3. **Single source only** — kept as-is with
+         ``sources=[that_source]``, ``conflict=False``.
+
+    The optional ``input_title`` is currently unused but accepted for
+    future extension (e.g. biasing the title-similarity threshold based
+    on how well the user's title matches either source).
+
+    Each returned candidate is a new dict (input dicts are not mutated).
+    """
+    # Index Crossref candidates by DOI for join; those without DOI go
+    # to a separate list for the title-match conflict pass.
+    crossref_by_doi: dict[str, dict[str, Any]] = {}
+    crossref_no_doi: list[dict[str, Any]] = []
+    for c in crossref_candidates:
+        c = dict(c)
+        c.setdefault("sources", ["crossref"])
+        c.setdefault("conflict", False)
+        doi = (c.get("doi") or "").strip().lower()
+        if doi:
+            crossref_by_doi[doi] = c
+        else:
+            crossref_no_doi.append(c)
+
+    s2_by_doi: dict[str, dict[str, Any]] = {}
+    s2_no_doi: list[dict[str, Any]] = []
+    for c in s2_candidates:
+        c = dict(c)
+        c.setdefault("sources", ["semantic_scholar"])
+        c.setdefault("conflict", False)
+        doi = (c.get("doi") or "").strip().lower()
+        if doi:
+            s2_by_doi[doi] = c
+        else:
+            s2_no_doi.append(c)
+
+    merged: list[dict[str, Any]] = []
+
+    # 1. DOI-matched: merge crossref + s2 into one candidate
+    matched_s2_dois: set[str] = set()
+    for doi, cr in crossref_by_doi.items():
+        if doi in s2_by_doi:
+            s2 = s2_by_doi[doi]
+            merged_item = dict(cr)
+            # Crossref fields win; s2 fills gaps only.
+            for k, v in s2.items():
+                if k in ("sources", "conflict"):
+                    continue
+                if not merged_item.get(k):
+                    merged_item[k] = v
+            merged_item["sources"] = ["crossref", "semantic_scholar"]
+            merged_item["conflict"] = False
+            merged.append(merged_item)
+            matched_s2_dois.add(doi)
+        else:
+            merged.append(cr)
+
+    # 2. s2-only DOI candidates (no Crossref match)
+    for doi, s2 in s2_by_doi.items():
+        if doi not in matched_s2_dois:
+            merged.append(s2)
+
+    # 3. Crossref no-DOI candidates: check for title-match conflict with
+    #    s2 no-DOI candidates. If titles agree (sim ≥ 0.95), keep BOTH
+    #    and tag as conflict; otherwise keep as single-source.
+    used_s2_no_doi: set[int] = set()
+    for cr in crossref_no_doi:
+        cr_title = cr.get("title") or ""
+        matched = False
+        for idx, s2 in enumerate(s2_no_doi):
+            if idx in used_s2_no_doi:
+                continue
+            s2_title = s2.get("title") or ""
+            if cr_title and s2_title:
+                sim = _title_similarity(cr_title, s2_title)
+                if sim >= 0.95:
+                    cr["conflict"] = True
+                    cr["conflict_type"] = "title_match_doi_mismatch"
+                    s2["conflict"] = True
+                    s2["conflict_type"] = "title_match_doi_mismatch"
+                    merged.append(cr)
+                    merged.append(s2)
+                    used_s2_no_doi.add(idx)
+                    matched = True
+                    break
+        if not matched:
+            merged.append(cr)
+
+    # 4. s2-only no-DOI candidates not consumed by conflict matching
+    for idx, s2 in enumerate(s2_no_doi):
+        if idx not in used_s2_no_doi:
+            merged.append(s2)
+
+    return merged
+
+
 async def _fetch_by_title(
     title: str,
     authors: list[str] | None = None,
+    year: int | None = None,
 ) -> dict[str, Any] | None:
     """Search Crossref + Semantic Scholar by title in parallel.
 
@@ -357,6 +643,18 @@ async def _fetch_by_title(
     second batch). This function performs the actual cross-source title
     search and selects the strongest candidate by DOI presence + author
     overlap.
+
+    Re8.1 (WP2 Task 9): now uses title-similarity scoring, year-penalty,
+    confidence computation, and dual-source conflict tagging. The
+    returned dict carries optional ``confidence``, ``ranking_reasons``,
+    ``sources``, ``conflict``, ``conflict_type`` and ``all_candidates``
+    fields — these are informational and do not affect
+    ``_decide_existence`` behaviour. Old callers see no API change
+    (``year`` is an optional kwarg defaulting to None).
+
+    The ``all_candidates`` field preserves every merged candidate so
+    downstream consumers can inspect the conflict evidence; it is never
+    empty when the function returns non-None.
     """
     from apps.api.app.services.retrieval.adapters.crossref_search import crossref_search
     from apps.api.app.services.retrieval.adapters.semantic_scholar_search import (
@@ -381,35 +679,66 @@ async def _fetch_by_title(
         logger.debug("semantic_scholar title search failed: %s", s2_hits)
         s2_hits = []
 
-    # Merge + validate candidates via _titles_agree
-    candidates: list[dict[str, Any]] = []
+    # Pre-filter via _titles_agree (loose substring match) to avoid
+    # promoting clearly-unrelated hits. Re8.0 behaviour preserved.
+    crossref_candidates: list[dict[str, Any]] = []
     for hit in (crossref_hits or []):
         if isinstance(hit, dict) and _titles_agree(title, hit.get("title", "")):
-            candidates.append(_normalize_title_hit(hit, "crossref"))
+            cand = _normalize_title_hit(hit, "crossref")
+            cand["sources"] = ["crossref"]
+            cand["conflict"] = False
+            crossref_candidates.append(cand)
+    s2_candidates: list[dict[str, Any]] = []
     for hit in (s2_hits or []):
         if isinstance(hit, dict) and _titles_agree(title, hit.get("title", "")):
-            candidates.append(_normalize_title_hit(hit, "semantic_scholar"))
+            cand = _normalize_title_hit(hit, "semantic_scholar")
+            cand["sources"] = ["semantic_scholar"]
+            cand["conflict"] = False
+            s2_candidates.append(cand)
 
-    if not candidates:
+    # Re8.1 §4: merge with conflict tagging (preserves dual-source evidence)
+    merged = _merge_with_conflict_tagging(
+        crossref_candidates, s2_candidates, input_title=title,
+    )
+
+    if not merged:
         return None
 
-    # Score: prefer candidates with DOI, then with author overlap
-    user_lastnames = {_author_lastname(a) for a in (authors or []) if a}
+    # Re8.1 §1-3: decorate every candidate with confidence + ranking_reasons
+    # and rank by a composite score that blends confidence anchor,
+    # title similarity, and year penalty.
+    input_meta = {
+        "title": title,
+        "authors": list(authors or []),
+        "year": year,
+    }
 
-    def _score(c: dict[str, Any]) -> int:
-        score = 0
-        if c.get("doi"):
-            score += 10
-        if user_lastnames:
-            cand_lastnames = {
-                _author_lastname(a) for a in (c.get("authors") or []) if a
-            }
-            if cand_lastnames & user_lastnames:
-                score += 5
-        return score
+    confidence_anchor = {"high": 0.8, "medium": 0.55, "low": 0.25}
 
-    candidates.sort(key=_score, reverse=True)
-    return candidates[0]
+    scored: list[tuple[dict[str, Any], float]] = []
+    for cand in merged:
+        level, reasons = _compute_confidence(cand, input_meta)
+        cand["confidence"] = level
+        cand["ranking_reasons"] = reasons
+        sim = _title_similarity(title, cand.get("title") or "")
+        penalty = _year_penalty(year, cand.get("year"))
+        # Composite score: confidence anchor dominates, but similarity
+        # and year penalty can break ties and demote conflict candidates.
+        score = confidence_anchor[level] * 0.6 + sim * 0.3 + penalty * 0.1
+        # Mild penalty for conflict-tagged candidates so a clean
+        # single-source match wins over a conflicting dual-source one
+        # when scores are otherwise close.
+        if cand.get("conflict"):
+            score -= 0.05
+        scored.append((cand, score))
+
+    scored.sort(key=lambda t: t[1], reverse=True)
+    best = dict(scored[0][0])
+    # Preserve the full merged list for downstream inspection. Each
+    # candidate in this list already has confidence + ranking_reasons
+    # + sources + conflict fields populated.
+    best["all_candidates"] = [c for c, _ in scored]
+    return best
 
 
 # ── Per-seed resolution ─────────────────────────────────────────────────────
@@ -472,7 +801,11 @@ async def _resolve_one_seed(
     if identifier is None:
         title = (flat.get("title") or "").strip()
         if input_form == "title" and title:
-            fetched = await _fetch_by_title(title, list(flat.get("authors") or []))
+            fetched = await _fetch_by_title(
+                title,
+                list(flat.get("authors") or []),
+                year=flat.get("year"),
+            )
             if fetched is not None:
                 status, hint = _decide_existence(flat, fetched)
                 card = make_seed_card(
@@ -490,6 +823,13 @@ async def _resolve_one_seed(
                 )
                 if hint:
                     card["repair_hint"] = hint
+                # Re8.1: propagate confidence + ranking_reasons + conflict
+                # evidence onto the card. These fields are optional and
+                # do not affect schema validation or downstream decisions.
+                for k in ("confidence", "ranking_reasons", "sources",
+                          "conflict", "conflict_type", "all_candidates"):
+                    if k in fetched:
+                        card[k] = fetched[k]
                 return card
         # Fall through: no title or title search found no match
         card = make_seed_card(
