@@ -56,30 +56,36 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     # info-sufficient?) before any downstream consumption. Short-circuits
     # to "pass" for topic_only / non-react-reflection modes (no-op).
     graph.add_edge("seed_resolver", "seed_audit_gate")
-    # Re8.0 WP2: paper_understanding parses seed PDFs and fills understanding
-    # fields (method_summary, dataset_and_metrics, ...) on SeedPaperCards.
-    # No-op when no seed card has a PDF, so topic_only callers see no change.
+    # Re8.0 P1-1: fulltext_acquisition runs BEFORE paper_understanding so
+    # that DOI/arXiv seeds get their PDFs downloaded first. paper_understanding
+    # then parses all PDFs (user-uploaded + newly downloaded) in a single
+    # pass. No-op for topic_only / offline / no verified metadata_only cards.
     #
     # Re8.0 P0-2: conditional repair routing — when seed_audit_gate emits
     # verdict=revise and round_idx < REFLECTION_GATE_MAX_ROUNDS, route
     # back to seed_resolver (re-resolve seeds with repair hints).
     # verdict=pass / unresolved / cap-reached → forward to
-    # paper_understanding. Lite Chain / Offline Replay always emit pass
+    # fulltext_acquisition. Lite Chain / Offline Replay always emit pass
     # (generated_by=skip), so they route forward — no behavior change.
     graph.add_conditional_edges(
         "seed_audit_gate",
         lambda state: route_after_gate(state, "seed_audit_gate"),
         {
-            "paper_understanding": "paper_understanding",  # forward
+            "fulltext_acquisition": "fulltext_acquisition",  # forward
             "seed_resolver": "seed_resolver",              # repair
         },
     )
-    graph.add_edge("paper_understanding", "fulltext_acquisition")
-    # Re8.0 P1-1: fulltext_acquisition downloads PDF bytes for verified
-    # DOI/arXiv seeds that paper_understanding couldn't parse (it only
-    # reads local PDFs). No-op for topic_only / offline / no verified
-    # metadata_only cards, so existing callers see no change.
-    graph.add_edge("fulltext_acquisition", "method_family_explorer")
+    # Re8.0 post-audit: fulltext_acquisition → paper_understanding (was
+    # reversed). For DOI/arXiv seeds, seed_resolver only fetches metadata;
+    # fulltext_acquisition downloads the PDF; paper_understanding then
+    # parses it to extract method/task/dataset/environment fields. The
+    # previous order (paper_understanding first) meant the first pass had
+    # no PDF to parse, and the downloaded PDF was never re-parsed.
+    graph.add_edge("fulltext_acquisition", "paper_understanding")
+    # Re8.0 WP2: paper_understanding parses seed PDFs and fills understanding
+    # fields (method_summary, dataset_and_metrics, ...) on SeedPaperCards.
+    # No-op when no seed card has a PDF, so topic_only callers see no change.
+    graph.add_edge("paper_understanding", "method_family_explorer")
     graph.add_edge("method_family_explorer", "topic_parser")
     graph.add_edge("topic_parser", "search_planner")
     graph.add_edge("search_planner", "paper_retriever")

@@ -1110,8 +1110,11 @@ class TestSearchAgentReactActions:
 # Forward / repair targets per gate — single source of truth for the
 # parametrized tests below. Mirrors _GATE_FORWARD_TARGETS /
 # _GATE_REPAIR_TARGETS in reflection_gates.py.
+# Re8.0 post-audit: seed_audit_gate forward target changed from
+# paper_understanding to fulltext_acquisition (node order swapped so
+# PDFs are downloaded before parsing).
 _GATE_ROUTING_TARGETS = [
-    (rg.GATE_SEED_AUDIT,   "paper_understanding",  "seed_resolver"),
+    (rg.GATE_SEED_AUDIT,   "fulltext_acquisition",  "seed_resolver"),
     (rg.GATE_TAILOR,       "innovation_extractor", "search_planner"),
     (rg.GATE_FINAL_REVIEW, "falsifiability",       "evidence_context"),
 ]

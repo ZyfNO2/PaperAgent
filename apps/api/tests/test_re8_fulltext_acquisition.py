@@ -193,6 +193,10 @@ class TestDoiDownloadSuccess:
         updated = result["seed_cards"][0]
         assert updated["fulltext_status"] == "fulltext_available"
         assert updated["pdf_bytes"] == _FAKE_PDF
+        # Re8.0 post-audit: raw_input.pdf_bytes must also be populated
+        # so paper_understanding (which reads from raw_input.pdf_bytes)
+        # can parse the downloaded PDF after fulltext_acquisition runs.
+        assert updated["raw_input"]["pdf_bytes"] == _FAKE_PDF
         # No gaps on success
         assert not result.get("evidence_gaps")
         # Trace records the download
