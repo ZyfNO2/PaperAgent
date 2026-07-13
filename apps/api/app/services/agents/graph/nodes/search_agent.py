@@ -177,6 +177,11 @@ available_plan_queries 中每条带有 query_id / gap_id。当你基于某条 pl
 的 query_id 填入 plan_query_id 字段，这样搜索结果才能被归因到对应的 evidence gap。
 如果你是从零构思的新查询而非改写自 plan query，则 plan_query_id 留空。
 
+Re8.1: available_plan_queries 中 pre_executed=true 的查询已在 ReAct 循环之前被
+预执行（用于保证 gap 证据归因）。如果某个 plan_query 的 pre_executed=true 且
+prior_steps 显示它已有结果，说明该 gap 的证据已收集，你不需要再执行相同查询。
+可以基于已有结果做补充搜索（如同义关键词、不同工具）或直接 stop。
+
 输出 JSON:
 {"action": "search" | "stop", "tool": "必须来自 available_sources", "query": "...", "plan_query_id": "可选，改写自 plan query 时填入其 query_id", "reason": "..."}
 
@@ -217,7 +222,13 @@ def _build_decision_prompt(
     # structured plan_queries with query_id/gap_id so the LLM can return
     # plan_query_id when adapting a plan query — this keeps gap_id stable
     # across query reformulation (replaces the P1-7b fallback).
-    plan_queries: list[dict[str, str]] = []
+    # Re8.1 WP1-B: mark plan_queries that were pre-executed so the LLM
+    # knows not to repeat them and can focus on supplementary searches.
+    pre_executed_query_ids: set[str] = {
+        s.get("query_id") for s in steps
+        if s.get("pre_executed") and s.get("query_id")
+    }
+    plan_queries: list[dict[str, Any]] = []
     if search_plan and search_plan.get("queries"):
         gap_counter: dict[str, int] = {}
         for q in search_plan["queries"]:
@@ -233,6 +244,7 @@ def _build_decision_prompt(
                 "tool": tool,
                 "query": query,
                 "gap_id": gap_id,
+                "pre_executed": query_id in pre_executed_query_ids,
             })
 
     # Failed tools to avoid
@@ -546,6 +558,169 @@ def _classify_results(tool: str, results: list[dict[str, Any]]) -> tuple[list[di
     return papers, repos
 
 
+def _pre_execute_plan_queries(
+    search_plan: dict[str, Any],
+    gap_lookup: tuple[dict[tuple[str, str], dict[str, str]], dict[str, dict[str, str]]],
+    skip_adapters: set[str],
+    failed_this_round: set[str],
+    is_gap_bound: bool,
+) -> tuple[
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    dict[str, list[dict[str, Any]]],
+    set[str],
+    set[str],
+    set[str],
+]:
+    """Re8.1 WP1-B: Pre-execute all gap-bound plan_queries before the ReAct loop.
+
+    Guarantees search results are attributed to gaps via ``plan_query_id``
+    propagation, regardless of subsequent LLM behavior. The ReAct loop then
+    only does supplementary searches on top of the plan-driven baseline.
+
+    Root cause (WP1-A diagnosis): the LLM ReAct loop does not echo
+    ``plan_query_id`` in tool calls, so ``_resolve_gap_meta`` falls back to
+    exact ``(tool, query)`` match — which also misses because the LLM
+    reformulates the query text. Result: ``gap_id=null`` for all
+    ``search_steps`` → gaps stay open → tailor_gate revise → cap reached.
+
+    This function bypasses the LLM entirely: it iterates gap-bound
+    plan_queries directly, executes each via ``_run_tool_sync``, and writes
+    ``plan_query_id`` + ``gap_id`` into the step entry deterministically.
+
+    Returns a tuple ``(pre_steps, pre_papers, pre_repos, pre_raw,
+    pre_resolved_gaps, pre_unresolved_gaps, pre_failed)``. The caller merges
+    these into the main state before the ReAct loop starts. When
+    ``is_gap_bound`` is False or the plan has no gap-bound queries, all
+    returned containers are empty (no-op — backward compatible).
+    """
+    by_tool_query, _by_query_id = gap_lookup
+    pre_steps: list[dict[str, Any]] = []
+    pre_papers: list[dict[str, Any]] = []
+    pre_repos: list[dict[str, Any]] = []
+    pre_raw: dict[str, list[dict[str, Any]]] = {}
+    pre_resolved_gaps: set[str] = set()
+    pre_unresolved_gaps: set[str] = set()
+    pre_failed: set[str] = set()
+
+    if not is_gap_bound or not by_tool_query:
+        return pre_steps, pre_papers, pre_repos, pre_raw, pre_resolved_gaps, pre_unresolved_gaps, pre_failed
+
+    seen_queries: set[tuple[str, str]] = set()  # dedupe (tool, query)
+    step_idx = 0
+    for q in (search_plan.get("queries") or []):
+        gap_id = q.get("gap_id") or ""
+        if not gap_id:
+            continue  # only gap-bound queries are pre-executed
+        tool = (q.get("tool") or "").strip().lower()
+        query = (q.get("query") or "").strip()
+        if not (tool and query):
+            continue
+        key = (tool, query)
+        if key in seen_queries:
+            continue
+        seen_queries.add(key)
+
+        meta = by_tool_query.get(key)
+        if not meta:
+            # Defensive: gap_id present but not in lookup — shouldn't happen
+            # because _build_gap_lookup indexes exactly these queries. Skip
+            # rather than risk mis-attribution.
+            continue
+        query_id = meta["query_id"]
+        success_cond = meta.get("success_condition", "")
+        lane_id = meta.get("lane_id", "")
+
+        # Skip adapters that already failed (prior repair round or this
+        # invocation). Record as a skip step so the trace stays honest.
+        if tool in skip_adapters or tool in failed_this_round or tool in pre_failed:
+            pre_steps.append({
+                "step": step_idx,
+                "type": "skip",
+                "tool": tool,
+                "query": query,
+                "plan_query_id": query_id,
+                "gap_id": gap_id,
+                "lane_id": lane_id,
+                "reason": f"pre-execution skip: adapter {tool} failed",
+                "pre_executed": True,
+            })
+            step_idx += 1
+            continue
+
+        # Execute the tool call. Reuse the same sync wrapper the ReAct loop
+        # uses so adapter behavior is identical.
+        try:
+            results = _run_tool_sync(tool, query, 12)
+        except Exception:
+            pre_failed.add(tool)
+            pre_steps.append({
+                "step": step_idx,
+                "type": "tool_call",
+                "tool": tool,
+                "query": query,
+                "plan_query_id": query_id,
+                "gap_id": gap_id,
+                "lane_id": lane_id,
+                "query_id": query_id,
+                "success_condition": success_cond,
+                "n_results": 0,
+                "n_papers": 0,
+                "n_repos": 0,
+                "reason": "pre-execution: tool failed",
+                "failed": True,
+                "pre_executed": True,
+                "evidence_delta": {
+                    "n_new_papers": 0,
+                    "n_new_repos": 0,
+                    "gap_resolved": False,
+                },
+            })
+            step_idx += 1
+            continue
+
+        new_papers, new_repos = _classify_results(tool, results)
+        pre_papers.extend(new_papers)
+        pre_repos.extend(new_repos)
+        pre_raw.setdefault(tool, []).extend(results)
+
+        n_results = len(results)
+        resolved = _check_gap_resolved(success_cond, len(new_papers), len(new_repos))
+        pre_steps.append({
+            "step": step_idx,
+            "type": "tool_call",
+            "tool": tool,
+            "query": query,
+            "plan_query_id": query_id,
+            "gap_id": gap_id,
+            "lane_id": lane_id,
+            "query_id": query_id,
+            "success_condition": success_cond,
+            "n_results": n_results,
+            "n_papers": len(new_papers),
+            "n_repos": len(new_repos),
+            "reason": "pre-execution: gap-bound plan_query",
+            "failed": n_results == 0,
+            "pre_executed": True,
+            "evidence_delta": {
+                "n_new_papers": len(new_papers),
+                "n_new_repos": len(new_repos),
+                "gap_resolved": resolved,
+            },
+        })
+
+        if resolved:
+            pre_resolved_gaps.add(gap_id)
+            pre_unresolved_gaps.discard(gap_id)
+        elif n_results == 0:
+            pre_unresolved_gaps.add(gap_id)
+
+        step_idx += 1
+
+    return pre_steps, pre_papers, pre_repos, pre_raw, pre_resolved_gaps, pre_unresolved_gaps, pre_failed
+
+
 def search_agent_node(state: ResearchState) -> dict[str, Any]:
     """React loop: think → call → observe → decide."""
     topic = state.get("topic") or ""
@@ -635,7 +810,94 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
             domain_str = str(atoms["domain"][0])
         domain_tools = _get_domain_tools(domain_str)
 
-        for step_idx in range(_MAX_STEPS):
+        # Re8.1 WP1-B: Pre-execute gap-bound plan_queries before the ReAct
+        # loop. This guarantees search results are attributed to gaps via
+        # plan_query_id propagation, regardless of subsequent LLM behavior.
+        #
+        # Root cause (WP1-A diagnosis, confidence=high): LLM ReAct loop
+        # does not echo plan_query_id in tool calls → _resolve_gap_meta
+        # falls back to exact (tool, query) match → also misses because
+        # LLM reformulates query text → gap_id=null for all search_steps
+        # → gaps stay open → tailor_gate revise → cap reached → BLOCKED.
+        #
+        # Fix: bypass the LLM for gap-bound plan_queries. Execute them
+        # directly with plan_query_id + gap_id pre-filled. The ReAct loop
+        # then only does supplementary searches on top of this baseline.
+        # Pre-execution steps do NOT count against _MAX_STEPS — the ReAct
+        # loop keeps its full budget for supplementary searches.
+        (
+            pre_steps,
+            pre_papers,
+            pre_repos,
+            pre_raw,
+            pre_resolved_gaps,
+            pre_unresolved_gaps,
+            pre_failed,
+        ) = _pre_execute_plan_queries(
+            search_plan,
+            (gap_lookup, gap_lookup_by_query_id),
+            skip_adapters,
+            failed_this_round,
+            is_gap_bound,
+        )
+        if pre_steps:
+            steps.extend(pre_steps)
+            all_papers.extend(pre_papers)
+            all_repos.extend(pre_repos)
+            for _tool, _results in pre_raw.items():
+                raw.setdefault(_tool, []).extend(_results)
+            resolved_gaps |= pre_resolved_gaps
+            unresolved_gaps |= pre_unresolved_gaps
+            failed_this_round |= pre_failed
+            # Re8.1 WP1-B: record pre-executed steps in react_actions
+            # audit trail so gap-bound pre-executed entries remain
+            # traceable (Re8.0 WP6 P2-3). Schema matches existing
+            # ReAct-loop entries (skip / tool_call) for
+            # test_react_actions_schema_consistent_across_paths.
+            for _pre in pre_steps:
+                _pre_type = _pre.get("type", "tool_call")
+                _pre_delta = _pre.get("evidence_delta", {}) or {}
+                react_actions_log.append({
+                    "step": _pre.get("step", 0),
+                    "action_type": _pre_type,
+                    "tool": _pre.get("tool", ""),
+                    "query": _pre.get("query", ""),
+                    "gap_id": _pre.get("gap_id"),
+                    "success_condition": _pre.get("success_condition"),
+                    "whitelist_allowed": is_tool_allowed(_pre.get("tool", "")),
+                    "n_results": _pre.get("n_results", 0),
+                    "n_papers": _pre.get("n_papers", 0),
+                    "n_repos": _pre.get("n_repos", 0),
+                    "gap_resolved": _pre_delta.get("gap_resolved", False),
+                    "failed": _pre.get("failed", False),
+                    "next_action": "continue",
+                    "reason": _pre.get("reason", "pre-execution"),
+                })
+            logger.info(
+                "search_agent: pre-executed %d gap-bound plan_queries, "
+                "resolved %d/%d gaps, %d papers, %d repos",
+                len(pre_steps),
+                len(pre_resolved_gaps),
+                len(all_bound_gaps),
+                len(pre_papers),
+                len(pre_repos),
+            )
+
+        # ReAct loop. react_iter is the ReAct-only iteration counter (does
+        # NOT include pre-execution steps); step_idx is the absolute position
+        # in the steps list (includes pre-execution steps). This preserves
+        # the full _MAX_STEPS budget for supplementary searches regardless
+        # of how many plan_queries were pre-executed.
+        for react_iter in range(_MAX_STEPS):
+            step_idx = len(steps)  # absolute position in steps list
+            # Re8.1 WP1-B: early exit if pre-execution resolved all gaps
+            if is_gap_bound and all_bound_gaps and resolved_gaps >= all_bound_gaps:
+                steps.append({
+                    "step": step_idx,
+                    "type": "stop",
+                    "reason": f"pre-execution resolved all {len(all_bound_gaps)} evidence gaps",
+                })
+                break
             # 1. Think: LLM decides next action
             # Re8.0 WP6 (P2-2): skip LLM call when run_mode is lite/offline.
             if use_llm:
@@ -651,7 +913,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
             if thought.get("action") == "stop" and domain_tools:
                 used_tools = {s.get("tool") for s in steps if s.get("type") == "tool_call"}
                 unused_domain = domain_tools - used_tools - failed_this_round - skip_adapters
-                if unused_domain and step_idx < _MAX_STEPS - 1:
+                if unused_domain and react_iter < _MAX_STEPS - 1:
                     inject_tool = sorted(unused_domain)[0]
                     method_kws = atoms.get("method") or []
                     obj_kws = atoms.get("object") or []
@@ -691,7 +953,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     used = {(s.get("tool"), s.get("query")) for s in steps if s.get("type") == "tool_call"}
                     remaining = [q for q in search_plan["queries"]
                                  if (q.get("tool"), q.get("query")) not in used]
-                    if remaining and step_idx < _MAX_STEPS - 1:
+                    if remaining and react_iter < _MAX_STEPS - 1:
                         next_q = remaining[0]
                         logger.info("search_agent: overruling stop, %d queries remaining, forcing %s",
                                      len(remaining), next_q.get("tool"))
@@ -705,7 +967,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                 else:
                     # Re3.9.4: Relevance-aware stop
                     _atoms_for_rel = state.get("topic_atoms") or {}
-                    if _atoms_for_rel and all_papers and step_idx < _MAX_STEPS - 2:
+                    if _atoms_for_rel and all_papers and react_iter < _MAX_STEPS - 2:
                         _rel_count = _count_relevant_papers(all_papers, _atoms_for_rel)
                         _total = len(all_papers)
                         _ratio = _rel_count / _total if _total > 0 else 1.0
