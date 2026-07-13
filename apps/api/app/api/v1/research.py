@@ -156,7 +156,14 @@ def list_cases() -> dict[str, Any]:
 
 
 def _run_case_sync(case_id: str, topic: str, extra: dict[str, Any]) -> None:
-    """Synchronous wrapper for the research graph, executed in a thread."""
+    """Synchronous wrapper for the research graph, executed in a thread.
+
+    Re8.1 WP5: ``extra`` may carry Re8.0 policy fields (entry_mode,
+    run_mode, network_policy, reasoning_policy, candidate_seeds) that
+    are transparently forwarded into ``state_in`` so the seeded_research
+    pipeline can be triggered via HTTP without going through
+    ``re80_seeded_demo.py`` CLI.
+    """
     t0 = time.time()
     cd = _case_dir(case_id)
     cd.mkdir(parents=True, exist_ok=True)
@@ -185,6 +192,18 @@ def _run_case_sync(case_id: str, topic: str, extra: dict[str, Any]) -> None:
         user_papers = _USER_PAPERS.pop(case_id, None)
         if user_papers:
             state_in["user_papers"] = user_papers
+        # Re8.1 WP5: forward Re8.0 policy fields so the seeded_research
+        # sub-graph activates. ``candidate_seeds`` bypasses _USER_PAPERS
+        # because it is the canonical Re8.0 contract (intake_node reads
+        # ``user_papers`` for backward compat, but seed_resolver reads
+        # ``candidate_seeds`` directly).
+        for re80_field in (
+            "entry_mode", "run_mode", "network_policy",
+            "reasoning_policy", "candidate_seeds",
+        ):
+            v = extra.get(re80_field)
+            if v is not None:
+                state_in[re80_field] = v  # type: ignore[literal-required]
         g = rg.build_graph()
 
         # Re3.9.2: stream() instead of invoke() — each node yields a patch
@@ -325,6 +344,321 @@ def submit_case(
                              {k: v for k, v in payload.items()
                               if k not in ("case_id", "topic")})
     return {"case_id": case_id, "status": "running"}
+
+
+# ---------------------------------------------------------------------------
+# Submit a seeded research run (Re8.1 WP5)
+# ---------------------------------------------------------------------------
+
+_SEED_IDENTIFIER_FIELDS = ("doi", "arxiv_id", "url", "title", "pdf_path")
+
+
+def _normalize_seed_payload(seed: dict[str, Any], idx: int) -> dict[str, Any]:
+    """Normalize a seed payload from the frontend form to the Re8.0
+    ``candidate_seed`` contract.
+
+    Frontend sends ``input_form`` + the identifier field matching it;
+    seed_resolver reads ``doi``/``arxiv_id``/``url``/``title``/``pdf_path``
+    directly. We also copy the form + role + seed_id and nest the raw
+    form under ``raw_input`` so the audit trail is preserved.
+    """
+    seed_id = (seed.get("seed_id") or "").strip() or f"S{idx + 1}"
+    input_form = (seed.get("input_form") or "title").strip()
+    role = (seed.get("role") or "classic_anchor").strip()
+
+    normalized: dict[str, Any] = {
+        "seed_id": seed_id,
+        "input_form": input_form,
+        "role": role,
+        "raw_input": {
+            "seed_id": seed_id,
+            "input_form": input_form,
+            "role": role,
+        },
+    }
+
+    # Copy whichever identifier fields are present (frontend stores the
+    # value in the field matching ``input_form``).
+    for field in _SEED_IDENTIFIER_FIELDS:
+        val = (seed.get(field) or "").strip() if isinstance(seed.get(field), str) else seed.get(field)
+        if val:
+            normalized[field] = val
+            normalized["raw_input"][field] = val
+
+    # Optional metadata fields
+    for meta_field in ("authors", "year", "abstract"):
+        mv = seed.get(meta_field)
+        if mv:
+            normalized[meta_field] = mv
+            normalized["raw_input"][meta_field] = mv
+
+    return normalized
+
+
+@router.post("/seeded")
+def submit_seeded(
+    payload: dict[str, Any],
+    background_tasks: BackgroundTasks,
+) -> dict[str, Any]:
+    """Submit a seeded research run with user-supplied seed papers.
+
+    Re8.1 WP5 Task 15: triggers the real seeded_research pipeline via
+    HTTP (no fixture). Accepts DOI / arXiv / URL / title / PDF seed
+    forms, plus run_mode + network_policy.
+
+    Request body:
+      {
+        "topic": str,            # required
+        "seeds": [                # required, 1+ entries
+          {
+            "seed_id": "S1",
+            "input_form": "doi" | "arxiv" | "url" | "pdf" | "citation" | "title",
+            "doi": "...",         # the field matching input_form
+            "role": "classic_anchor" | "current_sota_candidate" | ...
+          }
+        ],
+        "run_mode": "full_agent" | "lite_chain" | "offline_replay",  # optional
+        "network_policy": "online" | "offline"                       # optional
+      }
+    """
+    case_id = (payload.get("case_id") or "").strip() or uuid.uuid4().hex[:12]
+    case_id = _validate_case_id(case_id)
+    topic = (payload.get("topic") or "").strip()
+    if not topic:
+        raise HTTPException(400, "topic is required")
+
+    raw_seeds = payload.get("seeds") or []
+    if not isinstance(raw_seeds, list) or len(raw_seeds) == 0:
+        raise HTTPException(400, "seeds must be a non-empty list")
+    if len(raw_seeds) > 10:
+        raise HTTPException(400, "too many seeds (max 10)")
+
+    candidate_seeds = [
+        _normalize_seed_payload(s, i) for i, s in enumerate(raw_seeds)
+    ]
+
+    # Validate that each seed has at least one identifier
+    for i, cs in enumerate(candidate_seeds):
+        has_id = any(cs.get(f) for f in _SEED_IDENTIFIER_FIELDS)
+        if not has_id:
+            raise HTTPException(
+                400,
+                f"seed {i} ({cs.get('seed_id')}) has no identifier "
+                f"(one of {', '.join(_SEED_IDENTIFIER_FIELDS)} required)",
+            )
+
+    run_mode = (payload.get("run_mode") or "full_agent").strip()
+    if run_mode not in ("full_agent", "lite_chain", "offline_replay"):
+        raise HTTPException(400, f"invalid run_mode: {run_mode}")
+    network_policy = (payload.get("network_policy") or "online").strip()
+    if network_policy not in ("online", "offline"):
+        raise HTTPException(400, f"invalid network_policy: {network_policy}")
+
+    with _LOCK:
+        prev = _RUN_STATUS.get(case_id, {}).get("status")
+        if prev == "running":
+            return {"case_id": case_id, "status": "running",
+                    "message": "already running"}
+        _RUN_STATUS[case_id] = {
+            "status": "running",
+            "started_at": time.time(),
+            "topic": topic,
+            "entry_mode": "seeded_research",
+            "run_mode": run_mode,
+            "network_policy": network_policy,
+            "n_seeds": len(candidate_seeds),
+        }
+
+    extra = {
+        "entry_mode": "seeded_research",
+        "run_mode": run_mode,
+        "network_policy": network_policy,
+        "reasoning_policy": "react_reflection" if run_mode == "full_agent" else "chain_only",
+        "candidate_seeds": candidate_seeds,
+    }
+    background_tasks.add_task(_run_case_sync, case_id, topic, extra)
+    return {
+        "case_id": case_id,
+        "status": "running",
+        "n_seeds": len(candidate_seeds),
+        "run_mode": run_mode,
+        "network_policy": network_policy,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Seeded research summary (Re8.1 WP5)
+# ---------------------------------------------------------------------------
+
+_EXPECTED_PACKAGE_SECTIONS = {
+    "seed_audit_summary",
+    "tailor_summary",
+    "gate_results",
+    "ledger_entries",
+    "evidence_gap_status",
+    "falsifiable_hypothesis",
+    "fused_verdict",
+}
+
+
+def _build_seeded_summary(case_id: str, final_state: dict[str, Any]) -> dict[str, Any]:
+    """Build a SeededDemoResult-shaped summary from a final ResearchState.
+
+    This mirrors the field extraction in
+    ``apps/api/scripts/re80_seeded_demo.py::run_seeded_demo`` so the
+    frontend SeededResearch page can reuse its existing rendering logic
+    without depending on the CLI script.
+    """
+    traces = final_state.get("trace_events") or []
+    gate_results_state = final_state.get("reflection_gate_results") or {}
+    gate_summary: dict[str, Any] = {}
+    for gate_name in ("seed_audit_gate", "tailor_gate", "final_review_gate"):
+        entries = gate_results_state.get(gate_name) or []
+        if entries:
+            last = entries[-1]
+            gate_summary[gate_name] = {
+                "verdict": last.get("verdict"),
+                "generated_by": last.get("generated_by"),
+                "round_idx": last.get("round_idx"),
+                "rationale": (last.get("rationale") or "")[:300],
+                "re_search_requests": last.get("re_search_requests", []),
+                "unresolved_gaps": last.get("unresolved_gaps", []),
+                "all_rounds": [
+                    {
+                        "round_idx": e.get("round_idx"),
+                        "verdict": e.get("verdict"),
+                        "generated_by": e.get("generated_by"),
+                        "rationale": (e.get("rationale") or "")[:200],
+                    }
+                    for e in entries
+                ],
+            }
+        else:
+            gate_summary[gate_name] = None
+
+    seed_cards = final_state.get("seed_cards") or []
+    tailored = final_state.get("tailored_method") or {}
+    gaps = final_state.get("evidence_gaps") or []
+    gap_statuses: dict[str, int] = {}
+    for g in gaps:
+        s = g.get("status", "unknown")
+        gap_statuses[s] = gap_statuses.get(s, 0) + 1
+
+    research_package = final_state.get("final_research_package") or {}
+    present_sections = set(research_package.keys())
+    missing_sections = sorted(_EXPECTED_PACKAGE_SECTIONS - present_sections)
+
+    final_rec = final_state.get("final_recommendation") or {}
+
+    # Honest error categorisation (Re8.1 Task 16)
+    error_categories: list[str] = []
+    fused = (final_state.get("fused_verdict") or "").upper()
+    if fused == "BLOCKED":
+        error_categories.append("fused_blocked")
+    for gate_name, gate in gate_summary.items():
+        if gate and gate.get("verdict") == "unresolved":
+            error_categories.append(f"gate_unresolved:{gate_name}")
+    for card in seed_cards:
+        if card.get("existence_status") == "ambiguous":
+            error_categories.append("seed_ambiguous")
+            break
+        if card.get("existence_status") == "not_found":
+            error_categories.append("seed_not_found")
+            break
+    if (final_state.get("network_policy") or "online") == "offline":
+        error_categories.append("network_offline")
+
+    return {
+        "case_key": case_id,
+        "case_id": case_id,
+        "topic": final_state.get("topic", ""),
+        "n_seeds_input": len(seed_cards),
+        "mode": f"{final_state.get('entry_mode', 'topic_only')} + "
+                f"{final_state.get('run_mode', 'lite_chain')} + "
+                f"{final_state.get('reasoning_policy', 'chain_only')}",
+        "status": final_state.get("status", "done"),
+        "elapsed_s": final_state.get("elapsed_s", 0),
+        "error": final_state.get("error"),
+        "entry_mode": final_state.get("entry_mode", "topic_only"),
+        "run_mode": final_state.get("run_mode", "lite_chain"),
+        "network_policy": final_state.get("network_policy", "online"),
+        "seed_cards": [
+            {
+                "seed_id": c.get("seed_id"),
+                "resolved_title": (c.get("resolved_title") or "")[:80],
+                "existence_status": c.get("existence_status"),
+                "role": c.get("role"),
+                "repair_hint": c.get("repair_hint"),
+            }
+            for c in seed_cards
+        ],
+        "n_trace_events": len(traces),
+        "gate_seed_audit_gate": gate_summary.get("seed_audit_gate"),
+        "gate_tailor_gate": gate_summary.get("tailor_gate"),
+        "gate_final_review_gate": gate_summary.get("final_review_gate"),
+        "n_ledger_entries": len(final_state.get("reasoning_ledger") or []),
+        "n_react_actions": len(final_state.get("react_actions") or []),
+        "n_errors": len(final_state.get("errors") or []),
+        "error_samples": [
+            str(e.get("error", e))[:120]
+            for e in (final_state.get("errors") or [])[:3]
+        ],
+        "n_verified_papers": len(final_state.get("verified_papers") or []),
+        "n_search_steps": len(final_state.get("search_steps") or []),
+        "tailored_verdict": tailored.get("verdict"),
+        "tailored_ablation_rows": len(tailored.get("ablation_matrix") or []),
+        "tailored_method_summary": {
+            "contribution_type": tailored.get("contribution_type"),
+            "core_method": (tailored.get("core_method") or "")[:120],
+            "baseline_model": tailored.get("baseline_model"),
+        },
+        "novelty_review_verdict": final_state.get("novelty_review_verdict"),
+        "has_falsifiable_hypothesis": bool(
+            (final_state.get("falsifiable_hypothesis") or "")
+            not in ("", "unspecified")
+        ),
+        "hypothesis_preview": (final_state.get("falsifiable_hypothesis") or "")[:150],
+        "n_evidence_gaps": len(gaps),
+        "gap_statuses": gap_statuses,
+        "fused_verdict": final_state.get("fused_verdict"),
+        "fused_verdict_rationale": (final_state.get("fused_verdict_rationale") or "")[:300],
+        "final_research_package_sections": sorted(present_sections),
+        "final_research_package_section_count": len(present_sections),
+        "final_research_package_missing_sections": missing_sections,
+        "final_rec": {
+            "topic": final_rec.get("topic", ""),
+            "n_papers": final_rec.get("n_papers", 0),
+            "n_baseline": final_rec.get("n_baseline", 0),
+            "n_parallel": final_rec.get("n_parallel", 0),
+            "n_dataset": final_rec.get("n_dataset", 0),
+            "n_repo": final_rec.get("n_repo", 0),
+            "n_work_packages": final_rec.get("n_work_packages", 0),
+            "low_bar_status": final_rec.get("low_bar_status", ""),
+        },
+        # Re8.1 Task 16: honest error categories for frontend display
+        "error_categories": error_categories,
+    }
+
+
+@router.get("/{case_id}/seeded-summary")
+def seeded_summary(case_id: str) -> dict[str, Any]:
+    """Return a SeededDemoResult-shaped summary for a seeded research run.
+
+    Re8.1 WP5 Task 15.4/15.5: surfaces Gate round_idx + verdict trajectory
+    + Final Research Package 7-section check, plus Re8.1 Task 16 honest
+    error_categories so the frontend can distinguish BLOCKED / unresolved
+    / ambiguous / offline states.
+    """
+    case_id = _validate_case_id(case_id)
+    state_path = _case_dir(case_id) / "state.json"
+    if not state_path.exists():
+        raise HTTPException(
+            404,
+            f"state not found for case {case_id!r} — "
+            f"the run may still be in progress or never started",
+        )
+    final_state = json.loads(state_path.read_text(encoding="utf-8"))
+    return _build_seeded_summary(case_id, final_state)
 
 
 # ---------------------------------------------------------------------------

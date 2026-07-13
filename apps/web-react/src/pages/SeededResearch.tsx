@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { ErrorState } from '../components/ErrorState';
+import {
+  submitSeededResearch,
+  getSeededSummary,
+  pollCaseStatus,
+} from '../lib/api';
 import type {
   CandidateSeedInput,
   SeedInputForm,
@@ -9,6 +15,7 @@ import type {
   NetworkPolicy,
   SeededDemoResult,
   GateResult,
+  GateVerdict,
   FusedVerdict,
 } from '../types/seededResearch';
 
@@ -96,6 +103,14 @@ export function SeededResearch() {
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
+  // Re8.1 WP5: live result from real backend API (replaces fixture-only flow)
+  const [liveResult, setLiveResult] = useState<SeededDemoResult | null>(null);
+  const [liveLoading, setLiveLoading] = useState(false);
+  const [liveError, setLiveError] = useState<string | null>(null);
+  const [liveCaseId, setLiveCaseId] = useState<string | null>(null);
+  const [liveStatus, setLiveStatus] = useState<string>('');
+  const [liveStatusMessage, setLiveStatusMessage] = useState<string>('');
+
   // ===== 种子行操作 =====
   const updateSeed = (idx: number, patch: Partial<CandidateSeedInput>) => {
     setSeeds((prev) => prev.map((s, i) => (i === idx ? { ...s, ...patch } : s)));
@@ -131,37 +146,210 @@ export function SeededResearch() {
     }
   };
 
+  // ===== Re8.1 WP5: 真实后端 API 调用 =====
+  const runRealResearch = async () => {
+    const trimmedTopic = topic.trim();
+    if (!trimmedTopic) {
+      setLiveError('请先填写研究题目');
+      return;
+    }
+    // Validate seeds: at least one identifier per seed
+    for (let i = 0; i < seeds.length; i++) {
+      const s = seeds[i];
+      const hasId = !!(
+        s.doi?.trim() ||
+        s.arxiv_id?.trim() ||
+        s.url?.trim() ||
+        s.title?.trim() ||
+        s.pdf_path?.trim()
+      );
+      if (!hasId) {
+        setLiveError(`种子 ${s.seed_id || `S${i + 1}`} 缺少标识符（DOI/arXiv/URL/title/PDF 必须有一个）`);
+        return;
+      }
+    }
+
+    setLiveLoading(true);
+    setLiveError(null);
+    setLiveResult(null);
+    setLiveStatus('submitting');
+    setLiveStatusMessage('正在提交到真实后端...');
+
+    try {
+      const submitResp = await submitSeededResearch({
+        topic: trimmedTopic,
+        seeds: seeds.map((s) => ({
+          seed_id: s.seed_id,
+          input_form: s.input_form,
+          doi: s.doi || undefined,
+          arxiv_id: s.arxiv_id || undefined,
+          url: s.url || undefined,
+          title: s.title || undefined,
+          pdf_path: s.pdf_path || undefined,
+          authors: s.authors,
+          year: s.year,
+          role: s.role,
+        })),
+        run_mode: runMode,
+        network_policy: networkPolicy,
+      });
+      setLiveCaseId(submitResp.case_id);
+      setLiveStatus('running');
+      setLiveStatusMessage(
+        `后端已接受（case_id=${submitResp.case_id}, ${submitResp.n_seeds} 个种子, ${submitResp.run_mode}/${submitResp.network_policy}）。轮询进度...`,
+      );
+
+      // Poll until done/error (default 10 min timeout)
+      await pollCaseStatus(submitResp.case_id, {
+        intervalMs: 3000,
+        timeoutMs: 600_000,
+        onUpdate: (st) => {
+          const s = String(st.status || 'running');
+          setLiveStatus(s);
+          const currentNode = st.current_node ? ` · 当前节点: ${String(st.current_node)}` : '';
+          const elapsed = st.elapsed_s ? ` · 已运行 ${String(st.elapsed_s)}s` : '';
+          setLiveStatusMessage(`状态: ${s}${currentNode}${elapsed}`);
+        },
+      });
+
+      setLiveStatus('fetching');
+      setLiveStatusMessage('运行完成，正在拉取结果摘要...');
+      const summary = await getSeededSummary(submitResp.case_id);
+      setLiveResult(summary as unknown as SeededDemoResult);
+      setLiveStatus('done');
+      setLiveStatusMessage(`完成，用时 ${Number(summary.elapsed_s || 0).toFixed(0)}s`);
+    } catch (err) {
+      setLiveStatus('error');
+      setLiveError(err instanceof Error ? err.message : String(err));
+      setLiveStatusMessage('运行失败');
+    } finally {
+      setLiveLoading(false);
+    }
+  };
+
   // ===== 导出 Final Package JSON =====
   const exportPackage = () => {
-    if (!result) return;
+    // Re8.1 WP5: prefer live result (real API), fallback to fixture
+    const pkg = liveResult || result;
+    if (!pkg) return;
     const payload = {
-      case_key: result.case_key,
-      topic: result.topic,
-      mode: result.mode,
-      fused_verdict: result.fused_verdict,
-      fused_verdict_rationale: result.fused_verdict_rationale,
-      final_research_package_sections: result.final_research_package_sections,
-      seed_cards: result.seed_cards,
+      case_key: pkg.case_key,
+      topic: pkg.topic,
+      mode: pkg.mode,
+      fused_verdict: pkg.fused_verdict,
+      fused_verdict_rationale: pkg.fused_verdict_rationale,
+      final_research_package_sections: pkg.final_research_package_sections,
+      seed_cards: pkg.seed_cards,
       gate_results: {
-        seed_audit_gate: result.gate_seed_audit_gate,
-        tailor_gate: result.gate_tailor_gate,
-        final_review_gate: result.gate_final_review_gate,
+        seed_audit_gate: pkg.gate_seed_audit_gate,
+        tailor_gate: pkg.gate_tailor_gate,
+        final_review_gate: pkg.gate_final_review_gate,
       },
-      tailored_method_summary: result.tailored_method_summary,
-      hypothesis_preview: result.hypothesis_preview,
-      n_ledger_entries: result.n_ledger_entries,
-      gap_statuses: result.gap_statuses,
+      tailored_method_summary: pkg.tailored_method_summary,
+      hypothesis_preview: pkg.hypothesis_preview,
+      n_ledger_entries: pkg.n_ledger_entries,
+      gap_statuses: pkg.gap_statuses,
       exported_at: new Date().toISOString(),
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `seeded_research_package_${result.case_key}.json`;
+    a.download = `seeded_research_package_${pkg.case_key}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  // ===== Re8.1 Task 16: 错误状态诚实展示 =====
+  const ERROR_CATEGORY_LABELS: Record<string, string> = {
+    'fused_blocked': 'Decision Fusion 阻断',
+    'gate_unresolved:seed_audit_gate': '种子核验 Gate 未收敛（cap reached）',
+    'gate_unresolved:tailor_gate': 'Tailor Gate 未收敛（cap reached）',
+    'gate_unresolved:final_review_gate': '最终评审 Gate 未收敛（cap reached）',
+    'seed_ambiguous': '种子身份歧义（ambiguous）',
+    'seed_not_found': '种子未找到（not_found）',
+    'network_offline': '网络离线模式',
+  };
+
+  const renderErrorCategories = (cats: string[]) => {
+    if (!cats || cats.length === 0) return null;
+    return (
+      <div
+        className="status-banner error"
+        style={{ marginTop: '12px' }}
+        data-testid="seeded-error-categories"
+      >
+        <span className="status-icon">⚠️</span>
+        <div className="status-text">
+          <div className="status-label">研究未通过 — 诚实错误展示</div>
+          <div className="status-counts">
+            {cats.map((c) => (
+              <div key={c} style={{ fontSize: '13px', marginTop: '2px' }}>
+                <span style={{ color: 'var(--color-error)', fontWeight: 600 }}>●</span>{' '}
+                {ERROR_CATEGORY_LABELS[c] || c}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ===== Re8.1 Task 15.4: Gate repair 循环展示 =====
+  const renderGateRounds = (gate: GateResult) => {
+    if (!gate.all_rounds || gate.all_rounds.length === 0) return null;
+    return (
+      <div className="pa-small" style={{ marginTop: '6px' }} data-testid="gate-rounds-trajectory">
+        <div className="pa-muted" style={{ marginBottom: '2px' }}>Round 轨迹：</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          {gate.all_rounds.map((r, i) => (
+            <span
+              key={i}
+              className={`pa-gate-round-chip verdict-${r.verdict}`}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '2px 8px', borderRadius: '10px',
+                background: r.verdict === 'pass' ? '#dcfce7'
+                  : r.verdict === 'revise' ? '#fef9c3'
+                  : '#fee2e2',
+                fontSize: '11px', fontWeight: 600,
+              }}
+              title={r.rationale}
+            >
+              <span>R{r.round_idx}</span>
+              <span>{VERDICT_ICON[r.verdict] ?? '❓'}</span>
+              <span style={{ color: '#64748b', fontWeight: 400 }}>{r.generated_by}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // ===== Re8.1 Task 16.5: 网络离线模式 banner =====
+  const renderNetworkPolicyBanner = (data: SeededDemoResult) => {
+    if ((data.network_policy || 'online') !== 'offline') return null;
+    return (
+      <div
+        className="status-banner"
+        style={{
+          marginTop: '12px',
+          background: '#fef3c7',
+          border: '1px solid #fbbf24',
+        }}
+        data-testid="network-offline-banner"
+      >
+        <span className="status-icon">📵</span>
+        <div className="status-text">
+          <div className="status-label">网络离线模式已生效</div>
+          <div className="status-counts">
+            后端 NetworkPolicyGuard 已拦截所有外部 API 调用（Semantic Scholar / arXiv / GitHub / Crossref），仅使用本地缓存。
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // ===== 渲染辅助 =====
@@ -196,6 +384,8 @@ export function SeededResearch() {
           重搜请求：{gate.re_search_requests.join(', ')}
         </div>
       )}
+      {/* Re8.1 Task 15.4: Gate repair 循环展示（round_idx + verdict 变化轨迹） */}
+      {renderGateRounds(gate)}
     </div>
   );
 
@@ -345,19 +535,28 @@ export function SeededResearch() {
         </div>
       </Card>
 
-      {/* ============ Section 3: 结果展示 ============ */}
-      <Card title="③ 结果展示（fixture 联调）" testId="seeded-result-card">
+      {/* ============ Section 3: 结果展示（Re8.1: 真实 API + fixture 并存） ============ */}
+      <Card title="③ 结果展示（真实 API + fixture 联调）" testId="seeded-result-card">
         <div className="pa-interview-actions">
           <Button
             variant="primary"
             size="sm"
+            onClick={runRealResearch}
+            disabled={liveLoading}
+            data-testid="seeded-run-real"
+          >
+            {liveLoading ? '运行中…' : '🚀 运行真实研究（Re8.1）'}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={loadFixture}
-            disabled={loading}
+            disabled={loading || liveLoading}
             data-testid="seeded-load-fixture"
           >
-            {loading ? '加载中…' : '加载 fixture 结果'}
+            {loading ? '加载中…' : '加载 fixture（备用）'}
           </Button>
-          {result && (
+          {(liveResult || result) && (
             <Button
               variant="secondary"
               size="sm"
@@ -369,6 +568,40 @@ export function SeededResearch() {
           )}
         </div>
 
+        {/* Re8.1 WP5: live run status banner */}
+        {liveStatus && (
+          <div
+            className={`status-banner ${liveStatus === 'error' ? 'error' : liveStatus === 'done' ? 'done' : ''}`}
+            style={{ marginTop: '12px' }}
+            data-testid="seeded-live-status"
+          >
+            <span className="status-icon">
+              {liveStatus === 'done' ? '✅' : liveStatus === 'error' ? '❌' : '🔄'}
+            </span>
+            <div className="status-text">
+              <div className="status-label">
+                {liveStatus === 'submitting' && '提交中'}
+                {liveStatus === 'running' && '后端运行中'}
+                {liveStatus === 'fetching' && '拉取结果中'}
+                {liveStatus === 'done' && '运行完成'}
+                {liveStatus === 'error' && '运行失败'}
+                {liveCaseId && ` · case_id=${liveCaseId}`}
+              </div>
+              <div className="status-counts">{liveStatusMessage}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Re8.1 Task 16.1: 后端不可用 / 网络错误 — 诚实展示 */}
+        {liveError && (
+          <ErrorState
+            title="真实后端调用失败"
+            message={liveError}
+            suggestion="请确认后端服务在 127.0.0.1:18181 运行（uvicorn apps.api.app.main:app），或检查 DEEPSEEK_API_KEY 等环境变量"
+            onRetry={liveLoading ? undefined : runRealResearch}
+          />
+        )}
+
         {loadError && (
           <div className="status-banner error" style={{ marginTop: '12px' }}>
             <span className="status-icon">❌</span>
@@ -379,18 +612,28 @@ export function SeededResearch() {
           </div>
         )}
 
-        {result && (
+        {/* Re8.1 WP5: prefer liveResult (real API), fallback to fixture */}
+        {(() => {
+          const displayData = liveResult || result;
+          if (!displayData) return null;
+          return (
           <div className="pa-result-area" data-testid="seeded-result-area">
+            {/* Re8.1 Task 16.5: 网络离线模式 banner */}
+            {renderNetworkPolicyBanner(displayData)}
+
+            {/* Re8.1 Task 16.2/16.3/16.4: 诚实错误分类展示 */}
+            {displayData.error_categories && renderErrorCategories(displayData.error_categories)}
+
             {/* 三层 PASS 摘要 */}
             <div className="pa-pass-tiers" data-testid="pass-tiers">
-              {renderPassTier('runtime_pass', result.runtime_pass)}
-              {renderPassTier('contract_pass', result.contract_pass, result.contract_pass_reasons)}
-              {renderPassTier('quality_pass', result.quality_pass, result.quality_pass_reasons)}
+              {renderPassTier('runtime_pass', displayData.runtime_pass)}
+              {renderPassTier('contract_pass', displayData.contract_pass, displayData.contract_pass_reasons)}
+              {renderPassTier('quality_pass', displayData.quality_pass, displayData.quality_pass_reasons)}
             </div>
 
             {/* 种子核验状态表 */}
             <details className="report-section" open>
-              <summary>🌱 种子核验状态（{result.seed_cards.length}）</summary>
+              <summary>🌱 种子核验状态（{displayData.seed_cards.length}）</summary>
               <div className="report-content">
                 <table className="snapshot-table">
                   <thead>
@@ -402,7 +645,7 @@ export function SeededResearch() {
                     </tr>
                   </thead>
                   <tbody>
-                    {result.seed_cards.map((c) => (
+                    {displayData.seed_cards.map((c) => (
                       <tr key={c.seed_id}>
                         <td>{c.seed_id}</td>
                         <td>{c.resolved_title}</td>
@@ -423,7 +666,7 @@ export function SeededResearch() {
               <div className="report-content">
                 <div className="pa-gate-grid">
                   {GATE_LABELS.map(({ key, label }) => {
-                    const gate = result[key] as GateResult;
+                    const gate = displayData[key] as GateResult;
                     return renderGateCard(label, gate);
                   })}
                 </div>
@@ -436,14 +679,14 @@ export function SeededResearch() {
               <div className="report-content">
                 <div
                   className="pa-fused-verdict"
-                  style={{ color: FUSED_VERDICT_COLOR[result.fused_verdict] }}
+                  style={{ color: FUSED_VERDICT_COLOR[displayData.fused_verdict] }}
                   data-testid="fused-verdict"
                 >
-                  {result.fused_verdict}
+                  {displayData.fused_verdict}
                 </div>
-                {result.fused_verdict_rationale && (
+                {displayData.fused_verdict_rationale && (
                   <div className="pa-muted" style={{ marginTop: '6px' }}>
-                    {result.fused_verdict_rationale}
+                    {displayData.fused_verdict_rationale}
                   </div>
                 )}
               </div>
@@ -451,15 +694,15 @@ export function SeededResearch() {
 
             {/* Evidence Gaps */}
             <details className="report-section">
-              <summary>🔍 Evidence Gaps（{result.n_evidence_gaps ?? 0}）</summary>
+              <summary>🔍 Evidence Gaps（{displayData.n_evidence_gaps ?? 0}）</summary>
               <div className="report-content">
-                {result.gap_statuses && (
+                {displayData.gap_statuses && (
                   <div className="pa-small pa-muted" style={{ marginBottom: '8px' }}>
-                    状态分布：{Object.entries(result.gap_statuses).map(([k, v]) => `${k}=${v}`).join(' · ')}
+                    状态分布：{Object.entries(displayData.gap_statuses).map(([k, v]) => `${k}=${v}`).join(' · ')}
                   </div>
                 )}
                 <div className="pa-small pa-muted">
-                  共 {result.n_evidence_gaps ?? 0} 个 gap（fixture 摘要未含逐条 gap 详情，详见完整 package）。
+                  共 {displayData.n_evidence_gaps ?? 0} 个 gap（摘要未含逐条 gap 详情，详见完整 package）。
                 </div>
               </div>
             </details>
@@ -472,23 +715,23 @@ export function SeededResearch() {
                   <tbody>
                     <tr>
                       <td><strong>core_method</strong></td>
-                      <td>{result.tailored_method_summary.core_method || '（空）'}</td>
+                      <td>{displayData.tailored_method_summary.core_method || '（空）'}</td>
                     </tr>
                     <tr>
                       <td><strong>contribution_type</strong></td>
-                      <td>{result.tailored_method_summary.contribution_type ?? '（未设置）'}</td>
+                      <td>{displayData.tailored_method_summary.contribution_type ?? '（未设置）'}</td>
                     </tr>
                     <tr>
                       <td><strong>baseline_model</strong></td>
-                      <td>{result.tailored_method_summary.baseline_model ?? '（未设置）'}</td>
+                      <td>{displayData.tailored_method_summary.baseline_model ?? '（未设置）'}</td>
                     </tr>
                     <tr>
                       <td><strong>tailored_verdict</strong></td>
-                      <td>{result.tailored_verdict ?? '—'}</td>
+                      <td>{displayData.tailored_verdict ?? '—'}</td>
                     </tr>
                     <tr>
                       <td><strong>ablation_rows</strong></td>
-                      <td>{result.tailored_ablation_rows ?? 0}</td>
+                      <td>{displayData.tailored_ablation_rows ?? 0}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -497,16 +740,16 @@ export function SeededResearch() {
 
             {/* Final Research Package 7 section 检查清单 */}
             <details className="report-section" open>
-              <summary>📦 Final Research Package（{result.final_research_package_sections.length}/7 section）</summary>
+              <summary>📦 Final Research Package（{displayData.final_research_package_sections.length}/7 section）</summary>
               <div className="report-content">
                 <ul className="pa-checklist">
-                  {result.final_research_package_sections.map((sec) => (
+                  {displayData.final_research_package_sections.map((sec) => (
                     <li key={sec} className="pa-checklist-item">
                       <span className="pa-pass-icon">✅</span>
                       <span>{sec}</span>
                     </li>
                   ))}
-                  {(result.final_research_package_missing_sections ?? []).map((sec) => (
+                  {(displayData.final_research_package_missing_sections ?? []).map((sec) => (
                     <li key={sec} className="pa-checklist-item">
                       <span className="pa-pass-icon">❌</span>
                       <span className="pa-muted">{sec}（缺失）</span>
@@ -514,17 +757,17 @@ export function SeededResearch() {
                   ))}
                 </ul>
                 <div className="pa-small pa-muted" style={{ marginTop: '8px' }}>
-                  ledger 条目：{result.n_ledger_entries ?? 0} · trace 事件：{result.n_trace_events ?? 0} · react actions：{result.n_react_actions ?? 0}
+                  ledger 条目：{displayData.n_ledger_entries ?? 0} · trace 事件：{displayData.n_trace_events ?? 0} · react actions：{displayData.n_react_actions ?? 0}
                 </div>
               </div>
             </details>
 
             {/* 可证伪假设预览 */}
-            {result.hypothesis_preview && (
+            {displayData.hypothesis_preview && (
               <details className="report-section">
                 <summary>🧪 Falsifiable Hypothesis</summary>
                 <div className="report-content">
-                  <p className="pa-small">{result.hypothesis_preview}</p>
+                  <p className="pa-small">{displayData.hypothesis_preview}</p>
                 </div>
               </details>
             )}
@@ -535,26 +778,34 @@ export function SeededResearch() {
               <div className="report-content">
                 <table className="snapshot-table">
                   <tbody>
-                    <tr><td><strong>case_key</strong></td><td>{result.case_key}</td></tr>
-                    <tr><td><strong>mode</strong></td><td>{result.mode}</td></tr>
-                    <tr><td><strong>status</strong></td><td>{result.status}</td></tr>
-                    <tr><td><strong>elapsed_s</strong></td><td>{result.elapsed_s}</td></tr>
-                    <tr><td><strong>n_errors</strong></td><td>{result.n_errors ?? 0}</td></tr>
-                    {result.error_samples && result.error_samples.length > 0 && (
-                      <tr><td><strong>error_samples</strong></td><td>{result.error_samples.join(', ')}</td></tr>
+                    <tr><td><strong>case_key</strong></td><td>{displayData.case_key}</td></tr>
+                    {displayData.case_id && (
+                      <tr><td><strong>case_id</strong></td><td>{displayData.case_id}</td></tr>
+                    )}
+                    <tr><td><strong>mode</strong></td><td>{displayData.mode}</td></tr>
+                    <tr><td><strong>status</strong></td><td>{displayData.status}</td></tr>
+                    <tr><td><strong>elapsed_s</strong></td><td>{displayData.elapsed_s}</td></tr>
+                    <tr><td><strong>n_errors</strong></td><td>{displayData.n_errors ?? 0}</td></tr>
+                    {displayData.error_samples && displayData.error_samples.length > 0 && (
+                      <tr><td><strong>error_samples</strong></td><td>{displayData.error_samples.join(', ')}</td></tr>
                     )}
                   </tbody>
                 </table>
               </div>
             </details>
           </div>
-        )}
+          );
+        })()}
 
-        {!result && !loading && !loadError && (
+        {!liveResult && !result && !loading && !liveLoading && !loadError && !liveError && (
           <div className="empty-state" style={{ padding: '24px' }}>
             <div className="empty-icon">📭</div>
-            <div className="empty-title">尚未加载结果</div>
-            <div className="empty-desc">点击「加载 fixture 结果」查看 Seeded Research 运行产物（静态联调，不接真实 API）</div>
+            <div className="empty-title">尚未运行</div>
+            <div className="empty-desc">
+              点击「🚀 运行真实研究」调用真实后端 API（Re8.1 WP5），或「加载 fixture（备用）」查看静态产物。
+              <br />
+              支持 DOI / arXiv / URL / PDF / citation / title 六种输入形式。
+            </div>
           </div>
         )}
       </Card>

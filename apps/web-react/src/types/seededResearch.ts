@@ -48,6 +48,13 @@ export interface GateResult {
   rationale: string;
   re_search_requests?: string[];
   unresolved_gaps?: string[];
+  /** Re8.1 WP5: full round-by-round trajectory for Gate repair cycle display */
+  all_rounds?: Array<{
+    round_idx: number;
+    verdict: GateVerdict;
+    generated_by: 'llm' | 'rule' | 'skip';
+    rationale: string;
+  }>;
 }
 
 /** Decision Fusion 融合后的最终裁决 */
@@ -145,4 +152,14 @@ export interface SeededDemoResult {
   final_rec_has_research_package?: boolean;
   repair_cycles_detected?: unknown[];
   n_repair_cycles?: number;
+  /** Re8.1 WP5: honest error categories from backend (fused_blocked / gate_unresolved:* / seed_ambiguous / seed_not_found / network_offline) */
+  error_categories?: string[];
+  /** Re8.1 WP5: case_id from real backend run (alias of case_key) */
+  case_id?: string;
+  /** Re8.1 WP5: network policy actually applied */
+  network_policy?: 'online' | 'offline';
+  /** Re8.1 WP5: run mode actually applied */
+  run_mode?: string;
+  /** Re8.1 WP5: entry mode actually applied */
+  entry_mode?: string;
 }
