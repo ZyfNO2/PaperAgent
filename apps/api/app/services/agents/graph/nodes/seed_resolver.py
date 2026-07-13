@@ -318,6 +318,100 @@ def _decide_existence(
     return "verified", None
 
 
+# ── Title-based search (Seed Repair) ─────────────────────────────────────────
+
+def _normalize_title_hit(hit: dict[str, Any], source: str) -> dict[str, Any]:
+    """Map a crossref_search / semantic_scholar_search hit to the schema
+    expected by ``_decide_existence``: ``{title, authors, year, doi,
+    canonical_url, abstract}``.
+
+    Both adapters already return unified-schema dicts, but field names
+    differ slightly (crossref uses ``doi`` / ``url``; semantic_scholar
+    uses ``doi`` / ``url`` plus ``paper_id``). This helper normalises
+    them so ``_decide_existence`` can consume the result without knowing
+    the source.
+    """
+    return {
+        "title": hit.get("title") or "",
+        "authors": list(hit.get("authors") or []),
+        "year": hit.get("year"),
+        "doi": hit.get("doi"),
+        "canonical_url": hit.get("url") or hit.get("canonical_url"),
+        "abstract": (hit.get("abstract") or "")[:800] if hit.get("abstract") else "",
+    }
+
+
+async def _fetch_by_title(
+    title: str,
+    authors: list[str] | None = None,
+) -> dict[str, Any] | None:
+    """Search Crossref + Semantic Scholar by title in parallel.
+
+    Returns the best-matching candidate (normalised to the
+    ``_decide_existence`` schema) or ``None`` when no candidate's title
+    agrees with the query.
+
+    Used by ``_resolve_one_seed`` when ``input_form == "title"`` and no
+    stable identifier is available. Previously such seeds were marked
+    ``ambiguous`` without any network attempt (Seed Repair空转, Re8.0
+    second batch). This function performs the actual cross-source title
+    search and selects the strongest candidate by DOI presence + author
+    overlap.
+    """
+    from apps.api.app.services.retrieval.adapters.crossref_search import crossref_search
+    from apps.api.app.services.retrieval.adapters.semantic_scholar_search import (
+        semantic_scholar_search,
+    )
+
+    try:
+        crossref_hits, s2_hits = await asyncio.gather(
+            crossref_search([title], top_k=5),
+            semantic_scholar_search([title], top_k=5),
+            return_exceptions=True,
+        )
+    except Exception as exc:
+        logger.debug("title search gather failed for %s: %s", title, exc)
+        return None
+
+    # gather with return_exceptions=True returns Exception objects on failure
+    if isinstance(crossref_hits, Exception):
+        logger.debug("crossref title search failed: %s", crossref_hits)
+        crossref_hits = []
+    if isinstance(s2_hits, Exception):
+        logger.debug("semantic_scholar title search failed: %s", s2_hits)
+        s2_hits = []
+
+    # Merge + validate candidates via _titles_agree
+    candidates: list[dict[str, Any]] = []
+    for hit in (crossref_hits or []):
+        if isinstance(hit, dict) and _titles_agree(title, hit.get("title", "")):
+            candidates.append(_normalize_title_hit(hit, "crossref"))
+    for hit in (s2_hits or []):
+        if isinstance(hit, dict) and _titles_agree(title, hit.get("title", "")):
+            candidates.append(_normalize_title_hit(hit, "semantic_scholar"))
+
+    if not candidates:
+        return None
+
+    # Score: prefer candidates with DOI, then with author overlap
+    user_lastnames = {_author_lastname(a) for a in (authors or []) if a}
+
+    def _score(c: dict[str, Any]) -> int:
+        score = 0
+        if c.get("doi"):
+            score += 10
+        if user_lastnames:
+            cand_lastnames = {
+                _author_lastname(a) for a in (c.get("authors") or []) if a
+            }
+            if cand_lastnames & user_lastnames:
+                score += 5
+        return score
+
+    candidates.sort(key=_score, reverse=True)
+    return candidates[0]
+
+
 # ── Per-seed resolution ─────────────────────────────────────────────────────
 
 async def _resolve_one_seed(
@@ -355,8 +449,8 @@ async def _resolve_one_seed(
         card["repair_hint"] = "local PDF; fulltext parse pending (WP2)"
         return card
 
-    if offline or identifier is None:
-        # Nothing to fetch — keep as ambiguous with raw input preserved
+    if offline:
+        # Offline mode — no network fetches, keep as ambiguous
         card = make_seed_card(
             seed_id=seed_id,
             input_form=input_form,
@@ -370,10 +464,50 @@ async def _resolve_one_seed(
             role=flat.get("role", "unknown"),
             raw_input=payload,
         )
-        if offline:
-            card["repair_hint"] = "offline mode; skipped network verification"
-        else:
-            card["repair_hint"] = "no stable identifier; cannot verify online"
+        card["repair_hint"] = "offline mode; skipped network verification"
+        return card
+
+    # Online but no stable identifier — try title search (Re8.0 second batch:
+    # previously this short-circuited to ambiguous, leaving Seed Repair空转)
+    if identifier is None:
+        title = (flat.get("title") or "").strip()
+        if input_form == "title" and title:
+            fetched = await _fetch_by_title(title, list(flat.get("authors") or []))
+            if fetched is not None:
+                status, hint = _decide_existence(flat, fetched)
+                card = make_seed_card(
+                    seed_id=seed_id,
+                    input_form=input_form,
+                    resolved_title=fetched.get("title") or flat.get("title"),
+                    authors=fetched.get("authors") or list(flat.get("authors") or []),
+                    year=fetched.get("year") or flat.get("year"),
+                    doi=fetched.get("doi") or flat.get("doi"),
+                    canonical_url=fetched.get("canonical_url") or flat.get("url"),
+                    existence_status=status,
+                    fulltext_status="metadata_only",
+                    role=flat.get("role", "unknown"),
+                    raw_input=payload,
+                )
+                if hint:
+                    card["repair_hint"] = hint
+                return card
+        # Fall through: no title or title search found no match
+        card = make_seed_card(
+            seed_id=seed_id,
+            input_form=input_form,
+            resolved_title=flat.get("title"),
+            authors=list(flat.get("authors") or []),
+            year=flat.get("year"),
+            doi=flat.get("doi"),
+            canonical_url=flat.get("url"),
+            existence_status="ambiguous",
+            fulltext_status="metadata_only",
+            role=flat.get("role", "unknown"),
+            raw_input=payload,
+        )
+        card["repair_hint"] = (
+            "no stable identifier; title search found no authoritative match"
+        )
         return card
 
     # Online: fetch metadata

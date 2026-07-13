@@ -362,6 +362,49 @@ class TestRuleFallbackTailor:
         assert out["verdict"] == "pass"
 
 
+class TestTailorGateCoreMethodTolerance:
+    """Step 4: _TAILOR_PROMPT must tolerate empty core_method when
+    assembly_plan.description is non-empty.
+
+    Previously the prompt gave no guidance on incomplete upstream, so the
+    LLM would reject any tailored_method with core_method="" even when a
+    valid assembly_plan.description was present. This caused the Tailor
+    gate to emit "unresolved" on cap reached → fused_verdict=BLOCKED.
+    """
+
+    def test_prompt_includes_core_method_tolerance_clause(self):
+        """_TAILOR_PROMPT must mention core_method + assembly_plan fallback."""
+        prompt = rg._TAILOR_PROMPT
+        assert "core_method" in prompt
+        assert "assembly_plan.description" in prompt
+        assert "Do NOT reject solely on missing core_method" in prompt
+
+    def test_prompt_instructs_revise_when_both_empty(self):
+        """_TAILOR_PROMPT must call for revise when both fields are empty."""
+        prompt = rg._TAILOR_PROMPT
+        assert "BOTH core_method AND assembly_plan.description are empty" in prompt
+        assert "revise" in prompt
+
+    def test_build_tailor_prompt_renders_tolerance_clause(self):
+        """_build_tailor_prompt output must contain the tolerance clause
+        when rendered with a real state (not just the template)."""
+        state = _full_state(tailored_method={
+            "verdict": "GO",
+            "core_method": "",
+            "assembly_plan": {"description": "Use transformer encoder"},
+            "ablation_matrix": [
+                {"experiment_id": "baseline"},
+                {"experiment_id": "a"},
+                {"experiment_id": "b"},
+                {"experiment_id": "a+b"},
+            ],
+        })
+        rendered = rg._build_tailor_prompt(state)
+        assert "core_method" in rendered
+        assert "assembly_plan.description" in rendered
+        assert "Do NOT reject solely on missing core_method" in rendered
+
+
 class TestRuleFallbackFinalReview:
     def test_accepted_with_hypothesis_pass(self):
         state = _full_state(

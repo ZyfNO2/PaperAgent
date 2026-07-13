@@ -389,6 +389,13 @@ Tailored method:
 Open evidence gaps:
 {evidence_gaps_json}
 
+Note on incomplete upstream:
+- If `tailored_method.core_method` is empty BUT `assembly_plan.description`
+  is non-empty, treat the assembly_plan as the method specification.
+  Do NOT reject solely on missing core_method.
+- If BOTH core_method AND assembly_plan.description are empty, then
+  `revise` is appropriate (insufficient method specification).
+
 Decide:
 - pass       — verdict in {{GO, REVISE}}, ablation ≥4 rows, gaps addressable
 - revise     — request re-search for missing modules / baselines

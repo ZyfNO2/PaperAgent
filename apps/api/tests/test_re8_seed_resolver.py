@@ -30,7 +30,9 @@ from apps.api.app.services.agents.graph.nodes.seed_resolver import (
     _author_lastname,
     _classify_input,
     _decide_existence,
+    _fetch_by_title,
     _normalize_seed_payload,
+    _normalize_title_hit,
     _titles_agree,
     seed_resolver_node,
 )
@@ -697,11 +699,16 @@ class TestSeedResolverMultipleSeeds:
                 {"seed_id": "real", "doi": "10.1/real", "title": "Real"},
                 {"seed_id": "fake", "doi": "10.1/fake", "title": "Fake"},
                 {"seed_id": "titleonly", "title": "Just A Title"},
+                {"seed_id": "titleonly_no_match", "title": "Obscure Paper That Does Not Exist"},
             ],
         }
         real_fetched = {
             "title": "Real", "authors": ["A"], "doi": "10.1/real",
             "canonical_url": "https://doi.org/10.1/real",
+        }
+        title_fetched = {
+            "title": "Just A Title", "authors": ["B"], "doi": "10.2/title",
+            "canonical_url": "https://doi.org/10.2/title",
         }
 
         async def mock_crossref(doi):
@@ -709,23 +716,236 @@ class TestSeedResolverMultipleSeeds:
                 return real_fetched
             return None
 
+        async def mock_fetch_by_title(title, authors=None):
+            if title == "Just A Title":
+                return title_fetched
+            return None
+
         with patch(
             "apps.api.app.services.agents.graph.nodes.seed_resolver._fetch_crossref",
             new=mock_crossref,
+        ), patch(
+            "apps.api.app.services.agents.graph.nodes.seed_resolver._fetch_by_title",
+            new=mock_fetch_by_title,
         ):
             result = seed_resolver_node(state)
 
         cards = result["seed_cards"]
-        assert len(cards) == 3
+        assert len(cards) == 4
         statuses = {c["seed_id"]: c["existence_status"] for c in cards}
         assert statuses["real"] == "verified"
         assert statuses["fake"] in ("ambiguous", "not_found")
-        assert statuses["titleonly"] == "ambiguous"
-        # Only the real one promoted
-        assert len(result["verified_papers"]) == 1
-        assert result["verified_papers"][0]["seed_id"] == "real"
-        # 3 ledger entries
-        assert len(result["reasoning_ledger"]) == 3
+        assert statuses["titleonly"] == "verified"
+        assert statuses["titleonly_no_match"] == "ambiguous"
+        # real + titleonly promoted
+        assert len(result["verified_papers"]) == 2
+        verified_ids = {p["seed_id"] for p in result["verified_papers"]}
+        assert verified_ids == {"real", "titleonly"}
+        # 4 ledger entries
+        assert len(result["reasoning_ledger"]) == 4
+
+
+# ---------------------------------------------------------------------------
+# Re8.0 second batch: Seed Repair title-search capability
+# ---------------------------------------------------------------------------
+
+class TestSeedResolverTitleSearch:
+    """Step 3: _fetch_by_title + _resolve_one_seed title branch.
+
+    Previously a title-only seed (no DOI/arxiv) short-circuited to
+    ``ambiguous`` without any network attempt. Now ``_resolve_one_seed``
+    calls ``_fetch_by_title`` (Crossref + Semantic Scholar in parallel)
+    and promotes to ``verified`` when a match is found.
+    """
+
+    def test_normalize_title_hit_crossref(self):
+        """_normalize_title_hit maps crossref fields to _decide_existence schema."""
+        hit = {
+            "title": "Test Paper",
+            "authors": ["Alice", "Bob"],
+            "year": 2024,
+            "doi": "10.1/test",
+            "url": "https://doi.org/10.1/test",
+            "abstract": "An abstract",
+        }
+        norm = _normalize_title_hit(hit, "crossref")
+        assert norm["title"] == "Test Paper"
+        assert norm["authors"] == ["Alice", "Bob"]
+        assert norm["year"] == 2024
+        assert norm["doi"] == "10.1/test"
+        assert norm["canonical_url"] == "https://doi.org/10.1/test"
+        assert norm["abstract"] == "An abstract"
+
+    def test_normalize_title_hit_semantic_scholar(self):
+        """_normalize_title_hit maps s2 fields (uses url fallback)."""
+        hit = {
+            "title": "S2 Paper",
+            "authors": ["Carol"],
+            "year": 2023,
+            "doi": "10.2/s2",
+            "url": "https://www.semanticscholar.org/paper/123",
+            "abstract": None,
+        }
+        norm = _normalize_title_hit(hit, "semantic_scholar")
+        assert norm["title"] == "S2 Paper"
+        assert norm["canonical_url"] == "https://www.semanticscholar.org/paper/123"
+        assert norm["abstract"] == ""
+
+    @pytest.mark.asyncio
+    async def test_fetch_by_title_returns_match(self):
+        """_fetch_by_title picks the candidate with DOI when titles agree."""
+        crossref_hits = [
+            {"title": "Just A Title", "authors": ["B"], "doi": "10.2/title",
+             "url": "https://doi.org/10.2/title", "year": 2024, "abstract": ""},
+        ]
+        s2_hits = [
+            {"title": "Just A Title", "authors": ["B"], "doi": None,
+             "url": "https://s2/paper/1", "year": 2024, "abstract": ""},
+        ]
+
+        async def mock_crossref(queries, top_k=8, **kwargs):
+            return crossref_hits
+
+        async def mock_s2(queries, top_k=8, **kwargs):
+            return s2_hits
+
+        with patch(
+            "apps.api.app.services.retrieval.adapters.crossref_search.crossref_search",
+            new=mock_crossref,
+        ), patch(
+            "apps.api.app.services.retrieval.adapters.semantic_scholar_search.semantic_scholar_search",
+            new=mock_s2,
+        ):
+            result = await _fetch_by_title("Just A Title", authors=["B"])
+
+        assert result is not None
+        assert result["doi"] == "10.2/title"
+        assert result["title"] == "Just A Title"
+
+    @pytest.mark.asyncio
+    async def test_fetch_by_title_no_match_returns_none(self):
+        """_fetch_by_title returns None when no title agrees."""
+        crossref_hits = [
+            {"title": "Completely Different", "authors": ["X"], "doi": "10.1/x"},
+        ]
+        s2_hits = []
+
+        async def mock_crossref(queries, top_k=8, **kwargs):
+            return crossref_hits
+
+        async def mock_s2(queries, top_k=8, **kwargs):
+            return s2_hits
+
+        with patch(
+            "apps.api.app.services.retrieval.adapters.crossref_search.crossref_search",
+            new=mock_crossref,
+        ), patch(
+            "apps.api.app.services.retrieval.adapters.semantic_scholar_search.semantic_scholar_search",
+            new=mock_s2,
+        ):
+            result = await _fetch_by_title("Just A Title")
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_fetch_by_title_network_failure_returns_none(self):
+        """_fetch_by_title returns None (not raises) when both sources fail."""
+        async def mock_crossref(queries, top_k=8, **kwargs):
+            raise ConnectionError("crossref down")
+
+        async def mock_s2(queries, top_k=8, **kwargs):
+            raise ConnectionError("s2 down")
+
+        with patch(
+            "apps.api.app.services.retrieval.adapters.crossref_search.crossref_search",
+            new=mock_crossref,
+        ), patch(
+            "apps.api.app.services.retrieval.adapters.semantic_scholar_search.semantic_scholar_search",
+            new=mock_s2,
+        ):
+            result = await _fetch_by_title("Just A Title")
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_fetch_by_title_prefers_doi_candidate(self):
+        """When two sources return matches, the one with DOI wins."""
+        crossref_hits = [
+            {"title": "Paper X", "authors": ["A"], "doi": "10.1/x",
+             "url": "https://doi.org/10.1/x", "year": 2024, "abstract": ""},
+        ]
+        s2_hits = [
+            {"title": "Paper X", "authors": ["A"], "doi": None,
+             "url": "https://s2/paper/x", "year": 2024, "abstract": ""},
+        ]
+
+        async def mock_crossref(queries, top_k=8, **kwargs):
+            return crossref_hits
+
+        async def mock_s2(queries, top_k=8, **kwargs):
+            return s2_hits
+
+        with patch(
+            "apps.api.app.services.retrieval.adapters.crossref_search.crossref_search",
+            new=mock_crossref,
+        ), patch(
+            "apps.api.app.services.retrieval.adapters.semantic_scholar_search.semantic_scholar_search",
+            new=mock_s2,
+        ):
+            result = await _fetch_by_title("Paper X")
+
+        assert result is not None
+        assert result["doi"] == "10.1/x"
+
+    def test_resolve_title_seed_verified(self):
+        """_resolve_one_seed calls _fetch_by_title and promotes to verified."""
+        from apps.api.app.services.agents.graph.nodes.seed_resolver import _resolve_one_seed
+
+        title_fetched = {
+            "title": "Just A Title", "authors": ["B"], "doi": "10.2/title",
+            "canonical_url": "https://doi.org/10.2/title", "year": 2024,
+            "abstract": "",
+        }
+
+        async def mock_fetch_by_title(title, authors=None):
+            return title_fetched
+
+        with patch(
+            "apps.api.app.services.agents.graph.nodes.seed_resolver._fetch_by_title",
+            new=mock_fetch_by_title,
+        ):
+            import asyncio
+            card = asyncio.run(_resolve_one_seed(
+                "s1",
+                {"seed_id": "s1", "title": "Just A Title"},
+                offline=False,
+            ))
+
+        assert card["existence_status"] == "verified"
+        assert card["resolved_title"] == "Just A Title"
+        assert card["doi"] == "10.2/title"
+        assert card["canonical_url"] == "https://doi.org/10.2/title"
+
+    def test_resolve_title_seed_ambiguous_on_no_match(self):
+        """_resolve_one_seed stays ambiguous when _fetch_by_title returns None."""
+        from apps.api.app.services.agents.graph.nodes.seed_resolver import _resolve_one_seed
+
+        async def mock_fetch_by_title(title, authors=None):
+            return None
+
+        with patch(
+            "apps.api.app.services.agents.graph.nodes.seed_resolver._fetch_by_title",
+            new=mock_fetch_by_title,
+        ):
+            import asyncio
+            card = asyncio.run(_resolve_one_seed(
+                "s2",
+                {"seed_id": "s2", "title": "Obscure Nonexistent Paper"},
+                offline=False,
+            ))
+
+        assert card["existence_status"] == "ambiguous"
+        assert "title search found no authoritative match" in (card.get("repair_hint") or "")
 
 
 # ---------------------------------------------------------------------------
