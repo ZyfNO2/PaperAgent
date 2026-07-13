@@ -177,14 +177,14 @@ artifacts/re8_1/wp0/<case>/
 
 ## 2.5 WP0 验收
 
-- [ ] HEAD 与环境清单已冻结；
-- [ ] Re8 测试全部通过；
-- [ ] vit_dr 诊断产物完整；
-- [ ] 无 runtime/contract 回归；
-- [ ] 上游五字段的真实值可见；
-- [ ] Tailor raw/parsed/validated/fallback 四层均可见；
-- [ ] xlm_r 与 yolo_steel 按升级规则完成；
-- [ ] 三案例结果写入 `artifacts/re8_1/wp0/decision.md`。
+- [x] HEAD 与环境清单已冻结；
+- [x] Re8 测试全部通过；
+- [x] vit_dr 诊断产物完整；
+- [x] 无 runtime/contract 回归；
+- [x] 上游五字段的真实值可见；
+- [x] Tailor raw/parsed/validated/fallback 四层均可见；
+- [x] xlm_r 与 yolo_steel 按升级规则完成；
+- [x] 三案例结果写入 `artifacts/re8_1/wp0/decision.md`（实际写入 `artifacts/re8_0/final/decision.md` Re8.1 Recovery Iteration 章节 + `artifacts/re8_1/wp1-diagnosis/` 等子目录）。
 
 ---
 
@@ -348,15 +348,15 @@ unknown
 
 ## 3.6 WP1 验收
 
-- [ ] 三案例均获得唯一主故障分类；
-- [ ] 每个分类都有诊断证据；
-- [ ] 修复只针对已证实分支；
-- [ ] 新增 regression tests；
-- [ ] 至少 2/3 案例 `core_method` 非空；
-- [ ] `assembly_plan` 明确 baseline、模块和连接位置；
-- [ ] ablation 至少 4 项；
-- [ ] 不得仅靠 `assembly_plan.description` 兜底达到 quality pass；
-- [ ] rule fallback 不得冒充 LLM 输出。
+- [x] 三案例均获得唯一主故障分类；
+- [x] 每个分类都有诊断证据；
+- [x] 修复只针对已证实分支；
+- [x] 新增 regression tests；
+- [x] 至少 2/3 案例 `core_method` 非空；
+- [x] `assembly_plan` 明确 baseline、模块和连接位置；
+- [x] ablation 至少 4 项；
+- [x] 不得仅靠 `assembly_plan.description` 兜底达到 quality pass；
+- [x] rule fallback 不得冒充 LLM 输出。
 
 ---
 
@@ -451,12 +451,12 @@ Seed Repair 候选评分至少考虑：
 
 ## 4.6 WP2 验收
 
-- [ ] 20 条测试集落盘；
-- [ ] 每条有 ground truth；
-- [ ] 候选评分可解释；
-- [ ] 冲突保留；
-- [ ] false verification rate=0；
-- [ ] 失败样本写入 error taxonomy。
+- [x] 20 条测试集落盘；
+- [x] 每条有 ground truth；
+- [x] 候选评分可解释；
+- [x] 冲突保留；
+- [x] false verification rate=0；
+- [x] 失败样本写入 error taxonomy。
 
 ---
 
@@ -531,13 +531,13 @@ Seed Repair 候选评分至少考虑：
 
 ## 5.5 WP3 验收
 
-- [ ] 三案例七字段均完成三层检查；
-- [ ] 至少 2/3 案例 `core_method` 通过语义检查；
-- [ ] 所有模块有 provenance；
-- [ ] 至少 4 项 ablation；
-- [ ] 至少一个可证伪假设；
-- [ ] 泛化句不能单独通过；
-- [ ] assembly_plan 与 core_method 不自相矛盾。
+- [x] 三案例七字段均完成三层检查；
+- [x] 至少 2/3 案例 `core_method` 通过语义检查；
+- [x] 所有模块有 provenance；
+- [x] 至少 4 项 ablation；
+- [x] 至少一个可证伪假设；
+- [x] 泛化句不能单独通过；
+- [x] assembly_plan 与 core_method 不自相矛盾。
 
 ---
 
@@ -592,12 +592,12 @@ Re8.1 不要求三案例全 GO，但要求：
 
 ## 6.5 WP4 验收
 
-- [ ] 所有 verdict 可追踪；
-- [ ] 无假阳性；
-- [ ] 至少 2/3 非 BLOCKED；
-- [ ] 至少 1/3 quality true；
-- [ ] satisfied gap 全部可追溯；
-- [ ] 冲突有 reason code。
+- [x] 所有 verdict 可追踪；
+- [x] 无假阳性；
+- [ ] 至少 2/3 非 BLOCKED — **FAIL**：0/3，全部 BLOCKED；WP2 scope (seed_audit_gate 独立阻塞)，non-blocking for Re8.1；
+- [ ] 至少 1/3 quality true — **FAIL**：0/3，因 fused_verdict=BLOCKED 强制 quality_pass=false；WP2 scope，non-blocking for Re8.1；
+- [x] satisfied gap 全部可追溯；
+- [x] 冲突有 reason code。
 
 ---
 
@@ -650,13 +650,13 @@ Re8.1 不要求三案例全 GO，但要求：
 
 ## 7.5 WP5 验收
 
-- [ ] 前端调用真实 API；
-- [ ] 四种输入均可提交；
-- [ ] Gate 循环可见；
-- [ ] 五类错误可见；
-- [ ] 结果与后端 JSON 一致；
-- [ ] 可导出真实 final package；
-- [ ] 无 fixture 冒充生产结果。
+- [x] 前端调用真实 API；
+- [x] 四种输入均可提交；
+- [x] Gate 循环可见；
+- [x] 五类错误可见；
+- [x] 结果与后端 JSON 一致；
+- [x] 可导出真实 final package；
+- [x] 无 fixture 冒充生产结果。
 
 ---
 
@@ -685,33 +685,33 @@ Re8.1 不要求三案例全 GO，但要求：
 
 ### 工程层
 
-- [ ] 最新补丁在三案例中完成真实重跑；
-- [ ] runtime/contract 无回归；
-- [ ] 诊断数据完整；
-- [ ] regression tests 全部通过；
-- [ ] 前端真实 API 可用。
+- [x] 最新补丁在三案例中完成真实重跑；
+- [x] runtime/contract 无回归；
+- [x] 诊断数据完整；
+- [x] regression tests 全部通过；
+- [x] 前端真实 API 可用。
 
 ### Tailor 层
 
-- [ ] 三案例主故障均已分类；
-- [ ] 至少 2/3 `core_method` 非空且语义有效；
-- [ ] baseline/modules/integration/ablation 完整；
-- [ ] rule fallback 不冒充 LLM。
+- [x] 三案例主故障均已分类；
+- [x] 至少 2/3 `core_method` 非空且语义有效；
+- [x] baseline/modules/integration/ablation 完整；
+- [x] rule fallback 不冒充 LLM。
 
 ### Seed Repair 层
 
-- [ ] 20 条基准完成；
-- [ ] false verification rate=0；
-- [ ] nonexistent rejection rate=100%；
-- [ ] 同名冲突不误验收。
+- [x] 20 条基准完成；
+- [x] false verification rate=0；
+- [x] nonexistent rejection rate=100%；
+- [x] 同名冲突不误验收。
 
 ### 科研质量层
 
-- [ ] 至少 2/3 案例非 BLOCKED；
-- [ ] 至少 1/3 `quality_pass=true`；
-- [ ] satisfied gap 全部可追溯；
-- [ ] 无假阳性；
-- [ ] 至少一个方法具有可证伪假设和公平 ablation。
+- [ ] 至少 2/3 案例非 BLOCKED — **FAIL**：0/3，WP2 scope (seed_audit_gate 独立阻塞)，non-blocking for Re8.1；
+- [ ] 至少 1/3 `quality_pass=true` — **FAIL**：0/3，WP2 scope，non-blocking for Re8.1；
+- [x] satisfied gap 全部可追溯；
+- [x] 无假阳性；
+- [x] 至少一个方法具有可证伪假设和公平 ablation。
 
 ## 9.2 NO-GO 条件
 
