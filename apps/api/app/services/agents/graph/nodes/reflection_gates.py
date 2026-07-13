@@ -32,6 +32,8 @@ normalize_review_output pattern.
 """
 from __future__ import annotations
 
+import hashlib
+import json as _json
 import logging
 import time
 from typing import Any
@@ -104,6 +106,18 @@ def _get_gate_rounds(state: ResearchState, gate_name: str) -> int:
     return len(results.get(gate_name, []))
 
 
+def _count_rounds_in_cycle(state: ResearchState, gate_name: str, cycle_id: int = 0) -> int:
+    """Return the number of rounds already executed for ``gate_name`` in the given ``cycle_id``.
+
+    Re8.2 WP1: only entries whose ``cycle_id`` matches count toward the
+    per-cycle round cap. Entries with no ``cycle_id`` (legacy) default to
+    cycle_id=0 for backward compatibility.
+    """
+    results = state.get("reflection_gate_results") or {}
+    entries = results.get(gate_name, [])
+    return sum(1 for e in entries if e.get("cycle_id", 0) == cycle_id)
+
+
 def _append_gate_result(
     state: ResearchState,
     gate_name: str,
@@ -119,6 +133,104 @@ def _append_gate_result(
     gate_log.append(result)
     existing[gate_name] = gate_log
     return existing
+
+
+# ── Re8.2 WP1: stable input fingerprint for gate pass reuse ──────────────────
+
+FINGERPRINT_FIELDS = (
+    "tailored_method",
+    "evidence_gaps",
+    "seed_cards",
+)
+
+
+def _tailor_gate_input_fingerprint(state: ResearchState) -> str:
+    """Compute a stable SHA-256 fingerprint of tailor_gate input state.
+
+    The fingerprint covers only stable semantic fields:
+      - ``tailored_method`` (verdict, assembly_plan.description, ablation_matrix)
+      - ``evidence_gaps`` (gap_id, status)
+      - ``seed_cards`` (seed_id, existence_status, role)
+
+    It MUST NOT include timestamps, trace ids, elapsed time, or any
+    ephemeral field whose change does not reflect a meaningful input
+    change. Two invocations with the same research state will produce
+    the same fingerprint.
+    """
+    tailored = state.get("tailored_method") or {}
+    gaps = state.get("evidence_gaps") or []
+    seed_cards = state.get("seed_cards") or []
+    fields = {
+        "tailored_method": {
+            "verdict": tailored.get("verdict"),
+            "assembly_plan_description": (tailored.get("assembly_plan") or {}).get("description"),
+            "ablation_matrix": tailored.get("ablation_matrix"),
+        },
+        "evidence_gaps": sorted(
+            [{"gap_id": g.get("gap_id"), "status": g.get("status")} for g in gaps],
+            key=lambda x: str(x.get("gap_id", "")),
+        ),
+        "seed_cards": sorted(
+            [
+                {
+                    "seed_id": c.get("seed_id"),
+                    "existence_status": c.get("existence_status"),
+                    "role": c.get("role"),
+                }
+                for c in seed_cards
+            ],
+            key=lambda x: str(x.get("seed_id", "")),
+        ),
+    }
+    raw = _json.dumps(fields, sort_keys=True, ensure_ascii=False, default=str)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _reuse_gate_pass(
+    state: ResearchState,
+    previous: dict[str, Any],
+) -> dict[str, Any]:
+    """Return a state patch that reuses the previous gate pass result.
+
+    This function is called when the current input fingerprint matches the
+    fingerprint stored in ``last_gate_pass[gate_name]``. It emits a trace
+    entry (with ``reused_previous_pass=True``) and a ledger entry, but does
+    NOT append to ``reflection_gate_results`` — therefore the round counter
+    does not increment, and the gate cap is not affected.
+    """
+    t0 = time.time()
+    gate_name = previous.get("gate_name", GATE_TAILOR)
+    prev_round = previous.get("round_idx", 0)
+
+    output_summary = {"verdict": "pass", "generated_by": "reuse"}
+    input_summary = {"round_idx": prev_round, "activated": True, "reused_previous_pass": True}
+
+    trace = _emit(
+        f"reflection_gate::{gate_name}",
+        t0,
+        input_summary,
+        output_summary,
+        [],
+        "n/a",
+        [],
+        state_keys=["reflection_gate_results", "reasoning_ledger", "trace_events"],
+    )
+
+    ledger = _make_gate_ledger(
+        gate_name=gate_name,
+        decision_id=f"{gate_name}-reuse-r{prev_round}",
+        result=previous,
+    )
+
+    logger.info(
+        "reflection_gate %s: reused previous pass (round=%d, fingerprint match)",
+        gate_name, prev_round,
+    )
+
+    return {
+        "reasoning_ledger": [ledger],
+        "trace_events": [trace],
+    }
 
 
 # ── Schema enforcement (chokepoint for model-switch stability) ──────────────
@@ -149,13 +261,14 @@ def _normalize_gate_output(
     *,
     gate_name: str,
     round_idx: int,
+    cycle_id: int = 0,
     generated_by: str = "llm",
 ) -> dict[str, Any]:
     """Force any LLM shape into the fixed gate_result schema.
 
     This is the WP6 mirror of WP5's _normalize_tailor_output /
     normalize_review_output: regardless of which model produced ``raw``,
-    the output always carries the same 7 keys so downstream consumers
+    the output always carries the same keys so downstream consumers
     don't need to special-case per model.
     """
     raw = raw if isinstance(raw, dict) else {}
@@ -168,6 +281,7 @@ def _normalize_gate_output(
         gate_name=gate_name,
         verdict=_clamp_verdict(raw.get("verdict")),
         round_idx=round_idx,
+        cycle_id=cycle_id,
         re_search_requests=_ensure_str_list(raw.get("re_search_requests")),
         unresolved_gaps=_ensure_str_list(raw.get("unresolved_gaps")),
         rationale=rationale,
@@ -185,6 +299,7 @@ def _normalize_gate_output(
             gate_name=gate_name,
             verdict="unresolved",
             round_idx=round_idx,
+            cycle_id=cycle_id,
             rationale=f"normalization failed: {errs}",
             generated_by=generated_by,
         )
@@ -576,6 +691,7 @@ def _run_gate(
     gate_name: str,
     profile: str = "premium_review",
     contract_id: str = "reflection-gate/v1",
+    cycle_id: int | None = None,
 ) -> dict[str, Any]:
     """Run a Reflection Gate.
 
@@ -589,10 +705,17 @@ def _run_gate(
       5. Normalize via _normalize_gate_output (schema stability).
       6. Write ReasoningLedgerEntry + trace_events + reflection_gate_results.
 
+    ``cycle_id`` (Re8.2 WP1): when provided, the round cap is computed
+    per-cycle (only entries with the matching cycle_id count). When
+    ``None``, falls back to the global round count (legacy behavior).
+
     Returns a state patch dict.
     """
     t0 = time.time()
-    round_idx = _get_gate_rounds(state, gate_name)
+    if cycle_id is not None:
+        round_idx = _count_rounds_in_cycle(state, gate_name, cycle_id)
+    else:
+        round_idx = _get_gate_rounds(state, gate_name)
 
     # ── 1. Mode short-circuit ──────────────────────────────────────────────
     if not is_react_reflection_enabled(state):
@@ -600,6 +723,7 @@ def _run_gate(
             gate_name=gate_name,
             verdict="pass",
             round_idx=round_idx,
+            cycle_id=cycle_id or 0,
             rationale=(
                 f"short-circuit: run_mode={state.get('run_mode', 'missing')}, "
                 f"reasoning_policy={state.get('reasoning_policy', 'missing')}"
@@ -631,6 +755,7 @@ def _run_gate(
             gate_name=gate_name,
             verdict="unresolved",
             round_idx=round_idx,
+            cycle_id=cycle_id or 0,
             rationale=f"cap reached: {round_idx}/{REFLECTION_GATE_MAX_ROUNDS}",
             generated_by="rule",
         )
@@ -658,6 +783,8 @@ def _run_gate(
     prompt = prompt_builder(state)
     prov = profile
 
+    effective_cycle_id = cycle_id or 0
+
     try:
         from apps.api.app.services.agents.graph.validators.llm_output_validator import (
             call_json_with_validation,
@@ -675,14 +802,14 @@ def _run_gate(
         if isinstance(raw, dict):
             result = _normalize_gate_output(
                 raw, gate_name=gate_name, round_idx=round_idx,
-                generated_by="llm",
+                cycle_id=effective_cycle_id, generated_by="llm",
             )
         else:
             # LLM returned non-dict or None — use rule fallback
             rule_out = _RULE_FALLBACKS[gate_name](state)
             result = _normalize_gate_output(
                 rule_out, gate_name=gate_name, round_idx=round_idx,
-                generated_by="fallback",
+                cycle_id=effective_cycle_id, generated_by="fallback",
             )
             prov = "fallback"
     except Exception as exc:
@@ -691,7 +818,7 @@ def _run_gate(
         rule_out = _RULE_FALLBACKS[gate_name](state)
         result = _normalize_gate_output(
             rule_out, gate_name=gate_name, round_idx=round_idx,
-            generated_by="fallback",
+            cycle_id=effective_cycle_id, generated_by="fallback",
         )
         prov = "fallback"
 
@@ -710,11 +837,31 @@ def _run_gate(
         decision_id=f"{gate_name}-r{round_idx}",
         result=result,
     )
-    return {
+
+    # Re8.2 WP1: update last_gate_pass on verdict=pass for tailor_gate
+    last_gate_pass_update: dict[str, dict[str, Any]] | None = None
+    if gate_name == GATE_TAILOR and result.get("verdict") == "pass":
+        fingerprint = _tailor_gate_input_fingerprint(state)
+        last_gate_pass_update = {
+            gate_name: {
+                "verdict": "pass",
+                "round_idx": round_idx,
+                "cycle_id": effective_cycle_id,
+                "input_fingerprint": fingerprint,
+                "generated_by": result.get("generated_by", "llm"),
+                "rationale": result.get("rationale", ""),
+            }
+        }
+
+    state_patch: dict[str, Any] = {
         "reflection_gate_results": _append_gate_result(state, gate_name, result),
         "reasoning_ledger": [ledger],
         "trace_events": [trace],
     }
+    if last_gate_pass_update is not None:
+        state_patch["last_gate_pass"] = last_gate_pass_update
+
+    return state_patch
 
 
 # ── Public LangGraph node wrappers ─────────────────────────────────────────
@@ -726,8 +873,45 @@ def seed_audit_gate_node(state: ResearchState) -> dict[str, Any]:
 
 
 def tailor_gate_node(state: ResearchState) -> dict[str, Any]:
-    """LangGraph node: Tailor Reflection Gate (Plan §8.7 #2)."""
-    return _run_gate(state, gate_name=GATE_TAILOR)
+    """LangGraph node: Tailor Reflection Gate (Plan §8.7 #2).
+
+    Re8.2 WP1: before running the gate, checks whether the input state
+    has changed since the last pass via a stable fingerprint:
+
+    - If fingerprint matches a previous pass verdict → reuse pass
+      (no LLM call, no round increment).
+    - If fingerprint differs from the previous pass → increment cycle
+      counter so the new cycle starts with a fresh round counter.
+    """
+    # ── Fingerprint-based pass reuse ──────────────────────────────────────
+    previous = (state.get("last_gate_pass") or {}).get(GATE_TAILOR)
+    if previous and previous.get("verdict") == "pass":
+        current_fp = _tailor_gate_input_fingerprint(state)
+        if previous.get("input_fingerprint") == current_fp:
+            return _reuse_gate_pass(state, previous)
+
+    # ── Cycle management ──────────────────────────────────────────────────
+    cycle_patch: dict[str, Any] = {}
+    if previous is not None:
+        current_fp = _tailor_gate_input_fingerprint(state)
+        if previous.get("input_fingerprint") != current_fp:
+            current_cycle = (state.get("gate_cycle_id") or {}).get(GATE_TAILOR, 0)
+            new_cycle = int(current_cycle) + 1
+            cycle_patch = {
+                "gate_cycle_id": {
+                    **(state.get("gate_cycle_id") or {}),
+                    GATE_TAILOR: new_cycle,
+                }
+            }
+            logger.info(
+                "tailor_gate: input fingerprint changed — new cycle %d (was %d)",
+                new_cycle, current_cycle,
+            )
+
+    current_cycle = (state.get("gate_cycle_id") or {}).get(GATE_TAILOR, 0)
+    result = _run_gate(state, gate_name=GATE_TAILOR, cycle_id=current_cycle)
+    result.update(cycle_patch)
+    return result
 
 
 def final_review_gate_node(state: ResearchState) -> dict[str, Any]:
@@ -899,7 +1083,11 @@ __all__ = [
     "_normalize_gate_output",
     "_clamp_verdict",
     "_get_gate_rounds",
+    "_count_rounds_in_cycle",
     "_make_gate_ledger",
+    # Re8.2 WP1 fingerprint + reuse
+    "_tailor_gate_input_fingerprint",
+    "_reuse_gate_pass",
     # Routing
     "route_after_gate",
     # Nodes

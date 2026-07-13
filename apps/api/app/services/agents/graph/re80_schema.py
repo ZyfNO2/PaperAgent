@@ -124,6 +124,7 @@ def make_reflection_gate_result(
     gate_name: str,
     verdict: str = "unresolved",
     round_idx: int = 0,
+    cycle_id: int = 0,
     re_search_requests: list[str] | None = None,
     unresolved_gaps: list[str] | None = None,
     rationale: str = "",
@@ -136,6 +137,11 @@ def make_reflection_gate_result(
       - revise      → re-search requested; bound to a gap_id; round < cap
       - unresolved  → round cap reached; downstream must accept gaps
 
+    ``cycle_id``: Re8.2 WP1 — when the gate input changes (detected via
+    stable input fingerprint), a new cycle begins and the per-cycle round
+    counter resets to 0. Old cycle rounds do not count toward the new
+    cycle's cap.
+
     The result is consumed by both the graph router (to decide re-search)
     and the trace_events / ledger fields (for auditability).
     """
@@ -145,6 +151,7 @@ def make_reflection_gate_result(
         "gate_name": gate_name,
         "verdict": verdict,
         "round_idx": int(round_idx),
+        "cycle_id": int(cycle_id),
         "re_search_requests": list(re_search_requests or []),
         "unresolved_gaps": list(unresolved_gaps or []),
         "rationale": rationale,
