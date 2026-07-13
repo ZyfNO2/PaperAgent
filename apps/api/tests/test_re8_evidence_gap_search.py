@@ -19,6 +19,7 @@ import pytest
 from apps.api.app.services.agents.graph.nodes.search_agent import (
     _build_gap_lookup,
     _check_gap_resolved,
+    _pre_execute_plan_queries,
     search_agent_node,
 )
 from apps.api.app.services.agents.graph.nodes.search_planner import (
@@ -983,3 +984,278 @@ class TestP17bRemovalAndQueryIdStability:
         # Results go to unassigned_evidence
         unassigned = result.get("unassigned_evidence") or []
         assert len(unassigned) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Re8.1 WP1-B: pre-execution of gap-bound plan_queries
+# ---------------------------------------------------------------------------
+
+class TestRe81PreExecution:
+    """Re8.1 WP1-B: Pre-execute gap-bound plan_queries before the ReAct loop.
+
+    Root cause (WP1-A diagnosis): LLM ReAct loop does not echo
+    plan_query_id in tool calls → all search_steps.gap_id=null → gaps
+    stay open → tailor_gate revise → cap reached → BLOCKED.
+
+    Fix: pre-execute gap-bound plan_queries before the ReAct loop starts,
+    writing plan_query_id + gap_id directly into step entries. The ReAct
+    loop then only does supplementary searches.
+    """
+
+    def test_pre_execution_attributes_gap_id(self, monkeypatch):
+        """Given a gap-bound search_plan, all pre-executed tool_call steps
+        must carry a non-empty gap_id and plan_query_id."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        # LLM stops immediately — pre-execution does the heavy lifting
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper 1", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        pre_tool_steps = [
+            s for s in result["search_steps"]
+            if s.get("pre_executed") and s.get("type") == "tool_call"
+        ]
+        assert len(pre_tool_steps) > 0, "expected pre-executed tool_call steps"
+        for step in pre_tool_steps:
+            assert step.get("gap_id"), (
+                f"pre-executed step missing gap_id: {step}"
+            )
+            assert step.get("plan_query_id"), (
+                f"pre-executed step missing plan_query_id: {step}"
+            )
+            assert step.get("query_id"), (
+                f"pre-executed step missing query_id: {step}"
+            )
+            assert step.get("evidence_delta") is not None, (
+                f"pre-executed step missing evidence_delta: {step}"
+            )
+
+    def test_pre_execution_skips_non_gap_queries(self, monkeypatch):
+        """plan_queries without gap_id must NOT be pre-executed."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = {
+            "queries": [
+                {"tool": "arxiv", "query": "with gap", "gap_id": "G1",
+                 "success_condition": "find 1+", "lane_id": "anchor"},
+                {"tool": "arxiv", "query": "no gap", "why": "test"},
+            ],
+            "gap_bound": True,
+        }
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "P", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        pre_tool_steps = [
+            s for s in result["search_steps"]
+            if s.get("pre_executed") and s.get("type") == "tool_call"
+        ]
+        pre_queries = {(s.get("tool"), s.get("query")) for s in pre_tool_steps}
+        assert ("arxiv", "with gap") in pre_queries
+        assert ("arxiv", "no gap") not in pre_queries, (
+            "non-gap query should not be pre-executed"
+        )
+
+    def test_pre_execution_dedupes_duplicates(self, monkeypatch):
+        """Duplicate (tool, query) pairs in the plan must be pre-executed
+        only once."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = {
+            "queries": [
+                {"tool": "arxiv", "query": "dup query", "gap_id": "G1",
+                 "success_condition": "find 1+", "lane_id": "L1"},
+                {"tool": "arxiv", "query": "dup query", "gap_id": "G1",
+                 "success_condition": "find 1+", "lane_id": "L1"},
+                {"tool": "arxiv", "query": "dup query", "gap_id": "G1",
+                 "success_condition": "find 1+", "lane_id": "L1"},
+            ],
+            "gap_bound": True,
+        }
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "P", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        pre_tool_steps = [
+            s for s in result["search_steps"]
+            if s.get("pre_executed") and s.get("type") == "tool_call"
+        ]
+        dup_steps = [s for s in pre_tool_steps if s.get("query") == "dup query"]
+        assert len(dup_steps) == 1, (
+            f"expected 1 pre-executed step for duplicated query, got {len(dup_steps)}"
+        )
+
+    def test_react_loop_sees_pre_executed_results(self, monkeypatch):
+        """When the ReAct loop starts, state must already contain
+        pre-executed papers. The LLM should see them via paper_candidates."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        # LLM stops immediately because pre-execution collected papers
+        decisions = [{"action": "stop", "reason": "pre-executed papers enough"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Pre-exec Paper", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        # Pre-executed papers must be in paper_candidates
+        assert len(result["paper_candidates"]) > 0, (
+            "paper_candidates should contain pre-executed papers"
+        )
+        titles = [p.get("title", "") for p in result["paper_candidates"]]
+        assert any("Pre-exec" in t for t in titles), (
+            f"pre-executed paper not in candidates: {titles}"
+        )
+
+    def test_pre_execution_does_not_reintroduce_p1_7b_fallback(self, monkeypatch):
+        """Pre-execution must NOT mark all gaps as partially_satisfied.
+
+        P1-7b fallback (removed) force-attributed partial satisfaction to
+        ALL open gaps when gap_lookup missed. Pre-execution must only
+        update gaps that are actually addressed by plan_queries — gaps
+        whose gap_id doesn't match any plan_query must stay 'open'.
+
+        This test uses evidence_gaps with gap_ids that DON'T match the
+        plan's gap_ids, so pre-execution should not change their status.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        # evidence_gaps with gap_ids that DON'T match plan's gap-s1-* ids
+        gaps = [
+            make_evidence_gap(gap_id="UNRELATED-GAP-1", question="q1", status="open"),
+            make_evidence_gap(gap_id="UNRELATED-GAP-2", question="q2", status="open"),
+        ]
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        # Unrelated gaps must STAY "open" — pre-execution must not
+        # force-attribute partial satisfaction to gaps it didn't address.
+        for gap in result["evidence_gaps"]:
+            assert gap["status"] == "open", (
+                f"gap {gap['gap_id']} status={gap['status']} "
+                f"(should remain open — pre-execution must not reintroduce P1-7b)"
+            )
+
+    def test_plan_query_id_propagation(self, monkeypatch):
+        """Pre-executed steps must carry the correct plan_query_id that
+        matches _build_gap_lookup's query_id for the same (tool, query)."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        by_tool_query, _by_query_id = _build_gap_lookup(plan)
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "P", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        pre_tool_steps = [
+            s for s in result["search_steps"]
+            if s.get("pre_executed") and s.get("type") == "tool_call"
+        ]
+        assert len(pre_tool_steps) > 0
+        for step in pre_tool_steps:
+            key = (step["tool"], step["query"])
+            expected_meta = by_tool_query.get(key)
+            assert expected_meta, (
+                f"pre-executed step key {key} not in by_tool_query"
+            )
+            expected_qid = expected_meta["query_id"]
+            assert step.get("plan_query_id") == expected_qid, (
+                f"step plan_query_id={step.get('plan_query_id')!r} "
+                f"expected {expected_qid!r}"
+            )
+            assert step.get("query_id") == expected_qid, (
+                f"step query_id={step.get('query_id')!r} "
+                f"expected {expected_qid!r}"
+            )
+
+    def test_backward_compatibility_no_search_plan(self, monkeypatch):
+        """When search_plan is empty, pre-execution is a no-op and
+        behavior matches the original (pre-Re8.1) implementation."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        decisions = [
+            {"action": "search", "tool": "arxiv", "query": "YOLO", "reason": "go"},
+            {"action": "stop", "reason": "done"},
+        ]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": {},  # empty plan — pre-execution must be no-op
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "P", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        # No pre-executed steps
+        pre_steps = [s for s in result["search_steps"] if s.get("pre_executed")]
+        assert len(pre_steps) == 0, (
+            "empty plan should produce no pre-executed steps"
+        )
+        # ReAct loop ran normally
+        tool_steps = [s for s in result["search_steps"] if s.get("type") == "tool_call"]
+        assert len(tool_steps) >= 1
+        # The tool_step from ReAct loop is NOT pre_executed
+        assert not tool_steps[0].get("pre_executed")
+        # No evidence_delta (non-gap-bound plan)
+        assert "evidence_delta" not in tool_steps[0]
+        assert "gap_id" not in tool_steps[0]
