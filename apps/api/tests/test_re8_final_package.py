@@ -820,3 +820,204 @@ class TestFinalRecommendationNodeIntegration:
         rationale = patch["fused_verdict_rationale"]
         assert isinstance(rationale, str)
         assert rationale.strip() != ""
+
+
+# ── Re8.0 post-audit: _pkg_str list-typed work_package regression ─────────
+
+
+class TestLowBarReviewListTypedWorkPackage:
+    """Regression tests for commit e0239419.
+
+    ``low_bar_review_node`` previously called ``(pkg.get("data_source") or
+    "").strip().lower()``, which crashed with ``AttributeError`` when the
+    work_package LLM returned a list for ``data_source`` /
+    ``experiment_metrics`` / ``baseline`` / ``improved_module_source``.
+    The fix added ``_pkg_str()`` helper that coerces list → joined str
+    before strip. These tests pin the fix so it cannot silently regress.
+    """
+
+    def _state_with_pkg(self, pkg: dict[str, Any]) -> dict[str, Any]:
+        """Minimal state that exercises low_bar_review_node's pkg loop."""
+        state = _full_state()
+        state["topic"] = "test topic"
+        # Provide enough papers to avoid the "no verified papers" guard
+        # short-circuit (which would skip the pkg loop entirely).
+        state["verified_papers"] = [
+            {"title": "Verified Paper One"},
+            {"title": "Verified Paper Two"},
+            {"title": "Verified Paper Three"},
+        ]
+        state["baseline_candidates"] = []
+        state["parallel_candidates"] = []
+        state["dataset_candidates"] = []
+        state["repo_candidates"] = []
+        state["work_packages"] = [pkg]
+        state["evidence_graph"] = {}
+        return state
+
+    def test_data_source_as_list_does_not_crash(self):
+        """List-typed data_source must not raise AttributeError."""
+        from apps.api.app.services.agents.graph.nodes.content import (
+            low_bar_review_node,
+        )
+
+        pkg = {
+            "baseline": "Verified Paper One",
+            "improved_module_source": "Verified Paper Two",
+            "data_source": ["NEU-DET", "GC10-DET"],  # list, not str
+            "experiment_metrics": "mAP@0.5",
+        }
+        # Must not raise.
+        patch = low_bar_review_node(self._state_with_pkg(pkg))
+        # Package should be kept (baseline + module_source are in evidence).
+        assert patch["low_bar_review"]["n_packages_after_review"] == 1
+
+    def test_experiment_metrics_as_list_does_not_crash(self):
+        """List-typed experiment_metrics must not raise AttributeError."""
+        from apps.api.app.services.agents.graph.nodes.content import (
+            low_bar_review_node,
+        )
+
+        pkg = {
+            "baseline": "Verified Paper One",
+            "improved_module_source": "Verified Paper Two",
+            "data_source": "NEU-DET",
+            "experiment_metrics": ["mAP@0.5", "F1", "Precision"],  # list
+        }
+        patch = low_bar_review_node(self._state_with_pkg(pkg))
+        assert patch["low_bar_review"]["n_packages_after_review"] == 1
+
+    def test_baseline_as_list_does_not_crash(self):
+        """List-typed baseline must not raise AttributeError.
+
+        Note: list-typed baseline will likely NOT match evidence_titles
+        (since the joined str "verified paper one" != any title), so the
+        package should be DROPPED with an issue — but no crash.
+        """
+        from apps.api.app.services.agents.graph.nodes.content import (
+            low_bar_review_node,
+        )
+
+        pkg = {
+            "baseline": ["YOLOv8", "Faster R-CNN"],  # list
+            "improved_module_source": "Verified Paper Two",
+            "data_source": "NEU-DET",
+            "experiment_metrics": "mAP@0.5",
+        }
+        patch = low_bar_review_node(self._state_with_pkg(pkg))
+        # Package dropped because joined baseline not in evidence_titles.
+        assert patch["low_bar_review"]["n_packages_after_review"] == 0
+        # Issues list should mention the baseline mismatch.
+        assert any("baseline" in i for i in patch["low_bar_review"]["issues"])
+
+    def test_improved_module_source_as_list_does_not_crash(self):
+        """List-typed improved_module_source must not raise."""
+        from apps.api.app.services.agents.graph.nodes.content import (
+            low_bar_review_node,
+        )
+
+        pkg = {
+            "baseline": "Verified Paper One",
+            "improved_module_source": ["CBAM", "BiFPN"],  # list
+            "data_source": "NEU-DET",
+            "experiment_metrics": "mAP@0.5",
+        }
+        patch = low_bar_review_node(self._state_with_pkg(pkg))
+        # Dropped because joined module_source not in evidence_titles.
+        assert patch["low_bar_review"]["n_packages_after_review"] == 0
+
+    def test_str_typed_fields_still_work_backward_compat(self):
+        """Str-typed fields (the original happy path) must still work."""
+        from apps.api.app.services.agents.graph.nodes.content import (
+            low_bar_review_node,
+        )
+
+        pkg = {
+            "baseline": "Verified Paper One",
+            "improved_module_source": "Verified Paper Two",
+            "data_source": "NEU-DET",  # str
+            "experiment_metrics": "mAP@0.5",  # str
+        }
+        patch = low_bar_review_node(self._state_with_pkg(pkg))
+        assert patch["low_bar_review"]["n_packages_after_review"] == 1
+
+    def test_none_typed_fields_handled(self):
+        """None values (missing fields) must not raise — same as old
+        ``(None or "").strip()`` behavior."""
+        from apps.api.app.services.agents.graph.nodes.content import (
+            low_bar_review_node,
+        )
+
+        pkg = {
+            "baseline": None,
+            "improved_module_source": None,
+            "data_source": None,
+            "experiment_metrics": None,
+        }
+        patch = low_bar_review_node(self._state_with_pkg(pkg))
+        # All None → empty strings → no matches → package kept (empty
+        # strings don't trigger the "not in evidence_titles" drop).
+        assert patch["low_bar_review"]["n_packages_after_review"] == 1
+
+
+# ── Re8.0 post-audit: graph topology (fulltext → paper_understanding) ────
+
+
+class TestResearchGraphTopologyPostAudit:
+    """Regression tests for commit 73d97fab.
+
+    The graph node order was changed from
+    ``paper_understanding → fulltext_acquisition → method_family_explorer``
+    to ``fulltext_acquisition → paper_understanding → method_family_explorer``
+    so that paper_understanding can parse the PDF that fulltext_acquisition
+    just downloaded. These tests pin the topology so it cannot silently
+    revert.
+    """
+
+    def test_fulltext_acquisition_precedes_paper_understanding(self):
+        """``fulltext_acquisition`` must be an upstream neighbor of
+        ``paper_understanding`` in the graph (i.e., the edge
+        ``fulltext_acquisition → paper_understanding`` exists)."""
+        from apps.api.app.services.agents.graph.research_graph import build_graph
+
+        graph = build_graph().get_graph()
+        edges = {(e.source, e.target) for e in graph.edges}
+        # Core post-audit edge must exist.
+        assert ("fulltext_acquisition", "paper_understanding") in edges, (
+            "graph topology regression: fulltext_acquisition → "
+            "paper_understanding edge missing (commit 73d97fab reverted?)"
+        )
+
+    def test_paper_understanding_precedes_method_family_explorer(self):
+        """``paper_understanding`` must be upstream of
+        ``method_family_explorer``."""
+        from apps.api.app.services.agents.graph.research_graph import build_graph
+
+        graph = build_graph().get_graph()
+        edges = {(e.source, e.target) for e in graph.edges}
+        assert ("paper_understanding", "method_family_explorer") in edges
+
+    def test_old_paper_understanding_to_fulltext_edge_removed(self):
+        """The old (reversed) edge ``paper_understanding → fulltext_acquisition``
+        must NOT exist (commit 73d97fab removed it). If it does, the
+        graph has a cycle and paper_understanding runs before PDF download."""
+        from apps.api.app.services.agents.graph.research_graph import build_graph
+
+        graph = build_graph().get_graph()
+        edges = {(e.source, e.target) for e in graph.edges}
+        assert ("paper_understanding", "fulltext_acquisition") not in edges, (
+            "graph topology regression: old reversed edge "
+            "paper_understanding → fulltext_acquisition still present"
+        )
+
+    def test_seed_audit_gate_forwards_to_fulltext_acquisition(self):
+        """``seed_audit_gate`` forward target must be
+        ``fulltext_acquisition`` (not ``paper_understanding`` as before
+        commit 73d97fab)."""
+        from apps.api.app.services.agents.graph.nodes.reflection_gates import (
+            _GATE_FORWARD_TARGETS,
+            GATE_SEED_AUDIT,
+        )
+
+        assert _GATE_FORWARD_TARGETS[GATE_SEED_AUDIT] == "fulltext_acquisition"
+
