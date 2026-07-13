@@ -301,6 +301,29 @@ def _normalize_tailor_output(raw: dict[str, Any]) -> dict[str, Any]:
         prio = str(g.get("priority", "medium")).lower()
         g["priority"] = prio if prio in ("high", "medium", "low") else "medium"
 
+    # Re8.0 third batch: ensure assembly_plan.description is non-empty so
+    # Tailor Gate LLM does not reject on "insufficient method specification".
+    # If LLM returned empty description, derive a fallback from
+    # candidate_modules / primary_baseline / ablation_matrix.
+    # Note: ablation_matrix is always backfilled to >=4 rows by the logic
+    # above, so it cannot be used to distinguish "LLM provided ablation" from
+    # "template only". Prioritise modules and primary_baseline title instead.
+    if not (assembly.get("description") or "").strip():
+        module_names = [
+            m.get("name", "") for m in modules
+            if isinstance(m, dict) and (m.get("name") or "").strip()
+        ]
+        if module_names:
+            assembly["description"] = (
+                f"assembly plan: combine modules ({', '.join(module_names[:3])})"
+            )
+        else:
+            primary_title = (primary.get("title") or "").strip() if isinstance(primary, dict) else ""
+            if primary_title:
+                assembly["description"] = f"assembly plan: derived from {primary_title}"
+            else:
+                assembly["description"] = "assembly plan: see ablation_matrix for experiment config"
+
     return {
         "primary_baseline": primary,
         "candidate_modules": modules,

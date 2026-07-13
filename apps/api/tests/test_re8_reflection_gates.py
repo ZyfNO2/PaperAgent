@@ -362,35 +362,44 @@ class TestRuleFallbackTailor:
         assert out["verdict"] == "pass"
 
 
-class TestTailorGateCoreMethodTolerance:
-    """Step 4: _TAILOR_PROMPT must tolerate empty core_method when
-    assembly_plan.description is non-empty.
+class TestTailorPromptCoreMethodCleanup:
+    """Third batch: _TAILOR_PROMPT must not reference core_method (which
+    does not exist in the tailored_method schema). Instead it should
+    guide the LLM to check assembly_plan.description only.
 
-    Previously the prompt gave no guidance on incomplete upstream, so the
-    LLM would reject any tailored_method with core_method="" even when a
-    valid assembly_plan.description was present. This caused the Tailor
-    gate to emit "unresolved" on cap reached → fused_verdict=BLOCKED.
+    The second batch added a "core_method tolerance" clause, but since
+    core_method is not a schema field, the clause was a no-op — the LLM
+    always saw core_method="" and would revise when assembly_plan.description
+    was also empty. Third batch removes the core_method reference entirely.
     """
 
-    def test_prompt_includes_core_method_tolerance_clause(self):
-        """_TAILOR_PROMPT must mention core_method + assembly_plan fallback."""
+    def test_prompt_does_not_reference_core_method(self):
+        """_TAILOR_PROMPT must not instruct LLM to check core_method as a
+        field to evaluate (the second batch's tolerance clause is removed).
+        The prompt may mention core_method to state it's not a schema field,
+        but must not instruct LLM to check/fill it."""
         prompt = rg._TAILOR_PROMPT
-        assert "core_method" in prompt
+        # Second batch's old tolerance clauses must be removed
+        assert "If `tailored_method.core_method` is empty" not in prompt
+        assert "Do NOT reject solely on missing core_method" not in prompt
+        assert "BOTH core_method AND assembly_plan.description are empty" not in prompt
+
+    def test_prompt_references_assembly_plan_description(self):
+        """_TAILOR_PROMPT must guide LLM to check assembly_plan.description."""
+        prompt = rg._TAILOR_PROMPT
         assert "assembly_plan.description" in prompt
-        assert "Do NOT reject solely on missing core_method" in prompt
 
-    def test_prompt_instructs_revise_when_both_empty(self):
-        """_TAILOR_PROMPT must call for revise when both fields are empty."""
+    def test_prompt_includes_method_specification_note(self):
+        """_TAILOR_PROMPT must include the 'Note on method specification' section."""
         prompt = rg._TAILOR_PROMPT
-        assert "BOTH core_method AND assembly_plan.description are empty" in prompt
-        assert "revise" in prompt
+        assert "Note on method specification" in prompt
+        assert "no top-level `core_method` field" in prompt
 
-    def test_build_tailor_prompt_renders_tolerance_clause(self):
-        """_build_tailor_prompt output must contain the tolerance clause
-        when rendered with a real state (not just the template)."""
+    def test_build_tailor_prompt_renders_method_specification_note(self):
+        """_build_tailor_prompt output must contain the method specification
+        note when rendered with a real state (not just the template)."""
         state = _full_state(tailored_method={
             "verdict": "GO",
-            "core_method": "",
             "assembly_plan": {"description": "Use transformer encoder"},
             "ablation_matrix": [
                 {"experiment_id": "baseline"},
@@ -400,9 +409,10 @@ class TestTailorGateCoreMethodTolerance:
             ],
         })
         rendered = rg._build_tailor_prompt(state)
-        assert "core_method" in rendered
         assert "assembly_plan.description" in rendered
-        assert "Do NOT reject solely on missing core_method" in rendered
+        assert "Note on method specification" in rendered
+        # The prompt should explicitly state core_method is not a schema field
+        assert "no top-level `core_method` field" in rendered
 
 
 class TestRuleFallbackFinalReview:

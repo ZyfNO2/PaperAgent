@@ -307,6 +307,86 @@ class TestNormalizeTailorOutput:
         assert out["evidence_gaps_for_research"][1]["priority"] == "high"
 
 
+class TestNormalizeTailorOutputDescriptionFallback:
+    """Third batch: _normalize_tailor_output must ensure assembly_plan.description
+    is non-empty so Tailor Gate LLM does not reject on "insufficient method
+    specification".
+
+    If LLM returns empty description, derive a fallback from
+    candidate_modules / ablation_matrix / primary_baseline.
+    """
+
+    def test_empty_description_filled_from_modules(self):
+        """LLM returns assembly_plan={"description": ""} + candidate_modules
+        with names -> description should reference module names."""
+        raw = {
+            "assembly_plan": {"description": "", "steps": [], "expected_interfaces": []},
+            "candidate_modules": [
+                {"name": "AttentionHead"},
+                {"name": "FeaturePyramid"},
+            ],
+        }
+        out = _normalize_tailor_output(raw)
+        desc = out["assembly_plan"]["description"]
+        assert desc  # non-empty
+        assert "AttentionHead" in desc
+        assert "FeaturePyramid" in desc
+
+    def test_empty_description_filled_from_ablation_when_no_modules(self):
+        """LLM returns empty description + no modules + has ablation ->
+        description should reference ablation_matrix."""
+        raw = {
+            "assembly_plan": {"description": ""},
+            "candidate_modules": [],
+            "ablation_matrix": [
+                {"experiment_id": "baseline"},
+            ],
+        }
+        out = _normalize_tailor_output(raw)
+        desc = out["assembly_plan"]["description"]
+        assert desc  # non-empty
+        assert "ablation_matrix" in desc
+
+    def test_empty_description_filled_from_primary_baseline(self):
+        """LLM returns empty description + no modules + no ablation + has
+        primary_baseline -> description should reference primary_baseline title."""
+        raw = {
+            "assembly_plan": {"description": ""},
+            "candidate_modules": [],
+            "ablation_matrix": [],
+            "primary_baseline": {"title": "Faster R-CNN"},
+        }
+        out = _normalize_tailor_output(raw)
+        desc = out["assembly_plan"]["description"]
+        assert desc  # non-empty
+        assert "Faster R-CNN" in desc
+
+    def test_non_empty_description_preserved(self):
+        """LLM returns non-empty description -> preserved as-is."""
+        raw = {
+            "assembly_plan": {"description": "custom assembly plan from LLM"},
+            "candidate_modules": [{"name": "ShouldNotBeUsed"}],
+        }
+        out = _normalize_tailor_output(raw)
+        desc = out["assembly_plan"]["description"]
+        assert desc == "custom assembly plan from LLM"
+        assert "ShouldNotBeUsed" not in desc
+
+    def test_none_assembly_plan_filled(self):
+        """LLM returns assembly_plan=None + no modules + no primary_baseline
+        title -> description falls back to ablation_matrix reference."""
+        raw = {
+            "assembly_plan": None,
+            "candidate_modules": [],
+            "ablation_matrix": [],
+            "primary_baseline": {},
+        }
+        out = _normalize_tailor_output(raw)
+        desc = out["assembly_plan"]["description"]
+        assert desc  # non-empty
+        assert "ablation_matrix" in desc
+
+
 # ---------------------------------------------------------------------------
 # Tailor: _fallback_tailor
 # ---------------------------------------------------------------------------
