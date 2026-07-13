@@ -334,8 +334,20 @@ def _seeded_plan(
     Each lane's queries are expanded into one or more search_plan query
     entries, each carrying ``gap_id``, ``success_condition``, and
     ``lane_id`` so the search_agent can record evidence_delta per gap.
+
+    Re8.1 WP1-D: lane-fair allocation. Each lane gets at least
+    ``MIN_PER_LANE`` queries before round-robin fills the remaining cap.
+    This fixes the truncation issue where the first 2 lanes filled the
+    cap=12 quota, causing the last 3 lanes (mechanism_module / resource /
+    counter_evidence) to be completely dropped — which in turn prevented
+    Phase 2 fallback from triggering (gaps not in search_plan are
+    invisible to ``zero_result_gaps``).
     """
-    queries: list[dict[str, str]] = []
+    MIN_PER_LANE = 2
+    MAX_QUERIES = 12
+
+    # Phase 1: collect per-lane query lists
+    per_lane_queries: dict[str, list[dict[str, str]]] = {}
     seen: set[tuple[str, str]] = set()
     for lane in lanes:
         lane_id = lane.get("lane_id", "unknown")
@@ -344,6 +356,7 @@ def _seeded_plan(
         if not spec:
             continue
         gap_type, lane_tools, success_cond, expected_ev = spec
+        lane_entries: list[dict[str, str]] = []
         for qtext in (lane.get("queries") or []):
             qtext = (qtext or "").strip()
             if not qtext:
@@ -355,7 +368,7 @@ def _seeded_plan(
                 if key in seen:
                     continue
                 seen.add(key)
-                queries.append({
+                lane_entries.append({
                     "tool": tool,
                     "query": qtext,
                     "why": f"{lane_id}: {lane.get('description', '')[:60]}",
@@ -365,9 +378,47 @@ def _seeded_plan(
                     "success_condition": success_cond,
                     "lane_id": lane_id,
                 })
-    # Cap at 12 queries to keep the search budget reasonable
+        if lane_entries:
+            per_lane_queries[lane_id] = lane_entries
+
+    if not per_lane_queries:
+        return {
+            "queries": [],
+            "rounds": ["broad", "focused"],
+            "negative_feedback": "",
+            "gap_bound": True,  # flag for search_agent
+        }
+
+    # Phase 2: fair allocation
+    queries: list[dict[str, str]] = []
+    lane_ids = list(per_lane_queries.keys())
+
+    # Phase 2a: each lane gets MIN_PER_LANE queries first
+    for lane_id in lane_ids:
+        entries = per_lane_queries[lane_id][:MIN_PER_LANE]
+        queries.extend(entries)
+        if len(queries) >= MAX_QUERIES:
+            break
+
+    # Phase 2b: round-robin fill remaining cap
+    if len(queries) < MAX_QUERIES:
+        indices: dict[str, int] = {lane_id: MIN_PER_LANE for lane_id in lane_ids}
+        while len(queries) < MAX_QUERIES:
+            progressed = False
+            for lane_id in lane_ids:
+                if len(queries) >= MAX_QUERIES:
+                    break
+                idx = indices[lane_id]
+                entries = per_lane_queries[lane_id]
+                if idx < len(entries):
+                    queries.append(entries[idx])
+                    indices[lane_id] = idx + 1
+                    progressed = True
+            if not progressed:
+                break  # all lanes exhausted
+
     return {
-        "queries": queries[:12],
+        "queries": queries[:MAX_QUERIES],
         "rounds": ["broad", "focused"],
         "negative_feedback": "",
         "gap_bound": True,  # flag for search_agent

@@ -1744,3 +1744,429 @@ class TestBuildFallbackQuery:
         assert _build_fallback_query("mechanism_module", {}) is None
         assert _build_fallback_query("resource", {"object": ["detection"]}) is None
         assert _build_fallback_query("counter_evidence", {"method": []}) is None
+
+
+# ---------------------------------------------------------------------------
+# Re8.1 WP1-D Fix B: fallback for open gaps NOT in search_plan
+# ---------------------------------------------------------------------------
+
+class TestRe81Wp1dMissingGapFallback:
+    """Re8.1 WP1-D Fix B: Phase 2b fallback for gaps not in search_plan.
+
+    Root cause (round 2 verification): even with lane-fair allocation
+    (Fix A), a lane may have 0 input queries → its gap_id never enters
+    search_plan → Phase 2 (zero_result_gaps) can't see it → fallback
+    never triggers.
+
+    Fix B: ``_pre_execute_plan_queries`` now accepts ``evidence_gaps``
+    and generates fallback queries for open gaps whose gap_id is NOT
+    in ``search_plan.queries[].gap_id``. Only ``mechanism`` / ``repo``
+    / ``counter_evidence`` gap_types are eligible.
+    """
+
+    def _make_partial_plan(self) -> dict[str, Any]:
+        """Build a gap-bound plan with only anchor_reference +
+        competing_baseline queries (simulating the pre-Fix-A truncation
+        where the last 3 lanes were dropped)."""
+        return {
+            "queries": [
+                {"tool": "openalex", "query": "YOLO original paper",
+                 "gap_id": "gap-s1-anchor_reference",
+                 "success_condition": "find 1+ origin or citation-chain paper",
+                 "lane_id": "anchor_reference",
+                 "why": "anchor", "expected_evidence": "papers",
+                 "stop_condition": "n>=1"},
+                {"tool": "crossref", "query": "YOLO original paper",
+                 "gap_id": "gap-s1-anchor_reference",
+                 "success_condition": "find 1+ origin or citation-chain paper",
+                 "lane_id": "anchor_reference",
+                 "why": "anchor", "expected_evidence": "papers",
+                 "stop_condition": "n>=1"},
+                {"tool": "arxiv", "query": "Faster R-CNN detection",
+                 "gap_id": "gap-s1-competing_baseline",
+                 "success_condition": "find 2+ competing baseline papers",
+                 "lane_id": "competing_baseline",
+                 "why": "baseline", "expected_evidence": "papers",
+                 "stop_condition": "n>=1"},
+                {"tool": "semantic_scholar", "query": "Faster R-CNN detection",
+                 "gap_id": "gap-s1-competing_baseline",
+                 "success_condition": "find 2+ competing baseline papers",
+                 "lane_id": "competing_baseline",
+                 "why": "baseline", "expected_evidence": "papers",
+                 "stop_condition": "n>=1"},
+            ],
+            "rounds": ["broad", "focused"],
+            "gap_bound": True,
+        }
+
+    def _make_missing_gaps(self) -> list[dict[str, Any]]:
+        """Build evidence_gaps for the 3 lanes NOT in the partial plan."""
+        return [
+            make_evidence_gap(
+                gap_id="gap-s1-mechanism_module",
+                question="mechanism modules",
+                gap_type="mechanism",
+                status="open",
+                success_condition="find 1+ mechanism or module paper",
+            ),
+            make_evidence_gap(
+                gap_id="gap-s1-resource",
+                question="repos and datasets",
+                gap_type="repo",
+                status="open",
+                success_condition="find 1+ repo or dataset",
+            ),
+            make_evidence_gap(
+                gap_id="gap-s1-counter_evidence",
+                question="counter-evidence",
+                gap_type="counter_evidence",
+                status="open",
+                success_condition="find 1+ counter-evidence or limitation paper",
+            ),
+        ]
+
+    def test_fallback_for_gap_not_in_search_plan(self, monkeypatch):
+        """Test 6: evidence_gaps has open gaps NOT in search_plan →
+        Phase 2b fallback triggers for them.
+
+        Setup: search_plan only has anchor_reference + competing_baseline.
+        evidence_gaps has mechanism_module / resource / counter_evidence
+        gaps (not in search_plan). All Phase 1 queries return 0 results.
+
+        Expected: Phase 2b generates fallback steps for the 3 missing
+        gaps.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = self._make_partial_plan()
+        gaps = self._make_missing_gaps()
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "object detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[]):  # 0 results everywhere
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        # Should have at least 3 fallback steps (one per missing gap)
+        assert len(fallback_steps) >= 3, (
+            f"expected >= 3 fallback steps for missing gaps, "
+            f"got {len(fallback_steps)}: {fallback_steps}"
+        )
+        # Verify the missing gap_ids are covered
+        fb_gap_ids = {s.get("gap_id") for s in fallback_steps}
+        assert "gap-s1-mechanism_module" in fb_gap_ids, (
+            f"mechanism_module gap not in fallback gap_ids: {fb_gap_ids}"
+        )
+        assert "gap-s1-resource" in fb_gap_ids, (
+            f"resource gap not in fallback gap_ids: {fb_gap_ids}"
+        )
+        assert "gap-s1-counter_evidence" in fb_gap_ids, (
+            f"counter_evidence gap not in fallback gap_ids: {fb_gap_ids}"
+        )
+
+    def test_fallback_only_for_supported_lane_types(self, monkeypatch):
+        """Test 7: Phase 2b only triggers for mechanism_module / resource
+        / counter_evidence. anchor_reference (existence) and
+        competing_baseline (competing_method) gaps NOT in search_plan
+        do NOT get fallback.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # Plan with NO queries at all (all 5 gaps are "missing")
+        plan = {
+            "queries": [
+                {"tool": "arxiv", "query": "placeholder",
+                 "gap_id": "gap-s1-anchor_reference",
+                 "success_condition": "find 1+ origin",
+                 "lane_id": "anchor_reference",
+                 "why": "", "expected_evidence": "", "stop_condition": "n>=1"},
+            ],
+            "rounds": ["broad", "focused"],
+            "gap_bound": True,
+        }
+        # evidence_gaps with ALL 5 gap_types, but only anchor_reference
+        # is in search_plan. The other 4 are "missing".
+        gaps = [
+            make_evidence_gap(gap_id="gap-s1-anchor_reference", question="anchor",
+                              gap_type="existence", status="open",
+                              success_condition="find 1+ origin"),
+            make_evidence_gap(gap_id="gap-s1-competing_baseline", question="baseline",
+                              gap_type="competing_method", status="open",
+                              success_condition="find 2+ baselines"),
+            make_evidence_gap(gap_id="gap-s1-mechanism_module", question="mech",
+                              gap_type="mechanism", status="open",
+                              success_condition="find 1+ mechanism"),
+            make_evidence_gap(gap_id="gap-s1-resource", question="repo",
+                              gap_type="repo", status="open",
+                              success_condition="find 1+ repo"),
+            make_evidence_gap(gap_id="gap-s1-counter_evidence", question="counter",
+                              gap_type="counter_evidence", status="open",
+                              success_condition="find 1+ counter-evidence"),
+        ]
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[]):
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        fb_gap_ids = {s.get("gap_id") for s in fallback_steps}
+        # Supported types SHOULD have fallback
+        assert "gap-s1-mechanism_module" in fb_gap_ids, (
+            f"mechanism_module should have fallback (supported type)"
+        )
+        assert "gap-s1-resource" in fb_gap_ids, (
+            f"resource should have fallback (supported type)"
+        )
+        assert "gap-s1-counter_evidence" in fb_gap_ids, (
+            f"counter_evidence should have fallback (supported type)"
+        )
+        # Unsupported types should NOT have fallback
+        assert "gap-s1-competing_baseline" not in fb_gap_ids, (
+            f"competing_baseline should NOT have fallback "
+            f"(unsupported type — would reintroduce P1-7b)"
+        )
+        # anchor_reference is in search_plan so it's not a "missing" gap
+        # (Phase 1 handles it)
+
+    def test_fallback_gap_id_attribution(self, monkeypatch):
+        """Test 8: fallback queries for missing gaps carry correct
+        gap_id + lane_id + fallback=True.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = self._make_partial_plan()
+        gaps = self._make_missing_gaps()
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+
+        # Fallback returns 1 paper for mechanism, 1 repo for resource
+        def _fake_run_tool(tool, query, top_k=12):
+            if "module ablation" in query:
+                return [{"title": "Module Ablation Paper", "abstract": "a"}]
+            if tool == "github":
+                return [{"full_name": "owner/repo",
+                         "html_url": "https://github.com/owner/repo"}]
+            if "limitation failure" in query:
+                return [{"title": "Limitation Study", "abstract": "a"}]
+            return []  # Phase 1 queries return 0
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, side_effect=_fake_run_tool):
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        # Verify each fallback step has correct attribution
+        for step in fallback_steps:
+            assert step.get("gap_id"), (
+                f"fallback step missing gap_id: {step}"
+            )
+            assert step.get("lane_id"), (
+                f"fallback step missing lane_id: {step}"
+            )
+            assert step.get("fallback") is True, (
+                f"fallback step missing fallback=True: {step}"
+            )
+            assert step.get("pre_executed") is True, (
+                f"fallback step missing pre_executed=True: {step}"
+            )
+            assert step.get("plan_query_id", "").endswith("_fb"), (
+                f"fallback plan_query_id should end with _fb: "
+                f"{step.get('plan_query_id')}"
+            )
+            # lane_id must match the expected lane for this gap_id
+            gap_id = step["gap_id"]
+            expected_lane = gap_id.replace("gap-s1-", "")
+            assert step["lane_id"] == expected_lane, (
+                f"lane_id={step['lane_id']!r} expected {expected_lane!r}"
+            )
+
+    def test_fallback_at_most_one_per_gap(self, monkeypatch):
+        """Test 9: each gap gets at most ONE fallback query.
+
+        Uses 3 different gap types (mechanism + resource + counter_evidence)
+        to avoid seen_queries deduplication (same-type gaps generate the
+        same fallback query, which is intentionally deduped). The
+        ``fallback_done`` set ensures each gap_id gets at most one
+        fallback even if it appears in multiple phases.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # Plan with only anchor_reference
+        plan = {
+            "queries": [
+                {"tool": "openalex", "query": "YOLO",
+                 "gap_id": "gap-s1-anchor_reference",
+                 "success_condition": "find 1+ origin",
+                 "lane_id": "anchor_reference",
+                 "why": "", "expected_evidence": "", "stop_condition": "n>=1"},
+            ],
+            "rounds": ["broad", "focused"],
+            "gap_bound": True,
+        }
+        # 3 different gap types, all missing from search_plan
+        gaps = [
+            make_evidence_gap(gap_id="gap-s1-mechanism_module", question="m1",
+                              gap_type="mechanism", status="open",
+                              success_condition="find 1+ mechanism"),
+            make_evidence_gap(gap_id="gap-s1-resource", question="r1",
+                              gap_type="repo", status="open",
+                              success_condition="find 1+ repo"),
+            make_evidence_gap(gap_id="gap-s1-counter_evidence", question="c1",
+                              gap_type="counter_evidence", status="open",
+                              success_condition="find 1+ counter-evidence"),
+        ]
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[]):
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        # Each gap_id should appear at most once in fallback steps
+        fb_gap_id_counts: dict[str, int] = {}
+        for s in fallback_steps:
+            gid = s.get("gap_id", "")
+            fb_gap_id_counts[gid] = fb_gap_id_counts.get(gid, 0) + 1
+        for gid, count in fb_gap_id_counts.items():
+            assert count == 1, (
+                f"gap {gid} has {count} fallback steps (expected 1)"
+            )
+        # Should have 3 fallback steps (one per gap)
+        assert len(fallback_steps) == 3, (
+            f"expected 3 fallback steps (one per missing gap), "
+            f"got {len(fallback_steps)}"
+        )
+
+    def test_fallback_does_not_reintroduce_p1_7b(self, monkeypatch):
+        """Test 10: Phase 2b fallback must NOT affect unsupported gap
+        types (existence / competing_method).
+
+        Setup: search_plan has only anchor_reference. evidence_gaps has
+        both supported (mechanism/repo/counter_evidence) and unsupported
+        (existence/competing_method) gaps that are NOT in search_plan.
+
+        Expected: unsupported gaps stay 'open' (no fallback for them).
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # Plan with only anchor_reference
+        plan = {
+            "queries": [
+                {"tool": "openalex", "query": "YOLO",
+                 "gap_id": "gap-s1-anchor_reference",
+                 "success_condition": "find 1+ origin",
+                 "lane_id": "anchor_reference",
+                 "why": "", "expected_evidence": "", "stop_condition": "n>=1"},
+            ],
+            "rounds": ["broad", "focused"],
+            "gap_bound": True,
+        }
+        # Mix of supported and unsupported gap types, all NOT in search_plan
+        # (except anchor_reference which IS in search_plan)
+        gaps = [
+            # In search_plan — Phase 1 handles it
+            make_evidence_gap(gap_id="gap-s1-anchor_reference", question="anchor",
+                              gap_type="existence", status="open",
+                              success_condition="find 1+ origin"),
+            # NOT in search_plan, unsupported type → no fallback
+            make_evidence_gap(gap_id="gap-s1-competing_baseline", question="baseline",
+                              gap_type="competing_method", status="open",
+                              success_condition="find 2+ baselines"),
+            # NOT in search_plan, supported type → fallback
+            make_evidence_gap(gap_id="gap-s1-mechanism_module", question="mech",
+                              gap_type="mechanism", status="open",
+                              success_condition="find 1+ mechanism"),
+        ]
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+
+        # Fallback returns 1 paper for mechanism
+        def _fake_run_tool(tool, query, top_k=12):
+            if "module ablation" in query:
+                return [{"title": "Module Paper", "abstract": "a"}]
+            return []
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, side_effect=_fake_run_tool):
+            result = search_agent_node(state)
+
+        # competing_baseline gap must STAY "open" — unsupported type
+        for gap in result["evidence_gaps"]:
+            if gap["gap_id"] == "gap-s1-competing_baseline":
+                assert gap["status"] == "open", (
+                    f"competing_baseline gap status={gap['status']} "
+                    f"(should remain open — unsupported type, P1-7b invariant)"
+                )
+        # mechanism_module gap should be resolved (fallback got results)
+        mech_gap = next(
+            g for g in result["evidence_gaps"]
+            if g["gap_id"] == "gap-s1-mechanism_module"
+        )
+        assert mech_gap["status"] == "satisfied", (
+            f"mechanism_module gap status={mech_gap['status']} "
+            f"(should be satisfied — fallback resolved it)"
+        )
+        # Verify no fallback was generated for competing_baseline
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        fb_gap_ids = {s.get("gap_id") for s in fallback_steps}
+        assert "gap-s1-competing_baseline" not in fb_gap_ids, (
+            f"competing_baseline should NOT have fallback "
+            f"(unsupported type — P1-7b invariant)"
+        )
+        assert "gap-s1-mechanism_module" in fb_gap_ids, (
+            f"mechanism_module should have fallback (supported type)"
+        )
