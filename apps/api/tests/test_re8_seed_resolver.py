@@ -1663,3 +1663,276 @@ class TestSeedResolverCardRe81Fields:
         assert is_seed_evidence_eligible(card)
         # Promoted to evidence
         assert len(result["verified_papers"]) == 1
+
+
+# ---------------------------------------------------------------------------
+# Re8.1 WP2 Task 10 — Seed Repair acceptance tests
+# ---------------------------------------------------------------------------
+
+import json as _json
+from pathlib import Path as _Path
+from typing import Any as _Any
+
+_WP2_FIXTURES = _Path(__file__).parent / "fixtures" / "seed_repair_cases.json"
+
+
+def _load_wp2_cases() -> list[dict[str, _Any]]:
+    """Load the 20-case seed repair fixture for WP2 acceptance."""
+    with open(_WP2_FIXTURES, encoding="utf-8") as f:
+        data = _json.load(f)
+    return data["cases"]
+
+
+_WP2_ALL_CASES = _load_wp2_cases()
+
+
+def _wp2_cases_by_category(category: str) -> list[dict[str, _Any]]:
+    """Filter acceptance fixture cases by category."""
+    return [c for c in _WP2_ALL_CASES if c["category"] == category]
+
+
+def _find_correct_title_for_typo(typo_case: dict[str, _Any]) -> str | None:
+    """Recover the correct title for a typo_light case by matching its
+    ``resolved_title_contains`` fragment against the exact_title cases."""
+    fragment = (typo_case["expected"].get("resolved_title_contains") or "").lower()
+    if not fragment:
+        return None
+    for c in _wp2_cases_by_category("exact_title"):
+        if fragment in c["input"]["title"].lower():
+            return c["input"]["title"]
+    return None
+
+
+class TestRe81WP2Acceptance:
+    """WP2 Task 10: Seed Repair acceptance tests.
+
+    Verifies the four Seed Repair capabilities (title similarity, year
+    penalty, confidence computation, conflict tagging) against the
+    20-case fixture in ``seed_repair_cases.json``.
+
+    Acceptance criteria (spec.md):
+      1. Exact title Top-1 correct rate >= 90% (9/10)
+      2. Typo-light title success rate >= 70% (2/3)
+      3. Non-existent papers never marked verified (2/2)
+      4. Disambiguation correct rate >= 80% (2/3)
+      5. Conflict candidates preserve dual-source evidence
+
+    Real Crossref/S2 API calls are not available in the test environment,
+    so each criterion is validated via the pure-function capabilities
+    (``_title_similarity``, ``_compute_confidence``,
+    ``_decide_existence``, ``_merge_with_conflict_tagging``) which are
+    the deterministic building blocks of Seed Repair.
+    """
+
+    # ── Criterion 1: Exact title Top-1 >= 90% ──────────────────────────
+
+    @pytest.mark.parametrize("case", _wp2_cases_by_category("exact_title"))
+    def test_exact_title_top1(self, case):
+        """Exact title must yield similarity >= 0.95 and confidence=high.
+
+        Simulates a perfect Crossref/S2 Top-1 hit (same title, DOI
+        present, year consistent) and verifies the confidence pipeline
+        would promote it to ``verified``.
+        """
+        title = case["input"]["title"]
+        input_year = case["input"].get("year") or 2020
+
+        sim = _title_similarity(title, title)
+        assert sim >= 0.95, (
+            f"{case['case_id']}: expected self-similarity >= 0.95, got {sim}"
+        )
+
+        candidate = {
+            "title": title,
+            "doi": "10.1000/wp2-acceptance",
+            "authors": ["TestAuthor"],
+            "year": input_year,
+        }
+        input_meta = {
+            "title": title,
+            "authors": ["TestAuthor"],
+            "year": input_year,
+        }
+        level, reasons = _compute_confidence(candidate, input_meta)
+        assert level == "high", (
+            f"{case['case_id']}: expected high confidence, got {level} "
+            f"(reasons={reasons})"
+        )
+
+    # ── Criterion 2: Typo-light success rate >= 70% ───────────────────
+
+    def test_typo_light_success_rate(self):
+        """Typo-light title success rate >= 70% (>= 2/3).
+
+        A single-character typo must produce similarity >= 0.85 against
+        the correct title for at least 2 of 3 cases. Short titles (e.g.
+        ResNet's 6-token title) suffer a larger relative Jaccard penalty
+        per token difference, so the spec allows 1 failure out of 3.
+
+        The correct title is recovered from the matching exact_title
+        case via the ``resolved_title_contains`` fragment.
+        """
+        threshold = 0.85
+        cases = _wp2_cases_by_category("typo_light")
+        successes = 0
+        details: list[str] = []
+        for case in cases:
+            correct_title = _find_correct_title_for_typo(case)
+            assert correct_title is not None, (
+                f"{case['case_id']}: could not recover correct title"
+            )
+            sim = _title_similarity(case["input"]["title"], correct_title)
+            ok = sim >= threshold
+            details.append(
+                f"{case['case_id']}: sim={sim:.3f} {'PASS' if ok else 'FAIL'}"
+            )
+            if ok:
+                successes += 1
+        assert successes >= 2, (
+            f"typo success rate {successes}/{len(cases)} < 2/3 "
+            f"(threshold={threshold}). Details: {'; '.join(details)}"
+        )
+
+    # ── Criterion 3: Non-existent papers never verified ───────────────
+
+    @pytest.mark.parametrize("case", _wp2_cases_by_category("not_found"))
+    def test_not_found_never_verified(self, case):
+        """Non-existent papers must be marked ``ambiguous`` or
+        ``not_found`` — never ``verified``.
+
+        Validates both the fixture's expected constraints and that
+        ``_decide_existence`` returns a non-verified status when no
+        authoritative source confirms the paper.
+        """
+        expected = case["expected"]
+        assert expected.get("must_not_be_verified") is True, (
+            f"{case['case_id']}: fixture missing must_not_be_verified=True"
+        )
+        allowed = expected.get("allowed_existence_status", [])
+        assert "verified" not in allowed, (
+            f"{case['case_id']}: allowed statuses must not include 'verified'"
+        )
+        status, _ = _decide_existence(
+            {"title": case["input"]["title"]}, None,
+        )
+        assert status in ("ambiguous", "not_found"), (
+            f"{case['case_id']}: _decide_existence returned '{status}', "
+            f"expected ambiguous or not_found"
+        )
+
+    # ── Criterion 4: Disambiguation correct rate >= 80% ───────────────
+
+    @pytest.mark.parametrize("case", _wp2_cases_by_category("disambiguation"))
+    def test_disambiguation_by_author_year(self, case):
+        """Same-title papers must be disambiguated by author + year.
+
+        For ``verified`` cases (disamb_01 GAN/Goodfellow, disamb_03
+        AlexNet/Krizhevsky): correct authors → ``high`` confidence.
+
+        For ``ambiguous`` case (disamb_02 Transformer/Smith): the user
+        claims a wrong author. A real Crossref hit carries the actual
+        authors (Vaswani et al.); ``_compute_confidence`` must detect
+        the author mismatch and drop to ``medium`` or ``low``.
+        """
+        title = case["input"]["title"]
+        user_authors = case["input"]["authors"]
+        year = case["input"]["year"]
+        expected_status = case["expected"]["existence_status"]
+
+        if expected_status == "verified":
+            # Correct authors + DOI + title + year → high
+            candidate = {
+                "title": title,
+                "doi": "10.1000/disamb-correct",
+                "authors": user_authors,
+                "year": year,
+            }
+            input_meta = {
+                "title": title,
+                "authors": user_authors,
+                "year": year,
+            }
+            level, reasons = _compute_confidence(candidate, input_meta)
+            assert level == "high", (
+                f"{case['case_id']}: correct disambiguation should yield "
+                f"high, got {level} (reasons={reasons})"
+            )
+        else:
+            # disamb_02: user claims "Smith" but the real paper is by
+            # Vaswani et al. Simulate a real Crossref hit with the true
+            # authors; the user's wrong author must NOT produce high.
+            real_authors = ["Vaswani", "Shazeer", "Parmar"]
+            candidate_real = {
+                "title": title,
+                "doi": "10.5555/3295222.3295349",
+                "authors": real_authors,
+                "year": year,
+            }
+            input_meta_wrong = {
+                "title": title,
+                "authors": user_authors,  # ["Smith"]
+                "year": year,
+            }
+            level, reasons = _compute_confidence(
+                candidate_real, input_meta_wrong,
+            )
+            assert level in ("medium", "low"), (
+                f"{case['case_id']}: wrong author should yield medium/low, "
+                f"got {level} (reasons={reasons})"
+            )
+
+    # ── Criterion 5: Conflict evidence preserved ──────────────────────
+
+    def test_conflict_evidence_preserved_different_doi(self):
+        """Same title + different DOIs across sources → both candidates
+        retained (no silent drop), dual-source evidence visible.
+
+        ``_merge_with_conflict_tagging`` treats different-DOI candidates
+        as independent results (``conflict=False``). The ``conflict=True``
+        tag is reserved for the no-DOI title-match scenario (see
+        ``test_conflict_evidence_preserved_no_doi``). The acceptance
+        criterion here is that neither candidate is silently dropped
+        and both sources remain visible in the merged output.
+        """
+        crossref_cands = [
+            {"doi": "10.1/a", "title": "Same Title",
+             "authors": ["A"], "year": 2024},
+        ]
+        s2_cands = [
+            {"doi": "10.2/b", "title": "Same Title",
+             "authors": ["B"], "year": 2024},
+        ]
+        merged = _merge_with_conflict_tagging(
+            crossref_cands, s2_cands, input_title="Same Title",
+        )
+        # Both candidates retained (no silent drop)
+        assert len(merged) == 2, (
+            f"expected 2 candidates (no silent drop), got {len(merged)}"
+        )
+        # Dual-source evidence preserved
+        all_sources: set[str] = set()
+        for c in merged:
+            all_sources.update(c.get("sources", []))
+        assert "crossref" in all_sources, "crossref evidence missing"
+        assert "semantic_scholar" in all_sources, (
+            "semantic_scholar evidence missing"
+        )
+
+    def test_conflict_evidence_preserved_no_doi(self):
+        """Same title + no DOI on either side → both candidates retained,
+        ``conflict=True`` and ``conflict_type='title_match_doi_mismatch'``."""
+        crossref_cands = [
+            {"doi": None, "title": "GAN Paper",
+             "authors": ["A"], "year": 2024},
+        ]
+        s2_cands = [
+            {"doi": None, "title": "GAN Paper",
+             "authors": ["B"], "year": 2024},
+        ]
+        merged = _merge_with_conflict_tagging(
+            crossref_cands, s2_cands, input_title="GAN Paper",
+        )
+        assert len(merged) == 2
+        for c in merged:
+            assert c["conflict"] is True
+            assert c["conflict_type"] == "title_match_doi_mismatch"
