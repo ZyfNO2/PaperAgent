@@ -658,7 +658,11 @@ def final_review_gate_node(state: ResearchState) -> dict[str, Any]:
 # graph continues forward to the next node in the linear spine.
 
 _GATE_FORWARD_TARGETS = {
-    GATE_SEED_AUDIT: "paper_understanding",
+    # Re8.0 post-audit: fulltext_acquisition now runs before
+    # paper_understanding so DOI/arXiv seeds get their PDFs downloaded
+    # first. The gate must forward to fulltext_acquisition (the new
+    # first node in the understanding spine), not paper_understanding.
+    GATE_SEED_AUDIT: "fulltext_acquisition",
     GATE_TAILOR: "innovation_extractor",
     GATE_FINAL_REVIEW: "falsifiability",
 }
@@ -732,7 +736,9 @@ def route_after_gate(state: ResearchState, gate_name: str) -> str:
         - final_review_gate → ``evidence_context`` (compile more evidence)
 
     Forward targets:
-        - seed_audit_gate   → ``paper_understanding``
+        - seed_audit_gate   → ``fulltext_acquisition`` (Re8.0 post-audit:
+          was paper_understanding, but fulltext_acquisition now runs first
+          so PDFs are downloaded before paper_understanding parses them)
         - tailor_gate       → ``innovation_extractor``
         - final_review_gate → ``falsifiability``
 

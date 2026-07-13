@@ -252,6 +252,15 @@ async def _acquire_fulltext_for_card(
 
     card["fulltext_status"] = "fulltext_available"
     card["pdf_bytes"] = pdf_bytes
+    # Re8.0 post-audit: also write to raw_input.pdf_bytes so downstream
+    # paper_understanding can find the downloaded bytes. paper_understanding
+    # reads from card["raw_input"]["pdf_bytes"] (not card["pdf_bytes"]),
+    # so without this the downloaded PDF would be invisible to it.
+    raw = card.get("raw_input")
+    if not isinstance(raw, dict):
+        raw = {}
+        card["raw_input"] = raw
+    raw["pdf_bytes"] = pdf_bytes
     return None
 
 
