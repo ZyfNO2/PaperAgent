@@ -44,6 +44,11 @@ def _well_formed_final_state() -> dict:
 
     Used as the base for negative tests — each negative test mutates one
     field and asserts the corresponding check fails.
+
+    Re8.0 post-audit fix: added ``fused_verdict`` (top-level state field,
+    P0-A) and ``search_steps`` (for traceable evidence_delta check in
+    quality_pass Check 3). Without these the new quality_pass checks
+    would fail on the well-formed baseline.
     """
     return {
         "entry_mode": "seeded_research",
@@ -93,6 +98,21 @@ def _well_formed_final_state() -> dict:
             {"gap_id": "G2", "status": "open"},
         ],
         "novelty_review_verdict": "accepted",
+        # Re8.0 post-audit: fused_verdict top-level field (P0-A).
+        # Must NOT be BLOCKED for quality_pass to be true.
+        "fused_verdict": "GO",
+        # Re8.0 post-audit: search_steps with traceable evidence_delta.
+        # G1 has a step with gap_id="G1" and n_new_papers=3, so the new
+        # Check 3 (traceable evidence_delta) passes for G1.
+        "search_steps": [
+            {
+                "step": 1,
+                "gap_id": "G1",
+                "evidence_delta": {"n_new_papers": 3, "n_new_repos": 0},
+                "tool": "arxiv",
+                "n_results": 3,
+            },
+        ],
     }
 
 
@@ -102,6 +122,10 @@ def _all_ambiguous_final_state() -> dict:
     6 seeds all ambiguous, 3 gates return revise, 0 gaps closed.
     runtime_pass=true (final_rec exists) but contract_pass and
     quality_pass should both be false.
+
+    Re8.0 post-audit fix: added ``fused_verdict=BLOCKED`` and
+    ``search_steps=[]`` to mirror the real failure scenario where
+    no evidence was traceable and the pipeline was blocked.
     """
     state = _well_formed_final_state()
     state["candidate_seeds"] = [{"seed_id": f"S{i}"} for i in range(1, 7)]
@@ -127,6 +151,9 @@ def _all_ambiguous_final_state() -> dict:
         "verdict": "CONDITIONAL",
         "core_method": "",  # empty
     }
+    # Re8.0 post-audit: blocked + no traceable evidence
+    state["fused_verdict"] = "BLOCKED"
+    state["search_steps"] = []  # no evidence_delta at all
     return state
 
 
@@ -368,6 +395,115 @@ class TestComputeQualityPass:
         assert any("no verified seed" in r for r in reasons)
         assert any("core_method" in r for r in reasons)
         assert any("evidence gap" in r.lower() for r in reasons)
+
+    # ── Re8.0 post-audit: new checks for fused_verdict / gate unresolved /
+    #    traceable evidence_delta ────────────────────────────────────────
+
+    def test_fused_verdict_blocked_fails(self):
+        """fused_verdict=BLOCKED → quality_pass=false (post-audit fix).
+
+        Previously yolo_steel/xlm_r reported quality_pass=true with
+        fused_verdict=BLOCKED — a self-contradictory result. The new
+        Check 4 forbids this.
+        """
+        state = _well_formed_final_state()
+        state["fused_verdict"] = "BLOCKED"
+        passed, reasons = _compute_quality_pass(state)
+        assert passed is False
+        assert any("fused_verdict is BLOCKED" in r for r in reasons)
+
+    def test_fused_verdict_absent_passes(self):
+        """Missing fused_verdict should not cause failure (backward compat)."""
+        state = _well_formed_final_state()
+        del state["fused_verdict"]
+        passed, reasons = _compute_quality_pass(state)
+        # No BLOCKED check fires on empty/missing fused_verdict
+        assert not any("fused_verdict" in r for r in reasons)
+
+    def test_seed_audit_gate_unresolved_fails(self):
+        """seed_audit_gate unresolved → quality_pass=false (post-audit fix)."""
+        state = _well_formed_final_state()
+        state["reflection_gate_results"]["seed_audit_gate"] = [
+            {"verdict": "unresolved", "round_idx": 2}
+        ]
+        passed, reasons = _compute_quality_pass(state)
+        assert passed is False
+        assert any("seed_audit_gate" in r and "unresolved" in r for r in reasons)
+
+    def test_tailor_gate_unresolved_fails(self):
+        """tailor_gate unresolved → quality_pass=false (post-audit fix)."""
+        state = _well_formed_final_state()
+        state["reflection_gate_results"]["tailor_gate"] = [
+            {"verdict": "unresolved", "round_idx": 2}
+        ]
+        passed, reasons = _compute_quality_pass(state)
+        assert passed is False
+        assert any("tailor_gate" in r and "unresolved" in r for r in reasons)
+
+    def test_final_review_gate_unresolved_fails(self):
+        """final_review_gate unresolved → quality_pass=false (post-audit fix)."""
+        state = _well_formed_final_state()
+        state["reflection_gate_results"]["final_review_gate"] = [
+            {"verdict": "unresolved", "round_idx": 2}
+        ]
+        passed, reasons = _compute_quality_pass(state)
+        assert passed is False
+        assert any("final_review_gate" in r and "unresolved" in r for r in reasons)
+
+    def test_gap_without_traceable_evidence_delta_fails(self):
+        """Gap marked satisfied but no matching gap_id in search_steps → fails.
+
+        This is the core anti-false-positive check: the P1-7b fallback
+        marked all open gaps as partially_satisfied when any papers/repos
+        were found, but search_steps had gap_id=null / evidence_delta=null.
+        The new Check 3 requires the gap_id to appear in at least one
+        search_step with non-zero evidence_delta.
+        """
+        state = _well_formed_final_state()
+        # G1 is satisfied, but search_steps has NO gap_id match
+        state["search_steps"] = [
+            {"step": 1, "gap_id": None, "evidence_delta": {"n_new_papers": 5}},
+        ]
+        state["evidence_gaps"] = [
+            {"gap_id": "G1", "status": "satisfied"},
+            {"gap_id": "G2", "status": "open"},
+        ]
+        passed, reasons = _compute_quality_pass(state)
+        assert passed is False
+        assert any("traceable evidence_delta" in r for r in reasons)
+
+    def test_gap_with_traceable_evidence_delta_passes(self):
+        """Gap satisfied AND gap_id appears in search_steps with evidence → passes."""
+        state = _well_formed_final_state()
+        state["evidence_gaps"] = [
+            {"gap_id": "G1", "status": "satisfied"},
+            {"gap_id": "G2", "status": "open"},
+        ]
+        state["search_steps"] = [
+            {
+                "step": 1,
+                "gap_id": "G1",
+                "evidence_delta": {"n_new_papers": 5, "n_new_repos": 0},
+            },
+        ]
+        passed, reasons = _compute_quality_pass(state)
+        assert not any("traceable evidence_delta" in r for r in reasons)
+
+    def test_gap_with_only_repo_evidence_delta_passes(self):
+        """Gap satisfied with repo evidence (n_new_repos > 0) → passes."""
+        state = _well_formed_final_state()
+        state["evidence_gaps"] = [
+            {"gap_id": "G1", "status": "partially_satisfied"},
+        ]
+        state["search_steps"] = [
+            {
+                "step": 1,
+                "gap_id": "G1",
+                "evidence_delta": {"n_new_papers": 0, "n_new_repos": 2},
+            },
+        ]
+        passed, reasons = _compute_quality_pass(state)
+        assert not any("traceable evidence_delta" in r for r in reasons)
 
 
 # ── Combined / integration-style tests ─────────────────────────────────────

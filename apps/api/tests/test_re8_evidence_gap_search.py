@@ -203,12 +203,17 @@ class TestSeededPlan:
 class TestBuildGapLookup:
     def test_builds_lookup_from_gap_bound_plan(self):
         plan = _make_gap_bound_plan()
-        lookup = _build_gap_lookup(plan)
-        assert len(lookup) > 0
-        for (tool, query), meta in lookup.items():
+        by_tool_query, by_query_id = _build_gap_lookup(plan)
+        assert len(by_tool_query) > 0
+        assert len(by_query_id) > 0
+        for (tool, query), meta in by_tool_query.items():
             assert "gap_id" in meta
             assert "success_condition" in meta
             assert "lane_id" in meta
+            assert "query_id" in meta  # Re8.0 post-audit: query_id injected
+        # by_query_id keys should match the query_id fields in values
+        for qid, meta in by_query_id.items():
+            assert meta["query_id"] == qid
 
     def test_ignores_non_gap_queries(self):
         plan = {
@@ -218,14 +223,44 @@ class TestBuildGapLookup:
                  "success_condition": "find 1+", "lane_id": "anchor"},
             ],
         }
-        lookup = _build_gap_lookup(plan)
-        assert len(lookup) == 1
-        assert ("arxiv", "with gap") in lookup
-        assert ("arxiv", "no gap") not in lookup
+        by_tool_query, by_query_id = _build_gap_lookup(plan)
+        assert len(by_tool_query) == 1
+        assert ("arxiv", "with gap") in by_tool_query
+        assert ("arxiv", "no gap") not in by_tool_query
+        assert len(by_query_id) == 1
 
     def test_empty_plan_returns_empty(self):
-        assert _build_gap_lookup({}) == {}
-        assert _build_gap_lookup({"queries": []}) == {}
+        by_tool_query1, by_query_id1 = _build_gap_lookup({})
+        assert by_tool_query1 == {}
+        assert by_query_id1 == {}
+        by_tool_query2, by_query_id2 = _build_gap_lookup({"queries": []})
+        assert by_tool_query2 == {}
+        assert by_query_id2 == {}
+
+    def test_query_id_stable_across_reformulation(self):
+        """Re8.0 post-audit: query_id is the stable key for gap_id
+        propagation. The same gap_id gets deterministic query_ids
+        (q_{gap_id}_1, q_{gap_id}_2, ...) regardless of query text."""
+        plan = {
+            "queries": [
+                {"tool": "arxiv", "query": "original query",
+                 "gap_id": "G1", "success_condition": "find 1+", "lane_id": "L1"},
+                {"tool": "openalex", "query": "another query",
+                 "gap_id": "G1", "success_condition": "find 1+", "lane_id": "L1"},
+                {"tool": "crossref", "query": "for other gap",
+                 "gap_id": "G2", "success_condition": "find 2+", "lane_id": "L2"},
+            ],
+        }
+        by_tool_query, by_query_id = _build_gap_lookup(plan)
+        # G1 has 2 queries → q_G1_1, q_G1_2
+        # G2 has 1 query → q_G2_1
+        assert "q_G1_1" in by_query_id
+        assert "q_G1_2" in by_query_id
+        assert "q_G2_1" in by_query_id
+        # All three map to correct gap_ids
+        assert by_query_id["q_G1_1"]["gap_id"] == "G1"
+        assert by_query_id["q_G1_2"]["gap_id"] == "G1"
+        assert by_query_id["q_G2_1"]["gap_id"] == "G2"
 
 
 # ---------------------------------------------------------------------------
@@ -678,25 +713,23 @@ class TestIntegrationPlannerToAgent:
 
 
 # ---------------------------------------------------------------------------
-# P1-7b: gap_lookup miss fallback (search_agent.py lines 1007-1025)
+# Re8.0 post-audit: P1-7b fallback removal + plan_query_id gap stability
 # ---------------------------------------------------------------------------
 
-class TestP17bGapLookupMissFallback:
-    """P1-7b: gap_lookup miss fallback.
+class TestP17bRemovalAndQueryIdStability:
+    """Re8.0 post-audit: P1-7b fallback has been removed.
 
-    When the LLM-driven ReAct loop uses queries that don't exactly match
-    the gap-bound plan queries (gap_lookup miss), step_entry won't carry
-    gap_id and the per-gap partial_gaps set stays empty. In that case,
-    if search_agent DID find papers/repos, mark all "open" gaps as
-    "partially_satisfied".
+    The previous fallback force-attributed partial satisfaction to ALL
+    open gaps when gap_lookup missed (LLM reformulated the query). This
+    was a semantic flaw — "search returned results" does not prove any
+    specific gap was addressed.
 
-    Covers search_agent.py lines 1007-1025:
-        if not resolved_gaps and not partial_gaps and (paper_candidates or unique_repos):
-            for gap in existing_gaps:
-                gid = gap.get("gap_id", "")
-                current_status = gap.get("status", "open")
-                if gid and current_status == "open":
-                    partial_gaps.add(gid)
+    New behavior:
+      - gap_lookup miss + no plan_query_id → results go to
+        ``unassigned_evidence``, gaps stay "open" (NOT partially_satisfied)
+      - LLM returns ``plan_query_id`` when adapting a plan query →
+        gap_id stays stable across query reformulation, results are
+        attributed to the correct gap
     """
 
     def _make_state_with_open_gaps(
@@ -722,11 +755,12 @@ class TestP17bGapLookupMissFallback:
             "evidence_gaps": gaps,
         }
 
-    def test_p1_7b_gap_lookup_miss_with_papers_marks_partial(self, monkeypatch):
-        """gap_lookup miss + paper_candidates 非空 → open gaps 被标记为 partially_satisfied."""
+    def test_gap_lookup_miss_keeps_gaps_open(self, monkeypatch):
+        """gap_lookup miss + no plan_query_id + papers found → gaps STAY
+        'open', results go to unassigned_evidence (NOT partially_satisfied)."""
         monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
         state = self._make_state_with_open_gaps(n_gaps=2, gap_status="open")
-        # LLM uses a query NOT in the plan → gap_lookup miss
+        # LLM uses a query NOT in the plan and no plan_query_id → miss
         decisions = [
             {"action": "search", "tool": "arxiv",
              "query": "TOTALLY DIFFERENT QUERY NOT IN PLAN",
@@ -739,19 +773,27 @@ class TestP17bGapLookupMissFallback:
              patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper One", "abstract": "a"}]):
             result = search_agent_node(state)
 
-        # All open gaps should be marked partially_satisfied
+        # Gaps should STAY "open" — P1-7b fallback is removed
         for gap in result["evidence_gaps"]:
-            assert gap["status"] == "partially_satisfied", (
-                f"gap {gap['gap_id']} status={gap['status']}"
+            assert gap["status"] == "open", (
+                f"gap {gap['gap_id']} status={gap['status']} "
+                f"(should remain open — P1-7b fallback removed)"
             )
-        # Sanity: papers were indeed found
+        # Papers were found
         assert len(result["paper_candidates"]) >= 1
+        # Results recorded as unassigned_evidence (not attributed to any gap)
+        unassigned = result.get("unassigned_evidence") or []
+        assert len(unassigned) >= 1, (
+            "unassigned_evidence should contain the unattributed results"
+        )
+        assert unassigned[0]["n_papers"] >= 1
+        assert unassigned[0]["plan_query_id"] == ""  # LLM didn't return one
 
-    def test_p1_7b_gap_lookup_miss_with_repos_only_triggers(self, monkeypatch):
-        """gap_lookup miss + unique_repos 非空但 paper_candidates 为空 → fallback 触发."""
+    def test_gap_lookup_miss_with_repos_keeps_gaps_open(self, monkeypatch):
+        """gap_lookup miss + repos only (no papers) → gaps STAY 'open',
+        repo results go to unassigned_evidence."""
         monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
         state = self._make_state_with_open_gaps(n_gaps=2, gap_status="open")
-        # LLM uses github + a query NOT in plan → gap_lookup miss + repo result
         decisions = [
             {"action": "search", "tool": "github",
              "query": "TOTALLY DIFFERENT REPO QUERY NOT IN PLAN",
@@ -773,15 +815,19 @@ class TestP17bGapLookupMissFallback:
             result = search_agent_node(state)
 
         for gap in result["evidence_gaps"]:
-            assert gap["status"] == "partially_satisfied", (
+            assert gap["status"] == "open", (
                 f"gap {gap['gap_id']} status={gap['status']}"
             )
-        # paper_candidates empty, repo_candidates non-empty
         assert len(result["paper_candidates"]) == 0
         assert len(result["repo_candidates"]) >= 1
+        # Unassigned evidence should record the repo results
+        unassigned = result.get("unassigned_evidence") or []
+        assert len(unassigned) >= 1
+        assert unassigned[0]["n_repos"] >= 1
 
-    def test_p1_7b_empty_existing_gaps_safe_skip(self, monkeypatch):
-        """gap_lookup miss + existing_gaps 为空 → fallback 安全跳过,不报错."""
+    def test_empty_existing_gaps_no_error(self, monkeypatch):
+        """gap_lookup miss + existing_gaps empty → no error, results to
+        unassigned_evidence, evidence_gaps stays empty."""
         monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
         plan = _make_gap_bound_plan(seed_id="s1")
         state: dict[str, Any] = {
@@ -791,7 +837,7 @@ class TestP17bGapLookupMissFallback:
             },
             "search_plan": plan,
             "trace_events": [],
-            "evidence_gaps": [],  # empty — fallback should skip safely
+            "evidence_gaps": [],
         }
         decisions = [
             {"action": "search", "tool": "arxiv",
@@ -804,13 +850,15 @@ class TestP17bGapLookupMissFallback:
              patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper One", "abstract": "a"}]):
             result = search_agent_node(state)
 
-        # No error, evidence_gaps still empty
         assert result["evidence_gaps"] == []
-        # Sanity: papers were found (fallback condition met but no gaps to mark)
         assert len(result["paper_candidates"]) >= 1
+        # Even with no gaps, unassigned_evidence should record the results
+        unassigned = result.get("unassigned_evidence") or []
+        assert len(unassigned) >= 1
 
-    def test_p1_7b_no_open_gaps_no_change(self, monkeypatch):
-        """gap_lookup miss + 所有 gap status 不是 "open" → 不标记任何 gap."""
+    def test_blocked_gaps_stay_blocked_on_miss(self, monkeypatch):
+        """gap_lookup miss + all gaps 'blocked' → gaps stay 'blocked',
+        results to unassigned_evidence."""
         monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
         state = self._make_state_with_open_gaps(n_gaps=2, gap_status="blocked")
         decisions = [
@@ -824,11 +872,114 @@ class TestP17bGapLookupMissFallback:
              patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper One", "abstract": "a"}]):
             result = search_agent_node(state)
 
-        # Gaps should remain "blocked" (P1-7b only touches "open" gaps)
         for gap in result["evidence_gaps"]:
             assert gap["status"] == "blocked", (
-                f"gap {gap['gap_id']} status={gap['status']} "
-                f"(should remain blocked — P1-7b only marks open gaps)"
+                f"gap {gap['gap_id']} status={gap['status']}"
             )
-        # Sanity: papers were found (fallback condition met but no open gaps)
         assert len(result["paper_candidates"]) >= 1
+        unassigned = result.get("unassigned_evidence") or []
+        assert len(unassigned) >= 1
+
+    def test_plan_query_id_preserves_gap_on_reformulation(self, monkeypatch):
+        """LLM returns plan_query_id with a REFORMULATED query → gap_id
+        is preserved, step_entry carries gap_id, and if results are
+        found the gap can be marked partially_satisfied.
+
+        This is the core fix for P1-7b: the LLM can reformulate query
+        text without losing the gap binding.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        # Pick the first gap-bound query from the plan
+        first_q = next(q for q in plan["queries"] if q.get("gap_id"))
+        gap_id_expected = first_q["gap_id"]
+        # Compute the query_id the same way _build_gap_lookup does
+        # (q_{gap_id}_1 for the first query of this gap)
+        plan_query_id = f"q_{gap_id_expected}_1"
+
+        gaps = [
+            make_evidence_gap(
+                gap_id=gap_id_expected,
+                question="target gap",
+                status="open",
+            ),
+        ]
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {
+                "method": ["YOLO"], "object": ["detection"], "domain": "cv",
+            },
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+        # LLM reformulates the query text but returns plan_query_id
+        decisions = [
+            {"action": "search", "tool": first_q["tool"],
+             "query": "REFORMULATED QUERY TEXT different from plan",
+             "plan_query_id": plan_query_id,
+             "reason": "adapted plan query with new keywords"},
+            {"action": "stop", "reason": "done"},
+        ]
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper One", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        # The step should carry gap_id (preserved via plan_query_id)
+        tool_steps = [s for s in result["search_steps"] if s.get("type") == "tool_call"]
+        assert len(tool_steps) >= 1
+        assert tool_steps[0].get("gap_id") == gap_id_expected, (
+            f"step gap_id={tool_steps[0].get('gap_id')!r} "
+            f"(expected {gap_id_expected!r} — plan_query_id should preserve it)"
+        )
+        assert tool_steps[0].get("query_id") == plan_query_id
+        # Gap should be partially_satisfied (had results but maybe didn't
+        # meet success_condition threshold — depends on the condition)
+        # At minimum, the gap should NOT still be "open" if results were found
+        # and the success_condition is "find 1+".
+        updated_gap = result["evidence_gaps"][0]
+        assert updated_gap["status"] in ("partially_satisfied", "satisfied"), (
+            f"gap status={updated_gap['status']!r} "
+            f"(should be partially_satisfied or satisfied — results were attributed)"
+        )
+        # The FIRST step's results were attributed via plan_query_id, so
+        # they should NOT appear in unassigned_evidence. Later auto-
+        # injected steps (relevance reflection, domain injection) may
+        # produce unassigned_evidence — that's expected and fine.
+        unassigned = result.get("unassigned_evidence") or []
+        first_step_idx = tool_steps[0].get("step")
+        unassigned_from_first_step = [
+            u for u in unassigned if u.get("step") == first_step_idx
+        ]
+        assert len(unassigned_from_first_step) == 0, (
+            f"first step (with plan_query_id) should NOT contribute to "
+            f"unassigned_evidence, got {unassigned_from_first_step}"
+        )
+
+    def test_invalid_plan_query_id_falls_back_to_tool_query(self, monkeypatch):
+        """LLM returns a bogus plan_query_id that doesn't exist → falls
+        back to exact (tool, query) match. If that also misses, results
+        go to unassigned_evidence (graceful degradation)."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        state = self._make_state_with_open_gaps(n_gaps=1, gap_status="open")
+        decisions = [
+            {"action": "search", "tool": "arxiv",
+             "query": "NOT IN PLAN",
+             "plan_query_id": "q_NONEXISTENT_999",  # bogus
+             "reason": "llm hallucinated query_id"},
+            {"action": "stop", "reason": "done"},
+        ]
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper One", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        # Gap stays open (both lookups missed)
+        for gap in result["evidence_gaps"]:
+            assert gap["status"] == "open"
+        # Results go to unassigned_evidence
+        unassigned = result.get("unassigned_evidence") or []
+        assert len(unassigned) >= 1

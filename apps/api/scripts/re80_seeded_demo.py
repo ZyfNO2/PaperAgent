@@ -215,14 +215,25 @@ def _compute_quality_pass(final_state: dict) -> tuple[bool, list[str]]:
 
     Returns (passed, failure_reasons). passed=True if all checks pass.
 
+    Re8.0 post-audit fix: the previous version reported quality_pass=true
+    even when fused_verdict=BLOCKED or a Reflection Gate was unresolved,
+    creating a self-contradictory result (yolo_steel/xlm_r reported
+    quality_pass=true with fused_verdict=BLOCKED). The new version
+    enforces:
+      - fused_verdict must NOT be BLOCKED
+      - no Reflection Gate may be unresolved
+      - at least 1 gap must have traceable evidence_delta (not just a
+        status flag set by a fallback)
+
     Checks:
     1. At least 1 seed with existence_status="verified" (if seeded_research)
-    2. tailored_method.core_method non-empty (if seeded_research)
+    2. tailored_method.core_method (or assembly_plan.description) non-empty
     3. At least 1 evidence_gap with status="satisfied" or "partially_satisfied"
-       (if there were any open gaps)
-    4. final_recommendation.low_bar_status == "pass"
-    5. If novelty_review_verdict exists, it should not be "reject"
-       (weak_reject is acceptable for quality_pass)
+       AND that gap_id has traceable evidence_delta in search_steps
+    4. fused_verdict != "BLOCKED" (state top-level field, P0-A)
+    5. No Reflection Gate (seed_audit / tailor / final_review) is unresolved
+    6. final_recommendation.low_bar_status == "pass"
+    7. If novelty_review_verdict exists, it should not be "reject"
     """
     reasons: list[str] = []
     entry_mode = final_state.get("entry_mode", "topic_only")
@@ -254,18 +265,65 @@ def _compute_quality_pass(final_state: dict) -> tuple[bool, list[str]]:
                 "(and assembly_plan.description is empty)"
             )
 
-    # Check 3: if there were any open gaps, at least 1 should be closed
+    # Check 3: at least 1 gap with traceable evidence_delta
+    # Re8.0 post-audit fix: previously this check only verified that at
+    # least 1 gap had status in {satisfied, partially_satisfied}. But the
+    # P1-7b fallback marked all open gaps as partially_satisfied whenever
+    # any papers/repos were found, without verifying that the search
+    # results were actually attributable to those gaps (gap_id=null,
+    # evidence_delta=null in search_steps). Now we require that the
+    # gap_id appears in at least one search_step with a non-zero
+    # evidence_delta (n_new_papers > 0 or n_new_repos > 0).
     gaps = final_state.get("evidence_gaps") or []
-    has_open = any(g.get("status") == "open" for g in gaps)
-    has_closed = any(
-        g.get("status") in ("satisfied", "partially_satisfied") for g in gaps
+    steps = final_state.get("search_steps") or []
+    gaps_with_evidence: set[str] = set()
+    for s in steps:
+        gid = s.get("gap_id")
+        if not gid:
+            continue
+        delta = s.get("evidence_delta") or {}
+        if delta.get("n_new_papers", 0) > 0 or delta.get("n_new_repos", 0) > 0:
+            gaps_with_evidence.add(gid)
+    has_satisfied_with_evidence = any(
+        g.get("gap_id") in gaps_with_evidence
+        and g.get("status") in ("satisfied", "partially_satisfied")
+        for g in gaps
     )
-    if gaps and has_open and not has_closed:
+    if gaps and not has_satisfied_with_evidence:
         reasons.append(
-            "evidence gaps exist but none satisfied/partially_satisfied"
+            "no evidence gap has traceable evidence_delta "
+            "(gaps may be marked partially_satisfied but no step-level "
+            "gap_id match with non-zero papers/repos)"
         )
 
-    # Check 4: final_recommendation.low_bar_status == "pass"
+    # Check 4: fused_verdict must NOT be BLOCKED
+    # Re8.0 post-audit fix: BLOCKED means the decision fusion determined
+    # the pipeline cannot produce a GO. quality_pass=true with
+    # fused_verdict=BLOCKED is self-contradictory.
+    fused_verdict = (final_state.get("fused_verdict") or "").upper()
+    if fused_verdict == "BLOCKED":
+        reasons.append(
+            "fused_verdict is BLOCKED (quality_pass cannot be true "
+            "when the pipeline is blocked)"
+        )
+
+    # Check 5: no Reflection Gate may be unresolved
+    # Re8.0 post-audit fix: an unresolved gate means the gate hit its
+    # round cap without converging. quality_pass=true with an unresolved
+    # gate masks the fact that the pipeline did not actually resolve
+    # the issue.
+    gate_results = final_state.get("reflection_gate_results") or {}
+    for gate_name in ("seed_audit_gate", "tailor_gate", "final_review_gate"):
+        entries = gate_results.get(gate_name) or []
+        if entries:
+            last_entry = entries[-1]
+            if last_entry.get("verdict") == "unresolved":
+                reasons.append(
+                    f"reflection_gate {gate_name} is unresolved "
+                    f"(round_idx cap reached without convergence)"
+                )
+
+    # Check 6: final_recommendation.low_bar_status == "pass"
     final_rec = final_state.get("final_recommendation") or {}
     if final_rec.get("low_bar_status") != "pass":
         reasons.append(
@@ -273,7 +331,7 @@ def _compute_quality_pass(final_state: dict) -> tuple[bool, list[str]]:
             f"(got: {final_rec.get('low_bar_status')!r})"
         )
 
-    # Check 5: novelty_review_verdict should not be "reject"
+    # Check 7: novelty_review_verdict should not be "reject"
     novelty_verdict = final_state.get("novelty_review_verdict")
     if novelty_verdict and novelty_verdict == "reject":
         reasons.append("novelty_review_verdict is 'reject'")

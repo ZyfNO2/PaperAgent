@@ -45,26 +45,47 @@ if os.environ.get("PAPERAGENT_DISABLE_OPENALEX"):
 
 def _build_gap_lookup(
     search_plan: dict[str, Any],
-) -> dict[tuple[str, str], dict[str, str]]:
-    """Build a lookup from (tool, query) → gap metadata.
+) -> tuple[dict[tuple[str, str], dict[str, str]], dict[str, dict[str, str]]]:
+    """Build lookups from (tool, query) and query_id → gap metadata.
 
-    Only gap-bound queries (carrying ``gap_id``) are included. Used by
-    the search_agent loop to record evidence_delta per gap.
+    Only gap-bound queries (carrying ``gap_id``) are included. Returns a
+    tuple ``(by_tool_query, by_query_id)``:
+
+      - ``by_tool_query``: exact-match lookup keyed by ``(tool, query)``.
+        Used when the LLM uses a plan query verbatim.
+      - ``by_query_id``: stable lookup keyed by ``query_id``. Used when
+        the LLM reformulates the query text but returns the original
+        plan query's ``plan_query_id`` — this keeps ``gap_id`` stable
+        across query reformulation (Re8.0 post-audit fix for P1-7b).
+
+    Each gap_meta value carries ``query_id`` so the ReAct loop can
+    propagate it to ``step_entry`` for traceability.
     """
-    lookup: dict[tuple[str, str], dict[str, str]] = {}
+    by_tool_query: dict[tuple[str, str], dict[str, str]] = {}
+    by_query_id: dict[str, dict[str, str]] = {}
+    # Counter per gap_id to make query_id deterministic within a plan.
+    gap_counter: dict[str, int] = {}
     for q in (search_plan.get("queries") or []):
         gap_id = q.get("gap_id") or ""
         if not gap_id:
             continue
         tool = (q.get("tool") or "").strip().lower()
         query = (q.get("query") or "").strip()
-        if tool and query:
-            lookup[(tool, query)] = {
-                "gap_id": gap_id,
-                "success_condition": q.get("success_condition", ""),
-                "lane_id": q.get("lane_id", ""),
-            }
-    return lookup
+        if not (tool and query):
+            continue
+        gap_counter[gap_id] = gap_counter.get(gap_id, 0) + 1
+        query_id = f"q_{gap_id}_{gap_counter[gap_id]}"
+        meta = {
+            "gap_id": gap_id,
+            "success_condition": q.get("success_condition", ""),
+            "lane_id": q.get("lane_id", ""),
+            "query_id": query_id,
+        }
+        by_tool_query[(tool, query)] = meta
+        # First query_id for a given (gap_id, tool) wins — avoids
+        # collisions when the same gap has multiple tools.
+        by_query_id.setdefault(query_id, meta)
+    return by_tool_query, by_query_id
 
 
 def _check_gap_resolved(
@@ -151,8 +172,13 @@ _SYSTEM_PROMPT = """你是学术搜索策略师。根据题目、已有结果和
 重要: source_status=empty 只表示该查询没有命中，不代表 source 失效；
 只有 failed、rate_limited、disabled 的 source 不可再选。
 
+available_plan_queries 中每条带有 query_id / gap_id。当你基于某条 plan query
+改写 query 文本时（例如调整关键词、改变词序、添加限定词），必须把原 plan query
+的 query_id 填入 plan_query_id 字段，这样搜索结果才能被归因到对应的 evidence gap。
+如果你是从零构思的新查询而非改写自 plan query，则 plan_query_id 留空。
+
 输出 JSON:
-{"action": "search" | "stop", "tool": "必须来自 available_sources", "query": "...", "reason": "..."}
+{"action": "search" | "stop", "tool": "必须来自 available_sources", "query": "...", "plan_query_id": "可选，改写自 plan query 时填入其 query_id", "reason": "..."}
 
 如果搜索结果已经足够，输出:
 {"action": "stop", "reason": "已有 N 篇论文 + M 个 repo，足够开始分析"}
@@ -187,11 +213,27 @@ def _build_decision_prompt(
             status = "FAILED" if s.get("failed") else f"{s.get('n_results', 0)} results"
             prior_queries.append(f'{s.get("tool")}: "{s.get("query")}" -> {status}')
 
-    # Available queries from search_plan
-    plan_queries = []
+    # Available queries from search_plan. Re8.0 post-audit: expose
+    # structured plan_queries with query_id/gap_id so the LLM can return
+    # plan_query_id when adapting a plan query — this keeps gap_id stable
+    # across query reformulation (replaces the P1-7b fallback).
+    plan_queries: list[dict[str, str]] = []
     if search_plan and search_plan.get("queries"):
+        gap_counter: dict[str, int] = {}
         for q in search_plan["queries"]:
-            plan_queries.append(f'{q.get("tool", "?")}: "{q.get("query", "")}"')
+            tool = q.get("tool", "?")
+            query = q.get("query", "")
+            gap_id = q.get("gap_id", "")
+            query_id = ""
+            if gap_id:
+                gap_counter[gap_id] = gap_counter.get(gap_id, 0) + 1
+                query_id = f"q_{gap_id}_{gap_counter[gap_id]}"
+            plan_queries.append({
+                "query_id": query_id,
+                "tool": tool,
+                "query": query,
+                "gap_id": gap_id,
+            })
 
     # Failed tools to avoid
     failed_list = sorted(failed_tools) if failed_tools else []
@@ -570,12 +612,21 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
     steps: list[dict[str, Any]] = []
     failed_this_round: set[str] = set()  # tools that failed within this invocation
 
-    # Re8.0 WP4: Evidence Gap tracking — only active for gap-bound plans
-    gap_lookup = _build_gap_lookup(search_plan)
+    # Re8.0 WP4: Evidence Gap tracking — only active for gap-bound plans.
+    # Re8.0 post-audit fix (P1-7b removal): _build_gap_lookup now returns
+    # a tuple (by_tool_query, by_query_id). The by_query_id lookup lets
+    # the ReAct loop keep gap_id stable when the LLM reformulates a
+    # plan query's text but returns its plan_query_id.
+    gap_lookup, gap_lookup_by_query_id = _build_gap_lookup(search_plan)
     is_gap_bound = bool(search_plan.get("gap_bound")) and bool(gap_lookup)
     resolved_gaps: set[str] = set()
     unresolved_gaps: set[str] = set()
     all_bound_gaps: set[str] = {v["gap_id"] for v in gap_lookup.values()}
+    # Re8.0 post-audit: track search results that couldn't be attributed
+    # to any evidence gap (gap_lookup miss + no plan_query_id). These are
+    # kept for traceability but NOT used to mark any gap as
+    # partially_satisfied — that was the P1-7b semantic flaw.
+    unassigned_evidence: list[dict[str, Any]] = []
 
     try:
         # Re3.9.1: Resolve domain-specific tools for injection
@@ -682,6 +733,11 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
 
             tool = thought.get("tool", "").strip().lower()
             query = thought.get("query", "").strip()
+            # Re8.0 post-audit: extract plan_query_id so gap_id stays
+            # stable when the LLM reformulates the query text. The LLM
+            # is instructed (via _SYSTEM_PROMPT) to fill this when
+            # adapting a plan query; it's empty for from-scratch queries.
+            plan_query_id = (thought.get("plan_query_id") or "").strip()
 
             if not tool or not query:
                 steps.append({
@@ -690,6 +746,19 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     "reason": "empty tool or query from LLM",
                 })
                 break
+
+            # Re8.0 post-audit: unified gap_meta lookup — prefer
+            # plan_query_id (stable across query reformulation), then
+            # fall back to exact (tool, query) match. Returns {} when
+            # the search action can't be attributed to any gap (the
+            # results will go to unassigned_evidence instead of being
+            # force-attributed to all open gaps — this replaces P1-7b).
+            def _resolve_gap_meta(_tool: str, _query: str, _pqid: str) -> dict[str, str]:
+                if _pqid:
+                    meta = gap_lookup_by_query_id.get(_pqid)
+                    if meta:
+                        return meta
+                return gap_lookup.get((_tool, _query), {})
 
             # Skip tools that failed in prior repair round OR this invocation
             if tool in skip_adapters or tool in failed_this_round:
@@ -701,7 +770,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     "reason": f"adapter {tool} skipped (failed)",
                 })
                 # Re8.0 WP6 (P2-3): record skip in react_actions audit trail
-                _gap_meta_skip = gap_lookup.get((tool, query), {})
+                _gap_meta_skip = _resolve_gap_meta(tool, query, plan_query_id)
                 react_actions_log.append({
                     "step": step_idx,
                     "action_type": "skip",
@@ -738,7 +807,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     "failed": True,
                 })
                 # Re8.0 WP6 (P2-3): record failed dispatch in react_actions
-                _gap_meta_fail = gap_lookup.get((tool, query), {})
+                _gap_meta_fail = _resolve_gap_meta(tool, query, plan_query_id)
                 react_actions_log.append({
                     "step": step_idx,
                     "action_type": "tool_call",
@@ -782,8 +851,15 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
             # Re8.0 WP4: record evidence_delta + gap resolution for
             # gap-bound queries. This lets the trace answer "why did we
             # search and what did the results change?"
+            #
+            # Re8.0 post-audit (P1-7b removal): prefer plan_query_id
+            # lookup so gap_id stays stable when the LLM reformulates
+            # query text. When neither plan_query_id nor exact (tool,
+            # query) matches, the results are recorded to
+            # ``unassigned_evidence`` — they are NOT force-attributed
+            # to all open gaps (that was the P1-7b semantic flaw).
             if is_gap_bound:
-                gap_meta = gap_lookup.get((tool, query))
+                gap_meta = _resolve_gap_meta(tool, query, plan_query_id)
                 if gap_meta:
                     gap_id = gap_meta["gap_id"]
                     success_cond = gap_meta["success_condition"]
@@ -792,6 +868,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     )
                     step_entry["gap_id"] = gap_id
                     step_entry["lane_id"] = gap_meta.get("lane_id", "")
+                    step_entry["query_id"] = gap_meta.get("query_id", "")
                     step_entry["success_condition"] = success_cond
                     step_entry["evidence_delta"] = {
                         "n_new_papers": len(new_papers),
@@ -804,6 +881,19 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     elif n_results == 0:
                         # 0 results → gap stays unresolved (not failed)
                         unresolved_gaps.add(gap_id)
+                elif new_papers or new_repos:
+                    # Re8.0 post-audit: unattributed results — keep for
+                    # traceability but do NOT mark any gap as
+                    # partially_satisfied. This is the deliberate
+                    # replacement for the P1-7b fallback.
+                    unassigned_evidence.append({
+                        "step": step_idx,
+                        "tool": tool,
+                        "query": query,
+                        "plan_query_id": plan_query_id,
+                        "n_papers": len(new_papers),
+                        "n_repos": len(new_repos),
+                    })
 
             steps.append(step_entry)
 
@@ -980,17 +1070,19 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
     # to always return True.
     #
     # Strategy: upsert by gap_id. Gaps in resolved_gaps → "satisfied".
-    # Gaps in unresolved_gaps that received SOME results (n_papers>0 or
-    # n_repos>0 across all steps for that gap) → "partially_satisfied".
-    # Gaps not addressed by this search_plan stay unchanged.
+    # Gaps in partial_gaps (non-zero papers/repos in any step bound to
+    # that gap, but didn't meet the success_condition threshold) →
+    # "partially_satisfied". Gaps not addressed by this search_plan stay
+    # unchanged.
     #
-    # P1-7b fallback: when the LLM-driven ReAct loop uses queries that
-    # don't exactly match the gap-bound plan queries (gap_lookup miss),
-    # step_entry won't carry gap_id and the per-gap partial_gaps set
-    # stays empty. In that case, if search_agent DID find papers/repos,
-    # mark all "open" gaps as "partially_satisfied" — the search
-    # produced evidence even though we can't attribute it to a specific
-    # gap. This is more accurate than leaving them "open" forever.
+    # Re8.0 post-audit (P1-7b removal): the previous fallback that
+    # force-attributed partial satisfaction to ALL open gaps when
+    # gap_lookup missed has been removed. It was a semantic flaw —
+    # "search returned results" does not prove any specific gap was
+    # addressed. Unattributed results now go to ``unassigned_evidence``
+    # (recorded for traceability, not used to mutate gap status). Gap
+    # attribution is preserved via ``plan_query_id`` so the LLM can
+    # reformulate query text without losing the gap binding.
     updated_gaps: list[dict[str, Any]] = []
     existing_gaps = state.get("evidence_gaps") or []
     # Collect gap_ids that got partial results (non-zero papers/repos
@@ -1004,26 +1096,6 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         if delta.get("n_new_papers", 0) > 0 or delta.get("n_new_repos", 0) > 0:
             partial_gaps.add(gid)
 
-    # P1-7b: gap_lookup miss fallback. If no gap was explicitly resolved
-    # or partially-satisfied via the (tool, query) lookup, but the
-    # search_agent found papers or repos, attribute partial satisfaction
-    # to all "open" gaps. This handles the common case where the LLM
-    # reformulates plan queries (e.g. adds keywords, changes word order)
-    # and breaks the exact-match lookup.
-    if not resolved_gaps and not partial_gaps and (paper_candidates or unique_repos):
-        for gap in existing_gaps:
-            gid = gap.get("gap_id", "")
-            current_status = gap.get("status", "open")
-            if gid and current_status == "open":
-                partial_gaps.add(gid)
-        if partial_gaps:
-            logger.info(
-                "search_agent P1-7b: gap_lookup miss fallback — "
-                "marking %d open gap(s) as partially_satisfied "
-                "(found %d papers, %d repos but no step-level gap_id match)",
-                len(partial_gaps), len(paper_candidates), len(unique_repos),
-            )
-
     for gap in existing_gaps:
         g = dict(gap)  # shallow copy — don't mutate state in-place
         gid = g.get("gap_id", "")
@@ -1032,7 +1104,9 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         elif gid in partial_gaps:
             g["status"] = "partially_satisfied"
         # else: leave status unchanged (may be "open" from creation,
-        # or "blocked" from a previous round)
+        # or "blocked" from a previous round). Notably, a gap that was
+        # "open" and received no attributed evidence stays "open" —
+        # this is the correct behavior after P1-7b removal.
         updated_gaps.append(g)
 
     return {
@@ -1045,4 +1119,9 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
         "provider_profile": decision_provider,
         "react_actions": react_actions_log,  # Re8.0 WP6 (P2-3): audit trail
         "evidence_gaps": updated_gaps,  # Re8.0 P1-7: gap status writeback
+        # Re8.0 post-audit (P1-7b removal): search results that couldn't
+        # be attributed to any evidence gap. Kept for traceability —
+        # downstream nodes can inspect them, but they do NOT cause any
+        # gap to be marked partially_satisfied.
+        "unassigned_evidence": unassigned_evidence,
     }
