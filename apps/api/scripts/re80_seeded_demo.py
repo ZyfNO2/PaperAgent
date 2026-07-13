@@ -449,6 +449,16 @@ def run_seeded_demo(case_key: str) -> dict:
                     "rationale": (last.get("rationale") or "")[:300],
                     "re_search_requests": last.get("re_search_requests", []),
                     "unresolved_gaps": last.get("unresolved_gaps", []),
+                    # Re8.0 third batch: export full rounds list for diagnosis
+                    "all_rounds": [
+                        {
+                            "round_idx": e.get("round_idx"),
+                            "verdict": e.get("verdict"),
+                            "generated_by": e.get("generated_by"),
+                            "rationale": (e.get("rationale") or "")[:200],
+                        }
+                        for e in entries
+                    ],
                 }
             else:
                 result[f"gate_{gate_name}"] = None
