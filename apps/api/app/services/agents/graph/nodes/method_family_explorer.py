@@ -28,6 +28,7 @@ and the LLM prompt explicitly forbids tagging cross-task families as
 """
 from __future__ import annotations
 
+import json
 import logging
 import re
 import time
@@ -160,6 +161,8 @@ Seed paper:
 - Task definition: {task_def}
 - Method summary: {method}
 - Stated limitations: {limitations}
+- Dataset and metrics: {dataset_metrics}
+- Reproduction environment: {reproduction_env}
 - Inferred task type: {task_type}
 
 RULES (CRITICAL — violating any rule makes the output useless):
@@ -179,6 +182,9 @@ RULES (CRITICAL — violating any rule makes the output useless):
    across ALL families must NOT contain the seed model name (anti-anchoring).
 7. Aim for diversity: include at least one direct_competitor and at least
    one alternative_formulation or transferable_mechanism when possible.
+8. Use the dataset/metrics and reproduction environment to ground the
+   families: a family that requires a different dataset format or
+   hardware profile should note this in ``interface_requirements``.
 
 [OUTPUT CONTRACT] After your analysis, your ENTIRE final message must be
 exactly ONE valid JSON object with this shape:
@@ -206,12 +212,22 @@ def _format_limitations(limitations: list[str] | None) -> str:
     return "; ".join(limitations)
 
 
+def _format_dict_brief(d: dict[str, Any] | None) -> str:
+    """Compact JSON serialisation of dataset/environment dicts, truncated
+    to keep the prompt within token budget."""
+    if not d:
+        return "(none stated)"
+    return json.dumps(d, ensure_ascii=False, default=str)[:400]
+
+
 def _call_family_llm(
     *,
     title: str,
     task_def: str,
     method: str,
     limitations: list[str],
+    dataset_metrics: dict[str, Any] | None,
+    reproduction_env: dict[str, Any] | None,
     task_type: str,
 ) -> list[dict[str, Any]] | None:
     """Call the LLM to derive method families.
@@ -224,6 +240,8 @@ def _call_family_llm(
         task_def=task_def or "(unknown)",
         method=method or "(unknown)",
         limitations=_format_limitations(limitations),
+        dataset_metrics=_format_dict_brief(dataset_metrics),
+        reproduction_env=_format_dict_brief(reproduction_env),
         task_type=task_type,
     )
 
@@ -597,6 +615,8 @@ def method_family_explorer_node(state: ResearchState) -> dict[str, Any]:
         task_def=primary_seed.get("task_definition") or "",
         method=primary_seed.get("method_summary") or "",
         limitations=primary_seed.get("limitations") or [],
+        dataset_metrics=primary_seed.get("dataset_and_metrics"),
+        reproduction_env=primary_seed.get("reproduction_environment"),
         task_type=task_type,
     )
 

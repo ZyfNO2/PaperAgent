@@ -71,6 +71,16 @@ def _make_seeded_state(*, with_tailored: bool = False) -> dict[str, Any]:
                 role="classic_anchor",
                 task_definition="object detection",
                 method_summary="single-stage detector with grid predictions",
+                dataset_and_metrics={
+                    "datasets": [{"name": "PASCAL VOC", "size": "20k images"}],
+                    "metrics": [{"name": "mAP", "value": "63.4"}],
+                },
+                reproduction_environment={
+                    "framework": "Darknet",
+                    "hardware": "Titan X",
+                    "hyperparameters": {"lr": 0.001, "batch_size": 64},
+                },
+                limitations=["limited to grid-based detection", "struggles with small objects"],
             ),
         ],
         "method_families": [
@@ -355,6 +365,82 @@ class TestBuildTailorPrompt:
         prompt = build_tailor_prompt(_make_seeded_state())
         assert "full_agent" in prompt
         assert "online" in prompt
+
+    def test_prompt_includes_dataset_and_metrics(self):
+        """Re8.0 second-batch: Tailor prompt must include dataset_and_metrics."""
+        prompt = build_tailor_prompt(_make_seeded_state())
+        assert "PASCAL VOC" in prompt
+        assert "mAP" in prompt
+
+    def test_prompt_includes_reproduction_environment(self):
+        """Re8.0 second-batch: Tailor prompt must include reproduction_environment."""
+        prompt = build_tailor_prompt(_make_seeded_state())
+        assert "Darknet" in prompt
+        assert "Titan X" in prompt
+
+    def test_prompt_includes_limitations(self):
+        """Re8.0 second-batch: Tailor prompt must include limitations."""
+        prompt = build_tailor_prompt(_make_seeded_state())
+        assert "grid-based detection" in prompt
+        assert "small objects" in prompt
+
+    def test_format_seed_context_includes_all_5_fields(self):
+        """Re8.0 second-batch: _format_seed_context must surface all 5
+        paper_understanding fields, not just task_definition + method_summary.
+
+        Before commit (this fix): only 2/5 fields passed to Tailor LLM,
+        causing core_method="" + baseline_model=null + contribution_type=null
+        in Tailor output across all three seeded cases.
+        """
+        from apps.api.app.services.agents.graph.nodes.tailor_skill_adapter import (
+            _format_seed_context,
+        )
+
+        seed_cards = [
+            make_seed_card(
+                seed_id="s1",
+                resolved_title="Test Paper",
+                role="classic_anchor",
+                task_definition="test task",
+                method_summary="test method",
+                dataset_and_metrics={"datasets": [{"name": "TestDataset"}]},
+                reproduction_environment={"framework": "TestFramework"},
+                limitations=["limitation one", "limitation two"],
+            ),
+        ]
+        result = _format_seed_context(seed_cards)
+        # All 5 fields must appear in the compiled context.
+        assert "test task" in result
+        assert "test method" in result
+        assert "TestDataset" in result
+        assert "TestFramework" in result
+        assert "limitation one" in result
+        assert "limitation two" in result
+
+    def test_format_seed_context_handles_missing_fields(self):
+        """Missing dataset/env/limitations must not crash (backward compat
+        with seed cards that haven't passed through paper_understanding)."""
+        from apps.api.app.services.agents.graph.nodes.tailor_skill_adapter import (
+            _format_seed_context,
+        )
+
+        seed_cards = [
+            make_seed_card(
+                seed_id="s1",
+                resolved_title="Minimal Paper",
+                role="classic_anchor",
+                task_definition="task only",
+                # method_summary, dataset_and_metrics, reproduction_environment,
+                # limitations all default to None / empty
+            ),
+        ]
+        result = _format_seed_context(seed_cards)
+        # Should not crash; empty fields render as empty / "{}" / "".
+        assert "Minimal Paper" in result
+        assert "task only" in result
+        # dataset/environment render as "{}" when missing
+        assert "dataset: {}" in result
+        assert "environment: {}" in result
 
 
 # ---------------------------------------------------------------------------

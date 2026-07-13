@@ -699,3 +699,106 @@ class TestStateSchemaCompliance:
                 f"NODE_FIELDS 'method_family_explorer' references '{field}' "
                 f"but it is not in ResearchState"
             )
+
+
+# ---------------------------------------------------------------------------
+# Re8.0 second-batch: _call_family_llm must consume all 5 SeedCard fields
+# ---------------------------------------------------------------------------
+
+
+class TestCallFamilyLlmReceivesDatasetAndEnvironment:
+    """Re8.0 second-batch regression tests.
+
+    Before this fix, ``_call_family_llm`` only received ``task_def``,
+    ``method``, ``limitations``, ``title``, ``task_type`` — dropping
+    ``dataset_and_metrics`` and ``reproduction_environment`` populated by
+    ``paper_understanding``. This left the family-derivation LLM blind to
+    dataset/hardware constraints, producing families that may not be
+    fairly comparable under the seed's evaluation protocol.
+    """
+
+    def test_signature_includes_dataset_metrics_and_reproduction_env(self):
+        """``_call_family_llm`` signature must declare the two new params."""
+        import inspect
+
+        from apps.api.app.services.agents.graph.nodes.method_family_explorer import (
+            _call_family_llm,
+        )
+
+        sig = inspect.signature(_call_family_llm)
+        params = set(sig.parameters.keys())
+        assert "dataset_metrics" in params, (
+            "_call_family_llm must accept dataset_metrics parameter — "
+            "without it, dataset context from paper_understanding is dropped"
+        )
+        assert "reproduction_env" in params, (
+            "_call_family_llm must accept reproduction_env parameter — "
+            "without it, hardware/framework context from paper_understanding is dropped"
+        )
+
+    def test_prompt_template_includes_dataset_and_environment_placeholders(self):
+        """The user prompt template must surface dataset/environment context."""
+        from apps.api.app.services.agents.graph.nodes.method_family_explorer import (
+            _FAMILY_USER_TEMPLATE,
+        )
+
+        assert "{dataset_metrics}" in _FAMILY_USER_TEMPLATE
+        assert "{reproduction_env}" in _FAMILY_USER_TEMPLATE
+        assert "Dataset and metrics" in _FAMILY_USER_TEMPLATE
+        assert "Reproduction environment" in _FAMILY_USER_TEMPLATE
+
+    def test_call_site_passes_dataset_and_env_from_seed_card(self):
+        """The node's call site must pass ``dataset_and_metrics`` and
+        ``reproduction_environment`` from the primary seed card to
+        ``_call_family_llm``."""
+        from apps.api.app.services.agents.graph.nodes import method_family_explorer as mfe
+        from apps.api.app.services.agents.graph.re80_schema import make_seed_card
+
+        captured: dict = {}
+
+        def fake_call(**kwargs):
+            captured.update(kwargs)
+            return [
+                {"name": "Two-stage", "task_type": "detection",
+                 "relation_to_seed": "direct_competitor",
+                 "search_queries": ["two-stage detector"]},
+            ]
+
+        understood_card = make_seed_card(
+            seed_id="s1",
+            resolved_title="Test Paper",
+            existence_status="verified",
+            fulltext_status="downloaded",
+            task_definition="object detection",
+            method_summary="single-stage detector",
+            limitations=["small object recall low"],
+            dataset_and_metrics={
+                "datasets": [{"name": "COCO", "size": "80k images"}],
+                "metrics": [{"name": "mAP", "value": "0.45"}],
+            },
+            reproduction_environment={
+                "framework": "PyTorch",
+                "hardware": "V100",
+                "hyperparameters": {"lr": 0.001},
+            },
+        )
+
+        import unittest.mock as _mock
+        with _mock.patch(
+            "apps.api.app.services.agents.graph.nodes.method_family_explorer._call_family_llm",
+            side_effect=fake_call,
+        ):
+            state = {
+                "entry_mode": "seeded_research",
+                "seed_cards": [understood_card],
+            }
+            mfe.method_family_explorer_node(state)
+
+        assert "dataset_metrics" in captured, (
+            "call site did not pass dataset_metrics to _call_family_llm"
+        )
+        assert "reproduction_env" in captured, (
+            "call site did not pass reproduction_env to _call_family_llm"
+        )
+        assert captured["dataset_metrics"] == understood_card["dataset_and_metrics"]
+        assert captured["reproduction_env"] == understood_card["reproduction_environment"]
