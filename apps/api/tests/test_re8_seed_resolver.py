@@ -29,11 +29,15 @@ from apps.api.app.services.agents.graph.re80_schema import (
 from apps.api.app.services.agents.graph.nodes.seed_resolver import (
     _author_lastname,
     _classify_input,
+    _compute_confidence,
     _decide_existence,
     _fetch_by_title,
+    _merge_with_conflict_tagging,
     _normalize_seed_payload,
     _normalize_title_hit,
+    _title_similarity,
     _titles_agree,
+    _year_penalty,
     seed_resolver_node,
 )
 
@@ -716,7 +720,7 @@ class TestSeedResolverMultipleSeeds:
                 return real_fetched
             return None
 
-        async def mock_fetch_by_title(title, authors=None):
+        async def mock_fetch_by_title(title, authors=None, year=None):
             if title == "Just A Title":
                 return title_fetched
             return None
@@ -907,7 +911,7 @@ class TestSeedResolverTitleSearch:
             "abstract": "",
         }
 
-        async def mock_fetch_by_title(title, authors=None):
+        async def mock_fetch_by_title(title, authors=None, year=None):
             return title_fetched
 
         with patch(
@@ -930,7 +934,7 @@ class TestSeedResolverTitleSearch:
         """_resolve_one_seed stays ambiguous when _fetch_by_title returns None."""
         from apps.api.app.services.agents.graph.nodes.seed_resolver import _resolve_one_seed
 
-        async def mock_fetch_by_title(title, authors=None):
+        async def mock_fetch_by_title(title, authors=None, year=None):
             return None
 
         with patch(
@@ -1212,3 +1216,450 @@ class TestListUserPapersDedup:
         # Cleanup
         (fake_dir / "state.json").unlink(missing_ok=True)
         fake_dir.rmdir()
+
+
+# ---------------------------------------------------------------------------
+# Re8.1 WP2 Task 9 — Seed Repair capability tests
+# ---------------------------------------------------------------------------
+
+class TestTitleSimilarity:
+    """Capability 1: ``_title_similarity`` returns a similarity score in
+    [0.0, 1.0] using Jaccard (0.6) + Levenshtein ratio (0.4)."""
+
+    def test_title_similarity_exact_match(self):
+        """Identical titles (post-normalisation) → 1.0."""
+        t = "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"
+        assert _title_similarity(t, t) == 1.0
+
+    def test_title_similarity_typo(self):
+        """Single-character typo → still > 0.85 (covers typo_light cases)."""
+        a = "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"
+        b = "An Image is Worth 16x16 Words: Transformers for Image Recogntion at Scale"
+        sim = _title_similarity(a, b)
+        assert sim > 0.85, f"expected >0.85 for typo, got {sim}"
+
+    def test_title_similarity_different(self):
+        """Completely unrelated titles → < 0.3."""
+        a = "Attention is All You Need"
+        b = "Quantum-Entangled Transformer Networks for Time-Travel-Based Image Generation"
+        sim = _title_similarity(a, b)
+        assert sim < 0.3, f"expected <0.3 for unrelated, got {sim}"
+
+    def test_title_similarity_normalization(self):
+        """Case / punctuation / whitespace differences must not lower
+        the score below 1.0 when the normalised form is identical."""
+        a = "BERT: Pre-training of Deep Bidirectional Transformers!"
+        b = "bert  pre training of deep bidirectional transformers"
+        sim = _title_similarity(a, b)
+        assert sim == 1.0, f"expected 1.0 after normalisation, got {sim}"
+
+    def test_title_similarity_empty(self):
+        """Either side empty → 0.0 (defensive)."""
+        assert _title_similarity("", "Anything") == 0.0
+        assert _title_similarity("Anything", "") == 0.0
+        assert _title_similarity("", "") == 0.0
+
+
+class TestYearPenalty:
+    """Capability 2: ``_year_penalty`` returns a multiplier in [0.3, 1.0]."""
+
+    def test_year_penalty_no_input_year(self):
+        """input_year=None → 1.0 (cannot compare; no penalty)."""
+        assert _year_penalty(None, 2020) == 1.0
+
+    def test_year_penalty_consistent(self):
+        """|delta| <= 2 → 1.0 (within tolerance)."""
+        assert _year_penalty(2020, 2020) == 1.0
+        assert _year_penalty(2020, 2022) == 1.0
+        assert _year_penalty(2020, 2018) == 1.0
+
+    def test_year_penalty_conflict(self):
+        """|delta| > 2 → < 1.0 (penalty applied)."""
+        assert _year_penalty(2020, 2025) < 1.0
+        # Linear decay: delta=5 → 1.0 - (5-2)*0.1 = 0.7
+        assert _year_penalty(2020, 2025) == 0.7
+
+    def test_year_penalty_no_candidate_year(self):
+        """candidate_year=None → 0.7 (moderate: unverifiable)."""
+        assert _year_penalty(2020, None) == 0.7
+
+    def test_year_penalty_floor(self):
+        """Very large delta never goes below 0.3 (linear decay floor)."""
+        # delta=20 → 1.0 - 18*0.1 = -0.8, clamped to 0.3
+        assert _year_penalty(2000, 2020) == 0.3
+        assert _year_penalty(1950, 2024) == 0.3
+
+
+class TestComputeConfidence:
+    """Capability 3: ``_compute_confidence`` returns (level, reasons)."""
+
+    def test_confidence_high(self):
+        """DOI + full author match + title sim ≥0.9 + year consistent → high."""
+        candidate = {
+            "title": "Attention is All You Need",
+            "authors": ["Vaswani", "Shazeer", "Parmar"],
+            "year": 2017,
+            "doi": "10.5555/3295222.3295349",
+        }
+        input_meta = {
+            "title": "Attention is All You Need",
+            "authors": ["Vaswani"],
+            "year": 2017,
+        }
+        level, reasons = _compute_confidence(candidate, input_meta)
+        assert level == "high"
+        assert "doi_match" in reasons
+        assert "authors_full_match" in reasons
+        assert any(r.startswith("title_similarity_") for r in reasons)
+        assert "year_consistent" in reasons
+
+    def test_confidence_medium(self):
+        """Partial match (some signals missing) → medium."""
+        candidate = {
+            "title": "Attention is All You Need",
+            "authors": ["Vaswani", "Shazeer"],
+            "year": 2017,
+            "doi": None,  # no DOI
+        }
+        input_meta = {
+            "title": "Attention is All You Need",
+            "authors": ["Vaswani"],
+            "year": 2017,
+        }
+        level, reasons = _compute_confidence(candidate, input_meta)
+        # 0.3 (authors_full_match) + 0.2 (title>=0.9) + 0.1 (year) = 0.6 → medium
+        assert level == "medium"
+        assert "authors_full_match" in reasons
+        assert "doi_match" not in reasons
+
+    def test_confidence_low(self):
+        """No DOI + partial author match + medium title similarity → low."""
+        candidate = {
+            "title": "Masked Autoencoders Are Scalable Vision Learners",
+            "authors": ["He"],
+            "year": 2022,
+            "doi": None,
+        }
+        input_meta = {
+            "title": "Masked Autoencoders Are Good Vision Learners",
+            "authors": ["Different"],
+            "year": 2022,
+        }
+        level, reasons = _compute_confidence(candidate, input_meta)
+        assert level == "low"
+        # No DOI, no author match → very low score
+        assert "doi_match" not in reasons
+        assert "authors_full_match" not in reasons
+
+    def test_confidence_reasons_recorded(self):
+        """ranking_reasons is always non-empty when both titles provided."""
+        candidate = {"title": "Some Paper", "authors": ["A"], "year": 2024, "doi": "10.1/x"}
+        input_meta = {"title": "Some Paper", "authors": ["A"], "year": 2024}
+        _, reasons = _compute_confidence(candidate, input_meta)
+        assert isinstance(reasons, list)
+        assert len(reasons) > 0
+        # Each reason is a non-empty string
+        assert all(isinstance(r, str) and r for r in reasons)
+
+    def test_confidence_partial_authors_only(self):
+        """Authors partial match (intersection non-empty) → +0.15."""
+        candidate = {
+            "title": "Paper Title",
+            "authors": ["Alice", "Bob", "Carol"],
+            "year": 2024,
+            "doi": None,
+        }
+        input_meta = {
+            "title": "Paper Title",
+            "authors": ["Alice", "David"],  # David not in candidate
+            "year": 2024,
+        }
+        _, reasons = _compute_confidence(candidate, input_meta)
+        assert "authors_partial_match" in reasons
+        assert "authors_full_match" not in reasons
+
+
+class TestMergeWithConflictTagging:
+    """Capability 4: ``_merge_with_conflict_tagging`` preserves dual-source
+    evidence and tags conflicts. Never silently drops a candidate."""
+
+    def test_merge_consistent(self):
+        """Both sources return the same DOI → merged into one candidate,
+        ``sources=["crossref", "semantic_scholar"]``, ``conflict=False``."""
+        crossref = [{
+            "title": "Attention is All You Need",
+            "authors": ["Vaswani"],
+            "year": 2017,
+            "doi": "10.5555/3295222.3295349",
+        }]
+        s2 = [{
+            "title": "Attention is All You Need",
+            "authors": ["Vaswani"],
+            "year": 2017,
+            "doi": "10.5555/3295222.3295349",
+        }]
+        merged = _merge_with_conflict_tagging(crossref, s2)
+        assert len(merged) == 1
+        assert sorted(merged[0]["sources"]) == ["crossref", "semantic_scholar"]
+        assert merged[0]["conflict"] is False
+
+    def test_merge_conflict(self):
+        """Same title, different DOIs (or no DOI) → BOTH candidates kept,
+        each tagged ``conflict=True`` and ``conflict_type="title_match_doi_mismatch"``."""
+        crossref = [{
+            "title": "Generative Adversarial Networks",
+            "authors": ["Goodfellow"],
+            "year": 2014,
+            "doi": None,  # no DOI to verify identity
+        }]
+        s2 = [{
+            "title": "Generative Adversarial Networks",
+            "authors": ["Goodfellow"],
+            "year": 2014,
+            "doi": None,
+        }]
+        merged = _merge_with_conflict_tagging(crossref, s2)
+        # Both must be preserved (no silent drop)
+        assert len(merged) == 2
+        for c in merged:
+            assert c["conflict"] is True
+            assert c["conflict_type"] == "title_match_doi_mismatch"
+        # Each source represented once
+        sources = [c["sources"][0] for c in merged]
+        assert "crossref" in sources
+        assert "semantic_scholar" in sources
+
+    def test_merge_single_source(self):
+        """Only one source has a candidate → single-source tagging."""
+        crossref = [{
+            "title": "Only In Crossref",
+            "authors": ["A"],
+            "year": 2024,
+            "doi": "10.1/only-cr",
+        }]
+        merged = _merge_with_conflict_tagging(crossref, [])
+        assert len(merged) == 1
+        assert merged[0]["sources"] == ["crossref"]
+        assert merged[0]["conflict"] is False
+
+        # Reverse: only s2 has candidates
+        s2 = [{
+            "title": "Only In S2",
+            "authors": ["B"],
+            "year": 2024,
+            "doi": "10.1/only-s2",
+        }]
+        merged = _merge_with_conflict_tagging([], s2)
+        assert len(merged) == 1
+        assert merged[0]["sources"] == ["semantic_scholar"]
+        assert merged[0]["conflict"] is False
+
+    def test_merge_no_silent_drop(self):
+        """Conflicting candidates (different DOIs, same title) must both
+        be retained — never silently dropped."""
+        crossref = [{
+            "title": "Same Title Different Paper",
+            "authors": ["AuthorA"],
+            "year": 2024,
+            "doi": "10.1/cr-version",
+        }]
+        s2 = [{
+            "title": "Same Title Different Paper",
+            "authors": ["AuthorB"],
+            "year": 2024,
+            "doi": "10.1/s2-version",
+        }]
+        merged = _merge_with_conflict_tagging(crossref, s2)
+        # Different DOIs → both retained as separate candidates
+        assert len(merged) == 2
+        dois = {c.get("doi") for c in merged}
+        assert dois == {"10.1/cr-version", "10.1/s2-version"}
+
+    def test_merge_empty_inputs(self):
+        """Both sources empty → empty list (no crash)."""
+        assert _merge_with_conflict_tagging([], []) == []
+
+
+# ---------------------------------------------------------------------------
+# Re8.1 integration: _fetch_by_title returns confidence + all_candidates
+# ---------------------------------------------------------------------------
+
+class TestFetchByTitleRe81Integration:
+    """Verify ``_fetch_by_title`` decorates the returned candidate with
+    Re8.1 confidence + ranking_reasons + all_candidates fields."""
+
+    @pytest.mark.asyncio
+    async def test_fetch_by_title_returns_confidence_field(self):
+        """The best candidate dict carries ``confidence`` and ``ranking_reasons``."""
+        crossref_hits = [
+            {"title": "Just A Title", "authors": ["B"], "doi": "10.2/title",
+             "url": "https://doi.org/10.2/title", "year": 2024, "abstract": ""},
+        ]
+        s2_hits = [
+            {"title": "Just A Title", "authors": ["B"], "doi": "10.2/title",
+             "url": "https://s2/paper/1", "year": 2024, "abstract": ""},
+        ]
+
+        async def mock_crossref(queries, top_k=8, **kwargs):
+            return crossref_hits
+
+        async def mock_s2(queries, top_k=8, **kwargs):
+            return s2_hits
+
+        with patch(
+            "apps.api.app.services.retrieval.adapters.crossref_search.crossref_search",
+            new=mock_crossref,
+        ), patch(
+            "apps.api.app.services.retrieval.adapters.semantic_scholar_search.semantic_scholar_search",
+            new=mock_s2,
+        ):
+            result = await _fetch_by_title("Just A Title", authors=["B"], year=2024)
+
+        assert result is not None
+        assert "confidence" in result
+        assert result["confidence"] in ("high", "medium", "low")
+        assert "ranking_reasons" in result
+        assert isinstance(result["ranking_reasons"], list)
+        assert len(result["ranking_reasons"]) > 0
+        # all_candidates preserves the merged list (1 entry here: same DOI
+        # merged crossref + s2 into one)
+        assert "all_candidates" in result
+        assert len(result["all_candidates"]) >= 1
+
+    @pytest.mark.asyncio
+    async def test_fetch_by_title_year_affects_confidence(self):
+        """Year mismatch drops the year_consistent reason (no longer in
+        ranking_reasons) but does not crash the call."""
+        crossref_hits = [
+            {"title": "Paper X", "authors": ["A"], "doi": "10.1/x",
+             "url": "https://doi.org/10.1/x", "year": 2010, "abstract": ""},
+        ]
+        s2_hits: list[dict] = []
+
+        async def mock_crossref(queries, top_k=8, **kwargs):
+            return crossref_hits
+
+        async def mock_s2(queries, top_k=8, **kwargs):
+            return s2_hits
+
+        with patch(
+            "apps.api.app.services.retrieval.adapters.crossref_search.crossref_search",
+            new=mock_crossref,
+        ), patch(
+            "apps.api.app.services.retrieval.adapters.semantic_scholar_search.semantic_scholar_search",
+            new=mock_s2,
+        ):
+            # User claims year=2024 but candidate is from 2010 (delta=14)
+            result = await _fetch_by_title("Paper X", authors=["A"], year=2024)
+
+        assert result is not None
+        # Year conflict should appear as a reason
+        assert any("year_conflict" in r for r in result["ranking_reasons"])
+        # Year consistent should NOT appear
+        assert "year_consistent" not in result["ranking_reasons"]
+
+    @pytest.mark.asyncio
+    async def test_fetch_by_title_preserves_conflict_candidates(self):
+        """When both sources return title-matching but DOI-less candidates,
+        ``all_candidates`` retains both conflict-tagged entries (no drop)."""
+        crossref_hits = [
+            {"title": "Conflict Paper", "authors": ["A"], "doi": None,
+             "url": "https://crossref/x", "year": 2024, "abstract": ""},
+        ]
+        s2_hits = [
+            {"title": "Conflict Paper", "authors": ["B"], "doi": None,
+             "url": "https://s2/y", "year": 2024, "abstract": ""},
+        ]
+
+        async def mock_crossref(queries, top_k=8, **kwargs):
+            return crossref_hits
+
+        async def mock_s2(queries, top_k=8, **kwargs):
+            return s2_hits
+
+        with patch(
+            "apps.api.app.services.retrieval.adapters.crossref_search.crossref_search",
+            new=mock_crossref,
+        ), patch(
+            "apps.api.app.services.retrieval.adapters.semantic_scholar_search.semantic_scholar_search",
+            new=mock_s2,
+        ):
+            result = await _fetch_by_title("Conflict Paper")
+
+        assert result is not None
+        # Both conflict candidates must be preserved in all_candidates
+        all_cands = result["all_candidates"]
+        assert len(all_cands) == 2
+        assert all(c["conflict"] is True for c in all_cands)
+        # The returned best is one of the conflict-tagged candidates
+        assert result["conflict"] is True
+
+
+class TestSeedResolverCardRe81Fields:
+    """Re8.1 integration: ``seed_resolver_node`` propagates confidence +
+    ranking_reasons + all_candidates onto the SeedPaperCard when title
+    search succeeds. These fields are optional and must not affect
+    schema validation or evidence eligibility."""
+
+    def test_title_seed_card_carries_confidence(self):
+        """A title-only seed that resolves via _fetch_by_title must carry
+        ``confidence``, ``ranking_reasons``, ``sources`` and ``all_candidates``
+        on the resulting card."""
+        state = {
+            "entry_mode": "seeded_research",
+            "network_policy": "online",
+            "candidate_seeds": [
+                {
+                    "seed_id": "s1",
+                    "title": "Just A Title",
+                    "authors": ["B"],
+                    "year": 2024,
+                    "role": "classic_anchor",
+                },
+            ],
+        }
+        fetched = {
+            "title": "Just A Title",
+            "authors": ["B"],
+            "year": 2024,
+            "doi": "10.2/title",
+            "canonical_url": "https://doi.org/10.2/title",
+            "abstract": "",
+            "confidence": "high",
+            "ranking_reasons": ["doi_match", "authors_full_match",
+                                "title_similarity_1.00", "year_consistent"],
+            "sources": ["crossref", "semantic_scholar"],
+            "conflict": False,
+            "all_candidates": [
+                {"title": "Just A Title", "doi": "10.2/title",
+                 "confidence": "high", "ranking_reasons": [],
+                 "sources": ["crossref", "semantic_scholar"], "conflict": False},
+            ],
+        }
+
+        async def mock_fetch_by_title(title, authors=None, year=None):
+            return fetched
+
+        with patch(
+            "apps.api.app.services.agents.graph.nodes.seed_resolver._fetch_by_title",
+            new=mock_fetch_by_title,
+        ):
+            result = seed_resolver_node(state)
+
+        cards = result["seed_cards"]
+        assert len(cards) == 1
+        card = cards[0]
+        assert card["existence_status"] == "verified"
+        # Re8.1 fields propagated
+        assert card["confidence"] == "high"
+        assert "doi_match" in card["ranking_reasons"]
+        assert sorted(card["sources"]) == ["crossref", "semantic_scholar"]
+        assert card["conflict"] is False
+        assert len(card["all_candidates"]) == 1
+        # Card still passes schema validation (new fields are optional)
+        from apps.api.app.services.agents.graph.re80_schema import (
+            is_seed_evidence_eligible,
+        )
+        assert is_seed_evidence_eligible(card)
+        # Promoted to evidence
+        assert len(result["verified_papers"]) == 1
