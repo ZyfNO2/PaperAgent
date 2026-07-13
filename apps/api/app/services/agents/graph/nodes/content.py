@@ -262,12 +262,21 @@ def low_bar_review_node(state: ResearchState) -> dict[str, Any]:
 
     # Drop packages whose critical sources do not appear anywhere in the
     # evidence pool.  This blocks hallucinated citations (SOP §15).
+    # Re8.0 post-audit: work_package fields may be lists (not just str),
+    # so coerce to str before .strip(). Previous code crashed with
+    # AttributeError when data_source was a list.
+    def _pkg_str(pkg: dict[str, Any], key: str) -> str:
+        val = pkg.get(key)
+        if isinstance(val, list):
+            return " ".join(str(x) for x in val).strip().lower()
+        return (str(val) if val else "").strip().lower()
+
     kept: list[dict[str, Any]] = []
     for pkg in packages:
-        pkg_baseline = (pkg.get("baseline") or "").strip().lower()
-        pkg_source = (pkg.get("improved_module_source") or "").strip().lower()
-        pkg_data = (pkg.get("data_source") or "").strip().lower()
-        pkg_metrics = (pkg.get("experiment_metrics") or "").strip().lower()
+        pkg_baseline = _pkg_str(pkg, "baseline")
+        pkg_source = _pkg_str(pkg, "improved_module_source")
+        pkg_data = _pkg_str(pkg, "data_source")
+        pkg_metrics = _pkg_str(pkg, "experiment_metrics")
 
         if pkg_baseline and pkg_baseline not in evidence_titles:
             issues.append(
