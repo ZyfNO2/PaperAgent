@@ -61,19 +61,30 @@
 
 ## 最终验收（Task 8）
 
-- [x] yolo_steel 重跑：runtime_pass + contract_pass（quality_pass 失败：seed 配置 + tailor 独立问题）
-- [x] xlm_r 重跑：runtime_pass + contract_pass（quality_pass 失败：author 缺失 + tailor 独立问题）
+### 第一轮（commit 317c38d0 / a61a253d，P1 fixup 后）
+
+- [x] yolo_steel 重跑：runtime_pass + contract_pass（quality_pass 旧定义为 true，**但与 fused_verdict=BLOCKED 自相矛盾，属假阳性**，post-audit 已修正）
+- [x] xlm_r 重跑：runtime_pass + contract_pass（quality_pass 同上假阳性）
 - [x] vit_dr 重跑：runtime_pass + contract_pass + 种子 verified + seed_audit_gate pass + fused_verdict=BLOCKED 一致
-- [x] 3 题 runtime_pass=true, contract_pass=true（quality_pass 视真实结果，vit_dr 失败原因从 5 项减至 2 项）
 - [x] final_research_package 7 section 齐全（3 题都验证）
 - [x] trace events 中能看到 gate revise → 回到上游节点 → 再次 gate 的循环痕迹（round_idx>1 证明 repair 循环生效）
 - [x] P0-A 修复：state.fused_verdict 顶层字段非 null（vit_dr 重跑2 验证 = "BLOCKED"）
 - [x] P0-B 修复：种子 existence_status 升级到 verified（vit_dr S1/S2 均 verified）
 
+### 第二轮（post-audit，commit c9ee3c62 + 73d97fab + e0239419，假阳性修正后）
+
+权威验收结果存放于 `artifacts/re8_0/final/`：
+
+- [x] xlm_r 重跑（`re80_rerun_xlm_r.json`，908s）：runtime_pass=true / contract_pass=true / **quality_pass=false**（fused_verdict=BLOCKED + seed_audit_gate unresolved + tailor_gate unresolved + low_bar=blocked）；P1-7b fallback 已删除，gap status 反映真实证据归因
+- [x] vit_dr 重跑（`re80_rerun_vit_dr.json`，849s）：runtime_pass=true / contract_pass=true / **quality_pass=false**（fused_verdict=BLOCKED + tailor_gate unresolved）；gap-S1-competing_baseline=satisfied（有真实可追溯证据）
+- [~] yolo_steel 重跑：第一轮因 `content.py:269` `data_source` list 崩溃（已由 commit e0239419 修复）；第二轮重跑进行中，结果待写入 `tmp_re13_eval/re80_rerun_yolo_steel_v2.json` 后同步到 `final/`
+- [x] quality_pass 假阳性已消除：xlm_r 和 vit_dr 不再报告 `quality_pass=true` + `fused_verdict=BLOCKED` 的自相矛盾状态
+- [x] P1-7b fallback 删除生效：evidence_gaps 中大部分 gap 保持 `open`（不再被无归因地批量标为 `partially_satisfied`），至少 1 个 gap (`gap-S1-competing_baseline`) 有真实可追溯证据 → `satisfied`
+
 ## 遗留问题（P1，不阻塞 Task 8 核心验收）
 
 - [~] tailor_gate round_idx 超 cap（final_review_gate repair 循环重新触发 tailor_gate 导致计数累加；功能不受影响，cap 仍生效）——**已由 P1-1 fixup 缓解 final_review→tailor 路径**；tailor 自身 repair 循环的 round_idx 膨胀仍可能存在
-- [ ] tailored_method.core_method 为空（tailor 节点输出质量问题，需独立排查 prompt/schema）——re80_seeded_demo.py 已通过 P1-2 fixup (assembly_plan.description) 兜底读取
+- [ ] tailored_method.core_method 为空（tailor 节点输出质量问题，需独立排查 prompt/schema）——re80_seeded_demo.py 已通过 P1-2 fixup (assembly_plan.description) 兜底读取；post-audit 第二轮重跑确认 xlm_r/vit_dr 的 `core_method` 仍为空，根因是 `tailor_skill_adapter` LLM 输出质量问题，非假阳性。下一阶段重点：先验证 paper_understanding 是否消费 fulltext_acquisition 下载的 PDF，再调 Tailor Prompt/Schema（参见 spec.md "Recommendation: Tailor 上游输入完整性先于 Prompt 调优"）
 - [~] innovation_extractor schema 反复失败 → novelty_review_verdict=reject（prompt/schema 问题，下游放大器）——**已由 P1-3 fixup 在 validator 层部分缓解**；node 级 heuristic 输出质量仍需独立排查
 - [ ] repair_cycles_detected 检测盲区（unresolved 非 revise 不计数；metric 准确性问题）
 - [x] yolo_steel S1 demo CASES 配置错误（arxiv 2305.11527 实际是 InstructIE 论文，不是 YOLOv8）——**已由 P1-5 fixup 修正 seed 配置**（commit a61a253d）
