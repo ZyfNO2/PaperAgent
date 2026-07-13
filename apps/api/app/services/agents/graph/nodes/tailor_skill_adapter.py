@@ -105,9 +105,15 @@ def _format_seed_context(seed_cards: list[dict[str, Any]]) -> str:
         title = c.get("resolved_title") or c.get("raw_input", {}).get("title") or "(untitled)"
         task = c.get("task_definition") or ""
         method = c.get("method_summary") or ""
+        dataset = c.get("dataset_and_metrics") or {}
+        env = c.get("reproduction_environment") or {}
+        limitations = c.get("limitations") or []
         parts.append(
             f"[{c.get('seed_id', '?')}] role={role} | {title}\n"
-            f"  task: {task[:160]}\n  method: {method[:160]}"
+            f"  task: {task[:200]}\n  method: {method[:200]}\n"
+            f"  dataset: {json.dumps(dataset, ensure_ascii=False)[:200]}\n"
+            f"  environment: {json.dumps(env, ensure_ascii=False)[:200]}\n"
+            f"  limitations: {', '.join(str(l) for l in limitations[:3])[:200]}"
         )
     return "\n".join(parts)
 
