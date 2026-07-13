@@ -558,6 +558,17 @@ def _classify_results(tool: str, results: list[dict[str, Any]]) -> tuple[list[di
     return papers, repos
 
 
+# Re8.1 WP1-D: reverse mapping gap_type → lane_id for evidence_gaps
+# fallback. Only the three fallback-supported lane types are included —
+# anchor_reference and competing_baseline are intentionally excluded to
+# avoid reintroducing the P1-7b semantic flaw.
+_FALLBACK_GAP_TYPE_TO_LANE_ID: dict[str, str] = {
+    "mechanism": "mechanism_module",
+    "repo": "resource",
+    "counter_evidence": "counter_evidence",
+}
+
+
 def _build_fallback_query(
     lane_id: str,
     atoms: dict[str, Any],
@@ -609,6 +620,7 @@ def _pre_execute_plan_queries(
     failed_this_round: set[str],
     is_gap_bound: bool,
     atoms: dict[str, Any] | None = None,
+    evidence_gaps: list[dict[str, Any]] | None = None,
 ) -> tuple[
     list[dict[str, Any]],
     list[dict[str, Any]],
@@ -646,6 +658,14 @@ def _pre_execute_plan_queries(
         ``{method} limitation failure``).
 
     Each gap gets at most ONE fallback query to avoid unbounded expansion.
+
+    Re8.1 WP1-D (follow-up): Phase 2b inspects ``evidence_gaps`` from
+    state and generates fallback queries for open gaps whose ``gap_id``
+    is NOT in ``search_plan.queries[].gap_id``. This covers gaps from
+    lanes that had 0 input queries (so their gap_id never entered
+    search_plan) — Phase 2's ``zero_result_gaps`` can't see them.
+    Only ``mechanism`` / ``repo`` / ``counter_evidence`` gap_types are
+    eligible (does NOT reintroduce P1-7b).
 
     Returns a tuple ``(pre_steps, pre_papers, pre_repos, pre_raw,
     pre_resolved_gaps, pre_unresolved_gaps, pre_failed)``. The caller merges
@@ -924,6 +944,148 @@ def _pre_execute_plan_queries(
             fallback_done.add(gap_id)
             step_idx += 1
 
+    # ── Re8.1 WP1-D Phase 2b: Fallback for open gaps NOT in search_plan ──
+    # Root cause (round 2 verification): even with lane-fair allocation
+    # (Fix A), a lane may have 0 input queries → its gap_id never enters
+    # search_plan → Phase 2 (zero_result_gaps) can't see it → fallback
+    # never triggers. This phase inspects ``evidence_gaps`` from state
+    # and generates fallback queries for open gaps whose gap_id is NOT
+    # in search_plan.queries[].gap_id.
+    #
+    # Constraints (per WP1-D task spec):
+    #   - Only ``status=open`` gaps are considered
+    #   - Only gap_types in _FALLBACK_GAP_TYPE_TO_LANE_ID (mechanism /
+    #     repo / counter_evidence) get fallback — does NOT reintroduce
+    #     P1-7b (anchor_reference / competing_baseline excluded)
+    #   - Each gap gets at most ONE fallback (fallback_done set)
+    #   - Fallback steps carry gap_id + lane_id + fallback=True
+    #   - success_condition is read from the gap itself (since the gap
+    #     has no plan_query to inherit from)
+    if atoms and evidence_gaps:
+        plan_gap_ids: set[str] = {
+            q.get("gap_id", "") for q in (search_plan.get("queries") or [])
+            if q.get("gap_id")
+        }
+        for gap in evidence_gaps:
+            gap_id = gap.get("gap_id", "")
+            if not gap_id:
+                continue
+            # Only open gaps
+            if gap.get("status") != "open":
+                continue
+            # Only gaps NOT already in search_plan
+            if gap_id in plan_gap_ids:
+                continue
+            # Skip if already handled by Phase 2 (zero_result_gaps)
+            if gap_id in fallback_done:
+                continue
+            # Skip if this gap somehow got results already (defensive)
+            if gap_id in gaps_with_results:
+                continue
+            # Only fallback-supported gap_types
+            gap_type = gap.get("gap_type", "")
+            lane_id = _FALLBACK_GAP_TYPE_TO_LANE_ID.get(gap_type)
+            if not lane_id:
+                continue
+
+            fallback = _build_fallback_query(lane_id, atoms)
+            if not fallback:
+                continue
+            fb_tool, fb_query = fallback
+            fb_key = (fb_tool, fb_query)
+            if fb_key in seen_queries:
+                continue
+            seen_queries.add(fb_key)
+
+            # Skip if the fallback tool already failed
+            if fb_tool in skip_adapters or fb_tool in failed_this_round or fb_tool in pre_failed:
+                continue
+
+            # Build fallback step. Unlike Phase 2 (which inherits
+            # success_condition from the plan_query's gap_meta), here
+            # the gap has no plan_query — read success_condition from
+            # the gap itself.
+            fb_query_id = f"q_{gap_id}_fb"
+            fb_success_cond = gap.get("success_condition", "")
+            fb_lane_id = lane_id
+
+            # Execute the fallback query
+            try:
+                fb_results = _run_tool_sync(fb_tool, fb_query, 12)
+            except Exception:
+                pre_failed.add(fb_tool)
+                pre_steps.append({
+                    "step": step_idx,
+                    "type": "tool_call",
+                    "tool": fb_tool,
+                    "query": fb_query,
+                    "plan_query_id": fb_query_id,
+                    "gap_id": gap_id,
+                    "lane_id": fb_lane_id,
+                    "query_id": fb_query_id,
+                    "success_condition": fb_success_cond,
+                    "n_results": 0,
+                    "n_papers": 0,
+                    "n_repos": 0,
+                    "reason": f"pre-execution fallback (missing gap): tool {fb_tool} failed",
+                    "failed": True,
+                    "pre_executed": True,
+                    "fallback": True,
+                    "evidence_delta": {
+                        "n_new_papers": 0,
+                        "n_new_repos": 0,
+                        "gap_resolved": False,
+                    },
+                })
+                step_idx += 1
+                fallback_done.add(gap_id)
+                continue
+
+            fb_papers, fb_repos = _classify_results(fb_tool, fb_results)
+            pre_papers.extend(fb_papers)
+            pre_repos.extend(fb_repos)
+            pre_raw.setdefault(fb_tool, []).extend(fb_results)
+
+            fb_n_results = len(fb_results)
+            fb_resolved = _check_gap_resolved(
+                fb_success_cond, len(fb_papers), len(fb_repos),
+            )
+            pre_steps.append({
+                "step": step_idx,
+                "type": "tool_call",
+                "tool": fb_tool,
+                "query": fb_query,
+                "plan_query_id": fb_query_id,
+                "gap_id": gap_id,
+                "lane_id": fb_lane_id,
+                "query_id": fb_query_id,
+                "success_condition": fb_success_cond,
+                "n_results": fb_n_results,
+                "n_papers": len(fb_papers),
+                "n_repos": len(fb_repos),
+                "reason": f"pre-execution fallback: gap not in search_plan ({lane_id})",
+                "failed": fb_n_results == 0,
+                "pre_executed": True,
+                "fallback": True,
+                "evidence_delta": {
+                    "n_new_papers": len(fb_papers),
+                    "n_new_repos": len(fb_repos),
+                    "gap_resolved": fb_resolved,
+                },
+            })
+
+            if fb_resolved:
+                pre_resolved_gaps.add(gap_id)
+                pre_unresolved_gaps.discard(gap_id)
+                gaps_with_results.add(gap_id)
+            elif fb_n_results > 0:
+                gaps_with_results.add(gap_id)
+            elif fb_n_results == 0:
+                pre_unresolved_gaps.add(gap_id)
+
+            fallback_done.add(gap_id)
+            step_idx += 1
+
     return pre_steps, pre_papers, pre_repos, pre_raw, pre_resolved_gaps, pre_unresolved_gaps, pre_failed
 
 
@@ -1046,6 +1208,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
             failed_this_round,
             is_gap_bound,
             atoms,  # Re8.1 WP1-C: pass atoms for fallback query generation
+            state.get("evidence_gaps"),  # Re8.1 WP1-D: pass evidence_gaps for missing-gap fallback
         )
         if pre_steps:
             steps.extend(pre_steps)
