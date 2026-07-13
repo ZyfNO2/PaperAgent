@@ -216,6 +216,18 @@ class ResearchState(TypedDict, total=False):
     # entries per gate (initial + 2 revise rounds + final unresolved).
     reflection_gate_results: dict[str, list[dict[str, Any]]]
 
+    # Re8.2 WP1: Last pass result per gate for fingerprint-based reuse.
+    # When a gate emits verdict=pass and the same node is re-entered with
+    # unchanged input (same fingerprint), the pass is reused without
+    # calling the LLM or incrementing the round counter.
+    # Structure: {gate_name: {verdict, round_idx, cycle_id, input_fingerprint,
+    #                         generated_by, rationale}}
+    last_gate_pass: dict[str, dict[str, Any]]
+
+    # Re8.2 WP1: Per-gate cycle counter. Incremented when the gate input
+    # fingerprint changes, allowing round counters to reset per cycle.
+    gate_cycle_id: dict[str, int]
+
     # Re8.0 WP6: ReAct action log — append-only audit trail of every
     # tool call attempted by the Full Agent ReAct loop. Each entry:
     #   {gap_id, tool, query, expected_success, actual_result, next_action}
