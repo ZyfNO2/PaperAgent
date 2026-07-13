@@ -462,6 +462,30 @@ def tailor_skill_adapter_node(state: ResearchState) -> dict[str, Any]:
         result = _normalize_tailor_output(raw)
         result["generated_by"] = "llm"
 
+    # Re8.1 WP3: non-blocking output quality validation.
+    # Attaches ``_validation`` report to tailored_method and logs warnings
+    # when gates fail. Does NOT block the pipeline — downstream
+    # reflection_gates may consume ``_validation`` for repair decisions.
+    try:
+        from apps.api.app.services.agents.graph.validators.llm_output_validator import (
+            validate_tailor_output,
+        )
+        validation_report = validate_tailor_output(
+            result, state.get("seed_cards") or []
+        )
+        result["_validation"] = validation_report
+        if not validation_report.get("overall_passed"):
+            failed_gates = {
+                k: v for k, v in validation_report.items()
+                if isinstance(v, dict) and not v.get("passed", True)
+            }
+            logger.warning(
+                "tailor_skill_adapter: output validation gates failed: %s",
+                failed_gates,
+            )
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("tailor_skill_adapter: validation error: %s", exc)
+
     # Append ReasoningLedgerEntry (WP6 preview — stage="tailor")
     ledger_entry = _make_tailor_ledger(state, result)
     existing_ledger = list(state.get("reasoning_ledger") or [])
