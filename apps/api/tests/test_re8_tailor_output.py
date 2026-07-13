@@ -29,6 +29,9 @@ from apps.api.app.services.agents.graph.validators.llm_output_validator import (
     _validate_tailor_fields_non_empty,
     validate_tailor_output,
 )
+from apps.api.app.services.agents.graph.nodes.tailor_skill_adapter import (
+    _extend_tailor_with_seed_fields,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -280,3 +283,182 @@ class TestValidateTailorOutputReport:
             "overall_passed",
         }
         assert expected_keys.issubset(report.keys())
+
+
+# ---------------------------------------------------------------------------
+# Task 13 (WP3 option C): _extend_tailor_with_seed_fields schema extension
+# ---------------------------------------------------------------------------
+
+class TestTask13SchemaExtension:
+    """Task 13 option C: additive schema extension to unblock WP3 acceptance.
+
+    Copies 5 fields from SeedPaperCard, derives core_method from
+    assembly_plan.description, and derives assembly_plan structure fields
+    (baseline / modules / connections / ablation) from existing top-level
+    fields. No LLM prompt change, no breaking change to downstream consumers.
+    """
+
+    @staticmethod
+    def _make_seed_card(**overrides):
+        """Build a minimal SeedPaperCard with all 5 paper_understanding fields."""
+        seed = {
+            "seed_id": "s1",
+            "resolved_title": "Feature Pyramid Networks for Object Detection",
+            "role": "classic_anchor",
+            "task_definition": "detect objects at multiple scales",
+            "method_summary": (
+                "use a feature pyramid network with lateral connections "
+                "for multi-scale feature maps"
+            ),
+            "dataset_and_metrics": {
+                "datasets": [{"name": "COCO"}],
+                "metrics": [{"name": "mAP"}],
+            },
+            "reproduction_environment": {
+                "framework": "PyTorch",
+                "hardware": "V100",
+            },
+            "limitations": [
+                "struggles with very small objects",
+                "high memory cost",
+            ],
+        }
+        seed.update(overrides)
+        return seed
+
+    def test_extend_with_seed_fields_copies_5_fields(self):
+        """5 spec-required fields absent in tailored → all copied from seed."""
+        tailored = {"primary_baseline": {"title": "RetinaNet"}}
+        seed = self._make_seed_card()
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        assert result["task_definition"] == "detect objects at multiple scales"
+        assert result["method_summary"].startswith("use a feature pyramid")
+        assert result["dataset_and_metrics"]["datasets"][0]["name"] == "COCO"
+        assert result["reproduction_environment"]["framework"] == "PyTorch"
+        assert result["limitations"] == [
+            "struggles with very small objects",
+            "high memory cost",
+        ]
+
+    def test_extend_with_seed_fields_no_seed_cards(self):
+        """Empty seed_cards list → no crash, tailored unchanged, no marker."""
+        tailored = {"primary_baseline": {"title": "RetinaNet"}}
+        result = _extend_tailor_with_seed_fields(tailored, [])
+        assert result is tailored
+        # no seed fields added, no marker set
+        assert "_seed_field_source" not in result
+        assert "task_definition" not in result
+
+    def test_extend_with_seed_fields_no_overwrite_existing(self):
+        """Pre-existing task_definition must NOT be overwritten by seed."""
+        tailored = {"task_definition": "my own task"}
+        seed = self._make_seed_card(task_definition="seed task")
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        assert result["task_definition"] == "my own task"
+
+    def test_extend_marks_seed_field_source(self):
+        """_seed_field_source set to seed_id for audit traceability."""
+        tailored = {}
+        seed = self._make_seed_card(seed_id="seed-42")
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        assert result["_seed_field_source"] == "seed-42"
+
+    def test_core_method_derived_from_assembly_plan_description(self):
+        """core_method absent → derived from assembly_plan.description
+        (consistent with content.py fallback)."""
+        tailored = {
+            "assembly_plan": {"description": "FPN attached to RetinaNet backbone"},
+        }
+        seed = self._make_seed_card()
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        assert result["core_method"] == "FPN attached to RetinaNet backbone"
+
+    def test_assembly_plan_baseline_derived_from_primary_baseline(self):
+        """assembly_plan.baseline absent → derived from primary_baseline.title."""
+        tailored = {
+            "primary_baseline": {"title": "Faster R-CNN"},
+            "assembly_plan": {"description": "attach FPN"},
+        }
+        seed = self._make_seed_card()
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        assert result["assembly_plan"]["baseline"] == "Faster R-CNN"
+
+    def test_assembly_plan_modules_derived_from_candidate_modules(self):
+        """assembly_plan.modules absent → derived from candidate_modules
+        with name + role mapping."""
+        tailored = {
+            "candidate_modules": [
+                {"name": "FPN-lite", "target_failure_mode": "small object recall"},
+                {"name": "AttentionHead", "target_failure_mode": "feature focus"},
+            ],
+            "assembly_plan": {"description": "attach modules"},
+        }
+        seed = self._make_seed_card()
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        modules = result["assembly_plan"]["modules"]
+        assert len(modules) == 2
+        assert modules[0] == {"name": "FPN-lite", "role": "small object recall"}
+        assert modules[1] == {"name": "AttentionHead", "role": "feature focus"}
+
+    def test_assembly_plan_connections_derived_from_compatibility_analysis(self):
+        """assembly_plan.connections absent → derived from
+        compatibility_analysis[].interface."""
+        tailored = {
+            "compatibility_analysis": [
+                {"interface": "feature maps after backbone"},
+                {"interface": "lateral connections"},
+            ],
+            "assembly_plan": {"description": "attach"},
+        }
+        seed = self._make_seed_card()
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        connections = result["assembly_plan"]["connections"]
+        assert connections == [
+            "feature maps after backbone",
+            "lateral connections",
+        ]
+
+    def test_assembly_plan_ablation_references_top_level(self):
+        """assembly_plan.ablation references top-level ablation_matrix
+        (same object, not a copy)."""
+        ablation_matrix = [
+            {"experiment_id": "baseline"},
+            {"experiment_id": "A"},
+            {"experiment_id": "B"},
+            {"experiment_id": "A+B"},
+        ]
+        tailored = {
+            "ablation_matrix": ablation_matrix,
+            "assembly_plan": {"description": "attach"},
+        }
+        seed = self._make_seed_card()
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        # Same object reference (not a copy) — backward compat preserved
+        assert result["assembly_plan"]["ablation"] is ablation_matrix
+
+    def test_extend_does_not_break_existing_fields(self):
+        """Additive: existing fields (verdict, generated_by, etc.) preserved
+        while new fields are added."""
+        tailored = {
+            "verdict": "GO",
+            "verdict_reason": "modules compatible",
+            "generated_by": "llm",
+            "primary_baseline": {"title": "RetinaNet"},
+            "candidate_modules": [
+                {"name": "FPN", "target_failure_mode": "recall"},
+            ],
+            "assembly_plan": {"description": "FPN + RetinaNet"},
+            "ablation_matrix": [{"experiment_id": "baseline"}],
+        }
+        seed = self._make_seed_card()
+        result = _extend_tailor_with_seed_fields(tailored, [seed])
+        # existing fields unchanged
+        assert result["verdict"] == "GO"
+        assert result["verdict_reason"] == "modules compatible"
+        assert result["generated_by"] == "llm"
+        assert result["primary_baseline"]["title"] == "RetinaNet"
+        # new fields added
+        assert "task_definition" in result
+        assert "core_method" in result
+        assert result["assembly_plan"]["baseline"] == "RetinaNet"
+        assert len(result["assembly_plan"]["modules"]) == 1

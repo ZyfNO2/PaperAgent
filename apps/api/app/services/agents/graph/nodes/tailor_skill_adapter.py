@@ -338,6 +338,104 @@ def _normalize_tailor_output(raw: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+# ── Re8.1 WP3 Task 13: seed-field extension (additive) ────────────────────
+
+
+def _extend_tailor_with_seed_fields(tailored: dict[str, Any],
+                                    seed_cards: list) -> dict[str, Any]:
+    """Extend tailored_method with spec-required fields sourced from SeedPaperCard.
+
+    Additive only — does not overwrite existing keys. Marks copied fields
+    with ``_seed_field_source`` for audit traceability. This unblocks WP3
+    acceptance without modifying the LLM prompt (option C).
+
+    Extensions:
+      - 5 fields copied from SeedPaperCard[0]: task_definition /
+        method_summary / dataset_and_metrics / reproduction_environment /
+        limitations
+      - core_method derived from assembly_plan.description (consistent with
+        content.py fallback at line 732-734)
+      - assembly_plan.baseline derived from primary_baseline.title
+      - assembly_plan.modules derived from candidate_modules (name + role)
+      - assembly_plan.connections derived from compatibility_analysis.interface
+      - assembly_plan.ablation references top-level ablation_matrix (not copy)
+    """
+    if not seed_cards or not isinstance(seed_cards, list):
+        return tailored
+
+    seed = seed_cards[0] if isinstance(seed_cards[0], dict) else {}
+
+    # 5 fields from SeedPaperCard (copy reference, mark source)
+    _SEED_FIELDS = (
+        "task_definition",
+        "method_summary",
+        "dataset_and_metrics",
+        "reproduction_environment",
+        "limitations",
+    )
+    for field in _SEED_FIELDS:
+        if field not in tailored and seed.get(field) is not None:
+            tailored[field] = seed[field]
+
+    # core_method: derive from assembly_plan.description (consistent with
+    # content.py fallback — content.py keeps its defensive fallback too).
+    if "core_method" not in tailored or not tailored.get("core_method"):
+        assembly_plan = tailored.get("assembly_plan") or {}
+        description = assembly_plan.get("description") or ""
+        if description:
+            tailored["core_method"] = description
+
+    # Mark seed field source for audit traceability.
+    seed_id = seed.get("seed_id") or "unknown"
+    tailored.setdefault("_seed_field_source", seed_id)
+
+    # Extend assembly_plan structure (additive — only fills missing keys).
+    assembly_plan = tailored.setdefault("assembly_plan", {})
+
+    # baseline: derive from primary_baseline.title
+    if "baseline" not in assembly_plan:
+        primary_baseline = tailored.get("primary_baseline") or {}
+        baseline_title = primary_baseline.get("title") or ""
+        if baseline_title:
+            assembly_plan["baseline"] = baseline_title
+
+    # modules: derive from candidate_modules (name + role mapping)
+    if "modules" not in assembly_plan:
+        candidate_modules = tailored.get("candidate_modules") or []
+        modules = []
+        for m in candidate_modules:
+            if not isinstance(m, dict):
+                continue
+            name = m.get("name") or m.get("module_id") or ""
+            role = m.get("target_failure_mode") or m.get("role") or ""
+            if name:
+                modules.append({"name": name, "role": role})
+        if modules:
+            assembly_plan["modules"] = modules
+
+    # connections: derive from compatibility_analysis.interface
+    if "connections" not in assembly_plan:
+        compat = tailored.get("compatibility_analysis") or []
+        connections = []
+        for c in compat:
+            if not isinstance(c, dict):
+                continue
+            interface = c.get("interface") or c.get("integration_point") or ""
+            if interface:
+                connections.append(interface)
+        if connections:
+            assembly_plan["connections"] = connections
+
+    # ablation: reference (not copy) top-level ablation_matrix for backward
+    # compat — content.py line 727 still reads top-level ablation_matrix.
+    if "ablation" not in assembly_plan:
+        ablation_matrix = tailored.get("ablation_matrix") or []
+        if ablation_matrix:
+            assembly_plan["ablation"] = ablation_matrix  # reference, not copy
+
+    return tailored
+
+
 # ── Rule-based fallback (§9.3 step 3) ─────────────────────────────────────
 
 
@@ -457,10 +555,15 @@ def tailor_skill_adapter_node(state: ResearchState) -> dict[str, Any]:
     if raw is None:
         result = _fallback_tailor(state)
         result["generated_by"] = "fallback"
-        prov = "fallback"
     else:
         result = _normalize_tailor_output(raw)
         result["generated_by"] = "llm"
+
+    # Re8.1 WP3 Task 13: extend tailored_method with seed-sourced fields so
+    # WP3 validation (field_non_empty / assembly_plan structure) sees the
+    # spec-required 7 fields. Additive only — no overwrite, no LLM prompt
+    # change. Applied to BOTH llm and fallback paths for consistency.
+    result = _extend_tailor_with_seed_fields(result, state.get("seed_cards") or [])
 
     # Re8.1 WP3: non-blocking output quality validation.
     # Attaches ``_validation`` report to tailored_method and logs warnings
