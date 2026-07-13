@@ -1259,3 +1259,488 @@ class TestRe81PreExecution:
         # No evidence_delta (non-gap-bound plan)
         assert "evidence_delta" not in tool_steps[0]
         assert "gap_id" not in tool_steps[0]
+
+
+# ---------------------------------------------------------------------------
+# Re8.1 WP1-C: fallback queries for 0-result gaps + github supplement
+# ---------------------------------------------------------------------------
+
+class TestRe81Wp1cFallback:
+    """Re8.1 WP1-C: Fallback queries for gaps that returned 0 results.
+
+    Two issues identified in WP1-C verification:
+      Fix 1 (github supplement): ``resource`` gaps with 0 repos get a
+        github search using {method} {object} atoms — preserves the
+        ReAct loop's github search that pre-execution bypassed
+        (fixes yolo_steel low_bar_status regression: n_repo 8→0).
+      Fix 2 (gap-type differentiation): ``mechanism_module`` and
+        ``counter_evidence`` gaps get broader arxiv queries with
+        method-specific terms (``{method} module ablation`` /
+        ``{method} limitation failure``).
+
+    Each gap gets at most ONE fallback query. Fallback steps carry the
+    same gap_id for proper attribution and are marked ``fallback=True``.
+    """
+
+    def test_pre_execution_fallback_for_zero_results(self, monkeypatch):
+        """When all plan_queries for a gap return 0 results, a fallback
+        query is generated and executed. The fallback step must be marked
+        ``fallback=True`` and carry the correct gap_id."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "object detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[]):  # 0 results for ALL queries
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        assert len(fallback_steps) >= 1, (
+            "expected at least one fallback step when all plan_queries "
+            "return 0 results"
+        )
+        for step in fallback_steps:
+            assert step.get("gap_id"), (
+                f"fallback step missing gap_id: {step}"
+            )
+            assert step.get("pre_executed") is True
+            assert step.get("plan_query_id", "").endswith("_fb"), (
+                f"fallback plan_query_id should end with _fb: {step.get('plan_query_id')}"
+            )
+            assert step.get("fallback") is True
+            # Fallback queries should use the method keyword from atoms
+            assert "YOLO" in step.get("query", ""), (
+                f"fallback query should contain method keyword: {step.get('query')}"
+            )
+
+    def test_github_supplementary_search(self, monkeypatch):
+        """When pre-execution collects 0 repos for a resource gap, a
+        github fallback search is triggered using {method} {object}.
+
+        This is the Re8.1 WP1-C Fix 1 — preserves the ReAct loop's
+        github search that pre-execution bypassed (fixes yolo_steel
+        low_bar_status regression: n_repo 8→0).
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # Build plan with only the resource lane
+        lanes = [
+            {
+                "lane_id": "resource",
+                "description": "repos",
+                "queries": ["YOLO github repository"],
+                "gap_id": None,
+            },
+        ]
+        updated_lanes, _ = _create_lane_gaps(lanes, seed_id="s1")
+        plan = _seeded_plan(updated_lanes, seed_id="s1")
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "object detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        # Phase 1 returns 0 results (github query misses), Phase 2 fallback
+        # github search returns 1 repo
+        call_log: list[tuple[str, str]] = []
+
+        def _fake_run_tool(tool, query, top_k=12):
+            call_log.append((tool, query))
+            if tool == "github" and "YOLO detection" in query:
+                # Fallback query returns a repo
+                return [{
+                    "full_name": "ultralytics/yolov5",
+                    "html_url": "https://github.com/ultralytics/yolov5",
+                }]
+            # Phase 1 queries return 0 results
+            return []
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, side_effect=_fake_run_tool):
+            result = search_agent_node(state)
+
+        # The github fallback must have been called with method+object
+        github_calls = [c for c in call_log if c[0] == "github"]
+        assert any("YOLO detection" in q for _, q in github_calls), (
+            f"expected github fallback query with 'YOLO detection', "
+            f"got calls: {github_calls}"
+        )
+        # The fallback step must be in search_steps with gap_id attribution
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("tool") == "github"
+        ]
+        assert len(fallback_steps) >= 1, (
+            "expected a github fallback step for the resource gap"
+        )
+        fb_step = fallback_steps[0]
+        assert fb_step.get("gap_id") == "gap-s1-resource", (
+            f"fallback step gap_id={fb_step.get('gap_id')!r} "
+            f"(expected 'gap-s1-resource')"
+        )
+        assert fb_step.get("n_repos") >= 1, (
+            f"fallback step should have 1+ repos, got {fb_step.get('n_repos')}"
+        )
+        assert fb_step.get("evidence_delta", {}).get("gap_resolved") is True, (
+            "resource gap should be resolved by the github fallback"
+        )
+        # The resource gap should be in resolved_gap_ids
+        trace = result["trace_events"][0]
+        gap_res = trace["output_summary"].get("gap_resolution", {})
+        assert "gap-s1-resource" in gap_res.get("resolved_gap_ids", []), (
+            f"resource gap not in resolved_gap_ids: {gap_res}"
+        )
+
+    def test_fallback_preserves_gap_id(self, monkeypatch):
+        """Fallback queries must carry the same gap_id as the original
+        gap, ensuring proper evidence attribution."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # Build plan with only the mechanism_module lane
+        lanes = [
+            {
+                "lane_id": "mechanism_module",
+                "description": "modules",
+                "queries": ["small object detection module"],
+                "gap_id": None,
+            },
+        ]
+        updated_lanes, _ = _create_lane_gaps(lanes, seed_id="s1")
+        plan = _seeded_plan(updated_lanes, seed_id="s1")
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        # Phase 1 returns 0, Phase 2 fallback returns 1 paper
+        def _fake_run_tool(tool, query, top_k=12):
+            if "module ablation" in query:
+                return [{"title": "YOLO Module Ablation Study", "abstract": "a"}]
+            return []
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, side_effect=_fake_run_tool):
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        assert len(fallback_steps) == 1, (
+            f"expected exactly 1 fallback step, got {len(fallback_steps)}"
+        )
+        fb_step = fallback_steps[0]
+        # gap_id must match the original mechanism_module gap
+        assert fb_step.get("gap_id") == "gap-s1-mechanism_module", (
+            f"fallback gap_id={fb_step.get('gap_id')!r} "
+            f"(expected 'gap-s1-mechanism_module')"
+        )
+        # lane_id must be preserved
+        assert fb_step.get("lane_id") == "mechanism_module", (
+            f"fallback lane_id={fb_step.get('lane_id')!r}"
+        )
+        # success_condition must be preserved from the original gap
+        assert fb_step.get("success_condition"), (
+            "fallback step should carry the original success_condition"
+        )
+        # plan_query_id must end with _fb suffix
+        assert fb_step.get("plan_query_id", "").endswith("_fb"), (
+            f"fallback plan_query_id should end with _fb: "
+            f"{fb_step.get('plan_query_id')!r}"
+        )
+        # The fallback query should use the method keyword
+        assert "YOLO" in fb_step.get("query", "")
+        assert "module ablation" in fb_step.get("query", "")
+        # The fallback got results → gap should be resolved
+        assert fb_step.get("evidence_delta", {}).get("gap_resolved") is True
+        # The mechanism_module gap should be in resolved_gap_ids
+        trace = result["trace_events"][0]
+        gap_res = trace["output_summary"].get("gap_resolution", {})
+        assert "gap-s1-mechanism_module" in gap_res.get("resolved_gap_ids", []), (
+            f"mechanism_module gap not resolved after fallback: {gap_res}"
+        )
+
+    def test_no_fallback_when_results_found(self, monkeypatch):
+        """When a gap's plan_queries return results (even partial), no
+        fallback query is generated for that gap."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # Use the full plan (all 5 lanes)
+        plan = _make_gap_bound_plan(seed_id="s1")
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        # ALL queries return 1 paper → all gaps have results → no fallback
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[{"title": "Paper", "abstract": "a"}]):
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        assert len(fallback_steps) == 0, (
+            f"expected no fallback steps when all gaps have results, "
+            f"got {len(fallback_steps)}: {fallback_steps}"
+        )
+
+    def test_fallback_skipped_when_gap_has_partial_results(self, monkeypatch):
+        """If a gap has multiple plan_queries and ONE returns results
+        (even if not enough to resolve), no fallback is generated.
+
+        This prevents redundant fallback queries when the gap already
+        has *some* evidence from another plan_query.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # competing_baseline needs 2+ papers. Build a plan where
+        # competing_baseline has 2 queries: one returns 1 paper (partial),
+        # the other returns 0 results.
+        lanes = [
+            {
+                "lane_id": "competing_baseline",
+                "description": "baselines",
+                "queries": ["Faster R-CNN detection", "recent detection benchmark"],
+                "gap_id": None,
+            },
+        ]
+        updated_lanes, _ = _create_lane_gaps(lanes, seed_id="s1")
+        plan = _seeded_plan(updated_lanes, seed_id="s1")
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        # First query returns 1 paper (partial), others return 0
+        def _fake_run_tool(tool, query, top_k=12):
+            if "Faster R-CNN" in query:
+                return [{"title": "Faster R-CNN Paper", "abstract": "a"}]
+            return []
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, side_effect=_fake_run_tool):
+            result = search_agent_node(state)
+
+        # No fallback should be generated because the gap has partial results
+        # (competing_baseline is not in the fallback-supported lane_ids anyway,
+        # but this test also verifies the gaps_with_results skip logic)
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        assert len(fallback_steps) == 0, (
+            f"expected no fallback when gap has partial results, "
+            f"got {fallback_steps}"
+        )
+
+    def test_fallback_at_most_one_per_gap(self, monkeypatch):
+        """Each gap gets at most ONE fallback query, even if multiple
+        plan_queries for the gap returned 0 results."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        # Build plan with mechanism_module lane that has multiple queries
+        lanes = [
+            {
+                "lane_id": "mechanism_module",
+                "description": "modules",
+                "queries": ["module query 1", "module query 2", "module query 3"],
+                "gap_id": None,
+            },
+        ]
+        updated_lanes, _ = _create_lane_gaps(lanes, seed_id="s1")
+        plan = _seeded_plan(updated_lanes, seed_id="s1")
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        # ALL queries return 0 results → fallback should trigger
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[]):
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        # Even though mechanism_module has 3 queries (each returning 0),
+        # only 1 fallback should be generated
+        assert len(fallback_steps) == 1, (
+            f"expected exactly 1 fallback for mechanism_module gap "
+            f"(at most 1 per gap), got {len(fallback_steps)}"
+        )
+
+    def test_fallback_does_not_reintroduce_p1_7b(self, monkeypatch):
+        """Fallback queries must NOT mark unrelated gaps as resolved.
+
+        Only the specific gap that the fallback targets should be
+        affected. This is the P1-7b invariant — fallback is surgical.
+        """
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        # evidence_gaps with gap_ids that DON'T match plan's gap-s1-* ids
+        gaps = [
+            make_evidence_gap(gap_id="UNRELATED-GAP-A", question="q1", status="open"),
+            make_evidence_gap(gap_id="UNRELATED-GAP-B", question="q2", status="open"),
+        ]
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"method": ["YOLO"], "object": ["detection"], "domain": "cv"},
+            "search_plan": plan,
+            "trace_events": [],
+            "evidence_gaps": gaps,
+        }
+
+        # All plan_queries return 0 → fallbacks trigger for
+        # mechanism_module / resource / counter_evidence
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[]):
+            result = search_agent_node(state)
+
+        # Unrelated gaps must STAY "open" — fallbacks must not
+        # force-attribute resolution to gaps they didn't target
+        for gap in result["evidence_gaps"]:
+            assert gap["status"] == "open", (
+                f"unrelated gap {gap['gap_id']} status={gap['status']} "
+                f"(should remain open — fallback must not reintroduce P1-7b)"
+            )
+
+    def test_backward_compat_no_atoms_no_fallback(self, monkeypatch):
+        """When atoms is empty/None, no fallback queries are generated.
+        This preserves backward compatibility for callers that don't
+        pass atoms (or pass an empty dict)."""
+        monkeypatch.setenv("SEARCH_AGENT_USE_UNIFIED_ROUTER", "0")
+        plan = _make_gap_bound_plan(seed_id="s1")
+        decisions = [{"action": "stop", "reason": "done"}]
+
+        # atoms has no method keyword → _build_fallback_query returns None
+        state: dict[str, Any] = {
+            "topic": "detection",
+            "topic_atoms": {"object": ["detection"], "domain": "cv"},  # no method
+            "search_plan": plan,
+            "trace_events": [],
+        }
+
+        with patch(PATCH_CATALOG, return_value=_make_catalog()), \
+             patch(PATCH_LLM_DECIDE, side_effect=_make_decide_fn(decisions)), \
+             patch(PATCH_RUN_TOOL, return_value=[]):
+            result = search_agent_node(state)
+
+        fallback_steps = [
+            s for s in result["search_steps"]
+            if s.get("fallback") and s.get("type") == "tool_call"
+        ]
+        assert len(fallback_steps) == 0, (
+            "expected no fallback when atoms has no method keyword"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Re8.1 WP1-C: _build_fallback_query helper unit tests
+# ---------------------------------------------------------------------------
+
+class TestBuildFallbackQuery:
+    """Unit tests for the _build_fallback_query helper function."""
+
+    def test_mechanism_module_fallback(self):
+        from apps.api.app.services.agents.graph.nodes.search_agent import (
+            _build_fallback_query,
+        )
+        atoms = {"method": ["Transformer"], "object": ["detection"]}
+        result = _build_fallback_query("mechanism_module", atoms)
+        assert result is not None
+        tool, query = result
+        assert tool == "arxiv"
+        assert "Transformer" in query
+        assert "module ablation" in query
+
+    def test_resource_fallback_uses_github(self):
+        from apps.api.app.services.agents.graph.nodes.search_agent import (
+            _build_fallback_query,
+        )
+        atoms = {"method": ["YOLO"], "object": ["detection"]}
+        result = _build_fallback_query("resource", atoms)
+        assert result is not None
+        tool, query = result
+        assert tool == "github"
+        assert "YOLO" in query
+        assert "detection" in query
+
+    def test_resource_fallback_method_only(self):
+        """When atoms has method but no object, fallback uses method only."""
+        from apps.api.app.services.agents.graph.nodes.search_agent import (
+            _build_fallback_query,
+        )
+        atoms = {"method": ["BERT"]}
+        result = _build_fallback_query("resource", atoms)
+        assert result is not None
+        tool, query = result
+        assert tool == "github"
+        assert "BERT" in query
+
+    def test_counter_evidence_fallback(self):
+        from apps.api.app.services.agents.graph.nodes.search_agent import (
+            _build_fallback_query,
+        )
+        atoms = {"method": ["GAN"]}
+        result = _build_fallback_query("counter_evidence", atoms)
+        assert result is not None
+        tool, query = result
+        assert tool == "arxiv"
+        assert "GAN" in query
+        assert "limitation failure" in query
+
+    def test_unsupported_lane_returns_none(self):
+        from apps.api.app.services.agents.graph.nodes.search_agent import (
+            _build_fallback_query,
+        )
+        atoms = {"method": ["YOLO"]}
+        # anchor_reference and competing_baseline are NOT in the
+        # fallback-supported set
+        assert _build_fallback_query("anchor_reference", atoms) is None
+        assert _build_fallback_query("competing_baseline", atoms) is None
+        assert _build_fallback_query("unknown_lane", atoms) is None
+
+    def test_no_method_returns_none(self):
+        from apps.api.app.services.agents.graph.nodes.search_agent import (
+            _build_fallback_query,
+        )
+        # No method keyword → can't generate fallback
+        assert _build_fallback_query("mechanism_module", {}) is None
+        assert _build_fallback_query("resource", {"object": ["detection"]}) is None
+        assert _build_fallback_query("counter_evidence", {"method": []}) is None
