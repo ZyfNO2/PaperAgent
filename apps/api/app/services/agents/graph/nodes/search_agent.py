@@ -558,12 +558,57 @@ def _classify_results(tool: str, results: list[dict[str, Any]]) -> tuple[list[di
     return papers, repos
 
 
+def _build_fallback_query(
+    lane_id: str,
+    atoms: dict[str, Any],
+) -> tuple[str, str] | None:
+    """Re8.1 WP1-C: Build a fallback (tool, query) pair for a gap whose
+    plan_queries all returned 0 results.
+
+    Returns ``None`` when no fallback can be generated (e.g. atoms has no
+    method keyword, or the lane_id is not in the supported set).
+
+    Strategy by lane_id (covers Fix 1 + Fix 2 in a single mechanism):
+      - ``mechanism_module`` → arxiv ``"{method} module ablation"``
+        (broader than typical plan_queries; targets ablation/component
+        analysis which arxiv indexes well)
+      - ``resource`` → github ``"{method} {object}"``
+        (preserves the ReAct loop's github search that pre-execution
+        inadvertently bypassed — Re8.1 WP1-C Fix 1)
+      - ``counter_evidence`` → arxiv ``"{method} limitation failure"``
+        (targets limitation/failure discussion which arxiv indexes)
+
+    Each gap gets at most ONE fallback query (caller enforces this via
+    ``fallback_done`` set) to avoid unbounded query expansion.
+    """
+    method = atoms.get("method") or []
+    method_term = str(method[0]).strip() if method else ""
+    if not method_term:
+        return None
+
+    if lane_id == "mechanism_module":
+        return ("arxiv", f"{method_term} module ablation")
+    if lane_id == "resource":
+        # Github supplement: use method+object for repo search.
+        # This is the Re8.1 WP1-C Fix 1 — preserves the ReAct loop's
+        # github search that pre-execution bypassed for the resource gap.
+        obj = atoms.get("object") or []
+        obj_term = str(obj[0]).strip() if obj else ""
+        if obj_term:
+            return ("github", f"{method_term} {obj_term}")
+        return ("github", method_term)
+    if lane_id == "counter_evidence":
+        return ("arxiv", f"{method_term} limitation failure")
+    return None
+
+
 def _pre_execute_plan_queries(
     search_plan: dict[str, Any],
     gap_lookup: tuple[dict[tuple[str, str], dict[str, str]], dict[str, dict[str, str]]],
     skip_adapters: set[str],
     failed_this_round: set[str],
     is_gap_bound: bool,
+    atoms: dict[str, Any] | None = None,
 ) -> tuple[
     list[dict[str, Any]],
     list[dict[str, Any]],
@@ -589,6 +634,19 @@ def _pre_execute_plan_queries(
     plan_queries directly, executes each via ``_run_tool_sync``, and writes
     ``plan_query_id`` + ``gap_id`` into the step entry deterministically.
 
+    Re8.1 WP1-C (follow-up): After Phase 1 (original plan_queries), a
+    Phase 2 generates fallback queries for gaps that returned 0 results.
+    This addresses two issues:
+      - Fix 1 (github supplement): ``resource`` gaps with 0 repos get a
+        github search using ``{method} {object}`` atoms — preserves the
+        ReAct loop's github search that pre-execution bypassed.
+      - Fix 2 (gap-type differentiation): ``mechanism_module`` and
+        ``counter_evidence`` gaps get broader arxiv queries with
+        method-specific terms (``{method} module ablation`` /
+        ``{method} limitation failure``).
+
+    Each gap gets at most ONE fallback query to avoid unbounded expansion.
+
     Returns a tuple ``(pre_steps, pre_papers, pre_repos, pre_raw,
     pre_resolved_gaps, pre_unresolved_gaps, pre_failed)``. The caller merges
     these into the main state before the ReAct loop starts. When
@@ -608,6 +666,11 @@ def _pre_execute_plan_queries(
         return pre_steps, pre_papers, pre_repos, pre_raw, pre_resolved_gaps, pre_unresolved_gaps, pre_failed
 
     seen_queries: set[tuple[str, str]] = set()  # dedupe (tool, query)
+    # Re8.1 WP1-C: track gaps that returned 0 results (for Phase 2 fallback)
+    # and gaps that got any results (to skip fallback when evidence exists).
+    zero_result_gaps: dict[str, str] = {}  # gap_id -> lane_id
+    gaps_with_results: set[str] = set()
+    fallback_done: set[str] = set()  # gap_ids that already got a fallback
     step_idx = 0
     for q in (search_plan.get("queries") or []):
         gap_id = q.get("gap_id") or ""
@@ -710,6 +773,16 @@ def _pre_execute_plan_queries(
             },
         })
 
+        # Re8.1 WP1-C: track for Phase 2 fallback decisions
+        if n_results > 0:
+            gaps_with_results.add(gap_id)
+        elif lane_id:
+            # Record lane_id for fallback query generation. If the same
+            # gap has multiple 0-result queries, the last lane_id wins
+            # (they're all the same lane_id anyway since lane_id is
+            # derived from gap_id suffix).
+            zero_result_gaps[gap_id] = lane_id
+
         if resolved:
             pre_resolved_gaps.add(gap_id)
             pre_unresolved_gaps.discard(gap_id)
@@ -717,6 +790,139 @@ def _pre_execute_plan_queries(
             pre_unresolved_gaps.add(gap_id)
 
         step_idx += 1
+
+    # ── Re8.1 WP1-C Phase 2: Fallback queries for gaps with 0 results ──
+    # Addresses two issues identified in WP1-C verification:
+    #   Fix 1 (github supplement): ``resource`` gaps with 0 repos get a
+    #     github search using {method} {object} atoms — preserves the
+    #     ReAct loop's github search that pre-execution bypassed
+    #     (fixes yolo_steel low_bar_status regression: n_repo 8→0).
+    #   Fix 2 (gap-type differentiation): ``mechanism_module`` and
+    #     ``counter_evidence`` gaps get broader arxiv queries with
+    #     method-specific terms, since their original plan_queries
+    #     returned 0 results from arxiv/openalex (which may be disabled).
+    #
+    # Constraints (per WP1-C task spec):
+    #   - Each gap gets at most ONE fallback query (fallback_done set)
+    #   - Only gaps whose ALL plan_queries returned 0 results get
+    #     fallback (skip if gap_id in gaps_with_results)
+    #   - Fallback steps carry the same gap_id for proper attribution
+    #   - Fallback steps are marked ``fallback=True`` + ``pre_executed=True``
+    #   - Does NOT reintroduce P1-7b (only specific gap_types, not all)
+    if atoms and zero_result_gaps:
+        for gap_id, lane_id in zero_result_gaps.items():
+            # Skip if this gap already got results from another query
+            # (partial results count — only generate fallback when the
+            # gap has ZERO evidence from all its plan_queries)
+            if gap_id in gaps_with_results:
+                continue
+            if gap_id in fallback_done:
+                continue
+
+            fallback = _build_fallback_query(lane_id, atoms)
+            if not fallback:
+                continue
+            fb_tool, fb_query = fallback
+            fb_key = (fb_tool, fb_query)
+            if fb_key in seen_queries:
+                continue
+            seen_queries.add(fb_key)
+
+            # Skip if the fallback tool already failed
+            if fb_tool in skip_adapters or fb_tool in failed_this_round or fb_tool in pre_failed:
+                continue
+
+            # Find the original gap_meta for success_condition etc.
+            # (lane_id is stable per gap_id, so any meta with this gap_id works)
+            fb_meta = None
+            for _meta in by_tool_query.values():
+                if _meta.get("gap_id") == gap_id:
+                    fb_meta = _meta
+                    break
+
+            orig_query_id = fb_meta.get("query_id", "") if fb_meta else ""
+            fb_query_id = f"{orig_query_id}_fb" if orig_query_id else f"q_{gap_id}_fb"
+            fb_success_cond = fb_meta.get("success_condition", "") if fb_meta else ""
+            fb_lane_id = fb_meta.get("lane_id", lane_id) if fb_meta else lane_id
+
+            # Execute the fallback query
+            try:
+                fb_results = _run_tool_sync(fb_tool, fb_query, 12)
+            except Exception:
+                pre_failed.add(fb_tool)
+                pre_steps.append({
+                    "step": step_idx,
+                    "type": "tool_call",
+                    "tool": fb_tool,
+                    "query": fb_query,
+                    "plan_query_id": fb_query_id,
+                    "gap_id": gap_id,
+                    "lane_id": fb_lane_id,
+                    "query_id": fb_query_id,
+                    "success_condition": fb_success_cond,
+                    "n_results": 0,
+                    "n_papers": 0,
+                    "n_repos": 0,
+                    "reason": f"pre-execution fallback: tool {fb_tool} failed",
+                    "failed": True,
+                    "pre_executed": True,
+                    "fallback": True,
+                    "evidence_delta": {
+                        "n_new_papers": 0,
+                        "n_new_repos": 0,
+                        "gap_resolved": False,
+                    },
+                })
+                step_idx += 1
+                fallback_done.add(gap_id)
+                continue
+
+            fb_papers, fb_repos = _classify_results(fb_tool, fb_results)
+            pre_papers.extend(fb_papers)
+            pre_repos.extend(fb_repos)
+            pre_raw.setdefault(fb_tool, []).extend(fb_results)
+
+            fb_n_results = len(fb_results)
+            fb_resolved = _check_gap_resolved(
+                fb_success_cond, len(fb_papers), len(fb_repos),
+            )
+            pre_steps.append({
+                "step": step_idx,
+                "type": "tool_call",
+                "tool": fb_tool,
+                "query": fb_query,
+                "plan_query_id": fb_query_id,
+                "gap_id": gap_id,
+                "lane_id": fb_lane_id,
+                "query_id": fb_query_id,
+                "success_condition": fb_success_cond,
+                "n_results": fb_n_results,
+                "n_papers": len(fb_papers),
+                "n_repos": len(fb_repos),
+                "reason": f"pre-execution fallback: 0 results for {lane_id} gap",
+                "failed": fb_n_results == 0,
+                "pre_executed": True,
+                "fallback": True,
+                "evidence_delta": {
+                    "n_new_papers": len(fb_papers),
+                    "n_new_repos": len(fb_repos),
+                    "gap_resolved": fb_resolved,
+                },
+            })
+
+            if fb_resolved:
+                pre_resolved_gaps.add(gap_id)
+                pre_unresolved_gaps.discard(gap_id)
+                gaps_with_results.add(gap_id)
+            elif fb_n_results > 0:
+                # Fallback got partial results — mark gap as having results
+                # so downstream logic knows it has *some* evidence.
+                gaps_with_results.add(gap_id)
+            elif fb_n_results == 0:
+                pre_unresolved_gaps.add(gap_id)
+
+            fallback_done.add(gap_id)
+            step_idx += 1
 
     return pre_steps, pre_papers, pre_repos, pre_raw, pre_resolved_gaps, pre_unresolved_gaps, pre_failed
 
@@ -839,6 +1045,7 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
             skip_adapters,
             failed_this_round,
             is_gap_bound,
+            atoms,  # Re8.1 WP1-C: pass atoms for fallback query generation
         )
         if pre_steps:
             steps.extend(pre_steps)
@@ -874,9 +1081,11 @@ def search_agent_node(state: ResearchState) -> dict[str, Any]:
                     "reason": _pre.get("reason", "pre-execution"),
                 })
             logger.info(
-                "search_agent: pre-executed %d gap-bound plan_queries, "
-                "resolved %d/%d gaps, %d papers, %d repos",
+                "search_agent: pre-executed %d gap-bound plan_queries "
+                "(incl. %d fallback), resolved %d/%d gaps, "
+                "%d papers, %d repos",
                 len(pre_steps),
+                sum(1 for s in pre_steps if s.get("fallback")),
                 len(pre_resolved_gaps),
                 len(all_bound_gaps),
                 len(pre_papers),
