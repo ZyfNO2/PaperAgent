@@ -87,7 +87,7 @@ A single `NetworkPolicyGuard` SHALL intercept all outbound HTTP calls from searc
 Demo/evaluation results SHALL report three separate pass/fail tiers:
 - `runtime_pass`: pipeline completes without crash, `final_recommendation` is non-empty
 - `contract_pass`: seed_cards, tailored_method, 3 gate_results, ledger all have expected fields populated
-- `quality_pass`: ≥1 verified seed, tailored_method.core_method non-empty, ≥1 evidence gap closed, final verdict consistent with gate verdicts
+- `quality_pass`: ≥1 verified seed (seeded_research only), `tailored_method.core_method` (or `assembly_plan.description`) non-empty, ≥1 evidence gap with status `satisfied`/`partially_satisfied` AND a traceable `evidence_delta` in `search_steps` (gap_id must appear in ≥1 step with non-zero papers/repos), `fused_verdict != BLOCKED`, no Reflection Gate (seed_audit / tailor / final_review) is `unresolved`, `final_recommendation.low_bar_status == "pass"`, and (if present) `novelty_review_verdict != "reject"`. Re8.0 post-audit: the BLOCKED / unresolved / no-traceable-evidence guards were added because the previous definition reported `quality_pass=true` even when `fused_verdict=BLOCKED`, creating a self-contradictory result.
 
 #### Scenario: All seeds ambiguous
 - **WHEN** 6/6 seeds are `ambiguous` and 3 gates return `revise`
@@ -135,6 +135,54 @@ Previously gates only evaluated and emitted `re_search_requests` as audit trail.
 ### Requirement: PASS Criteria (was: single binary)
 
 Previously demo reported single PASS/FAIL. Now reports `runtime_pass` / `contract_pass` / `quality_pass` as three independent booleans.
+
+### Requirement: Fulltext Acquisition Before Paper Understanding (post-audit)
+
+Originally the graph ordered `paper_understanding → fulltext_acquisition → method_family_explorer`. This caused `paper_understanding` to run on a seed card with only metadata — the PDF had not yet been downloaded. `fulltext_acquisition` then downloaded the PDF, but the graph did not return to `paper_understanding`, so the freshly downloaded PDF was never parsed.
+
+**Fix (commit 73d97fab)**: graph order is now `fulltext_acquisition → paper_understanding → method_family_explorer`. `fulltext_acquisition_node` writes downloaded PDF bytes to BOTH `card["pdf_bytes"]` AND `card["raw_input"]["pdf_bytes"]` — the latter is the path `paper_understanding` actually reads. `seed_audit_gate`'s forward target was updated from `paper_understanding` to `fulltext_acquisition` accordingly.
+
+#### Scenario: DOI seed gets fulltext parsed
+- **WHEN** seed has `existence_status=verified` and `fulltext_status=metadata_only`
+- **THEN** `fulltext_acquisition_node` downloads PDF → `paper_understanding` parses `raw_input.pdf_bytes` → `method_family_explorer` consumes the parsed SeedCard fields (task_definition / method_summary / dataset / environment)
+
+### Requirement: Evidence Gap Attribution Stability (post-audit, was P1-7b fallback)
+
+Previously `search_agent.py` had a fallback (P1-7b, commit a61a253d) that marked ALL open gaps as `partially_satisfied` whenever the ReAct LLM reformulated a query such that `(tool, query)` no longer matched the `gap_lookup`, but search still returned any papers/repos. This produced `gap_id=null` / `evidence_delta=null` in `search_steps`, proving only "search had results" — not that any specific Gap was actually addressed.
+
+**Fix (commit c9ee3c62)**: the P1-7b fallback is removed. In its place:
+1. `_build_gap_lookup` returns `(by_tool_query, by_query_id)` tuple; each gap_meta carries a deterministic `query_id` (`q_{gap_id}_{n}`).
+2. The system prompt exposes structured `plan_queries` (query_id + gap_id + query_text + tool) and instructs the LLM to echo `plan_query_id` when reformulating.
+3. The ReAct loop uses `_resolve_gap_meta(tool, query, plan_query_id)` — `plan_query_id` lookup first, then `(tool, query)` fallback — to keep `gap_id` stable across reformulation.
+4. Search results that cannot be attributed to any gap (gap_lookup miss + no `plan_query_id`) go into `unassigned_evidence` (for traceability only), NOT into marking any gap as `partially_satisfied`.
+
+A gap may only be marked `partially_satisfied` when (a) the search action was bound to a `gap_id`, (b) ≥1 result passed relevance check, (c) the result produced a recordable Evidence ID, and (d) the Gap's success condition is partially met.
+
+#### Scenario: LLM reformulates query but plan_query_id preserved
+- **WHEN** LLM rewrites `query_text` but echoes `plan_query_id="q_gap-S1-task_definition_for_family_1"`
+- **THEN** the search result is attributed to `gap_id="gap-S1-task_definition_for_family"` and may update that gap's status
+
+#### Scenario: LLM drops plan_query_id
+- **WHEN** LLM returns a reformulated query without `plan_query_id` and `(tool, query)` does not match any entry in `gap_lookup`
+- **THEN** search results go into `unassigned_evidence`; no gap is marked `partially_satisfied`
+
+### Recommendation: Tailor 上游输入完整性先于 Prompt 调优
+
+Post-audit 第二轮重跑确认 xlm_r/vit_dr 的 `tailored_method.core_method` 仍为空，`tailor_gate` round_idx 达到 cap，`fused_verdict=BLOCKED`。但这**不是 Tailor Prompt 单点问题** — Tailor 的上游输入链路仍可能不完整：
+
+1. `fulltext_acquisition` 是否真的下载到了 PDF（DOI/arXiv 种子可能因 Unpaywall 无 OA 副本而失败）
+2. `paper_understanding` 是否消费了下载的 PDF 并填充了 SeedCard 的 `task_definition` / `method_summary` / `dataset` / `environment` 字段
+3. `method_family_explorer` 是否消费了上述 SeedCard 字段
+4. `tailor_skill_adapter` 的输入 prompt 是否包含 `task_definition` / `method_summary` / `dataset` / `environment`
+
+**推荐诊断顺序**（必须在 Tailor Prompt 调优之前）：
+1. 检查下载后的 PDF 是否真的进入 `paper_understanding`（查 trace_events + `card["raw_input"]["pdf_bytes"]` 非空）
+2. 检查 SeedCard 的 `task_definition`/`method_summary`/`dataset`/`environment` 是否被填充
+3. 检查 `MethodFamily` 是否消费这些字段
+4. 检查 Tailor Adapter 输入 prompt 是否包含这些字段
+5. 最后才调 Prompt / Schema / Gate 判定
+
+在 (1)-(4) 任何一步缺失的情况下，单纯调 Tailor Prompt 只会让 LLM 在缺失输入上"编造" core_method，产生新的假阳性。
 
 ## REMOVED Requirements
 

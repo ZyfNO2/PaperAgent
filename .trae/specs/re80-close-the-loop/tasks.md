@@ -3,10 +3,10 @@
 ## P0 — 阻塞核心闭环（必须先做）
 
 - [x] Task 1: CandidateSeed 输入契约归一化
-  - [ ] SubTask 1.1: 修 `seed_resolver.py` `_classify_input`，兼容顶层字段和 `raw_input` 嵌套字段（先 flatten raw_input 到顶层，再分类）
-  - [ ] SubTask 1.2: 修 `re80_seeded_demo.py` CASES，把 `doi/url/title` 从 `raw_input` 提到顶层（双保险）
-  - [ ] SubTask 1.3: 新增单元测试：nested raw_input 输入 → Resolver 正确提取 identifier → 走 Crossref/arXiv 验证
-  - [ ] SubTask 1.4: 重跑 3 道种子题（yolo_steel/xlm_r/vit_dr），验证种子 existence_status 不再全部 ambiguous
+  - [x] SubTask 1.1: 修 `seed_resolver.py` `_classify_input`，兼容顶层字段和 `raw_input` 嵌套字段（先 flatten raw_input 到顶层，再分类）
+  - [x] SubTask 1.2: 修 `re80_seeded_demo.py` CASES，把 `doi/url/title` 从 `raw_input` 提到顶层（双保险）
+  - [x] SubTask 1.3: 新增单元测试：nested raw_input 输入 → Resolver 正确提取 identifier → 走 Crossref/arXiv 验证
+  - [x] SubTask 1.4: 重跑 3 道种子题（yolo_steel/xlm_r/vit_dr），验证种子 existence_status 不再全部 ambiguous
 
 - [x] Task 2: Reflection Gate Conditional Repair Routing
   - [x] SubTask 2.1: 在 `research_graph.py` 把 `seed_audit_gate → paper_understanding` 静态 edge 改为 conditional edge：verdict=pass → forward; verdict=revise & round<2 → 回 seed_resolver; verdict=unresolved或round>=2 → forward
@@ -23,18 +23,18 @@
   - [x] SubTask 3.4: 单元测试：network_policy=online（默认）→ adapter 正常工作
 
 - [x] Task 4: Three-Tier PASS Standard
-  - [ ] SubTask 4.1: 在 `re80_seeded_demo.py` 新增 `_compute_contract_pass(final_state)` 和 `_compute_quality_pass(final_state)` 函数
-  - [ ] SubTask 4.2: 修改 demo 输出，报告 `runtime_pass` / `contract_pass` / `quality_pass` 三个独立布尔值 + 失败原因
-  - [ ] SubTask 4.3: 单元测试：mock final_state 全空字段 → contract_pass=false, quality_pass=false
+  - [x] SubTask 4.1: 在 `re80_seeded_demo.py` 新增 `_compute_contract_pass(final_state)` 和 `_compute_quality_pass(final_state)` 函数
+  - [x] SubTask 4.2: 修改 demo 输出，报告 `runtime_pass` / `contract_pass` / `quality_pass` 三个独立布尔值 + 失败原因
+  - [x] SubTask 4.3: 单元测试：mock final_state 全空字段 → contract_pass=false, quality_pass=false
 
 ## P1 — 影响真实可用性（P0 修完后做）
 
 - [x] Task 5: Fulltext Acquisition Layer
-  - [ ] SubTask 5.1: 新增 `apps/api/app/services/agents/graph/nodes/fulltext_acquisition.py`，实现 `fulltext_acquisition_node(state)`
-  - [ ] SubTask 5.2: 逻辑：遍历 verified seed_cards → DOI/arXiv → 尝试下载 PDF（unpaywall/arxiv PDF URL）→ 设置 `fulltext_status=fulltext_available`
-  - [ ] SubTask 5.3: 失败时（403/paywall）保持 `metadata_only`，打开 `fulltext` 类型 evidence gap
-  - [ ] SubTask 5.4: 在 graph 接入：`paper_understanding → fulltext_acquisition → method_family_explorer`
-  - [ ] SubTask 5.5: 单元测试：mock DOI → 返回 PDF bytes → fulltext_status 更新；mock 403 → gap 打开
+  - [x] SubTask 5.1: 新增 `apps/api/app/services/agents/graph/nodes/fulltext_acquisition.py`，实现 `fulltext_acquisition_node(state)`
+  - [x] SubTask 5.2: 逻辑：遍历 verified seed_cards → DOI/arXiv → 尝试下载 PDF（unpaywall/arxiv PDF URL）→ 设置 `fulltext_status=fulltext_available`
+  - [x] SubTask 5.3: 失败时（403/paywall）保持 `metadata_only`，打开 `fulltext` 类型 evidence gap
+  - [x] SubTask 5.4: 在 graph 接入：`fulltext_acquisition → paper_understanding → method_family_explorer`（Re8.0 post-audit commit 73d97fab：原顺序 `paper_understanding → fulltext_acquisition` 反了，导致首次 paper_understanding 无 PDF 可解析；修正后 fulltext_acquisition 在前，下载的 PDF 写入 `raw_input.pdf_bytes` 供 paper_understanding 读取）
+  - [x] SubTask 5.5: 单元测试：mock DOI → 返回 PDF bytes → fulltext_status 更新 + `raw_input.pdf_bytes` 同步写入；mock 403 → gap 打开
 
 - [x] Task 6: Decision Fusion
   - [x] SubTask 6.1: 在 `content.py` 新增 `_compute_fused_verdict(state)` 函数，融合 seed_audit/tailor/final_review gate verdicts + novelty + gaps
@@ -62,6 +62,10 @@
   - [x] SubTask 8.11（P1 fixup, commit a61a253d）: llm_output_validator.py P1-3 innovation_extractor fallback — validator 接受既无 innovation_points 也无 stitching_plan 的输出（交由 node 级 heuristic 兜底），避免无意义 LLM repair
   - [x] SubTask 8.12（P1 fixup, commit a61a253d）: 测试覆盖 +21 用例（test_re8_evidence_gap_search +4 / test_re8_reflection_gates +5 / test_re5x_llm_validator +3 / test_re8_final_package +3 / test_re8_seed_resolver +6），全部 567 Re8 测试通过
   - [x] SubTask 8.13（P1 fixup, commit a61a253d）: re80_seeded_demo.py 验收脚本增强 — RE80_DEMO_OUT 环境变量支持并行运行；evidence_gaps_debug / search_steps_debug 字段便于 gap_id/status/evidence_delta 关联诊断；P1-2 fallback (assembly_plan.description 兜底 core_method) + P1-4 Pattern 2 (dict-structured reflection_gate_results n_repair_cycles 提取) + P1-5 yolo_steel seed 配置
+  - [x] SubTask 8.14（post-audit, commit c9ee3c62）: 修正 `_compute_quality_pass` 假阳性 — 加入 `fused_verdict != BLOCKED` + 无 gate unresolved + 至少 1 个 gap 有可追溯 `evidence_delta`（gap_id 必须在 `search_steps` 中匹配且非零 papers/repos）三条硬性约束；xlm_r/vit_dr 重跑后 `quality_pass` 从 `true`（假阳性）修正为 `false`，消除与 `fused_verdict=BLOCKED` 自相矛盾
+  - [x] SubTask 8.15（post-audit, commit c9ee3c62）: 删除 `search_agent.py` P1-7b fallback（原 lines 1007-1025）— 该 fallback 在 LLM 改写 query 导致 gap_lookup miss 时，只要 search_agent 找到任意 papers/repos 就把所有 open gap 批量标为 `partially_satisfied`，但 `gap_id=null` / `evidence_delta=null`，无真实归因；替换为 `plan_query_id` 稳定传递机制（LLM 返回 `plan_query_id`，ReAct 循环优先用 `plan_query_id` 查 gap_meta，保持 gap_id 稳定）+ `unassigned_evidence` 追踪（无法归因的结果进入此列表，不用于标记 gap）
+  - [x] SubTask 8.16（post-audit, commit 73d97fab）: 修正 graph 节点顺序 — 原 `paper_understanding → fulltext_acquisition → method_family_explorer` 导致首次 paper_understanding 无 PDF 可解析；改为 `fulltext_acquisition → paper_understanding → method_family_explorer`，同时 `fulltext_acquisition` 下载成功后同步写入 `raw_input.pdf_bytes`（paper_understanding 实际读取位置）；`seed_audit_gate` 的 forward target 和 `reflection_gates._GATE_FORWARD_TARGETS[GATE_SEED_AUDIT]` 也从 `paper_understanding` 改为 `fulltext_acquisition`
+  - [x] SubTask 8.17（post-audit, commit e0239419）: 修正 `low_bar_review_node` 在 `work_package` 字段为 list 时的崩溃 — `pkg.get("data_source")` 返回 list 时调用 `.strip()` 抛 `AttributeError`；新增 `_pkg_str()` helper 对 list 做 `" ".join(...)` 后再 strip；yolo_steel 第二轮 research loop 因此崩溃已修复
 
 ## P1-4 — 前端（最后做）
 
