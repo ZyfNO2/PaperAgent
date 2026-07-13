@@ -133,6 +133,11 @@ class ResearchState(TypedDict, total=False):
 
     # === Re3.0 new fields ===
     search_steps: list[dict[str, Any]]  # React search agent step log
+    # Re8.0 post-audit: search results that cannot be attributed to any
+    # evidence gap (gap_lookup miss + no plan_query_id). Tracked for
+    # traceability only — does NOT mark any gap as partially_satisfied.
+    # See spec.md "Evidence Gap Attribution Stability".
+    unassigned_evidence: list[dict[str, Any]]
 
     # --- Telemetry ---
     trace_events: Annotated[list[dict[str, Any]], operator.add]
