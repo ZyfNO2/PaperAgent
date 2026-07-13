@@ -77,7 +77,7 @@
 
 - [x] xlm_r 重跑（`re80_rerun_xlm_r.json`，908s）：runtime_pass=true / contract_pass=true / **quality_pass=false**（fused_verdict=BLOCKED + seed_audit_gate unresolved + tailor_gate unresolved + low_bar=blocked）；P1-7b fallback 已删除，gap status 反映真实证据归因
 - [x] vit_dr 重跑（`re80_rerun_vit_dr.json`，849s）：runtime_pass=true / contract_pass=true / **quality_pass=false**（fused_verdict=BLOCKED + tailor_gate unresolved）；gap-S1-competing_baseline=satisfied（有真实可追溯证据）
-- [~] yolo_steel 重跑：第一轮因 `content.py:269` `data_source` list 崩溃（已由 commit e0239419 修复）；第二轮重跑进行中，结果待写入 `tmp_re13_eval/re80_rerun_yolo_steel_v2.json` 后同步到 `final/`
+- [x] yolo_steel 重跑（`re80_rerun_yolo_steel_v2.json`，579s）：runtime_pass=true / contract_pass=true / **quality_pass=false**（fused_verdict=BLOCKED + seed_audit_gate unresolved + tailor_gate unresolved + 无 gap 有可追溯 evidence_delta）；content.py 崩溃已修复（commit e0239419）
 - [x] quality_pass 假阳性已消除：xlm_r 和 vit_dr 不再报告 `quality_pass=true` + `fused_verdict=BLOCKED` 的自相矛盾状态
 - [x] P1-7b fallback 删除生效：evidence_gaps 中大部分 gap 保持 `open`（不再被无归因地批量标为 `partially_satisfied`），至少 1 个 gap (`gap-S1-competing_baseline`) 有真实可追溯证据 → `satisfied`
 
