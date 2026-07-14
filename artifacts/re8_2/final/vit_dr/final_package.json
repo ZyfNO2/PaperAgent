@@ -1,0 +1,396 @@
+{
+  "seed_audit_summary": [
+    {
+      "seed_id": "S1",
+      "resolved_title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "existence_status": "verified",
+      "role": "classic_anchor",
+      "fulltext_status": "downloaded"
+    },
+    {
+      "seed_id": "S2",
+      "resolved_title": "Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy in Retinal Fundus Photographs",
+      "existence_status": "verified",
+      "role": "reproduction_target",
+      "fulltext_status": "metadata_only"
+    }
+  ],
+  "tailor_summary": {
+    "verdict": "GO",
+    "core_method": "A minimum-viable method assembly for evaluating Vision Transformer adaptations for diabetic retinopathy grading from fundus images.",
+    "baseline_model": "Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy in Retinal Fundus Photographs",
+    "ablation_matrix_count": 4,
+    "contribution_type": "engineering"
+  },
+  "gate_results": {
+    "seed_audit_gate": {
+      "verdict": "pass",
+      "round_idx": 0,
+      "rationale": "Both seeds S1 and S2 are verified with non-unknown roles (classic_anchor and reproduction_target respectively).",
+      "re_search_requests": []
+    },
+    "tailor_gate": {
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "rationale": "cap reached: 2/2",
+      "re_search_requests": []
+    },
+    "final_review_gate": {
+      "verdict": "unresolved",
+      "round_idx": 0,
+      "rationale": "review rejected; no further re-search can rescue",
+      "re_search_requests": []
+    }
+  },
+  "ledger_entries": [
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 0 method families for seed 'S1' with inferred task_type='classification'.",
+      "status": "unresolved",
+      "confidence": 0.2
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 0 method families for seed 'S1' with inferred task_type='classification'.",
+      "status": "unresolved",
+      "confidence": 0.2
+    },
+    {
+      "decision_id": "tailor-43024",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Development and Validation of a Deep Learning Algorithm for Detection of Diabeti",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 0 method families for seed 'S1' with inferred task_type='classification'.",
+      "status": "unresolved",
+      "confidence": 0.2
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 0 method families for seed 'S1' with inferred task_type='classification'.",
+      "status": "unresolved",
+      "confidence": 0.2
+    },
+    {
+      "decision_id": "tailor-43024",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Development and Validation of a Deep Learning Algorithm for Detection of Diabeti",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-60193",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Development and Validation of a Deep Learning Algorithm for Detection of Diabeti",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r1",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 0 method families for seed 'S1' with inferred task_type='classification'.",
+      "status": "unresolved",
+      "confidence": 0.2
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 0 method families for seed 'S1' with inferred task_type='classification'.",
+      "status": "unresolved",
+      "confidence": 0.2
+    },
+    {
+      "decision_id": "tailor-43024",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Development and Validation of a Deep Learning Algorithm for Detection of Diabeti",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 0 method families for seed 'S1' with inferred task_type='classification'.",
+      "status": "unresolved",
+      "confidence": 0.2
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 0 method families for seed 'S1' with inferred task_type='classification'.",
+      "status": "unresolved",
+      "confidence": 0.2
+    },
+    {
+      "decision_id": "tailor-43024",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Development and Validation of a Deep Learning Algorithm for Detection of Diabeti",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-60193",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Development and Validation of a Deep Learning Algorithm for Detection of Diabeti",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r1",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-62114",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Development and Validation of a Deep Learning Algorithm for Detection of Diabeti",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-cap-r2",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    }
+  ],
+  "evidence_gap_status": {
+    "counts": {
+      "open": 1,
+      "satisfied": 5,
+      "partially_satisfied": 0,
+      "blocked": 0
+    },
+    "open_gaps": [
+      {
+        "gap_id": "gap-S2-fulltext",
+        "question": "What is the fulltext content of paper 'Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy in Retinal Fundus Photographs'?",
+        "gap_type": "fulltext"
+      }
+    ]
+  },
+  "falsifiable_hypothesis": "The proposed Vision Transformer adaptation will achieve at least a 5% higher AUC on the EyePACS or Messidor datasets compared to prior CNN-based fundus image grading methods.",
+  "fused_verdict": {
+    "verdict": "BLOCKED",
+    "rationale": "tailor unresolved"
+  }
+}

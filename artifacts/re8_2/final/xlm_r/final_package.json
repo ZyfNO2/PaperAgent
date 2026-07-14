@@ -1,0 +1,432 @@
+{
+  "seed_audit_summary": [
+    {
+      "seed_id": "S1",
+      "resolved_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "existence_status": "verified",
+      "role": "classic_anchor",
+      "fulltext_status": "downloaded"
+    },
+    {
+      "seed_id": "S2",
+      "resolved_title": "Unsupervised Cross-lingual Representation Learning at Scale",
+      "existence_status": "verified",
+      "role": "current_sota_candidate",
+      "fulltext_status": "downloaded"
+    }
+  ],
+  "tailor_summary": {
+    "verdict": "GO",
+    "core_method": "A minimum-viable method assembly for cross-lingual transfer learning with XLM-R, incorporating adaptive subsampling and knowledge distillation while excluding retrieval-augmented pretraining due to compatibility constraints.",
+    "baseline_model": "Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+    "ablation_matrix_count": 4,
+    "contribution_type": "engineering"
+  },
+  "gate_results": {
+    "seed_audit_gate": {
+      "verdict": "pass",
+      "round_idx": 0,
+      "rationale": "2 verified seed(s) with assigned roles",
+      "re_search_requests": []
+    },
+    "tailor_gate": {
+      "verdict": "pass",
+      "round_idx": 0,
+      "rationale": "Tailored method is compatible (M1/M2 integrated), falsifiable (clear steps), and simpler than M3; no open evidence gaps remain.",
+      "re_search_requests": []
+    },
+    "final_review_gate": {
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "rationale": "cap reached: 2/2",
+      "re_search_requests": []
+    }
+  },
+  "ledger_entries": [
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor-27884",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor-27884",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-11432",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r1",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r1",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor-27884",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor-27884",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-11432",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r1",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r1",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-4008",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-cap-r2",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    }
+  ],
+  "evidence_gap_status": {
+    "counts": {
+      "open": 0,
+      "satisfied": 5,
+      "partially_satisfied": 0,
+      "blocked": 0
+    },
+    "open_gaps": []
+  },
+  "falsifiable_hypothesis": "Retrieval-Augmented Pretraining will improve zero-shot cross-lingual transfer performance on low-resource African languages by at least 10% over the XLM-R baseline.",
+  "fused_verdict": {
+    "verdict": "BLOCKED",
+    "rationale": "final review unresolved"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "seed_audit_gate": [
+    {
+      "gate_name": "seed_audit_gate",
+      "verdict": "pass",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "2 verified seed(s) with assigned roles",
+      "generated_by": "fallback",
+      "reason_code": "SEED_VERIFIED",
+      "seed_id": "S1",
+      "candidate_count": 2,
+      "top_score": 0.0
+    }
+  ],
+  "tailor_gate": [
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "pass",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "Tailored method is compatible, falsifiable, and no simpler route is evident given the assembly plan and module compatibility analysis.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "pass",
+      "round_idx": 1,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "The tailored method is compatible, falsifiable, and no simpler route is evident given the assembly plan and satisfied evidence gaps.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "pass",
+      "round_idx": 0,
+      "cycle_id": 1,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "Tailored method is compatible (M1/M2 integrated), falsifiable (clear steps), and simpler than M3; no open evidence gaps remain.",
+      "generated_by": "llm"
+    }
+  ],
+  "final_review_gate": [
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "revise",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [
+        "gap-S1-competing_baseline",
+        "gap-S1-mechanism_module",
+        "gap-S1-counter_evidence"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "High-severity risks (repetition, differentiation, falsifiability) require targeted re-search to address gaps in baseline comparison, module novelty, and counter-evidence synthesis.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "revise",
+      "round_idx": 1,
+      "cycle_id": 0,
+      "re_search_requests": [
+        "search_method_family",
+        "search_dataset"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "weak_reject — request targeted re-search",
+      "generated_by": "fallback"
+    },
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "cap reached: 2/2",
+      "generated_by": "rule"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "seed_audit_gate": [
+    {
+      "gate_name": "seed_audit_gate",
+      "verdict": "pass",
+      "round_idx": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "2 verified seed(s) with assigned roles",
+      "generated_by": "fallback"
+    }
+  ],
+  "tailor_gate": [
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "pass",
+      "round_idx": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "Tailored method is compatible, falsifiable, and no simpler route is evident; all open gaps are addressed by satisfied status.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "pass",
+      "round_idx": 1,
+      "re_search_requests": [
+        "gap-S2-fulltext"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "Tailored method is compatible and falsifiable with a simpler primary baseline; only missing fulltext evidence for a foundational DR paper (gap-S2-fulltext).",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "cap reached: 2/2",
+      "generated_by": "rule"
+    }
+  ],
+  "final_review_gate": [
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "revise",
+      "round_idx": 0,
+      "re_search_requests": [
+        "gap-S1-competing_baseline",
+        "gap-S1-mechanism_module",
+        "gap-S1-counter_evidence"
+      ],
+      "unresolved_gaps": [
+        "gap-S2-fulltext"
+      ],
+      "rationale": "High-risk pressure points remain: lack of fundus-specific MAE adaptation (gap-S1-competing_baseline), unclear differentiation from WenLan (gap-S1-mechanism_module), and missing counter-evidence (gap-S1-counter_evidence). Fulltext of key DR paper (gap-S2-fulltext) is unresolved.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "revise",
+      "round_idx": 1,
+      "re_search_requests": [
+        "gap-S1-competing_baseline",
+        "gap-S1-mechanism_module",
+        "gap-S1-counter_evidence"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "High-risk novelty gaps remain: prior art on MAE+Pyramid ViT for DR grading (gap_id: 2205.10063v1_14) and medical multi-modal models (gap_id: 2103.06561v6_11) must be contrasted with proposed contributions; falsifiability and differentiation claims require targeted evidence.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "cap reached: 2/2",
+      "generated_by": "rule"
+    }
+  ]
+}

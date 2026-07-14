@@ -1,0 +1,114 @@
+{
+  "seed_audit_gate": [
+    {
+      "gate_name": "seed_audit_gate",
+      "verdict": "revise",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [
+        "S2"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "Seed S2 has existence_status 'ambiguous' and lacks a stable identifier (gap_id: S2.repair_hint).",
+      "generated_by": "llm",
+      "reason_code": "SEED_NOT_FOUND"
+    },
+    {
+      "gate_name": "seed_audit_gate",
+      "verdict": "revise",
+      "round_idx": 1,
+      "cycle_id": 0,
+      "re_search_requests": [
+        "S2"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "Seed S2 has existence_status 'ambiguous' and lacks a stable identifier (gap_id: S2, evidence_id: repair_hint).",
+      "generated_by": "llm",
+      "reason_code": "SEED_NOT_FOUND"
+    },
+    {
+      "gate_name": "seed_audit_gate",
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "cap reached: 2/2",
+      "generated_by": "rule"
+    }
+  ],
+  "tailor_gate": [
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "pass",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "Tailored method is compatible, falsifiable, and no simpler route is evident given the assembly plan and satisfied evidence gaps.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "pass",
+      "round_idx": 1,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "Tailored method is compatible, falsifiable, and no simpler route is evident given the assembly plan and satisfied evidence gaps.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "pass",
+      "round_idx": 0,
+      "cycle_id": 1,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "The tailored method is compatible, falsifiable, and no simpler route is evident; all open gaps are already satisfied.",
+      "generated_by": "llm"
+    }
+  ],
+  "final_review_gate": [
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "revise",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [
+        "gap-S1-anchor_reference",
+        "gap-S1-competing_baseline",
+        "gap-S1-mechanism_module",
+        "gap-S1-resource",
+        "gap-S1-counter_evidence"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "Novelty rejection and unspecified falsifiable hypothesis require addressing all evidence gaps to justify contribution.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "revise",
+      "round_idx": 1,
+      "cycle_id": 0,
+      "re_search_requests": [
+        "gap-S1-competing_baseline",
+        "gap-S1-mechanism_module",
+        "gap-S1-counter_evidence"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "High-risk novelty gaps persist: no evidence confirms prior stitching of YOLOv8 with Cascade IoU/CF-DETR/Faster R-CNN RPN in steel defect detection (evidence_ids 1906.09756v1_19, 2505.23317v1_16, 1606.03473v1_21), and falsifiability thresholds lack clear baselines (risk 'falsifiability').",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "cap reached: 2/2",
+      "generated_by": "rule"
+    }
+  ]
+}

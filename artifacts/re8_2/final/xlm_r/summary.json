@@ -1,0 +1,353 @@
+{
+  "case_key": "xlm_r",
+  "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+  "description": "NLP: multilingual transformers for low-resource language NLP",
+  "n_seeds_input": 2,
+  "mode": "seeded_research + full_agent + react_reflection",
+  "status": "PASS",
+  "elapsed_s": 464.2,
+  "error": null,
+  "runtime_pass": true,
+  "contract_pass": true,
+  "contract_pass_reasons": [],
+  "quality_pass": false,
+  "quality_pass_reasons": [
+    "fused_verdict is BLOCKED (quality_pass cannot be true when the pipeline is blocked)",
+    "reflection_gate final_review_gate is unresolved (round_idx cap reached without convergence)",
+    "final_recommendation.low_bar_status is not 'pass' (got: 'blocked')"
+  ],
+  "final_rec": {
+    "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+    "n_papers": 3,
+    "n_baseline": 0,
+    "n_parallel": 2,
+    "n_dataset": 0,
+    "n_repo": 4,
+    "n_work_packages": 0,
+    "low_bar_status": "blocked"
+  },
+  "seed_cards": [
+    {
+      "seed_id": "S1",
+      "resolved_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "existence_status": "verified",
+      "role": "classic_anchor"
+    },
+    {
+      "seed_id": "S2",
+      "resolved_title": "Unsupervised Cross-lingual Representation Learning at Scale",
+      "existence_status": "verified",
+      "role": "current_sota_candidate"
+    }
+  ],
+  "n_trace_events": 55,
+  "n_gate_traces": 12,
+  "providers_used": {
+    "local": 15,
+    "fallback": 2,
+    "httpx": 1,
+    "llm_router": 2,
+    "fast_json": 22,
+    "react_search": 1,
+    "semantic_scholar": 1,
+    "premium_review": 10,
+    "n/a": 1
+  },
+  "gate_seed_audit_gate": {
+    "verdict": "pass",
+    "generated_by": "fallback",
+    "round_idx": 0,
+    "rationale": "2 verified seed(s) with assigned roles",
+    "re_search_requests": [],
+    "unresolved_gaps": [],
+    "all_rounds": [
+      {
+        "round_idx": 0,
+        "verdict": "pass",
+        "generated_by": "fallback",
+        "rationale": "2 verified seed(s) with assigned roles"
+      }
+    ]
+  },
+  "gate_tailor_gate": {
+    "verdict": "pass",
+    "generated_by": "llm",
+    "round_idx": 0,
+    "rationale": "Tailored method is compatible (M1/M2 integrated), falsifiable (clear steps), and simpler than M3; no open evidence gaps remain.",
+    "re_search_requests": [],
+    "unresolved_gaps": [],
+    "all_rounds": [
+      {
+        "round_idx": 0,
+        "verdict": "pass",
+        "generated_by": "llm",
+        "rationale": "Tailored method is compatible, falsifiable, and no simpler route is evident given the assembly plan and module compatibility analysis."
+      },
+      {
+        "round_idx": 1,
+        "verdict": "pass",
+        "generated_by": "llm",
+        "rationale": "The tailored method is compatible, falsifiable, and no simpler route is evident given the assembly plan and satisfied evidence gaps."
+      },
+      {
+        "round_idx": 0,
+        "verdict": "pass",
+        "generated_by": "llm",
+        "rationale": "Tailored method is compatible (M1/M2 integrated), falsifiable (clear steps), and simpler than M3; no open evidence gaps remain."
+      }
+    ]
+  },
+  "gate_final_review_gate": {
+    "verdict": "unresolved",
+    "generated_by": "rule",
+    "round_idx": 2,
+    "rationale": "cap reached: 2/2",
+    "re_search_requests": [],
+    "unresolved_gaps": [],
+    "all_rounds": [
+      {
+        "round_idx": 0,
+        "verdict": "revise",
+        "generated_by": "llm",
+        "rationale": "High-severity risks (repetition, differentiation, falsifiability) require targeted re-search to address gaps in baseline comparison, module novelty, and counter-evidence synthesis."
+      },
+      {
+        "round_idx": 1,
+        "verdict": "revise",
+        "generated_by": "fallback",
+        "rationale": "weak_reject — request targeted re-search"
+      },
+      {
+        "round_idx": 2,
+        "verdict": "unresolved",
+        "generated_by": "rule",
+        "rationale": "cap reached: 2/2"
+      }
+    ]
+  },
+  "n_ledger_entries": 53,
+  "n_react_actions": 12,
+  "n_errors": 0,
+  "n_verified_papers": 3,
+  "n_search_steps": 13,
+  "tailored_verdict": "GO",
+  "tailored_ablation_rows": 4,
+  "tailored_method_summary": {
+    "contribution_type": null,
+    "core_method": "A minimum-viable method assembly for cross-lingual transfer learning with XLM-R, incorporating adaptive subsampling and ",
+    "baseline_model": null
+  },
+  "novelty_review_verdict": "weak_reject",
+  "has_falsifiable_hypothesis": true,
+  "hypothesis_preview": "Retrieval-Augmented Pretraining will improve zero-shot cross-lingual transfer performance on low-resource African languages by at least 10% over the X",
+  "n_evidence_gaps": 5,
+  "gap_statuses": {
+    "satisfied": 5
+  },
+  "evidence_gaps_debug": [
+    {
+      "gap_id": "gap-S1-anchor_reference",
+      "status": "satisfied",
+      "description": "",
+      "lane_id": ""
+    },
+    {
+      "gap_id": "gap-S1-competing_baseline",
+      "status": "satisfied",
+      "description": "",
+      "lane_id": ""
+    },
+    {
+      "gap_id": "gap-S1-mechanism_module",
+      "status": "satisfied",
+      "description": "",
+      "lane_id": ""
+    },
+    {
+      "gap_id": "gap-S1-resource",
+      "status": "satisfied",
+      "description": "",
+      "lane_id": ""
+    },
+    {
+      "gap_id": "gap-S1-counter_evidence",
+      "status": "satisfied",
+      "description": "",
+      "lane_id": ""
+    }
+  ],
+  "search_steps_debug": [
+    {
+      "step": 0,
+      "type": "tool_call",
+      "gap_id": "gap-S1-anchor_reference",
+      "evidence_delta": {
+        "n_new_papers": 0,
+        "n_new_repos": 0,
+        "gap_resolved": false
+      },
+      "tool": "openalex",
+      "n_results": 0
+    },
+    {
+      "step": 1,
+      "type": "tool_call",
+      "gap_id": "gap-S1-anchor_reference",
+      "evidence_delta": {
+        "n_new_papers": 12,
+        "n_new_repos": 0,
+        "gap_resolved": true
+      },
+      "tool": "crossref",
+      "n_results": 12
+    },
+    {
+      "step": 2,
+      "type": "tool_call",
+      "gap_id": "gap-S1-competing_baseline",
+      "evidence_delta": {
+        "n_new_papers": 0,
+        "n_new_repos": 0,
+        "gap_resolved": false
+      },
+      "tool": "arxiv",
+      "n_results": 0
+    },
+    {
+      "step": 3,
+      "type": "tool_call",
+      "gap_id": "gap-S1-competing_baseline",
+      "evidence_delta": {
+        "n_new_papers": 0,
+        "n_new_repos": 0,
+        "gap_resolved": false
+      },
+      "tool": "semantic_scholar",
+      "n_results": 0
+    },
+    {
+      "step": 4,
+      "type": "tool_call",
+      "gap_id": "gap-S1-mechanism_module",
+      "evidence_delta": {
+        "n_new_papers": 12,
+        "n_new_repos": 0,
+        "gap_resolved": true
+      },
+      "tool": "arxiv",
+      "n_results": 12
+    },
+    {
+      "step": 5,
+      "type": "tool_call",
+      "gap_id": "gap-S1-mechanism_module",
+      "evidence_delta": {
+        "n_new_papers": 0,
+        "n_new_repos": 0,
+        "gap_resolved": false
+      },
+      "tool": "openalex",
+      "n_results": 0
+    },
+    {
+      "step": 6,
+      "type": "tool_call",
+      "gap_id": "gap-S1-resource",
+      "evidence_delta": {
+        "n_new_papers": 0,
+        "n_new_repos": 4,
+        "gap_resolved": true
+      },
+      "tool": "github",
+      "n_results": 4
+    },
+    {
+      "step": 7,
+      "type": "tool_call",
+      "gap_id": "gap-S1-resource",
+      "evidence_delta": {
+        "n_new_papers": 0,
+        "n_new_repos": 0,
+        "gap_resolved": false
+      },
+      "tool": "huggingface",
+      "n_results": 0
+    },
+    {
+      "step": 8,
+      "type": "tool_call",
+      "gap_id": "gap-S1-counter_evidence",
+      "evidence_delta": {
+        "n_new_papers": 12,
+        "n_new_repos": 0,
+        "gap_resolved": true
+      },
+      "tool": "arxiv",
+      "n_results": 12
+    },
+    {
+      "step": 9,
+      "type": "tool_call",
+      "gap_id": "gap-S1-counter_evidence",
+      "evidence_delta": {
+        "n_new_papers": 0,
+        "n_new_repos": 0,
+        "gap_resolved": false
+      },
+      "tool": "openalex",
+      "n_results": 0
+    },
+    {
+      "step": 10,
+      "type": "tool_call",
+      "gap_id": "gap-S1-anchor_reference",
+      "evidence_delta": {
+        "n_new_papers": 0,
+        "n_new_repos": 0,
+        "gap_resolved": false
+      },
+      "tool": "openalex",
+      "n_results": 0
+    },
+    {
+      "step": 11,
+      "type": "tool_call",
+      "gap_id": "gap-S1-competing_baseline",
+      "evidence_delta": {
+        "n_new_papers": 12,
+        "n_new_repos": 0,
+        "gap_resolved": true
+      },
+      "tool": "arxiv",
+      "n_results": 12
+    },
+    {
+      "step": 12,
+      "type": "stop",
+      "gap_id": null,
+      "evidence_delta": null,
+      "tool": null,
+      "n_results": null
+    }
+  ],
+  "fused_verdict": "BLOCKED",
+  "fused_verdict_rationale": "final review unresolved",
+  "final_research_package_sections": [
+    "evidence_gap_status",
+    "falsifiable_hypothesis",
+    "fused_verdict",
+    "gate_results",
+    "ledger_entries",
+    "seed_audit_summary",
+    "tailor_summary"
+  ],
+  "final_research_package_section_count": 7,
+  "final_research_package_missing_sections": [],
+  "final_rec_fused_verdict": "BLOCKED",
+  "final_rec_has_research_package": true,
+  "repair_cycles_detected": [
+    "tailor_gate:round_idx=1(cap-reached,implicit)",
+    "final_review_gate:round_idx=2(cap-reached,implicit)"
+  ],
+  "n_repair_cycles": 2
+}

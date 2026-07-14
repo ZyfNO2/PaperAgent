@@ -1,0 +1,78 @@
+{
+  "phase": "Re8.2",
+  "generated_at": "2026-07-14T23:50:00+08:00",
+  "gaps": [
+    {
+      "id": "GAP-001",
+      "category": "business_acceptance",
+      "severity": "high",
+      "description": "WP4 三案例 fused_verdict 全部为 BLOCKED，未满足 SOP 中 '至少 2/3 非 BLOCKED，至少 1/3 quality_pass=true' 的验收指标。",
+      "cases": ["vit_dr", "xlm_r", "yolo_steel"],
+      "root_cause": "final_review_gate / tailor_gate / seed_audit_gate 在证据不足时仍达到 round cap  unresolved",
+      "next_steps": [
+        "提升 final_review_gate 的 evidence threshold 或放宽 cap",
+        "打通 baseline 全文获取链路（gap-S2-fulltext）",
+        "对 yolo_steel S2 类无稳定 identifier 论文引入本地 PDF / 人工确认兜底"
+      ],
+      "owner": "Re8.3+"
+    },
+    {
+      "id": "GAP-002",
+      "category": "tailor_skill_adapter",
+      "severity": "medium",
+      "description": "tailor_skill_adapter 输出校验频繁失败，缺少 task_definition / method_summary / dataset_and_metrics 等字段。",
+      "cases": ["vit_dr", "xlm_r", "yolo_steel"],
+      "root_cause": "LLM prompt 对 schema 的约束不足，模型未输出完整字段",
+      "next_steps": [
+        "加强 tailor_skill_adapter 的 prompt schema 约束",
+        "增加结构化输出失败时的 fallback formatter"
+      ],
+      "owner": "Re8.3"
+    },
+    {
+      "id": "GAP-003",
+      "category": "seed_repair",
+      "severity": "medium",
+      "description": "Seed Repair 2.0 对中文/工业论文（yolo_steel S2）覆盖不足，无法从无 DOI/arXiv 的标题+作者信息中恢复稳定 identifier。",
+      "cases": ["yolo_steel"],
+      "root_cause": "检索源对中文期刊/会议覆盖有限，且未使用作者+年份+期刊交叉策略",
+      "next_steps": [
+        "接入 CNKI / 万方 / 百度学术等中文源",
+        "实现本地 PDF 上传解析作为 seed input"
+      ],
+      "owner": "Re8.3+"
+    },
+    {
+      "id": "GAP-004",
+      "category": "e2e_runtime",
+      "severity": "low",
+      "description": "真实 full_agent E2E 测试运行时间 13-22 分钟，对 CI 不友好。",
+      "cases": ["wp5_e2e"],
+      "root_cause": "真实 LLM 调用与外部检索延迟",
+      "next_steps": [
+        "在 CI 中使用 lite_chain 或 pre-recorded trace 做 smoke E2E",
+        "保留 full_agent E2E 作为 nightly / release 验证"
+      ],
+      "owner": "CI/Re8.3"
+    },
+    {
+      "id": "GAP-005",
+      "category": "frontend_polling",
+      "severity": "low",
+      "description": "前端 pollCaseStatus 默认 10 分钟超时，不足以等待真实 full_agent pipeline。",
+      "cases": ["wp5_e2e"],
+      "root_cause": "超时硬编码为 600_000 ms",
+      "next_steps": [
+        "已在本次提交中延长至 30 分钟",
+        "后续可根据 run_mode 动态设置超时"
+      ],
+      "owner": "completed"
+    }
+  ],
+  "summary": {
+    "high": 1,
+    "medium": 2,
+    "low": 2,
+    "total": 5
+  }
+}
