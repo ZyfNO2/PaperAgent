@@ -214,7 +214,7 @@ export function SeededResearch() {
       // Poll until done/error (default 10 min timeout)
       await pollCaseStatus(submitResp.case_id, {
         intervalMs: 3000,
-        timeoutMs: 600_000,
+        timeoutMs: 1_800_000, // 30 min: real full_agent pipeline can exceed 10 min
         onUpdate: (st) => {
           const s = String(st.status || 'running');
           setLiveStatus(s);
