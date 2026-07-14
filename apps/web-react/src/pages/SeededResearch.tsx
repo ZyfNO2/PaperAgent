@@ -74,6 +74,18 @@ const FUSED_VERDICT_COLOR: Record<FusedVerdict, string> = {
   BLOCKED: 'var(--color-error)',
 };
 
+// Re8.2 WP3: Seed Audit Gate structured reason code labels
+const REASON_CODE_LABELS: Record<string, string> = {
+  SEED_NOT_FOUND: '未找到匹配种子',
+  SEED_LOW_CONFIDENCE: '候选置信度不足',
+  SEED_SOURCE_CONFLICT: '多源信息冲突',
+  SEED_AUTHOR_MISMATCH: '作者信息不一致',
+  SEED_YEAR_MISMATCH: '年份信息不一致',
+  SEED_IDENTIFIER_CONFLICT: '标识符冲突',
+  SEED_FULLTEXT_UNAVAILABLE: '全文无法获取',
+  SEED_VERIFIED: '种子已核验',
+};
+
 // ===== 默认种子行 =====
 
 function makeEmptySeed(idx: number): CandidateSeedInput {
@@ -374,6 +386,24 @@ export function SeededResearch() {
         round {gate.round_idx} · generated_by {gate.generated_by}
       </div>
       <div className="pa-gate-rationale">{gate.rationale}</div>
+      {/* Re8.2 WP3: Seed Audit Gate structured diagnostics */}
+      {gate.reason_code && (
+        <div className="pa-small" style={{ marginTop: '6px' }} data-testid="seed-audit-reason-code">
+          <span className="pa-muted">reason_code:</span>{' '}
+          <code>{gate.reason_code}</code>
+          {REASON_CODE_LABELS[gate.reason_code] && (
+            <span className="pa-muted"> — {REASON_CODE_LABELS[gate.reason_code]}</span>
+          )}
+        </div>
+      )}
+      {(gate.seed_id ?? gate.candidate_count ?? gate.top_score ?? gate.repair_target) && (
+        <div className="pa-small pa-muted" style={{ marginTop: '4px' }} data-testid="seed-audit-diagnostics">
+          {gate.seed_id && <span>seed_id={gate.seed_id} · </span>}
+          {typeof gate.candidate_count === 'number' && <span>candidates={gate.candidate_count} · </span>}
+          {typeof gate.top_score === 'number' && <span>top_score={gate.top_score.toFixed(2)} · </span>}
+          {gate.repair_target && <span>repair_target={gate.repair_target}</span>}
+        </div>
+      )}
       {gate.unresolved_gaps && gate.unresolved_gaps.length > 0 && (
         <div className="pa-small">
           未解决 gap：{gate.unresolved_gaps.join(', ')}

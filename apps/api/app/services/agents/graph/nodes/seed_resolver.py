@@ -741,6 +741,829 @@ async def _fetch_by_title(
     return best
 
 
+# ── Re8.2 WP2 — Seed Repair 2.0: title normalisation ───────────────────────
+
+import unicodedata
+
+_ACRONYM_MAP: dict[str, str] = {
+    # Common ML/DL paper acronyms: full name → alias
+    "bidirectional encoder representations from transformers": "bert",
+    "generative pre-trained transformer": "gpt",
+    "vision transformer": "vit",
+    "convolutional neural network": "cnn",
+    "deep residual learning": "resnet",
+    "you only look once": "yolo",
+    "generative adversarial network": "gan",
+    "masked autoencoder": "mae",
+    "contrastive language-image pre-training": "clip",
+    "denoising diffusion probabilistic model": "ddpm",
+    "cross-lingual language model": "xlm",
+    "robustly optimized bert approach": "roberta",
+    "knowledge graph": "kg",
+    "long short-term memory": "lstm",
+    "graph neural network": "gnn",
+    "reinforcement learning": "rl",
+    "natural language processing": "nlp",
+    "mixture of experts": "moe",
+    "convolutional lstm": "convlstm",
+    "latent diffusion model": "ldm",
+    "hidden markov model": "hmm",
+    "support vector machine": "svm",
+    "conditional random field": "crf",
+    "multi-layer perceptron": "mlp",
+    "recurrent neural network": "rnn",
+    "variational autoencoder": "vae",
+    "principal component analysis": "pca",
+    "independent component analysis": "ica",
+    "node2vec": "node2vec",
+    "word2vec": "word2vec",
+    "deeplab": "deeplab",
+    "u-net": "unet",
+    "temporal convolutional network": "tcn",
+    "fully convolutional network": "fcn",
+    "deep q-network": "dqn",
+    "auto-encoding variational bayes": "aevb",
+    "neural architecture search": "nas",
+    "gradient boosting machine": "gbm",
+    "extreme gradient boosting": "xgboost",
+    "random forest": "rf",
+    "graph attention network": "gat",
+    "graph convolutional network": "gcn",
+}
+
+
+def _normalize_title_for_query(title: str) -> str:
+    """Normalize a title string for query matching (Re8.2 WP2).
+
+    Steps:
+      1. Unicode NFC normalize
+      2. Lowercase
+      3. Strip leading/trailing whitespace
+      4. Collapse all whitespace runs to single space
+
+    Used as the base normalisation for all query variants.
+    """
+    t = unicodedata.normalize("NFC", title)
+    t = t.lower().strip()
+    import re as _re2
+    t = _re2.sub(r"\s+", " ", t)
+    return t
+
+
+def _strip_subtitle(title: str) -> str:
+    """Remove subtitle after colon or em-dash, return the main title.
+
+    E.g. ``"BERT: Pre-training of Deep Bidirectional Transformers"``
+    → ``"bert pre training of deep bidirectional transformers"``
+    """
+    t = _normalize_title_for_query(title)
+    import re as _re2
+    # Split on colon or em-dash (but keep if no separator)
+    for sep in (r"\s*—\s*", r"\s*–\s*", r"\s*:\s*"):
+        parts = _re2.split(sep, t, maxsplit=1)
+        if len(parts) > 1 and parts[1].strip():
+            return parts[0].strip()
+    return t
+
+
+def _remove_punctuation(title: str) -> str:
+    """Remove common punctuation from a normalized title."""
+    import re as _re2
+    return _re2.sub(r"[^\w\s]", "", title)
+
+
+def _extract_core_terms(title: str, max_terms: int = 5) -> list[str]:
+    """Extract the most significant terms from a title.
+
+    Strips stopwords and short tokens, returns at most ``max_terms``
+    tokens. Used for the author+core and year+core query variants.
+    """
+    import re as _re2
+    _STOPWORDS: set[str] = {
+        "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
+        "of", "with", "by", "from", "as", "is", "are", "was", "were", "be",
+        "been", "being", "have", "has", "had", "do", "does", "did", "will",
+        "would", "could", "should", "may", "might", "shall", "can", "need",
+        "dare", "ought", "used", "this", "that", "these", "those", "it",
+        "its", "they", "them", "their", "we", "our", "you", "your", "he",
+        "she", "his", "her", "him", "i", "me", "my", "mine",
+        "not", "no", "nor", "neither", "so", "very", "just", "about",
+        "over", "under", "above", "below", "between", "through", "during",
+        "before", "after", "up", "down", "out", "off", "than", "then",
+        "also", "too", "only", "well", "even", "still", "already", "yet",
+        "because", "since", "while", "although", "though", "if", "unless",
+        "until", "once", "after", "before",
+        "via", "per", "into", "onto", "upon", "within", "without",
+        "more", "most", "much", "many", "some", "any", "each", "every",
+        "both", "all", "few", "several", "such", "like",
+        "how", "what", "which", "who", "whom", "whose", "where", "when",
+        "why", "whether",
+        "toward", "towards", "among", "amongst", "between",
+        "one", "two", "three", "first", "second", "new", "novel",
+    }
+    t = _normalize_title_for_query(title)
+    t = _remove_punctuation(t)
+    tokens = [w for w in t.split() if len(w) > 2 and w not in _STOPWORDS]
+    # Return unique tokens, up to max_terms, preserving order
+    seen: set[str] = set()
+    result: list[str] = []
+    for tok in tokens:
+        if tok not in seen:
+            seen.add(tok)
+            result.append(tok)
+            if len(result) >= max_terms:
+                break
+    return result
+
+
+def _generate_acronym_aliases(title: str) -> list[str]:
+    """Generate acronym aliases for a title.
+
+    Checks if the normalized title matches any known full name in
+    ``_ACRONYM_MAP`` and returns the alias(es). Also tries to
+    generate an acronym from the first letter of each word.
+    """
+    t = _normalize_title_for_query(title)
+    aliases: list[str] = []
+    for full_name, alias in _ACRONYM_MAP.items():
+        if full_name in t:
+            aliases.append(alias)
+    # Also try word-initial acronym generation for >=3 word titles
+    words = t.split()
+    if len(words) >= 3:
+        acronym = "".join(w[0] for w in words if w and w[0].isalpha())
+        if acronym and acronym not in aliases:
+            aliases.append(acronym)
+    return aliases
+
+
+def _build_query_variants(
+    title: str,
+    authors: list[str] | None = None,
+    year: int | None = None,
+) -> list[str]:
+    """Build up to 4 query variants for multi-strategy search (Re8.2 WP2).
+
+    Strategies:
+      1. Full original title (as-is, for exact-match APIs)
+      2. Subtitle-stripped title (remove after colon/dash)
+      3. Author last name + core terms (if authors available)
+      4. Year + core terms (if year available)
+
+    Returns a list of query strings (1-4 entries). Empty or duplicate
+    entries are filtered out.
+    """
+    queries: list[str] = []
+    # S1: full original title
+    full = title.strip()
+    if full:
+        queries.append(full)
+    # S2: subtitle-stripped
+    stripped = _strip_subtitle(title)
+    if stripped and stripped != _normalize_title_for_query(full):
+        queries.append(stripped)
+    # S3: author + core terms
+    core = _extract_core_terms(title)
+    if authors and core:
+        author_part = " ".join(
+            _author_lastname(a) for a in authors if _author_lastname(a)
+        )
+        if author_part:
+            queries.append(f"{author_part} {' '.join(core)}")
+    # S4: year + core terms
+    if year is not None and core:
+        queries.append(f"{year} {' '.join(core)}")
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    unique: list[str] = []
+    for q in queries:
+        nq = _normalize_title_for_query(q)
+        if nq and nq not in seen:
+            seen.add(nq)
+            unique.append(q)
+    return unique
+
+
+# ── Re8.2 WP2 — Seed Repair 2.0: multi-source parallel fetch ───────────────
+
+
+def _openalex_result_to_candidate(raw: dict[str, Any]) -> dict[str, Any] | None:
+    """Convert an OpenAlex search result to a partial SeedCandidate dict."""
+    title = raw.get("title") or ""
+    if not title:
+        return None
+    authors_list: list[str] = []
+    for a in (raw.get("authorships") or []):
+        if isinstance(a, dict):
+            n = a.get("author", {}).get("display_name") if isinstance(a.get("author"), dict) else None
+            if n:
+                authors_list.append(n)
+    doi = raw.get("doi") or ""
+    if doi and isinstance(doi, str):
+        doi = doi.replace("https://doi.org/", "")
+    arxiv_id = None
+    for loc in (raw.get("locations") or []):
+        if isinstance(loc, dict):
+            lp = loc.get("landing_page_url") or ""
+            if "arxiv.org" in lp:
+                m = _ARXIV_URL_RE.search(lp)
+                if m:
+                    arxiv_id = m.group(1)
+    return {
+        "title": title,
+        "authors": authors_list,
+        "year": raw.get("publication_year"),
+        "doi": doi or None,
+        "arxiv_id": arxiv_id,
+        "canonical_url": raw.get("id") or "",
+        "abstract": raw.get("abstract") or "",
+        "venue": "",
+        "sources": ["openalex"],
+    }
+
+
+def _arxiv_result_to_candidate(raw: dict[str, Any]) -> dict[str, Any] | None:
+    """Convert an arXiv search result to a partial SeedCandidate dict."""
+    title = raw.get("title") or ""
+    if not title:
+        return None
+    return {
+        "title": title,
+        "authors": list(raw.get("authors") or []),
+        "year": raw.get("year"),
+        "doi": raw.get("doi"),
+        "arxiv_id": raw.get("arxiv_id"),
+        "canonical_url": raw.get("url") or "",
+        "abstract": raw.get("abstract") or "",
+        "venue": "",
+        "sources": ["arxiv"],
+    }
+
+
+def _source_result_to_candidate(source: str, raw: dict[str, Any]) -> dict[str, Any] | None:
+    """Dispatch source-specific normalisation to a partial SeedCandidate dict.
+
+    ``raw`` is a single hit dict from any supported source. Returns None
+    when the hit is unusable (empty title).
+    """
+    if source == "openalex":
+        return _openalex_result_to_candidate(raw)
+    if source == "arxiv":
+        return _arxiv_result_to_candidate(raw)
+    # Crossref and Semantic Scholar share the same normalisation path
+    title = raw.get("title") or ""
+    if not title:
+        return None
+    return {
+        "title": title,
+        "authors": list(raw.get("authors") or []),
+        "year": raw.get("year"),
+        "doi": raw.get("doi"),
+        "arxiv_id": raw.get("arxiv_id"),
+        "canonical_url": raw.get("url") or raw.get("canonical_url") or "",
+        "abstract": raw.get("abstract") or "",
+        "venue": raw.get("venue") or "",
+        "sources": [source],
+    }
+
+
+def _deduplicate_candidates(
+    candidates: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Deduplicate candidates by DOI (preferred) then by normalised title.
+
+    When two candidates share a DOI, the one with more sources wins
+    (sources merged). When two candidates share a title (after
+    normalisation) but no DOI, they are kept as separate entries but
+    tagged with a conflict marker.
+    """
+    doi_map: dict[str, dict[str, Any]] = {}
+    title_clusters: list[list[dict[str, Any]]] = []
+    title_index: dict[str, int] = {}
+
+    for c in candidates:
+        doi = (c.get("doi") or "").strip().lower()
+        if doi:
+            if doi in doi_map:
+                existing = doi_map[doi]
+                existing_sources = set(existing.get("sources") or [])
+                new_sources = set(c.get("sources") or [])
+                existing["sources"] = sorted(existing_sources | new_sources)
+                # Merge authors from both sources while preserving order
+                existing_authors = list(existing.get("authors") or [])
+                new_authors = list(c.get("authors") or [])
+                seen_authors: set[str] = set(a.lower().strip() for a in existing_authors)
+                merged_authors = list(existing_authors)
+                for a in new_authors:
+                    key = a.lower().strip()
+                    if key and key not in seen_authors:
+                        seen_authors.add(key)
+                        merged_authors.append(a)
+                existing["authors"] = merged_authors
+                # Fill gaps: prefer existing values, fill from new
+                for k in ("title", "year", "arxiv_id", "canonical_url", "abstract"):
+                    if not existing.get(k) and c.get(k):
+                        existing[k] = c[k]
+            else:
+                doi_map[doi] = dict(c)
+        else:
+            # No DOI: cluster by normalised title
+            import re as _re2
+            nt = _re2.sub(r"[^a-z0-9]+", " ", (c.get("title") or "").lower()).strip()
+            if nt in title_index:
+                title_clusters[title_index[nt]].append(c)
+            else:
+                title_index[nt] = len(title_clusters)
+                title_clusters.append([c])
+
+    result: list[dict[str, Any]] = list(doi_map.values())
+    for cluster in title_clusters:
+        if len(cluster) == 1:
+            result.append(cluster[0])
+        else:
+            # Multiple candidates with same normalised title but no DOI
+            # → keep all with conflict marker
+            for c in cluster:
+                c["conflict"] = True
+                c.setdefault("sources", [])
+                result.append(c)
+
+    return result
+
+
+def _normalize_candidate_title(title: str) -> str:
+    """Fully normalize a candidate title for comparison (Re8.2 WP2).
+
+    Includes: Unicode NFC, lowercase, punctuation removal, whitespace
+    collapse. Used as the comparison key for scoring.
+    """
+    t = unicodedata.normalize("NFC", title)
+    t = t.lower()
+    import re as _re2
+    t = _re2.sub(r"[^\w\s]", "", t)
+    t = _re2.sub(r"\s+", " ", t).strip()
+    return t
+
+
+def _compute_structured_scores(
+    input_title: str,
+    input_authors: list[str],
+    input_year: int | None,
+    candidate: dict[str, Any],
+) -> dict[str, float]:
+    """Compute structured per-component scores for a candidate (Re8.2 WP2).
+
+    Scoring formula (Plan A):
+      total = 0.35*title + 0.25*author + 0.15*year + 0.15*abstract + 0.10*identifier
+
+    Each component score is in [0.0, 1.0].
+
+    Plan B conservative logic (caller applies via ``_apply_threshold``):
+      (title >= 0.88 AND author >= 0.70) OR identifier == 1.0
+
+    Returns a dict with keys: title_score, author_score, year_score,
+    abstract_score, identifier_score.
+    """
+    # ── Title score ────────────────────────────────────────────────────
+    cand_title = candidate.get("title") or ""
+    if input_title and cand_title:
+        title_score = _title_similarity(input_title, cand_title)
+    else:
+        title_score = 0.0
+
+    # ── Author score (Jaccard on normalised last names) ────────────────
+    user_lastnames = {_author_lastname(a) for a in input_authors if a}
+    user_lastnames.discard("")
+    cand_lastnames = {_author_lastname(a) for a in (candidate.get("authors") or []) if a}
+    cand_lastnames.discard("")
+    if user_lastnames and cand_lastnames:
+        intersection = user_lastnames & cand_lastnames
+        author_score = len(intersection) / len(user_lastnames | cand_lastnames)
+    elif not user_lastnames and not cand_lastnames:
+        author_score = 0.5  # neutral when both absent
+    else:
+        author_score = 0.0  # one side has authors, other doesn't
+
+    # ── Year score ─────────────────────────────────────────────────────
+    cand_year = candidate.get("year")
+    if input_year is not None and cand_year is not None:
+        try:
+            delta = abs(int(input_year) - int(cand_year))
+            if delta <= 1:
+                year_score = 1.0
+            elif delta <= 3:
+                year_score = 0.7
+            elif delta <= 5:
+                year_score = 0.4
+            else:
+                year_score = 0.1
+        except (TypeError, ValueError):
+            year_score = 0.5
+    elif input_year is None and cand_year is None:
+        year_score = 0.5  # neutral when both absent
+    elif input_year is not None and cand_year is None:
+        year_score = 0.3  # candidate has no year — penalty
+    else:
+        year_score = 0.3  # input has no year — penalty
+
+    # ── Abstract score ─────────────────────────────────────────────────
+    input_abstract = ""  # not passed to _fetch_by_title currently
+    cand_abstract = candidate.get("abstract") or ""
+    if input_abstract and cand_abstract:
+        ia_tokens = set(_normalize_candidate_title(input_abstract).split())
+        ca_tokens = set(_normalize_candidate_title(cand_abstract).split())
+        if ia_tokens and ca_tokens:
+            abstract_score = len(ia_tokens & ca_tokens) / len(ia_tokens | ca_tokens)
+        else:
+            abstract_score = 0.0
+    elif cand_abstract:
+        # Candidate has abstract but input doesn't → partial credit
+        abstract_score = 0.3
+    else:
+        abstract_score = 0.0
+
+    # ── Identifier score ───────────────────────────────────────────────
+    doi = (candidate.get("doi") or "").strip()
+    arxiv = (candidate.get("arxiv_id") or "").strip()
+    if doi and _DOI_RE.search(doi):
+        identifier_score = 1.0
+    elif arxiv:
+        identifier_score = 0.8
+    else:
+        identifier_score = 0.0
+
+    return {
+        "title_score": round(title_score, 4),
+        "author_score": round(author_score, 4),
+        "year_score": round(year_score, 4),
+        "abstract_score": round(abstract_score, 4),
+        "identifier_score": round(identifier_score, 4),
+    }
+
+
+def _apply_threshold(
+    scores: dict[str, float],
+    *,
+    use_plan_b: bool = False,
+) -> tuple[str, float]:
+    """Apply structured scoring threshold and return (confidence, total_score).
+
+    Plan A (default):
+      total = 0.35*title + 0.25*author + 0.15*year + 0.15*abstract + 0.10*identifier
+      >= 0.85  → "verified"
+      0.70-0.85 → "ambiguous"
+      < 0.70   → "not_found"
+
+    Plan B (conservative):
+      (title >= 0.88 AND author >= 0.70) OR identifier == 1.0 → "verified"
+      Otherwise fall back to Plan A thresholds.
+    """
+    from apps.api.app.services.agents.graph.re80_schema import (
+        SEED_AMBIGUOUS_LOWER,
+        SEED_VERIFIED_THRESHOLD,
+    )
+
+    total = (
+        0.35 * scores["title_score"]
+        + 0.25 * scores["author_score"]
+        + 0.15 * scores["year_score"]
+        + 0.15 * scores["abstract_score"]
+        + 0.10 * scores["identifier_score"]
+    )
+    total = round(total, 4)
+
+    if use_plan_b:
+        title_ok = scores["title_score"] >= 0.88
+        author_ok = scores["author_score"] >= 0.70
+        identifier_ok = scores["identifier_score"] >= 1.0
+        if (title_ok and author_ok) or identifier_ok:
+            confidence = "verified"
+        elif total >= SEED_VERIFIED_THRESHOLD:
+            # Override to ambiguous if Plan B would not verify
+            confidence = "ambiguous"
+        elif total >= SEED_AMBIGUOUS_LOWER:
+            confidence = "ambiguous"
+        else:
+            confidence = "not_found"
+    else:
+        if total >= SEED_VERIFIED_THRESHOLD:
+            confidence = "verified"
+        elif total >= SEED_AMBIGUOUS_LOWER:
+            confidence = "ambiguous"
+        else:
+            confidence = "not_found"
+
+    return confidence, total
+
+
+def _resolve_confidence_to_string(confidence: str) -> str:
+    """Map threshold confidence to a human-readable level string.
+
+    "verified" → "high", "ambiguous" → "medium", "not_found" → "low".
+    """
+    return {"verified": "high", "ambiguous": "medium", "not_found": "low"}.get(
+        confidence, "low"
+    )
+
+
+# ── Re8.2 WP2 — Seed Repair 2.0: LLM disambiguation ────────────────────────
+
+
+def _should_llm_disambiguate(candidates: list[dict[str, Any]]) -> bool:
+    """Determine whether LLM disambiguation is warranted (Re8.2 WP2).
+
+    Conditions (ALL must hold):
+      1. 2 <= n_candidates <= 5
+      2. Top-1 and Top-2 total_score gap < 0.08
+      3. At least one candidate has confidence >= "ambiguous" (total >= 0.70)
+    """
+    if len(candidates) < 2 or len(candidates) > 5:
+        return False
+    scored = sorted(candidates, key=lambda c: c.get("total_score", 0.0), reverse=True)
+    gap = scored[0].get("total_score", 0.0) - scored[1].get("total_score", 0.0)
+    if gap >= 0.08:
+        return False
+    has_min = any(c.get("total_score", 0.0) >= 0.70 for c in scored)
+    return has_min
+
+
+async def _llm_disambiguate(
+    input_title: str,
+    input_authors: list[str],
+    input_year: int | None,
+    candidates: list[dict[str, Any]],
+    *,
+    profile: str = "premium_review",
+) -> dict[str, Any]:
+    """LLM disambiguation for close-score candidates (Re8.2 WP2).
+
+    The LLM receives the original user input (title, authors, year) plus
+    the list of candidates with their structured scores. It can only:
+      - Select one existing candidate by index (0-based)
+      - Reject all (``reject_all``)
+
+    The LLM MUST NOT retrieve, create, or hallucinate new candidates.
+
+    Returns the selected candidate dict (with ``_disambiguation`` marker)
+    or None when all are rejected.
+    """
+    import json as _json
+
+    prompt_lines = [
+        "[DISAMBIGUATION] You are a seed paper disambiguator.",
+        "",
+        "User input:",
+        f"  Title:   {input_title}",
+        f"  Authors: {', '.join(input_authors) if input_authors else '(none)'}",
+        f"  Year:    {input_year if input_year is not None else '(unknown)'}",
+        "",
+        "Candidates (scored by structural similarity):",
+    ]
+    for i, c in enumerate(candidates):
+        prompt_lines.append(f"  [{i}] title={c.get('title','')}")
+        prompt_lines.append(f"      authors={', '.join(c.get('authors') or [])}")
+        prompt_lines.append(f"      year={c.get('year')}, doi={c.get('doi') or 'N/A'}")
+        prompt_lines.append(f"      total_score={c.get('total_score', 0.0)}")
+        prompt_lines.append(f"      confidence={c.get('confidence', 'not_found')}")
+        prompt_lines.append("")
+
+    prompt_lines.append(
+        "Your task: select the candidate that matches the user input best,"
+    )
+    prompt_lines.append("or reject all if none match.")
+    prompt_lines.append("")
+    prompt_lines.append(
+        "IMPORTANT: You may ONLY choose from the candidates listed above."
+    )
+    prompt_lines.append(
+        "Do NOT retrieve, create, or hallucinate new candidates."
+    )
+    prompt_lines.append("")
+    prompt_lines.append("Output JSON:")
+    prompt_lines.append(
+        '{"selected_index": <int|null>, "confidence": "high|medium|low", '
+        '"reason": "<str>", "reject_all": <bool>}'
+    )
+    prompt_lines.append(
+        "  selected_index=0 → candidates[0]; selected_index=null or "
+        "reject_all=true → reject all."
+    )
+    prompt_lines.append(
+        "  confidence=high/medium/low expresses your certainty. "
+        "Only high confidence should lead to verification."
+    )
+    prompt_lines.append("")
+    prompt_lines.append(
+        "[OUTPUT CONTRACT] Reply ONLY with the JSON object, no prose, no fences."
+    )
+
+    prompt = "\n".join(prompt_lines)
+
+    try:
+        from apps.api.app.services.agents.graph.validators.llm_output_validator import (
+            call_json_with_validation,
+        )
+        raw = call_json_with_validation(
+            prompt,
+            system="You are a seed paper disambiguator. Select the best matching candidate or reject all.",
+            node_name="seed_disambiguator",
+            profile=profile,
+            contract_id="seed-disambiguation/v1",
+            max_tokens=400,
+            timeout=20.0,
+            fallback=None,
+        )
+    except Exception as exc:
+        logger.warning("seed disambiguation LLM call failed: %s — reject_all", exc)
+        return None
+
+    if not isinstance(raw, dict):
+        return None
+
+    # SOP format: reject_all / confidence / selected_index / reason
+    # Backward compat: selection / rationale
+    if raw.get("reject_all") is True:
+        return None
+
+    llm_confidence = str(raw.get("confidence", "")).strip().lower()
+    if llm_confidence == "low":
+        return None
+
+    selected_index = raw.get("selected_index")
+    if selected_index is None or selected_index == "null":
+        # Backward-compatible fallback to legacy "selection" field
+        selected_index = raw.get("selection")
+    if selected_index is None or selected_index == "null":
+        return None
+
+    try:
+        idx = int(selected_index)
+    except (TypeError, ValueError):
+        idx = -1
+
+    if idx < 0 or idx >= len(candidates):
+        return None
+
+    selected = dict(candidates[idx])
+    selected["_disambiguation"] = {
+        "selected_index": idx,
+        "reason": str(raw.get("reason", raw.get("rationale", ""))),
+        "llm_confidence": llm_confidence or "unspecified",
+        "n_candidates": len(candidates),
+    }
+    return selected
+
+
+# ── Re8.2 WP2 — Seed Repair 2.0: orchestrator ──────────────────────────────
+
+
+async def _fetch_seed_candidates(
+    title: str,
+    authors: list[str] | None = None,
+    year: int | None = None,
+    *,
+    profile: str = "premium_review",
+) -> dict[str, Any] | None:
+    """Multi-source parallel seed search with structured scoring (Re8.2 WP2).
+
+    Builds up to 4 query variants (full title, stripped, author+core,
+    year+core) and dispatches them to Crossref, Semantic Scholar,
+    OpenAlex, and arXiv in parallel via ``asyncio.gather``.
+
+    Each source result is normalised to a partial SeedCandidate dict,
+    deduplicated, and scored via ``_compute_structured_scores`` with
+    Plan A formula and Plan B conservative check.
+
+    When the top candidates are close (gap < 0.08, 2-5 candidates,
+    at least one >= 0.70), an optional LLM disambiguation step is
+    triggered to select the best match or reject all.
+
+    Returns the best candidate decorated with scores, or None when
+    no candidate meets the minimum threshold.
+
+    All fields on the returned dict are additive; existing callers
+    that expect the ``_fetch_by_title`` shape still work.
+    """
+    from apps.api.app.services.retrieval.adapters.crossref_search import crossref_search
+    from apps.api.app.services.retrieval.adapters.semantic_scholar_search import (
+        semantic_scholar_search,
+    )
+    from apps.api.app.services.retrieval.adapters.openalex_search import openalex_search
+    from apps.api.app.services.retrieval.adapters.arxiv_search import arxiv_search
+
+    if not title or not title.strip():
+        return None
+
+    input_authors = list(authors or [])
+    input_year = year
+
+    # ── 1. Build query variants ────────────────────────────────────────
+    queries = _build_query_variants(title, authors=input_authors, year=input_year)
+    if not queries:
+        return None
+
+    # ── 2. Parallel search across all sources ──────────────────────────
+    crossref_tasks = [crossref_search([q], top_k=5) for q in queries]
+    s2_tasks = [semantic_scholar_search([q], top_k=5) for q in queries]
+    oa_tasks = [openalex_search([q], top_k=5) for q in queries]
+    arxiv_tasks = [arxiv_search([q], top_k=5) for q in queries]
+
+    all_raw: list[list[Any]] = [[], [], [], []]  # crossref, s2, oa, arxiv
+
+    try:
+        results = await asyncio.gather(
+            asyncio.gather(*crossref_tasks, return_exceptions=True),
+            asyncio.gather(*s2_tasks, return_exceptions=True),
+            asyncio.gather(*oa_tasks, return_exceptions=True),
+            asyncio.gather(*arxiv_tasks, return_exceptions=True),
+            return_exceptions=True,
+        )
+    except Exception as exc:
+        logger.debug("seed_candidates gather failed for %s: %s", title, exc)
+        return None
+
+    # Unpack results (nested gather)
+    if not isinstance(results, (list, tuple)) or len(results) != 4:
+        return None
+
+    for source_idx, source_results in enumerate(results):
+        if isinstance(source_results, Exception):
+            logger.debug("seed_candidates source %d failed: %s", source_idx, source_results)
+            continue
+        for query_results in source_results:
+            if isinstance(query_results, Exception):
+                continue
+            if isinstance(query_results, list):
+                all_raw[source_idx].extend(query_results)
+
+    source_names = ["crossref", "semantic_scholar", "openalex", "arxiv"]
+
+    # ── 3. Normalize results to partial SeedCandidate dicts ────────────
+    raw_candidates: list[dict[str, Any]] = []
+    for source_idx, items in enumerate(all_raw):
+        source = source_names[source_idx]
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            cand = _source_result_to_candidate(source, item)
+            if cand is not None:
+                raw_candidates.append(cand)
+
+    if not raw_candidates:
+        return None
+
+    # ── 4. Deduplicate ─────────────────────────────────────────────────
+    candidates = _deduplicate_candidates(raw_candidates)
+
+    # ── 5. Compute structured scores for each candidate ────────────────
+    for c in candidates:
+        scores = _compute_structured_scores(title, input_authors, input_year, c)
+        c.update(scores)
+        confidence, total = _apply_threshold(scores, use_plan_b=False)
+        c["confidence"] = confidence
+        c["total_score"] = total
+        # Also compute Plan B for auditing
+        plan_b_conf, _ = _apply_threshold(scores, use_plan_b=True)
+        c["confidence_plan_b"] = plan_b_conf
+
+    # ── 6. Sort by total_score descending ──────────────────────────────
+    candidates.sort(key=lambda c: c.get("total_score", 0.0), reverse=True)
+
+    # ── 7. LLM disambiguation (when conditions warrant) ────────────────
+    if _should_llm_disambiguate(candidates):
+        llm_selected = await _llm_disambiguate(
+            title, input_authors, input_year, candidates, profile=profile,
+        )
+        if llm_selected is not None:
+            # LLM selected a candidate → use it, but verify confidence
+            if llm_selected.get("confidence") != "verified":
+                # LLM selection but low confidence → ambiguous
+                llm_selected["confidence"] = "ambiguous"
+                llm_selected["_llm_override"] = "low_confidence_downgrade"
+            # Promote the original candidate object to the top so that
+            # list.remove() does not fail because of added metadata.
+            idx = llm_selected.get("_disambiguation", {}).get("selected_index")
+            if isinstance(idx, int) and 0 <= idx < len(candidates):
+                selected = candidates.pop(idx)
+                selected["confidence"] = llm_selected["confidence"]
+                selected["_disambiguation"] = llm_selected["_disambiguation"]
+                if "_llm_override" in llm_selected:
+                    selected["_llm_override"] = llm_selected["_llm_override"]
+                candidates.insert(0, selected)
+            else:
+                candidates.insert(0, llm_selected)
+        # else: LLM rejected all → keep current ranking, no verified
+
+    # ── 8. Return best candidate if score >= ambiguous threshold ───────
+    best = candidates[0]
+    if best.get("total_score", 0.0) < 0.70 and best.get("confidence") == "not_found":
+        return None
+
+    # Preserve all candidates for downstream inspection
+    best["all_candidates"] = candidates
+    return best
+
+
 # ── Per-seed resolution ─────────────────────────────────────────────────────
 
 async def _resolve_one_seed(
@@ -797,7 +1620,11 @@ async def _resolve_one_seed(
         return card
 
     # Online but no stable identifier — try title search (Re8.0 second batch:
-    # previously this short-circuited to ambiguous, leaving Seed Repair空转)
+    # previously this short-circuited to ambiguous, leaving Seed Repair空转).
+    # Re8.2 WP2: calls _fetch_by_title first (backward compat), then enhances
+    # with _fetch_seed_candidates when the old path returns nothing. This
+    # ordering preserves existing test mocking — tests that mock _fetch_by_title
+    # continue to work without also mocking the 4 new adapters.
     if identifier is None:
         title = (flat.get("title") or "").strip()
         if input_form == "title" and title:
@@ -806,8 +1633,35 @@ async def _resolve_one_seed(
                 list(flat.get("authors") or []),
                 year=flat.get("year"),
             )
+            # Re8.2 WP2: when _fetch_by_title returns nothing, try the
+            # enhanced multi-strategy + structured scoring path.
+            if fetched is None:
+                fetched = await _fetch_seed_candidates(
+                    title,
+                    list(flat.get("authors") or []),
+                    year=flat.get("year"),
+                )
             if fetched is not None:
-                status, hint = _decide_existence(flat, fetched)
+                # Determine existence status. Re8.2 WP2 path sets
+                # ``total_score`` and ``confidence`` in
+                # {"verified", "ambiguous", "not_found"}. The legacy
+                # Re8.1 _fetch_by_title path sets ``confidence`` in
+                # {"high", "medium", "low"} — use _decide_existence
+                # for that path.
+                wp2_total = fetched.get("total_score")
+                if wp2_total is not None:
+                    wp2_confidence = fetched.get("confidence", "ambiguous")
+                    if wp2_confidence == "verified":
+                        status = "verified"
+                        hint = None
+                    elif wp2_confidence == "ambiguous":
+                        status = "ambiguous"
+                        hint = "seed repair: structured score in ambiguous range"
+                    else:
+                        status = "ambiguous"
+                        hint = "seed repair: low confidence match"
+                else:
+                    status, hint = _decide_existence(flat, fetched)
                 card = make_seed_card(
                     seed_id=seed_id,
                     input_form=input_form,
@@ -823,11 +1677,15 @@ async def _resolve_one_seed(
                 )
                 if hint:
                     card["repair_hint"] = hint
-                # Re8.1: propagate confidence + ranking_reasons + conflict
-                # evidence onto the card. These fields are optional and
-                # do not affect schema validation or downstream decisions.
+                # Re8.1: propagate legacy fields
                 for k in ("confidence", "ranking_reasons", "sources",
                           "conflict", "conflict_type", "all_candidates"):
+                    if k in fetched:
+                        card[k] = fetched[k]
+                # Re8.2 WP2: propagate structured score fields
+                for k in ("title_score", "author_score", "year_score",
+                          "abstract_score", "identifier_score", "total_score",
+                          "confidence_plan_b", "_disambiguation", "_llm_override"):
                     if k in fetched:
                         card[k] = fetched[k]
                 return card

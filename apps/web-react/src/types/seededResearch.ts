@@ -44,16 +44,23 @@ export type GateVerdict = 'pass' | 'revise' | 'unresolved';
 export interface GateResult {
   verdict: GateVerdict;
   round_idx: number;
-  generated_by: 'llm' | 'rule' | 'skip';
+  generated_by: 'llm' | 'rule' | 'skip' | 'reuse';
   rationale: string;
   re_search_requests?: string[];
   unresolved_gaps?: string[];
+  /** Re8.2 WP3: Seed Audit Gate 结构化 reason code 与诊断字段 */
+  reason_code?: string;
+  seed_id?: string;
+  candidate_count?: number;
+  top_score?: number;
+  repair_target?: string;
   /** Re8.1 WP5: full round-by-round trajectory for Gate repair cycle display */
   all_rounds?: Array<{
     round_idx: number;
     verdict: GateVerdict;
-    generated_by: 'llm' | 'rule' | 'skip';
+    generated_by: 'llm' | 'rule' | 'skip' | 'reuse';
     rationale: string;
+    reason_code?: string;
   }>;
 }
 

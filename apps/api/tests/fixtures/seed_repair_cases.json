@@ -1,0 +1,385 @@
+{
+  "version": "1.0",
+  "total_cases": 20,
+  "cases": [
+    {
+      "case_id": "sr_exact_01",
+      "category": "exact_title",
+      "description": "经典 ViT 论文精确标题",
+      "input": {
+        "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "An Image is Worth 16x16 Words",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "经典论文, Crossref/arXiv 均能命中"
+    },
+    {
+      "case_id": "sr_exact_02",
+      "category": "exact_title",
+      "description": "BERT 论文精确标题",
+      "input": {
+        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "BERT",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "经典 NLP 预训练论文, Crossref/S2 均能稳定命中"
+    },
+    {
+      "case_id": "sr_exact_03",
+      "category": "exact_title",
+      "description": "ResNet 论文精确标题",
+      "input": {
+        "title": "Deep Residual Learning for Image Recognition",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Deep Residual Learning",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "He et al. CVPR 2016, 多源可命中"
+    },
+    {
+      "case_id": "sr_exact_04",
+      "category": "exact_title",
+      "description": "GPT-3 论文精确标题, 含年份约束",
+      "input": {
+        "title": "Language Models are Few-Shot Learners",
+        "authors": [],
+        "year": 2020,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Few-Shot Learners",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_match_year": 2020,
+        "must_contain_field": "doi"
+      },
+      "notes": "NeurIPS 2020, 年份用于排除 GPT-2/GPT-1 同类"
+    },
+    {
+      "case_id": "sr_exact_05",
+      "category": "exact_title",
+      "description": "YOLOv1 论文精确标题",
+      "input": {
+        "title": "You Only Look Once: Unified, Real-Time Object Detection",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "You Only Look Once",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "YOLO 系列初版, 需注意 YOLOv2/v3 同名扩展"
+    },
+    {
+      "case_id": "sr_exact_06",
+      "category": "exact_title",
+      "description": "Attention Is All You Need 精确标题, 含年份约束",
+      "input": {
+        "title": "Attention is All You Need",
+        "authors": [],
+        "year": 2017,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Attention is All You Need",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_match_year": 2017,
+        "must_contain_field": "doi"
+      },
+      "notes": "Transformer 原始论文, 同名扩展极多, 年份+标题可定位"
+    },
+    {
+      "case_id": "sr_exact_07",
+      "category": "exact_title",
+      "description": "CLIP 论文精确标题",
+      "input": {
+        "title": "Learning Transferable Visual Models From Natural Language Supervision",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Transferable Visual Models",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "OpenAI CLIP, ICML 2021"
+    },
+    {
+      "case_id": "sr_exact_08",
+      "category": "exact_title",
+      "description": "DDPM 论文精确标题",
+      "input": {
+        "title": "Denoising Diffusion Probabilistic Models",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Denoising Diffusion Probabilistic Models",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "Ho et al. NeurIPS 2020, 扩散模型奠基论文"
+    },
+    {
+      "case_id": "sr_exact_09",
+      "category": "exact_title",
+      "description": "SimCLR 论文精确标题",
+      "input": {
+        "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Contrastive Learning",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "Chen et al. ICML 2020, 对比学习代表"
+    },
+    {
+      "case_id": "sr_exact_10",
+      "category": "exact_title",
+      "description": "MAE 论文精确标题",
+      "input": {
+        "title": "Masked Autoencoders Are Scalable Vision Learners",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Masked Autoencoders",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "He et al. CVPR 2022, 掩码自编码视觉"
+    },
+    {
+      "case_id": "sr_typo_01",
+      "category": "typo_light",
+      "description": "ViT 标题拼写错误 (Recogntion 少 i)",
+      "input": {
+        "title": "An Image is Worth 16x16 Words: Transformers for Image Recogntion at Scale",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "An Image is Worth 16x16 Words",
+        "top_n_hit": 3,
+        "min_confidence": "medium"
+      },
+      "notes": "Recogntion 缺 i, 期望模糊匹配在 Top-3 内命中原论文"
+    },
+    {
+      "case_id": "sr_typo_02",
+      "category": "typo_light",
+      "description": "BERT 标题拼写错误 (Understading)",
+      "input": {
+        "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understading",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "BERT",
+        "top_n_hit": 3,
+        "min_confidence": "medium"
+      },
+      "notes": "Understading 拼写错误, 期望 Top-3 内命中"
+    },
+    {
+      "case_id": "sr_typo_03",
+      "category": "typo_light",
+      "description": "ResNet 标题拼写错误 (Recogntion)",
+      "input": {
+        "title": "Deep Residual Learning for Image Recogntion",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Deep Residual Learning",
+        "top_n_hit": 3,
+        "min_confidence": "medium"
+      },
+      "notes": "Recogntion 缺 i, 期望 Top-3 内命中"
+    },
+    {
+      "case_id": "sr_disamb_01",
+      "category": "disambiguation",
+      "description": "GAN 同名论文, 按作者+年份消歧到原始 GAN",
+      "input": {
+        "title": "Generative Adversarial Networks",
+        "authors": ["Goodfellow"],
+        "year": 2014,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Generative Adversarial Networks",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_match_authors": ["Goodfellow"],
+        "must_match_year": 2014,
+        "must_contain_field": "doi"
+      },
+      "notes": "存在大量同名/扩展论文 (GAN 变体), 必须按作者消歧到 Goodfellow 原始 GAN 论文"
+    },
+    {
+      "case_id": "sr_disamb_02",
+      "category": "disambiguation",
+      "description": "Transformer 同名, 作者错误但年份正确",
+      "input": {
+        "title": "Attention is All You Need",
+        "authors": ["Smith"],
+        "year": 2017,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "ambiguous",
+        "allowed_existence_status": ["ambiguous", "verified"],
+        "resolved_title_contains": "Attention is All You Need",
+        "min_confidence": "medium"
+      },
+      "notes": "作者错误但年份正确, 期望 ambiguous 或低置信 verified, 体现冲突证据保留"
+    },
+    {
+      "case_id": "sr_disamb_03",
+      "category": "disambiguation",
+      "description": "ImageNet Classification 同名, 按作者+年份消歧到 AlexNet",
+      "input": {
+        "title": "ImageNet Classification with Deep Convolutional Neural Networks",
+        "authors": ["Krizhevsky"],
+        "year": 2012,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "ImageNet Classification",
+        "top_n_hit": 1,
+        "min_confidence": "high",
+        "must_match_authors": ["Krizhevsky"],
+        "must_match_year": 2012,
+        "must_contain_field": "doi"
+      },
+      "notes": "AlexNet 论文 (Krizhevsky 2012), 必须按作者消歧到原始论文, 排除综述/扩展"
+    },
+    {
+      "case_id": "sr_noauth_01",
+      "category": "no_author",
+      "description": "仅 DOI 输入 (CoAtNet), 最稳路径",
+      "input": {
+        "title": "",
+        "authors": [],
+        "year": null,
+        "doi": "10.1145/3442381"
+      },
+      "expected": {
+        "existence_status": "verified",
+        "allowed_existence_status": ["verified", "ambiguous"],
+        "min_confidence": "high",
+        "must_contain_field": "doi"
+      },
+      "notes": "CoAtNet (Dai et al. 2021), DOI 输入应直接命中, 无需标题相似度"
+    },
+    {
+      "case_id": "sr_noauth_02",
+      "category": "no_author",
+      "description": "标题+年份无作者 (GoogLeNet)",
+      "input": {
+        "title": "Going Deeper with Convolutions",
+        "authors": [],
+        "year": 2014,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "verified",
+        "resolved_title_contains": "Going Deeper with Convolutions",
+        "top_n_hit": 1,
+        "min_confidence": "medium",
+        "must_match_year": 2014
+      },
+      "notes": "GoogLeNet (Szegedy et al. 2014), 无作者但标题+年份足够定位"
+    },
+    {
+      "case_id": "sr_notfound_01",
+      "category": "not_found",
+      "description": "完全虚构标题",
+      "input": {
+        "title": "Quantum-Entangled Transformer Networks for Time-Travel-Based Image Generation",
+        "authors": [],
+        "year": null,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "not_found",
+        "allowed_existence_status": ["not_found", "ambiguous"],
+        "min_confidence": "low",
+        "must_not_be_verified": true
+      },
+      "notes": "虚构论文, 任何来源都不应命中, 不得返回 verified"
+    },
+    {
+      "case_id": "sr_notfound_02",
+      "category": "not_found",
+      "description": "真实词汇组合但不存在的论文, 防过度匹配",
+      "input": {
+        "title": "Federated Reinforcement Learning for Distributed Diabetic Retinopathy Grading with Vision Transformers",
+        "authors": ["NonexistentAuthor"],
+        "year": 2025,
+        "doi": null
+      },
+      "expected": {
+        "existence_status": "not_found",
+        "allowed_existence_status": ["not_found", "ambiguous"],
+        "min_confidence": "low",
+        "must_not_be_verified": true
+      },
+      "notes": "看似真实但实际不存在的论文组合, 防止过度匹配导致误 verified"
+    }
+  ]
+}
