@@ -1,0 +1,70 @@
+{
+  "phase": "Re8.2",
+  "generated_at": "2026-07-14T23:50:00+08:00",
+  "scope": [
+    "apps/api/app/services/agents/graph/nodes/seed_resolver.py",
+    "apps/api/app/services/agents/graph/nodes/reflection_gates.py",
+    "apps/api/app/services/agents/graph/re80_schema.py",
+    "apps/api/app/services/agents/graph/research_graph.py",
+    "apps/api/app/services/agents/graph/nodes/content.py",
+    "apps/api/app/services/agents/graph/state.py",
+    "apps/api/scripts/re80_seeded_demo.py",
+    "apps/web-react/src/pages/SeededResearch.tsx",
+    "apps/web-react/src/types/seededResearch.ts",
+    "apps/web-react/e2e/test_re82_seeded_e2e.py"
+  ],
+  "test_suites": [
+    {
+      "name": "Re8 unit tests",
+      "command": "pytest apps/api/tests -m re8 -q",
+      "result": "567 passed",
+      "status": "pass"
+    },
+    {
+      "name": "Seed Repair 2.0 tests",
+      "command": "pytest apps/api/tests/test_re8_2_seed_repair.py -q",
+      "result": "25 passed",
+      "status": "pass"
+    },
+    {
+      "name": "Reflection Gates tests",
+      "command": "pytest apps/api/tests/test_re8_reflection_gates.py -q",
+      "result": "all passed",
+      "status": "pass"
+    },
+    {
+      "name": "WP5 real E2E",
+      "command": "pytest apps/web-react/e2e/test_re82_seeded_e2e.py -m e2e_real -v",
+      "result": "1 passed",
+      "status": "pass"
+    }
+  ],
+  "regression_items": [
+    {
+      "item": "seed_resolver author merging",
+      "before": "multi-source candidates with same DOI kept separate author lists",
+      "after": "deduplication merges unique authors while preserving order",
+      "test": "test_multi_source_doi_merge"
+    },
+    {
+      "item": "LLM disambiguation candidate promotion",
+      "before": "ValueError when selected candidate not found in list",
+      "after": "promotes selected candidate by index directly",
+      "test": "test_llm_disambiguation_promotion"
+    },
+    {
+      "item": "Gate re-entry prevention",
+      "before": "tailor_gate re-ran on unchanged input, hit cap",
+      "after": "input fingerprint reuse + per-cycle round counting",
+      "test": "TestGateInputFingerprint"
+    },
+    {
+      "item": "Seed Audit structured diagnostics",
+      "before": "gate output only had verdict/rationale",
+      "after": "reason_code, seed_id, candidate_count, top_score, repair_target added",
+      "test": "test_rule_seed_audit_gate_outputs_reason_code"
+    }
+  ],
+  "status": "pass",
+  "notes": "All automated tests in scope passed. WP4 business acceptance (2/3 non-BLOCKED) is not a regression metric and is tracked separately in metrics.json."
+}

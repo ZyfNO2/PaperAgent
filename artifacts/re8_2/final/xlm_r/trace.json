@@ -1,0 +1,2419 @@
+[
+  {
+    "node": "intake",
+    "started_at": "2026-07-14T14:37:20Z",
+    "input_summary": {
+      "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R"
+    },
+    "output_summary": {
+      "ok": true
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:37:20Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "case_id",
+      "provider_profile",
+      "trace_events",
+      "errors",
+      "candidate_seeds",
+      "entry_mode",
+      "run_mode",
+      "network_policy",
+      "reasoning_policy"
+    ]
+  },
+  {
+    "node": "seed_resolver",
+    "started_at": "2026-07-14T14:37:28Z",
+    "input_summary": {
+      "entry_mode": "seeded_research",
+      "n_candidates": 2,
+      "network_policy": "online"
+    },
+    "output_summary": {
+      "n_resolved": 2,
+      "n_verified": 2,
+      "n_ambiguous": 0,
+      "n_not_found": 0,
+      "n_promoted_to_evidence": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "crossref+arxiv",
+        "mode": "online"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:37:28Z",
+    "elapsed_s": 7.228,
+    "state_keys": [
+      "seed_cards",
+      "verified_papers",
+      "seed_papers",
+      "reasoning_ledger",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "reflection_gate::seed_audit_gate",
+    "started_at": "2026-07-14T14:37:38Z",
+    "input_summary": {
+      "round_idx": 0,
+      "activated": true,
+      "entry_mode": "seeded_research"
+    },
+    "output_summary": {
+      "verdict": "pass",
+      "generated_by": "fallback",
+      "re_search_requests": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "fallback",
+    "ended_at": "2026-07-14T14:37:38Z",
+    "elapsed_s": 10.824,
+    "state_keys": [
+      "reflection_gate_results",
+      "reasoning_ledger",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "fulltext_acquisition",
+    "started_at": "2026-07-14T14:37:43Z",
+    "input_summary": {
+      "entry_mode": "seeded_research",
+      "n_seed_cards": 2,
+      "n_target": 2,
+      "network_policy": "online"
+    },
+    "output_summary": {
+      "n_downloaded": 2,
+      "n_failed": 0,
+      "n_skipped": 0,
+      "n_gaps_opened": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "unpaywall",
+        "endpoint": "api.unpaywall.org"
+      },
+      {
+        "tool": "arxiv_pdf",
+        "endpoint": "arxiv.org/pdf"
+      },
+      {
+        "tool": "httpx.stream",
+        "timeout": 30.0
+      }
+    ],
+    "errors": [],
+    "provider": "httpx",
+    "ended_at": "2026-07-14T14:37:43Z",
+    "elapsed_s": 4.357,
+    "state_keys": [
+      "seed_cards",
+      "evidence_gaps",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "paper_understanding",
+    "started_at": "2026-07-14T14:38:08Z",
+    "input_summary": {
+      "entry_mode": "seeded_research",
+      "n_seed_cards": 2,
+      "n_pdf_cards": 2
+    },
+    "output_summary": {
+      "n_parsed": 2,
+      "n_failed": 0,
+      "n_gaps_generated": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "pdf.extract_sections",
+        "engine": "pymupdf"
+      },
+      {
+        "tool": "pdf.extract_tables",
+        "engine": "pdfplumber"
+      },
+      {
+        "tool": "llm_router.call_json",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "llm_router",
+    "ended_at": "2026-07-14T14:38:08Z",
+    "elapsed_s": 25.011,
+    "state_keys": [
+      "seed_cards",
+      "evidence_gaps",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "method_family_explorer",
+    "started_at": "2026-07-14T14:38:22Z",
+    "input_summary": {
+      "entry_mode": "seeded_research",
+      "n_seed_cards": 2,
+      "primary_seed_id": "S1",
+      "inferred_task_type": "forecasting"
+    },
+    "output_summary": {
+      "n_families": 4,
+      "n_direct_competitor": 1,
+      "n_alternative_formulation": 2,
+      "n_transferable_mechanism": 1,
+      "n_incompatible": 0,
+      "n_search_lanes": 5,
+      "n_errors": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "llm_router.call_json",
+        "profile": "fast_json",
+        "purpose": "method_family_derivation"
+      }
+    ],
+    "errors": [],
+    "provider": "llm_router",
+    "ended_at": "2026-07-14T14:38:22Z",
+    "elapsed_s": 14.727,
+    "state_keys": [
+      "method_families",
+      "search_lanes",
+      "evidence_gaps",
+      "reasoning_ledger",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "topic_parser",
+    "started_at": "2026-07-14T14:38:31Z",
+    "input_summary": {
+      "topic_len": 77
+    },
+    "output_summary": {
+      "n_method": 8,
+      "n_object": 0,
+      "domain": "nlp_llm"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_parser.llm",
+        "attempts": 1,
+        "mode": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:38:31Z",
+    "elapsed_s": 8.689,
+    "state_keys": [
+      "topic_atoms",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_planner",
+    "started_at": "2026-07-14T14:38:31Z",
+    "input_summary": {
+      "topic_len": 77,
+      "mode": "seeded_gap_bound",
+      "entry_mode": "seeded_research",
+      "n_lanes": 5
+    },
+    "output_summary": {
+      "n_queries": 12,
+      "rounds": [
+        "broad",
+        "focused"
+      ],
+      "gap_bound": true,
+      "n_new_gaps": 5
+    },
+    "tool_calls": [
+      {
+        "tool": "search_planner.seeded_gap_bound"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:38:31Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "search_plan",
+      "search_lanes",
+      "evidence_gaps",
+      "trace_events",
+      "errors",
+      "provider_profile"
+    ]
+  },
+  {
+    "node": "search_agent",
+    "started_at": "2026-07-14T14:38:31Z",
+    "input_summary": {
+      "topic_len": 77,
+      "has_atoms": true,
+      "has_plan": true,
+      "provider": "react_search"
+    },
+    "output_summary": {
+      "n_paper_candidates": 47,
+      "n_repo_candidates": 4,
+      "n_steps": 13,
+      "n_tool_calls": 12,
+      "raw_tools": [
+        "openalex",
+        "crossref",
+        "arxiv",
+        "semantic_scholar",
+        "github",
+        "huggingface"
+      ],
+      "per_adapter": {
+        "arxiv": 36,
+        "openalex": 0,
+        "crossref": 12,
+        "github": 4,
+        "semantic_scholar": 0,
+        "huggingface": 0
+      },
+      "failed_adapters": [],
+      "skipped_adapters": [],
+      "repair_rounds": 0,
+      "gap_resolution": {
+        "gap_bound": true,
+        "n_bound_gaps": 5,
+        "n_resolved": 5,
+        "n_unresolved": 0,
+        "resolved_gap_ids": [
+          "gap-S1-anchor_reference",
+          "gap-S1-competing_baseline",
+          "gap-S1-counter_evidence",
+          "gap-S1-mechanism_module",
+          "gap-S1-resource"
+        ],
+        "unresolved_gap_ids": []
+      },
+      "n_react_actions": 12,
+      "react_enabled": true
+    },
+    "tool_calls": [
+      {
+        "tool": "llm_decide",
+        "mode": "react_search"
+      },
+      {
+        "tool": "openalex",
+        "n": 0
+      },
+      {
+        "tool": "crossref",
+        "n": 12
+      },
+      {
+        "tool": "arxiv",
+        "n": 36
+      },
+      {
+        "tool": "semantic_scholar",
+        "n": 0
+      },
+      {
+        "tool": "github",
+        "n": 4
+      },
+      {
+        "tool": "huggingface",
+        "n": 0
+      }
+    ],
+    "errors": [],
+    "provider": "react_search",
+    "state_keys": [
+      "raw_results",
+      "paper_candidates",
+      "repo_candidates",
+      "search_steps",
+      "trace_events",
+      "errors",
+      "provider_profile",
+      "react_actions"
+    ],
+    "ended_at": "2026-07-14T14:38:54Z",
+    "elapsed_s": 22.373
+  },
+  {
+    "node": "quality_filter",
+    "started_at": "2026-07-14T14:38:54Z",
+    "input_summary": {
+      "n_candidates": 47
+    },
+    "output_summary": {
+      "kept": 5,
+      "dropped": 1,
+      "low_relevance": 41,
+      "pre_filter_keep": 46,
+      "pre_filter_drop": 1,
+      "llm_judged": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "quality_filter.pre_filter",
+        "pre_keep": 46,
+        "pre_drop": 1,
+        "gray_area": 0
+      },
+      {
+        "tool": "quality_filter.no_llm_needed",
+        "reason": "all candidates resolved by pre-filter"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "paper_candidates",
+      "filter_results",
+      "trace_events"
+    ],
+    "ended_at": "2026-07-14T14:38:54Z",
+    "elapsed_s": 0.001
+  },
+  {
+    "node": "verify",
+    "started_at": "2026-07-14T14:38:54Z",
+    "input_summary": {
+      "n_candidates": 5,
+      "topic_len": 77,
+      "verify_scope": "search",
+      "citation_done": false
+    },
+    "output_summary": {
+      "n_accept": 0,
+      "n_weak_reject": 1,
+      "n_reject": 4,
+      "n_input": 5,
+      "n_resolved": 5,
+      "coverage": 1.0,
+      "verification_failed": false,
+      "verification_status": "full_coverage",
+      "unresolved_ids": [],
+      "invalid_ids": [],
+      "raw_lengths": [
+        1700
+      ],
+      "parse_stages": [
+        "resolved"
+      ],
+      "provider": "fast_json",
+      "model": "",
+      "contract_id": "legacy_fallback",
+      "batch_results": [
+        {
+          "batch": 0,
+          "raw_length": 1700,
+          "parse_stage": "resolved",
+          "resolved": 5,
+          "expected": 5,
+          "title_matched": 5,
+          "elapsed_s": 10.28,
+          "attempt": 0,
+          "n_papers": 5,
+          "provider": "fast_json",
+          "contract_id": "legacy_fallback"
+        }
+      ]
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_paper_verifier.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "state_keys": [
+      "verified_papers",
+      "weak_papers",
+      "paper_candidates",
+      "trace_events",
+      "errors",
+      "provider_profile",
+      "verify_scope"
+    ],
+    "ended_at": "2026-07-14T14:39:04Z",
+    "elapsed_s": 10.305
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-14T14:39:04Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 1,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 4,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": true,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 1
+        },
+        "current_coverage": {
+          "core": 2,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 4
+        },
+        "gaps": [
+          "baseline"
+        ],
+        "budget_remaining": 2,
+        "decision": "reflect"
+      }
+    },
+    "output_summary": {
+      "route": "citation_expander"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:39:04Z",
+    "elapsed_s": 0.019,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "citation_expander",
+    "started_at": "2026-07-14T14:39:04Z",
+    "input_summary": {
+      "n_verified": 3,
+      "n_seeds": 2,
+      "seed_titles": [
+        "SpeechLM: Enhanced Speech Pre-Training with Unpaired Textual",
+        "BERT: Pre-training of Deep Bidirectional Transformers for La"
+      ]
+    },
+    "output_summary": {
+      "n_expanded": 0,
+      "n_surveys": 0,
+      "n_repos": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "semantic_scholar.citations+references",
+        "n_seeds": 2,
+        "n_expanded": 0,
+        "concurrent": true
+      }
+    ],
+    "errors": [],
+    "provider": "semantic_scholar",
+    "state_keys": [
+      "expanded_papers",
+      "seed_papers",
+      "surveys_found",
+      "repos_found",
+      "citation_expansion_done",
+      "paper_candidates",
+      "trace_events"
+    ],
+    "per_seed": [
+      {
+        "seed_title": "SpeechLM: Enhanced Speech Pre-Training with Unpaired Textual",
+        "n_references_plus_citations": 0,
+        "relevance_score": 5
+      },
+      {
+        "seed_title": "BERT: Pre-training of Deep Bidirectional Transformers for La",
+        "n_references_plus_citations": 0,
+        "relevance_score": 2
+      }
+    ],
+    "ended_at": "2026-07-14T14:39:04Z",
+    "elapsed_s": 0.003
+  },
+  {
+    "node": "quality_gate",
+    "started_at": "2026-07-14T14:39:04Z",
+    "input_summary": {
+      "n_papers": 3,
+      "n_weak": 0,
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 4,
+      "n_work_packages": 0,
+      "repair_rounds": 0,
+      "weak_promoted": false,
+      "zero_accept_repair": false,
+      "coverage_gate": {
+        "required_roles": {
+          "core": 2,
+          "baseline": 1
+        },
+        "optional_roles": {
+          "parallel": 1,
+          "dataset": 1,
+          "repo": 1
+        },
+        "current_coverage": {
+          "core": 2,
+          "baseline": 0,
+          "parallel": 0,
+          "dataset": 0,
+          "repo": 4
+        },
+        "gaps": [
+          "baseline"
+        ],
+        "budget_remaining": 2,
+        "decision": "reflect"
+      }
+    },
+    "output_summary": {
+      "route": "continue"
+    },
+    "tool_calls": [
+      "quality_gate.rule_based"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:39:04Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "evidence_audit",
+      "trace_events",
+      "verified_papers",
+      "weak_papers"
+    ]
+  },
+  {
+    "node": "dataset_repo",
+    "started_at": "2026-07-14T14:39:34Z",
+    "input_summary": {
+      "n_papers": 8,
+      "n_github_repos": 0
+    },
+    "output_summary": {
+      "n_dataset": 0,
+      "n_repo": 4,
+      "used_fallback": true,
+      "llm_success_rate": "0/3"
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_dataset_repo_extractor.llm",
+        "attempts": 3,
+        "mode": "fast_json"
+      },
+      {
+        "tool": "github_direct_extract",
+        "n_repos": 0
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:39:34Z",
+    "elapsed_s": 30.481,
+    "state_keys": [
+      "dataset_candidates",
+      "repo_candidates",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "json_graph_builder",
+    "started_at": "2026-07-14T14:39:34Z",
+    "input_summary": {
+      "papers": 3
+    },
+    "output_summary": {
+      "nodes": 7,
+      "edges": 0
+    },
+    "tool_calls": [
+      "local.classifier"
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:39:34Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "evidence_graph",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "evidence_auditor",
+    "started_at": "2026-07-14T14:39:34Z",
+    "input_summary": {
+      "n_verified": 3
+    },
+    "output_summary": {
+      "n_baseline": 0,
+      "n_parallel": 2,
+      "n_survey": 0,
+      "n_dataset_paper": 0,
+      "n_noise": 1,
+      "llm_reclassified": false
+    },
+    "tool_calls": [
+      {
+        "tool": "local.classifier",
+        "mode": "rule_based_topics+llm",
+        "provider": "local"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:39:34Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "baseline_candidates",
+      "parallel_candidates",
+      "dataset_papers",
+      "surveys",
+      "evidence_audit",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "feasibility_assessor",
+    "started_at": "2026-07-14T14:39:44Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_dataset": 0,
+      "n_repo": 4
+    },
+    "output_summary": {
+      "verdict": "risky",
+      "score": 65
+    },
+    "tool_calls": [
+      {
+        "tool": "feasibility_assessor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:39:44Z",
+    "elapsed_s": 9.526,
+    "state_keys": [
+      "feasibility_report",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate_search",
+    "started_at": "2026-07-14T14:39:44Z",
+    "input_summary": {
+      "enabled": false,
+      "n_papers": 3
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:39:44Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate_search",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "work_package",
+    "started_at": "2026-07-14T14:39:53Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 2
+    },
+    "output_summary": {
+      "n_packages": 0,
+      "n_gap": 1
+    },
+    "tool_calls": [
+      {
+        "tool": "re11_work_package.llm",
+        "profile": "fast_json"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:39:53Z",
+    "elapsed_s": 9.53,
+    "state_keys": [
+      "work_packages",
+      "evidence_audit",
+      "trace_events",
+      "errors"
+    ]
+  },
+  {
+    "node": "sota_matcher",
+    "started_at": "2026-07-14T14:40:07Z",
+    "input_summary": {
+      "n_baseline": 0
+    },
+    "output_summary": {
+      "n_comparison": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "sota_matcher.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:40:07Z",
+    "elapsed_s": 13.616,
+    "state_keys": [
+      "sota_comparison",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-14T14:40:25Z",
+    "input_summary": {
+      "n_innovation": 0
+    },
+    "output_summary": {
+      "nick_model_name": "AfriXLM-R"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:40:25Z",
+    "elapsed_s": 18.174,
+    "state_keys": [
+      "research_narrative",
+      "narrative_revisions",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "tailor_skill_adapter",
+    "started_at": "2026-07-14T14:40:27Z",
+    "input_summary": {
+      "entry_mode": "seeded_research",
+      "n_seed_cards": 2,
+      "n_families": 4,
+      "n_lanes": 5,
+      "n_gaps_open": 0
+    },
+    "output_summary": {
+      "verdict": "GO",
+      "generated_by": "llm",
+      "n_candidate_modules": 4,
+      "n_ablation_rows": 4,
+      "n_research_gaps": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "tailor-skill/v1"
+      }
+    ],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:40:27Z",
+    "elapsed_s": 20.341,
+    "state_keys": [
+      "tailored_method",
+      "trace_events",
+      "reasoning_ledger"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-14T14:40:27Z",
+    "input_summary": {
+      "n_packages": 0
+    },
+    "output_summary": {
+      "status": "blocked",
+      "n_remaining": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:40:27Z",
+    "elapsed_s": 0.013,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "reflection_gate::tailor_gate",
+    "started_at": "2026-07-14T14:40:33Z",
+    "input_summary": {
+      "round_idx": 0,
+      "activated": true,
+      "entry_mode": "seeded_research"
+    },
+    "output_summary": {
+      "verdict": "pass",
+      "generated_by": "llm",
+      "re_search_requests": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:40:33Z",
+    "elapsed_s": 5.49,
+    "state_keys": [
+      "reflection_gate_results",
+      "reasoning_ledger",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-14T14:40:37Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 2
+    },
+    "output_summary": {
+      "n_innovation": 1,
+      "n_datasets_found": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:40:37Z",
+    "elapsed_s": 4.504,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "dataset_candidates",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-14T14:40:46Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 4
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:40:46Z",
+    "elapsed_s": 13.481,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-14T14:41:00Z",
+    "input_summary": {
+      "n_innovation": 1,
+      "n_packages": 0
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:41:00Z",
+    "elapsed_s": 13.285,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "novelty_draft",
+    "started_at": "2026-07-14T14:40:56Z",
+    "input_summary": {
+      "n_innovation": 1,
+      "n_evidence": 3
+    },
+    "output_summary": {
+      "n_drafts": 1,
+      "n_draft_status": 0,
+      "n_needs_evidence": 1,
+      "n_risks": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "novelty_draft.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:40:56Z",
+    "elapsed_s": 9.893,
+    "state_keys": [
+      "novelty_drafts",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-14T14:41:14Z",
+    "input_summary": {
+      "n_innovation": 1
+    },
+    "output_summary": {
+      "nick_model_name": "Afro-XLM-R"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:41:14Z",
+    "elapsed_s": 14.256,
+    "state_keys": [
+      "research_narrative",
+      "narrative_revisions",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "novelty_review",
+    "started_at": "2026-07-14T14:41:15Z",
+    "input_summary": {
+      "n_innovation_points": 1,
+      "has_tailored_method": true
+    },
+    "output_summary": {
+      "verdict": "weak_reject",
+      "generated_by": "llm",
+      "score": 3,
+      "contribution_type": "empirical"
+    },
+    "tool_calls": [
+      {
+        "tool": "novelty-review/v1"
+      }
+    ],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:41:15Z",
+    "elapsed_s": 14.985,
+    "state_keys": [
+      "novelty_review_verdict",
+      "novelty_review_score",
+      "problem_method_insight",
+      "contributions",
+      "falsifiable_hypothesis",
+      "minimum_key_experiment",
+      "contribution_type",
+      "review_generated_by",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "reflection_gate::final_review_gate",
+    "started_at": "2026-07-14T14:41:22Z",
+    "input_summary": {
+      "round_idx": 0,
+      "activated": true,
+      "entry_mode": "seeded_research"
+    },
+    "output_summary": {
+      "verdict": "revise",
+      "generated_by": "llm",
+      "re_search_requests": [
+        "gap-S1-competing_baseline",
+        "gap-S1-mechanism_module",
+        "gap-S1-counter_evidence"
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:41:22Z",
+    "elapsed_s": 7.039,
+    "state_keys": [
+      "reflection_gate_results",
+      "reasoning_ledger",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-14T14:41:15Z",
+    "input_summary": {
+      "n_packages": 0
+    },
+    "output_summary": {
+      "status": "blocked",
+      "n_remaining": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:41:15Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-14T14:41:35Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:41:35Z",
+    "elapsed_s": 13.084,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-14T14:41:46Z",
+    "input_summary": {
+      "n_innovation": 1,
+      "n_packages": 0
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:41:46Z",
+    "elapsed_s": 11.736,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "tailor_skill_adapter",
+    "started_at": "2026-07-14T14:41:51Z",
+    "input_summary": {
+      "entry_mode": "seeded_research",
+      "n_seed_cards": 2,
+      "n_families": 4,
+      "n_lanes": 5,
+      "n_gaps_open": 0
+    },
+    "output_summary": {
+      "verdict": "GO",
+      "generated_by": "llm",
+      "n_candidate_modules": 3,
+      "n_ablation_rows": 5,
+      "n_research_gaps": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "tailor-skill/v1"
+      }
+    ],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:41:51Z",
+    "elapsed_s": 16.171,
+    "state_keys": [
+      "tailored_method",
+      "trace_events",
+      "reasoning_ledger"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-14T14:41:51Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:41:51Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "reflection_gate::tailor_gate",
+    "started_at": "2026-07-14T14:42:00Z",
+    "input_summary": {
+      "round_idx": 1,
+      "activated": true,
+      "entry_mode": "seeded_research"
+    },
+    "output_summary": {
+      "verdict": "pass",
+      "generated_by": "llm",
+      "re_search_requests": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:42:00Z",
+    "elapsed_s": 8.796,
+    "state_keys": [
+      "reflection_gate_results",
+      "reasoning_ledger",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-14T14:42:00Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+      "n_papers": 3,
+      "n_baseline": 0,
+      "n_parallel": 2,
+      "n_dataset": 0,
+      "n_repo": 4,
+      "n_work_packages": 0,
+      "low_bar_status": "blocked",
+      "human_gate_status": "pass_through",
+      "claim_judge_verdict": null,
+      "verdict": "RISKY",
+      "stop_reason": [
+        "low-bar review blocked the proposal"
+      ],
+      "notes": [
+        "low-bar review blocked the proposal"
+      ],
+      "research_basis": [],
+      "artifact_id": "rec-fd0bbdec1c31",
+      "fused_verdict": "CONDITIONAL",
+      "fused_verdict_rationale": "gates requested revision",
+      "research_package": {
+        "seed_audit_summary": [
+          {
+            "seed_id": "S1",
+            "resolved_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+            "existence_status": "verified",
+            "role": "classic_anchor",
+            "fulltext_status": "downloaded"
+          },
+          {
+            "seed_id": "S2",
+            "resolved_title": "Unsupervised Cross-lingual Representation Learning at Scale",
+            "existence_status": "verified",
+            "role": "current_sota_candidate",
+            "fulltext_status": "downloaded"
+          }
+        ],
+        "tailor_summary": {
+          "verdict": "GO",
+          "core_method": "A minimum-viable method assembly for cross-lingual transfer learning in low-resource African languages using XLM-R with candidate modules M1, M2, and M3.",
+          "baseline_model": "Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+          "ablation_matrix_count": 5,
+          "contribution_type": "empirical"
+        },
+        "gate_results": {
+          "seed_audit_gate": {
+            "verdict": "pass",
+            "round_idx": 0,
+            "rationale": "2 verified seed(s) with assigned roles",
+            "re_search_requests": []
+          },
+          "tailor_gate": {
+            "verdict": "pass",
+            "round_idx": 1,
+            "rationale": "The tailored method is compatible, falsifiable, and no simpler route is evident given the assembly plan and satisfied evidence gaps.",
+            "re_search_requests": []
+          },
+          "final_review_gate": {
+            "verdict": "revise",
+            "round_idx": 0,
+            "rationale": "High-severity risks (repetition, differentiation, falsifiability) require targeted re-search to address gaps in baseline comparison, module novelty, and counter-evidence synthesis.",
+            "re_search_requests": [
+              "gap-S1-competing_baseline",
+              "gap-S1-mechanism_module",
+              "gap-S1-counter_evidence"
+            ]
+          }
+        },
+        "ledger_entries": [
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor-27884",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r0",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-r0",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=revise",
+            "status": "proposed",
+            "confidence": 0.5
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor-27884",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r0",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-r0",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=revise",
+            "status": "proposed",
+            "confidence": 0.5
+          },
+          {
+            "decision_id": "tailor-11432",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r1",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          }
+        ],
+        "evidence_gap_status": {
+          "counts": {
+            "open": 0,
+            "satisfied": 5,
+            "partially_satisfied": 0,
+            "blocked": 0
+          },
+          "open_gaps": []
+        },
+        "falsifiable_hypothesis": "Adapter layers and knowledge distillation will not significantly improve cross-lingual transfer performance for low-resource African languages compared to vanilla XLM-R Base fine-tuning.",
+        "fused_verdict": {
+          "verdict": "CONDITIONAL",
+          "rationale": "gates requested revision"
+        }
+      },
+      "feedback_bar": {
+        "artifact_type": "final_recommendation",
+        "artifact_id": "rec-fd0bbdec1c31",
+        "idempotency_key": "793cc490d7620672cc7f0caa",
+        "options": [
+          "useful",
+          "incorrect",
+          "unsupported",
+          "needs_more_evidence"
+        ]
+      }
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:42:00Z",
+    "elapsed_s": 0.005,
+    "state_keys": [
+      "final_recommendation",
+      "final_research_package",
+      "fused_verdict",
+      "fused_verdict_rationale",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-14T14:42:08Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 2
+    },
+    "output_summary": {
+      "n_innovation": 1,
+      "n_datasets_found": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:42:08Z",
+    "elapsed_s": 8.456,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "dataset_candidates",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "novelty_draft",
+    "started_at": "2026-07-14T14:42:16Z",
+    "input_summary": {
+      "n_innovation": 1,
+      "n_evidence": 3
+    },
+    "output_summary": {
+      "n_drafts": 1,
+      "n_draft_status": 1,
+      "n_needs_evidence": 0,
+      "n_risks": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "novelty_draft.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:42:16Z",
+    "elapsed_s": 7.96,
+    "state_keys": [
+      "novelty_drafts",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "novelty_review",
+    "started_at": "2026-07-14T14:42:35Z",
+    "input_summary": {
+      "n_innovation_points": 1,
+      "has_tailored_method": true
+    },
+    "output_summary": {
+      "verdict": "weak_reject",
+      "generated_by": "llm",
+      "score": 3,
+      "contribution_type": "empirical"
+    },
+    "tool_calls": [
+      {
+        "tool": "novelty-review/v1"
+      }
+    ],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:42:35Z",
+    "elapsed_s": 18.581,
+    "state_keys": [
+      "novelty_review_verdict",
+      "novelty_review_score",
+      "problem_method_insight",
+      "contributions",
+      "falsifiable_hypothesis",
+      "minimum_key_experiment",
+      "contribution_type",
+      "review_generated_by",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "reflection_gate::final_review_gate",
+    "started_at": "2026-07-14T14:43:07Z",
+    "input_summary": {
+      "round_idx": 1,
+      "activated": true,
+      "entry_mode": "seeded_research"
+    },
+    "output_summary": {
+      "verdict": "revise",
+      "generated_by": "fallback",
+      "re_search_requests": [
+        "search_method_family",
+        "search_dataset"
+      ]
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "fallback",
+    "ended_at": "2026-07-14T14:43:07Z",
+    "elapsed_s": 32.372,
+    "state_keys": [
+      "reflection_gate_results",
+      "reasoning_ledger",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "tailor_skill_adapter",
+    "started_at": "2026-07-14T14:43:24Z",
+    "input_summary": {
+      "entry_mode": "seeded_research",
+      "n_seed_cards": 2,
+      "n_families": 4,
+      "n_lanes": 5,
+      "n_gaps_open": 0
+    },
+    "output_summary": {
+      "verdict": "GO",
+      "generated_by": "llm",
+      "n_candidate_modules": 3,
+      "n_ablation_rows": 4,
+      "n_research_gaps": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "tailor-skill/v1"
+      }
+    ],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:43:24Z",
+    "elapsed_s": 16.401,
+    "state_keys": [
+      "tailored_method",
+      "trace_events",
+      "reasoning_ledger"
+    ]
+  },
+  {
+    "node": "reflection_gate::tailor_gate",
+    "started_at": "2026-07-14T14:43:30Z",
+    "input_summary": {
+      "round_idx": 0,
+      "activated": true,
+      "entry_mode": "seeded_research"
+    },
+    "output_summary": {
+      "verdict": "pass",
+      "generated_by": "llm",
+      "re_search_requests": []
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:43:30Z",
+    "elapsed_s": 6.746,
+    "state_keys": [
+      "reflection_gate_results",
+      "reasoning_ledger",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "innovation_extractor",
+    "started_at": "2026-07-14T14:43:37Z",
+    "input_summary": {
+      "n_baseline": 0,
+      "n_parallel": 2
+    },
+    "output_summary": {
+      "n_innovation": 1,
+      "n_datasets_found": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "innovation_extractor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:43:37Z",
+    "elapsed_s": 6.538,
+    "state_keys": [
+      "innovation_points",
+      "stitching_plan",
+      "dataset_candidates",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "novelty_draft",
+    "started_at": "2026-07-14T14:43:59Z",
+    "input_summary": {
+      "n_innovation": 1,
+      "n_evidence": 3
+    },
+    "output_summary": {
+      "n_drafts": 1,
+      "n_draft_status": 1,
+      "n_needs_evidence": 0,
+      "n_risks": 2
+    },
+    "tool_calls": [
+      {
+        "tool": "novelty_draft.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:43:59Z",
+    "elapsed_s": 21.834,
+    "state_keys": [
+      "novelty_drafts",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "novelty_review",
+    "started_at": "2026-07-14T14:44:15Z",
+    "input_summary": {
+      "n_innovation_points": 1,
+      "has_tailored_method": true
+    },
+    "output_summary": {
+      "verdict": "weak_reject",
+      "generated_by": "llm",
+      "score": 3,
+      "contribution_type": "engineering"
+    },
+    "tool_calls": [
+      {
+        "tool": "novelty-review/v1"
+      }
+    ],
+    "errors": [],
+    "provider": "premium_review",
+    "ended_at": "2026-07-14T14:44:15Z",
+    "elapsed_s": 16.083,
+    "state_keys": [
+      "novelty_review_verdict",
+      "novelty_review_score",
+      "problem_method_insight",
+      "contributions",
+      "falsifiable_hypothesis",
+      "minimum_key_experiment",
+      "contribution_type",
+      "review_generated_by",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "reflection_gate::final_review_gate",
+    "started_at": "2026-07-14T14:44:15Z",
+    "input_summary": {
+      "round_idx": 2,
+      "cap": 2,
+      "activated": true
+    },
+    "output_summary": {
+      "verdict": "unresolved",
+      "generated_by": "rule"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "n/a",
+    "ended_at": "2026-07-14T14:44:15Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "reflection_gate_results",
+      "reasoning_ledger",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "narrative_builder",
+    "started_at": "2026-07-14T14:44:38Z",
+    "input_summary": {
+      "n_innovation": 1
+    },
+    "output_summary": {
+      "nick_model_name": "AfriXLM-R"
+    },
+    "tool_calls": [
+      {
+        "tool": "narrative_builder.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:44:38Z",
+    "elapsed_s": 13.151,
+    "state_keys": [
+      "research_narrative",
+      "narrative_revisions",
+      "narrative_revision_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "low_bar_review",
+    "started_at": "2026-07-14T14:44:38Z",
+    "input_summary": {
+      "n_packages": 0
+    },
+    "output_summary": {
+      "status": "blocked",
+      "n_remaining": 0
+    },
+    "tool_calls": [
+      {
+        "tool": "low_bar.rule_based"
+      }
+    ],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:44:38Z",
+    "elapsed_s": 0.001,
+    "state_keys": [
+      "low_bar_review",
+      "work_packages",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "optimization_advisor",
+    "started_at": "2026-07-14T14:44:51Z",
+    "input_summary": {
+      "feasibility": "risky"
+    },
+    "output_summary": {
+      "n_paths": 3
+    },
+    "tool_calls": [
+      {
+        "tool": "optimization_advisor.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:44:51Z",
+    "elapsed_s": 12.839,
+    "state_keys": [
+      "optimization_directions",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "devils_advocate",
+    "started_at": "2026-07-14T14:45:04Z",
+    "input_summary": {
+      "n_innovation": 1,
+      "n_packages": 0
+    },
+    "output_summary": {
+      "overall_verdict": "MINOR_REVISION"
+    },
+    "tool_calls": [
+      {
+        "tool": "devils_advocate.llm"
+      }
+    ],
+    "errors": [],
+    "provider": "fast_json",
+    "ended_at": "2026-07-14T14:45:04Z",
+    "elapsed_s": 13.931,
+    "state_keys": [
+      "review_report",
+      "devils_advocate_block_count",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "human_gate",
+    "started_at": "2026-07-14T14:45:05Z",
+    "input_summary": {
+      "enabled": false
+    },
+    "output_summary": {
+      "status": "pass_through"
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:45:05Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "human_gate",
+      "trace_events"
+    ]
+  },
+  {
+    "node": "final_recommendation",
+    "started_at": "2026-07-14T14:45:05Z",
+    "input_summary": {},
+    "output_summary": {
+      "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+      "n_papers": 3,
+      "n_baseline": 0,
+      "n_parallel": 2,
+      "n_dataset": 0,
+      "n_repo": 4,
+      "n_work_packages": 0,
+      "low_bar_status": "blocked",
+      "human_gate_status": "pass_through",
+      "claim_judge_verdict": "REVISE",
+      "verdict": "RISKY",
+      "stop_reason": [
+        "low-bar review blocked the proposal",
+        "claim judge requested revisions"
+      ],
+      "notes": [
+        "low-bar review blocked the proposal"
+      ],
+      "research_basis": [],
+      "artifact_id": "rec-ef7a69404811",
+      "fused_verdict": "BLOCKED",
+      "fused_verdict_rationale": "final review unresolved",
+      "research_package": {
+        "seed_audit_summary": [
+          {
+            "seed_id": "S1",
+            "resolved_title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+            "existence_status": "verified",
+            "role": "classic_anchor",
+            "fulltext_status": "downloaded"
+          },
+          {
+            "seed_id": "S2",
+            "resolved_title": "Unsupervised Cross-lingual Representation Learning at Scale",
+            "existence_status": "verified",
+            "role": "current_sota_candidate",
+            "fulltext_status": "downloaded"
+          }
+        ],
+        "tailor_summary": {
+          "verdict": "GO",
+          "core_method": "A minimum-viable method assembly for cross-lingual transfer learning with XLM-R, incorporating adaptive subsampling and knowledge distillation while excluding retrieval-augmented pretraining due to compatibility constraints.",
+          "baseline_model": "Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+          "ablation_matrix_count": 4,
+          "contribution_type": "engineering"
+        },
+        "gate_results": {
+          "seed_audit_gate": {
+            "verdict": "pass",
+            "round_idx": 0,
+            "rationale": "2 verified seed(s) with assigned roles",
+            "re_search_requests": []
+          },
+          "tailor_gate": {
+            "verdict": "pass",
+            "round_idx": 0,
+            "rationale": "Tailored method is compatible (M1/M2 integrated), falsifiable (clear steps), and simpler than M3; no open evidence gaps remain.",
+            "re_search_requests": []
+          },
+          "final_review_gate": {
+            "verdict": "unresolved",
+            "round_idx": 2,
+            "rationale": "cap reached: 2/2",
+            "re_search_requests": []
+          }
+        },
+        "ledger_entries": [
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor-27884",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r0",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-r0",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=revise",
+            "status": "proposed",
+            "confidence": 0.5
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor-27884",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r0",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-r0",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=revise",
+            "status": "proposed",
+            "confidence": 0.5
+          },
+          {
+            "decision_id": "tailor-11432",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r1",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-r1",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=revise",
+            "status": "proposed",
+            "confidence": 0.5
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor-27884",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r0",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-r0",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=revise",
+            "status": "proposed",
+            "confidence": 0.5
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "seed-audit-S1",
+            "stage": "seed_audit",
+            "decision": "seed S1 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed-audit-S2",
+            "stage": "seed_audit",
+            "decision": "seed S2 → verified",
+            "status": "verified",
+            "confidence": 0.9
+          },
+          {
+            "decision_id": "seed_audit_gate-r0",
+            "stage": "seed_audit_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "decision-S1-family_expansion",
+            "stage": "family_expansion",
+            "decision": "Derived 4 method families for seed 'S1' with inferred task_type='forecasting'.",
+            "status": "evidence_backed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor-27884",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=XLM-R Base (270M parameters) for Cross-lingual Transfer Learning",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r0",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-r0",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=revise",
+            "status": "proposed",
+            "confidence": 0.5
+          },
+          {
+            "decision_id": "tailor-11432",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r1",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-r1",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=revise",
+            "status": "proposed",
+            "confidence": 0.5
+          },
+          {
+            "decision_id": "tailor-4008",
+            "stage": "tailor",
+            "decision": "verdict=GO; primary_baseline=Unsupervised Cross-lingual Representation Learning at Scale (XLM-R)",
+            "status": "proposed",
+            "confidence": 0.7
+          },
+          {
+            "decision_id": "tailor_gate-r0",
+            "stage": "tailor_gate",
+            "decision": "gate_verdict=pass",
+            "status": "verified",
+            "confidence": 1.0
+          },
+          {
+            "decision_id": "final_review_gate-cap-r2",
+            "stage": "final_review_gate",
+            "decision": "gate_verdict=unresolved",
+            "status": "unresolved",
+            "confidence": 0.0
+          }
+        ],
+        "evidence_gap_status": {
+          "counts": {
+            "open": 0,
+            "satisfied": 5,
+            "partially_satisfied": 0,
+            "blocked": 0
+          },
+          "open_gaps": []
+        },
+        "falsifiable_hypothesis": "Retrieval-Augmented Pretraining will improve zero-shot cross-lingual transfer performance on low-resource African languages by at least 10% over the XLM-R baseline.",
+        "fused_verdict": {
+          "verdict": "BLOCKED",
+          "rationale": "final review unresolved"
+        }
+      },
+      "feedback_bar": {
+        "artifact_type": "final_recommendation",
+        "artifact_id": "rec-ef7a69404811",
+        "idempotency_key": "03d7b741b6ad277abebc9d44",
+        "options": [
+          "useful",
+          "incorrect",
+          "unsupported",
+          "needs_more_evidence"
+        ]
+      }
+    },
+    "tool_calls": [],
+    "errors": [],
+    "provider": "local",
+    "ended_at": "2026-07-14T14:45:05Z",
+    "elapsed_s": 0.0,
+    "state_keys": [
+      "final_recommendation",
+      "final_research_package",
+      "fused_verdict",
+      "fused_verdict_rationale",
+      "trace_events"
+    ]
+  }
+]

@@ -1,0 +1,94 @@
+{
+  "phase": "Re8.2",
+  "generated_at": "2026-07-14T23:50:00+08:00",
+  "wp4_case_runs": {
+    "vit_dr": {
+      "case_key": "vit_dr",
+      "topic": "Vision Transformer for automated diabetic retinopathy grading from fundus images",
+      "elapsed_s": 466.0,
+      "runtime_pass": true,
+      "contract_pass": true,
+      "quality_pass": false,
+      "fused_verdict": "BLOCKED",
+      "fused_verdict_rationale": "tailor unresolved",
+      "seed_audit_gate": "pass",
+      "tailor_gate": "unresolved",
+      "final_review_gate": "unresolved",
+      "n_verified_papers": 3,
+      "n_trace_events": 81,
+      "n_repair_cycles": 1,
+      "seed_cards": [
+        {"seed_id": "S1", "existence_status": "verified", "role": "classic_anchor"},
+        {"seed_id": "S2", "existence_status": "verified", "role": "reproduction_target"}
+      ]
+    },
+    "xlm_r": {
+      "case_key": "xlm_r",
+      "topic": "Cross-lingual transfer learning for low-resource African languages with XLM-R",
+      "elapsed_s": 464.2,
+      "runtime_pass": true,
+      "contract_pass": true,
+      "quality_pass": false,
+      "fused_verdict": "BLOCKED",
+      "fused_verdict_rationale": "final review unresolved",
+      "seed_audit_gate": "pass",
+      "tailor_gate": "pass",
+      "final_review_gate": "unresolved",
+      "n_verified_papers": 3,
+      "n_trace_events": 55,
+      "n_repair_cycles": 2,
+      "seed_cards": [
+        {"seed_id": "S1", "existence_status": "verified", "role": "classic_anchor"},
+        {"seed_id": "S2", "existence_status": "verified", "role": "current_sota_candidate"}
+      ]
+    },
+    "yolo_steel": {
+      "case_key": "yolo_steel",
+      "topic": "YOLOv8 for real-time steel surface defect detection on NEU-DET dataset",
+      "elapsed_s": 493.1,
+      "runtime_pass": true,
+      "contract_pass": true,
+      "quality_pass": false,
+      "fused_verdict": "BLOCKED",
+      "fused_verdict_rationale": "seed audit unresolved",
+      "seed_audit_gate": "unresolved",
+      "tailor_gate": "pass",
+      "final_review_gate": "unresolved",
+      "n_verified_papers": 7,
+      "n_trace_events": 59,
+      "n_repair_cycles": 3,
+      "seed_cards": [
+        {"seed_id": "S1", "existence_status": "verified", "role": "classic_anchor"},
+        {"seed_id": "S2", "existence_status": "ambiguous", "role": "reproduction_target"}
+      ]
+    }
+  },
+  "wp4_acceptance_criteria": {
+    "target_non_blocked_ratio": "2/3",
+    "actual_non_blocked_ratio": "0/3",
+    "target_quality_pass_ratio": "1/3",
+    "actual_quality_pass_ratio": "0/3",
+    "vit_dr_tailor_reentry_blocked": false,
+    "xlm_r_seed_audit_unresolved": false,
+    "yolo_steel_s2_verified_or_honest": true
+  },
+  "wp5_e2e": {
+    "status": "passed",
+    "case_id": "2f7868f8f2ff8",
+    "topic": "Cross-lingual transfer learning for low-resource languages with BERT",
+    "seed_doi": "10.18653/v1/N19-1423",
+    "elapsed_s": 827.57,
+    "fused_verdict": "BLOCKED",
+    "gate_seed_audit_gate": "pass",
+    "gate_tailor_gate": "unresolved",
+    "gate_final_review_gate": "revise",
+    "exported_package": "seeded_research_package_2f7868f8f2ff8.json",
+    "screenshot": "wp5_e2e_screenshot.png"
+  },
+  "regression_summary": {
+    "re8_unit_tests": "567 passed",
+    "re8_2_seed_repair_tests": "25 passed",
+    "re8_reflection_gates_tests": "10 added for gate re-entry prevention",
+    "wp5_e2e": "1 passed"
+  }
+}

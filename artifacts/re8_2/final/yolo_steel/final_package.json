@@ -1,0 +1,768 @@
+{
+  "seed_audit_summary": [
+    {
+      "seed_id": "S1",
+      "resolved_title": "You Only Look Once: Unified, Real-Time Object Detection",
+      "existence_status": "verified",
+      "role": "classic_anchor",
+      "fulltext_status": "downloaded"
+    },
+    {
+      "seed_id": "S2",
+      "resolved_title": "Surface defect detection of hot-rolled steel strip based on deep learning",
+      "existence_status": "ambiguous",
+      "role": "reproduction_target",
+      "fulltext_status": "metadata_only"
+    }
+  ],
+  "tailor_summary": {
+    "verdict": "GO",
+    "core_method": "A minimum-viable method assembly for YOLOv8-based real-time steel surface defect detection, integrating Cascade R-CNN's IoU strategy, CF-DETR's transformer encoder, and Faster R-CNN's RPN for hybrid detection.",
+    "baseline_model": "Cascade R-CNN: High Quality Object Detection and Instance Segmentation",
+    "ablation_matrix_count": 5,
+    "contribution_type": "engineering"
+  },
+  "gate_results": {
+    "seed_audit_gate": {
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "rationale": "cap reached: 2/2",
+      "re_search_requests": []
+    },
+    "tailor_gate": {
+      "verdict": "pass",
+      "round_idx": 0,
+      "rationale": "The tailored method is compatible, falsifiable, and no simpler route is evident; all open gaps are already satisfied.",
+      "re_search_requests": []
+    },
+    "final_review_gate": {
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "rationale": "cap reached: 2/2",
+      "re_search_requests": []
+    }
+  },
+  "ledger_entries": [
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r1",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-cap-r2",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='detection'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r1",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-cap-r2",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='detection'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor-99529",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=YOLOv8 for Real-Time Steel Surface Defect Detection on NEU-DET Dataset",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r1",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-cap-r2",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='detection'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r1",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-cap-r2",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='detection'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor-99529",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=YOLOv8 for Real-Time Steel Surface Defect Detection on NEU-DET Dataset",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-15876",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=YOLOv8 for real-time steel surface defect detection on NEU-DET dataset",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r1",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r1",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r1",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-cap-r2",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='detection'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r1",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-cap-r2",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='detection'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor-99529",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=YOLOv8 for Real-Time Steel Surface Defect Detection on NEU-DET Dataset",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r1",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-cap-r2",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='detection'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r0",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-r1",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "seed-audit-S1",
+      "stage": "seed_audit",
+      "decision": "seed S1 → verified",
+      "status": "verified",
+      "confidence": 0.9
+    },
+    {
+      "decision_id": "seed-audit-S2",
+      "stage": "seed_audit",
+      "decision": "seed S2 → ambiguous",
+      "status": "unresolved",
+      "confidence": 0.4
+    },
+    {
+      "decision_id": "seed_audit_gate-cap-r2",
+      "stage": "seed_audit_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    },
+    {
+      "decision_id": "decision-S1-family_expansion",
+      "stage": "family_expansion",
+      "decision": "Derived 4 method families for seed 'S1' with inferred task_type='detection'.",
+      "status": "evidence_backed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor-99529",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=YOLOv8 for Real-Time Steel Surface Defect Detection on NEU-DET Dataset",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r0",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-15876",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=YOLOv8 for real-time steel surface defect detection on NEU-DET dataset",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r1",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-r1",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=revise",
+      "status": "proposed",
+      "confidence": 0.5
+    },
+    {
+      "decision_id": "tailor-87970",
+      "stage": "tailor",
+      "decision": "verdict=GO; primary_baseline=Cascade R-CNN: High Quality Object Detection and Instance Segmentation",
+      "status": "proposed",
+      "confidence": 0.7
+    },
+    {
+      "decision_id": "tailor_gate-r0",
+      "stage": "tailor_gate",
+      "decision": "gate_verdict=pass",
+      "status": "verified",
+      "confidence": 1.0
+    },
+    {
+      "decision_id": "final_review_gate-cap-r2",
+      "stage": "final_review_gate",
+      "decision": "gate_verdict=unresolved",
+      "status": "unresolved",
+      "confidence": 0.0
+    }
+  ],
+  "evidence_gap_status": {
+    "counts": {
+      "open": 0,
+      "satisfied": 5,
+      "partially_satisfied": 0,
+      "blocked": 0
+    },
+    "open_gaps": []
+  },
+  "falsifiable_hypothesis": "unspecified",
+  "fused_verdict": {
+    "verdict": "BLOCKED",
+    "rationale": "seed audit unresolved"
+  }
+}

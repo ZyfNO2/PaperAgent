@@ -1,0 +1,63 @@
+{
+  "seed_audit_gate": [
+    {
+      "gate_name": "seed_audit_gate",
+      "verdict": "pass",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "Both seeds S1 and S2 are verified with non-unknown roles (classic_anchor and reproduction_target respectively).",
+      "generated_by": "llm",
+      "reason_code": "SEED_VERIFIED"
+    }
+  ],
+  "tailor_gate": [
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "revise",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [
+        "gap-S2-fulltext"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "The tailored method relies on baseline S2, but its fulltext content (gap-S2-fulltext) remains unavailable, creating a critical evidence gap for method compatibility and falsifiability.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "revise",
+      "round_idx": 1,
+      "cycle_id": 0,
+      "re_search_requests": [
+        "gap-S2-fulltext"
+      ],
+      "unresolved_gaps": [],
+      "rationale": "Missing fulltext for primary baseline (S2) prevents direct compatibility and falsifiability verification.",
+      "generated_by": "llm"
+    },
+    {
+      "gate_name": "tailor_gate",
+      "verdict": "unresolved",
+      "round_idx": 2,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "cap reached: 2/2",
+      "generated_by": "rule"
+    }
+  ],
+  "final_review_gate": [
+    {
+      "gate_name": "final_review_gate",
+      "verdict": "unresolved",
+      "round_idx": 0,
+      "cycle_id": 0,
+      "re_search_requests": [],
+      "unresolved_gaps": [],
+      "rationale": "review rejected; no further re-search can rescue",
+      "generated_by": "fallback"
+    }
+  ]
+}
