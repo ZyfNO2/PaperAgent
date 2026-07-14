@@ -35,8 +35,8 @@ WP1 已修复 Gate 重入问题。WP2-WP6 需依次完成以将整个 SOP 推进
 - 最终状态 PASS / PARTIAL / NO-GO
 
 ## Impact
-- Affected code: `seed_resolver.py`, `reflection_gates.py`, `re80_schema.py`, `research_graph.py`, `content.py`
-- New files: `seed_candidate.py`（统一候选模型与检索）, seed audit fixture
+- Affected code: `seed_resolver.py`, `reflection_gates.py`, `re80_schema.py`, `research_graph.py`
+- New files: `SeedCandidate` model embedded in `re80_schema.py`, seed audit fixture, `test_re8_2_seed_repair.py`, `test_re82_seeded_e2e.py`, `scripts/re82_wp*.py`
 - Affected tests: `test_re8_seed_resolver.py`, `test_re8_reflection_gates.py`, 新 `test_re8_seed_repair.py`
 - Affected artifacts: `artifacts/re8_2/`
 
