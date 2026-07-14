@@ -287,6 +287,16 @@ def _normalize_gate_output(
         rationale=rationale,
         generated_by=raw.get("generated_by", generated_by),
     )
+    # Re8.2 WP2/WP3: preserve reason_code and structured Seed Audit fields
+    raw_reason_code = raw.get("reason_code")
+    if isinstance(raw_reason_code, str) and raw_reason_code.strip():
+        from apps.api.app.services.agents.graph.re80_schema import SEED_AUDIT_REASON_CODES
+        if raw_reason_code.strip() in SEED_AUDIT_REASON_CODES:
+            result["reason_code"] = raw_reason_code.strip()
+    for k in ("seed_id", "candidate_count", "top_score", "repair_target"):
+        v = raw.get(k)
+        if v is not None:
+            result[k] = v
     # Sanity check — never let a malformed gate result escape
     errs = validate_reflection_gate_result(result)
     if errs:
@@ -322,15 +332,49 @@ def _rule_seed_audit_gate(state: ResearchState) -> dict[str, Any]:
 
     Pass iff at least one verified seed card exists with a non-unknown
     role. Otherwise → revise (request re-search for the seed identity).
+
+    Re8.2 WP2/WP3: outputs ``reason_code`` from SEED_AUDIT_REASON_CODES
+    plus structured diagnostics (``seed_id``, ``candidate_count``,
+    ``top_score``, ``repair_target``) for downstream repair routing and
+    frontend display.
     """
+    from apps.api.app.services.agents.graph.re80_schema import SEED_AUDIT_REASON_CODES
+
     seed_cards = state.get("seed_cards") or []
+    candidate_count = len(seed_cards)
+    top_score = max(
+        [c.get("total_score", 0.0) for c in seed_cards if isinstance(c.get("total_score"), (int, float))]
+        or [0.0]
+    )
+
+    def _first_seed_id(cards: list[dict[str, Any]]) -> str | None:
+        for c in cards:
+            sid = c.get("seed_id")
+            if sid:
+                return str(sid)
+        return None
+
     verified = [c for c in seed_cards
                 if c.get("existence_status") == "verified"]
     if not verified:
+        # Determine reason code based on seed card states
+        not_found = [c for c in seed_cards if c.get("existence_status") == "not_found"]
+        ambiguous = [c for c in seed_cards if c.get("existence_status") == "ambiguous"]
+        if not_found and not ambiguous:
+            reason_code = "SEED_NOT_FOUND"
+        elif ambiguous and not not_found:
+            reason_code = "SEED_LOW_CONFIDENCE"
+        else:
+            reason_code = "SEED_NOT_FOUND"
         return {
             "verdict": "revise",
             "re_search_requests": ["resolve_seed_identity"],
             "rationale": "no verified seed card found",
+            "reason_code": reason_code,
+            "seed_id": _first_seed_id(seed_cards),
+            "candidate_count": candidate_count,
+            "top_score": top_score,
+            "repair_target": "seed_resolver",
         }
     role_unknown = [c for c in verified if c.get("role") == "unknown"]
     if role_unknown:
@@ -338,10 +382,19 @@ def _rule_seed_audit_gate(state: ResearchState) -> dict[str, Any]:
             "verdict": "revise",
             "re_search_requests": ["classify_seed_role"],
             "rationale": f"{len(role_unknown)} verified seed(s) have role=unknown",
+            "reason_code": "SEED_LOW_CONFIDENCE",
+            "seed_id": _first_seed_id(role_unknown),
+            "candidate_count": candidate_count,
+            "top_score": top_score,
+            "repair_target": "seed_resolver",
         }
     return {
         "verdict": "pass",
         "rationale": f"{len(verified)} verified seed(s) with assigned roles",
+        "reason_code": "SEED_VERIFIED",
+        "seed_id": _first_seed_id(verified),
+        "candidate_count": candidate_count,
+        "top_score": top_score,
     }
 
 
@@ -517,8 +570,18 @@ Output JSON:
   "verdict": "pass" | "revise" | "unresolved",
   "re_search_requests": ["gap_id_1", "gap_id_2"],
   "unresolved_gaps": ["gap_id_3"],
-  "rationale": "one-sentence justification citing gap_id / seed_id"
+  "rationale": "one-sentence justification citing gap_id / seed_id",
+  "reason_code": "SEED_VERIFIED" | "SEED_NOT_FOUND" | "SEED_LOW_CONFIDENCE" | "SEED_SOURCE_CONFLICT" | "SEED_AUTHOR_MISMATCH" | "SEED_YEAR_MISMATCH" | "SEED_IDENTIFIER_CONFLICT"
 }}
+
+Reason codes:
+- SEED_VERIFIED           — seed is authentic and role-correct
+- SEED_NOT_FOUND          — seed cannot be found in any authoritative source
+- SEED_LOW_CONFIDENCE     — seed exists but confidence is too low to verify
+- SEED_SOURCE_CONFLICT    — multiple sources disagree on seed identity
+- SEED_AUTHOR_MISMATCH    — author set does not match the authoritative record
+- SEED_YEAR_MISMATCH      — publication year conflicts with authoritative record
+- SEED_IDENTIFIER_CONFLICT — DOI/arXiv identifier points to a different paper
 
 [OUTPUT CONTRACT] Reply ONLY with the JSON object, no prose, no fences."""
 

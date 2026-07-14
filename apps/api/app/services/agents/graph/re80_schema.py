@@ -35,6 +35,22 @@ REASONING_POLICIES = ("react_reflection", "chain_only")
 
 SEED_INPUT_FORMS = ("title", "doi", "arxiv", "url", "pdf", "citation")
 SEED_EXISTENCE_STATUS = ("verified", "ambiguous", "not_found")
+
+# Re8.2 WP2: Structured scoring thresholds
+SEED_VERIFIED_THRESHOLD = 0.85
+SEED_AMBIGUOUS_LOWER = 0.70
+
+# Re8.2 WP2: SEED_AUDIT_REASON_CODES — structured reason codes for seed audit gate
+SEED_AUDIT_REASON_CODES = (
+    "SEED_NOT_FOUND",
+    "SEED_LOW_CONFIDENCE",
+    "SEED_SOURCE_CONFLICT",
+    "SEED_AUTHOR_MISMATCH",
+    "SEED_YEAR_MISMATCH",
+    "SEED_IDENTIFIER_CONFLICT",
+    "SEED_FULLTEXT_UNAVAILABLE",
+    "SEED_VERIFIED",
+)
 # Re8.0 P1-1: fulltext acquisition three-state progression
 #   metadata_only → fulltext_available → fulltext_parsed
 # "downloaded" is the legacy value written by paper_understanding (WP2);
@@ -129,6 +145,11 @@ def make_reflection_gate_result(
     unresolved_gaps: list[str] | None = None,
     rationale: str = "",
     generated_by: str = "llm",
+    reason_code: str | None = None,
+    seed_id: str | None = None,
+    candidate_count: int | None = None,
+    top_score: float | None = None,
+    repair_target: str | None = None,
 ) -> dict[str, Any]:
     """Construct a Reflection Gate result with safe defaults.
 
@@ -142,12 +163,16 @@ def make_reflection_gate_result(
     counter resets to 0. Old cycle rounds do not count toward the new
     cycle's cap.
 
+    Re8.2 WP3: ``reason_code``, ``seed_id``, ``candidate_count``,
+    ``top_score``, and ``repair_target`` provide structured Seed Audit
+    diagnostics without breaking the fixed gate-result schema.
+
     The result is consumed by both the graph router (to decide re-search)
     and the trace_events / ledger fields (for auditability).
     """
     if verdict not in ("pass", "revise", "unresolved"):
         verdict = "unresolved"
-    return {
+    result: dict[str, Any] = {
         "gate_name": gate_name,
         "verdict": verdict,
         "round_idx": int(round_idx),
@@ -157,6 +182,17 @@ def make_reflection_gate_result(
         "rationale": rationale,
         "generated_by": generated_by,
     }
+    if reason_code is not None:
+        result["reason_code"] = reason_code
+    if seed_id is not None:
+        result["seed_id"] = seed_id
+    if candidate_count is not None:
+        result["candidate_count"] = int(candidate_count)
+    if top_score is not None:
+        result["top_score"] = float(top_score)
+    if repair_target is not None:
+        result["repair_target"] = repair_target
+    return result
 
 
 def validate_reflection_gate_result(result: dict[str, Any]) -> list[str]:
@@ -172,6 +208,17 @@ def validate_reflection_gate_result(result: dict[str, Any]) -> list[str]:
         errs.append("re_search_requests must be list")
     if not isinstance(result.get("unresolved_gaps"), list):
         errs.append("unresolved_gaps must be list")
+    # Re8.2 WP3 optional structured diagnostics
+    if "reason_code" in result and not isinstance(result["reason_code"], str):
+        errs.append("reason_code must be str")
+    if "seed_id" in result and not isinstance(result["seed_id"], str):
+        errs.append("seed_id must be str")
+    if "candidate_count" in result and not isinstance(result["candidate_count"], int):
+        errs.append("candidate_count must be int")
+    if "top_score" in result and not isinstance(result["top_score"], (int, float)):
+        errs.append("top_score must be numeric")
+    if "repair_target" in result and not isinstance(result["repair_target"], str):
+        errs.append("repair_target must be str")
     return errs
 
 
@@ -434,3 +481,84 @@ def default_re80_state(
             "max_wall_time_minutes": 20,
         },
     }
+
+
+# ── SeedCandidate (Re8.2 WP2) ──────────────────────────────────────────────
+
+def make_seed_candidate(
+    *,
+    title: str = "",
+    authors: list[str] | None = None,
+    year: int | None = None,
+    doi: str | None = None,
+    arxiv_id: str | None = None,
+    canonical_url: str | None = None,
+    abstract: str = "",
+    venue: str = "",
+    sources: list[str] | None = None,
+    title_score: float = 0.0,
+    author_score: float = 0.0,
+    year_score: float = 0.0,
+    abstract_score: float = 0.0,
+    identifier_score: float = 0.0,
+    total_score: float = 0.0,
+    confidence: str = "low",
+    conflicts: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Construct a SeedCandidate dict (Re8.2 WP2 unified model).
+
+    All fields are optional; the constructor provides safe defaults so
+    partial candidates can be built during early pipeline stages.
+    """
+    return {
+        "title": title,
+        "authors": list(authors or []),
+        "year": year,
+        "doi": doi,
+        "arxiv_id": arxiv_id,
+        "canonical_url": canonical_url,
+        "abstract": abstract,
+        "venue": venue,
+        "sources": list(sources or []),
+        "title_score": title_score,
+        "author_score": author_score,
+        "year_score": year_score,
+        "abstract_score": abstract_score,
+        "identifier_score": identifier_score,
+        "total_score": total_score,
+        "confidence": confidence,
+        "conflicts": list(conflicts or []),
+    }
+
+
+def seed_candidate_from_source(
+    source: str,
+    raw: dict[str, Any],
+    *,
+    title: str = "",
+    authors: list[str] | None = None,
+    year: int | None = None,
+    doi: str | None = None,
+    arxiv_id: str | None = None,
+    canonical_url: str | None = None,
+    abstract: str = "",
+    venue: str = "",
+) -> dict[str, Any]:
+    """Build a SeedCandidate from a normalized source result.
+
+    Extracts known fields from ``raw`` (which may come from Crossref,
+    Semantic Scholar, OpenAlex, or arXiv) and fills in any explicit
+    overrides. Fields missing from both ``raw`` and the overrides
+    are left at their default (empty / None) values.
+    """
+    return make_seed_candidate(
+        title=title or raw.get("title") or "",
+        authors=authors or raw.get("authors") or [],
+        year=year if year is not None else raw.get("year"),
+        doi=doi or raw.get("doi"),
+        arxiv_id=arxiv_id or raw.get("arxiv_id"),
+        canonical_url=canonical_url or raw.get("canonical_url") or raw.get("url"),
+        abstract=abstract or raw.get("abstract") or "",
+        venue=venue or raw.get("venue") or "",
+        sources=[source],
+    )
