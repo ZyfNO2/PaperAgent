@@ -1566,6 +1566,35 @@ async def _fetch_seed_candidates(
 
 # ── Per-seed resolution ─────────────────────────────────────────────────────
 
+def _status_from_fetched(
+    flat: dict[str, Any],
+    fetched: dict[str, Any] | None,
+) -> tuple[str, str | None]:
+    """Map a fetched/searched candidate to an existence_status + repair_hint.
+
+    Re8.2 WP2 structured-scoring path uses ``total_score`` and
+    ``confidence`` in {"verified", "ambiguous", "not_found"}. The legacy
+    Re8.1 ``_fetch_by_title`` path uses ``confidence`` in
+    {"high", "medium", "low"} and falls back to ``_decide_existence``.
+    """
+    if fetched is None:
+        title = (flat.get("title") or "").strip()
+        if title:
+            return "ambiguous", "no authoritative landing page; consider Repair via author/year"
+        return "not_found", "no identifier and no title; cannot verify"
+
+    wp2_total = fetched.get("total_score")
+    if wp2_total is not None:
+        wp2_confidence = fetched.get("confidence", "ambiguous")
+        if wp2_confidence == "verified":
+            return "verified", None
+        if wp2_confidence == "ambiguous":
+            return "ambiguous", "seed repair: structured score in ambiguous range"
+        return "ambiguous", "seed repair: low confidence match"
+
+    return _decide_existence(flat, fetched)
+
+
 async def _resolve_one_seed(
     seed_id: str,
     payload: dict[str, Any],
@@ -1642,26 +1671,7 @@ async def _resolve_one_seed(
                     year=flat.get("year"),
                 )
             if fetched is not None:
-                # Determine existence status. Re8.2 WP2 path sets
-                # ``total_score`` and ``confidence`` in
-                # {"verified", "ambiguous", "not_found"}. The legacy
-                # Re8.1 _fetch_by_title path sets ``confidence`` in
-                # {"high", "medium", "low"} — use _decide_existence
-                # for that path.
-                wp2_total = fetched.get("total_score")
-                if wp2_total is not None:
-                    wp2_confidence = fetched.get("confidence", "ambiguous")
-                    if wp2_confidence == "verified":
-                        status = "verified"
-                        hint = None
-                    elif wp2_confidence == "ambiguous":
-                        status = "ambiguous"
-                        hint = "seed repair: structured score in ambiguous range"
-                    else:
-                        status = "ambiguous"
-                        hint = "seed repair: low confidence match"
-                else:
-                    status, hint = _decide_existence(flat, fetched)
+                status, hint = _status_from_fetched(flat, fetched)
                 card = make_seed_card(
                     seed_id=seed_id,
                     input_form=input_form,
@@ -1712,18 +1722,40 @@ async def _resolve_one_seed(
     fetched: dict[str, Any] | None = None
     if input_form == "doi":
         fetched = await _fetch_crossref(identifier)
+        # Re8.2 WP4 fallback: authoritative Crossref fetch can fail or return
+        # an empty metadata shell due to transient network/SSL errors. If the
+        # fetched record lacks a usable title, try the Seed Repair 2.0
+        # multi-source search path as a safety net.
+        if (fetched is None or not (fetched.get("title") or "").strip()) and (flat.get("title") or "").strip():
+            fetched = await _fetch_seed_candidates(
+                (flat.get("title") or "").strip(),
+                list(flat.get("authors") or []),
+                year=flat.get("year"),
+            )
     elif input_form == "arxiv":
         fetched = await _fetch_arxiv(identifier)
+        if (fetched is None or not (fetched.get("title") or "").strip()) and (flat.get("title") or "").strip():
+            fetched = await _fetch_seed_candidates(
+                (flat.get("title") or "").strip(),
+                list(flat.get("authors") or []),
+                year=flat.get("year"),
+            )
     elif input_form == "url":
         # Try arxiv pattern first (P1-1: use unanchored _ARXIV_URL_RE)
         if "arxiv.org" in (identifier or "").lower():
             m = _ARXIV_URL_RE.search(identifier)
             if m:
                 fetched = await _fetch_arxiv(m.group(1))
+            if (fetched is None or not (fetched.get("title") or "").strip()) and (flat.get("title") or "").strip():
+                fetched = await _fetch_seed_candidates(
+                    (flat.get("title") or "").strip(),
+                    list(flat.get("authors") or []),
+                    year=flat.get("year"),
+                )
         # Else fall through — URL-only is metadata_only ambiguous unless
         # caller also supplied a DOI/arxiv that we already tried above.
 
-    status, hint = _decide_existence(flat, fetched)
+    status, hint = _status_from_fetched(flat, fetched)
 
     # Merge fetched metadata into card (fetched wins on conflicts)
     card = make_seed_card(

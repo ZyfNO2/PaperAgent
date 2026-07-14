@@ -401,6 +401,9 @@ def run_seeded_demo(case_key: str) -> dict:
 
         result["status"] = "PASS"
         result["runtime_pass"] = True
+        # Re8.2 WP4: embed full final_state for downstream artifact extraction
+        # (removed by the wrapper before writing the public summary)
+        result["_final_state"] = final_state
         result["final_rec"] = {
             "topic": final_rec.get("topic", ""),
             "n_papers": final_rec.get("n_papers", 0),
