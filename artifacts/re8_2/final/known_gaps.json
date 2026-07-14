@@ -67,12 +67,51 @@
         "后续可根据 run_mode 动态设置超时"
       ],
       "owner": "completed"
+    },
+    {
+      "id": "GAP-006",
+      "category": "trace_consistency",
+      "severity": "medium",
+      "description": "reflection_gates.py 与 seed_resolver.py 的 trace 未统一记录 contract_id 与 model，仅有 provider 或硬编码 local，降低跨节点调试能力。",
+      "cases": ["vit_dr", "xlm_r", "yolo_steel"],
+      "root_cause": "trace emit 时未复用 verify.py 的 diag 模式",
+      "next_steps": [
+        "在 reflection_gates.py 的 input/output_summary 中注入 contract_id 与 model",
+        "在 seed_resolver.py 中记录实际 source 与 LLM 消歧 contract_id"
+      ],
+      "owner": "Re8.3"
+    },
+    {
+      "id": "GAP-007",
+      "category": "sop_hook",
+      "severity": "low",
+      "description": "SOP 完成度检查 hook 对交接包产物使用固定清单（trace_before_after.json 等），与 Re8.2 实际 handoff 结构（manifest/metrics/decision/regression/e2e/known_gaps）不一致，导致 [!!] 误报。",
+      "cases": ["re8_2"],
+      "root_cause": "hook 的 EXPECTED_HANDOFF_FILES 未按 SOP 阶段差异化",
+      "next_steps": [
+        "让 hook 读取 manifest.json 判断产物齐备，或按版本号配置预期清单"
+      ],
+      "owner": "Re8.3"
+    },
+    {
+      "id": "GAP-008",
+      "category": "e2e_ci",
+      "severity": "low",
+      "description": "真实 E2E 测试硬编码 29 分钟超时并依赖真实 API/LLM，不适合作为默认回归守门。",
+      "cases": ["wp5_e2e"],
+      "root_cause": "超时与外部依赖未参数化",
+      "next_steps": [
+        "将超时参数化为 env",
+        "增加 @pytest.mark.network 标记以便 CI 跳过",
+        "补充基于 mock 的前端 smoke test"
+      ],
+      "owner": "CI/Re8.3"
     }
   ],
   "summary": {
     "high": 1,
-    "medium": 2,
-    "low": 2,
-    "total": 5
+    "medium": 3,
+    "low": 4,
+    "total": 8
   }
 }
