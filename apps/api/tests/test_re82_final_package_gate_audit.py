@@ -9,7 +9,11 @@ from apps.api.app.services.agents.graph.nodes import final_recommendation_re82 a
 _CANONICAL_SECTIONS = {
     "seed_audit_summary": [],
     "tailor_summary": {},
-    "gate_results": {"tailor_gate": {"verdict": "pass"}},
+    "gate_results": {
+        "seed_audit_gate": {"verdict": "pass"},
+        "tailor_gate": {"verdict": "pass"},
+        "final_review_gate": {"verdict": "pass"},
+    },
     "ledger_entries": [],
     "evidence_gap_status": {"counts": {}, "open_gaps": []},
     "falsifiable_hypothesis": "hypothesis",
@@ -40,25 +44,32 @@ def _state():
     }
 
 
-def test_gate_execution_is_nested_without_creating_eighth_section(monkeypatch):
+def test_gate_execution_is_nested_without_extra_section_or_pseudo_gate(monkeypatch):
     monkeypatch.setattr(wrapper._legacy, "final_recommendation_node", lambda state: _legacy_patch())
 
     patch = wrapper.final_recommendation_node(_state())
     package = patch["final_research_package"]
-    execution = package["gate_results"]["_execution"]
+    execution = package["gate_results"]["tailor_gate"]["execution"]
 
     assert set(package) == set(_CANONICAL_SECTIONS)
     assert len(package) == 7
+    assert set(package["gate_results"]) == {
+        "seed_audit_gate",
+        "tailor_gate",
+        "final_review_gate",
+    }
     assert "gate_execution" not in package
+    assert "_execution" not in package["gate_results"]
     assert execution["reuse_count"]["tailor_gate"] == 2
     assert patch["final_recommendation"]["gate_execution"] == execution
     assert patch["final_recommendation"]["research_package"] == package
     assert len(patch["trace_events"]) == 2
 
 
-def test_legacy_top_level_gate_execution_is_migrated(monkeypatch):
+def test_legacy_top_level_and_pseudo_gate_execution_are_migrated(monkeypatch):
     legacy_package = copy.deepcopy(_CANONICAL_SECTIONS)
     legacy_package["gate_execution"] = {"legacy": True}
+    legacy_package["gate_results"]["_execution"] = {"legacy": True}
     monkeypatch.setattr(
         wrapper._legacy,
         "final_recommendation_node",
@@ -68,13 +79,14 @@ def test_legacy_top_level_gate_execution_is_migrated(monkeypatch):
     package = wrapper.final_recommendation_node(_state())["final_research_package"]
 
     assert "gate_execution" not in package
-    assert package["gate_results"]["_execution"]["reuse_count"]["tailor_gate"] == 2
+    assert "_execution" not in package["gate_results"]
+    assert package["gate_results"]["tailor_gate"]["execution"]["reuse_count"]["tailor_gate"] == 2
 
 
 def test_missing_gate_metadata_degrades_to_empty_collections(monkeypatch):
     monkeypatch.setattr(wrapper._legacy, "final_recommendation_node", lambda state: _legacy_patch())
     patch = wrapper.final_recommendation_node({})
-    audit = patch["final_research_package"]["gate_results"]["_execution"]
+    audit = patch["final_research_package"]["gate_results"]["tailor_gate"]["execution"]
 
     assert audit["last_gate_pass"] == {}
     assert audit["cycle_id"] == {}
