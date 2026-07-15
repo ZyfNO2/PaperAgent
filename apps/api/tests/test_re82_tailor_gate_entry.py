@@ -71,7 +71,7 @@ def test_react_mode_calls_reuse_path(monkeypatch):
     assert patch == {"ok": True}
 
 
-def test_cached_skip_pass_is_removed_before_react_evaluation(monkeypatch):
+def test_cached_skip_pass_is_removed_and_invalidation_is_persisted(monkeypatch):
     captured = {}
 
     def reuse_node(state):
@@ -94,9 +94,11 @@ def test_cached_skip_pass_is_removed_before_react_evaluation(monkeypatch):
 
     patch = entry.tailor_gate_node(source)
 
-    assert patch == {"evaluated": True}
+    assert patch["evaluated"] is True
     assert legacy.GATE_TAILOR not in captured["last_gate_pass"]
     assert legacy.GATE_SEED_AUDIT in captured["last_gate_pass"]
+    assert patch["last_gate_pass"][legacy.GATE_TAILOR] == {}
+    assert patch["last_gate_pass"][legacy.GATE_SEED_AUDIT]["verdict"] == "pass"
     assert legacy.GATE_TAILOR in source["last_gate_pass"]
 
 
