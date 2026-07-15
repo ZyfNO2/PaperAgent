@@ -40,6 +40,7 @@ from . import paper_understanding as _paper_understanding
 from . import method_family_explorer as _method_family_explorer
 from . import tailor_skill_adapter as _tailor_skill_adapter  # Re8.0 WP5
 from . import reflection_gates as _reflection_gates  # Re8.0 WP6
+from . import reflection_gate_reuse as _reflection_gate_reuse  # Re8.2 WP1
 from . import fulltext_acquisition as _fulltext_acquisition  # Re8.0 P1-1
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
@@ -51,7 +52,7 @@ REGISTRY: dict[str, callable] = {
     "method_family_explorer": _method_family_explorer.method_family_explorer_node,  # Re8.0 WP3
     "tailor_skill_adapter": _tailor_skill_adapter.tailor_skill_adapter_node,  # Re8.0 WP5
     "seed_audit_gate": _reflection_gates.seed_audit_gate_node,  # Re8.0 WP6
-    "tailor_gate": _reflection_gates.tailor_gate_node,  # Re8.0 WP6
+    "tailor_gate": _reflection_gate_reuse.tailor_gate_node,  # Re8.2 WP1
     "final_review_gate": _reflection_gates.final_review_gate_node,  # Re8.0 WP6
     "topic_parser": _topic_parser.topic_parser_node,
     "search_planner": _search_planner.search_planner_node,
@@ -104,8 +105,11 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
                             "trace_events"),  # Re8.0 WP5
     "seed_audit_gate": ("reflection_gate_results", "reasoning_ledger",
                        "trace_events"),  # Re8.0 WP6
-    "tailor_gate": ("reflection_gate_results", "reasoning_ledger",
-                   "trace_events"),  # Re8.0 WP6
+    "tailor_gate": ("reflection_gate_results", "last_gate_pass",
+                    "gate_cycle_id", "gate_cycle_start_index",
+                    "gate_input_fingerprint", "gate_reuse_count",
+                    "gate_evaluation_events", "gate_reuse_events",
+                    "reasoning_ledger", "trace_events"),  # Re8.2 WP1
     "final_review_gate": ("reflection_gate_results", "reasoning_ledger",
                          "trace_events"),  # Re8.0 WP6
     "topic_parser": ("topic_atoms", "trace_events", "errors", "provider_profile"),
@@ -121,11 +125,11 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "citation_expander": ("seed_papers", "expanded_papers", "surveys_found",
                          "repos_found", "citation_expansion_done", "paper_candidates",
                          "trace_events", "errors", "verify_scope"),  # Re6.1 Fix B
-    "quality_gate": ("evidence_audit", "trace_events"),
-    "targeted_repair": ("search_plan", "evidence_audit", "trace_events", "errors",
-                        "repair_outcome", "repair_no_query_reason", "repair_query_ids"),  # Re6.1 Fix A
     "dataset_repo_extractor": ("dataset_candidates", "repo_candidates",
                               "evidence_audit", "trace_events", "errors"),
+    "quality_gate": ("evidence_audit", "trace_events"),
+    "targeted_repair": ("search_plan", "evidence_audit", "trace_events", "errors",
+                       "repair_outcome", "repair_no_query_reason", "repair_query_ids"),  # Re6.1 Fix A
     "evidence_graph_builder": ("evidence_graph", "evidence_audit", "trace_events"),
     "baseline_classifier": ("baseline_candidates", "parallel_candidates",
                            "dataset_papers", "surveys", "evidence_audit",
