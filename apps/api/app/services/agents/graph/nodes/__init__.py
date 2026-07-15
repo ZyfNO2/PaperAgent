@@ -10,6 +10,7 @@ from __future__ import annotations
 from . import baseline_classifier as _baseline_classifier
 from . import citation_expander as _citation_expander
 from . import content as _content
+from . import final_recommendation_re82 as _final_recommendation_re82
 from . import dataset_repo_extractor as _dataset_repo_extractor
 from . import intake as _intake
 from . import json_graph_builder as _json_graph_builder
@@ -74,7 +75,7 @@ REGISTRY: dict[str, callable] = {
     "low_bar_review": _content.low_bar_review_node,
     "human_gate": _content.human_gate_node,
     "human_gate_search": _content.human_gate_search_node,  # Re3.9.3
-    "final_recommendation": _content.final_recommendation_node,
+    "final_recommendation": _final_recommendation_re82.final_recommendation_node,
     # Re1.4 analysis nodes
     "feasibility_assessor": _feasibility.feasibility_assessor_node,
     "innovation_extractor": _innovation.innovation_extractor_node,
@@ -139,7 +140,9 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "low_bar_review": ("low_bar_review", "work_packages", "trace_events"),
     "human_gate": ("human_gate", "trace_events"),
     "human_gate_search": ("human_gate_search", "trace_events"),  # Re3.9.3
-    "final_recommendation": ("final_recommendation", "trace_events"),
+    "final_recommendation": ("final_recommendation", "final_research_package",
+                             "fused_verdict", "fused_verdict_rationale",
+                             "stop_reason", "trace_events"),  # Re8.2 WP1
     # Re1.4 analysis nodes
     "feasibility_assessor": ("feasibility_report", "trace_events"),
     "innovation_extractor": ("innovation_points", "stitching_plan", "trace_events"),
