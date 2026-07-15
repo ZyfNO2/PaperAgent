@@ -31,7 +31,7 @@ from . import reflection_gates as _legacy
 from ._util import emit_trace as _emit
 
 _GATE = _legacy.GATE_TAILOR
-_FINGERPRINT_VERSION = "re8.2-tailor-gate-fingerprint/v1"
+_FINGERPRINT_VERSION = "re8.2-tailor-gate-fingerprint/v2"
 
 # Keys explicitly excluded from dependency fingerprints.  They are either
 # sensitive, non-serializable, local-machine-specific, or operational noise.
@@ -50,6 +50,7 @@ _EXCLUDED_KEYS = {
     "elapsed_ms",
     "provider_request_id",
     "request_id",
+    "generated_by",
 }
 
 _SEED_IDENTITY_FIELDS = (
@@ -81,10 +82,11 @@ def _json_safe(value: Any) -> Any:
         return None
     if isinstance(value, Mapping):
         out: dict[str, Any] = {}
-        for key in sorted(str(k) for k in value.keys()):
+        items = sorted(value.items(), key=lambda pair: str(pair[0]))
+        for raw_key, item in items:
+            key = str(raw_key)
             if key in _EXCLUDED_KEYS:
                 continue
-            item = value.get(key)
             safe = _json_safe(item)
             if safe is not None or item is None:
                 out[key] = safe
@@ -127,12 +129,33 @@ def _project_tailored_method(raw: Any) -> dict[str, Any]:
 
     if "candidate_modules" in tailored:
         tailored["candidate_modules"] = _sort_records(
-            tailored.get("candidate_modules"), ("module_id", "name", "source")
+            tailored.get("candidate_modules"),
+            ("module_id", "name", "source_evidence_id", "source"),
+        )
+    if "compatibility_analysis" in tailored:
+        tailored["compatibility_analysis"] = _sort_records(
+            tailored.get("compatibility_analysis"),
+            ("module_id", "name", "source_evidence_id"),
         )
     if "ablation_matrix" in tailored:
         tailored["ablation_matrix"] = _sort_records(
             tailored.get("ablation_matrix"), ("experiment_id", "name", "variant")
         )
+    if "evidence_gaps_for_research" in tailored:
+        tailored["evidence_gaps_for_research"] = _sort_records(
+            tailored.get("evidence_gaps_for_research"),
+            ("gap_id", "priority", "description"),
+        )
+
+    # These fields are semantically set-like.  Their order can drift across
+    # provider calls or validation passes without changing the method.
+    for field in (
+        "fair_comparison_requirements",
+        "limitations",
+        "validation_warnings",
+    ):
+        if field in tailored:
+            tailored[field] = _sort_records(tailored.get(field), ())
 
     assembly = tailored.get("assembly_plan")
     if isinstance(assembly, dict):
