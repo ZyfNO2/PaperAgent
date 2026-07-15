@@ -21,6 +21,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Re8 structured PDF parsing. The base install keeps the existing pypdf
+# fallback; deployments that need heading/table extraction opt into this extra.
+pdf = [
+    "PyMuPDF>=1.24",
+    "pdfplumber>=0.11",
+]
 dev = [
     "pytest>=8.3",
     "pytest-asyncio>=0.24",
