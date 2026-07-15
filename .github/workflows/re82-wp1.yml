@@ -8,8 +8,10 @@ on:
       - "apps/api/app/services/agents/graph/state.py"
       - "apps/api/app/services/agents/graph/nodes/__init__.py"
       - "apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py"
+      - "apps/api/app/services/agents/graph/nodes/tailor_gate_entry.py"
       - "apps/api/app/services/agents/graph/nodes/final_recommendation_re82.py"
       - "apps/api/tests/test_re82_gate_reuse.py"
+      - "apps/api/tests/test_re82_tailor_gate_entry.py"
       - "apps/api/tests/test_re82_final_package_gate_audit.py"
       - ".github/workflows/re82-wp1.yml"
   pull_request:
@@ -17,9 +19,11 @@ on:
       - "apps/api/app/services/agents/graph/state.py"
       - "apps/api/app/services/agents/graph/nodes/__init__.py"
       - "apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py"
+      - "apps/api/app/services/agents/graph/nodes/tailor_gate_entry.py"
       - "apps/api/app/services/agents/graph/nodes/final_recommendation_re82.py"
       - "apps/api/app/services/agents/graph/nodes/reflection_gates.py"
       - "apps/api/tests/test_re82_gate_reuse.py"
+      - "apps/api/tests/test_re82_tailor_gate_entry.py"
       - "apps/api/tests/test_re82_final_package_gate_audit.py"
       - "apps/api/tests/test_re8_reflection_gates.py"
       - ".github/workflows/re82-wp1.yml"
@@ -31,7 +35,7 @@ permissions:
 jobs:
   gate-regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,15 +55,45 @@ jobs:
           apps/api/app/services/agents/graph/state.py
           apps/api/app/services/agents/graph/nodes/__init__.py
           apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py
+          apps/api/app/services/agents/graph/nodes/tailor_gate_entry.py
           apps/api/app/services/agents/graph/nodes/final_recommendation_re82.py
           apps/api/tests/test_re82_gate_reuse.py
+          apps/api/tests/test_re82_tailor_gate_entry.py
           apps/api/tests/test_re82_final_package_gate_audit.py
+
+      - name: Lint changed Python files
+        run: >-
+          ruff check
+          apps/api/app/services/agents/graph/state.py
+          apps/api/app/services/agents/graph/nodes/__init__.py
+          apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py
+          apps/api/app/services/agents/graph/nodes/tailor_gate_entry.py
+          apps/api/app/services/agents/graph/nodes/final_recommendation_re82.py
+          apps/api/tests/test_re82_gate_reuse.py
+          apps/api/tests/test_re82_tailor_gate_entry.py
+          apps/api/tests/test_re82_final_package_gate_audit.py
+
+      - name: Create test result directory
+        run: mkdir -p test-results
 
       - name: Run focused Re8.2 WP1 tests
         run: >-
           pytest -q
           apps/api/tests/test_re82_gate_reuse.py
+          apps/api/tests/test_re82_tailor_gate_entry.py
           apps/api/tests/test_re82_final_package_gate_audit.py
+          --junitxml=test-results/re82-wp1.xml
 
-      - name: Run existing reflection gate regression
-        run: pytest -q apps/api/tests/test_re8_reflection_gates.py
+      - name: Run full Re8 API regression
+        run: >-
+          pytest -q apps/api/tests -k "re8"
+          --junitxml=test-results/re8-regression.xml
+
+      - name: Upload JUnit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: re82-wp1-test-results
+          path: test-results/*.xml
+          if-no-files-found: error
+          retention-days: 14
