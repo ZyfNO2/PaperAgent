@@ -1,6 +1,17 @@
 name: Re8.2 WP1 Gate Regression
 
 on:
+  push:
+    branches:
+      - "dev/re8.2-wp1-gate-reuse"
+    paths:
+      - "apps/api/app/services/agents/graph/state.py"
+      - "apps/api/app/services/agents/graph/nodes/__init__.py"
+      - "apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py"
+      - "apps/api/app/services/agents/graph/nodes/final_recommendation_re82.py"
+      - "apps/api/tests/test_re82_gate_reuse.py"
+      - "apps/api/tests/test_re82_final_package_gate_audit.py"
+      - ".github/workflows/re82-wp1.yml"
   pull_request:
     paths:
       - "apps/api/app/services/agents/graph/state.py"
