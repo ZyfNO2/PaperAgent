@@ -1,10 +1,9 @@
 """Re8.2 additive final-recommendation audit wrapper.
 
 The legacy final recommendation remains the source of truth for verdicts and
-the seven canonical package sections. Gate execution metadata is attached under
-``gate_results._execution`` and on the recommendation object, so reuse remains
-auditable without turning the canonical seven-section package into an eighth
-section.
+the seven canonical package sections. Tailor execution metadata is nested on
+the Tailor Gate result and on the recommendation object, so reuse remains
+auditable without creating either an eighth package section or a pseudo Gate.
 """
 from __future__ import annotations
 
@@ -35,13 +34,20 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
     package = copy.deepcopy(patch.get("final_research_package") or {})
     execution = _gate_execution_summary(state)
 
-    # Gate execution is extension metadata, not an eighth canonical section.
+    # Gate execution is extension metadata, not an eighth canonical section or
+    # a fourth pseudo Gate. Attach it to the Tailor Gate result it describes.
     package.pop("gate_execution", None)
     gate_results = package.get("gate_results")
     if not isinstance(gate_results, dict):
         gate_results = {}
     gate_results = copy.deepcopy(gate_results)
-    gate_results["_execution"] = execution
+    gate_results.pop("_execution", None)  # migrate the short-lived review shape
+    tailor_result = gate_results.get("tailor_gate")
+    if not isinstance(tailor_result, dict):
+        tailor_result = {}
+    tailor_result = copy.deepcopy(tailor_result)
+    tailor_result["execution"] = execution
+    gate_results["tailor_gate"] = tailor_result
     package["gate_results"] = gate_results
 
     recommendation = copy.deepcopy(patch.get("final_recommendation") or {})
@@ -58,6 +64,7 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
         {
             "gate_execution_present": True,
             "canonical_package_section_count": len(package),
+            "gate_result_keys": sorted(gate_results),
             "reuse_count": execution["reuse_count"],
         },
         [],
