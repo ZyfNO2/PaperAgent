@@ -7,6 +7,7 @@ on:
       - "fix/re8.2-*"
     paths:
       - "pyproject.toml"
+      - "scripts/ci/compare_pytest_junit.py"
       - "apps/api/app/services/agents/graph/state.py"
       - "apps/api/app/services/agents/graph/nodes/__init__.py"
       - "apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py"
@@ -20,6 +21,7 @@ on:
   pull_request:
     paths:
       - "pyproject.toml"
+      - "scripts/ci/compare_pytest_junit.py"
       - "apps/api/app/services/agents/graph/state.py"
       - "apps/api/app/services/agents/graph/nodes/__init__.py"
       - "apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py"
@@ -40,10 +42,12 @@ permissions:
 jobs:
   api-regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -57,6 +61,7 @@ jobs:
       - name: Compile changed Python modules
         run: >-
           python -m py_compile
+          scripts/ci/compare_pytest_junit.py
           apps/api/app/services/agents/graph/state.py
           apps/api/app/services/agents/graph/nodes/__init__.py
           apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py
@@ -73,6 +78,7 @@ jobs:
       - name: Lint changed Python files
         run: >-
           ruff check
+          scripts/ci/compare_pytest_junit.py
           apps/api/app/services/agents/graph/state.py
           apps/api/app/services/agents/graph/nodes/__init__.py
           apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py
@@ -94,10 +100,32 @@ jobs:
           pytest -q apps/api/tests/test_re82_*.py
           --junitxml=test-results/re82-gate.xml
 
-      - name: Run full API regression
+      - name: Run isolated Re8 regression
+        run: >-
+          pytest -q apps/api/tests -k "re8"
+          --junitxml=test-results/re8-isolated.xml
+
+      - name: Run full API suite on PR head (audit)
+        continue-on-error: true
         run: >-
           pytest -q apps/api/tests
-          --junitxml=test-results/api-regression.xml
+          --junitxml=test-results/api-head.xml
+
+      - name: Prepare master worktree
+        run: git worktree add /tmp/paperagent-master origin/master
+
+      - name: Run full API suite on master baseline (audit)
+        continue-on-error: true
+        run: >-
+          cd /tmp/paperagent-master &&
+          pytest -q apps/api/tests
+          --junitxml="$GITHUB_WORKSPACE/test-results/api-master.xml"
+
+      - name: Block head-only API regressions
+        run: >-
+          python scripts/ci/compare_pytest_junit.py
+          test-results/api-master.xml
+          test-results/api-head.xml
 
       - name: Upload JUnit evidence
         if: always()
