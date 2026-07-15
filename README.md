@@ -164,10 +164,27 @@ PaperAgent **不会**：
 
 ---
 
-## 后续路线（不在 Session 17 范围）
+## 当前 Roadmap（Re8.2）
 
-- **Session 18 候选**：错误处理、空状态与可观测性整理 —— 统一错误码、本地 health endpoint、增强日志；
-- 不扩功能、不做新智能体能力，专注**稳定、可复现、可比较、可诊断**。
+项目当前处于 **engineering alpha / internal demo**：Agent 主干和 Re8.2 WP1 Gate reuse/cycle 已有实现，但 post-merge hardening、真实 Provider smoke、Seed Repair 2.0、三案例真实重跑和无 Mock 前后端 E2E 尚未全部闭环。
+
+下一执行顺序：
+
+```text
+合并 PR #2 Gate hardening
+→ 完成 Issue #3 API/frontend contract closure
+→ 真实 Mistral vit_dr smoke
+→ WP2 Seed Repair 2.0
+→ WP3 Seed Audit reason_code / repair_target
+→ 三案例真实重跑
+→ 无 Mock backend/frontend E2E
+→ 全仓测试债务收敛与最终交接
+```
+
+详细状态、验收门槛、非声明边界和生产化阶段见：
+
+- [Plan/PaperAgent_Re8.2_ROADMAP.md](Plan/PaperAgent_Re8.2_ROADMAP.md)
+- [Plan/PaperAgent_Re8.2_EXECUTION_CONTRACT.md](Plan/PaperAgent_Re8.2_EXECUTION_CONTRACT.md)
 
 ---
 
