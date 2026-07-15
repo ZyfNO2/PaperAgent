@@ -208,13 +208,23 @@ class ResearchState(TypedDict, total=False):
     contribution_type: str
     review_generated_by: str
 
-    # Re8.0 WP6: Reflection Gate results keyed by gate_name
-    # ("seed_audit_gate" / "tailor_gate" / "final_review_gate"). Each
-    # value is a make_reflection_gate_result() dict. Lite Chain and
-    # Offline Replay emit a single "pass" entry per gate without LLM
-    # calls; Full Agent may emit up to REFLECTION_GATE_MAX_ROUNDS+1
-    # entries per gate (initial + 2 revise rounds + final unresolved).
+    # Re8.0 WP6: Reflection Gate evaluation results keyed by gate_name.
+    # Re8.2 separates evaluation entries from reuse events.  Historical
+    # results remain append-only across cycles, while ``gate_cycle_start_index``
+    # defines which suffix belongs to the active bounded evaluation cycle.
     reflection_gate_results: dict[str, list[dict[str, Any]]]
+
+    # Re8.2 WP1: last verified pass per gate.  A pass may be reused only when
+    # its stable dependency fingerprint matches the current input.
+    last_gate_pass: Annotated[dict[str, dict[str, Any]], merge_dict]
+    # Active evaluation cycle and its first index in reflection_gate_results.
+    gate_cycle_id: Annotated[dict[str, int], merge_dict]
+    gate_cycle_start_index: Annotated[dict[str, int], merge_dict]
+    gate_input_fingerprint: Annotated[dict[str, str], merge_dict]
+    # Reuse is auditable but never contributes to evaluation round count.
+    gate_reuse_count: Annotated[dict[str, int], merge_dict]
+    gate_evaluation_events: Annotated[list[dict[str, Any]], operator.add]
+    gate_reuse_events: Annotated[list[dict[str, Any]], operator.add]
 
     # Re8.0 WP6: ReAct action log — append-only audit trail of every
     # tool call attempted by the Full Agent ReAct loop. Each entry:
