@@ -41,7 +41,6 @@ from . import paper_understanding as _paper_understanding
 from . import method_family_explorer as _method_family_explorer
 from . import tailor_skill_adapter as _tailor_skill_adapter  # Re8.0 WP5
 from . import reflection_gates as _reflection_gates  # Re8.0 WP6
-from . import reflection_gate_reuse as _reflection_gate_reuse  # Re8.2 WP1 helpers
 from . import tailor_gate_entry as _tailor_gate_entry  # Re8.2 WP1 entrypoint
 from . import fulltext_acquisition as _fulltext_acquisition  # Re8.0 P1-1
 
