@@ -6,8 +6,10 @@ on:
       - "apps/api/app/services/agents/graph/state.py"
       - "apps/api/app/services/agents/graph/nodes/__init__.py"
       - "apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py"
+      - "apps/api/app/services/agents/graph/nodes/final_recommendation_re82.py"
       - "apps/api/app/services/agents/graph/nodes/reflection_gates.py"
       - "apps/api/tests/test_re82_gate_reuse.py"
+      - "apps/api/tests/test_re82_final_package_gate_audit.py"
       - "apps/api/tests/test_re8_reflection_gates.py"
       - ".github/workflows/re82-wp1.yml"
   workflow_dispatch:
@@ -38,10 +40,15 @@ jobs:
           apps/api/app/services/agents/graph/state.py
           apps/api/app/services/agents/graph/nodes/__init__.py
           apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py
+          apps/api/app/services/agents/graph/nodes/final_recommendation_re82.py
           apps/api/tests/test_re82_gate_reuse.py
+          apps/api/tests/test_re82_final_package_gate_audit.py
 
       - name: Run focused Re8.2 WP1 tests
-        run: pytest -q apps/api/tests/test_re82_gate_reuse.py
+        run: >-
+          pytest -q
+          apps/api/tests/test_re82_gate_reuse.py
+          apps/api/tests/test_re82_final_package_gate_audit.py
 
       - name: Run existing reflection gate regression
         run: pytest -q apps/api/tests/test_re8_reflection_gates.py
