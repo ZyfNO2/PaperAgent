@@ -1,9 +1,10 @@
 """Re8.2 additive final-recommendation audit wrapper.
 
 The legacy final recommendation remains the source of truth for verdicts and
-package sections.  This wrapper adds Gate execution metadata so a reused Tailor
-pass is visible without inserting a synthetic evaluation result into
-``reflection_gate_results``.
+the seven canonical package sections. Gate execution metadata is attached under
+``gate_results._execution`` and on the recommendation object, so reuse remains
+auditable without turning the canonical seven-section package into an eighth
+section.
 """
 from __future__ import annotations
 
@@ -32,10 +33,20 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
     t0 = time.time()
     patch = dict(_legacy.final_recommendation_node(state))
     package = copy.deepcopy(patch.get("final_research_package") or {})
-    package["gate_execution"] = _gate_execution_summary(state)
+    execution = _gate_execution_summary(state)
+
+    # Gate execution is extension metadata, not an eighth canonical section.
+    package.pop("gate_execution", None)
+    gate_results = package.get("gate_results")
+    if not isinstance(gate_results, dict):
+        gate_results = {}
+    gate_results = copy.deepcopy(gate_results)
+    gate_results["_execution"] = execution
+    package["gate_results"] = gate_results
 
     recommendation = copy.deepcopy(patch.get("final_recommendation") or {})
     recommendation["research_package"] = package
+    recommendation["gate_execution"] = execution
 
     trace = _emit(
         "final_recommendation_re82_gate_audit",
@@ -46,7 +57,8 @@ def final_recommendation_node(state: ResearchState) -> dict[str, Any]:
         },
         {
             "gate_execution_present": True,
-            "reuse_count": package["gate_execution"]["reuse_count"],
+            "canonical_package_section_count": len(package),
+            "reuse_count": execution["reuse_count"],
         },
         [],
         "local",
