@@ -1,0 +1,47 @@
+name: Re8.2 WP1 Gate Regression
+
+on:
+  pull_request:
+    paths:
+      - "apps/api/app/services/agents/graph/state.py"
+      - "apps/api/app/services/agents/graph/nodes/__init__.py"
+      - "apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py"
+      - "apps/api/app/services/agents/graph/nodes/reflection_gates.py"
+      - "apps/api/tests/test_re82_gate_reuse.py"
+      - "apps/api/tests/test_re8_reflection_gates.py"
+      - ".github/workflows/re82-wp1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]"
+
+      - name: Compile changed Python modules
+        run: >-
+          python -m py_compile
+          apps/api/app/services/agents/graph/state.py
+          apps/api/app/services/agents/graph/nodes/__init__.py
+          apps/api/app/services/agents/graph/nodes/reflection_gate_reuse.py
+          apps/api/tests/test_re82_gate_reuse.py
+
+      - name: Run focused Re8.2 WP1 tests
+        run: pytest -q apps/api/tests/test_re82_gate_reuse.py
+
+      - name: Run existing reflection gate regression
+        run: pytest -q apps/api/tests/test_re8_reflection_gates.py
