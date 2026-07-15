@@ -1,22 +1,22 @@
 """Re8.2 WP1 — deterministic Tailor Gate cycle and pass reuse.
 
 The legacy reflection gate runner derives ``round_idx`` from the total length of
-``reflection_gate_results[gate_name]``.  That is correct for one evaluation
+``reflection_gate_results[gate_name]``. That is correct for one evaluation
 cycle, but final-review repair can route through Tailor again after Tailor has
-already passed.  Re-entering the legacy runner then consumes another round and
+already passed. Re-entering the legacy runner then consumes another round and
 may eventually emit a cap result even though Tailor's semantic inputs did not
 change.
 
-This module wraps only ``tailor_gate_node``.  It deliberately leaves the
-existing evaluator, schema, prompts, cap, and routing functions untouched.
-It adds three contracts:
+This module wraps only ``tailor_gate_node``. It leaves the existing evaluator,
+schema, prompts, cap, and routing functions untouched while separating:
 
-* a canonical SHA-256 fingerprint over stable Tailor dependencies;
-* explicit cycle metadata so a semantic input change starts a fresh bounded
-  evaluation cycle without deleting historical results;
-* pass reuse that writes audit events but does not append to
-  ``reflection_gate_results`` and therefore does not consume an evaluation
-  round.
+* canonical dependency fingerprints;
+* bounded evaluation cycles;
+* auditable reuse events that never consume evaluation rounds.
+
+Re8.2 post-merge review additionally guarantees that legacy ``skip``/``reuse``
+log entries never consume a real evaluation round and that only the active,
+latest evaluated pass can be reused.
 """
 from __future__ import annotations
 
@@ -32,8 +32,9 @@ from ._util import emit_trace as _emit
 
 _GATE = _legacy.GATE_TAILOR
 _FINGERPRINT_VERSION = "re8.2-tailor-gate-fingerprint/v2"
+_NON_EVALUATION_GENERATORS = {"skip", "reuse"}
 
-# Keys explicitly excluded from dependency fingerprints.  They are either
+# Keys explicitly excluded from dependency fingerprints. They are either
 # sensitive, non-serializable, local-machine-specific, or operational noise.
 _EXCLUDED_KEYS = {
     "raw_input",
@@ -69,13 +70,7 @@ _SEED_IDENTITY_FIELDS = (
 
 
 def _json_safe(value: Any) -> Any:
-    """Return a deterministic, JSON-serializable representation.
-
-    The function is intentionally conservative: bytes are omitted rather than
-    converted to text, and known operational keys are removed recursively.
-    Unknown objects are represented by their type name instead of ``repr`` so
-    memory addresses and local paths cannot create false fingerprint changes.
-    """
+    """Return a deterministic, JSON-serializable representation."""
     if value is None or isinstance(value, (bool, int, float, str)):
         return value
     if isinstance(value, (bytes, bytearray, memoryview)):
@@ -147,8 +142,6 @@ def _project_tailored_method(raw: Any) -> dict[str, Any]:
             ("gap_id", "priority", "description"),
         )
 
-    # These fields are semantically set-like.  Their order can drift across
-    # provider calls or validation passes without changing the method.
     for field in (
         "fair_comparison_requirements",
         "limitations",
@@ -242,6 +235,71 @@ def _as_non_negative_int(value: Any, default: int = 0) -> int:
     return parsed if parsed >= 0 else default
 
 
+def _counts_as_evaluation_result(entry: Any) -> bool:
+    """Return whether a historical result consumes an evaluation round."""
+    return (
+        isinstance(entry, dict)
+        and str(entry.get("generated_by") or "").lower()
+        not in _NON_EVALUATION_GENERATORS
+    )
+
+
+def _latest_evaluation(log: list[dict[str, Any]]) -> tuple[int, dict[str, Any]] | None:
+    for index in range(len(log) - 1, -1, -1):
+        entry = log[index]
+        if _counts_as_evaluation_result(entry):
+            return index, entry
+    return None
+
+
+def _can_reuse_previous_pass(
+    state: ResearchState,
+    previous: Any,
+    fingerprint: str,
+    full_log: list[dict[str, Any]],
+) -> bool:
+    """Allow reuse only for the active cycle's latest evaluated pass.
+
+    Fingerprint equality alone is insufficient: an older pass can be followed by
+    a later revise/unresolved cycle. Reusing that stale pass would leave routing
+    and fused-verdict consumers reading the later failure from the evaluation
+    log. Active cycle metadata plus the latest evaluated result keep those views
+    consistent without appending a synthetic pass.
+    """
+    if not isinstance(previous, dict):
+        return False
+    if previous.get("verdict") != "pass":
+        return False
+    if previous.get("generated_by") in _NON_EVALUATION_GENERATORS:
+        return False
+    if previous.get("input_fingerprint") != fingerprint:
+        return False
+
+    active_fingerprint = (state.get("gate_input_fingerprint") or {}).get(_GATE)
+    if active_fingerprint != fingerprint:
+        return False
+
+    active_cycle = _as_non_negative_int((state.get("gate_cycle_id") or {}).get(_GATE))
+    if _as_non_negative_int(previous.get("cycle_id")) != active_cycle:
+        return False
+
+    latest = _latest_evaluation(full_log)
+    if latest is None:
+        return False
+    latest_index, latest_result = latest
+    if latest_result.get("verdict") != "pass":
+        return False
+    if _as_non_negative_int(latest_result.get("round_idx")) != _as_non_negative_int(
+        previous.get("evaluation_round_idx")
+    ):
+        return False
+
+    stored_index = previous.get("result_log_index")
+    if stored_index is not None and _as_non_negative_int(stored_index) != latest_index:
+        return False
+    return True
+
+
 def _reuse_previous_pass(
     state: ResearchState,
     previous: dict[str, Any],
@@ -250,6 +308,7 @@ def _reuse_previous_pass(
     t0 = time.time()
     cycle_id = _as_non_negative_int(previous.get("cycle_id"))
     source_round = _as_non_negative_int(previous.get("evaluation_round_idx"))
+    source_log_index = _as_non_negative_int(previous.get("result_log_index"))
     counts = dict(state.get("gate_reuse_count") or {})
     reuse_count = _as_non_negative_int(counts.get(_GATE)) + 1
     counts[_GATE] = reuse_count
@@ -260,6 +319,7 @@ def _reuse_previous_pass(
         "reused_previous_pass": True,
         "source_cycle_id": cycle_id,
         "source_round_idx": source_round,
+        "source_result_log_index": source_log_index,
         "input_fingerprint": fingerprint,
         "generated_by": "reuse",
         "reuse_count": reuse_count,
@@ -303,8 +363,6 @@ def _reuse_previous_pass(
         decision_id=f"{_GATE}-reuse-c{cycle_id}-n{reuse_count}",
         result=ledger_result,
     )
-    # Deliberately omit reflection_gate_results: LangGraph retains the existing
-    # value, so reuse cannot increase the evaluation round count.
     return {
         "gate_reuse_count": counts,
         "gate_reuse_events": [reuse_event],
@@ -316,17 +374,14 @@ def _reuse_previous_pass(
 def tailor_gate_node(state: ResearchState) -> dict[str, Any]:
     """Run, reuse, or start a new bounded Tailor Gate evaluation cycle."""
     fingerprint = tailor_gate_input_fingerprint(state)
-    last_passes = dict(state.get("last_gate_pass") or {})
-    previous = last_passes.get(_GATE)
-    if (
-        isinstance(previous, dict)
-        and previous.get("verdict") == "pass"
-        and previous.get("input_fingerprint") == fingerprint
-    ):
-        return _reuse_previous_pass(state, previous, fingerprint)
-
     full_results = dict(state.get("reflection_gate_results") or {})
     full_log = list(full_results.get(_GATE, []))
+    last_passes = dict(state.get("last_gate_pass") or {})
+    previous = last_passes.get(_GATE)
+
+    if _can_reuse_previous_pass(state, previous, fingerprint, full_log):
+        return _reuse_previous_pass(state, previous, fingerprint)
+
     active_fingerprints = dict(state.get("gate_input_fingerprint") or {})
     cycle_ids = dict(state.get("gate_cycle_id") or {})
     cycle_starts = dict(state.get("gate_cycle_start_index") or {})
@@ -338,14 +393,21 @@ def tailor_gate_node(state: ResearchState) -> dict[str, Any]:
         start_index = 0
 
     if active_fingerprint is None:
-        # Legacy states have no cycle metadata.  Preserve their complete gate
-        # log so this feature cannot bypass an already-consumed cap.
-        start_index = 0
+        # Legacy skip-only histories must not consume real evaluation rounds.
+        # If real evaluations exist, preserve all of them conservatively so a
+        # legacy checkpoint cannot bypass an already-consumed cap.
+        evaluation_indices = [
+            i for i, entry in enumerate(full_log) if _counts_as_evaluation_result(entry)
+        ]
+        start_index = evaluation_indices[0] if evaluation_indices else len(full_log)
     elif active_fingerprint != fingerprint:
         cycle_id += 1
         start_index = len(full_log)
 
-    current_cycle_before = full_log[start_index:]
+    cycle_history = full_log[start_index:]
+    current_cycle_before = [
+        entry for entry in cycle_history if _counts_as_evaluation_result(entry)
+    ]
     delegated_state = dict(state)
     delegated_results = dict(full_results)
     delegated_results[_GATE] = current_cycle_before
@@ -354,9 +416,10 @@ def tailor_gate_node(state: ResearchState) -> dict[str, Any]:
     patch = dict(_legacy.tailor_gate_node(delegated_state))
     delegated_after = dict(patch.get("reflection_gate_results") or delegated_results)
     current_cycle_after = list(delegated_after.get(_GATE, current_cycle_before))
+    appended_results = current_cycle_after[len(current_cycle_before):]
 
     merged_results = dict(delegated_after)
-    merged_results[_GATE] = full_log[:start_index] + current_cycle_after
+    merged_results[_GATE] = full_log + appended_results
     patch["reflection_gate_results"] = merged_results
 
     active_fingerprints[_GATE] = fingerprint
@@ -366,10 +429,13 @@ def tailor_gate_node(state: ResearchState) -> dict[str, Any]:
     patch["gate_cycle_id"] = cycle_ids
     patch["gate_cycle_start_index"] = cycle_starts
 
-    last_result = current_cycle_after[-1] if current_cycle_after else {}
+    last_result = appended_results[-1] if appended_results else (
+        current_cycle_after[-1] if current_cycle_after else {}
+    )
     evaluation_round_idx = _as_non_negative_int(
         last_result.get("round_idx"), len(current_cycle_before)
     )
+    result_log_index = len(merged_results[_GATE]) - 1
     evaluation_event = {
         "gate_name": _GATE,
         "event_type": "gate_evaluated",
@@ -378,7 +444,7 @@ def tailor_gate_node(state: ResearchState) -> dict[str, Any]:
         "input_fingerprint": fingerprint,
         "verdict": last_result.get("verdict", "unresolved"),
         "generated_by": last_result.get("generated_by", "unknown"),
-        "result_log_index": len(merged_results[_GATE]) - 1,
+        "result_log_index": result_log_index,
     }
     patch["gate_evaluation_events"] = list(patch.get("gate_evaluation_events") or []) + [
         evaluation_event
@@ -418,7 +484,13 @@ def tailor_gate_node(state: ResearchState) -> dict[str, Any]:
             "input_fingerprint": fingerprint,
             "generated_by": last_result.get("generated_by", "unknown"),
             "rationale": last_result.get("rationale", ""),
+            "result_log_index": result_log_index,
         }
+        patch["last_gate_pass"] = last_passes
+    elif _GATE in last_passes:
+        # The cached pass is no longer current. A tombstone overwrites the
+        # nested merge-dict entry without pretending an old pass is active.
+        last_passes[_GATE] = {}
         patch["last_gate_pass"] = last_passes
 
     return patch
