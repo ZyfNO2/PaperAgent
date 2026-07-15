@@ -10,6 +10,7 @@ from __future__ import annotations
 from . import baseline_classifier as _baseline_classifier
 from . import citation_expander as _citation_expander
 from . import content as _content
+from . import final_recommendation_re82 as _final_recommendation_re82
 from . import dataset_repo_extractor as _dataset_repo_extractor
 from . import intake as _intake
 from . import json_graph_builder as _json_graph_builder
@@ -40,6 +41,7 @@ from . import paper_understanding as _paper_understanding
 from . import method_family_explorer as _method_family_explorer
 from . import tailor_skill_adapter as _tailor_skill_adapter  # Re8.0 WP5
 from . import reflection_gates as _reflection_gates  # Re8.0 WP6
+from . import tailor_gate_entry as _tailor_gate_entry  # Re8.2 WP1 entrypoint
 from . import fulltext_acquisition as _fulltext_acquisition  # Re8.0 P1-1
 
 # Every node is a (ResearchState) -> dict[str, Any] patch function.
@@ -51,7 +53,7 @@ REGISTRY: dict[str, callable] = {
     "method_family_explorer": _method_family_explorer.method_family_explorer_node,  # Re8.0 WP3
     "tailor_skill_adapter": _tailor_skill_adapter.tailor_skill_adapter_node,  # Re8.0 WP5
     "seed_audit_gate": _reflection_gates.seed_audit_gate_node,  # Re8.0 WP6
-    "tailor_gate": _reflection_gates.tailor_gate_node,  # Re8.0 WP6
+    "tailor_gate": _tailor_gate_entry.tailor_gate_node,  # Re8.2 WP1
     "final_review_gate": _reflection_gates.final_review_gate_node,  # Re8.0 WP6
     "topic_parser": _topic_parser.topic_parser_node,
     "search_planner": _search_planner.search_planner_node,
@@ -73,7 +75,7 @@ REGISTRY: dict[str, callable] = {
     "low_bar_review": _content.low_bar_review_node,
     "human_gate": _content.human_gate_node,
     "human_gate_search": _content.human_gate_search_node,  # Re3.9.3
-    "final_recommendation": _content.final_recommendation_node,
+    "final_recommendation": _final_recommendation_re82.final_recommendation_node,
     # Re1.4 analysis nodes
     "feasibility_assessor": _feasibility.feasibility_assessor_node,
     "innovation_extractor": _innovation.innovation_extractor_node,
@@ -104,8 +106,11 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
                             "trace_events"),  # Re8.0 WP5
     "seed_audit_gate": ("reflection_gate_results", "reasoning_ledger",
                        "trace_events"),  # Re8.0 WP6
-    "tailor_gate": ("reflection_gate_results", "reasoning_ledger",
-                   "trace_events"),  # Re8.0 WP6
+    "tailor_gate": ("reflection_gate_results", "last_gate_pass",
+                    "gate_cycle_id", "gate_cycle_start_index",
+                    "gate_input_fingerprint", "gate_reuse_count",
+                    "gate_evaluation_events", "gate_reuse_events",
+                    "reasoning_ledger", "trace_events"),  # Re8.2 WP1
     "final_review_gate": ("reflection_gate_results", "reasoning_ledger",
                          "trace_events"),  # Re8.0 WP6
     "topic_parser": ("topic_atoms", "trace_events", "errors", "provider_profile"),
@@ -121,11 +126,11 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "citation_expander": ("seed_papers", "expanded_papers", "surveys_found",
                          "repos_found", "citation_expansion_done", "paper_candidates",
                          "trace_events", "errors", "verify_scope"),  # Re6.1 Fix B
-    "quality_gate": ("evidence_audit", "trace_events"),
-    "targeted_repair": ("search_plan", "evidence_audit", "trace_events", "errors",
-                        "repair_outcome", "repair_no_query_reason", "repair_query_ids"),  # Re6.1 Fix A
     "dataset_repo_extractor": ("dataset_candidates", "repo_candidates",
                               "evidence_audit", "trace_events", "errors"),
+    "quality_gate": ("evidence_audit", "trace_events"),
+    "targeted_repair": ("search_plan", "evidence_audit", "trace_events", "errors",
+                       "repair_outcome", "repair_no_query_reason", "repair_query_ids"),  # Re6.1 Fix A
     "evidence_graph_builder": ("evidence_graph", "evidence_audit", "trace_events"),
     "baseline_classifier": ("baseline_candidates", "parallel_candidates",
                            "dataset_papers", "surveys", "evidence_audit",
@@ -135,7 +140,9 @@ NODE_FIELDS: dict[str, tuple[str, ...]] = {
     "low_bar_review": ("low_bar_review", "work_packages", "trace_events"),
     "human_gate": ("human_gate", "trace_events"),
     "human_gate_search": ("human_gate_search", "trace_events"),  # Re3.9.3
-    "final_recommendation": ("final_recommendation", "trace_events"),
+    "final_recommendation": ("final_recommendation", "final_research_package",
+                             "fused_verdict", "fused_verdict_rationale",
+                             "stop_reason", "trace_events"),  # Re8.2 WP1
     # Re1.4 analysis nodes
     "feasibility_assessor": ("feasibility_report", "trace_events"),
     "innovation_extractor": ("innovation_points", "stitching_plan", "trace_events"),
