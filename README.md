@@ -54,6 +54,7 @@ Development method: mandatory TDD
 ## v0.1 之后
 
 - [v0.2 至 v1.0 后续版本路线图](docs/ROADMAP_AFTER_V0.1.md)
+- [v0.2 文献检索与 Web-First 上线方案](docs/planning/V0.2_LITERATURE_RETRIEVAL.md)
 
 后续版本继续使用强制 TDD，并按“单版本单主目标”的方式推进。v0.1 未完成验收前，不提前实现后续版本功能。
 
