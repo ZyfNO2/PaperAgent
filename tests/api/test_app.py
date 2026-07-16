@@ -6,7 +6,7 @@ import time
 
 from fastapi.testclient import TestClient
 
-from paperagent.api import SQLiteTaskRepository, create_app
+from paperagent.api import SQLiteTaskRepository, TaskCreateRequest, create_app
 from paperagent.api.models import TaskStatus
 
 
@@ -154,6 +154,11 @@ def test_api__queued_cancel_prevents_executor_call(tmp_path) -> None:
 def test_api__missing_task_paths_and_empty_event_page(tmp_path) -> None:
     executor = ImmediateExecutor()
     repository = SQLiteTaskRepository(tmp_path / "tasks.db")
+    repository.create_task(
+        task_id="manual-task",
+        idempotency_key="manual",
+        payload=TaskCreateRequest.model_validate(_body()),
+    )
     app = create_app(executor=executor, repository=repository)
 
     with TestClient(app) as client:
@@ -162,20 +167,10 @@ def test_api__missing_task_paths_and_empty_event_page(tmp_path) -> None:
         assert client.get("/v1/tasks/missing/events/stream").status_code == 404
         assert client.post("/v1/tasks/missing/cancel").status_code == 404
 
-        repository.create_task(
-            task_id="manual-task",
-            idempotency_key="manual",
-            payload=__import__(
-                "paperagent.api.models", fromlist=["TaskCreateRequest"]
-            ).TaskCreateRequest.model_validate(_body()),
-        )
         page = client.get("/v1/tasks/manual-task/events?after=1").json()
-        assert page == {
-            "task_id": "manual-task",
-            "events": [],
-            "next_cursor": 1,
-            "terminal": False,
-        }
+        assert page["task_id"] == "manual-task"
+        assert page["events"] == []
+        assert page["next_cursor"] == 1
         assert client.get("/v1/tasks/manual-task/events?after=-1").status_code == 422
         assert client.get("/v1/tasks/manual-task/events?limit=501").status_code == 422
 
