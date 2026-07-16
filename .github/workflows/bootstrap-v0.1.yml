@@ -17,19 +17,21 @@ jobs:
   verify-extract-and-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: v0.1
-          fetch-depth: 1
-          show-progress: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - name: Checkout v0.1 quietly
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git init -q .
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=1 origin v0.1
+          git checkout -q -B v0.1 FETCH_HEAD
       - name: Decode and extract verified implementation payload
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
+          python3 - <<'PY'
           from __future__ import annotations
 
           import base64
@@ -61,7 +63,7 @@ jobs:
               tf.extractall(filter="data")
           PY
       - name: Install development dependencies
-        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+        run: python3 -m pip install --upgrade pip && python3 -m pip install -e '.[dev]'
       - name: Run offline release gates
         shell: bash
         run: |
