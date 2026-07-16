@@ -1,47 +1,58 @@
 # PaperAgent
 
-PaperAgent `v0.2` extends the frozen v0.1 LangGraph workflow with a bounded, explainable,
-multi-source academic-literature retrieval core. The v0.1 graph, state, prompts, deterministic
-fixtures, and repair contracts remain compatible and versioned independently.
+PaperAgent `v0.3` adds a durable task API to the bounded v0.1 workflow and v0.2 literature-retrieval
+core. The implementation remains intentionally single-process and SQLite-backed for MVP deployment.
 
 ## Current status
 
 ```text
-Package version: v0.2.0
+Package version: v0.3.0
 Workflow engine contract: v0.1 (frozen)
 Literature retrieval contract: v0.2
-Stage: offline implementation complete
-Release status: real-provider smoke pending; Draft PR only
+Task API contract: v0.3
+Stage: offline MVP implementation complete
+Release status: Draft PR / real-provider and public deployment smoke pending
 ```
 
-## v0.2 implemented scope
+## v0.3 implemented scope
 
-- structured `LiteratureQueryPlan`, `QueryLane`, `ProviderResult`, `PaperRecord`, and
-  `CoverageReport` contracts;
+- FastAPI application factory with injectable workflow executor;
+- SQLite-backed task metadata, results, typed errors, and ordered progress events;
+- single-process, single-concurrency background runner;
+- required idempotency keys with payload-conflict detection;
+- queued/running/cancel-requested/cancelled/succeeded/failed state machine;
+- polling and SSE generated from the same durable event cursor;
+- cooperative cancellation at workflow boundaries;
+- fail-closed restart recovery that never silently replays active provider calls;
+- bounded 16 KiB event payloads and 180 KB terminal results;
+- redacted unknown-exception handling;
+- adapter for the existing LangGraph workflow.
+
+## Preserved v0.2 and v0.1 scope
+
 - OpenAlex, Semantic Scholar, and arXiv discovery adapters;
-- Crossref and DataCite DOI verification adapters;
-- explicit `success / empty / rate_limited / timeout / failed` provider states;
-- concurrent provider fan-out with per-provider limits and a whole-round deadline;
-- deterministic request coalescing and separate success/negative TTL caches;
-- failure-safe caching: timeout, rate-limit, malformed, and failed responses never poison the
-  normal result cache;
-- DOI, arXiv ID, provider ID, and title/year/first-author deduplication;
-- provenance-preserving metadata merge with conflict warnings;
-- explainable relevance, Evidence Gap coverage, verification, recency, and diversity ranking;
-- citation count used only as a weak tie-breaker;
-- deterministic Coverage Gate with at most one focused retry and at most two retrieval rounds;
-- compatibility adapter into the existing v0.1 Retrieval Subgraph;
-- separately marked real-network smoke tests, skipped by default.
+- Crossref and DataCite DOI verification;
+- deterministic deduplication, provenance merge, ranking, coverage audit, cache, and retry budgets;
+- frozen v0.1 graph/state/prompt/fixture contracts;
+- deterministic Fake LLM/Search fixtures, bounded repair routes, HITL checkpoint semantics, and
+  redacted traces.
 
-## Preserved v0.1 scope
+## Task API
 
-- frozen Pydantic schema and TypedDict State contracts;
-- versioned production prompts and deterministic Fake LLM/Search providers;
-- bounded top-level LangGraph and independent retrieval/method repair budgets;
-- checkpoint-backed Human-in-the-Loop interrupt/resume;
-- redacted Trace metadata and idempotent in-memory persistence.
+```text
+POST /v1/tasks
+GET  /v1/tasks/{task_id}
+GET  /v1/tasks/{task_id}/events
+GET  /v1/tasks/{task_id}/events/stream
+POST /v1/tasks/{task_id}/cancel
+GET  /healthz
+```
 
-## Offline verification
+`POST /v1/tasks` requires an `Idempotency-Key` header. This version has no authentication or tenant
+isolation and must be treated as a local or trusted-network evaluation service, not a public
+multi-tenant deployment.
+
+## Verification
 
 ```bash
 python -m pip install -e '.[dev]'
@@ -52,8 +63,7 @@ pytest -q
 pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
 ```
 
-Default tests do not access the network or require API credentials. Real-provider smoke tests are
-opt-in:
+Default tests do not access the network. Real-provider smoke tests remain opt-in:
 
 ```bash
 PAPERAGENT_RUN_REAL_PROVIDER=1 \
@@ -61,23 +71,23 @@ PAPERAGENT_CONTACT_EMAIL=you@example.com \
 pytest -m 'real_provider and network' -q
 ```
 
-`SEMANTIC_SCHOLAR_API_KEY` is optional. Do not commit real credentials.
-
 ## Development contracts
 
-- [v0.1 execution plan](docs/v0.1/EXECUTION_PLAN.md)
-- [v0.1 graph and nodes](docs/v0.1/GRAPH_AND_NODES.md)
-- [v0.1 state contracts](docs/v0.1/STATE_CONTRACTS.md)
-- [v0.1 implementation handoff](docs/v0.1/HANDOFF.md)
-- [v0.2 literature retrieval design](docs/planning/V0.2_LITERATURE_RETRIEVAL.md)
+- [stacked v0.3-v0.5 MVP sequence](docs/planning/MVP_RELEASE_SEQUENCE_V0.3_V0.5.md)
+- [v0.3 execution plan](docs/v0.3/EXECUTION_PLAN.md)
 - [v0.2 implementation handoff](docs/v0.2/HANDOFF.md)
+- [v0.2 literature retrieval design](docs/planning/V0.2_LITERATURE_RETRIEVAL.md)
+- [v0.1 implementation handoff](docs/v0.1/HANDOFF.md)
 
-## Branch policy
+## Stacked branch policy
 
-- `master`: clean release line;
-- `feat/v0.1-offline-skeleton`: v0.1 Draft review branch;
-- `feat/v0.2-literature-retrieval-foundation`: v0.2 Draft development branch;
-- `backup/legacy-pre-v0.1-20260716`: read-only legacy backup.
+```text
+feat/v0.1-offline-skeleton
+  -> feat/v0.2-literature-retrieval-foundation
+      -> feat/v0.3-durable-task-api-mvp
+          -> feat/v0.4-review-export-mvp
+              -> feat/v0.5-pwa-shell-mvp
+```
 
-Do not merge v0.2 directly into `master`. Review it against the v0.1 implementation branch first,
-then decide the release sequence explicitly.
+Each version is reviewed through its own Draft PR against the immediately preceding branch. No
+version is merged automatically.
