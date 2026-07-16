@@ -4,11 +4,11 @@ on:
   push:
     branches: [v0.1]
     paths:
-      - .bootstrap/READY
+      - .bootstrap-v2/READY
   pull_request:
     branches: [master]
     paths:
-      - .bootstrap/READY
+      - .bootstrap-v2/READY
 
 permissions:
   contents: write
@@ -28,8 +28,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .bootstrap/payload.part* | base64 --decode > /tmp/paperagent-v0.1.tar.gz
-          echo '6d6acde1a1752da5fddd0aad6006ed488002275251d172b5b81cd5038adb6c12  /tmp/paperagent-v0.1.tar.gz' | sha256sum --check
+          cat .bootstrap-v2/payload.part* | base64 --decode > /tmp/paperagent-v0.1.tar.gz
+          echo 'a8a847b3cfbb9ff50228000f01ec7e71ce68ae6a20ede8d20dc34a3e95247728  /tmp/paperagent-v0.1.tar.gz' | sha256sum --check
+          gzip -t /tmp/paperagent-v0.1.tar.gz
           tar -tzf /tmp/paperagent-v0.1.tar.gz >/tmp/paperagent-v0.1-files.txt
           if grep -E '(^/|(^|/)\.\.(/|$))' /tmp/paperagent-v0.1-files.txt; then
             echo 'unsafe archive path detected' >&2
@@ -50,7 +51,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf .bootstrap
+          rm -rf .bootstrap .bootstrap-v2
           rm -f .github/workflows/bootstrap-v0.1.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
