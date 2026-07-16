@@ -24,19 +24,36 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Extract verified implementation payload
+      - name: Decode and extract verified implementation payload
         shell: bash
         run: |
           set -euo pipefail
-          cat .bootstrap/payload.part* | base64 --decode > /tmp/paperagent-v0.1.tar.gz
-          echo '6d6acde1a1752da5fddd0aad6006ed488002275251d172b5b81cd5038adb6c12  /tmp/paperagent-v0.1.tar.gz' | sha256sum --check
-          gzip -t /tmp/paperagent-v0.1.tar.gz
-          tar -tzf /tmp/paperagent-v0.1.tar.gz >/tmp/paperagent-v0.1-files.txt
-          if grep -E '(^/|(^|/)\.\.(/|$))' /tmp/paperagent-v0.1-files.txt; then
-            echo 'unsafe archive path detected' >&2
-            exit 1
-          fi
-          tar -xzf /tmp/paperagent-v0.1.tar.gz
+          python - <<'PY'
+          from __future__ import annotations
+
+          import base64
+          import hashlib
+          import tarfile
+          from pathlib import Path
+
+          expected = "6d6acde1a1752da5fddd0aad6006ed488002275251d172b5b81cd5038adb6c12"
+          parts = sorted(Path(".bootstrap").glob("payload.part*"))
+          if not parts:
+              raise SystemExit("no bootstrap payload parts found")
+          encoded = b"".join(part.read_bytes().strip() for part in parts)
+          payload = base64.b64decode(encoded, validate=True)
+          actual = hashlib.sha256(payload).hexdigest()
+          if actual != expected:
+              raise SystemExit(f"payload sha256 mismatch: expected={expected} actual={actual}")
+          archive = Path("/tmp/paperagent-v0.1.tar.gz")
+          archive.write_bytes(payload)
+          with tarfile.open(archive, mode="r:gz") as tf:
+              for member in tf.getmembers():
+                  path = Path(member.name)
+                  if path.is_absolute() or ".." in path.parts:
+                      raise SystemExit(f"unsafe archive path: {member.name}")
+              tf.extractall(filter="data")
+          PY
       - name: Install development dependencies
         run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
       - name: Run offline release gates
