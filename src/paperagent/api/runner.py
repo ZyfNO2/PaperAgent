@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import json
+from contextlib import suppress
 from dataclasses import dataclass, field
 
 from paperagent.api.executor import TaskCancelledError, TaskExecutor
 from paperagent.api.models import JsonObject, TaskError
 from paperagent.api.repository import SQLiteTaskRepository
+from paperagent.schemas.request import ResearchRequest
 
 MAX_RESULT_BYTES = 180_000
 
@@ -52,15 +54,10 @@ class SingleProcessTaskRunner:
             if await asyncio.to_thread(self.repository.has_queued_tasks):
                 self._wake.set()
                 continue
-            try:
+            with suppress(TimeoutError):
                 await asyncio.wait_for(self._wake.wait(), timeout=self.idle_poll_seconds)
-            except TimeoutError:
-                pass
 
-    async def _execute(self, task_id: str, request: object) -> None:
-        from paperagent.schemas.request import ResearchRequest
-
-        typed_request = ResearchRequest.model_validate(request)
+    async def _execute(self, task_id: str, request: ResearchRequest) -> None:
         if await asyncio.to_thread(self.repository.should_cancel, task_id):
             await asyncio.to_thread(self.repository.mark_cancelled, task_id)
             return
@@ -79,7 +76,7 @@ class SingleProcessTaskRunner:
         try:
             result = await self.executor.execute(
                 task_id=task_id,
-                request=typed_request,
+                request=request,
                 emit=emit,
                 should_cancel=should_cancel,
             )
@@ -103,7 +100,7 @@ class SingleProcessTaskRunner:
             await asyncio.to_thread(self.repository.complete_task, task_id, result)
         except TaskCancelledError:
             await asyncio.to_thread(self.repository.mark_cancelled, task_id)
-        except Exception as exc:  # noqa: BLE001 - converted to a redacted durable error contract
+        except Exception as exc:
             await asyncio.to_thread(
                 self.repository.fail_task,
                 task_id,

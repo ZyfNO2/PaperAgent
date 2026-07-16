@@ -48,9 +48,7 @@ def test_repository__create_get_and_idempotent_replay(tmp_path) -> None:
 
 def test_repository__idempotency_key_conflict_is_fail_closed(tmp_path) -> None:
     repository = _repository(tmp_path)
-    repository.create_task(
-        task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW
-    )
+    repository.create_task(task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW)
 
     with pytest.raises(IdempotencyConflictError):
         repository.create_task(
@@ -63,9 +61,7 @@ def test_repository__idempotency_key_conflict_is_fail_closed(tmp_path) -> None:
 
 def test_repository__claim_append_and_complete(tmp_path) -> None:
     repository = _repository(tmp_path)
-    repository.create_task(
-        task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW
-    )
+    repository.create_task(task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW)
 
     claimed = repository.claim_next_task(now=NOW + timedelta(seconds=1))
     assert claimed is not None
@@ -96,9 +92,7 @@ def test_repository__claim_append_and_complete(tmp_path) -> None:
 
 def test_repository__queued_cancel_never_becomes_running(tmp_path) -> None:
     repository = _repository(tmp_path)
-    repository.create_task(
-        task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW
-    )
+    repository.create_task(task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW)
 
     cancelled, accepted = repository.request_cancel("task-1", now=NOW + timedelta(seconds=1))
     repeated, repeated_accepted = repository.request_cancel(
@@ -114,9 +108,7 @@ def test_repository__queued_cancel_never_becomes_running(tmp_path) -> None:
 
 def test_repository__running_cancel_is_cooperative_then_terminal(tmp_path) -> None:
     repository = _repository(tmp_path)
-    repository.create_task(
-        task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW
-    )
+    repository.create_task(task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW)
     assert repository.claim_next_task(now=NOW) is not None
 
     requested, accepted = repository.request_cancel("task-1", now=NOW + timedelta(seconds=1))
@@ -133,12 +125,8 @@ def test_repository__running_cancel_is_cooperative_then_terminal(tmp_path) -> No
 
 def test_repository__failure_and_restart_recovery_are_durable(tmp_path) -> None:
     repository = _repository(tmp_path)
-    repository.create_task(
-        task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW
-    )
-    repository.create_task(
-        task_id="task-2", idempotency_key="idem-2", payload=_payload(), now=NOW
-    )
+    repository.create_task(task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW)
+    repository.create_task(task_id="task-2", idempotency_key="idem-2", payload=_payload(), now=NOW)
     first = repository.claim_next_task(now=NOW)
     second = repository.claim_next_task(now=NOW)
     assert first is not None and second is not None
@@ -153,9 +141,7 @@ def test_repository__failure_and_restart_recovery_are_durable(tmp_path) -> None:
         assert record.error.code == "PROCESS_RESTARTED"
         assert record.error.retryable is True
 
-    repository.create_task(
-        task_id="task-3", idempotency_key="idem-3", payload=_payload(), now=NOW
-    )
+    repository.create_task(task_id="task-3", idempotency_key="idem-3", payload=_payload(), now=NOW)
     failed = repository.fail_task(
         "task-3",
         TaskError(code="UPSTREAM", message="Provider unavailable", retryable=True),
@@ -180,9 +166,7 @@ def test_repository__validation_and_missing_task_paths(tmp_path) -> None:
     with pytest.raises(ValueError):
         repository.list_events("missing", limit=0)
 
-    repository.create_task(
-        task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW
-    )
+    repository.create_task(task_id="task-1", idempotency_key="idem-1", payload=_payload(), now=NOW)
     with pytest.raises(ValueError, match="16 KiB"):
         repository.append_event(
             task_id="task-1",
