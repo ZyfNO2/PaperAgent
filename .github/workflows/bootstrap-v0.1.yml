@@ -4,11 +4,11 @@ on:
   push:
     branches: [v0.1]
     paths:
-      - .bootstrap-v4/READY
+      - .bootstrap-v4/READY2
   pull_request:
     branches: [master]
     paths:
-      - .bootstrap-v4/READY
+      - .bootstrap-v4/READY2
 
 permissions:
   contents: write
@@ -28,7 +28,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .bootstrap-v4/payload.part* > /tmp/paperagent-v0.1.tar.gz
+          cat \
+            .bootstrap-v4/payload.part00 \
+            .bootstrap-v4/payload.part01 \
+            .bootstrap-v4/payload.part02 \
+            .bootstrap-v4/payload.part03 \
+            .bootstrap-v4/payload.part04 \
+            .bootstrap-v4/payload.part050 \
+            .bootstrap-v4/payload.part0510 \
+            .bootstrap-v4/payload.part0511 \
+            .bootstrap-v4/payload.part06 \
+            .bootstrap-v4/payload.part07 \
+            > /tmp/paperagent-v0.1.tar.gz
           echo 'a8a847b3cfbb9ff50228000f01ec7e71ce68ae6a20ede8d20dc34a3e95247728  /tmp/paperagent-v0.1.tar.gz' | sha256sum --check
           gzip -t /tmp/paperagent-v0.1.tar.gz
           tar -tzf /tmp/paperagent-v0.1.tar.gz >/tmp/paperagent-v0.1-files.txt
