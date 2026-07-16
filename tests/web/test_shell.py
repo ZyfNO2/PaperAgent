@@ -52,7 +52,9 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
     assert "paperagent-shell-v0.5.0" in worker.text
     assert "/v1" not in worker.text
     assert javascript.status_code == stylesheet.status_code == icon.status_code == 200
-    assert javascript.headers["content-type"].startswith(("text/javascript", "application/javascript"))
+    assert javascript.headers["content-type"].startswith(
+        ("text/javascript", "application/javascript")
+    )
     assert stylesheet.headers["content-type"].startswith("text/css")
     assert icon.headers["content-type"].startswith("image/svg+xml")
 
