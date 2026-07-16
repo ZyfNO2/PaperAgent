@@ -20,50 +20,65 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Run gates and publish diagnostic
+          python-version: '3.11'
+      - name: Verify Python 3.11
         shell: bash
         run: |
           set +e
-          mkdir -p .ci/v0.3
-          python -m pip install --upgrade pip > /tmp/install.log 2>&1
-          python -m pip install -e '.[dev]' >> /tmp/install.log 2>&1
+          python -m pip install --upgrade pip > /tmp/py311.log 2>&1
+          python -m pip install -e '.[dev]' >> /tmp/py311.log 2>&1
           install_rc=$?
-          ruff check . > /tmp/ruff.log 2>&1
-          ruff_rc=$?
-          ruff format --check . > /tmp/format.log 2>&1
-          format_rc=$?
-          mypy --config-file pyproject.toml > /tmp/mypy.log 2>&1
-          mypy_rc=$?
-          pytest -q --cov=paperagent --cov-branch --cov-report=term-missing > /tmp/pytest.log 2>&1
-          pytest_rc=$?
+          ruff check . >> /tmp/py311.log 2>&1; ruff_rc=$?
+          ruff format --check . >> /tmp/py311.log 2>&1; format_rc=$?
+          mypy --config-file pyproject.toml >> /tmp/py311.log 2>&1; mypy_rc=$?
+          pytest -q --cov=paperagent --cov-branch --cov-report=term-missing >> /tmp/py311.log 2>&1; pytest_rc=$?
           overall=0
           for value in "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc"; do
             if [ "$value" -ne 0 ]; then overall=1; fi
           done
+          printf 'install_rc=%s\nruff_rc=%s\nformat_rc=%s\nmypy_rc=%s\npytest_rc=%s\noverall_rc=%s\n' \
+            "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc" "$overall" > /tmp/py311.status
+          exit 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify Python 3.12 and publish evidence
+        shell: bash
+        run: |
+          set +e
+          python -m pip install --upgrade pip > /tmp/py312.log 2>&1
+          python -m pip install -e '.[dev]' >> /tmp/py312.log 2>&1
+          install_rc=$?
+          ruff check . >> /tmp/py312.log 2>&1; ruff_rc=$?
+          ruff format --check . >> /tmp/py312.log 2>&1; format_rc=$?
+          mypy --config-file pyproject.toml >> /tmp/py312.log 2>&1; mypy_rc=$?
+          pytest -q --cov=paperagent --cov-branch --cov-report=term-missing >> /tmp/py312.log 2>&1; pytest_rc=$?
+          overall=0
+          for value in "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc"; do
+            if [ "$value" -ne 0 ]; then overall=1; fi
+          done
+          printf 'install_rc=%s\nruff_rc=%s\nformat_rc=%s\nmypy_rc=%s\npytest_rc=%s\noverall_rc=%s\n' \
+            "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc" "$overall" > /tmp/py312.status
+          py311_overall="$(awk -F= '/overall_rc/{print $2}' /tmp/py311.status)"
+          combined=0
+          if [ "$py311_overall" -ne 0 ] || [ "$overall" -ne 0 ]; then combined=1; fi
+          mkdir -p .ci/v0.3
           {
             echo "run_id=${GITHUB_RUN_ID}"
             echo "head_sha=${GITHUB_SHA}"
-            echo "install_rc=${install_rc}"
-            echo "ruff_rc=${ruff_rc}"
-            echo "format_rc=${format_rc}"
-            echo "mypy_rc=${mypy_rc}"
-            echo "pytest_rc=${pytest_rc}"
-            echo "overall_rc=${overall}"
-            echo "--- install tail ---"
-            tail -n 40 /tmp/install.log
-            echo "--- ruff ---"
-            cat /tmp/ruff.log
-            echo "--- format ---"
-            cat /tmp/format.log
-            echo "--- mypy ---"
-            cat /tmp/mypy.log
-            echo "--- pytest tail ---"
-            tail -n 160 /tmp/pytest.log
-          } > .ci/v0.3/LATEST.txt
+            echo "python_3_11:"
+            cat /tmp/py311.status
+            echo "python_3_12:"
+            cat /tmp/py312.status
+            echo "combined_rc=${combined}"
+            echo "--- Python 3.11 tail ---"
+            tail -n 120 /tmp/py311.log
+            echo "--- Python 3.12 tail ---"
+            tail -n 120 /tmp/py312.log
+          } > .ci/v0.3/FINAL.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .ci/v0.3/LATEST.txt
-          git commit -m 'chore(v0.3): publish self-verification result' || true
+          git add .ci/v0.3/FINAL.txt
+          git commit -m 'chore(v0.3): publish dual-version verification evidence' || true
           git push origin HEAD:feat/v0.3-durable-task-api-mvp
-          exit "$overall"
+          exit "$combined"
