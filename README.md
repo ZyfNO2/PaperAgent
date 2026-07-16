@@ -10,7 +10,7 @@ Version: v0.1
 Stage: offline implementation complete
 Implementation: bounded LangGraph skeleton
 Development method: mandatory TDD
-Release status: waiting for real-provider smoke / review before merge
+Release status: Draft PR / real-provider smoke pending
 ```
 
 ## Implemented scope
@@ -25,7 +25,7 @@ Release status: waiting for real-provider smoke / review before merge
 - graph, integration, failure, OOD, leakage, lint, type-check, and coverage gates;
 - GitHub Actions verification on Python 3.11 and 3.12.
 
-## Local verification
+## Verification
 
 ```bash
 python -m pip install -e '.[dev]'
@@ -36,7 +36,8 @@ pytest -q
 pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
 ```
 
-Default tests are offline and do not read API keys or access the network.
+Default tests are offline and do not read API keys or access the network. The current Draft PR runs
+the same quality gates on Python 3.11 and 3.12.
 
 ## Development contract
 
@@ -49,11 +50,20 @@ Default tests are offline and do not read API keys or access the network.
 7. [Acceptance gates](docs/v0.1/ACCEPTANCE.md)
 8. [Implementation handoff](docs/v0.1/HANDOFF.md)
 
+## Later versions
+
+- [Roadmap after v0.1](docs/ROADMAP_AFTER_V0.1.md)
+- [v0.2 literature retrieval plan](docs/planning/V0.2_LITERATURE_RETRIEVAL.md)
+
+These later-version documents are planning material only. They do not expand the v0.1 implementation
+scope.
+
 ## Branch policy
 
 - `master`: clean release line;
-- `v0.1`: current implementation branch;
+- `feat/v0.1-offline-skeleton`: current reviewed implementation branch;
+- `v0.1`: design and bootstrap history retained for audit;
 - `backup/legacy-pre-v0.1-20260716`: read-only legacy backup.
 
-Do not merge `v0.1` into `master` until review, CI, and any explicitly required real-provider smoke
+Do not merge the Draft PR into `master` until review and any explicitly required real-provider smoke
 checks are complete.
