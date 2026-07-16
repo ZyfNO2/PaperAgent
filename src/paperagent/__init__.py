@@ -5,6 +5,7 @@ from paperagent.version import (
     REVIEW_EXPORT_CONTRACT_VERSION,
     SCHEMA_VERSION,
     TASK_API_CONTRACT_VERSION,
+    WEB_SHELL_CONTRACT_VERSION,
     __version__,
 )
 
@@ -15,5 +16,6 @@ __all__ = [
     "REVIEW_EXPORT_CONTRACT_VERSION",
     "SCHEMA_VERSION",
     "TASK_API_CONTRACT_VERSION",
+    "WEB_SHELL_CONTRACT_VERSION",
     "__version__",
 ]
