@@ -1,0 +1,69 @@
+name: v0.3 self-reported verification
+
+on:
+  push:
+    branches:
+      - feat/v0.3-durable-task-api-mvp
+    paths:
+      - .ci/v0.3/TRIGGER
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v0.3-durable-task-api-mvp
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run gates and publish diagnostic
+        shell: bash
+        run: |
+          set +e
+          mkdir -p .ci/v0.3
+          python -m pip install --upgrade pip > /tmp/install.log 2>&1
+          python -m pip install -e '.[dev]' >> /tmp/install.log 2>&1
+          install_rc=$?
+          ruff check . > /tmp/ruff.log 2>&1
+          ruff_rc=$?
+          ruff format --check . > /tmp/format.log 2>&1
+          format_rc=$?
+          mypy --config-file pyproject.toml > /tmp/mypy.log 2>&1
+          mypy_rc=$?
+          pytest -q --cov=paperagent --cov-branch --cov-report=term-missing > /tmp/pytest.log 2>&1
+          pytest_rc=$?
+          overall=0
+          for value in "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc"; do
+            if [ "$value" -ne 0 ]; then overall=1; fi
+          done
+          {
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "head_sha=${GITHUB_SHA}"
+            echo "install_rc=${install_rc}"
+            echo "ruff_rc=${ruff_rc}"
+            echo "format_rc=${format_rc}"
+            echo "mypy_rc=${mypy_rc}"
+            echo "pytest_rc=${pytest_rc}"
+            echo "overall_rc=${overall}"
+            echo "--- install tail ---"
+            tail -n 40 /tmp/install.log
+            echo "--- ruff ---"
+            cat /tmp/ruff.log
+            echo "--- format ---"
+            cat /tmp/format.log
+            echo "--- mypy ---"
+            cat /tmp/mypy.log
+            echo "--- pytest tail ---"
+            tail -n 160 /tmp/pytest.log
+          } > .ci/v0.3/LATEST.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .ci/v0.3/LATEST.txt
+          git commit -m 'chore(v0.3): publish self-verification result' || true
+          git push origin HEAD:feat/v0.3-durable-task-api-mvp
+          exit "$overall"
