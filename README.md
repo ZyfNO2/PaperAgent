@@ -1,31 +1,47 @@
 # PaperAgent
 
-PaperAgent `v0.1` is a clean, test-driven rebuild of the research workflow skeleton. The branch
-contains no imports from the legacy Re1-Re8 implementation.
+PaperAgent `v0.2` extends the frozen v0.1 LangGraph workflow with a bounded, explainable,
+multi-source academic-literature retrieval core. The v0.1 graph, state, prompts, deterministic
+fixtures, and repair contracts remain compatible and versioned independently.
 
 ## Current status
 
 ```text
-Version: v0.1
+Package version: v0.2.0
+Workflow engine contract: v0.1 (frozen)
+Literature retrieval contract: v0.2
 Stage: offline implementation complete
-Implementation: bounded LangGraph skeleton
-Development method: mandatory TDD
-Release status: Draft PR / real-provider smoke pending
+Release status: real-provider smoke pending; Draft PR only
 ```
 
-## Implemented scope
+## v0.2 implemented scope
+
+- structured `LiteratureQueryPlan`, `QueryLane`, `ProviderResult`, `PaperRecord`, and
+  `CoverageReport` contracts;
+- OpenAlex, Semantic Scholar, and arXiv discovery adapters;
+- Crossref and DataCite DOI verification adapters;
+- explicit `success / empty / rate_limited / timeout / failed` provider states;
+- concurrent provider fan-out with per-provider limits and a whole-round deadline;
+- deterministic request coalescing and separate success/negative TTL caches;
+- failure-safe caching: timeout, rate-limit, malformed, and failed responses never poison the
+  normal result cache;
+- DOI, arXiv ID, provider ID, and title/year/first-author deduplication;
+- provenance-preserving metadata merge with conflict warnings;
+- explainable relevance, Evidence Gap coverage, verification, recency, and diversity ranking;
+- citation count used only as a weak tie-breaker;
+- deterministic Coverage Gate with at most one focused retry and at most two retrieval rounds;
+- compatibility adapter into the existing v0.1 Retrieval Subgraph;
+- separately marked real-network smoke tests, skipped by default.
+
+## Preserved v0.1 scope
 
 - frozen Pydantic schema and TypedDict State contracts;
-- versioned production prompt registry and deterministic Fake LLM/Search providers;
-- bounded Retrieval subgraph with verification, coverage routing, and two-round hard limit;
-- structured planning, evidence synthesis, method design, and report workflows;
-- deterministic Quality Gate with independent retrieval and method-repair budgets;
-- LangGraph Human-in-the-Loop interrupt/resume using checkpoint state;
-- redacted Trace metadata and idempotent in-memory final snapshot persistence;
-- graph, integration, failure, OOD, leakage, lint, type-check, and coverage gates;
-- GitHub Actions verification on Python 3.11 and 3.12.
+- versioned production prompts and deterministic Fake LLM/Search providers;
+- bounded top-level LangGraph and independent retrieval/method repair budgets;
+- checkpoint-backed Human-in-the-Loop interrupt/resume;
+- redacted Trace metadata and idempotent in-memory persistence.
 
-## Verification
+## Offline verification
 
 ```bash
 python -m pip install -e '.[dev]'
@@ -36,34 +52,32 @@ pytest -q
 pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
 ```
 
-Default tests are offline and do not read API keys or access the network. The current Draft PR runs
-the same quality gates on Python 3.11 and 3.12.
+Default tests do not access the network or require API credentials. Real-provider smoke tests are
+opt-in:
 
-## Development contract
+```bash
+PAPERAGENT_RUN_REAL_PROVIDER=1 \
+PAPERAGENT_CONTACT_EMAIL=you@example.com \
+pytest -m 'real_provider and network' -q
+```
 
-1. [Execution plan](docs/v0.1/EXECUTION_PLAN.md)
-2. [Graph and nodes](docs/v0.1/GRAPH_AND_NODES.md)
-3. [State and schema contracts](docs/v0.1/STATE_CONTRACTS.md)
-4. [TDD strategy](docs/v0.1/TDD_STRATEGY.md)
-5. [LLM fixture contract](docs/v0.1/LLM_TEST_FIXTURES.md)
-6. [Development workflow](docs/v0.1/DEVELOPMENT_WORKFLOW.md)
-7. [Acceptance gates](docs/v0.1/ACCEPTANCE.md)
-8. [Implementation handoff](docs/v0.1/HANDOFF.md)
+`SEMANTIC_SCHOLAR_API_KEY` is optional. Do not commit real credentials.
 
-## Later versions
+## Development contracts
 
-- [Roadmap after v0.1](docs/ROADMAP_AFTER_V0.1.md)
-- [v0.2 literature retrieval plan](docs/planning/V0.2_LITERATURE_RETRIEVAL.md)
-
-These later-version documents are planning material only. They do not expand the v0.1 implementation
-scope.
+- [v0.1 execution plan](docs/v0.1/EXECUTION_PLAN.md)
+- [v0.1 graph and nodes](docs/v0.1/GRAPH_AND_NODES.md)
+- [v0.1 state contracts](docs/v0.1/STATE_CONTRACTS.md)
+- [v0.1 implementation handoff](docs/v0.1/HANDOFF.md)
+- [v0.2 literature retrieval design](docs/planning/V0.2_LITERATURE_RETRIEVAL.md)
+- [v0.2 implementation handoff](docs/v0.2/HANDOFF.md)
 
 ## Branch policy
 
 - `master`: clean release line;
-- `feat/v0.1-offline-skeleton`: current reviewed implementation branch;
-- `v0.1`: design and bootstrap history retained for audit;
+- `feat/v0.1-offline-skeleton`: v0.1 Draft review branch;
+- `feat/v0.2-literature-retrieval-foundation`: v0.2 Draft development branch;
 - `backup/legacy-pre-v0.1-20260716`: read-only legacy backup.
 
-Do not merge the Draft PR into `master` until review and any explicitly required real-provider smoke
-checks are complete.
+Do not merge v0.2 directly into `master`. Review it against the v0.1 implementation branch first,
+then decide the release sequence explicitly.

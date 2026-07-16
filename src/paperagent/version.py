@@ -1,4 +1,5 @@
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 ENGINE_VERSION = "v0.1"
 SCHEMA_VERSION = "0.1"
 FIXTURE_VERSION = "v0.1"
+LITERATURE_CONTRACT_VERSION = "v0.2"
