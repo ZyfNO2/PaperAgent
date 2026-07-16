@@ -1,8 +1,10 @@
 # PaperAgent v0.1 Implementation Handoff
 
 > Status: `OFFLINE IMPLEMENTATION COMPLETE / REAL PROVIDER NOT VERIFIED`
-> Branch: `v0.1`
 > Repository: `ZyfNO2/PaperAgent`
+> Branch: `feat/v0.1-offline-skeleton`
+> Draft PR: `#6`
+> Verified implementation commit before this handoff: `a3c7f66a26cda435cd5ea727b9df4eadfa668379`
 
 ## Completed
 
@@ -16,30 +18,67 @@
 - Compiled top-level LangGraph with planning branches, repair branches, persistence, and HITL resume.
 - Idempotent in-memory snapshot persistence and redacted trace metadata.
 - Eight OOD scenarios, leakage checks, typed failure paths, static quality gates, and CI workflow.
+- Temporary bootstrap workflows and transport payloads removed from the review branch.
+
+## Main files and directories
+
+```text
+pyproject.toml
+.github/workflows/v0.1-ci.yml
+src/paperagent/graph.py
+src/paperagent/state.py
+src/paperagent/schemas/
+src/paperagent/nodes/
+src/paperagent/retrieval/
+src/paperagent/providers/
+src/paperagent/prompts/v0_1/
+src/paperagent/telemetry/
+src/paperagent/persistence/
+tests/
+docs/v0.1/HANDOFF.md
+```
 
 ## Key architecture decisions
 
-1. LangGraph represents only control flow; same-context LLM work stays inside four structured nodes.
-2. Fake providers select fixtures only from explicit runtime keys, never prompt/domain keywords.
-3. Retrieval and method repair budgets are independent to avoid one repair consuming the other.
+1. LangGraph represents only real control flow; same-context LLM work stays inside four structured nodes.
+2. Fake providers select fixtures only from explicit runtime keys, never prompt or domain keywords.
+3. Retrieval and method repair budgets are independent to prevent one repair path consuming another.
 4. Evidence synthesis and reporting may reference only accepted evidence IDs.
 5. The retrieval subgraph wrapper returns only newly appended trace events to avoid reducer duplication.
-6. Human review uses LangGraph interrupt/checkpoint semantics; resume does not repeat intake.
+6. Human review uses LangGraph interrupt/checkpoint semantics; resume does not repeat completed intake.
 7. Raw chain-of-thought, API keys, provider objects, and unredacted payloads are not stored in State.
+8. The review branch is based on the latest v0.1 design/planning tree, so newer roadmap documents are retained.
 
-## Local verification evidence
+## Verification evidence
 
-Executed in the cloud development workspace:
+### Cloud workspace
 
 ```text
 ruff check .                                      PASS
 ruff format --check .                             PASS
-mypy --config-file pyproject.toml                 PASS (50 source files)
-pytest -q                                         PASS (58 tests after prompt/CI additions)
+mypy --config-file pyproject.toml                 PASS
+pytest -q                                         PASS (58 tests)
 pytest --cov=paperagent --cov-branch ...          PASS (90.82%, threshold >= 90%)
 ```
 
-The final local regression used Python 3.13.5; CI separately verifies Python 3.11 and 3.12.
+### GitHub Actions
+
+Workflow: `PaperAgent v0.1 CI`
+Run: `29512784137`
+Result: `SUCCESS`
+
+```text
+Python 3.11 offline verification                  PASS
+Python 3.12 offline verification                  PASS
+Install project                                   PASS
+Ruff lint                                         PASS
+Ruff format check                                 PASS
+Mypy                                              PASS
+Offline tests and branch coverage                 PASS
+Coverage artifact upload                          PASS
+```
+
+These are deterministic offline control-flow and contract tests. They are not real-provider E2E tests.
 
 ## Not verified
 
@@ -48,26 +87,26 @@ The final local regression used Python 3.13.5; CI separately verifies Python 3.1
 - Production database/checkpointer, worker, web UI, and multi-user deployment.
 - Scientific performance against a real baseline or dataset.
 
-These are not represented as completed by Fake/Mock tests.
+No Fake, Mock, Stub, static check, or offline integration result is represented as a real external E2E result.
 
 ## Known limitations
 
 - Only Fake providers are included in the default v0.1 implementation.
 - Persistence is in-memory and intended for deterministic tests, not production durability.
-- Prompt/schema behavior is validated offline; real-model conformance may require a later adapter
-  without weakening the frozen offline contracts.
-- The current graph is a skeleton and does not download PDFs or execute user code.
+- Prompt/schema behavior is validated offline; real-model conformance requires a later adapter without weakening frozen offline contracts.
+- The graph is a bounded skeleton and does not download PDFs or execute user code.
+- The Draft PR remains intentionally unmerged.
 
-## Next developer steps
+## Remaining work
 
-1. Check the branch head and GitHub Actions result.
-2. Run the commands below without network credentials.
-3. Implement one real LLM adapter behind the existing Provider protocol.
-4. Add a separately marked `real_provider` smoke test using repository Secrets.
-5. Do not modify deterministic fixtures to accommodate real-provider variance.
-6. Request code review and merge only after required gates are explicitly accepted.
+1. Review Draft PR #6 against the frozen v0.1 acceptance matrix.
+2. Implement one real LLM adapter behind the existing Provider protocol.
+3. Add a separately marked `real_provider` smoke test using repository Secrets.
+4. Add a real SearchProvider adapter only after the LLM adapter contract remains stable.
+5. Do not modify deterministic fixtures to accommodate external-provider variance.
+6. Merge only after the required real-provider policy is explicitly accepted.
 
-## Recommended commands
+## Recommended verification commands
 
 ```bash
 python -m pip install -e '.[dev]'
@@ -80,5 +119,4 @@ pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
 
 ## Release state
 
-`PARTIAL COMPLETE`: all planned offline v0.1 skeleton work is implemented and locally verified;
-external provider smoke remains pending and no merge to `master` has been performed.
+`PARTIAL COMPLETE`: all planned offline v0.1 skeleton work is implemented and verified locally and in GitHub Actions. External provider smoke remains pending. No merge to `master` has been performed.
