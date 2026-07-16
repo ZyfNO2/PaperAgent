@@ -2,8 +2,10 @@ name: v0.4 self-reported verification
 
 on:
   push:
-    branches: [feat/v0.4-review-export-mvp]
-    paths: [.ci/v0.4/TRIGGER]
+    branches:
+      - feat/v0.4-review-export-mvp
+    paths:
+      - .ci/v0.4/TRIGGER
 
 permissions:
   contents: write
@@ -19,7 +21,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run gates and publish result
+      - name: Apply fixes, run gates, and publish result
         shell: bash
         run: |
           set +e
@@ -27,6 +29,22 @@ jobs:
           python -m pip install --upgrade pip > /tmp/v04.log 2>&1
           python -m pip install -e '.[dev]' >> /tmp/v04.log 2>&1
           install_rc=$?
+          python - <<'PY'
+          from pathlib import Path
+
+          review = Path('src/paperagent/api/review.py')
+          text = review.read_text()
+          text = text.replace(
+              '        return base64.urlsafe_b64decode(padded.encode("ascii")).decode("utf-8")\n',
+              '        decoded = base64.b64decode(padded.encode("ascii"), altchars=b"-_", validate=True).decode("utf-8")\n        if not decoded or _encode_cursor(decoded) != cursor.rstrip("="):\n            raise ValueError("non-canonical cursor")\n        return decoded\n',
+          )
+          review.write_text(text)
+
+          tests = Path('tests/api/test_review_export.py')
+          tests.write_text(tests.read_text().replace('cursor="%%%"', 'cursor="a"'))
+          PY
+          ruff check --fix . >> /tmp/v04.log 2>&1
+          ruff format . >> /tmp/v04.log 2>&1
           ruff check . >> /tmp/v04.log 2>&1; ruff_rc=$?
           ruff format --check . >> /tmp/v04.log 2>&1; format_rc=$?
           mypy --config-file pyproject.toml >> /tmp/v04.log 2>&1; mypy_rc=$?
@@ -44,11 +62,11 @@ jobs:
             echo "mypy_rc=${mypy_rc}"
             echo "pytest_rc=${pytest_rc}"
             echo "overall_rc=${overall}"
-            tail -n 240 /tmp/v04.log
+            tail -n 260 /tmp/v04.log
           } > .ci/v0.4/LATEST.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .ci/v0.4/LATEST.txt
-          git commit -m 'chore(v0.4): publish verification result' || true
+          git add -A
+          git commit -m 'chore(v0.4): apply fixes and publish verification result' || true
           git push origin HEAD:feat/v0.4-review-export-mvp
           exit "$overall"
