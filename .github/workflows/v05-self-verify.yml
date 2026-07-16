@@ -1,0 +1,57 @@
+name: v0.5 self-reported verification
+
+on:
+  push:
+    branches:
+      - feat/v0.5-pwa-shell-mvp
+    paths:
+      - .ci/v0.5/TRIGGER
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v0.5-pwa-shell-mvp
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Format, run gates, and publish result
+        shell: bash
+        run: |
+          set +e
+          mkdir -p .ci/v0.5
+          python -m pip install --upgrade pip > /tmp/v05.log 2>&1
+          python -m pip install -e '.[dev]' >> /tmp/v05.log 2>&1; install_rc=$?
+          ruff check --fix . >> /tmp/v05.log 2>&1
+          ruff format . >> /tmp/v05.log 2>&1
+          ruff check . >> /tmp/v05.log 2>&1; ruff_rc=$?
+          ruff format --check . >> /tmp/v05.log 2>&1; format_rc=$?
+          mypy --config-file pyproject.toml >> /tmp/v05.log 2>&1; mypy_rc=$?
+          pytest -q --cov=paperagent --cov-branch --cov-report=term-missing >> /tmp/v05.log 2>&1; pytest_rc=$?
+          overall=0
+          for value in "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc"; do
+            if [ "$value" -ne 0 ]; then overall=1; fi
+          done
+          {
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "head_sha=${GITHUB_SHA}"
+            echo "install_rc=${install_rc}"
+            echo "ruff_rc=${ruff_rc}"
+            echo "format_rc=${format_rc}"
+            echo "mypy_rc=${mypy_rc}"
+            echo "pytest_rc=${pytest_rc}"
+            echo "overall_rc=${overall}"
+            tail -n 300 /tmp/v05.log
+          } > .ci/v0.5/LATEST.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore(v0.5): format and publish verification result' || true
+          git push origin HEAD:feat/v0.5-pwa-shell-mvp
+          exit "$overall"
