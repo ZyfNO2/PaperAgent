@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [master]
     paths:
-      - .bootstrap-v4/READY8
+      - .bootstrap-v4/READY9
 
 permissions:
   contents: write
@@ -27,28 +27,23 @@ jobs:
           python - <<'PY'
           from __future__ import annotations
 
-          import base64
           import hashlib
           from pathlib import Path
 
           root = Path('.bootstrap-v4')
-
-          def decode_text_part(name: str) -> bytes:
-              encoded = b''.join((root / name).read_bytes().split())
-              return base64.b64decode(encoded, validate=True)
-
-          parts = [
-              (root / 'payload.part00').read_bytes(),
-              (root / 'payload.part01').read_bytes(),
-              (root / 'payload.part02').read_bytes(),
-              (root / 'payload.part03').read_bytes(),
-              (root / 'payload.part04').read_bytes(),
-              decode_text_part('payload.part050.b64'),
-              decode_text_part('payload.part051.b64'),
-              (root / 'payload.part06').read_bytes(),
-              (root / 'payload.part07').read_bytes(),
+          part_names = [
+              'payload.part00',
+              'payload.part01',
+              'payload.part02',
+              'payload.part03',
+              'payload.part04',
+              'payload.part050',
+              'payload.part0510',
+              'payload.part0511',
+              'payload.part06',
+              'payload.part07',
           ]
-          payload = b''.join(parts)
+          payload = b''.join((root / name).read_bytes() for name in part_names)
           expected = 'a8a847b3cfbb9ff50228000f01ec7e71ce68ae6a20ede8d20dc34a3e95247728'
           actual = hashlib.sha256(payload).hexdigest()
           if actual != expected:
