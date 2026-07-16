@@ -35,13 +35,36 @@ jobs:
           review = Path('src/paperagent/api/review.py')
           text = review.read_text()
           text = text.replace(
-              '        return base64.urlsafe_b64decode(padded.encode("ascii")).decode("utf-8")\n',
-              '        decoded = base64.b64decode(padded.encode("ascii"), altchars=b"-_", validate=True).decode("utf-8")\n        if not decoded or _encode_cursor(decoded) != cursor.rstrip("="):\n            raise ValueError("non-canonical cursor")\n        return decoded\n',
+              '        decoded = base64.b64decode(padded.encode("ascii"), altchars=b"-_", validate=True).decode("utf-8")\n',
+              '        decoded = base64.b64decode(\n            padded.encode("ascii"), altchars=b"-_", validate=True\n        ).decode("utf-8")\n',
+          )
+          text = text.replace(
+              '                "SELECT decision, favorite, version FROM paper_reviews WHERE task_id = ? AND paper_id = ?",\n',
+              '                """SELECT decision, favorite, version FROM paper_reviews\n                   WHERE task_id = ? AND paper_id = ?""",\n',
+          )
+          text = text.replace(
+              '                    f"stale review version: expected {update.expected_version}, current {current.version}"\n',
+              '                    f"stale review version: expected {update.expected_version}, "\n                    f"current {current.version}"\n',
+          )
+          text = text.replace(
+              '                INSERT INTO paper_reviews (task_id, paper_id, decision, favorite, version, updated_at)\n',
+              '                INSERT INTO paper_reviews (\n                    task_id, paper_id, decision, favorite, version, updated_at\n                )\n',
           )
           review.write_text(text)
 
-          tests = Path('tests/api/test_review_export.py')
-          tests.write_text(tests.read_text().replace('cursor="%%%"', 'cursor="a"'))
+          routes = Path('src/paperagent/api/review_routes.py')
+          text = routes.read_text()
+          replacements = {
+              'raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc':
+                  'raise HTTPException(\n                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"\n            ) from exc',
+              'raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="paper not found") from exc':
+                  'raise HTTPException(\n                status_code=status.HTTP_404_NOT_FOUND, detail="paper not found"\n            ) from exc',
+              'raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc':
+                  'raise HTTPException(\n                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)\n            ) from exc',
+          }
+          for old, new in replacements.items():
+              text = text.replace(old, new)
+          routes.write_text(text)
           PY
           ruff check --fix . >> /tmp/v04.log 2>&1
           ruff format . >> /tmp/v04.log 2>&1
