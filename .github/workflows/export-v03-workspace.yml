@@ -8,7 +8,7 @@ on:
       - .bootstrap-v03/EXPORT
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   export:
@@ -18,16 +18,26 @@ jobs:
         with:
           ref: feat/v0.3-durable-task-api-mvp
           fetch-depth: 0
-      - name: Create workspace archive
+      - name: Export verified workspace chunks
+        shell: bash
         run: |
           set -euo pipefail
-          tar --exclude=.git --exclude=.bootstrap-v03 --exclude=paperagent-v03-workspace.tar.gz -czf paperagent-v03-workspace.tar.gz .
-          sha256sum paperagent-v03-workspace.tar.gz > paperagent-v03-workspace.sha256
-      - uses: actions/upload-artifact@v4
-        with:
-          name: paperagent-v03-workspace
-          path: |
-            paperagent-v03-workspace.tar.gz
-            paperagent-v03-workspace.sha256
-          retention-days: 1
-          if-no-files-found: error
+          rm -rf .workspace-export-v03
+          mkdir -p .workspace-export-v03
+          tar \
+            --exclude=.git \
+            --exclude=.bootstrap-v03 \
+            --exclude=.workspace-export-v03 \
+            --exclude=paperagent-v03-workspace.tar.gz \
+            -czf paperagent-v03-workspace.tar.gz .
+          sha256="$(sha256sum paperagent-v03-workspace.tar.gz | awk '{print $1}')"
+          size="$(wc -c < paperagent-v03-workspace.tar.gz | tr -d ' ')"
+          base64 -w0 paperagent-v03-workspace.tar.gz > /tmp/payload.b64
+          split -b 50000 -d -a 2 /tmp/payload.b64 .workspace-export-v03/part
+          count="$(find .workspace-export-v03 -name 'part*' -type f | wc -l | tr -d ' ')"
+          printf 'sha256=%s\nsize=%s\nparts=%s\n' "$sha256" "$size" "$count" > .workspace-export-v03/MANIFEST
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .workspace-export-v03
+          git commit -m 'chore(v0.3): export verified workspace archive'
+          git push origin HEAD:feat/v0.3-durable-task-api-mvp
