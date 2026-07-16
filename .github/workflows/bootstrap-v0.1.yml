@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [master]
     paths:
-      - .bootstrap-v4/READY9
+      - .bootstrap-v4/READY10
 
 permissions:
   contents: write
@@ -20,44 +20,38 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Reconstruct and verify implementation payload
+      - name: Assemble payload and verify SHA-256
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          from __future__ import annotations
-
-          import hashlib
-          from pathlib import Path
-
-          root = Path('.bootstrap-v4')
-          part_names = [
-              'payload.part00',
-              'payload.part01',
-              'payload.part02',
-              'payload.part03',
-              'payload.part04',
-              'payload.part050',
-              'payload.part0510',
-              'payload.part0511',
-              'payload.part06',
-              'payload.part07',
-          ]
-          payload = b''.join((root / name).read_bytes() for name in part_names)
-          expected = 'a8a847b3cfbb9ff50228000f01ec7e71ce68ae6a20ede8d20dc34a3e95247728'
-          actual = hashlib.sha256(payload).hexdigest()
-          if actual != expected:
-              raise SystemExit(f'payload sha256 mismatch: {actual}')
-          Path('/tmp/paperagent-v0.1.tar.gz').write_bytes(payload)
-          print(f'payload verified: {actual} ({len(payload)} bytes)')
-          PY
-          gzip -t /tmp/paperagent-v0.1.tar.gz
+          cat \
+            .bootstrap-v4/payload.part00 \
+            .bootstrap-v4/payload.part01 \
+            .bootstrap-v4/payload.part02 \
+            .bootstrap-v4/payload.part03 \
+            .bootstrap-v4/payload.part04 \
+            .bootstrap-v4/payload.part050 \
+            .bootstrap-v4/payload.part0510 \
+            .bootstrap-v4/payload.part0511 \
+            .bootstrap-v4/payload.part06 \
+            .bootstrap-v4/payload.part07 \
+            > /tmp/paperagent-v0.1.tar.gz
+          echo 'a8a847b3cfbb9ff50228000f01ec7e71ce68ae6a20ede8d20dc34a3e95247728  /tmp/paperagent-v0.1.tar.gz' | sha256sum --check
+      - name: Validate gzip stream
+        run: gzip -t /tmp/paperagent-v0.1.tar.gz
+      - name: Validate archive paths
+        shell: bash
+        run: |
+          set -euo pipefail
           tar -tzf /tmp/paperagent-v0.1.tar.gz >/tmp/paperagent-v0.1-files.txt
           if grep -E '(^/|(^|/)\.\.(/|$))' /tmp/paperagent-v0.1-files.txt; then
             echo 'unsafe archive path detected' >&2
             exit 1
           fi
-          tar -xzf /tmp/paperagent-v0.1.tar.gz
+      - name: Extract implementation
+        run: tar -xzf /tmp/paperagent-v0.1.tar.gz
+      - name: Remove transport files
+        run: |
           rm -rf .bootstrap .bootstrap-v2 .bootstrap-v3 .bootstrap-v4
           rm -f .github/workflows/v0.1-ci.yml
       - name: Install development dependencies
