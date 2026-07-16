@@ -5,11 +5,12 @@ from datetime import UTC, datetime
 import pytest
 
 
-def test_package__import__exposes_v0_1_version() -> None:
+def test_package__import__exposes_v0_2_package_and_frozen_v0_1_engine_versions() -> None:
     import paperagent
 
-    assert paperagent.__version__ == "0.1.0"
+    assert paperagent.__version__ == "0.2.0"
     assert paperagent.ENGINE_VERSION == "v0.1"
+    assert paperagent.LITERATURE_CONTRACT_VERSION == "v0.2"
 
 
 def test_runtime_config__defaults__are_bounded() -> None:

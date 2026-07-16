@@ -52,6 +52,22 @@ async def search_tool_node(state: PaperAgentState, config: RunnableConfig) -> St
             candidates.extend(found)
             if query.query_id not in completed:
                 completed.append(query.query_id)
+            result_reader = getattr(services.search, "last_provider_results", None)
+            if callable(result_reader):
+                for provider_result in result_reader(query.query_id):
+                    if provider_result.status not in {"failed", "timeout", "rate_limited"}:
+                        continue
+                    errors.append(
+                        ToolErrorRecord(
+                            code=provider_result.error_code or "SEARCH_PROVIDER_ERROR",
+                            message=provider_result.error_message
+                            or f"{provider_result.provider} retrieval failed",
+                            provider=provider_result.provider,
+                            query_id=query.query_id,
+                            retryable=provider_result.status in {"timeout", "rate_limited"},
+                            attempt=provider_result.retry_count + 1,
+                        )
+                    )
             trace.append(
                 make_event(
                     services,
