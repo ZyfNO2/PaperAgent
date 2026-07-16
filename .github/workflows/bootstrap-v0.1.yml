@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [master]
     paths:
-      - .bootstrap-v4/READY6
+      - .bootstrap-v4/READY7
 
 permissions:
   contents: write
@@ -20,23 +20,37 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Extract verified implementation payload
+      - name: Reconstruct and verify implementation payload
         shell: bash
         run: |
           set -euo pipefail
-          cat \
-            .bootstrap-v4/payload.part00 \
-            .bootstrap-v4/payload.part01 \
-            .bootstrap-v4/payload.part02 \
-            .bootstrap-v4/payload.part03 \
-            .bootstrap-v4/payload.part04 \
-            .bootstrap-v4/payload.part050 \
-            .bootstrap-v4/payload.part0510 \
-            .bootstrap-v4/payload.part0511 \
-            .bootstrap-v4/payload.part06 \
-            .bootstrap-v4/payload.part07 \
-            > /tmp/paperagent-v0.1.tar.gz
-          echo 'a8a847b3cfbb9ff50228000f01ec7e71ce68ae6a20ede8d20dc34a3e95247728  /tmp/paperagent-v0.1.tar.gz' | sha256sum --check
+          python - <<'PY'
+          from __future__ import annotations
+
+          import base64
+          import hashlib
+          from pathlib import Path
+
+          root = Path('.bootstrap-v4')
+          parts = [
+              (root / 'payload.part00').read_bytes(),
+              (root / 'payload.part01').read_bytes(),
+              (root / 'payload.part02').read_bytes(),
+              (root / 'payload.part03').read_bytes(),
+              (root / 'payload.part04').read_bytes(),
+              base64.b64decode((root / 'payload.part050.b64').read_bytes(), validate=True),
+              base64.b64decode((root / 'payload.part051.b64').read_bytes(), validate=True),
+              (root / 'payload.part06').read_bytes(),
+              (root / 'payload.part07').read_bytes(),
+          ]
+          payload = b''.join(parts)
+          expected = 'a8a847b3cfbb9ff50228000f01ec7e71ce68ae6a20ede8d20dc34a3e95247728'
+          actual = hashlib.sha256(payload).hexdigest()
+          if actual != expected:
+              raise SystemExit(f'payload sha256 mismatch: {actual}')
+          Path('/tmp/paperagent-v0.1.tar.gz').write_bytes(payload)
+          print(f'payload verified: {actual} ({len(payload)} bytes)')
+          PY
           gzip -t /tmp/paperagent-v0.1.tar.gz
           tar -tzf /tmp/paperagent-v0.1.tar.gz >/tmp/paperagent-v0.1-files.txt
           if grep -E '(^/|(^|/)\.\.(/|$))' /tmp/paperagent-v0.1-files.txt; then
