@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paperagent"
-version = "0.4.0"
-description = "A bounded research workflow with durable review decisions and deterministic exports."
+version = "0.5.0"
+description = "A bounded research workflow with a package-served review PWA shell."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -30,7 +30,7 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-paperagent = ["prompts/v0_1/*.md"]
+paperagent = ["prompts/v0_1/*.md", "web/assets/*"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"
