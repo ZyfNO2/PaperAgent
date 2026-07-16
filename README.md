@@ -1,43 +1,50 @@
 # PaperAgent
 
-PaperAgent `v0.4` adds durable paper-review decisions and deterministic evidence exports on top of
-the bounded v0.1 workflow, v0.2 literature retrieval, and v0.3 SQLite task API.
+PaperAgent `v0.5` adds a package-served responsive PWA shell over the bounded v0.1 workflow, v0.2
+literature retrieval, v0.3 durable task API, and v0.4 review/export layer.
 
 ## Current status
 
 ```text
-Package version: v0.4.0
+Package version: v0.5.0
 Workflow engine contract: v0.1 (frozen)
 Literature retrieval contract: v0.2
 Task API contract: v0.3
 Review/export contract: v0.4
+Web shell contract: v0.5
 Stage: offline MVP implementation complete
-Release status: stacked Draft PR / real-provider and public deployment smoke pending
+Release status: stacked Draft PR / browser E2E, real-provider, and public deployment smoke pending
 ```
 
-## v0.4 implemented scope
+## v0.5 implemented scope
 
-- durable per-paper `pending / accepted / rejected` decisions and favorite state;
-- optimistic version checks with repeat-safe identical updates;
-- stable opaque cursor pagination ordered by paper ID;
-- paper cards derived only from succeeded task evidence with `source_type=paper`;
-- failed-verification or rejected evidence cannot be accepted in the MVP;
-- deterministic JSON, Markdown, and BibTeX exports;
-- accepted, favorite, and all export selections;
-- SHA-256, item count, media type, and filename export metadata.
+- responsive `/app` and `/app/{task_id}` routes served directly by FastAPI;
+- package-local HTML, CSS, JavaScript, manifest, service worker, and SVG icon;
+- research task submission with generated idempotency keys;
+- shareable task URLs and local recent-task history;
+- polling-first progress with SSE enhancement and cancellation;
+- paper-card filtering, acceptance/rejection, pending state, and favorites;
+- JSON, Markdown, and BibTeX downloads with checksum feedback;
+- loading, offline, failed, cancelled, empty, and terminal UI states;
+- mobile layout, semantic markup, focus states, and reduced-motion support;
+- restrictive CSP and shell-only service-worker caching.
 
-## Preserved v0.3-v0.1 scope
+The browser contains no Agent, retrieval, ranking, prompt, or provider logic. All decisions remain in
+the Python service.
 
+## Preserved v0.4-v0.1 scope
+
+- durable paper decisions, stable pagination, and deterministic exports;
 - FastAPI task submission, polling, SSE, cancellation, and health endpoints;
-- SQLite task/result/error/event persistence and a single-process runner;
-- idempotency conflict detection and fail-closed restart semantics;
-- OpenAlex, Semantic Scholar, arXiv, Crossref, and DataCite adapters;
-- deterministic merge, ranking, coverage, cache, and retry budgets;
-- frozen v0.1 graph/state/prompt/fixture contracts and deterministic offline fixtures.
+- SQLite persistence and a single-process runner;
+- multi-source literature adapters and deterministic retrieval contracts;
+- frozen v0.1 graph/state/prompt/fixture contracts.
 
-## API
+## Main routes
 
 ```text
+GET  /app
+GET  /app/{task_id}
 POST /v1/tasks
 GET  /v1/tasks/{task_id}
 GET  /v1/tasks/{task_id}/events
@@ -59,16 +66,16 @@ python -m pip install -e '.[dev]'
 ruff check .
 ruff format --check .
 mypy --config-file pyproject.toml
-pytest -q
 pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
 ```
 
-Default tests do not access the network. Real-provider smoke tests remain opt-in.
+Default tests do not access the network. Real-provider and real-browser E2E tests remain separate.
 
 ## Development contracts
 
 - [stacked v0.3-v0.5 MVP sequence](docs/planning/MVP_RELEASE_SEQUENCE_V0.3_V0.5.md)
-- [v0.4 execution plan](docs/v0.4/EXECUTION_PLAN.md)
+- [v0.5 execution plan](docs/v0.5/EXECUTION_PLAN.md)
+- [v0.4 handoff](docs/v0.4/HANDOFF.md)
 - [v0.3 handoff](docs/v0.3/HANDOFF.md)
 - [v0.2 handoff](docs/v0.2/HANDOFF.md)
 - [v0.1 handoff](docs/v0.1/HANDOFF.md)
