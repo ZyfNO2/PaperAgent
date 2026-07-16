@@ -21,13 +21,56 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply repository formatter
+      - name: Apply deterministic fixes and formatter
+        shell: bash
         run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          app = Path('src/paperagent/api/app.py')
+          text = app.read_text()
+          long_raise = 'raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc'
+          wrapped_raise = '''raise HTTPException(\n                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"\n            ) from exc'''
+          text = text.replace(long_raise, wrapped_raise)
+          app.write_text(text)
+
+          repository = Path('src/paperagent/api/repository.py')
+          text = repository.read_text()
+          text = text.replace(
+              '"SELECT COALESCE(MAX(sequence), 0) + 1 AS next_sequence FROM task_events WHERE task_id = ?",',
+              '"""SELECT COALESCE(MAX(sequence), 0) + 1 AS next_sequence\n               FROM task_events WHERE task_id = ?""",',
+          )
+          text = text.replace('        return row\n\n    def _record_from_row(', '        return cast(sqlite3.Row, row)\n\n    def _record_from_row(')
+          repository.write_text(text)
+
+          runner = Path('src/paperagent/api/runner.py')
+          text = runner.read_text()
+          text = text.replace('import json\n', 'import json\nfrom contextlib import suppress\n')
+          text = text.replace(
+              'from paperagent.api.repository import SQLiteTaskRepository\n',
+              'from paperagent.api.repository import SQLiteTaskRepository\nfrom paperagent.schemas.request import ResearchRequest\n',
+          )
+          text = text.replace(
+              '''            try:\n                await asyncio.wait_for(self._wake.wait(), timeout=self.idle_poll_seconds)\n            except TimeoutError:\n                pass\n\n    async def _execute(self, task_id: str, request: object) -> None:\n        from paperagent.schemas.request import ResearchRequest\n\n        typed_request = ResearchRequest.model_validate(request)\n''',
+              '''            with suppress(TimeoutError):\n                await asyncio.wait_for(self._wake.wait(), timeout=self.idle_poll_seconds)\n\n    async def _execute(self, task_id: str, request: ResearchRequest) -> None:\n''',
+          )
+          text = text.replace('request=typed_request,', 'request=request,')
+          text = text.replace(
+              'except Exception as exc:  # noqa: BLE001 - converted to a redacted durable error contract',
+              'except Exception as exc:',
+          )
+          runner.write_text(text)
+
+          test_runner = Path('tests/api/test_runner_executor.py')
+          text = test_runner.read_text().replace('from datetime import UTC, datetime\n', '')
+          test_runner.write_text(text)
+          PY
           python -m pip install 'ruff==0.12.12'
           ruff check --fix .
           ruff format .
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'style(v0.3): apply Ruff formatting' || true
+          git commit -m 'style(v0.3): apply deterministic fixes and Ruff formatting' || true
           git push origin HEAD:feat/v0.3-durable-task-api-mvp
