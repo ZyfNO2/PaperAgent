@@ -137,3 +137,20 @@ Return the full pytest output and any provider status/error payloads if a live s
 
 `PARTIAL COMPLETE`: all planned offline v0.2 literature-retrieval foundation work is implemented and
 verified. Real provider smoke remains pending; no merge has been performed.
+
+## 10. Remote publication evidence
+
+```text
+Draft PR:                         #7
+Base branch:                      feat/v0.1-offline-skeleton
+Verified release-candidate SHA:  ae9c35836738ac5b3e1aa52162791968543ec343
+GitHub Actions run:              29518497909
+Python 3.11 verification:        PASS
+Python 3.12 verification:        PASS
+Temporary bootstrap transport:   REMOVED
+Merge status:                     NOT MERGED
+```
+
+The release-candidate CI ran project installation, Ruff lint and format checks, Mypy, all default
+offline tests, branch coverage, and coverage-artifact upload on both supported Python versions.
+The branch remains Draft because live provider behavior is still explicitly unverified.
