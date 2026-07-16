@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "status": "proposed",
+  "baseline": {
+    "name": "single-condition database index strategy evaluation baseline",
+    "description": "Evaluate one fixed condition without the proposed diagnostic comparison."
+  },
+  "modules": [
+    {
+      "module_id": "module-input-audit",
+      "name": "input audit",
+      "purpose": "Freeze inputs, splits, and preprocessing."
+    },
+    {
+      "module_id": "module-controlled-comparison",
+      "name": "controlled comparison",
+      "purpose": "Compare conditions using query latency."
+    }
+  ],
+  "integration_contracts": [
+    {
+      "from_module": "module-input-audit",
+      "to_module": "module-controlled-comparison",
+      "input": "validated evaluation records",
+      "output": "condition-level metrics"
+    }
+  ],
+  "problem_method_insight": "database index strategy evaluation should be evaluated by separating data quality from system behavior.",
+  "falsifiable_hypothesis": "The proposed comparison improves query latency by at least 0.05 over the baseline; a smaller gain falsifies the hypothesis.",
+  "minimum_key_experiment": {
+    "name": "minimum database index strategy evaluation comparison",
+    "conditions": [
+      "baseline",
+      "proposed"
+    ],
+    "metrics": [
+      "query latency"
+    ],
+    "baseline": "baseline",
+    "success_threshold": "proposed query latency - baseline query latency >= 0.05"
+  },
+  "ablations": [
+    {
+      "name": "remove controlled comparison",
+      "change": "Use only the baseline condition",
+      "expected_observation": "Failure attribution becomes weaker"
+    }
+  ],
+  "risks": [
+    "Small samples may inflate variance"
+  ],
+  "stop_conditions": [
+    "The evaluation set has fewer than 30 independent examples"
+  ],
+  "evidence_ids": [
+    "ev-evidence-001",
+    "ev-evaluation-001"
+  ]
+}

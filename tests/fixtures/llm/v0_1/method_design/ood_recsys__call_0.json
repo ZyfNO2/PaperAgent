@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "status": "proposed",
+  "baseline": {
+    "name": "single-condition cold-start recommendation baseline",
+    "description": "Evaluate one fixed condition without the proposed diagnostic comparison."
+  },
+  "modules": [
+    {
+      "module_id": "module-input-audit",
+      "name": "input audit",
+      "purpose": "Freeze inputs, splits, and preprocessing."
+    },
+    {
+      "module_id": "module-controlled-comparison",
+      "name": "controlled comparison",
+      "purpose": "Compare conditions using NDCG."
+    }
+  ],
+  "integration_contracts": [
+    {
+      "from_module": "module-input-audit",
+      "to_module": "module-controlled-comparison",
+      "input": "validated evaluation records",
+      "output": "condition-level metrics"
+    }
+  ],
+  "problem_method_insight": "cold-start recommendation should be evaluated by separating data quality from system behavior.",
+  "falsifiable_hypothesis": "The proposed comparison improves NDCG by at least 0.05 over the baseline; a smaller gain falsifies the hypothesis.",
+  "minimum_key_experiment": {
+    "name": "minimum cold-start recommendation comparison",
+    "conditions": [
+      "baseline",
+      "proposed"
+    ],
+    "metrics": [
+      "NDCG"
+    ],
+    "baseline": "baseline",
+    "success_threshold": "proposed NDCG - baseline NDCG >= 0.05"
+  },
+  "ablations": [
+    {
+      "name": "remove controlled comparison",
+      "change": "Use only the baseline condition",
+      "expected_observation": "Failure attribution becomes weaker"
+    }
+  ],
+  "risks": [
+    "Small samples may inflate variance"
+  ],
+  "stop_conditions": [
+    "The evaluation set has fewer than 30 independent examples"
+  ],
+  "evidence_ids": [
+    "ev-evidence-001",
+    "ev-evaluation-001"
+  ]
+}

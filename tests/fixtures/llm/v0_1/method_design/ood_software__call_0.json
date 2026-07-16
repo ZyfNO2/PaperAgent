@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "status": "proposed",
+  "baseline": {
+    "name": "single-condition API migration regression testing baseline",
+    "description": "Evaluate one fixed condition without the proposed diagnostic comparison."
+  },
+  "modules": [
+    {
+      "module_id": "module-input-audit",
+      "name": "input audit",
+      "purpose": "Freeze inputs, splits, and preprocessing."
+    },
+    {
+      "module_id": "module-controlled-comparison",
+      "name": "controlled comparison",
+      "purpose": "Compare conditions using regression pass rate."
+    }
+  ],
+  "integration_contracts": [
+    {
+      "from_module": "module-input-audit",
+      "to_module": "module-controlled-comparison",
+      "input": "validated evaluation records",
+      "output": "condition-level metrics"
+    }
+  ],
+  "problem_method_insight": "API migration regression testing should be evaluated by separating data quality from system behavior.",
+  "falsifiable_hypothesis": "The proposed comparison improves regression pass rate by at least 0.05 over the baseline; a smaller gain falsifies the hypothesis.",
+  "minimum_key_experiment": {
+    "name": "minimum API migration regression testing comparison",
+    "conditions": [
+      "baseline",
+      "proposed"
+    ],
+    "metrics": [
+      "regression pass rate"
+    ],
+    "baseline": "baseline",
+    "success_threshold": "proposed regression pass rate - baseline regression pass rate >= 0.05"
+  },
+  "ablations": [
+    {
+      "name": "remove controlled comparison",
+      "change": "Use only the baseline condition",
+      "expected_observation": "Failure attribution becomes weaker"
+    }
+  ],
+  "risks": [
+    "Small samples may inflate variance"
+  ],
+  "stop_conditions": [
+    "The evaluation set has fewer than 30 independent examples"
+  ],
+  "evidence_ids": [
+    "ev-evidence-001",
+    "ev-evaluation-001"
+  ]
+}

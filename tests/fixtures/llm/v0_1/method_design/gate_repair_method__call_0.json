@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1",
+  "status": "proposed",
+  "baseline": {"name": "single-condition evaluation", "description": "Evaluate retrieved context."},
+  "modules": [{"module_id": "module-basic", "name": "basic", "purpose": "basic proposal"}],
+  "integration_contracts": [],
+  "problem_method_insight": "A weak proposal.",
+  "falsifiable_hypothesis": "Performance may improve.",
+  "minimum_key_experiment": {
+    "name": "basic experiment",
+    "conditions": ["baseline", "proposal"],
+    "metrics": ["score"],
+    "baseline": "baseline",
+    "success_threshold": "improves"
+  },
+  "ablations": [],
+  "risks": [],
+  "stop_conditions": [],
+  "evidence_ids": ["ev-support-001", "ev-ablation-001"]
+}
