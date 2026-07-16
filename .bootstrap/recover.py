@@ -12,7 +12,7 @@ EXPECTED = "3a996bc1f69fe419bc478c2e486487aeb5f1ffa3d14383e75d93f2379ef15a97"
 def parse_number(field: bytes) -> int:
     if field and field[0] & 0x80:
         return int.from_bytes(field, byteorder="big", signed=True)
-    cleaned = field.rstrip(b"\0 ").strip()
+    cleaned = field.strip(b"\0 ")
     return int(cleaned or b"0", 8)
 
 
