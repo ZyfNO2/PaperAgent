@@ -5,6 +5,10 @@ on:
     branches: [feat/v0.2-literature-retrieval-foundation]
     paths:
       - .bootstrap-v02/READY
+  pull_request:
+    branches: [feat/v0.1-offline-skeleton]
+    paths:
+      - .bootstrap-v02/READY
 
 permissions:
   contents: write
@@ -17,10 +21,22 @@ jobs:
         with:
           ref: feat/v0.2-literature-retrieval-foundation
           fetch-depth: 0
+      - name: Guard completed bootstrap
+        id: guard
+        shell: bash
+        run: |
+          if [ -f src/paperagent/literature/service.py ]; then
+            echo 'bootstrap=false' >> "$GITHUB_OUTPUT"
+            echo 'v0.2 implementation already present; no-op.'
+          else
+            echo 'bootstrap=true' >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-python@v5
+        if: steps.guard.outputs.bootstrap == 'true'
         with:
           python-version: '3.12'
       - name: Reconstruct and verify payload
+        if: steps.guard.outputs.bootstrap == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -54,16 +70,22 @@ jobs:
             tests/literature/utils.py \
             tests/literature/test_providers.py
       - name: Install development dependencies
+        if: steps.guard.outputs.bootstrap == 'true'
         run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
       - name: Ruff lint
+        if: steps.guard.outputs.bootstrap == 'true'
         run: ruff check .
       - name: Ruff format check
+        if: steps.guard.outputs.bootstrap == 'true'
         run: ruff format --check .
       - name: Mypy
+        if: steps.guard.outputs.bootstrap == 'true'
         run: mypy --config-file pyproject.toml
       - name: Offline tests and branch coverage
+        if: steps.guard.outputs.bootstrap == 'true'
         run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
       - name: Commit implementation
+        if: steps.guard.outputs.bootstrap == 'true'
         shell: bash
         run: |
           set -euo pipefail
