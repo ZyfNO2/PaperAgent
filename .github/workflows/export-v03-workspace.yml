@@ -1,0 +1,33 @@
+name: Export v0.3 workspace
+
+on:
+  push:
+    branches:
+      - feat/v0.3-durable-task-api-mvp
+    paths:
+      - .bootstrap-v03/EXPORT
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v0.3-durable-task-api-mvp
+          fetch-depth: 0
+      - name: Create workspace archive
+        run: |
+          set -euo pipefail
+          tar --exclude=.git --exclude=.bootstrap-v03 --exclude=paperagent-v03-workspace.tar.gz -czf paperagent-v03-workspace.tar.gz .
+          sha256sum paperagent-v03-workspace.tar.gz > paperagent-v03-workspace.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paperagent-v03-workspace
+          path: |
+            paperagent-v03-workspace.tar.gz
+            paperagent-v03-workspace.sha256
+          retention-days: 1
+          if-no-files-found: error
