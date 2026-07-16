@@ -151,7 +151,7 @@ def test_api__queued_cancel_prevents_executor_call(tmp_path) -> None:
     assert executor.calls == [first]
 
 
-def test_api__missing_task_paths_and_empty_event_page(tmp_path) -> None:
+def test_api__missing_task_paths_and_terminal_empty_event_page(tmp_path) -> None:
     executor = ImmediateExecutor()
     repository = SQLiteTaskRepository(tmp_path / "tasks.db")
     repository.create_task(
@@ -159,6 +159,7 @@ def test_api__missing_task_paths_and_empty_event_page(tmp_path) -> None:
         idempotency_key="manual",
         payload=TaskCreateRequest.model_validate(_body()),
     )
+    repository.request_cancel("manual-task")
     app = create_app(executor=executor, repository=repository)
 
     with TestClient(app) as client:
@@ -167,10 +168,13 @@ def test_api__missing_task_paths_and_empty_event_page(tmp_path) -> None:
         assert client.get("/v1/tasks/missing/events/stream").status_code == 404
         assert client.post("/v1/tasks/missing/cancel").status_code == 404
 
-        page = client.get("/v1/tasks/manual-task/events?after=1").json()
-        assert page["task_id"] == "manual-task"
-        assert page["events"] == []
-        assert page["next_cursor"] == 1
+        page = client.get("/v1/tasks/manual-task/events?after=2").json()
+        assert page == {
+            "task_id": "manual-task",
+            "events": [],
+            "next_cursor": 2,
+            "terminal": True,
+        }
         assert client.get("/v1/tasks/manual-task/events?after=-1").status_code == 422
         assert client.get("/v1/tasks/manual-task/events?limit=501").status_code == 422
 
