@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [master]
     paths:
-      - .bootstrap-v4/READY7
+      - .bootstrap-v4/READY8
 
 permissions:
   contents: write
@@ -32,14 +32,19 @@ jobs:
           from pathlib import Path
 
           root = Path('.bootstrap-v4')
+
+          def decode_text_part(name: str) -> bytes:
+              encoded = b''.join((root / name).read_bytes().split())
+              return base64.b64decode(encoded, validate=True)
+
           parts = [
               (root / 'payload.part00').read_bytes(),
               (root / 'payload.part01').read_bytes(),
               (root / 'payload.part02').read_bytes(),
               (root / 'payload.part03').read_bytes(),
               (root / 'payload.part04').read_bytes(),
-              base64.b64decode((root / 'payload.part050.b64').read_bytes(), validate=True),
-              base64.b64decode((root / 'payload.part051.b64').read_bytes(), validate=True),
+              decode_text_part('payload.part050.b64'),
+              decode_text_part('payload.part051.b64'),
               (root / 'payload.part06').read_bytes(),
               (root / 'payload.part07').read_bytes(),
           ]
