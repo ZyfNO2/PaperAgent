@@ -1,10 +1,10 @@
 name: Bootstrap PaperAgent v0.1 implementation
 
 on:
-  push:
-    branches: [v0.1]
+  pull_request:
+    branches: [master]
     paths:
-      - .bootstrap-v4/READY5
+      - .bootstrap-v4/READY6
 
 permissions:
   contents: write
@@ -56,7 +56,7 @@ jobs:
         run: mypy --config-file pyproject.toml
       - name: Pytest with branch coverage
         run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
-      - name: Commit implementation
+      - name: Commit implementation snapshot
         shell: bash
         run: |
           set -euo pipefail
@@ -64,5 +64,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git commit -m 'feat(v0.1): implement bounded test-driven PaperAgent skeleton'
-      - name: Push implementation review branch
+      - name: Push verified snapshot branch
         run: git push origin HEAD:refs/heads/feat/v0.1-offline-skeleton
