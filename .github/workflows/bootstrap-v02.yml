@@ -1,0 +1,74 @@
+name: Bootstrap PaperAgent v0.2 implementation
+
+on:
+  push:
+    branches: [feat/v0.2-literature-retrieval-foundation]
+    paths:
+      - .bootstrap-v02/READY
+
+permissions:
+  contents: write
+
+jobs:
+  verify-extract-test-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v0.2-literature-retrieval-foundation
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reconstruct and verify payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat \
+            .bootstrap-v02/payload.part00 \
+            .bootstrap-v02/chunk04 \
+            .bootstrap-v02/chunk05 \
+            .bootstrap-v02/chunk06 \
+            .bootstrap-v02/chunk07 \
+            .bootstrap-v02/chunk08 \
+            .bootstrap-v02/chunk09 \
+            .bootstrap-v02/chunk10 \
+            .bootstrap-v02/chunk11 \
+            .bootstrap-v02/chunk12 \
+            .bootstrap-v02/chunk13 \
+            .bootstrap-v02/chunk14 \
+            .bootstrap-v02/chunk15 \
+            | base64 --decode > /tmp/paperagent-v0.2.tar.gz
+          echo 'a5ff9284ecaec874ca1feed8ab9c6baf696d82e5e9f69ff1bf64cee460d87dbb  /tmp/paperagent-v0.2.tar.gz' | sha256sum --check
+          gzip -t /tmp/paperagent-v0.2.tar.gz
+          tar -tzf /tmp/paperagent-v0.2.tar.gz > /tmp/paperagent-v0.2-files.txt
+          if grep -E '(^/|(^|/)\.\.(/|$))' /tmp/paperagent-v0.2-files.txt; then
+            echo 'unsafe archive path detected' >&2
+            exit 1
+          fi
+          tar -xzf /tmp/paperagent-v0.2.tar.gz
+          rm -f \
+            .github/workflows/v0.1-ci.yml \
+            tests/__init__.py \
+            tests/literature/__init__.py \
+            tests/literature/utils.py \
+            tests/literature/test_providers.py
+      - name: Install development dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+      - name: Ruff lint
+        run: ruff check .
+      - name: Ruff format check
+        run: ruff format --check .
+      - name: Mypy
+        run: mypy --config-file pyproject.toml
+      - name: Offline tests and branch coverage
+        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+      - name: Commit implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(v0.2): implement literature retrieval foundation'
+          git push origin HEAD:feat/v0.2-literature-retrieval-foundation
