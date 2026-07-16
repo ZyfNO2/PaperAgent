@@ -1,0 +1,40 @@
+name: Bootstrap PaperAgent v0.1 implementation
+
+on:
+  push:
+    branches: [v0.1]
+    paths:
+      - .bootstrap/READY
+
+permissions:
+  contents: write
+
+jobs:
+  extract-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Extract verified implementation payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .bootstrap/payload.part* | base64 --decode > /tmp/paperagent-v0.1.tar.gz
+          tar -tzf /tmp/paperagent-v0.1.tar.gz >/tmp/paperagent-v0.1-files.txt
+          if grep -E '(^/|(^|/)\.\.(/|$))' /tmp/paperagent-v0.1-files.txt; then
+            echo 'unsafe archive path detected' >&2
+            exit 1
+          fi
+          tar -xzf /tmp/paperagent-v0.1.tar.gz
+          rm -rf .bootstrap
+          rm -f .github/workflows/bootstrap-v0.1.yml
+      - name: Commit implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(v0.1): implement bounded test-driven PaperAgent skeleton'
+          git push origin HEAD:v0.1
