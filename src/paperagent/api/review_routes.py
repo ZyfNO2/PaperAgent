@@ -44,11 +44,15 @@ def register_review_routes(app: FastAPI, repository: SQLiteReviewRepository) -> 
                 favorite_only=favorite,
             )
         except TaskNotFoundError as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"
+            ) from exc
         except ReviewTaskNotReadyError as exc:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
         except ReviewValidationError as exc:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+            ) from exc
 
     @app.put("/v1/tasks/{task_id}/papers/{paper_id}/review", response_model=PaperReview)
     async def update_paper_review(
@@ -59,11 +63,15 @@ def register_review_routes(app: FastAPI, repository: SQLiteReviewRepository) -> 
         try:
             return await asyncio.to_thread(repository.update_review, task_id, paper_id, update)
         except TaskNotFoundError as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="paper not found") from exc
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="paper not found"
+            ) from exc
         except ReviewConflictError as exc:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
         except ReviewValidationError as exc:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+            ) from exc
         except ReviewTaskNotReadyError as exc:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
@@ -81,7 +89,9 @@ def register_review_routes(app: FastAPI, repository: SQLiteReviewRepository) -> 
                 selection=selection,
             )
         except TaskNotFoundError as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"
+            ) from exc
         except ReviewTaskNotReadyError as exc:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
         response = Response(content=document.content, media_type=document.media_type)

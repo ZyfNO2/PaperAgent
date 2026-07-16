@@ -15,7 +15,11 @@ from paperagent.api import (
     TaskCreateRequest,
     create_app,
 )
-from paperagent.api.review import ReviewConflictError, ReviewTaskNotReadyError, ReviewValidationError
+from paperagent.api.review import (
+    ReviewConflictError,
+    ReviewTaskNotReadyError,
+    ReviewValidationError,
+)
 from paperagent.schemas import ResearchRequest
 
 
@@ -159,7 +163,7 @@ def test_review_repository__conflict_validation_and_task_readiness(tmp_path) -> 
             ),
         )
     with pytest.raises(ReviewValidationError, match="invalid paper cursor"):
-        reviews.list_cards("task-review", cursor="%%%")
+        reviews.list_cards("task-review", cursor="a")
     with pytest.raises(ReviewValidationError, match="limit"):
         reviews.list_cards("task-review", limit=101)
 
@@ -201,9 +205,7 @@ def test_review_export__is_deterministic_and_selection_scoped(tmp_path) -> None:
     assert json_one == json_two
     assert json_one.manifest.item_count == 1
     assert json_one.manifest.sha256 == hashlib.sha256(json_one.content.encode()).hexdigest()
-    assert [paper["paper_id"] for paper in json.loads(json_one.content)["papers"]] == [
-        "paper-a"
-    ]
+    assert [paper["paper_id"] for paper in json.loads(json_one.content)["papers"]] == ["paper-a"]
 
     markdown = exporter.export("task-review", format="markdown", selection="favorite")
     assert "Alpha {Method}" in markdown.content

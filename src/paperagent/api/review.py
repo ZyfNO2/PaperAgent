@@ -44,7 +44,12 @@ def _decode_cursor(cursor: str | None) -> str | None:
         return None
     try:
         padded = cursor + "=" * (-len(cursor) % 4)
-        return base64.urlsafe_b64decode(padded.encode("ascii")).decode("utf-8")
+        decoded = base64.b64decode(padded.encode("ascii"), altchars=b"-_", validate=True).decode(
+            "utf-8"
+        )
+        if not decoded or _encode_cursor(decoded) != cursor.rstrip("="):
+            raise ValueError("non-canonical cursor")
+        return decoded
     except (UnicodeDecodeError, ValueError) as exc:
         raise ReviewValidationError("invalid paper cursor") from exc
 
@@ -301,9 +306,7 @@ class ReviewExportService:
         )
 
     @staticmethod
-    def _select(
-        cards: list[ReviewPaperCard], selection: ExportSelection
-    ) -> list[ReviewPaperCard]:
+    def _select(cards: list[ReviewPaperCard], selection: ExportSelection) -> list[ReviewPaperCard]:
         if selection == "accepted":
             return [card for card in cards if card.decision is ReviewDecision.ACCEPTED]
         if selection == "favorite":
