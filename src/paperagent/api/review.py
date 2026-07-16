@@ -152,7 +152,8 @@ class SQLiteReviewRepository:
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             row = connection.execute(
-                "SELECT decision, favorite, version FROM paper_reviews WHERE task_id = ? AND paper_id = ?",
+                """SELECT decision, favorite, version FROM paper_reviews
+                   WHERE task_id = ? AND paper_id = ?""",
                 (task_id, paper_id),
             ).fetchone()
             current = (
@@ -168,7 +169,8 @@ class SQLiteReviewRepository:
             )
             if update.expected_version != current.version:
                 raise ReviewConflictError(
-                    f"stale review version: expected {update.expected_version}, current {current.version}"
+                    f"stale review version: expected {update.expected_version}, "
+                    f"current {current.version}"
                 )
             if current.decision is update.decision and current.favorite is update.favorite:
                 return current
@@ -182,7 +184,9 @@ class SQLiteReviewRepository:
             )
             connection.execute(
                 """
-                INSERT INTO paper_reviews (task_id, paper_id, decision, favorite, version, updated_at)
+                INSERT INTO paper_reviews (
+                    task_id, paper_id, decision, favorite, version, updated_at
+                )
                 VALUES (?, ?, ?, ?, ?, ?)
                 ON CONFLICT(task_id, paper_id) DO UPDATE SET
                     decision = excluded.decision,
