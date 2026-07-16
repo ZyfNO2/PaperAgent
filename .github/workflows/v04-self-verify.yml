@@ -1,4 +1,4 @@
-name: v0.4 self-reported verification
+name: v0.4 dual-version verification
 
 on:
   push:
@@ -20,76 +20,63 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Apply fixes, run gates, and publish result
+          python-version: '3.11'
+      - name: Verify Python 3.11
         shell: bash
         run: |
           set +e
-          mkdir -p .ci/v0.4
-          python -m pip install --upgrade pip > /tmp/v04.log 2>&1
-          python -m pip install -e '.[dev]' >> /tmp/v04.log 2>&1
-          install_rc=$?
-          python - <<'PY'
-          from pathlib import Path
-
-          review = Path('src/paperagent/api/review.py')
-          text = review.read_text()
-          text = text.replace(
-              '        decoded = base64.b64decode(padded.encode("ascii"), altchars=b"-_", validate=True).decode("utf-8")\n',
-              '        decoded = base64.b64decode(\n            padded.encode("ascii"), altchars=b"-_", validate=True\n        ).decode("utf-8")\n',
-          )
-          text = text.replace(
-              '                "SELECT decision, favorite, version FROM paper_reviews WHERE task_id = ? AND paper_id = ?",\n',
-              '                """SELECT decision, favorite, version FROM paper_reviews\n                   WHERE task_id = ? AND paper_id = ?""",\n',
-          )
-          text = text.replace(
-              '                    f"stale review version: expected {update.expected_version}, current {current.version}"\n',
-              '                    f"stale review version: expected {update.expected_version}, "\n                    f"current {current.version}"\n',
-          )
-          text = text.replace(
-              '                INSERT INTO paper_reviews (task_id, paper_id, decision, favorite, version, updated_at)\n',
-              '                INSERT INTO paper_reviews (\n                    task_id, paper_id, decision, favorite, version, updated_at\n                )\n',
-          )
-          review.write_text(text)
-
-          routes = Path('src/paperagent/api/review_routes.py')
-          text = routes.read_text()
-          replacements = {
-              'raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc':
-                  'raise HTTPException(\n                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"\n            ) from exc',
-              'raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="paper not found") from exc':
-                  'raise HTTPException(\n                status_code=status.HTTP_404_NOT_FOUND, detail="paper not found"\n            ) from exc',
-              'raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc':
-                  'raise HTTPException(\n                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)\n            ) from exc',
-          }
-          for old, new in replacements.items():
-              text = text.replace(old, new)
-          routes.write_text(text)
-          PY
-          ruff check --fix . >> /tmp/v04.log 2>&1
-          ruff format . >> /tmp/v04.log 2>&1
-          ruff check . >> /tmp/v04.log 2>&1; ruff_rc=$?
-          ruff format --check . >> /tmp/v04.log 2>&1; format_rc=$?
-          mypy --config-file pyproject.toml >> /tmp/v04.log 2>&1; mypy_rc=$?
-          pytest -q --cov=paperagent --cov-branch --cov-report=term-missing >> /tmp/v04.log 2>&1; pytest_rc=$?
+          python -m pip install --upgrade pip > /tmp/py311.log 2>&1
+          python -m pip install -e '.[dev]' >> /tmp/py311.log 2>&1; install_rc=$?
+          ruff check . >> /tmp/py311.log 2>&1; ruff_rc=$?
+          ruff format --check . >> /tmp/py311.log 2>&1; format_rc=$?
+          mypy --config-file pyproject.toml >> /tmp/py311.log 2>&1; mypy_rc=$?
+          pytest -q --cov=paperagent --cov-branch --cov-report=term-missing >> /tmp/py311.log 2>&1; pytest_rc=$?
           overall=0
           for value in "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc"; do
             if [ "$value" -ne 0 ]; then overall=1; fi
           done
+          printf 'install_rc=%s\nruff_rc=%s\nformat_rc=%s\nmypy_rc=%s\npytest_rc=%s\noverall_rc=%s\n' \
+            "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc" "$overall" > /tmp/py311.status
+          exit 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify Python 3.12 and publish evidence
+        shell: bash
+        run: |
+          set +e
+          python -m pip install --upgrade pip > /tmp/py312.log 2>&1
+          python -m pip install -e '.[dev]' >> /tmp/py312.log 2>&1; install_rc=$?
+          ruff check . >> /tmp/py312.log 2>&1; ruff_rc=$?
+          ruff format --check . >> /tmp/py312.log 2>&1; format_rc=$?
+          mypy --config-file pyproject.toml >> /tmp/py312.log 2>&1; mypy_rc=$?
+          pytest -q --cov=paperagent --cov-branch --cov-report=term-missing >> /tmp/py312.log 2>&1; pytest_rc=$?
+          overall=0
+          for value in "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc"; do
+            if [ "$value" -ne 0 ]; then overall=1; fi
+          done
+          printf 'install_rc=%s\nruff_rc=%s\nformat_rc=%s\nmypy_rc=%s\npytest_rc=%s\noverall_rc=%s\n' \
+            "$install_rc" "$ruff_rc" "$format_rc" "$mypy_rc" "$pytest_rc" "$overall" > /tmp/py312.status
+          py311_overall="$(awk -F= '/overall_rc/{print $2}' /tmp/py311.status)"
+          combined=0
+          if [ "$py311_overall" -ne 0 ] || [ "$overall" -ne 0 ]; then combined=1; fi
+          mkdir -p .ci/v0.4
           {
             echo "run_id=${GITHUB_RUN_ID}"
             echo "head_sha=${GITHUB_SHA}"
-            echo "install_rc=${install_rc}"
-            echo "ruff_rc=${ruff_rc}"
-            echo "format_rc=${format_rc}"
-            echo "mypy_rc=${mypy_rc}"
-            echo "pytest_rc=${pytest_rc}"
-            echo "overall_rc=${overall}"
-            tail -n 260 /tmp/v04.log
-          } > .ci/v0.4/LATEST.txt
+            echo "python_3_11:"
+            cat /tmp/py311.status
+            echo "python_3_12:"
+            cat /tmp/py312.status
+            echo "combined_rc=${combined}"
+            echo "--- Python 3.11 tail ---"
+            tail -n 130 /tmp/py311.log
+            echo "--- Python 3.12 tail ---"
+            tail -n 130 /tmp/py312.log
+          } > .ci/v0.4/FINAL.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'chore(v0.4): apply fixes and publish verification result' || true
+          git add .ci/v0.4/FINAL.txt
+          git commit -m 'chore(v0.4): publish dual-version verification evidence' || true
           git push origin HEAD:feat/v0.4-review-export-mvp
-          exit "$overall"
+          exit "$combined"
