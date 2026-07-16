@@ -1,4 +1,3 @@
-from paperagent.api.app import create_app
 from paperagent.api.executor import LangGraphTaskExecutor, TaskCancelledError, TaskExecutor
 from paperagent.api.models import (
     CancelTaskResponse,
@@ -11,12 +10,32 @@ from paperagent.api.models import (
     TaskView,
 )
 from paperagent.api.repository import SQLiteTaskRepository
+from paperagent.api.review import ReviewExportService, SQLiteReviewRepository
+from paperagent.api.review_models import (
+    ExportDocument,
+    ExportManifest,
+    PaperCardPage,
+    PaperReview,
+    PaperReviewUpdate,
+    ReviewDecision,
+    ReviewPaperCard,
+)
 from paperagent.api.runner import SingleProcessTaskRunner
+from paperagent.api.v04 import create_app
 
 __all__ = [
     "CancelTaskResponse",
+    "ExportDocument",
+    "ExportManifest",
     "HealthResponse",
     "LangGraphTaskExecutor",
+    "PaperCardPage",
+    "PaperReview",
+    "PaperReviewUpdate",
+    "ReviewDecision",
+    "ReviewExportService",
+    "ReviewPaperCard",
+    "SQLiteReviewRepository",
     "SQLiteTaskRepository",
     "SingleProcessTaskRunner",
     "TaskAccepted",
