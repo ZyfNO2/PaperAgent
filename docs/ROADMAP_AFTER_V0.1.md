@@ -19,9 +19,33 @@ v0.1 之后不继续无边界加节点。每个版本只解决一个主问题，
 → 打版本标签
 ```
 
-长期目标是形成一个可半自主运行、可暂停、可恢复、可审计的研究规划 Agent，而不是一次性自动写论文的黑箱系统。
+长期目标是形成一个可在网页端和小程序端使用、可暂停、可恢复、可审计的研究规划 Agent，而不是一次性自动写论文的黑箱系统。
 
-## 2. v0.1 完成后的立即工作
+## 2. 路线图调整原因
+
+经过 PrismLens、AutoResearchClaw、PaperQA2、STORM / Co-STORM 和 ResearchPilot 的对比，后续版本顺序调整为：
+
+```text
+先把文献检索做对
+→ 再把长任务做成可恢复 API
+→ 再建立检索质量评估
+→ 再做 Web/PWA/小程序外壳
+```
+
+主要减法：
+
+- v0.2 不引入 Multi-Agent；
+- v0.2 不引入向量数据库；
+- v0.2 不解析全部 PDF；
+- v0.2 不做每篇论文 LLM Judge；
+- v0.3 默认不要求 Redis + PostgreSQL + 独立 Worker；
+- v0.5 小程序只做任务、结果和人工审核，不复制完整桌面工作台。
+
+详细检索方案见：
+
+- [v0.2 文献检索与 Web-First 上线方案](planning/V0.2_LITERATURE_RETRIEVAL.md)
+
+## 3. v0.1 完成后的立即工作
 
 在开始 v0.2 前，先完成一个短暂的稳定阶段：
 
@@ -37,109 +61,208 @@ v0.1 之后不继续无边界加节点。每个版本只解决一个主问题，
 
 ---
 
-## 3. v0.2 — 真实 Provider 与可信检索
+## 4. v0.2 — 文献检索核心与真实 Provider
 
 ### 核心目标
 
-把 v0.1 的确定性骨架接入真实 LLM 和真实检索，但不扩大图结构。
+把 v0.1 Retrieval Subgraph 接入真实学术来源，建立可信、可缓存、可解释的 Evidence Bundle，同时保持顶层 Graph 不变。
+
+### Graph 兼容
+
+```text
+prepare_search_node
+  └─ QueryPlanner + SourceRouter
+
+search_tool_node
+  └─ Provider Fan-out + Normalize + Deduplicate/Merge
+
+verify_evidence_node
+  └─ Metadata Verify + Rank + Coverage Audit
+
+retrieval_gate
+  └─ enough | retry_under_budget | budget_exhausted
+```
 
 ### 实现范围
 
-- `LLMProvider` 正式接口；
-- 至少一个真实结构化输出模型适配器；
-- `SearchProvider` 正式接口；
-- 论文、网页、仓库三类基础来源；
-- Provider timeout、bounded retry、rate limit 和 usage metadata；
-- Evidence URL、DOI、仓库地址的基础验证；
-- Prompt registry 和 prompt version；
+- `LLMProvider` 正式结构化接口；
+- `LiteratureProvider` 统一接口；
+- OpenAlex 作为默认广覆盖来源；
+- Semantic Scholar 和 arXiv 作为补充来源；
+- Crossref / DataCite DOI 验证；
+- Query Lane 与 Evidence Gap 绑定；
+- 来源并发、独立限流和总 deadline；
+- ProviderResult 区分 success / empty / timeout / rate_limited / failed；
+- DOI → arXiv ID → canonical ID → title/year/author 去重；
+- 多来源元数据合并和 provenance；
+- 可解释相关性、覆盖率和多样性排序；
+- 最多一次定向补搜；
+- 成功缓存、短期负缓存和 verification cache；
 - 真实 Provider smoke test，默认不进入普通离线 CI。
 
-### TDD 重点
+### 调用预算
 
-- Provider SDK 异常必须归一化；
-- malformed JSON 不得进入 State；
-- 搜索失败不得伪造结果；
-- rejected/pending Evidence 不得支持最终结论；
-- 同一个 fixture 在不同 Prompt 文本下仍返回相同测试结果。
+```text
+Query lanes: 2—4
+Retrieval rounds: <= 2
+Discovery providers per lane: <= 2
+Results per provider request: <= 10
+Merged candidates: <= 30
+Final paper cards: <= 12
+LLM calls inside retrieval: <= 2
+```
 
 ### 暂不实现
 
-- 多 Provider 自动路由；
-- 向量数据库；
-- 长期记忆；
-- Multi-Agent；
-- 完整 PDF 深度解析。
-
-### 验收
-
-- 真实 Provider happy path 可完成；
-- 离线测试不依赖网络；
-- 正常路径核心 LLM 调用仍不超过 5 次；
-- Provider 错误均有稳定错误类型和 Trace；
-- 无来源时明确 BLOCKED，不补造文献。
-
----
-
-## 4. v0.3 — Checkpoint、持久化、Trace 与 Replay
-
-### 核心目标
-
-让一次 Agent 运行可以安全暂停、恢复和审计。
-
-### 实现范围
-
-- SQLite Checkpointer；
-- run/thread/session 基础合同；
-- Node 级 checkpoint；
-- Human interrupt/resume；
-- versioned `TraceEvent`；
-- payload redaction；
-- JSONL 或 SQLite Trace store；
-- read-only trace inspector；
-- recorded replay；
-- checkpoint schema migration 最小机制。
-
-### 借鉴来源
-
-可以借鉴 PaperClaw 已验证的 Context、Session、Trace、Safe Resume 和 Recorded Replay 合同，但不得整体复制无关子系统。
+- Qdrant / Elasticsearch；
+- 全量 PDF 下载和解析；
+- Citation Graph 无限扩展；
+- Google Scholar 爬虫；
+- Multi-Agent 文献辩论；
+- 每篇论文单独 LLM 评分；
+- 自动 Related Work 全文写作；
+- GitHub / 网页 / 数据集与论文混合排序。
 
 ### TDD 重点
 
-- interrupt 后状态可恢复；
-- 已完成副作用不被重复执行；
+- Provider 失败不能伪装成真实空结果；
+- 故障产生的空列表不能污染正常缓存；
+- 同一论文跨来源正确合并；
+- 预印本和正式出版版本正确关联；
+- 高引用但不相关论文不能压过相关论文；
+- 新论文无引用时仍可进入结果；
+- required gap 不得被 LLM 删除；
+- 全部来源失败时明确 BLOCKED；
+- 部分来源失败时返回 partial result 和失败状态。
+
+### 验收
+
+- 至少两个真实学术来源可运行；
+- 至少一种 DOI / arXiv 验证路径可运行；
+- 检索循环最多两轮；
+- Retrieval 内 LLM 调用最多两次；
+- 去重后保留全部来源 provenance；
+- rejected / failed verification 不支持最终 claim；
+- Citation Count 不是唯一或主要排序；
+- 无来源时明确 BLOCKED，不补造文献；
+- Fake Provider 离线测试与真实 Smoke Test 分开报告。
+
+---
+
+## 5. v0.3 — Durable Task API、Checkpoint 与进度传输
+
+### 核心目标
+
+让检索和研究任务可以从网页端发起，在后台运行，并支持查询、取消、暂停、恢复和审计。
+
+### 默认最小部署
+
+```text
+FastAPI
++ SQLite
++ LangGraph Checkpointer
++ 单进程后台 Task Runner
++ SSE for Web
++ Polling fallback for Mini Program
+```
+
+只有实际出现多实例或高并发需求后，才升级为：
+
+```text
+Redis + ARQ/RQ/Celery
+PostgreSQL
+独立 Worker
+```
+
+### 实现范围
+
+- 创建 task / run；
+- 查询状态和阶段进度；
+- 获取论文分页结果；
+- cancel；
+- Human review 提交；
+- 幂等 request key；
+- SQLite Checkpointer；
+- run / thread / session 合同；
+- versioned `TraceEvent`；
+- payload redaction；
+- SSE 事件；
+- Polling API；
+- recorded replay；
+- Checkpoint schema migration 最小机制。
+
+### 状态机
+
+```text
+created
+→ queued
+→ running
+→ waiting_for_human
+→ running
+→ completed | partial | blocked | failed | cancelled
+```
+
+### 借鉴来源
+
+- PrismLens：FastAPI、后台任务、SSE、认证和前后端分层；
+- PaperClaw：Session、Trace、Safe Resume、Recorded Replay；
+- ResearchPilot：实时阶段进度和报告查询。
+
+### 减法
+
+- 不先引入 Redis；
+- 不先引入 PostgreSQL；
+- 不做完整 Trace UI；
+- 不做团队协作；
+- 不做多租户计费；
+- 不做 WebSocket，SSE + Polling 足够。
+
+### TDD 重点
+
+- POST 快速返回 task_id；
+- 重复幂等键不重复执行任务；
+- cancel 后不再产生新的 Provider 调用；
+- resume 不重复执行已经完成的搜索请求；
+- SSE 与 Polling 暴露相同权威状态；
 - replay 不调用真实模型和工具；
-- Trace 中可区分真实调用、retry、fallback 和 replay；
-- Secret 不进入持久化 payload。
+- Secret 不进入 Trace 和数据库。
 
 ### 验收
 
 - 任意顶层节点后可恢复；
-- Human review 路径可跨进程恢复；
-- recorded replay 与原始节点序列一致；
+- 网页断开后任务继续执行；
+- 小程序只靠轮询也能完整查看状态；
+- Human review 可跨进程恢复；
 - Trace 完整率 100%；
-- checkpoint 损坏时显式失败，不静默重置。
+- Checkpoint 损坏时显式失败，不静默重置。
 
 ---
 
-## 5. v0.4 — 自动评估与质量基线
+## 6. v0.4 — 文献检索与 Evidence 自动评估
 
 ### 核心目标
 
-建立可重复的 Agent 质量评估，不依赖主观展示。
+建立可重复的检索质量基线，不再依赖“结果看起来不错”。
 
 ### 实现范围
 
-- deterministic graph eval；
-- schema success rate；
-- task completion rate；
-- Evidence binding coverage；
+- Provider availability / partial failure 指标；
+- duplicate collapse accuracy；
+- metadata merge accuracy；
+- verification precision；
+- Evidence Gap coverage；
+- source diversity；
+- year / type constraint compliance；
+- relevance ranking test；
 - unsupported claim detection；
-- retry/repair/tool failure 指标；
+- retry / tool failure 指标；
 - Token、成本、P50/P95 延迟；
-- OOD 测试集扩展；
+- OOD 测试集；
 - legacy entity leakage scanner；
-- golden trace 和 regression report；
-- 可选的 LLM reviewer 实验，但不得覆盖硬规则。
+- golden Evidence Bundle；
+- golden Trace；
+- regression report；
+- 可选 LLM reviewer 实验，但不得覆盖硬规则。
 
 ### 测试集结构
 
@@ -152,63 +275,89 @@ v0.1 之后不继续无边界加节点。每个版本只解决一个主问题，
 - 数据库；
 - 软件工程；
 - 跨学科问题；
+- 非英语查询；
 - 信息不足问题；
 - 不可完成问题；
-- 恶意或诱导伪造引用的问题。
+- 恶意诱导伪造引用的问题；
+- 只有预印本的新方向；
+- 同一论文多版本和多来源记录。
 
 ### 验收
 
-- 每次版本提交都可生成确定性评估报告；
-- 所有 claim 可追溯到 Evidence 或标记为 proposed/inferred；
+- 每次版本提交可生成确定性评估报告；
+- 所有 claim 可追溯到 Evidence 或标记 proposed / inferred；
 - OOD 任务无固定案例污染；
-- 真实 Provider 指标与 Fake Provider 指标分开报告；
-- Mock 结果不得被称为真实 E2E。
+- 真实 Provider 指标与 Fake Provider 指标分开；
+- Mock 结果不得称为真实 E2E；
+- 排序回归和去重回归可以自动发现。
 
 ---
 
-## 6. v0.5 — API、任务控制与 Human-in-the-Loop
+## 7. v0.5 — Web/PWA 与小程序壳
 
 ### 核心目标
 
-把核心 Agent 封装成可供前端或其他服务调用的半自主任务服务。
+将已经稳定的 Retrieval + Task API 做成最小可用产品，不在前端重建 Agent 逻辑。
 
-### 实现范围
+### Web / PWA
 
-- FastAPI 最小接口；
-- 创建 run、读取状态、读取报告；
-- pause、resume、cancel；
-- Human review 提交接口；
-- 幂等 request key；
-- 任务状态机；
-- 基础认证和速率限制；
-- API contract tests；
-- 不包含完整 Web UI。
+- 登录；
+- 创建研究任务；
+- 查看阶段和进度；
+- 论文卡片分页；
+- Evidence Gap 标签；
+- verified / pending / suspicious / failed 标记；
+- 接受、拒绝、收藏；
+- 查看来源和验证方法；
+- 导出 Markdown / JSON / BibTeX；
+- 历史任务。
 
-### 状态建议
+### 小程序
 
-```text
-created
-→ running
-→ waiting_for_human
-→ running
-→ completed | blocked | failed | cancelled
-```
+只提供：
+
+- 创建任务；
+- 轮询任务；
+- 查看论文卡片；
+- 接受 / 拒绝；
+- 查看最终摘要；
+- 分享任务链接。
+
+不提供：
+
+- 完整 PDF 阅读；
+- Prompt 配置；
+- Trace 调试；
+- 复杂图表；
+- Provider 管理；
+- 大段长文编辑。
+
+### 技术建议
+
+- Web 优先 Next.js PWA；
+- 小程序使用同一 REST API；
+- Web 使用 SSE，小程序使用 Polling；
+- 论文列表分页；
+- 首屏只返回元数据和短摘要；
+- 全文和长摘要按需加载；
+- 单次状态响应建议不超过 200 KB。
 
 ### 验收
 
-- API 重复提交不会重复创建副作用；
-- cancel 后不再调用模型或检索；
-- waiting_for_human 可恢复；
-- 所有 API 状态与 LangGraph State 一致；
-- 错误响应不泄漏 Prompt、Secret 或内部堆栈。
+- 手机和桌面均能完成创建、查看和审核；
+- 前端刷新不丢任务；
+- 小程序断网恢复后可继续查询；
+- 用户操作不会直接修改未经 API 校验的 State；
+- 前端不接触 Provider Secret；
+- P50/P95 交互延迟满足预算。
 
 ---
 
-## 7. v0.6 — 研究材料工作区
+## 8. v0.6 — 研究材料工作区
 
 ### 核心目标
 
-让用户材料成为一等 Evidence，而不是附加文本。
+让用户上传材料成为一等 Evidence，而不是附加文本。
 
 ### 实现范围
 
@@ -218,8 +367,8 @@ created
 - 文档 chunk 和稳定 ID；
 - 用户材料与网络材料统一 Evidence contract；
 - 冲突来源标记；
-- accepted/rejected 人工操作；
-- 报告导出为 Markdown/JSON；
+- accepted / rejected 人工操作；
+- 报告导出；
 - 暂不运行用户代码。
 
 ### TDD 重点
@@ -232,14 +381,14 @@ created
 
 ### 验收
 
-- 用户材料可完整进入检索、综合、方法设计和最终报告；
+- 用户材料可进入检索、综合、方法设计和最终报告；
 - 每个引用可回到原文件和位置；
 - 冲突来源不会被静默合并；
 - 解析失败有明确状态。
 
 ---
 
-## 8. v0.7 — ContextBuilder 与上下文预算
+## 9. v0.7 — ContextBuilder 与上下文预算
 
 ### 核心目标
 
@@ -268,23 +417,17 @@ collect
 - context manifest；
 - Prompt injection 基础防护。
 
-### 暂不实现
-
-- 长期个人记忆；
-- 自动向量记忆写入；
-- 跨用户共享记忆。
-
 ### 验收
 
-- Workflow 不再直接读取完整 State；
+- Workflow 不直接读取完整 State；
 - 压缩前后 required constraints 一致；
-- 所有引用 ID 均保留；
-- 超预算时可解释删减了什么；
-- 长输入不会改变图的有界终止性。
+- 所有引用 ID 保留；
+- 超预算时可解释删减内容；
+- 长输入不改变图的有界终止性。
 
 ---
 
-## 9. v0.8 — 可靠性、安全与可观测性
+## 10. v0.8 — 可靠性、安全与可观测性
 
 ### 核心目标
 
@@ -294,7 +437,7 @@ collect
 
 - structured logging；
 - metrics；
-- health/readiness checks；
+- health / readiness；
 - Provider circuit breaker；
 - retry budget；
 - per-run cost budget；
@@ -303,20 +446,21 @@ collect
 - data retention policy；
 - failure injection tests；
 - load and concurrency tests；
+- Redis / PostgreSQL / 独立 Worker 升级评估；
 - 可选 LangSmith exporter，但不作为事实源。
 
 ### 验收
 
 - Provider 故障不会形成无限重试；
 - 单次任务成本有硬上限；
-- 所有外部调用均可审计；
-- 日志和 Trace 不包含 Secret；
+- 所有外部调用可审计；
+- 日志和 Trace 不含 Secret；
 - 服务重启后任务状态一致；
 - 并发任务之间 State 不串扰。
 
 ---
 
-## 10. v0.9 — Beta、Shadow Run 与上线演练
+## 11. v0.9 — Beta、Shadow Run 与上线演练
 
 ### 核心目标
 
@@ -327,7 +471,7 @@ collect
 - Beta feature flag；
 - Shadow mode；
 - 真实任务采样；
-- 用户反馈记录；
+- 用户反馈；
 - 回退机制；
 - runbook；
 - 数据备份和恢复演练；
@@ -337,23 +481,23 @@ collect
 
 ### 验收
 
-- 连续真实任务中无无限循环；
-- BLOCKED 和 HUMAN_REVIEW 比例可解释；
+- 连续真实任务无无限循环；
+- BLOCKED、PARTIAL 和 HUMAN_REVIEW 比例可解释；
 - P50/P95 延迟满足预算；
-- 回退方案已实际演练；
+- 回退方案实际演练；
 - 无严重 Evidence 伪造、跨任务污染或 Secret 泄漏；
 - 核心功能不依赖 legacy backup 分支。
 
 ---
 
-## 11. v1.0 — 半自主上线版本
+## 12. v1.0 — 半自主上线版本
 
 ### 定义
 
-v1.0 是一个半自主研究规划系统：
+v1.0 是一个网页端优先、可被小程序调用的半自主研究规划系统：
 
 - 可以接受研究问题和材料；
-- 可以自主规划有限检索；
+- 可以自主规划有限文献检索；
 - 可以生成证据综合和方法建议；
 - 可以在必要时暂停请求人工判断；
 - 可以恢复、追踪、回放和评估；
@@ -364,16 +508,17 @@ v1.0 是一个半自主研究规划系统：
 ### v1.0 必备条件
 
 - State、Graph、Node、Provider 和 API 合同稳定；
-- Checkpoint/HITL 可恢复；
+- Checkpoint / HITL 可恢复；
 - Evidence 全链路可追溯；
 - OOD 和 leakage 测试稳定；
 - 成本、延迟和调用次数有硬预算；
+- Web 和小程序核心流程可用；
 - Trace、Eval、回退和运维文档齐全；
 - 至少完成一次真实 Beta 验收。
 
 ---
 
-## 12. 明确暂缓到 v1.0 之后
+## 13. 明确暂缓到 v1.0 之后
 
 以下项目不应阻塞 v1.0：
 
@@ -383,23 +528,28 @@ v1.0 是一个半自主研究规划系统：
 - 完整论文写作与投稿；
 - 长期个人记忆；
 - 多租户计费；
-- 完整可视化工作台；
+- 完整可视化科研工作台；
 - 自动 Prompt 优化；
-- 复杂向量数据库和知识图谱；
-- 大规模分布式 Worker。
+- 大规模向量数据库和知识图谱；
+- 大规模分布式 Worker；
+- Citation Graph 全局爬取。
 
-这些能力应在 v1.0 稳定后按实际用户需求单独立项，不提前建设。
-
-## 13. 推荐版本优先级
+## 14. 推荐版本优先级
 
 ```text
-必须先做：
-v0.2 Provider/Retrieval
-→ v0.3 Persistence/Trace
-→ v0.4 Evaluation
-→ v0.5 API/HITL
+检索基础：
+v0.2 Literature Retrieval Core
 
-形成产品能力：
+产品运行基础：
+v0.3 Durable Task API / Checkpoint / SSE / Polling
+
+质量基础：
+v0.4 Retrieval and Evidence Evaluation
+
+用户入口：
+v0.5 Web/PWA and Mini Program Shell
+
+能力扩展：
 v0.6 Materials Workspace
 → v0.7 ContextBuilder
 → v0.8 Reliability
@@ -409,7 +559,7 @@ v0.9 Beta
 → v1.0 Release
 ```
 
-## 14. 分支与合并规则
+## 15. 分支与合并规则
 
 每个版本使用独立分支：
 
@@ -432,19 +582,22 @@ v1.0
 7. 破坏性 schema 变更必须提供 migration note；
 8. backup legacy 只读，不合并回主线。
 
-## 15. 最近的下一步
+## 16. 最近的下一步
 
 v0.1 验收完成后，实际执行顺序应为：
 
 ```text
 1. 合并并标记 v0.1.0
-2. 写 v0.2 REQUIREMENTS.md
-3. 写 Provider/Search contract 的失败测试
-4. 实现 Fake 和真实 Provider 的共同接口
-5. 接入第一个真实 LLM
-6. 接入第一个真实 Search Provider
-7. 完成真实 happy path 与失败路径验收
-8. 合并 v0.2
+2. 从 master 创建 v0.2
+3. 写 v0.2 REQUIREMENTS.md 和固定 Provider Fixtures
+4. 写 ProviderResult / PaperRecord / CoverageReport 失败测试
+5. 实现 OpenAlex Provider
+6. 实现 Semantic Scholar / arXiv Provider
+7. 实现去重、元数据合并和 provenance
+8. 实现 Crossref / DataCite 验证
+9. 实现可解释排序和 Coverage Gate
+10. 完成真实 Smoke Test 与检索评估
+11. 合并 v0.2
 ```
 
-不要在 v0.2 同时建设 Trace UI、Multi-Agent、长期记忆或完整前端。
+不要在 v0.2 同时建设完整前端、Multi-Agent、长期记忆、Qdrant 或全量 PDF RAG。
