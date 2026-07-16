@@ -1,0 +1,48 @@
+{
+  "schema_version": "0.1",
+  "gap_assessments": [
+    {
+      "gap_id": "gap-evidence",
+      "status": "supported",
+      "evidence_ids": [
+        "ev-evidence-001"
+      ],
+      "summary": "A synthetic note defines the evaluation boundary for database index strategy evaluation.",
+      "limitations": [
+        "Synthetic fixture only"
+      ]
+    },
+    {
+      "gap_id": "gap-evaluation",
+      "status": "supported",
+      "evidence_ids": [
+        "ev-evaluation-001"
+      ],
+      "summary": "A synthetic note defines a controlled comparison with query latency.",
+      "limitations": [
+        "Threshold requires real calibration"
+      ]
+    }
+  ],
+  "verified_findings": [
+    {
+      "claim_id": "claim-evidence",
+      "text": "The minimum evaluation for database index strategy evaluation requires traceable inputs and outputs.",
+      "evidence_ids": [
+        "ev-evidence-001"
+      ]
+    },
+    {
+      "claim_id": "claim-evaluation",
+      "text": "A controlled comparison can be measured with query latency.",
+      "evidence_ids": [
+        "ev-evaluation-001"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "feasibility": "feasible",
+  "limitations": [
+    "All evidence is synthetic and only validates workflow behavior"
+  ]
+}

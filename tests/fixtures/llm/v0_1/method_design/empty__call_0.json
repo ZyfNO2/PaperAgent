@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1",
+  "status": "proposed",
+  "baseline": {"name": "deferred baseline", "description": "Baseline selection is deferred until evidence is available."},
+  "modules": [],
+  "integration_contracts": [],
+  "problem_method_insight": "No evidence-backed method can be selected yet.",
+  "falsifiable_hypothesis": "After evidence collection, a candidate must improve the primary metric by at least 0.10.",
+  "minimum_key_experiment": {"name": "deferred experiment", "conditions": ["baseline", "candidate"], "metrics": ["primary_metric"], "baseline": "baseline", "success_threshold": "candidate - baseline >= 0.10"},
+  "ablations": [{"name": "deferred ablation", "change": "remove candidate module", "expected_observation": "No claim before evidence"}],
+  "risks": ["No accepted evidence"],
+  "stop_conditions": ["Retrieval remains empty after the hard budget"],
+  "evidence_ids": []
+}
