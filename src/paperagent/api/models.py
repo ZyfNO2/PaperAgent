@@ -21,9 +21,7 @@ class TaskStatus(StrEnum):
     FAILED = "failed"
 
 
-TERMINAL_TASK_STATUSES = frozenset(
-    {TaskStatus.CANCELLED, TaskStatus.SUCCEEDED, TaskStatus.FAILED}
-)
+TERMINAL_TASK_STATUSES = frozenset({TaskStatus.CANCELLED, TaskStatus.SUCCEEDED, TaskStatus.FAILED})
 
 
 class TaskError(FrozenModel):

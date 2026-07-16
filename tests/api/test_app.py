@@ -59,9 +59,7 @@ def test_api__health_submit_poll_events_and_sse_share_state(tmp_path) -> None:
 
     with TestClient(app) as client:
         assert client.get("/healthz").json() == {"status": "ok", "api_contract": "v0.3"}
-        accepted = client.post(
-            "/v1/tasks", json=_body(), headers={"Idempotency-Key": "request-1"}
-        )
+        accepted = client.post("/v1/tasks", json=_body(), headers={"Idempotency-Key": "request-1"})
         assert accepted.status_code == 202
         accepted_payload = accepted.json()
         assert accepted_payload["reused"] is False
@@ -87,7 +85,7 @@ def test_api__health_submit_poll_events_and_sse_share_state(tmp_path) -> None:
         assert stream.headers["content-type"].startswith("text/event-stream")
         assert "event: task.queued" in stream.text
         assert "event: task.succeeded" in stream.text
-        assert f'id: {task["event_cursor"]}' in stream.text
+        assert f"id: {task['event_cursor']}" in stream.text
 
     assert executor.calls == [task_id]
 
@@ -97,12 +95,8 @@ def test_api__idempotency_replay_and_conflict(tmp_path) -> None:
     app = create_app(executor=executor, database_path=tmp_path / "tasks.db")
 
     with TestClient(app) as client:
-        first = client.post(
-            "/v1/tasks", json=_body(), headers={"Idempotency-Key": "same-key"}
-        )
-        replay = client.post(
-            "/v1/tasks", json=_body(), headers={"Idempotency-Key": "same-key"}
-        )
+        first = client.post("/v1/tasks", json=_body(), headers={"Idempotency-Key": "same-key"})
+        replay = client.post("/v1/tasks", json=_body(), headers={"Idempotency-Key": "same-key"})
         conflict = client.post(
             "/v1/tasks",
             json=_body("A different research question"),

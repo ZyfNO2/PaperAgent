@@ -104,7 +104,9 @@ def create_app(
         try:
             record = await asyncio.to_thread(task_repository.get_task, task_id)
         except TaskNotFoundError as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"
+            ) from exc
         return TaskView.from_record(record)
 
     @app.get("/v1/tasks/{task_id}/events", response_model=TaskEventPage)
@@ -122,7 +124,9 @@ def create_app(
             )
             record = await asyncio.to_thread(task_repository.get_task, task_id)
         except TaskNotFoundError as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"
+            ) from exc
         next_cursor = events[-1].sequence if events else after
         return TaskEventPage(
             task_id=task_id,
@@ -140,7 +144,9 @@ def create_app(
         try:
             await asyncio.to_thread(task_repository.get_task, task_id)
         except TaskNotFoundError as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"
+            ) from exc
 
         async def event_stream() -> AsyncIterator[str]:
             cursor = after
@@ -180,7 +186,9 @@ def create_app(
         try:
             record, accepted = await asyncio.to_thread(task_repository.request_cancel, task_id)
         except TaskNotFoundError as exc:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="task not found"
+            ) from exc
         task_runner.notify()
         return CancelTaskResponse(task_id=task_id, status=record.status, accepted=accepted)
 

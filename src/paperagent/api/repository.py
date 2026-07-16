@@ -164,9 +164,10 @@ class SQLiteTaskRepository:
         if not 1 <= limit <= 500:
             raise ValueError("limit must be between 1 and 500")
         with self._connect() as connection:
-            if connection.execute(
-                "SELECT 1 FROM tasks WHERE task_id = ?", (task_id,)
-            ).fetchone() is None:
+            if (
+                connection.execute("SELECT 1 FROM tasks WHERE task_id = ?", (task_id,)).fetchone()
+                is None
+            ):
                 raise TaskNotFoundError(task_id)
             rows = connection.execute(
                 """
@@ -436,7 +437,8 @@ class SQLiteTaskRepository:
         if len(payload_json.encode("utf-8")) > MAX_EVENT_PAYLOAD_BYTES:
             raise ValueError("event payload exceeds the 16 KiB MVP limit")
         sequence_row = connection.execute(
-            "SELECT COALESCE(MAX(sequence), 0) + 1 AS next_sequence FROM task_events WHERE task_id = ?",
+            """SELECT COALESCE(MAX(sequence), 0) + 1 AS next_sequence
+               FROM task_events WHERE task_id = ?""",
             (task_id,),
         ).fetchone()
         if sequence_row is None:  # pragma: no cover - aggregate always returns one row
@@ -455,11 +457,9 @@ class SQLiteTaskRepository:
         row = connection.execute("SELECT * FROM tasks WHERE task_id = ?", (task_id,)).fetchone()
         if row is None:
             raise TaskNotFoundError(task_id)
-        return row
+        return cast(sqlite3.Row, row)
 
-    def _record_from_row(
-        self, connection: sqlite3.Connection, row: sqlite3.Row
-    ) -> TaskRecord:
+    def _record_from_row(self, connection: sqlite3.Connection, row: sqlite3.Row) -> TaskRecord:
         payload = TaskCreateRequest.model_validate_json(cast(str, row["request_json"]))
         result_raw = cast(str | None, row["result_json"])
         error_raw = cast(str | None, row["error_json"])
