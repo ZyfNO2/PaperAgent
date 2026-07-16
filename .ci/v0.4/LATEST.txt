@@ -1,0 +1,248 @@
+run_id=29541390515
+head_sha=69fafe15cb622cfe7dccccb36a69a773f5dfce1c
+install_rc=0
+ruff_rc=1
+format_rc=1
+mypy_rc=0
+pytest_rc=1
+overall_rc=1
+
+E501 Line too long (105 > 100)
+  --> src/paperagent/api/review_routes.py:62:101
+   |
+60 |             return await asyncio.to_thread(repository.update_review, task_id, paper_id, update)
+61 |         except TaskNotFoundError as exc:
+62 |             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="paper not found") from exc
+   |                                                                                                     ^^^^^
+63 |         except ReviewConflictError as exc:
+64 |             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+   |
+
+E501 Line too long (107 > 100)
+  --> src/paperagent/api/review_routes.py:66:101
+   |
+64 |             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+65 |         except ReviewValidationError as exc:
+66 |             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+   |                                                                                                     ^^^^^^^
+67 |         except ReviewTaskNotReadyError as exc:
+68 |             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+   |
+
+E501 Line too long (104 > 100)
+  --> src/paperagent/api/review_routes.py:84:101
+   |
+82 |             )
+83 |         except TaskNotFoundError as exc:
+84 |             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found") from exc
+   |                                                                                                     ^^^^
+85 |         except ReviewTaskNotReadyError as exc:
+86 |             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/api/test_review_export.py:1:1
+   |
+ 1 | / from __future__ import annotations
+ 2 | |
+ 3 | | import hashlib
+ 4 | | import json
+ 5 | |
+ 6 | | import pytest
+ 7 | | from fastapi.testclient import TestClient
+ 8 | |
+ 9 | | from paperagent.api import (
+10 | |     PaperReviewUpdate,
+11 | |     ReviewDecision,
+12 | |     ReviewExportService,
+13 | |     SQLiteReviewRepository,
+14 | |     SQLiteTaskRepository,
+15 | |     TaskCreateRequest,
+16 | |     create_app,
+17 | | )
+18 | | from paperagent.api.review import ReviewConflictError, ReviewTaskNotReadyError, ReviewValidationError
+19 | | from paperagent.schemas import ResearchRequest
+   | |______________________________________________^
+   |
+help: Organize imports
+
+E501 Line too long (101 > 100)
+  --> tests/api/test_review_export.py:18:101
+   |
+16 |     create_app,
+17 | )
+18 | from paperagent.api.review import ReviewConflictError, ReviewTaskNotReadyError, ReviewValidationError
+   |                                                                                                     ^
+19 | from paperagent.schemas import ResearchRequest
+   |
+
+Found 10 errors.
+[*] 1 fixable with the `--fix` option.
+Would reformat: src/paperagent/api/review.py
+Would reformat: src/paperagent/api/review_routes.py
+Would reformat: tests/api/test_review_export.py
+3 files would be reformatted, 109 files already formatted
+Success: no issues found in 77 source files
+.............F.......................................................... [ 41%]
+........................................................................ [ 83%]
+.......s.F..................                                             [100%]
+=================================== FAILURES ===================================
+________ test_review_repository__conflict_validation_and_task_readiness ________
+
+tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/test_review_repository__confli0')
+
+    def test_review_repository__conflict_validation_and_task_readiness(tmp_path) -> None:
+        tasks = SQLiteTaskRepository(tmp_path / "tasks.db")
+        _succeeded_task(tasks)
+        reviews = SQLiteReviewRepository(tasks)
+        reviews.update_review(
+            "task-review",
+            "paper-b",
+            PaperReviewUpdate(
+                decision=ReviewDecision.REJECTED,
+                expected_version=0,
+            ),
+        )
+    
+        with pytest.raises(ReviewConflictError):
+            reviews.update_review(
+                "task-review",
+                "paper-b",
+                PaperReviewUpdate(
+                    decision=ReviewDecision.ACCEPTED,
+                    expected_version=0,
+                ),
+            )
+        with pytest.raises(ReviewValidationError, match="cannot be accepted"):
+            reviews.update_review(
+                "task-review",
+                "paper-failed",
+                PaperReviewUpdate(
+                    decision=ReviewDecision.ACCEPTED,
+                    expected_version=0,
+                ),
+            )
+>       with pytest.raises(ReviewValidationError, match="invalid paper cursor"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ReviewValidationError
+
+tests/api/test_review_export.py:161: Failed
+____ test_package__import__exposes_v0_3_and_frozen_prior_contract_versions _____
+
+    def test_package__import__exposes_v0_3_and_frozen_prior_contract_versions() -> None:
+        import paperagent
+    
+>       assert paperagent.__version__ == "0.3.0"
+E       AssertionError: assert '0.4.0' == '0.3.0'
+E         
+E         - 0.3.0
+E         ?   ^
+E         + 0.4.0
+E         ?   ^
+
+tests/unit/test_foundation.py:11: AssertionError
+=============================== warnings summary ===============================
+../../../../../opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/api/test_review_export.py::test_review_api__updates_filters_and_downloads_exports
+  /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/fastapi/routing.py:345: StarletteDeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    return await dependant.call(**values)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.13-final-0 _______________
+
+Name                                                      Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------------------
+src/paperagent/__init__.py                                    2      0      0      0   100%
+src/paperagent/api/__init__.py                                8      0      0      0   100%
+src/paperagent/api/app.py                                    93      6     10      2    90%   156, 169-173
+src/paperagent/api/executor.py                               41      0     12      2    96%   65->80, 82->84
+src/paperagent/api/models.py                                 76      0      0      0   100%
+src/paperagent/api/repository.py                            183      3     36      5    96%   41, 52->54, 61->63, 246, 267
+src/paperagent/api/review.py                                179     10     56     10    91%   48-49, 67->69, 100, 121, 138, 202, 228, 231, 234, 243, 361->363
+src/paperagent/api/review_models.py                          47      0      0      0   100%
+src/paperagent/api/review_routes.py                          45      9      0      0    80%   48-51, 62, 67-68, 85-86
+src/paperagent/api/runner.py                                 70      6     18      3    90%   55-56, 62-63, 84-85
+src/paperagent/api/v04.py                                    17      0      0      0   100%
+src/paperagent/config.py                                      9      0      0      0   100%
+src/paperagent/errors.py                                     29      0      0      0   100%
+src/paperagent/graph.py                                      41      0      0      0   100%
+src/paperagent/literature/__init__.py                         7      0      0      0   100%
+src/paperagent/literature/adapter.py                         37      0     10      0   100%
+src/paperagent/literature/cache.py                           39      1      8      0    98%   57
+src/paperagent/literature/coverage.py                        22      0     10      0   100%
+src/paperagent/literature/factory.py                         32      0      2      0   100%
+src/paperagent/literature/merge.py                           80      0     36      1    99%   94->96
+src/paperagent/literature/normalize.py                       37      0     16      0   100%
+src/paperagent/literature/planner.py                         47      1     26      1    97%   23
+src/paperagent/literature/providers/__init__.py               5      0      0      0   100%
+src/paperagent/literature/providers/arxiv.py                 61      2     12      2    95%   137, 156
+src/paperagent/literature/providers/base.py                  48      0      6      0   100%
+src/paperagent/literature/providers/openalex.py              72      2     30      9    89%   50->52, 52->54, 54->56, 119, 122->121, 124->123, 131, 136->135, 138->135
+src/paperagent/literature/providers/semantic_scholar.py      50      2      8      3    91%   56->60, 96, 125
+src/paperagent/literature/ranking.py                         49      3     12      3    90%   19, 27, 62
+src/paperagent/literature/service.py                        123      1     30      2    98%   112->117, 235
+src/paperagent/literature/verification.py                    94      0     38      1    99%   66->71
+src/paperagent/nodes/__init__.py                              8      0      0      0   100%
+src/paperagent/nodes/_shared.py                              56      3     12      4    90%   65, 68, 73, 128->167
+src/paperagent/nodes/evidence_synthesis.py                   21      1      6      1    93%   17
+src/paperagent/nodes/human_review.py                         38      6     10      5    77%   23, 27-28, 33, 41, 45
+src/paperagent/nodes/intake.py                               22      1      2      1    92%   24
+src/paperagent/nodes/method_design.py                        24      2      6      3    83%   18, 24, 48->50
+src/paperagent/nodes/persist.py                              21      1      2      1    91%   19
+src/paperagent/nodes/planning.py                             29      4      8      2    84%   17, 24-25, 51
+src/paperagent/nodes/quality_gate.py                         71     10     34      8    81%   23, 47, 62, 74-81, 88, 106, 111, 158
+src/paperagent/nodes/report.py                               28      1      8      2    92%   33, 54->56
+src/paperagent/persistence/__init__.py                        3      0      0      0   100%
+src/paperagent/persistence/base.py                            8      0      0      0   100%
+src/paperagent/persistence/memory.py                         16      0      2      0   100%
+src/paperagent/prompts/__init__.py                            2      0      0      0   100%
+src/paperagent/prompts/registry.py                           25      2      0      0    92%   30-31
+src/paperagent/prompts/v0_1/__init__.py                       0      0      0      0   100%
+src/paperagent/providers/__init__.py                          4      0      0      0   100%
+src/paperagent/providers/base.py                             15      0      0      0   100%
+src/paperagent/providers/fake_llm.py                         47      3      4      1    92%   45, 87-88
+src/paperagent/providers/fake_search.py                      38      5      4      2    83%   20, 51, 72, 75-76
+src/paperagent/retrieval/__init__.py                          5      0      0      0   100%
+src/paperagent/retrieval/gate.py                             15      1      6      1    90%   10
+src/paperagent/retrieval/graph.py                            18      0      0      0   100%
+src/paperagent/retrieval/prepare_search.py                   26      2      4      2    87%   20, 23
+src/paperagent/retrieval/search_tool.py                      43      5     12      2    87%   19, 53->55, 81-93
+src/paperagent/retrieval/verify_evidence.py                  56      5     24      5    88%   28, 32, 34, 46, 58
+src/paperagent/runtime.py                                    40      3      8      3    88%   23, 26, 33
+src/paperagent/schemas/__init__.py                           12      0      0      0   100%
+src/paperagent/schemas/base.py                                4      0      0      0   100%
+src/paperagent/schemas/common.py                             43      0      0      0   100%
+src/paperagent/schemas/evidence.py                           81      6     22      6    88%   37, 39, 74, 83, 92, 99
+src/paperagent/schemas/execution.py                          13      0      0      0   100%
+src/paperagent/schemas/literature.py                        143      5     16      5    94%   38, 68, 107, 109, 113
+src/paperagent/schemas/method.py                             38      0      0      0   100%
+src/paperagent/schemas/plan.py                               60      6     22      7    84%   61, 64, 66, 67->72, 69, 71, 76
+src/paperagent/schemas/quality.py                            21      2      6      2    85%   27, 29
+src/paperagent/schemas/report.py                             23      0      2      0   100%
+src/paperagent/schemas/request.py                            39      4     10      3    86%   43, 46, 52-53
+src/paperagent/schemas/synthesis.py                          34      1      6      1    95%   45
+src/paperagent/schemas/trace.py                              24      0      0      0   100%
+src/paperagent/state.py                                      44      0      4      0   100%
+src/paperagent/telemetry/__init__.py                          8      0      0      0   100%
+src/paperagent/telemetry/events.py                           10      0      0      0   100%
+src/paperagent/telemetry/hashing.py                          25      2     10      2    89%   22, 24
+src/paperagent/telemetry/redaction.py                        10      0      4      0   100%
+src/paperagent/testing.py                                    19      0      0      0   100%
+src/paperagent/version.py                                     7      0      0      0   100%
+-----------------------------------------------------------------------------------------------------
+TOTAL                                                      2980    127    630    113    93%
+Required test coverage of 90.0% reached. Total coverage: 93.24%
+=========================== short test summary info ============================
+SKIPPED [1] tests/real_provider/test_literature_smoke.py:29: set PAPERAGENT_RUN_REAL_PROVIDER=1
+FAILED tests/api/test_review_export.py::test_review_repository__conflict_validation_and_task_readiness - Failed: DID NOT RAISE ReviewValidationError
+FAILED tests/unit/test_foundation.py::test_package__import__exposes_v0_3_and_frozen_prior_contract_versions - AssertionError: assert '0.4.0' == '0.3.0'
+  
+  - 0.3.0
+  ?   ^
+  + 0.4.0
+  ?   ^
+2 failed, 169 passed, 1 skipped, 2 warnings in 4.95s
