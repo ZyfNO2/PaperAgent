@@ -156,6 +156,36 @@ def test_cli__serve_is_localhost_first_and_invokes_uvicorn(
     assert exc_info.value.code == 2
 
 
+def test_cli__non_negative_float_rejects_negative() -> None:
+    from paperagent.cli import _non_negative_float
+
+    import argparse
+
+    with pytest.raises(argparse.ArgumentTypeError, match="non-negative"):
+        _non_negative_float("-1")
+
+
+def test_cli__serve_rejects_invalid_port() -> None:
+    from paperagent.cli import main
+
+    with pytest.raises(SystemExit):
+        main(["serve", "--port", "99999"])
+
+
+def test_cli__llm_smoke_rejects_missing_key() -> None:
+    from paperagent.cli import main
+
+    with pytest.raises(SystemExit):
+        main(["llm-smoke"])
+
+
+def test_cli__provider_smoke_rejects_zero_timeout() -> None:
+    from paperagent.cli import main
+
+    with pytest.raises(SystemExit, match="greater than zero"):
+        main(["provider-smoke", "--timeout", "0"])
+
+
 def test_provider_smoke_summary_and_cli_exit_codes(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],

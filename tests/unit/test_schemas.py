@@ -120,3 +120,118 @@ def test_final_report__completed_without_limitations__is_rejected() -> None:
             next_actions=[],
             evidence_ids=[],
         )
+
+
+def test_research_plan__ready_with_clarification_is_rejected() -> None:
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    with pytest.raises(ValidationError, match="cannot include clarification"):
+        ResearchPlan(
+            status="ready",
+            problem_statement="p",
+            scope="s",
+            evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
+            search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="search")],
+            success_criteria=["c"],
+            risks=[],
+            clarification_question="?",
+        )
+
+
+def test_research_plan__ready_with_block_reason_is_rejected() -> None:
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    with pytest.raises(ValidationError, match="cannot include"):
+        ResearchPlan(
+            status="ready",
+            problem_statement="p",
+            scope="s",
+            evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
+            search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="search")],
+            success_criteria=["c"],
+            risks=[],
+            block_reason="blocked",
+        )
+
+
+def test_research_plan__need_human_without_clarification_is_rejected() -> None:
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    with pytest.raises(ValidationError, match="requires clarification"):
+        ResearchPlan(
+            status="need_human",
+            problem_statement="p",
+            scope="s",
+            evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
+            search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="search")],
+            success_criteria=["c"],
+            risks=[],
+        )
+
+
+def test_research_plan__need_human_with_block_reason_is_rejected() -> None:
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    with pytest.raises(ValidationError, match="cannot include block_reason"):
+        ResearchPlan(
+            status="need_human",
+            problem_statement="p",
+            scope="s",
+            evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
+            search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="search")],
+            success_criteria=["c"],
+            risks=[],
+            clarification_question="?",
+            block_reason="blocked",
+        )
+
+
+def test_research_plan__blocked_without_reason_is_rejected() -> None:
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    with pytest.raises(ValidationError, match="requires block_reason"):
+        ResearchPlan(
+            status="blocked",
+            problem_statement="p",
+            scope="s",
+            evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
+            search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="search")],
+            success_criteria=["c"],
+            risks=[],
+        )
+
+
+def test_research_plan__blocked_with_clarification_is_rejected() -> None:
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    with pytest.raises(ValidationError, match="cannot include clarification"):
+        ResearchPlan(
+            status="blocked",
+            problem_statement="p",
+            scope="s",
+            evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
+            search_queries=[SearchQuery(query_id="q1", gap_id="g1", query="search")],
+            success_criteria=["c"],
+            risks=[],
+            block_reason="blocked",
+            clarification_question="?",
+        )
+
+
+def test_research_plan__query_count_exceeds_budget() -> None:
+    from paperagent.schemas import EvidenceGap, ResearchPlan, SearchQuery
+
+    plan = ResearchPlan(
+        status="ready",
+        problem_statement="p",
+        scope="s",
+        evidence_gaps=[EvidenceGap(gap_id="g1", description="d")],
+        search_queries=[
+            SearchQuery(query_id="q1", gap_id="g1", query="s1"),
+            SearchQuery(query_id="q2", gap_id="g1", query="s2"),
+        ],
+        success_criteria=["c"],
+        risks=[],
+    )
+    with pytest.raises(ValueError, match="exceeds budget"):
+        plan.validate_query_budget(1)
