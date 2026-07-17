@@ -34,6 +34,7 @@ def test_eval_cli_writes_report(tmp_path: Path) -> None:
                 "terminal": "succeeded",
                 "observed_properties": ["grounded"],
                 "calls": 1,
+                "estimated_cost_usd": 0.01,
             }
         )
         + "\n",
