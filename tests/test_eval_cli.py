@@ -41,15 +41,18 @@ def test_eval_cli_writes_report(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    assert main(
-        [
-            "--cases",
-            str(cases),
-            "--observations",
-            str(observations),
-            "--output",
-            str(output),
-        ]
-    ) == 0
+    assert (
+        main(
+            [
+                "--cases",
+                str(cases),
+                "--observations",
+                str(observations),
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
     report = json.loads(output.read_text(encoding="utf-8"))
     assert report["passed"] == 1

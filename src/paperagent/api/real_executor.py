@@ -133,9 +133,7 @@ class RealTaskExecutor(TaskExecutor):
         if not isinstance(sink, TelemetrySink):
             return result
         enriched = dict(result)
-        enriched["provider_telemetry"] = [
-            record.model_dump(mode="json") for record in sink.records
-        ]
+        enriched["provider_telemetry"] = [record.model_dump(mode="json") for record in sink.records]
         return enriched
 
     @staticmethod

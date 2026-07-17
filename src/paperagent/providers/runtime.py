@@ -70,7 +70,9 @@ class ProviderRuntimeConfig(BaseModel):
             or parsed.query
             or parsed.fragment
         ):
-            raise ValueError("base_url must be an HTTPS origin/path without credentials or query data")
+            raise ValueError(
+                "base_url must be an HTTPS origin/path without credentials or query data"
+            )
         if self.total_timeout_seconds < self.connect_timeout_seconds:
             raise ValueError("total_timeout_seconds must cover connect timeout")
         if self.total_timeout_seconds < self.read_timeout_seconds:

@@ -134,7 +134,9 @@ class MistralLLMProvider(LLMProvider):
                     parsed = schema.model_validate_json(content)
                 except ValidationError as exc:
                     validation_error = exc
-                    can_repair = self._config.allow_schema_repair and attempt < self._config.max_attempts
+                    can_repair = (
+                        self._config.allow_schema_repair and attempt < self._config.max_attempts
+                    )
                     if can_repair:
                         repair_instruction = _repair_instruction(schema, exc)
                     raise ProviderError(
@@ -350,9 +352,7 @@ class MistralLLMProvider(LLMProvider):
         )
 
 
-def _extract_content_and_usage(
-    payload: dict[str, object], *, task: str
-) -> tuple[str, UsageRecord]:
+def _extract_content_and_usage(payload: dict[str, object], *, task: str) -> tuple[str, UsageRecord]:
     choices = payload.get("choices")
     if not isinstance(choices, list) or not choices:
         raise ProviderError(
