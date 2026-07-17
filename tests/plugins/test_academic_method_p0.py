@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from paperagent.plugins import MethodPlan, audit_method_plan
+from paperagent.plugins import MethodAuditReport, MethodPlan, audit_method_plan
 from paperagent.plugins.academic_method import AuditVerdict
 
 _EXAMPLE = Path("examples/v0_8/go-plan.json")
@@ -15,6 +15,10 @@ def _go_payload() -> dict[str, object]:
     return payload
 
 
+def _failed_check_ids(report: MethodAuditReport) -> set[str]:
+    return {check.check_id for check in report.checks if not check.passed}
+
+
 def test_empty_module_plan_cannot_receive_go() -> None:
     payload = _go_payload()
     payload["modules"] = []
@@ -22,9 +26,7 @@ def test_empty_module_plan_cannot_receive_go() -> None:
     report = audit_method_plan(MethodPlan.model_validate(payload))
 
     assert report.verdict is AuditVerdict.REVISE
-    assert any(
-        check.check_id == "proposed-modules-present" and not check.passed for check in report.checks
-    )
+    assert "proposed-modules-present" in _failed_check_ids(report)
 
 
 def test_baseline_arm_with_proposed_module_cannot_receive_go() -> None:
@@ -41,7 +43,4 @@ def test_baseline_arm_with_proposed_module_cannot_receive_go() -> None:
     report = audit_method_plan(MethodPlan.model_validate(payload))
 
     assert report.verdict is AuditVerdict.REVISE
-    assert any(
-        check.check_id == "experiment-baseline-arm" and not check.passed
-        for check in report.checks
-    )
+    assert "experiment-baseline-arm" in _failed_check_ids(report)
