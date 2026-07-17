@@ -91,9 +91,9 @@ def test_release_app__full_demo_review_and_export_path(tmp_path: Path) -> None:
         exported = client.get(f"/v1/tasks/{task_id}/exports/json?selection=all")
         assert exported.status_code == 200
         assert exported.headers["X-PaperAgent-Item-Count"] == "3"
-        assert exported.headers["X-PaperAgent-SHA256"] == hashlib.sha256(
-            exported.content
-        ).hexdigest()
+        assert (
+            exported.headers["X-PaperAgent-SHA256"] == hashlib.sha256(exported.content).hexdigest()
+        )
         assert len(json.loads(exported.text)["papers"]) == 3
 
 
