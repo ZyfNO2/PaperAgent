@@ -23,6 +23,7 @@ from paperagent.pricing import PriceTable
 from paperagent.providers import LLMProvider, build_llm_provider
 from paperagent.providers.runtime import ProviderRuntimeConfig, TelemetrySink
 from paperagent.runtime import RuntimeServices
+from paperagent.schemas import RunBudgets
 from paperagent.schemas.request import ResearchRequest
 from paperagent.testing import Clock, IdFactory
 
@@ -98,7 +99,15 @@ class RealTaskExecutor(TaskExecutor):
             ids=UUIDIdFactory(),
             store=InMemoryStateStore(),
         )
-        executor = LangGraphTaskExecutor(graph=self.graph, services=services)
+        graph_budgets = RunBudgets(max_llm_calls=self.provider_config.max_llm_calls_per_task)
+        executor = LangGraphTaskExecutor(
+            graph=self.graph,
+            services=services,
+            configurable={
+                "network_policy": "allow_search",
+                "budgets": graph_budgets,
+            },
+        )
         try:
             result = await executor.execute(
                 task_id=task_id,
