@@ -2,14 +2,13 @@
 
 ## Current state
 
-`PARTIAL COMPLETE / LIVE MISTRAL AND SCIENTIFIC EVALUATION NOT VERIFIED`
+`OFFLINE MVP COMPLETE / LIVE MISTRAL AND SCIENTIFIC QUALITY NOT VERIFIED`
 
 ```text
 Repository:               ZyfNO2/PaperAgent
-Implementation branch:    feat/v0.6-real-llm-integration
-Draft PR:                 #13
-Verified implementation:  df1aa39264ce504b0273d07d0d614716529f08e0
-Final cleaned head:       4c2b4443d09fdaf65f07f7bd5d62200d588f9143
+Implementation branch:    feat/v0.6-v0.8-mvp-plugins
+Draft PR:                 #14
+Base:                     master at b01dbfa86de345b3d468240cc1b5a478c8cb0746
 ```
 
 No Fake, Mock, Stub, static check, deterministic demo, or literature-provider smoke is represented as
@@ -20,42 +19,43 @@ real LLM end-to-end evidence.
 | Phase | Status | Evidence boundary |
 |---|---|---|
 | A — provider contracts and policy | COMPLETE | configuration, errors, budgets, pricing, telemetry, redaction, and offline tests implemented |
-| B — Mistral adapter | IMPLEMENTED / LIVE PENDING | adapter and failure-injection tests pass; four production-schema live tests exist but were not executed |
-| C — real runtime integration | OFFLINE COMPLETE / LIVE PENDING | explicit CLI selection, per-task lifecycle, readiness, graph budget/network integration, and offline runtime tests pass |
-| D — evaluation harness | FOUNDATION PARTIAL | deterministic schemas, loader, digest, graders, report CLI, seed corpus, holdout manifest, and run manifest implemented; release corpus and human review pending |
-| E — release hardening | REGRESSION PASS / REAL LLM PENDING | standard dual-version CI and full v0.5.1 release hardening pass; credentialed Mistral and scientific release gates pending |
+| B — Mistral adapter | IMPLEMENTED / LIVE PENDING | adapter and failure-injection tests exist; four production-schema live tests require credentials |
+| C — real runtime integration | OFFLINE COMPLETE / LIVE PENDING | explicit CLI selection, lifecycle, readiness, graph, persistence, cancellation, and budget integration are implemented |
+| D — evaluation harness | DEVELOPMENT CORPUS COMPLETE / HOLDOUT PENDING | deterministic loader, graders, reports, manifest, and balanced 48-case corpus are committed; external observations and human review remain pending |
+| E — release hardening | FINAL CI IN PROGRESS | Python 3.11/3.12, wheel, browser, provider, and Docker gates must pass on the combined v0.6-v0.8 branch |
 
-## Verified automated evidence
+## Delivered evaluation corpus
 
-### Implementation evidence
-
-```text
-PaperAgent CI:             29588147924 — SUCCESS
-Release Hardening:         29588147843 — SUCCESS
-Detailed diagnostics:      29588147922 — SUCCESS
-Offline test result:       211 passed, 6 intentionally skipped
-Python 3.12 coverage:      95.09% line, 79.41% branch, 92.39% combined
-```
-
-### Final cleaned branch evidence
+`evals/v0_6/cases.jsonl` contains 48 versioned development cases:
 
 ```text
-PaperAgent CI:             29588725985 — SUCCESS
-Release Hardening:         29588726008 — SUCCESS
-Temporary diagnostics:     REMOVED
-Preliminary Handoff:       REMOVED
+in_domain:             12
+ood:                   12
+insufficient_evidence: 12
+adversarial:           12
 ```
 
-The final Release Hardening run passed Python 3.11/3.12, Wheel, installed CLI/web, Chromium, live
-OpenAlex/arXiv/Crossref/DataCite, and Docker readiness gates.
+The corpus is development evidence, not an external holdout. It must not be used to claim unbiased
+scientific quality.
 
-## Pending blockers
+## Previously verified v0.6 foundation
 
-1. Configure a GitHub Actions `MISTRAL_API_KEY` secret.
+Draft PR #13 verified the provider/runtime foundation before the combined branch was created:
+
+```text
+PaperAgent CI:             29589067736 — SUCCESS
+Release Hardening:         29589067905 — SUCCESS
+```
+
+The combined branch preserves that implementation while rebasing the final file tree onto the current
+v0.5.1 `master` state.
+
+## Pending external verification
+
+1. Configure a GitHub Actions `MISTRAL_API_KEY` secret without committing the key.
 2. Select an explicit supported Mistral model and dispatch the live v0.6 workflow.
-3. Execute a real Mistral-backed vertical research task.
-4. Expand `evals/v0_6/cases.jsonl` from four seed cases to the required 48 development cases.
-5. Freeze the external holdout digest and collect real observations.
-6. Perform blinded human scientific review and threshold adjudication.
+3. Execute three complete Mistral-backed vertical research runs.
+4. Freeze an external holdout digest and collect real observations.
+5. Perform blinded human scientific review and threshold adjudication.
 
-See `docs/v0.6/HANDOFF.md` for exact commands, evidence distinctions, limitations, and takeover steps.
+See the combined Handoff for the final commit, CI results, exact commands, and evidence boundaries.
