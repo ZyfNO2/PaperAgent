@@ -64,11 +64,14 @@ class PluginRegistry:
         selected = tuple(
             entry_points(group=_ENTRY_POINT_GROUP) if candidates is None else candidates
         )
-        by_name = {candidate.name: candidate for candidate in selected}
+        by_name: dict[str, list[EntryPoint]] = {}
+        for candidate in selected:
+            by_name.setdefault(candidate.name, []).append(candidate)
+
         failures: list[PluginLoadFailure] = []
         for name in sorted(allowed_names):
-            candidate = by_name.get(name)
-            if candidate is None:
+            matches = by_name.get(name, [])
+            if not matches:
                 failures.append(
                     PluginLoadFailure(
                         entry_point=name,
@@ -77,6 +80,19 @@ class PluginRegistry:
                     )
                 )
                 continue
+            if len(matches) != 1:
+                failures.append(
+                    PluginLoadFailure(
+                        entry_point=name,
+                        code=PluginErrorCode.DUPLICATE,
+                        message=(
+                            "authorized plugin entry point is ambiguous because multiple "
+                            f"installed distributions expose the name: {name}"
+                        ),
+                    )
+                )
+                continue
+            candidate = matches[0]
             try:
                 loaded = candidate.load()
                 instance = loaded() if isinstance(loaded, type) else loaded
