@@ -15,6 +15,7 @@ from paperagent.api.executor import TaskExecutor
 from paperagent.api.real_executor import build_real_task_executor
 from paperagent.demo import DemoTaskExecutor
 from paperagent.literature.factory import LiteratureProviderSettings
+from paperagent.pricing import load_price_table
 from paperagent.provider_smoke import run_provider_smoke
 from paperagent.providers.config import load_provider_config
 
@@ -51,6 +52,15 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--llm-provider", default=None)
     serve.add_argument("--llm-model", default=None)
     serve.add_argument("--llm-base-url", default=None)
+    serve.add_argument(
+        "--llm-price-table",
+        type=Path,
+        default=(
+            Path(os.environ["PAPERAGENT_LLM_PRICE_TABLE"])
+            if os.getenv("PAPERAGENT_LLM_PRICE_TABLE")
+            else None
+        ),
+    )
     serve.add_argument("--log-level", default="info")
     serve.add_argument(
         "--allow-public-bind",
@@ -96,15 +106,18 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
                 model=cast(str | None, args.llm_model),
                 base_url=cast(str | None, args.llm_base_url),
             )
-        except ValueError as exc:
+            price_path = cast(Path | None, args.llm_price_table)
+            price_table = load_price_table(price_path) if price_path is not None else None
+            executor = build_real_task_executor(
+                provider_config,
+                literature_settings=LiteratureProviderSettings(
+                    contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
+                    semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
+                ),
+                price_table=price_table,
+            )
+        except (OSError, ValueError) as exc:
             parser.error(str(exc))
-        executor = build_real_task_executor(
-            provider_config,
-            literature_settings=LiteratureProviderSettings(
-                contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
-                semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
-            ),
-        )
 
     app = create_app(
         executor=executor,
