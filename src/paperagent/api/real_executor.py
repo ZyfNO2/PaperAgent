@@ -16,7 +16,6 @@ from paperagent.api.models import JsonObject
 from paperagent.graph import build_graph
 from paperagent.literature.factory import (
     LiteratureProviderSettings,
-    LiteratureRuntime,
     build_literature_runtime,
 )
 from paperagent.persistence import InMemoryStateStore
@@ -87,7 +86,6 @@ class RealTaskExecutor(TaskExecutor):
             store=InMemoryStateStore(),
         )
         executor = LangGraphTaskExecutor(graph=self.graph, services=services)
-        result: JsonObject | None = None
         try:
             result = await executor.execute(
                 task_id=task_id,
@@ -97,8 +95,10 @@ class RealTaskExecutor(TaskExecutor):
             )
             return self._attach_telemetry(result, llm)
         finally:
-            await self._emit_telemetry(llm, emit)
-            await literature.aclose()
+            try:
+                await self._emit_telemetry(llm, emit)
+            finally:
+                await literature.aclose()
 
     @staticmethod
     def _attach_telemetry(result: JsonObject, llm: LLMProvider) -> JsonObject:
