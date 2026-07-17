@@ -1,10 +1,16 @@
-name: PaperAgent v0.1 CI
+name: PaperAgent CI
 
 on:
   push:
-    branches: [v0.1]
+    branches:
+      - v0.1
+      - feat/v0.1-offline-skeleton
+      - feat/v0.2-literature-retrieval-foundation
   pull_request:
-    branches: [master]
+    branches:
+      - master
+      - feat/v0.1-offline-skeleton
+      - feat/v0.2-literature-retrieval-foundation
 
 permissions:
   contents: read

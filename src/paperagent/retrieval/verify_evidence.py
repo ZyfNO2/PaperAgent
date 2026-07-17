@@ -6,12 +6,37 @@ from langchain_core.runnables import RunnableConfig
 
 from paperagent.nodes._shared import execution_with
 from paperagent.runtime import get_services
-from paperagent.schemas import EvidenceBundle, EvidenceItem
+from paperagent.schemas import EvidenceBundle, EvidenceItem, SearchCandidate
 from paperagent.state import PaperAgentState, StatePatch
 from paperagent.telemetry import hash_payload, make_event
 
 NODE = "verify_evidence_node"
 _ALLOWED_LOCATOR_PREFIXES = ("fixture://", "https://", "http://", "doi:", "github://")
+_STATUS_PRIORITY = {
+    "failed_verification": 0,
+    "rejected": 1,
+    "pending": 2,
+    "accepted": 3,
+}
+
+
+def _candidate_status(
+    candidate: SearchCandidate,
+) -> Literal["accepted", "rejected", "pending", "failed_verification"]:
+    external = candidate.metadata.get("verification_status")
+    if external == "verified":
+        return "accepted"
+    if external in {"pending", "suspicious"}:
+        return "pending"
+    if external == "rejected":
+        return "rejected"
+    if external == "failed":
+        return "failed_verification"
+    return (
+        "accepted"
+        if candidate.locator.startswith(_ALLOWED_LOCATOR_PREFIXES)
+        else "failed_verification"
+    )
 
 
 async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -> StatePatch:
@@ -23,19 +48,22 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
     by_id = {item.evidence_id: item for item in existing.items}
     for candidate in retrieval.raw_candidates:
         evidence_id = f"ev-{candidate.candidate_id}"
-        status: Literal["accepted", "failed_verification"] = (
-            "accepted"
-            if candidate.locator.startswith(_ALLOWED_LOCATOR_PREFIXES)
-            else "failed_verification"
-        )
+        status = _candidate_status(candidate)
+        previous = by_id.get(evidence_id)
+        supports = sorted(set(previous.supports_gap_ids if previous else []) | {candidate.gap_id})
+        if (
+            previous is not None
+            and _STATUS_PRIORITY[previous.verification_status] > _STATUS_PRIORITY[status]
+        ):
+            status = previous.verification_status
         by_id[evidence_id] = EvidenceItem(
             evidence_id=evidence_id,
             source_type=candidate.source_type,
             title=candidate.title,
             locator=candidate.locator,
-            retrieved_at=services.clock.now(),
+            retrieved_at=previous.retrieved_at if previous else services.clock.now(),
             verification_status=status,
-            supports_gap_ids=[candidate.gap_id],
+            supports_gap_ids=supports,
             summary=candidate.snippet,
             content_hash=hash_payload(candidate),
         )
