@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 from paperagent.api.executor import TaskExecutor
 from paperagent.api.repository import SQLiteTaskRepository
 from paperagent.api.review import SQLiteReviewRepository
 from paperagent.api.runner import SingleProcessTaskRunner
 from paperagent.api.v04 import create_app as create_review_app
+from paperagent.release import release_readiness
 from paperagent.web import register_web_routes
 
 
@@ -31,6 +34,16 @@ def create_app(
         sse_poll_seconds=sse_poll_seconds,
         sse_heartbeat_seconds=sse_heartbeat_seconds,
     )
-    app.version = "0.5.0"
+    app.version = "0.5.1"
     register_web_routes(app)
+
+    @app.get("/readyz", include_in_schema=False)
+    async def readiness() -> JSONResponse:
+        snapshot = await asyncio.to_thread(
+            release_readiness,
+            app.state.task_repository.database_path,
+        )
+        status_code = 200 if snapshot["status"] == "ready" else 503
+        return JSONResponse(content=snapshot, status_code=status_code)
+
     return app
