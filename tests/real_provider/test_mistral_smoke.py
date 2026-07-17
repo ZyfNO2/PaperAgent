@@ -33,8 +33,9 @@ async def test_live_mistral_structured_output() -> None:
             api_key=SecretStr(api_key),
             max_attempts=1,
             max_llm_calls_per_task=1,
-            max_input_tokens=1_000,
-            max_output_tokens=128,
+            max_input_tokens_per_task=1_000,
+            max_output_tokens_per_call=128,
+            max_output_tokens_per_task=128,
             task_wall_clock_seconds=60,
         )
     )
