@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -16,7 +17,7 @@ class PriceTable(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     version: str = Field(min_length=1)
-    models: dict[str, ModelPrice]
+    models: dict[str, ModelPrice] = Field(min_length=1)
 
     def estimate(
         self,
@@ -36,3 +37,10 @@ class PriceTable(BaseModel):
             + Decimal(output_tokens) * price.output_usd_per_million_tokens
         ) / million
         return float(total)
+
+
+def load_price_table(path: Path) -> PriceTable:
+    return PriceTable.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+__all__ = ["ModelPrice", "PriceTable", "load_price_table"]
