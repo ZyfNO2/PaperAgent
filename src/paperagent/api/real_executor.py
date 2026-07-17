@@ -29,7 +29,8 @@ from paperagent.testing import Clock, IdFactory
 
 
 class SearchRuntime(Protocol):
-    adapter: Any
+    @property
+    def adapter(self) -> Any: ...
 
     async def aclose(self) -> None: ...
 
