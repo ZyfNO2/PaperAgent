@@ -249,7 +249,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "research-contract-complete",
             all(_present(value) for value in research_fields) and bool(plan.research.constraints),
             AuditSeverity.ERROR,
-            "research contract includes problem, setting, metric, constraints, claim, observation, and mechanism",
+            (
+                "research contract includes problem, setting, metric, constraints, "
+                "claim, observation, and mechanism"
+            ),
             status=ClaimStatus.PROPOSED,
         )
     )
@@ -269,7 +272,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "baseline-card-complete",
             all(_present(value) for value in baseline_fields),
             AuditSeverity.ERROR,
-            "baseline card records source, version, license, data split, environment, and seed policy",
+            (
+                "baseline card records source, version, license, data split, "
+                "environment, and seed policy"
+            ),
             evidence_ids=(baseline.source_evidence_id,) if baseline.source_evidence_id else (),
         )
     )
@@ -326,7 +332,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "falsifiable-hypothesis",
             all(_present(value) for value in hypothesis_values),
             AuditSeverity.ERROR,
-            "hypothesis states condition, limitation, mechanism, intervention, metric change, and guardrail",
+            (
+                "hypothesis states condition, limitation, mechanism, intervention, "
+                "metric change, and guardrail"
+            ),
             status=ClaimStatus.PROPOSED,
         )
     )
@@ -366,7 +375,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
                 and bool(module.assumptions)
                 and not shape_only,
                 AuditSeverity.ERROR,
-                f"module {module.name} has semantic, shape, ordering, training, cost, effect, assumption, and failure contracts",
+                (
+                    f"module {module.name} has semantic, shape, ordering, training, "
+                    "cost, effect, assumption, and failure contracts"
+                ),
                 evidence_ids=(module.evidence_id,) if module.evidence_id else (),
                 status=ClaimStatus.PROPOSED,
             )
@@ -472,7 +484,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "experiment-fairness",
             fair_experiments,
             AuditSeverity.ERROR,
-            "all comparison arms share data and preprocessing and define tuning, metrics, seeds, uncertainty, resources, and stopping criteria",
+            (
+                "all comparison arms share data and preprocessing and define tuning, "
+                "metrics, seeds, uncertainty, resources, and stopping criteria"
+            ),
             status=ClaimStatus.PROPOSED,
         )
     )
@@ -595,7 +610,9 @@ class AcademicMethodTailoringPlugin:
     _manifest = PluginManifest(
         name="academic-method-tailoring",
         version="0.8.0",
-        description="Deterministic evidence, compatibility, and ablation audit for method proposals.",
+        description=(
+            "Deterministic evidence, compatibility, and ablation audit for method proposals."
+        ),
         capabilities=(PluginCapability.RESEARCH_METHOD, PluginCapability.EVALUATION),
         operations=("audit", "template"),
         deterministic=True,

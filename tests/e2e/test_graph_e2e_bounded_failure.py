@@ -96,7 +96,7 @@ def test_e2e__empty_retrieval__exhausts_budget_and_blocks_via_http(
 
         assert_completed_nodes(result, EXPECTED_BOUNDED_NODES)
 
-        # Two rounds × two queries per round = four search calls total.
+        # Two rounds x two queries per round = four search calls total.
         page = client.get(f"/v1/tasks/{task_id}/events?after=0&limit=200").json()
         progress = [
             event["payload"]
