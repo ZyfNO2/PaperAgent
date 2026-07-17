@@ -2,7 +2,7 @@ from paperagent.providers.base import FixtureKey, LLMProvider, SearchProvider
 from paperagent.providers.config import load_provider_config
 from paperagent.providers.fake_llm import FakeLLMProvider
 from paperagent.providers.fake_search import FakeSearchProvider, SearchFixtureKey
-from paperagent.providers.mistral import MistralLLMProvider, MistralLLMCall
+from paperagent.providers.mistral import MistralLLMCall, MistralLLMProvider
 from paperagent.providers.runtime import (
     InvocationTelemetry,
     LLMProviderName,
