@@ -464,7 +464,9 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
         )
         fair_experiments = fair_experiments and complete
         if reference_signature is not None:
-            fair_experiments = fair_experiments and _data_signature(experiment) == reference_signature
+            fair_experiments = (
+                fair_experiments and _data_signature(experiment) == reference_signature
+            )
     checks.append(
         _check(
             "experiment-fairness",
@@ -510,11 +512,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
     reasons = risks or ("all deterministic audit gates passed",)
     baseline_decision = (
         "verified and reproducible"
-        if all(
-            item.passed
-            for item in checks
-            if item.check_id.startswith("baseline-")
-        )
+        if all(item.passed for item in checks if item.check_id.startswith("baseline-"))
         else "not ready for modification"
     )
     matrix = tuple(

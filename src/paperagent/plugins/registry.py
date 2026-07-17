@@ -61,7 +61,9 @@ class PluginRegistry:
     ) -> tuple[PluginLoadFailure, ...]:
         if not allowed_names:
             return ()
-        selected = tuple(entry_points(group=_ENTRY_POINT_GROUP) if candidates is None else candidates)
+        selected = tuple(
+            entry_points(group=_ENTRY_POINT_GROUP) if candidates is None else candidates
+        )
         by_name = {candidate.name: candidate for candidate in selected}
         failures: list[PluginLoadFailure] = []
         for name in sorted(allowed_names):

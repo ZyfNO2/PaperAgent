@@ -11,7 +11,6 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi.testclient import TestClient
-
 from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm_raw
 
 from paperagent.runtime import RuntimeServices
@@ -69,9 +68,7 @@ def test_e2e__planning_timeout__produces_typed_blocked_report_via_http(
 
         # The llm.failed trace event must surface through the result trace.
         failed_events = [
-            event
-            for event in result.get("trace", [])
-            if event.get("event_type") == "llm.failed"
+            event for event in result.get("trace", []) if event.get("event_type") == "llm.failed"
         ]
         assert failed_events, "expected at least one llm.failed trace event"
         assert any(event.get("error_code") == "PROVIDER_TIMEOUT" for event in failed_events)

@@ -11,7 +11,6 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi.testclient import TestClient
-
 from helpers import assert_completed_nodes
 
 EXPECTED_HAPPY_NODES = [
@@ -75,9 +74,7 @@ def test_e2e__happy_path__real_graph_reaches_succeeded_with_full_state(
         assert progress_payloads, "expected at least one workflow.progress event"
         assert all("execution_status" in payload for payload in progress_payloads)
         assert all("report_status" in payload for payload in progress_payloads)
-        assert any(
-            payload.get("report_status") == "completed" for payload in progress_payloads
-        )
+        assert any(payload.get("report_status") == "completed" for payload in progress_payloads)
 
 
 def test_e2e__happy_path__sse_stream_replays_full_event_history(

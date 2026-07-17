@@ -9,7 +9,7 @@ PLUGIN_API_VERSION = "v0.7"
 
 
 def _validate_json_value(value: object, *, path: str) -> None:
-    if value is None or isinstance(value, (str, int, float, bool)):
+    if value is None or isinstance(value, str | int | float | bool):
         return
     if isinstance(value, list):
         for index, item in enumerate(value):
