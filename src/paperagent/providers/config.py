@@ -16,8 +16,11 @@ def load_provider_config(
     base_url: str | None = None,
 ) -> ProviderRuntimeConfig:
     values = os.environ if environ is None else environ
-    resolved_provider = provider or values.get("PAPERAGENT_LLM_PROVIDER", "mistral")
+    resolved_provider = provider or values.get("PAPERAGENT_LLM_PROVIDER") or "mistral"
     resolved_model = model or values.get("PAPERAGENT_LLM_MODEL")
+    resolved_base_url = (
+        base_url or values.get("PAPERAGENT_LLM_BASE_URL") or "https://api.mistral.ai/v1"
+    )
     api_key = values.get("MISTRAL_API_KEY")
     if not resolved_model:
         raise ValueError("PAPERAGENT_LLM_MODEL or an explicit model is required")
@@ -28,7 +31,7 @@ def load_provider_config(
         provider=LLMProviderName(resolved_provider),
         model=resolved_model,
         api_key=SecretStr(api_key),
-        base_url=base_url or values.get("PAPERAGENT_LLM_BASE_URL", "https://api.mistral.ai/v1"),
+        base_url=resolved_base_url,
         connect_timeout_seconds=float(values.get("PAPERAGENT_LLM_CONNECT_TIMEOUT", "5")),
         read_timeout_seconds=float(values.get("PAPERAGENT_LLM_READ_TIMEOUT", "60")),
         total_timeout_seconds=float(values.get("PAPERAGENT_LLM_TOTAL_TIMEOUT", "90")),
