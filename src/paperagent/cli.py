@@ -111,4 +111,3 @@ def main(argv: Sequence[str] | None = None) -> int:
     if command == "provider-smoke":
         return _provider_smoke(args)
     parser.error(f"unsupported command: {command}")
-    return 2
