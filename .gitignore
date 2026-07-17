@@ -11,3 +11,13 @@ htmlcov/
 .env
 .env.*
 !.env.example
+
+# Local scratch / temporary artifacts (pytest tmp, patch drafts, logs)
+tmp/
+
+# Third-party plugin/tool working dirs (not part of the project)
+.codely-cli/
+.understand-anything/
+
+# Runtime data (traces, runs, built dist) — apps/ holds per-app state, not source
+apps/

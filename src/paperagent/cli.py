@@ -12,7 +12,9 @@ import uvicorn
 
 from paperagent.api import create_app
 from paperagent.demo import DemoTaskExecutor
+from paperagent.llm_smoke import run_llm_smoke
 from paperagent.provider_smoke import run_provider_smoke
+from paperagent.providers.openai_llm import OpenAILLMProvider
 
 _LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
 
@@ -59,6 +61,24 @@ def build_parser() -> argparse.ArgumentParser:
         default=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
     )
     smoke.add_argument("--timeout", type=_non_negative_float, default=20.0)
+
+    llm_smoke = subparsers.add_parser(
+        "llm-smoke",
+        help="run a real OpenAI-compatible LLM smoke across the four structured nodes",
+    )
+    llm_smoke.add_argument(
+        "--api-key",
+        default=os.getenv("PAPERAGENT_OPENAI_API_KEY"),
+        help="OpenAI-compatible API key (defaults to PAPERAGENT_OPENAI_API_KEY)",
+    )
+    llm_smoke.add_argument("--model", default="gpt-4o-mini")
+    llm_smoke.add_argument("--base-url", default="https://api.openai.com/v1")
+    llm_smoke.add_argument("--timeout", type=_non_negative_float, default=60.0)
+    llm_smoke.add_argument(
+        "--question",
+        default=None,
+        help="optional research question override for the planning node",
+    )
     return parser
 
 
@@ -102,6 +122,29 @@ def _provider_smoke(args: argparse.Namespace) -> int:
     return 0 if summary.passed else 1
 
 
+def _llm_smoke(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
+    api_key = cast(str | None, args.api_key)
+    if not api_key:
+        parser.error(
+            "--api-key is required (or set PAPERAGENT_OPENAI_API_KEY in the environment)"
+        )
+    model = cast(str, args.model)
+    base_url = cast(str, args.base_url)
+    timeout = cast(float, args.timeout)
+    question = cast(str | None, args.question)
+    if timeout <= 0:
+        raise SystemExit("--timeout must be greater than zero")
+    provider = OpenAILLMProvider(
+        api_key=api_key,
+        model=model,
+        base_url=base_url,
+        timeout_seconds=timeout,
+    )
+    summary = asyncio.run(run_llm_smoke(provider, question=question))
+    print(json.dumps(summary.as_dict(), indent=2, sort_keys=True))
+    return 0 if summary.passed else 1
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
@@ -110,4 +153,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _serve(parser, args)
     if command == "provider-smoke":
         return _provider_smoke(args)
+    if command == "llm-smoke":
+        return _llm_smoke(parser, args)
     parser.error(f"unsupported command: {command}")

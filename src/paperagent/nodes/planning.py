@@ -49,4 +49,10 @@ def planning_route(state: PaperAgentState) -> str:
     plan = state.get("plan")
     if plan is None:
         raise ValueError("plan is required for planning route")
+    # Defensive: real LLMs may return a plan.status that the graph's
+    # conditional_edges does not map (e.g. "draft"). Route any unknown status
+    # to "blocked" so the graph always reaches report_node -> persist_node
+    # instead of silently stopping after planning.
+    if plan.status not in ("ready", "need_human", "blocked"):
+        return "blocked"
     return plan.status
