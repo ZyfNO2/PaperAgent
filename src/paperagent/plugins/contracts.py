@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from enum import StrEnum
 from typing import Protocol, runtime_checkable
 
@@ -9,7 +10,11 @@ PLUGIN_API_VERSION = "v0.7"
 
 
 def _validate_json_value(value: object, *, path: str) -> None:
-    if value is None or isinstance(value, str | int | float | bool):
+    if value is None or isinstance(value, str | int | bool):
+        return
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError(f"{path} contains a non-finite float")
         return
     if isinstance(value, list):
         for index, item in enumerate(value):
