@@ -59,6 +59,8 @@ class ProviderRuntimeConfig(BaseModel):
     def validate_runtime(self) -> ProviderRuntimeConfig:
         if not self.model.strip():
             raise ValueError("model must contain non-whitespace characters")
+        if not self.api_key.get_secret_value().strip():
+            raise ValueError("api_key must contain non-whitespace characters")
         parsed = urlsplit(self.base_url)
         if (
             parsed.scheme != "https"
