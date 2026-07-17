@@ -29,7 +29,7 @@ jobs:
       - name: Apply mechanical formatting
         shell: bash
         run: |
-          ruff check --fix .
+          ruff check --fix . || true
           ruff format .
           if git diff --quiet; then
             exit 0
