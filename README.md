@@ -1,44 +1,58 @@
 # PaperAgent
 
-PaperAgent `v0.5` adds a package-served responsive PWA shell over the bounded v0.1 workflow, v0.2
-literature retrieval, v0.3 durable task API, and v0.4 review/export layer.
+PaperAgent `v0.5.1` is a bounded research-workflow release candidate for local single-user use and
+trusted-network evaluation. It combines the frozen v0.1 workflow, v0.2 literature retrieval, v0.3
+durable task API, v0.4 review/export layer, and v0.5 package-served PWA shell with an executable demo,
+readiness checks, wheel packaging, and a minimal container.
 
 ## Current status
 
 ```text
-Package version: v0.5.0
+Package version: v0.5.1
 Workflow engine contract: v0.1 (frozen)
 Literature retrieval contract: v0.2
 Task API contract: v0.3
 Review/export contract: v0.4
 Web shell contract: v0.5
-Stage: offline MVP implementation complete
-Release status: stacked Draft PR / browser E2E, real-provider, and public deployment smoke pending
+Release contract: v0.5.1
+Stage: MVP release candidate
+Deployment boundary: local single user / trusted network
 ```
 
-## v0.5 implemented scope
+## Run the deterministic demo
 
-- responsive `/app` and `/app/{task_id}` routes served directly by FastAPI;
-- package-local HTML, CSS, JavaScript, manifest, service worker, and SVG icon;
-- research task submission with generated idempotency keys;
-- shareable task URLs and local recent-task history;
-- polling-first progress with SSE enhancement and cancellation;
-- paper-card filtering, acceptance/rejection, pending state, and favorites;
-- JSON, Markdown, and BibTeX downloads with checksum feedback;
-- loading, offline, failed, cancelled, empty, and terminal UI states;
-- mobile layout, semantic markup, focus states, and reduced-motion support;
-- restrictive CSP and shell-only service-worker caching.
+```bash
+python -m pip install -e '.[dev,release]'
+paperagent serve
+```
 
-The browser contains no Agent, retrieval, ranking, prompt, or provider logic. All decisions remain in
-the Python service.
+Open `http://127.0.0.1:8000/app`.
 
-## Preserved v0.4-v0.1 scope
+The built-in executor produces synthetic, deterministic evidence for product-contract testing. It
+exercises task submission, progress, review guards, favorites, and exports without credentials. It is
+not a scientific answer and does not call an LLM.
 
-- durable paper decisions, stable pagination, and deterministic exports;
-- FastAPI task submission, polling, SSE, cancellation, and health endpoints;
-- SQLite persistence and a single-process runner;
-- multi-source literature adapters and deterministic retrieval contracts;
-- frozen v0.1 graph/state/prompt/fixture contracts.
+The CLI refuses a non-loopback bind unless `--allow-public-bind` is supplied. That flag is an explicit
+operator acknowledgement only; it does not add authentication or tenant isolation.
+
+## Live provider smoke
+
+```bash
+PAPERAGENT_CONTACT_EMAIL=you@example.com \
+  paperagent provider-smoke --timeout 20
+```
+
+This checks OpenAlex and arXiv discovery plus Crossref and DataCite DOI verification.
+
+## Container
+
+```bash
+docker build -t paperagent:0.5.1 .
+docker run --rm -p 8000:8000 -v paperagent-data:/data paperagent:0.5.1
+```
+
+The image runs as an unprivileged user, stores SQLite state in `/data`, and exposes `/readyz` for
+SQLite integrity and packaged-asset checks.
 
 ## Main routes
 
@@ -54,41 +68,56 @@ GET  /v1/tasks/{task_id}/papers
 PUT  /v1/tasks/{task_id}/papers/{paper_id}/review
 GET  /v1/tasks/{task_id}/exports/{json|markdown|bibtex}
 GET  /healthz
+GET  /readyz
 ```
 
-The service still has no authentication or tenant isolation. Treat it as a local, single-user, or
-trusted-network evaluation service.
+## Implemented MVP scope
 
-## Verification
+- bounded LangGraph workflow and frozen schema/prompt/fixture contracts;
+- OpenAlex, Semantic Scholar, and arXiv discovery adapters;
+- Crossref and DataCite DOI verification;
+- deterministic merge, ranking, coverage, cache, and retry budgets;
+- SQLite task/result/error/event persistence and single-process execution;
+- idempotent submission, Polling, SSE, cancellation, and fail-closed restart semantics;
+- durable paper review decisions, stable pagination, and deterministic exports;
+- responsive package-local PWA shell with restrictive CSP and shell-only caching;
+- deterministic credential-free demo executor;
+- localhost-first CLI, readiness diagnostics, wheel installation, and Docker packaging.
+
+The browser contains no Agent, retrieval, ranking, prompt, or provider logic. All workflow decisions
+remain in the Python service.
+
+## Automated release gates
 
 ```bash
-python -m pip install -e '.[dev]'
+python -m pip install -e '.[dev,release]'
 ruff check .
 ruff format --check .
 mypy --config-file pyproject.toml
 pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+python -m build --wheel
 ```
 
-Default tests do not access the network. Real-provider and real-browser E2E tests remain separate.
+The release workflow additionally runs:
+
+- Python 3.11 and 3.12 verification;
+- installed-wheel CLI and packaged-web smoke;
+- headless Chromium submit → progress → review → export smoke;
+- live OpenAlex, arXiv, Crossref, and DataCite smoke;
+- Docker build and readiness smoke.
+
+## Security and product boundary
+
+This release has no authentication, user accounts, tenant isolation, quotas, payments, or public
+abuse controls. Do not expose it as an unauthenticated public multi-user service. The deterministic
+demo does not establish scientific quality, real-LLM quality, or production scalability.
 
 ## Development contracts
 
-- [stacked v0.3-v0.5 MVP sequence](docs/planning/MVP_RELEASE_SEQUENCE_V0.3_V0.5.md)
-- [v0.5 execution plan](docs/v0.5/EXECUTION_PLAN.md)
+- [v0.5.1 execution plan](docs/v0.5.1/EXECUTION_PLAN.md)
+- [v0.5.1 release runbook](docs/v0.5.1/RELEASE_CANDIDATE.md)
+- [v0.5 handoff](docs/v0.5/HANDOFF.md)
 - [v0.4 handoff](docs/v0.4/HANDOFF.md)
 - [v0.3 handoff](docs/v0.3/HANDOFF.md)
 - [v0.2 handoff](docs/v0.2/HANDOFF.md)
 - [v0.1 handoff](docs/v0.1/HANDOFF.md)
-
-## Stacked branch policy
-
-```text
-feat/v0.1-offline-skeleton
-  -> feat/v0.2-literature-retrieval-foundation
-      -> feat/v0.3-durable-task-api-mvp
-          -> feat/v0.4-review-export-mvp
-              -> feat/v0.5-pwa-shell-mvp
-```
-
-Each version is reviewed through its own Draft PR against the immediately preceding branch. No
-version is merged automatically.
