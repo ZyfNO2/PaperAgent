@@ -3,23 +3,57 @@ from __future__ import annotations
 import os
 
 import pytest
-from pydantic import BaseModel, ConfigDict, SecretStr
+from pydantic import BaseModel, SecretStr
 
 from paperagent.providers.mistral import MistralLLMProvider
 from paperagent.providers.runtime import ProviderRuntimeConfig
-from paperagent.schemas import Message
+from paperagent.schemas import (
+    EvidenceSynthesis,
+    FinalReport,
+    Message,
+    MethodProposal,
+    ResearchPlan,
+)
 
-
-class SmokeOutput(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    status: str
+PRODUCTION_SCHEMA_CASES: tuple[tuple[str, type[BaseModel], str], ...] = (
+    (
+        "planning",
+        ResearchPlan,
+        "Return a minimal blocked research plan. Set status to blocked, provide a non-empty "
+        "block_reason, set clarification_question to null, and keep all list fields empty.",
+    ),
+    (
+        "synthesis",
+        EvidenceSynthesis,
+        "Return a minimal evidence synthesis for a case with no accepted evidence. Use empty "
+        "assessment, finding, conflict, and limitation lists, and set feasibility to unknown.",
+    ),
+    (
+        "method",
+        MethodProposal,
+        "Return a minimal proposed method object with one baseline, one module, no integration "
+        "contracts, one key experiment, one ablation, one risk, one stop condition, and no "
+        "evidence identifiers.",
+    ),
+    (
+        "report",
+        FinalReport,
+        "Return a minimal partial final report with an executive summary, empty finding lists, "
+        "null proposed_method and experiment_plan, one limitation, one next action, and no "
+        "evidence identifiers.",
+    ),
+)
 
 
 @pytest.mark.real_provider
 @pytest.mark.network
 @pytest.mark.asyncio
-async def test_live_mistral_structured_output() -> None:
+@pytest.mark.parametrize(("task", "schema", "instruction"), PRODUCTION_SCHEMA_CASES)
+async def test_live_mistral_production_schema(
+    task: str,
+    schema: type[BaseModel],
+    instruction: str,
+) -> None:
     if os.environ.get("PAPERAGENT_RUN_REAL_LLM") != "1":
         pytest.skip("set PAPERAGENT_RUN_REAL_LLM=1 to enable live Mistral smoke")
     api_key = os.environ.get("MISTRAL_API_KEY")
@@ -33,19 +67,19 @@ async def test_live_mistral_structured_output() -> None:
             api_key=SecretStr(api_key),
             max_attempts=1,
             max_llm_calls_per_task=1,
-            max_input_tokens_per_task=1_000,
-            max_output_tokens_per_call=128,
-            max_output_tokens_per_task=128,
+            max_input_tokens_per_task=4_000,
+            max_output_tokens_per_call=2_048,
+            max_output_tokens_per_task=2_048,
             task_wall_clock_seconds=60,
         )
     )
     result = await provider.generate_structured(
-        task="v0.6-live-smoke",
+        task=task,
         scenario="live",
         call_index=0,
         fixture_version="v0.1",
-        schema=SmokeOutput,
-        messages=[Message(role="user", content='Return JSON with status equal to "ok".')],
+        schema=schema,
+        messages=[Message(role="user", content=instruction)],
     )
 
-    assert result.status == "ok"
+    assert isinstance(result, schema)
