@@ -17,19 +17,18 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Report files requiring Ruff formatting
-        id: format
-        continue-on-error: true
+      - name: Produce canonical Ruff formatting
         run: |
           python -m pip install --quiet 'ruff==0.12.12'
+          ruff format tests/plugins/test_academic_method_p0.py
+          cp tests/plugins/test_academic_method_p0.py formatted-test_academic_method_p0.py
           ruff format --check . > ruff-format-diagnostic.txt 2>&1
-      - name: Upload format diagnostic
+      - name: Upload canonical file and diagnostic
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ruff-format-diagnostic
-          path: ruff-format-diagnostic.txt
+          path: |
+            formatted-test_academic_method_p0.py
+            ruff-format-diagnostic.txt
           if-no-files-found: error
-      - name: Enforce format result
-        if: steps.format.outcome == 'failure'
-        run: exit 1
