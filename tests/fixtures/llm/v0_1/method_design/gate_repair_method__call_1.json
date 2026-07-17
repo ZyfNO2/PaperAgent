@@ -1,0 +1,28 @@
+{
+  "schema_version": "0.1",
+  "status": "proposed",
+  "baseline": {"name": "single-condition evaluation", "description": "Evaluate only retrieved context."},
+  "modules": [
+    {"module_id": "module-claim-split", "name": "claim segmentation", "purpose": "Split answers into atomic claims."},
+    {"module_id": "module-support-label", "name": "support labeling", "purpose": "Label claim support."},
+    {"module_id": "module-context-ablation", "name": "context ablation", "purpose": "Compare context conditions."}
+  ],
+  "integration_contracts": [
+    {"from_module": "module-claim-split", "to_module": "module-support-label", "input": "atomic claims", "output": "support labels"}
+  ],
+  "problem_method_insight": "Reliability depends on retrieval and faithful evidence use.",
+  "falsifiable_hypothesis": "If retrieval dominates error, gold-context support rate exceeds retrieved-context support rate by at least 0.15.",
+  "minimum_key_experiment": {
+    "name": "three-context evaluation",
+    "conditions": ["gold_context", "retrieved_context", "shuffled_context"],
+    "metrics": ["claim_support_rate", "answer_accuracy"],
+    "baseline": "retrieved_context",
+    "success_threshold": "gold_context - retrieved_context >= 0.15"
+  },
+  "ablations": [
+    {"name": "remove claim segmentation", "change": "Judge whole answers", "expected_observation": "Lower diagnostic granularity"}
+  ],
+  "risks": ["Label subjectivity"],
+  "stop_conditions": ["Fewer than 30 answer samples"],
+  "evidence_ids": ["ev-support-001", "ev-ablation-001"]
+}

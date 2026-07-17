@@ -1,0 +1,53 @@
+{
+  "schema_version": "0.1",
+  "status": "ready",
+  "problem_statement": "Design a bounded, reproducible evaluation for industrial defect detection.",
+  "scope": "Offline, small-scale evaluation of industrial defect detection; no production deployment.",
+  "research_questions": [
+    "Which evidence supports the evaluation design for industrial defect detection?",
+    "Which controlled comparison isolates the main failure mode?"
+  ],
+  "evidence_gaps": [
+    {
+      "gap_id": "gap-evidence",
+      "description": "Verifiable evidence for industrial defect detection.",
+      "required": true,
+      "minimum_accepted_items": 1
+    },
+    {
+      "gap_id": "gap-evaluation",
+      "description": "A controlled evaluation using defect recall.",
+      "required": true,
+      "minimum_accepted_items": 1
+    }
+  ],
+  "search_queries": [
+    {
+      "query_id": "query-evidence-01",
+      "gap_id": "gap-evidence",
+      "query": "industrial defect detection evaluation evidence",
+      "source_types": [
+        "paper",
+        "web"
+      ]
+    },
+    {
+      "query_id": "query-evaluation-01",
+      "gap_id": "gap-evaluation",
+      "query": "industrial defect detection controlled comparison defect recall",
+      "source_types": [
+        "paper",
+        "web"
+      ]
+    }
+  ],
+  "success_criteria": [
+    "All claims bind to accepted evidence",
+    "The primary metric is defect recall"
+  ],
+  "risks": [
+    "Small samples may produce unstable estimates"
+  ],
+  "clarification_question": null,
+  "block_reason": null
+}

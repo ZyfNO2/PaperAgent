@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paperagent"
+version = "0.1.0"
+description = "A bounded, test-driven LangGraph research workflow skeleton."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "langgraph>=0.6,<0.7",
+  "langchain-core>=0.3,<0.4",
+  "pydantic>=2.10,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.16,<1.17",
+  "pytest>=8.3,<10",
+  "pytest-asyncio>=0.25,<2",
+  "pytest-cov>=6,<8",
+  "ruff>=0.12,<0.13",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+paperagent = ["prompts/v0_1/*.md"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = [
+  "ignore::langchain_core._api.deprecation.LangChainPendingDeprecationWarning",
+]
+markers = [
+  "real_provider: requires real provider credentials and network",
+  "network: accesses external network",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["B008"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src/paperagent"]
+mypy_path = "src"
+follow_imports = "normal"
+warn_unreachable = true
+
+[tool.coverage.run]
+branch = true
+source = ["paperagent"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 90
+
+[[tool.mypy.overrides]]
+module = ["langchain_core.*", "langgraph.*", "langsmith.*"]
+follow_imports = "skip"
+ignore_missing_imports = true
