@@ -90,11 +90,11 @@ def run_plugin_cli(args: argparse.Namespace) -> int:
         registry, failures = build_default_registry(allowed_external_names=_allowed_names(args))
         command = cast(str, args.plugin_command)
         if command == "list":
-            payload = {
+            list_payload: dict[str, object] = {
                 "plugins": [manifest.model_dump(mode="json") for manifest in registry.manifests()],
                 "load_failures": [failure.model_dump(mode="json") for failure in failures],
             }
-            print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+            print(json.dumps(list_payload, ensure_ascii=False, indent=2, sort_keys=True))
             return 1 if failures else 0
         if failures:
             raise ValueError(
@@ -117,18 +117,18 @@ def run_plugin_cli(args: argparse.Namespace) -> int:
             operation = cast(str, args.operation)
             input_path = cast(Path, args.input)
             output_path = cast(Path, args.output)
-            payload = _load_payload(input_path)
+            request_payload = _load_payload(input_path)
             request_id = cast(str | None, args.request_id) or _stable_request_id(
                 name,
                 operation,
-                payload,
+                request_payload,
             )
             result = registry.invoke(
                 name,
                 PluginRequest(
                     request_id=request_id,
                     operation=operation,
-                    payload=payload,
+                    payload=request_payload,
                 ),
             )
             _write_atomic_json(
