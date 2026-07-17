@@ -21,7 +21,7 @@ from paperagent.api.review_models import (
     ReviewPaperCard,
 )
 from paperagent.api.runner import SingleProcessTaskRunner
-from paperagent.api.v04 import create_app
+from paperagent.api.v05 import create_app
 
 __all__ = [
     "CancelTaskResponse",
