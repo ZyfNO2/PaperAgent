@@ -29,16 +29,26 @@ jobs:
       - name: Apply mechanical formatting
         shell: bash
         run: |
-          ruff check --fix . || true
-          ruff format .
+          set +e
+          : > v0.6-formatter.txt
+          ruff check --fix . >> v0.6-formatter.txt 2>&1
+          echo "ruff_check_exit=$?" >> v0.6-formatter.txt
+          ruff format . >> v0.6-formatter.txt 2>&1
+          echo "ruff_format_exit=$?" >> v0.6-formatter.txt
+          git status --short >> v0.6-formatter.txt 2>&1
+          git diff > v0.6-formatted.patch
           if git diff --quiet; then
+            echo "no_changes=true" >> v0.6-formatter.txt
             exit 0
           fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add src tests
-          git commit -m 'chore(v0.6): apply automated formatting'
-          git push origin HEAD:feat/v0.6-real-llm-integration
+          git commit -m 'chore(v0.6): apply automated formatting' >> v0.6-formatter.txt 2>&1
+          echo "git_commit_exit=$?" >> v0.6-formatter.txt
+          git push origin HEAD:feat/v0.6-real-llm-integration >> v0.6-formatter.txt 2>&1
+          echo "git_push_exit=$?" >> v0.6-formatter.txt
+          exit 0
       - name: Capture diagnostics
         shell: bash
         run: |
@@ -62,5 +72,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: v0.6-diagnostics
-          path: v0.6-diagnostics.txt
+          path: |
+            v0.6-diagnostics.txt
+            v0.6-formatter.txt
+            v0.6-formatted.patch
           if-no-files-found: error
