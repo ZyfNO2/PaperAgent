@@ -3,10 +3,11 @@ name: PaperAgent v0.5.1 Release Hardening
 on:
   push:
     branches:
-      - chore/v0.5.1-release-hardening
+      - master
+      - chore/master-ci-gates
   pull_request:
     branches:
-      - feat/v0.5-pwa-shell-mvp
+      - master
   workflow_dispatch:
 
 permissions:
