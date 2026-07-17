@@ -9,6 +9,7 @@ Repository:               ZyfNO2/PaperAgent
 Implementation branch:    feat/v0.6-real-llm-integration
 Draft PR:                 #13
 Verified implementation:  df1aa39264ce504b0273d07d0d614716529f08e0
+Final cleaned head:       4c2b4443d09fdaf65f07f7bd5d62200d588f9143
 ```
 
 No Fake, Mock, Stub, static check, deterministic demo, or literature-provider smoke is represented as
@@ -26,6 +27,8 @@ real LLM end-to-end evidence.
 
 ## Verified automated evidence
 
+### Implementation evidence
+
 ```text
 PaperAgent CI:             29588147924 — SUCCESS
 Release Hardening:         29588147843 — SUCCESS
@@ -34,7 +37,16 @@ Offline test result:       211 passed, 6 intentionally skipped
 Python 3.12 coverage:      95.09% line, 79.41% branch, 92.39% combined
 ```
 
-The full Release Hardening run passed Python 3.11/3.12, Wheel, installed CLI/web, Chromium, live
+### Final cleaned branch evidence
+
+```text
+PaperAgent CI:             29588725985 — SUCCESS
+Release Hardening:         29588726008 — SUCCESS
+Temporary diagnostics:     REMOVED
+Preliminary Handoff:       REMOVED
+```
+
+The final Release Hardening run passed Python 3.11/3.12, Wheel, installed CLI/web, Chromium, live
 OpenAlex/arXiv/Crossref/DataCite, and Docker readiness gates.
 
 ## Pending blockers
