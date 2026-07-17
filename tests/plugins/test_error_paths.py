@@ -118,7 +118,7 @@ def test_registry_rejects_incompatible_api() -> None:
 
 
 def test_external_discovery_isolates_plugin_and_loader_failures() -> None:
-    registry = PluginRegistry()
+    registry = PluginRegistry((EchoContractPlugin(),))
     failures = registry.discover_external(
         {"duplicate", "broken-loader"},
         candidates=(
@@ -126,15 +126,11 @@ def test_external_discovery_isolates_plugin_and_loader_failures() -> None:
             _FakeEntryPoint("broken-loader", error=RuntimeError("boom")),
         ),  # type: ignore[arg-type]
     )
-    registry.register(EchoContractPlugin())
 
-    duplicate_failures = registry.discover_external(
-        {"duplicate"},
-        candidates=(_FakeEntryPoint("duplicate", EchoContractPlugin()),),  # type: ignore[arg-type]
-    )
-
-    assert failures[0].code is PluginErrorCode.LOAD_FAILED
-    assert duplicate_failures[0].code is PluginErrorCode.DUPLICATE
+    assert [failure.code for failure in failures] == [
+        PluginErrorCode.LOAD_FAILED,
+        PluginErrorCode.DUPLICATE,
+    ]
 
 
 def test_resolve_missing_plugin_is_typed() -> None:
