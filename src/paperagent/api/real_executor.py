@@ -19,6 +19,7 @@ from paperagent.literature.factory import (
     build_literature_runtime,
 )
 from paperagent.persistence import InMemoryStateStore
+from paperagent.pricing import PriceTable
 from paperagent.providers import LLMProvider, build_llm_provider
 from paperagent.providers.runtime import ProviderRuntimeConfig, TelemetrySink
 from paperagent.runtime import RuntimeServices
@@ -32,7 +33,7 @@ class SearchRuntime(Protocol):
     async def aclose(self) -> None: ...
 
 
-ProviderBuilder = Callable[[ProviderRuntimeConfig], LLMProvider]
+ProviderBuilder = Callable[[ProviderRuntimeConfig, PriceTable | None], LLMProvider]
 LiteratureBuilder = Callable[[LiteratureProviderSettings], SearchRuntime]
 
 
@@ -54,9 +55,19 @@ class RealTaskExecutor(TaskExecutor):
     literature_settings: LiteratureProviderSettings = field(
         default_factory=LiteratureProviderSettings
     )
+    price_table: PriceTable | None = None
     graph: Any = field(default_factory=build_graph)
     provider_builder: ProviderBuilder = build_llm_provider
     literature_builder: LiteratureBuilder = build_literature_runtime
+
+    def __post_init__(self) -> None:
+        maximum = self.provider_config.max_estimated_cost_usd
+        if maximum is None:
+            return
+        if self.price_table is None:
+            raise ValueError("a price table is required when a monetary budget is configured")
+        if self.provider_config.model not in self.price_table.models:
+            raise ValueError("the configured model is missing from the selected price table")
 
     def readiness(self) -> dict[str, object]:
         return {
@@ -66,6 +77,8 @@ class RealTaskExecutor(TaskExecutor):
             "model": self.provider_config.model,
             "native_json_schema": self.provider_config.native_json_schema,
             "credentials_configured": bool(self.provider_config.api_key.get_secret_value()),
+            "cost_budget_enforced": self.provider_config.max_estimated_cost_usd is not None,
+            "price_table_version": self.price_table.version if self.price_table is not None else None,
         }
 
     async def execute(
@@ -76,7 +89,7 @@ class RealTaskExecutor(TaskExecutor):
         emit: EventEmitter,
         should_cancel: CancellationProbe,
     ) -> JsonObject:
-        llm = self.provider_builder(self.provider_config)
+        llm = self.provider_builder(self.provider_config, self.price_table)
         literature = self.literature_builder(self.literature_settings)
         services = RuntimeServices(
             llm=llm,
@@ -124,10 +137,12 @@ def build_real_task_executor(
     provider_config: ProviderRuntimeConfig,
     *,
     literature_settings: LiteratureProviderSettings | None = None,
+    price_table: PriceTable | None = None,
 ) -> RealTaskExecutor:
     return RealTaskExecutor(
         provider_config=provider_config,
         literature_settings=literature_settings or LiteratureProviderSettings(),
+        price_table=price_table,
     )
 
 
