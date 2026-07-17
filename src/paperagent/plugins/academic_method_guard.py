@@ -76,6 +76,6 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
 
 # The package imports this guard before callers reach the implementation submodule.
 # Rebinding keeps direct submodule imports, the built-in plugin, and the CLI on one policy.
-setattr(_implementation, "audit_method_plan", audit_method_plan)
+_implementation.audit_method_plan = audit_method_plan
 
 __all__ = ["AcademicMethodTailoringPlugin", "audit_method_plan"]
