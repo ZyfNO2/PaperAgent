@@ -3,6 +3,7 @@ from paperagent.version import (
     FIXTURE_VERSION,
     LITERATURE_CONTRACT_VERSION,
     SCHEMA_VERSION,
+    TASK_API_CONTRACT_VERSION,
     __version__,
 )
 
@@ -11,5 +12,6 @@ __all__ = [
     "FIXTURE_VERSION",
     "LITERATURE_CONTRACT_VERSION",
     "SCHEMA_VERSION",
+    "TASK_API_CONTRACT_VERSION",
     "__version__",
 ]
