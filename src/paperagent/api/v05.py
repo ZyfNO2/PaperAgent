@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Mapping
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -42,6 +43,23 @@ def create_app(
         snapshot = await asyncio.to_thread(
             release_readiness,
             app.state.task_repository.database_path,
+        )
+        executor_readiness = getattr(executor, "readiness", None)
+        if callable(executor_readiness):
+            try:
+                value = executor_readiness()
+                if not isinstance(value, Mapping):
+                    raise TypeError("executor readiness must return a mapping")
+                snapshot["checks"]["executor"] = dict(value)
+            except Exception as exc:
+                snapshot["checks"]["executor"] = {
+                    "ok": False,
+                    "error": type(exc).__name__,
+                }
+        snapshot["status"] = (
+            "ready"
+            if all(bool(check.get("ok")) for check in snapshot["checks"].values())
+            else "not_ready"
         )
         status_code = 200 if snapshot["status"] == "ready" else 503
         return JSONResponse(content=snapshot, status_code=status_code)
