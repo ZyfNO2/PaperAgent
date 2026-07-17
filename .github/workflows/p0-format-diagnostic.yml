@@ -1,4 +1,4 @@
-name: P0 Format Diagnostic
+name: P0 Test Diagnostic
 
 on:
   pull_request:
@@ -12,23 +12,28 @@ permissions:
   contents: read
 
 jobs:
-  format-diagnostic:
+  test-diagnostic:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Produce canonical Ruff formatting
-        run: |
-          python -m pip install --quiet 'ruff==0.12.12'
-          ruff format tests/plugins/test_academic_method_p0.py
-          cp tests/plugins/test_academic_method_p0.py formatted-test_academic_method_p0.py
-          ruff format --check . > ruff-format-diagnostic.txt 2>&1
-      - name: Upload canonical file and diagnostic
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+      - name: Capture offline test failures
+        id: tests
+        continue-on-error: true
+        run: pytest -q --maxfail=20 > p0-test-diagnostic.txt 2>&1
+      - name: Upload test diagnostic
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ruff-format-diagnostic
-          path: |
-            formatted-test_academic_method_p0.py
-            ruff-format-diagnostic.txt
+          name: p0-test-diagnostic
+          path: p0-test-diagnostic.txt
           if-no-files-found: error
+      - name: Enforce test result
+        if: steps.tests.outcome == 'failure'
+        run: exit 1
