@@ -1,9 +1,11 @@
 from paperagent.plugins.academic_method import (
-    AcademicMethodTailoringPlugin,
     MethodAuditReport,
     MethodPlan,
-    audit_method_plan,
     method_plan_template,
+)
+from paperagent.plugins.academic_method_guard import (
+    AcademicMethodTailoringPlugin,
+    audit_method_plan,
 )
 from paperagent.plugins.contracts import (
     PLUGIN_API_VERSION,
