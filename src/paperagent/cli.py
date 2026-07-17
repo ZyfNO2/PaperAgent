@@ -11,8 +11,12 @@ from typing import cast
 import uvicorn
 
 from paperagent.api import create_app
+from paperagent.api.executor import TaskExecutor
+from paperagent.api.real_executor import build_real_task_executor
 from paperagent.demo import DemoTaskExecutor
+from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.provider_smoke import run_provider_smoke
+from paperagent.providers.config import load_provider_config
 
 _LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
 
@@ -27,13 +31,13 @@ def _non_negative_float(value: str) -> float:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="paperagent",
-        description="PaperAgent v0.5.1 single-user release utilities.",
+        description="PaperAgent v0.5.1 release utilities with experimental v0.6 real LLM support.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     serve = subparsers.add_parser(
         "serve",
-        help="serve the deterministic demo API and PWA shell",
+        help="serve the API and PWA shell with an explicit demo or real executor",
     )
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8000)
@@ -42,7 +46,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path(os.getenv("PAPERAGENT_DATABASE", "paperagent.db")),
     )
+    serve.add_argument("--executor", choices=("demo", "real"), default="demo")
     serve.add_argument("--demo-delay", type=_non_negative_float, default=0.02)
+    serve.add_argument("--llm-provider", default=None)
+    serve.add_argument("--llm-model", default=None)
+    serve.add_argument("--llm-base-url", default=None)
     serve.add_argument("--log-level", default="info")
     serve.add_argument(
         "--allow-public-bind",
@@ -66,6 +74,7 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
     host = cast(str, args.host)
     port = cast(int, args.port)
     database = cast(Path, args.database)
+    executor_name = cast(str, args.executor)
     delay = cast(float, args.demo_delay)
     allow_public_bind = cast(bool, args.allow_public_bind)
     log_level = cast(str, args.log_level)
@@ -77,8 +86,28 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
             "non-loopback binds require --allow-public-bind; this release has no authentication"
         )
 
+    executor: TaskExecutor
+    if executor_name == "demo":
+        executor = DemoTaskExecutor(delay_seconds=delay)
+    else:
+        try:
+            provider_config = load_provider_config(
+                provider=cast(str | None, args.llm_provider),
+                model=cast(str | None, args.llm_model),
+                base_url=cast(str | None, args.llm_base_url),
+            )
+        except ValueError as exc:
+            parser.error(str(exc))
+        executor = build_real_task_executor(
+            provider_config,
+            literature_settings=LiteratureProviderSettings(
+                contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
+                semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
+            ),
+        )
+
     app = create_app(
-        executor=DemoTaskExecutor(delay_seconds=delay),
+        executor=executor,
         database_path=database,
         sse_poll_seconds=0.05,
         sse_heartbeat_seconds=5.0,
