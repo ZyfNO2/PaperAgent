@@ -115,6 +115,8 @@ demo does not establish scientific quality, real-LLM quality, or production scal
 ## Development contracts
 
 - [v0.6 real LLM integration and evaluation plan](docs/v0.6/EXECUTION_PLAN.md)
+- [v0.6 implementation status](docs/v0.6/DEVELOPMENT_STATUS.md)
+- [v0.6 implementation handoff](docs/v0.6/HANDOFF.md)
 - [v0.5.1 execution plan](docs/v0.5.1/EXECUTION_PLAN.md)
 - [v0.5.1 release runbook](docs/v0.5.1/RELEASE_CANDIDATE.md)
 - [v0.5 handoff](docs/v0.5/HANDOFF.md)
