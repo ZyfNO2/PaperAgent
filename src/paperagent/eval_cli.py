@@ -8,7 +8,9 @@ from paperagent.evaluation import EvaluationObservation, build_report, load_case
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Build a deterministic PaperAgent evaluation report")
+    parser = argparse.ArgumentParser(
+        description="Build a deterministic PaperAgent evaluation report"
+    )
     parser.add_argument("--cases", type=Path, required=True)
     parser.add_argument("--observations", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
