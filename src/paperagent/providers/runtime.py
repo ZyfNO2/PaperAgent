@@ -184,9 +184,15 @@ class TaskBudget:
                     "output token budget exhausted",
                     task=task,
                 )
+        maximum = self._config.max_estimated_cost_usd
+        if maximum is not None and usage.estimated_cost_usd is None:
+            raise ProviderError(
+                ProviderErrorCode.BUDGET_EXHAUSTED,
+                "monetary budget cannot be enforced because provider usage is unknown",
+                task=task,
+            )
         if usage.estimated_cost_usd is not None:
             self._estimated_cost_usd += usage.estimated_cost_usd
-            maximum = self._config.max_estimated_cost_usd
             if maximum is not None and self._estimated_cost_usd > maximum:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
