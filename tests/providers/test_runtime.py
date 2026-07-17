@@ -80,6 +80,15 @@ def test_budget_fails_closed_on_tokens_and_cost() -> None:
     assert cost_error.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
 
 
+def test_monetary_budget_fails_closed_when_usage_is_unknown() -> None:
+    budget = TaskBudget(make_config(max_estimated_cost_usd=0.01))
+
+    with pytest.raises(ProviderError, match="provider usage is unknown") as exc_info:
+        budget.record_usage(UsageRecord(), task="planning")
+
+    assert exc_info.value.error_code is ProviderErrorCode.BUDGET_EXHAUSTED
+
+
 def test_redaction_recurses_without_mutating_safe_values() -> None:
     payload = {
         "Authorization": "Bearer secret",
