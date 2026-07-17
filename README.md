@@ -1,40 +1,69 @@
 # PaperAgent
 
-PaperAgent 正在以 `v0.1` 从零重建。
+PaperAgent `v0.1` is a clean, test-driven rebuild of the research workflow skeleton. The branch
+contains no imports from the legacy Re1-Re8 implementation.
 
-当前主线只保留新架构的设计文档；旧 PaperAgent 源码、测试、配置和历史实现不迁移到新工作树。
-
-## 当前状态
+## Current status
 
 ```text
 Version: v0.1
-Stage: architecture and node design
-Implementation: not started
+Stage: offline implementation complete
+Implementation: bounded LangGraph skeleton
+Development method: mandatory TDD
+Release status: Draft PR / real-provider smoke pending
 ```
 
-## v0.1 目标
+## Implemented scope
 
-从零建立一个最小、可运行、可测试的 LangGraph 研究工作流骨架，包括：
+- frozen Pydantic schema and TypedDict State contracts;
+- versioned production prompt registry and deterministic Fake LLM/Search providers;
+- bounded Retrieval subgraph with verification, coverage routing, and two-round hard limit;
+- structured planning, evidence synthesis, method design, and report workflows;
+- deterministic Quality Gate with independent retrieval and method-repair budgets;
+- LangGraph Human-in-the-Loop interrupt/resume using checkpoint state;
+- redacted Trace metadata and idempotent in-memory final snapshot persistence;
+- graph, integration, failure, OOD, leakage, lint, type-check, and coverage gates;
+- GitHub Actions verification on Python 3.11 and 3.12.
 
-- 新的 State contract；
-- 新的顶层 StateGraph；
-- 有界 Retrieval subgraph；
-- 结构化 Node contract；
-- 单一确定性 Quality Gate；
-- Human-in-the-Loop interrupt/resume；
-- 最小 Trace 和 Checkpoint；
-- 域外测试与泄漏检查。
+## Verification
 
-## 文档
+```bash
+python -m pip install -e '.[dev]'
+ruff check .
+ruff format --check .
+mypy --config-file pyproject.toml
+pytest -q
+pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+```
 
-- [v0.1 执行案](docs/v0.1/EXECUTION_PLAN.md)
-- [v0.1 图与节点设计](docs/v0.1/GRAPH_AND_NODES.md)
+Default tests are offline and do not read API keys or access the network. The current Draft PR runs
+the same quality gates on Python 3.11 and 3.12.
 
-## 分支
+## Development contract
 
-- `master`：重置后的新主线；
-- `v0.1`：v0.1 实现分支；
-- `backup/legacy-pre-v0.1-20260716`：旧 PaperAgent 完整备份，只读参考；
-- `docs/paperagent-vnext-refactor-plan`：重构规划过程文档。
+1. [Execution plan](docs/v0.1/EXECUTION_PLAN.md)
+2. [Graph and nodes](docs/v0.1/GRAPH_AND_NODES.md)
+3. [State and schema contracts](docs/v0.1/STATE_CONTRACTS.md)
+4. [TDD strategy](docs/v0.1/TDD_STRATEGY.md)
+5. [LLM fixture contract](docs/v0.1/LLM_TEST_FIXTURES.md)
+6. [Development workflow](docs/v0.1/DEVELOPMENT_WORKFLOW.md)
+7. [Acceptance gates](docs/v0.1/ACCEPTANCE.md)
+8. [Implementation handoff](docs/v0.1/HANDOFF.md)
 
-旧实现只用于阅读和借鉴。新代码不得导入旧节点、旧 State、旧 Prompt、旧 fixture 或兼容层。
+## Later versions
+
+- [Roadmap after v0.1](docs/ROADMAP_AFTER_V0.1.md)
+- [v0.2 literature retrieval plan](docs/planning/V0.2_LITERATURE_RETRIEVAL.md)
+
+These later-version documents are planning material only. They do not expand the v0.1 implementation
+scope.
+
+## Branch policy
+
+- `master`: clean release line;
+- `feat/v0.1-offline-skeleton`: current reviewed implementation branch;
+- `v0.1`: design and bootstrap history retained for audit;
+- `backup/legacy-pre-v0.1-20260716`: read-only legacy backup.
+
+Do not merge the Draft PR into `master` until review and any explicitly required real-provider smoke
+checks are complete.

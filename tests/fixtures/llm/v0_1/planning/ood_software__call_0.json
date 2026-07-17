@@ -1,0 +1,53 @@
+{
+  "schema_version": "0.1",
+  "status": "ready",
+  "problem_statement": "Design a bounded, reproducible evaluation for API migration regression testing.",
+  "scope": "Offline, small-scale evaluation of API migration regression testing; no production deployment.",
+  "research_questions": [
+    "Which evidence supports the evaluation design for API migration regression testing?",
+    "Which controlled comparison isolates the main failure mode?"
+  ],
+  "evidence_gaps": [
+    {
+      "gap_id": "gap-evidence",
+      "description": "Verifiable evidence for API migration regression testing.",
+      "required": true,
+      "minimum_accepted_items": 1
+    },
+    {
+      "gap_id": "gap-evaluation",
+      "description": "A controlled evaluation using regression pass rate.",
+      "required": true,
+      "minimum_accepted_items": 1
+    }
+  ],
+  "search_queries": [
+    {
+      "query_id": "query-evidence-01",
+      "gap_id": "gap-evidence",
+      "query": "API migration regression testing evaluation evidence",
+      "source_types": [
+        "paper",
+        "web"
+      ]
+    },
+    {
+      "query_id": "query-evaluation-01",
+      "gap_id": "gap-evaluation",
+      "query": "API migration regression testing controlled comparison regression pass rate",
+      "source_types": [
+        "paper",
+        "web"
+      ]
+    }
+  ],
+  "success_criteria": [
+    "All claims bind to accepted evidence",
+    "The primary metric is regression pass rate"
+  ],
+  "risks": [
+    "Small samples may produce unstable estimates"
+  ],
+  "clarification_question": null,
+  "block_reason": null
+}
