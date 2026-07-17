@@ -3,9 +3,13 @@ from __future__ import annotations
 from collections.abc import Mapping
 from enum import StrEnum
 from time import monotonic
-from typing import Final
+from typing import cast
+from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, model_validator
+
+from paperagent.errors import ProviderError as BaseProviderError
+from paperagent.telemetry.redaction import redact
 
 
 class LLMProviderName(StrEnum):
@@ -40,8 +44,9 @@ class ProviderRuntimeConfig(BaseModel):
     read_timeout_seconds: float = Field(default=60.0, gt=0)
     total_timeout_seconds: float = Field(default=90.0, gt=0)
     max_attempts: int = Field(default=2, ge=1, le=4)
-    max_input_tokens: int = Field(default=32_000, ge=1)
-    max_output_tokens: int = Field(default=4_096, ge=1)
+    max_input_tokens_per_task: int = Field(default=32_000, ge=1)
+    max_output_tokens_per_call: int = Field(default=4_096, ge=1)
+    max_output_tokens_per_task: int = Field(default=16_384, ge=1)
     max_llm_calls_per_task: int = Field(default=12, ge=1)
     task_wall_clock_seconds: float = Field(default=600.0, gt=0)
     max_estimated_cost_usd: float | None = Field(default=None, gt=0)
@@ -52,27 +57,45 @@ class ProviderRuntimeConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_runtime(self) -> ProviderRuntimeConfig:
-        if not self.base_url.startswith("https://"):
-            raise ValueError("base_url must use HTTPS")
+        if not self.model.strip():
+            raise ValueError("model must contain non-whitespace characters")
+        parsed = urlsplit(self.base_url)
+        if (
+            parsed.scheme != "https"
+            or not parsed.hostname
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ValueError("base_url must be an HTTPS origin/path without credentials or query data")
         if self.total_timeout_seconds < self.connect_timeout_seconds:
             raise ValueError("total_timeout_seconds must cover connect timeout")
         if self.total_timeout_seconds < self.read_timeout_seconds:
             raise ValueError("total_timeout_seconds must cover read timeout")
+        if self.max_output_tokens_per_task < self.max_output_tokens_per_call:
+            raise ValueError("task output budget must cover at least one provider call")
         return self
 
 
-class ProviderError(RuntimeError):
+class ProviderError(BaseProviderError):
     def __init__(
         self,
-        code: ProviderErrorCode,
+        error_code: ProviderErrorCode,
         message: str,
         *,
+        task: str = "llm",
         retryable: bool = False,
         status_code: int | None = None,
     ) -> None:
-        super().__init__(message)
-        self.code = code
-        self.retryable = retryable
+        super().__init__(
+            message,
+            provider="mistral",
+            task=task,
+            retryable=retryable,
+            code=f"LLM_{error_code.value.upper()}",
+        )
+        self.error_code = error_code
         self.status_code = status_code
 
 
@@ -116,6 +139,8 @@ class TelemetrySink:
 
 
 class TaskBudget:
+    """Count every physical request or repair attempt against one task budget."""
+
     def __init__(self, config: ProviderRuntimeConfig) -> None:
         self._config = config
         self._started_at = monotonic()
@@ -128,29 +153,32 @@ class TaskBudget:
     def calls(self) -> int:
         return self._calls
 
-    def reserve_call(self) -> None:
-        self._check_time()
+    def reserve_call(self, *, task: str = "llm") -> None:
+        self._check_time(task=task)
         if self._calls >= self._config.max_llm_calls_per_task:
             raise ProviderError(
                 ProviderErrorCode.BUDGET_EXHAUSTED,
                 "maximum LLM calls per task exhausted",
+                task=task,
             )
         self._calls += 1
 
-    def record_usage(self, usage: UsageRecord) -> None:
+    def record_usage(self, usage: UsageRecord, *, task: str = "llm") -> None:
         if usage.input_tokens is not None:
             self._input_tokens += usage.input_tokens
-            if self._input_tokens > self._config.max_input_tokens:
+            if self._input_tokens > self._config.max_input_tokens_per_task:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
                     "input token budget exhausted",
+                    task=task,
                 )
         if usage.output_tokens is not None:
             self._output_tokens += usage.output_tokens
-            if self._output_tokens > self._config.max_output_tokens:
+            if self._output_tokens > self._config.max_output_tokens_per_task:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
                     "output token budget exhausted",
+                    task=task,
                 )
         if usage.estimated_cost_usd is not None:
             self._estimated_cost_usd += usage.estimated_cost_usd
@@ -159,42 +187,19 @@ class TaskBudget:
                 raise ProviderError(
                     ProviderErrorCode.BUDGET_EXHAUSTED,
                     "estimated monetary budget exhausted",
+                    task=task,
                 )
-        self._check_time()
+        self._check_time(task=task)
 
-    def _check_time(self) -> None:
+    def _check_time(self, *, task: str) -> None:
         elapsed = monotonic() - self._started_at
         if elapsed > self._config.task_wall_clock_seconds:
             raise ProviderError(
                 ProviderErrorCode.BUDGET_EXHAUSTED,
                 "task wall-clock budget exhausted",
+                task=task,
             )
 
 
-_REDACTED: Final[str] = "[REDACTED]"
-_SECRET_KEYS: Final[tuple[str, ...]] = (
-    "authorization",
-    "api_key",
-    "apikey",
-    "token",
-    "secret",
-    "cookie",
-)
-
-
 def redact_mapping(value: Mapping[str, object]) -> dict[str, object]:
-    redacted: dict[str, object] = {}
-    for key, item in value.items():
-        lowered = key.lower()
-        if any(secret_key in lowered for secret_key in _SECRET_KEYS):
-            redacted[key] = _REDACTED
-        elif isinstance(item, Mapping):
-            redacted[key] = redact_mapping(item)
-        elif isinstance(item, list):
-            redacted[key] = [
-                redact_mapping(element) if isinstance(element, Mapping) else element
-                for element in item
-            ]
-        else:
-            redacted[key] = item
-    return redacted
+    return cast(dict[str, object], redact(value))
