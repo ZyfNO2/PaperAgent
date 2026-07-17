@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -9,6 +11,7 @@ from pydantic import SecretStr
 
 from paperagent.api import create_app
 from paperagent.api.real_executor import RealTaskExecutor
+from paperagent.pricing import ModelPrice, PriceTable
 from paperagent.providers.runtime import (
     InvocationTelemetry,
     LLMProviderName,
@@ -62,6 +65,18 @@ class FakeLiteratureRuntime:
         self.closed = True
 
 
+def price_table() -> PriceTable:
+    return PriceTable(
+        version="test",
+        models={
+            "fake-real-model": ModelPrice(
+                input_usd_per_million_tokens=Decimal("1"),
+                output_usd_per_million_tokens=Decimal("2"),
+            )
+        },
+    )
+
+
 @pytest.mark.asyncio
 async def test_real_executor_creates_per_task_services_and_preserves_telemetry() -> None:
     runtimes: list[FakeLiteratureRuntime] = []
@@ -82,7 +97,7 @@ async def test_real_executor_creates_per_task_services_and_preserves_telemetry()
             api_key=SecretStr("secret"),
         ),
         graph=FakeGraph(),
-        provider_builder=lambda _: FakeLLM(),
+        provider_builder=lambda _config, _prices: FakeLLM(),
         literature_builder=build_literature,
     )
     result = await executor.execute(
@@ -98,12 +113,38 @@ async def test_real_executor_creates_per_task_services_and_preserves_telemetry()
     assert runtimes[0].closed is True
 
 
-def test_real_executor_readiness_never_exposes_secret(tmp_path: Any) -> None:
+def test_real_executor_requires_pricing_for_a_monetary_budget() -> None:
+    config = ProviderRuntimeConfig(
+        model="fake-real-model",
+        api_key=SecretStr("secret"),
+        max_estimated_cost_usd=0.1,
+    )
+
+    with pytest.raises(ValueError, match="price table"):
+        RealTaskExecutor(provider_config=config)
+    with pytest.raises(ValueError, match="missing"):
+        RealTaskExecutor(
+            provider_config=config,
+            price_table=PriceTable(
+                version="test",
+                models={
+                    "another-model": ModelPrice(
+                        input_usd_per_million_tokens=Decimal("1"),
+                        output_usd_per_million_tokens=Decimal("1"),
+                    )
+                },
+            ),
+        )
+
+
+def test_real_executor_readiness_never_exposes_secret(tmp_path: Path) -> None:
     executor = RealTaskExecutor(
         provider_config=ProviderRuntimeConfig(
             model="fake-real-model",
             api_key=SecretStr("top-secret"),
-        )
+            max_estimated_cost_usd=0.1,
+        ),
+        price_table=price_table(),
     )
     app = create_app(executor=executor, database_path=tmp_path / "real-ready.db")
 
@@ -114,4 +155,6 @@ def test_real_executor_readiness_never_exposes_secret(tmp_path: Any) -> None:
     payload = response.json()
     assert payload["checks"]["executor"]["executor"] == "real"
     assert payload["checks"]["executor"]["credentials_configured"] is True
+    assert payload["checks"]["executor"]["cost_budget_enforced"] is True
+    assert payload["checks"]["executor"]["price_table_version"] == "test"
     assert "top-secret" not in response.text
