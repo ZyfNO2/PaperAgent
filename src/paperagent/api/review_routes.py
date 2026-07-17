@@ -51,7 +51,7 @@ def register_review_routes(app: FastAPI, repository: SQLiteReviewRepository) -> 
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
         except ReviewValidationError as exc:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)
             ) from exc
 
     @app.put("/v1/tasks/{task_id}/papers/{paper_id}/review", response_model=PaperReview)
@@ -70,7 +70,7 @@ def register_review_routes(app: FastAPI, repository: SQLiteReviewRepository) -> 
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
         except ReviewValidationError as exc:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)
             ) from exc
         except ReviewTaskNotReadyError as exc:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
