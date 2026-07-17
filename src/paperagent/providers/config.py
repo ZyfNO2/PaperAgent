@@ -33,8 +33,15 @@ def load_provider_config(
         read_timeout_seconds=float(values.get("PAPERAGENT_LLM_READ_TIMEOUT", "60")),
         total_timeout_seconds=float(values.get("PAPERAGENT_LLM_TOTAL_TIMEOUT", "90")),
         max_attempts=int(values.get("PAPERAGENT_LLM_MAX_ATTEMPTS", "2")),
-        max_input_tokens=int(values.get("PAPERAGENT_LLM_MAX_INPUT_TOKENS", "32000")),
-        max_output_tokens=int(values.get("PAPERAGENT_LLM_MAX_OUTPUT_TOKENS", "4096")),
+        max_input_tokens_per_task=int(
+            values.get("PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK", "32000")
+        ),
+        max_output_tokens_per_call=int(
+            values.get("PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL", "4096")
+        ),
+        max_output_tokens_per_task=int(
+            values.get("PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK", "16384")
+        ),
         max_llm_calls_per_task=int(values.get("PAPERAGENT_LLM_MAX_CALLS", "12")),
         task_wall_clock_seconds=float(values.get("PAPERAGENT_LLM_TASK_TIMEOUT", "600")),
         max_estimated_cost_usd=(
