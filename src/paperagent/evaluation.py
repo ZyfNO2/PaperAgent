@@ -104,7 +104,7 @@ def grade_case(case: EvaluationCase, observation: EvaluationObservation) -> Eval
         and not observed_forbidden
         and terminal_matches
         and calls_within_budget
-        and cost_within_budget is not False
+        and cost_within_budget is True
     )
     return EvaluationResult(
         case_id=case.case_id,
@@ -125,15 +125,20 @@ def build_report(
     observations: tuple[EvaluationObservation, ...],
 ) -> EvaluationReport:
     by_id = {case.case_id: case for case in cases}
-    observation_ids = {observation.case_id for observation in observations}
-    unknown = observation_ids - set(by_id)
+    by_observation: dict[str, EvaluationObservation] = {}
+    for observation in observations:
+        if observation.case_id in by_observation:
+            raise ValueError(f"duplicate observation for case ID: {observation.case_id}")
+        by_observation[observation.case_id] = observation
+
+    unknown = set(by_observation) - set(by_id)
     if unknown:
         raise ValueError(f"observations contain unknown case IDs: {sorted(unknown)}")
 
     results: list[EvaluationResult] = []
     for case in cases:
-        observation = next(
-            (item for item in observations if item.case_id == case.case_id),
+        observation = by_observation.get(
+            case.case_id,
             EvaluationObservation(
                 case_id=case.case_id,
                 terminal="missing",
