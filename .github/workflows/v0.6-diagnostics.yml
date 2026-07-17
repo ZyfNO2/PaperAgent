@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'push' && github.ref_name || github.sha }}
+          ref: feat/v0.6-real-llm-integration
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -27,7 +27,6 @@ jobs:
       - name: Install project
         run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
       - name: Apply mechanical formatting
-        if: github.event_name == 'push'
         shell: bash
         run: |
           ruff check --fix .
