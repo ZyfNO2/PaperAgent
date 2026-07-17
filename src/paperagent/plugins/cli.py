@@ -64,13 +64,16 @@ def _write_atomic_json(path: Path, value: object, *, overwrite: bool) -> None:
     if not path.parent.exists():
         raise ValueError(f"output parent directory does not exist: {path.parent}")
     temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
-    payload = json.dumps(
-        value,
-        ensure_ascii=False,
-        indent=2,
-        sort_keys=True,
-        allow_nan=False,
-    ) + "\n"
+    payload = (
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        )
+        + "\n"
+    )
     try:
         temporary.write_text(payload, encoding="utf-8")
         if overwrite:
