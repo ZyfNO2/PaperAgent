@@ -23,8 +23,7 @@ def test_empty_module_plan_cannot_receive_go() -> None:
 
     assert report.verdict is AuditVerdict.REVISE
     assert any(
-        check.check_id == "proposed-modules-present" and not check.passed
-        for check in report.checks
+        check.check_id == "proposed-modules-present" and not check.passed for check in report.checks
     )
 
 
