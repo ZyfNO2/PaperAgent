@@ -38,6 +38,10 @@ ProviderBuilder = Callable[[ProviderRuntimeConfig, PriceTable | None], LLMProvid
 LiteratureBuilder = Callable[[LiteratureProviderSettings], SearchRuntime]
 
 
+def _build_literature(settings: LiteratureProviderSettings) -> SearchRuntime:
+    return build_literature_runtime(settings)
+
+
 @dataclass(frozen=True)
 class SystemClock(Clock):
     def now(self) -> datetime:
@@ -59,7 +63,7 @@ class RealTaskExecutor(TaskExecutor):
     price_table: PriceTable | None = None
     graph: Any = field(default_factory=build_graph)
     provider_builder: ProviderBuilder = build_llm_provider
-    literature_builder: LiteratureBuilder = build_literature_runtime
+    literature_builder: LiteratureBuilder = _build_literature
 
     def __post_init__(self) -> None:
         maximum = self.provider_config.max_estimated_cost_usd
@@ -71,6 +75,7 @@ class RealTaskExecutor(TaskExecutor):
             raise ValueError("the configured model is missing from the selected price table")
 
     def readiness(self) -> dict[str, object]:
+        price_table_version = self.price_table.version if self.price_table is not None else None
         return {
             "ok": True,
             "executor": "real",
@@ -79,7 +84,7 @@ class RealTaskExecutor(TaskExecutor):
             "native_json_schema": self.provider_config.native_json_schema,
             "credentials_configured": bool(self.provider_config.api_key.get_secret_value()),
             "cost_budget_enforced": self.provider_config.max_estimated_cost_usd is not None,
-            "price_table_version": self.price_table.version if self.price_table is not None else None,
+            "price_table_version": price_table_version,
         }
 
     async def execute(
