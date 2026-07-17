@@ -93,6 +93,23 @@ def test_external_discovery_reports_missing_authorized_name() -> None:
     assert registry.manifests() == ()
 
 
+def test_external_discovery_rejects_duplicate_entry_point_names() -> None:
+    registry = PluginRegistry()
+    candidates = (
+        FakeEntryPoint("external-test", ExternalTestPlugin),
+        FakeEntryPoint("external-test", ExternalTestPlugin),
+    )
+
+    failures = registry.discover_external(
+        {"external-test"},
+        candidates=candidates,  # type: ignore[arg-type]
+    )
+
+    assert len(failures) == 1
+    assert failures[0].code is PluginErrorCode.DUPLICATE
+    assert registry.manifests() == ()
+
+
 def test_registry_rejects_unsupported_operation() -> None:
     registry = PluginRegistry((EchoContractPlugin(),))
 
@@ -111,4 +128,14 @@ def test_plugin_request_rejects_non_json_payload() -> None:
             request_id="request-1",
             operation="echo",
             payload={"bad": object()},
+        )
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_plugin_request_rejects_non_finite_json_numbers(value: float) -> None:
+    with pytest.raises(ValidationError, match="non-finite float"):
+        PluginRequest(
+            request_id="request-1",
+            operation="echo",
+            payload={"bad": value},
         )
