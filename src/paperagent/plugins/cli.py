@@ -3,9 +3,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any, cast
+from uuid import uuid4
 
 from paperagent.plugins import build_default_registry
 from paperagent.plugins.contracts import PluginError, PluginRequest
@@ -59,14 +61,27 @@ def _stable_request_id(name: str, operation: str, payload: dict[str, object]) ->
 
 
 def _write_atomic_json(path: Path, value: object, *, overwrite: bool) -> None:
-    if path.exists() and not overwrite:
-        raise ValueError(f"output already exists: {path}")
     if not path.parent.exists():
         raise ValueError(f"output parent directory does not exist: {path.parent}")
-    temporary = path.with_name(f".{path.name}.tmp")
-    payload = json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-    temporary.write_text(payload, encoding="utf-8")
-    temporary.replace(path)
+    temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
+    payload = json.dumps(
+        value,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    try:
+        temporary.write_text(payload, encoding="utf-8")
+        if overwrite:
+            temporary.replace(path)
+            return
+        try:
+            os.link(temporary, path)
+        except FileExistsError as exc:
+            raise ValueError(f"output already exists: {path}") from exc
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _allowed_names(args: argparse.Namespace) -> set[str]:
