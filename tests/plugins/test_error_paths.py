@@ -19,7 +19,9 @@ from paperagent.plugins import (
 
 
 class _MalformedPlugin:
-    manifest = {"name": "malformed"}
+    @property
+    def manifest(self) -> Any:
+        return {"name": "malformed"}
 
     def invoke(self, request: PluginRequest) -> PluginResult:
         raise AssertionError(request)
