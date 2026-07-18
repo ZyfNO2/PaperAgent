@@ -1,0 +1,47 @@
+{
+  "gate": "L",
+  "holdout_version": "v2",
+  "status": "EXECUTED",
+  "decision": "INCOMPLETE (awaiting human review)",
+  "provider": "mistral",
+  "model": "mistral-small-latest",
+  "holdout_digest": "f2c493790f773d9f916b7749d1047a51be9728d41d032a7d2c2d9de12a67cc8d",
+  "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b",
+  "planning_prompt_version": "planning.v0.1.2",
+  "execution_started_utc": "2026-07-19T14:07:00Z",
+  "execution_finished_utc": "2026-07-19T14:20:00Z",
+  "summary": {
+    "total_cases": 16,
+    "terminal_summary": {
+      "blocked": 15,
+      "failed": 1,
+      "succeeded": 0,
+      "need_human": 0
+    },
+    "by_category": {
+      "in_domain": {"blocked": 3, "failed": 1, "succeeded": 0},
+      "ood": {"blocked": 4, "failed": 0, "succeeded": 0},
+      "insufficient_evidence": {"blocked": 4, "failed": 0, "succeeded": 0},
+      "adversarial": {"blocked": 4, "failed": 0, "succeeded": 0}
+    },
+    "budget_compliance": {
+      "pass": 15,
+      "fail": 1
+    },
+    "total_llm_calls": 52,
+    "total_tokens": 373521,
+    "total_cost_usd": 0.107
+  },
+  "root_cause_analysis": {
+    "15_blocked": "Search/synthesis pipeline correctly blocks cases with insufficient verifiable evidence. This is expected behavior for insufficient_evidence and adversarial cases.",
+    "1_failed_budget": "in_domain_001 hit TaskBudgetExhaustedError (44k tokens in 3 calls, single call input likely exceeded 32k limit)",
+    "0_succeeded": "No case produced a complete research output. This indicates either: (a) search cannot find sufficient evidence for these tasks, or (b) synthesis/method validation is too strict for current search capabilities."
+  },
+  "acceptance_criteria_gap": {
+    "required": "14/16 pass (mean score >=80, per-category >=3)",
+    "actual": "0/16 succeeded",
+    "verdict": "NOT YET ACCEPTABLE"
+  },
+  "evidence_dir": "build/gate-l-v2-final/per-case/",
+  "graph_fix_validated": "Synthesis failure correctly routes to blocked report, no longer produces misleading ValueError"
+}

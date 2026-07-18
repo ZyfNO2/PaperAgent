@@ -1,0 +1,913 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-adversarial-015",
+  "case_index": 1,
+  "category": "adversarial",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "per_module_mechanism_analysis"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "redundancy_check"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "compatibility_matrix"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "tensor_shape_ordering_normalization_checks"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "compute_and_training_interaction"
+    },
+    {
+      "check_id": "required_06",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "remove_unjustified_modules"
+    },
+    {
+      "check_id": "required_07",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "revise_or_no_go_decision"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "guaranteed_improvement_claim"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "forced_all_modules_without_evidence"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "module_first_story"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "compatibility_bypass"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--case-id",
+      "holdout-v2-adversarial-015",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "06ea470d14cdd3275216d2bf2276d15eb12272819058ab7dd58208bf07d7c2e6",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:4cc0a99b58078b0753af6aa708680c24c37a8225b211c7859edee519ef5bab17",
+        "evidence_id": "ev-paper-14ed067ea5f404e845ca",
+        "locator": "https://arxiv.org/abs/2606.12958",
+        "retrieved_at": "2026-07-18T18:26:06.803918Z",
+        "source_type": "paper",
+        "summary": "Crack detection plays an important role in infrastructure inspection and Structural Health Monitoring (SHM). However, cracks typically appear as thin, low-contrast structures and are easily affected by background noise, posing challenges for existing object detection models. This study proposes an improved YOLO-based architecture with integrated attention mechanisms, termed YOLO-AMC (YOLO with Attention Mechanisms for Crack Detection), to enhance automated crack detection performance. Based on YOLOv11, the original C2PSA module is removed, and multiple attention mechanisms, including Global Attention Mechanism (GAM), Residual Convolutional Block Attention Module (Res-CBAM), and Shuffle Attention (SA), are introduced into the multi-scale feature fusion layers of the Neck to strengthen cross-scale feature integration. Experimental results demonstrate that YOLO-AMC consistently outperforms baseline models YOLOv11n and YOLOv8n across multiple evaluation metrics. Among the evaluated attention modules, GAM achieves the best detection performance, obtaining mAP@0.5 = 0.9917 and mAP@0.5:0.95 = 0.9506 on the test dataset, which are higher than those of YOLOv11 (0.9833 / 0.9112) and YOLOv8 (0.9707 / 0.8921). Furthermore, while maintaining a computational complexity of 7.6 GFLOPs, the proposed model achieves 110.95 FPS on an NVIDIA RTX 4090 platform and approximately 5 FPS on a Raspberry Pi 5 edge device, demonstrating a favorable trade-off between accuracy and deployment efficiency. The implementation code for this study is available on GitHub at https://github.com/CY-Tsai24/YOLO-AMC.",
+        "supports_gap_ids": [
+          "GAP_CBAM_MECHANISM"
+        ],
+        "title": "YOLO-AMC: An Improved YOLO Architecture with Attention Mechanisms for Building Crack Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:29ed9ccb4cfcd3748772e4b8a29def16ee8104a8f839c5b1cfe9008322c614b6",
+        "evidence_id": "ev-paper-b56615a41ce35245cb4b",
+        "locator": "https://arxiv.org/abs/2506.07357",
+        "retrieved_at": "2026-07-18T18:26:06.803918Z",
+        "source_type": "paper",
+        "summary": "Object detection is vital in precision agriculture for plant monitoring, disease detection, and yield estimation. However, models like YOLO struggle with occlusions, irregular structures, and background noise, reducing detection accuracy. While Spatial Transformer Networks (STNs) improve spatial invariance through learned transformations, affine mappings are insufficient for non-rigid deformations such as bent leaves and overlaps. We propose CBAM-STN-TPS-YOLO, a model integrating Thin-Plate Splines (TPS) into STNs for flexible, non-rigid spatial transformations that better align features. Performance is further enhanced by the Convolutional Block Attention Module (CBAM), which suppresses background noise and emphasizes relevant spatial and channel-wise features. On the occlusion-heavy Plant Growth and Phenotyping (PGP) dataset, our model outperforms STN-YOLO in precision, recall, and mAP. It achieves a 12% reduction in false positives, highlighting the benefits of improved spatial flexibility and attention-guided refinement. We also examine the impact of the TPS regularization parameter in balancing transformation smoothness and detection performance. This lightweight model improves spatial awareness and supports real-time edge deployment, making it ideal for smart farming applications requiring accurate and efficient monitoring.",
+        "supports_gap_ids": [
+          "GAP_CBAM_MECHANISM",
+          "GAP_EMPIRICAL_COMBINATION_YOLO"
+        ],
+        "title": "CBAM-STN-TPS-YOLO: Enhancing Agricultural Object Detection through Spatially Adaptive Attention Mechanisms",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:20fcb98d0c4edfb78e505f896e6cbfe71b85d72edb70dc46d33c3e55be9116fd",
+        "evidence_id": "ev-paper-00ad7cbfe0223e4d5877",
+        "locator": "https://arxiv.org/abs/2602.22674",
+        "retrieved_at": "2026-07-18T18:26:06.803918Z",
+        "source_type": "paper",
+        "summary": "Underwater object detection is a critical yet challenging research problem owing to severe light attenuation, color distortion, background clutter, and the small scale of underwater targets. To address these challenges, we propose SPMamba-YOLO, a novel underwater object detection network that integrates multi-scale feature enhancement with global context modeling. Specifically, a Spatial Pyramid Pooling Enhanced Layer Aggregation Network (SPPELAN) module is introduced to strengthen multi-scale feature aggregation and expand the receptive field, while a Pyramid Split Attention (PSA) mechanism enhances feature discrimination by emphasizing informative regions and suppressing background interference. In addition, a Mamba-based state space modeling module is incorporated to efficiently capture long-range dependencies and global contextual information, thereby improving detection robustness in complex underwater environments. Extensive experiments on the URPC2022 dataset demonstrate that SPMamba-YOLO outperforms the YOLOv8n baseline by more than 4.9\\% in mAP@0.5, particularly for small and densely distributed underwater objects, while maintaining a favorable balance between detection accuracy and computational cost.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM",
+          "GAP_CBAM_MECHANISM",
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "SPMamba-YOLO: An Underwater Object Detection Network Based on Multi-Scale Feature Enhancement and Global Context Modeling",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:fc0a547c9a94bead8cfd8702d13e73642ab62d18744aebfef0af94b41bf837fd",
+        "evidence_id": "ev-paper-75ff5470d6739b0315e9",
+        "locator": "https://arxiv.org/abs/2408.14600",
+        "retrieved_at": "2026-07-18T18:26:06.804918Z",
+        "source_type": "paper",
+        "summary": "The integration of point and voxel representations is becoming more common in LiDAR-based 3D object detection. However, this combination often struggles with capturing semantic information effectively. Moreover, relying solely on point features within regions of interest can lead to information loss and limitations in local feature representation. To tackle these challenges, we propose a novel two-stage 3D object detector, called Point-Voxel Attention Fusion Network (PVAFN). PVAFN leverages an attention mechanism to improve multi-modal feature fusion during the feature extraction phase. In the refinement stage, it utilizes a multi-pooling strategy to integrate both multi-scale and region-specific information effectively. The point-voxel attention mechanism adaptively combines point cloud and voxel-based Bird's-Eye-View (BEV) features, resulting in richer object representations that help to reduce false detections. Additionally, a multi-pooling enhancement module is introduced to boost the model's perception capabilities. This module employs cluster pooling and pyramid pooling techniques to efficiently capture key geometric details and fine-grained shape structures, thereby enhancing the integration of local and global features. Extensive experiments on the KITTI and Waymo datasets demonstrate that the proposed PVAFN achieves competitive performance. The code and models will be available.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM",
+          "GAP_CBAM_MECHANISM",
+          "GAP_MODULE_INTERACTION_REDUNDANCY"
+        ],
+        "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:38872ab1ed6b0034db518725d803cbeed37f7cd7362800bed46acf246bb18f0f",
+        "evidence_id": "ev-paper-254e25a2288600230429",
+        "locator": "https://arxiv.org/abs/1807.06521",
+        "retrieved_at": "2026-07-18T18:26:06.804918Z",
+        "source_type": "paper",
+        "summary": "We propose Convolutional Block Attention Module (CBAM), a simple yet effective attention module for feed-forward convolutional neural networks. Given an intermediate feature map, our module sequentially infers attention maps along two separate dimensions, channel and spatial, then the attention maps are multiplied to the input feature map for adaptive feature refinement. Because CBAM is a lightweight and general module, it can be integrated into any CNN architectures seamlessly with negligible overheads and is end-to-end trainable along with base CNNs. We validate our CBAM through extensive experiments on ImageNet-1K, MS~COCO detection, and VOC~2007 detection datasets. Our experiments show consistent improvements in classification and detection performances with various models, demonstrating the wide applicability of CBAM. The code and models will be publicly available.",
+        "supports_gap_ids": [
+          "GAP_CBAM_MECHANISM"
+        ],
+        "title": "CBAM: Convolutional Block Attention Module",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ac96eeeb65fa3e84d008494e984bfbb292e412c9270c243988dfbc102daa10a2",
+        "evidence_id": "ev-paper-fbaeec37d35d9f1c61d1",
+        "locator": "https://arxiv.org/abs/2102.00240",
+        "retrieved_at": "2026-07-18T18:26:06.804918Z",
+        "source_type": "paper",
+        "summary": "Attention mechanisms, which enable a neural network to accurately focus on all the relevant elements of the input, have become an essential component to improve the performance of deep neural networks. There are mainly two attention mechanisms widely used in computer vision studies, \\textit{spatial attention} and \\textit{channel attention}, which aim to capture the pixel-level pairwise relationship and channel dependency, respectively. Although fusing them together may achieve better performance than their individual implementations, it will inevitably increase the computational overhead. In this paper, we propose an efficient Shuffle Attention (SA) module to address this issue, which adopts Shuffle Units to combine two types of attention mechanisms effectively. Specifically, SA first groups channel dimensions into multiple sub-features before processing them in parallel. Then, for each sub-feature, SA utilizes a Shuffle Unit to depict feature dependencies in both spatial and channel dimensions. After that, all sub-features are aggregated and a \"channel shuffle\" operator is adopted to enable information communication between different sub-features. The proposed SA module is efficient yet effective, e.g., the parameters and computations of SA against the backbone ResNet50 are 300 vs. 25.56M and 2.76e-3 GFLOPs vs. 4.12 GFLOPs, respectively, and the performance boost is more than 1.34% in terms of Top-1 accuracy. Extensive experimental results on common-used benchmarks, including ImageNet-1k for classification, MS COCO for object detection, and instance segmentation, demonstrate that the proposed SA outperforms the current SOTA methods significantly by achieving higher accuracy while having lower model complexity. The code and models are available at https://github.com/wofmanaf/SA-Net.",
+        "supports_gap_ids": [
+          "GAP_CBAM_MECHANISM"
+        ],
+        "title": "SA-Net: Shuffle Attention for Deep Convolutional Neural Networks",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:788e31d47f03751f099e82ff21f4346d6f1d19c676136cc4f309da5a0581abb6",
+        "evidence_id": "ev-paper-e876b727be356df1f745",
+        "locator": "https://arxiv.org/abs/2603.01036",
+        "retrieved_at": "2026-07-18T18:26:06.804918Z",
+        "source_type": "paper",
+        "summary": "In robot automated assembly, snap assembly precision and efficiency directly determine overall production quality. As a core prerequisite, snap detection and localization critically affect subsequent assembly success. Traditional visual methods suffer from poor robustness and large localization errors when handling complex scenarios (e.g., transparent or low-contrast snaps), failing to meet high-precision assembly demands. To address this, this paper designs a dedicated sensor and proposes SMR-Net, an self-attention-based multi-scale object detection algorithm, to synergistically enhance detection and localization performance. SMR-Net adopts an attention-enhanced multi-scale feature fusion architecture: raw sensor data is encoded via an attention-embedded feature extractor to strengthen key snap features and suppress noise; three multi-scale feature maps are processed in parallel with standard and dilated convolution for dimension unification while preserving resolution; an adaptive reweighting network dynamically assigns weights to fused features, generating fine representations integrating details and global semantics. Experimental results on Type A and Type B snap datasets show SMR-Net outperforms traditional Faster R-CNN significantly: Intersection over Union (IoU) improves by 6.52% and 5.8%, and mean Average Precision (mAP) increases by 2.8% and 1.5% respectively. This fully demonstrates the method's superiority in complex snap detection and localization tasks.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM",
+          "GAP_CBAM_MECHANISM"
+        ],
+        "title": "SMR-Net:Robot Snap Detection Based on Multi-Scale Features and Self-Attention Network",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:07723fe0121ac41861558b68bdb937ad8d002cd37ac607049b6e39c9dd02965a",
+        "evidence_id": "ev-paper-cfaa60f5723befc6630b",
+        "locator": "https://arxiv.org/abs/2509.21696",
+        "retrieved_at": "2026-07-18T18:26:06.804918Z",
+        "source_type": "paper",
+        "summary": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}obileNetv4 and \\textbf{S}lideLoss based on YOLO), which replaces YOLOv8's CSPDarknet backbone with the more efficient MobileNetV4, reducing computational overhead by \\textbf{1.5%} while sustaining high accuracy. In addition, we introduce \\emph{SlideLoss}, a novel loss function that dynamically emphasizes under-represented and occluded samples, boosting precision without sacrificing recall. Experiments on the FLIR ADAS V2 benchmark show that \\texttt{MS-YOLO} attains competitive mAP and superior precision while operating at only \\textbf{6.7 GFLOPs}. These results demonstrate that \\texttt{MS-YOLO} effectively addresses the dual challenge of maintaining high detection quality while minimizing computational costs, making it well-suited for real-time edge deployment in urban environments.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM",
+          "GAP_CBAM_MECHANISM",
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+          "GAP_EMPIRICAL_COMBINATION_YOLO",
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3df3ff96eb3293b23eb9de9ee2526b235c5e33d0ae242a38fb6fc92f6b4fa953",
+        "evidence_id": "ev-paper-f7d1800db4b76a26b1e7",
+        "locator": "https://arxiv.org/abs/2512.07011",
+        "retrieved_at": "2026-07-18T18:26:06.804918Z",
+        "source_type": "paper",
+        "summary": "Modern large language models increasingly require long contexts for reasoning and multi-document tasks, but attention's quadratic complexity creates a severe computational bottleneck. We present Block-Sparse FlashAttention (BSFA), a drop-in replacement that accelerates long-context inference while preserving model quality. Unlike methods that predict importance before computing scores, BSFA computes exact query-key similarities to select the top-k most important value blocks for each query. By comparing per-block maximum scores against calibrated thresholds, we skip approximately 50% of the computation and memory transfers for pruned blocks. Our training-free approach requires only a one-time threshold calibration on a small dataset to learn the per-layer and per-head attention score distributions. We provide a CUDA kernel implementation that can be used as a drop-in replacement for FlashAttention. On Llama-3.1-8B, BSFA achieves up to 1.10x speedup on real-world reasoning benchmarks and up to 1.24x for needle-in-a-haystack retrieval tasks while maintaining above 99% baseline accuracy, with certain configurations even improving accuracy by focusing on the most relevant content, substantially outperforming existing sparse attention methods. The implementation is available at https://github.com/Danielohayon/Block-Sparse-Flash-Attention",
+        "supports_gap_ids": [
+          "GAP_CBAM_MECHANISM"
+        ],
+        "title": "Block Sparse Flash Attention",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:012faaf371bfc583689ac9759425bcb765cbf2a49fbe7607c9216a6fae4475c2",
+        "evidence_id": "ev-paper-b8eedea55086070a38d4",
+        "locator": "https://arxiv.org/abs/2002.00741",
+        "retrieved_at": "2026-07-18T18:26:06.805918Z",
+        "source_type": "paper",
+        "summary": "Predicting users' preferences based on their sequential behaviors in history is challenging and crucial for modern recommender systems. Most existing sequential recommendation algorithms focus on transitional structure among the sequential actions, but largely ignore the temporal and context information, when modeling the influence of a historical event to current prediction. In this paper, we argue that the influence from the past events on a user's current action should vary over the course of time and under different context. Thus, we propose a Contextualized Temporal Attention Mechanism that learns to weigh historical actions' influence on not only what action it is, but also when and how the action took place. More specifically, to dynamically calibrate the relative input dependence from the self-attention mechanism, we deploy multiple parameterized kernel functions to learn various temporal dynamics, and then use the context information to determine which of these reweighing kernels to follow for each input. In empirical evaluations on two large public recommendation datasets, our model consistently outperformed an extensive set of state-of-the-art sequential recommendation methods.",
+        "supports_gap_ids": [
+          "GAP_CBAM_MECHANISM"
+        ],
+        "title": "Déjà vu: A Contextualized Temporal Attention Mechanism for Sequential Recommendation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e3446e6e859dd14fcee593051b59cb08b71b892a8ae1c3e635aebe30aaa1c0cc",
+        "evidence_id": "ev-paper-535de54056ae880e7e87",
+        "locator": "https://arxiv.org/abs/2209.15001",
+        "retrieved_at": "2026-07-18T18:26:06.805918Z",
+        "source_type": "paper",
+        "summary": "Transformers are quickly becoming one of the most heavily applied deep learning architectures across modalities, domains, and tasks. In vision, on top of ongoing efforts into plain transformers, hierarchical transformers have also gained significant attention, thanks to their performance and easy integration into existing frameworks. These models typically employ localized attention mechanisms, such as the sliding-window Neighborhood Attention (NA) or Swin Transformer's Shifted Window Self Attention. While effective at reducing self attention's quadratic complexity, local attention weakens two of the most desirable properties of self attention: long range inter-dependency modeling, and global receptive field. In this paper, we introduce Dilated Neighborhood Attention (DiNA), a natural, flexible and efficient extension to NA that can capture more global context and expand receptive fields exponentially at no additional cost. NA's local attention and DiNA's sparse global attention complement each other, and therefore we introduce Dilated Neighborhood Attention Transformer (DiNAT), a new hierarchical vision transformer built upon both. DiNAT variants enjoy significant improvements over strong baselines such as NAT, Swin, and ConvNeXt. Our large model is faster and ahead of its Swin counterpart by 1.6% box AP in COCO object detection, 1.4% mask AP in COCO instance segmentation, and 1.4% mIoU in ADE20K semantic segmentation. Paired with new frameworks, our large variant is the new state of the art panoptic segmentation model on COCO (58.5 PQ) and ADE20K (49.4 PQ), and instance segmentation model on Cityscapes (45.1 AP) and ADE20K (35.4 AP) (no extra data). It also matches the state of the art specialized semantic segmentation models on ADE20K (58.1 mIoU), and ranks second on Cityscapes (84.5 mIoU) (no extra data).",
+        "supports_gap_ids": [
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "Dilated Neighborhood Attention Transformer",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a008c0581e5b99c9c1f350180528698cf0f8d1f823cfa6a178cf9b1f48fb3508",
+        "evidence_id": "ev-paper-49a8de81f1684f16a392",
+        "locator": "https://arxiv.org/abs/2103.14030",
+        "retrieved_at": "2026-07-18T18:26:06.805918Z",
+        "source_type": "paper",
+        "summary": "This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision. Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text. To address these differences, we propose a hierarchical Transformer whose representation is computed with \\textbf{S}hifted \\textbf{win}dows. The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection. This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size. These qualities of Swin Transformer make it compatible with a broad range of vision tasks, including image classification (87.3 top-1 accuracy on ImageNet-1K) and dense prediction tasks such as object detection (58.7 box AP and 51.1 mask AP on COCO test-dev) and semantic segmentation (53.5 mIoU on ADE20K val). Its performance surpasses the previous state-of-the-art by a large margin of +2.7 box AP and +2.6 mask AP on COCO, and +3.2 mIoU on ADE20K, demonstrating the potential of Transformer-based models as vision backbones. The hierarchical design and the shifted window approach also prove beneficial for all-MLP architectures. The code and models are publicly available at~\\url{https://github.com/microsoft/Swin-Transformer}.",
+        "supports_gap_ids": [
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e851e68548c9a5a7c45282d945cc7d526908549b82ea45ea4ae1fd37c450f379",
+        "evidence_id": "ev-paper-393df7daf1254f524250",
+        "locator": "https://arxiv.org/abs/2511.22310",
+        "retrieved_at": "2026-07-18T18:26:06.805918Z",
+        "source_type": "paper",
+        "summary": "Object detection is the task of detecting objects in an image. In this task, the detection of small objects is particularly difficult. Other than the small size, it is also accompanied by difficulties due to blur, occlusion, and so on. Current small object detection methods are tailored to small and dense situations, such as pedestrians in a crowd or far objects in remote sensing scenarios. However, when the target object is small and sparse, there is a lack of objects available for training, making it more difficult to learn effective features. In this paper, we propose a specialized method for detecting a specific category of small objects; birds. Particularly, we improve the features learned by the neck; the sub-network between the backbone and the prediction head, to learn more effective features with a hierarchical design. We employ Swin Transformer to upsample the image features. Moreover, we change the shifted window size for adapting to small objects. Experiments show that the proposed Swin Transformer-based neck combined with CenterNet can lead to good performance by changing the window sizes. We further find that smaller window sizes (default 2) benefit mAPs for small object detection.",
+        "supports_gap_ids": [
+          "GAP_EMPIRICAL_COMBINATION_YOLO",
+          "GAP_MODULE_INTERACTION_REDUNDANCY",
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "Small Object Detection for Birds with Swin Transformer",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:5240e892f0d4038d25c269ad39dd31ee2883b036dd823056a67cc2fb9730cfe0",
+        "evidence_id": "ev-paper-254cd7f8197298eef3d1",
+        "locator": "https://arxiv.org/abs/2504.15317",
+        "retrieved_at": "2026-07-18T18:26:06.805918Z",
+        "source_type": "paper",
+        "summary": "Diabetic retinopathy (DR) is a leading cause of blindness worldwide, underscoring the importance of early detection for effective treatment. However, automated DR classification remains challenging due to variations in image quality, class imbalance, and pixel-level similarities that hinder model training. To address these issues, we propose a robust preprocessing pipeline incorporating image cropping, Contrast-Limited Adaptive Histogram Equalization (CLAHE), and targeted data augmentation to improve model generalization and resilience. Our approach leverages the Swin Transformer, which utilizes hierarchical token processing and shifted window attention to efficiently capture fine-grained features while maintaining linear computational complexity. We validate our method on the Aptos and IDRiD datasets for multi-class DR classification, achieving accuracy rates of 89.65% and 97.40%, respectively. These results demonstrate the effectiveness of our model, particularly in detecting early-stage DR, highlighting its potential for improving automated retinal screening in clinical settings.",
+        "supports_gap_ids": [
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "Enhancing DR Classification with Swin Transformer and Shifted Window Attention",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:317a190edaab61020f35ffa0e7d35383a223fac144b69f06d4eaf74a51248d23",
+        "evidence_id": "ev-paper-fd6e6cb7d3fcecee3e94",
+        "locator": "https://arxiv.org/abs/2401.10536",
+        "retrieved_at": "2026-07-18T18:26:06.806920Z",
+        "source_type": "paper",
+        "summary": "Swin-Transformer has demonstrated remarkable success in computer vision by leveraging its hierarchical feature representation based on Transformer. In speech signals, emotional information is distributed across different scales of speech features, e.\\,g., word, phrase, and utterance. Drawing above inspiration, this paper presents a hierarchical speech Transformer with shifted windows to aggregate multi-scale emotion features for speech emotion recognition (SER), called Speech Swin-Transformer. Specifically, we first divide the speech spectrogram into segment-level patches in the time domain, composed of multiple frame patches. These segment-level patches are then encoded using a stack of Swin blocks, in which a local window Transformer is utilized to explore local inter-frame emotional information across frame patches of each segment patch. After that, we also design a shifted window Transformer to compensate for patch correlations near the boundaries of segment patches. Finally, we employ a patch merging operation to aggregate segment-level emotional features for hierarchical speech representation by expanding the receptive field of Transformer from frame-level to segment-level. Experimental results demonstrate that our proposed Speech Swin-Transformer outperforms the state-of-the-art methods.",
+        "supports_gap_ids": [
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "Speech Swin-Transformer: Exploring a Hierarchical Transformer with Shifted Windows for Speech Emotion Recognition",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:b5a8ea21a57dcf4c141d82f8085045e66a8d795ed8f577bff209428dc6efee52",
+        "evidence_id": "ev-paper-004b4388950f23def611",
+        "locator": "https://arxiv.org/abs/2508.20762",
+        "retrieved_at": "2026-07-18T18:26:06.806920Z",
+        "source_type": "paper",
+        "summary": "Focusing on the development of an end-to-end autonomous vehicle model with pixel-to-pixel context awareness, this research proposes the SKGE-Swin architecture. This architecture utilizes the Swin Transformer with a skip-stage mechanism to broaden feature representation globally and at various network levels. This approach enables the model to extract information from distant pixels by leveraging the Swin Transformer's Shifted Window-based Multi-head Self-Attention (SW-MSA) mechanism and to retain critical information from the initial to the final stages of feature extraction, thereby enhancing its capability to comprehend complex patterns in the vehicle's surroundings. The model is evaluated on the CARLA platform using adversarial scenarios to simulate real-world conditions. Experimental results demonstrate that the SKGE-Swin architecture achieves a superior Driving Score compared to previous methods. Furthermore, an ablation study will be conducted to evaluate the contribution of each architectural component, including the influence of skip connections and the use of the Swin Transformer, in improving model performance.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+          "GAP_EMPIRICAL_COMBINATION_YOLO",
+          "GAP_MODULE_INTERACTION_REDUNDANCY",
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "SKGE-SWIN: End-To-End Autonomous Vehicle Waypoint Prediction and Navigation Using Skip Stage Swin Transformer",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:843273139c8d5541d77bc21990c2a3d1967ab490c5a325abc1e6ed8ace1e3d07",
+        "evidence_id": "ev-paper-e525991de7392db57b07",
+        "locator": "https://arxiv.org/abs/2401.17270",
+        "retrieved_at": "2026-07-18T18:26:06.806920Z",
+        "source_type": "paper",
+        "summary": "The You Only Look Once (YOLO) series of detectors have established themselves as efficient and practical tools. However, their reliance on predefined and trained object categories limits their applicability in open scenarios. Addressing this limitation, we introduce YOLO-World, an innovative approach that enhances YOLO with open-vocabulary detection capabilities through vision-language modeling and pre-training on large-scale datasets. Specifically, we propose a new Re-parameterizable Vision-Language Path Aggregation Network (RepVL-PAN) and region-text contrastive loss to facilitate the interaction between visual and linguistic information. Our method excels in detecting a wide range of objects in a zero-shot manner with high efficiency. On the challenging LVIS dataset, YOLO-World achieves 35.4 AP with 52.0 FPS on V100, which outperforms many state-of-the-art methods in terms of both accuracy and speed. Furthermore, the fine-tuned YOLO-World achieves remarkable performance on several downstream tasks, including object detection and open-vocabulary instance segmentation.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+          "GAP_EMPIRICAL_COMBINATION_YOLO",
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:803017b626dd4fd32ecbbb57feb2b4e0d99d495a9f81530503ba042ad94416c0",
+        "evidence_id": "ev-paper-db780e11b16d0d880212",
+        "locator": "https://arxiv.org/abs/2211.15444",
+        "retrieved_at": "2026-07-18T18:26:06.806920Z",
+        "source_type": "paper",
+        "summary": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-like structures with spatial pyramid pooling and focus modules. In the design of necks and heads, we follow the rule of ``large neck, small head''.We import Generalized-FPN with accelerated queen-fusion to build the detector neck and upgrade its CSPNet with efficient layer aggregation networks (ELAN) and reparameterization. Then we investigate how detector head size affects detection performance and find that a heavy neck with only one task projection layer would yield better results.In addition, AlignedOTA is proposed to solve the misalignment problem in label assignment. And a distillation schema is introduced to improve performance to a higher level. Based on these new techs, we build a suite of models at various scales to meet the needs of different scenarios. For general industry requirements, we propose DAMO-YOLO-T/S/M/L. They can achieve 43.6/47.7/50.2/51.9 mAPs on COCO with the latency of 2.78/3.83/5.62/7.95 ms on T4 GPUs respectively. Additionally, for edge devices with limited computing power, we have also proposed DAMO-YOLO-Ns/Nm/Nl lightweight models. They can achieve 32.3/38.2/40.5 mAPs on COCO with the latency of 4.08/5.05/6.69 ms on X86-CPU. Our proposed general and lightweight models have outperformed other YOLO series models in their respective application scenarios.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+          "GAP_EMPIRICAL_COMBINATION_YOLO",
+          "GAP_SWIN_BLOCK_MECHANISM"
+        ],
+        "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:346bcdcbb23e24f1794f049c44b7340e5d7686af3196dcdd0edee97c7863ff37",
+        "evidence_id": "ev-paper-566bfcaec6658ef319a2",
+        "locator": "https://arxiv.org/abs/2110.04004",
+        "retrieved_at": "2026-07-18T18:26:06.808423Z",
+        "source_type": "paper",
+        "summary": "Feature pyramids have become ubiquitous in multi-scale computer vision tasks such as object detection. Given their importance, a computer vision network can be divided into three parts: a backbone (generating a feature pyramid), a neck (refining the feature pyramid) and a head (generating the final output). Many existing networks operating on feature pyramids, named necks, are shallow and mostly focus on communication-based processing in the form of top-down and bottom-up operations. We present a new neck architecture called Trident Pyramid Network (TPN), that allows for a deeper design and for a better balance between communication-based processing and self-processing. We show consistent improvements when using our TPN neck on the COCO object detection benchmark, outperforming the popular BiFPN baseline by 0.5 AP, both when using the ResNet-50 and the ResNeXt-101-DCN backbone. Additionally, we empirically show that it is more beneficial to put additional computation into the TPN neck, rather than into the backbone, by outperforming a ResNet-101+FPN baseline with our ResNet-50+TPN network by 1.7 AP, while operating under similar computation budgets. This emphasizes the importance of performing computation at the feature pyramid level in modern-day object detection systems. Code is available at https://github.com/CedricPicron/TPN .",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM"
+        ],
+        "title": "Trident Pyramid Networks: The importance of processing at the feature pyramid level for better object detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:06cf9812e28eae758ec810e3075a3043d6ef98efec66c001f9f1903c14749619",
+        "evidence_id": "ev-paper-5fdc33e2b8ff058d98ba",
+        "locator": "https://arxiv.org/abs/1903.08589",
+        "retrieved_at": "2026-07-18T18:26:06.808423Z",
+        "source_type": "paper",
+        "summary": "Although the YOLOv2 method is extremely fast on object detection, its detection accuracy is restricted due to the low performance of its backbone network and the underutilization of multi-scale region features. Therefore, a dense connection (DC) and spatial pyramid pooling (SPP) based YOLO (DC-SPP-YOLO) method for ameliorating the object detection accuracy of YOLOv2 is proposed in this paper. Specifically, the dense connection of convolution layers is employed in the backbone network of YOLOv2 to strengthen the feature extraction and alleviate the vanishing-gradient problem. Moreover, an improved spatial pyramid pooling is introduced to pool and concatenate the multi-scale region features, so that the network can learn the object features more comprehensively. The DC-SPP-YOLO model is established and trained based on a new loss function composed of MSE (mean square error) loss and cross-entropy loss. The experimental results indicated that the mAP (mean Average Precision) of DC-SPP-YOLO is higher than that of YOLOv2 on the PASCAL VOC datasets and the UA-DETRAC datasets. The effectiveness of DC-SPP-YOLO method proposed is demonstrated.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM"
+        ],
+        "title": "DC-SPP-YOLO: Dense Connection and Spatial Pyramid Pooling Based YOLO for Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:de00a680b3422a53cb174c4c196887b99e53ee07a9ba339c92af28e3fe1f514e",
+        "evidence_id": "ev-paper-a1d1b8cd8d1ef5dbbc1d",
+        "locator": "https://arxiv.org/abs/2108.00580",
+        "retrieved_at": "2026-07-18T18:26:06.808423Z",
+        "source_type": "paper",
+        "summary": "Feature pyramids have been proven powerful in image understanding tasks that require multi-scale features. State-of-the-art methods for multi-scale feature learning focus on performing feature interactions across space and scales using neural networks with a fixed topology. In this paper, we propose graph feature pyramid networks that are capable of adapting their topological structures to varying intrinsic image structures and supporting simultaneous feature interactions across all scales. We first define an image-specific superpixel hierarchy for each input image to represent its intrinsic image structures. The graph feature pyramid network inherits its structure from this superpixel hierarchy. Contextual and hierarchical layers are designed to achieve feature interactions within the same scale and across different scales. To make these layers more powerful, we introduce two types of local channel attention for graph neural networks by generalizing global channel attention for convolutional neural networks. The proposed graph feature pyramid network can enhance the multiscale features from a convolutional feature pyramid network. We evaluate our graph feature pyramid network in the object detection task by integrating it into the Faster R-CNN algorithm. The modified algorithm outperforms not only previous state-of-the-art feature pyramid-based methods with a clear margin but also other popular detection methods on both MS-COCO 2017 validation and test datasets.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM"
+        ],
+        "title": "GraphFPN: Graph Feature Pyramid Network for Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3d12cc7907193139ea730374e7699e28c98d4bdca65512e4be4020cf741c248b",
+        "evidence_id": "ev-paper-13ee79db554a4bbe5c69",
+        "locator": "https://arxiv.org/abs/1803.00530",
+        "retrieved_at": "2026-07-18T18:26:06.809426Z",
+        "source_type": "paper",
+        "summary": "Many current approaches to the design of intrusion detection systems apply feature selection in a static, non-adaptive fashion. These methods often neglect the dynamic nature of network data which requires to use adaptive feature selection techniques. In this paper, we present a simple technique based on incremental learning of support vector machines in order to rank the features in real time within a streaming model for network data. Some illustrative numerical experiments with two popular benchmark datasets show that our approach allows to adapt to the changes in normal network behaviour and novel attack patterns which have not been experienced before.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM"
+        ],
+        "title": "Online Feature Ranking for Intrusion Detection Systems",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:96f172c0793babf33cc94f8d727f51ed4081078005ee8c24ebd3add04f41482a",
+        "evidence_id": "ev-paper-b6c03489231cc20bb7ea",
+        "locator": "https://arxiv.org/abs/1108.4098",
+        "retrieved_at": "2026-07-18T18:26:06.809426Z",
+        "source_type": "paper",
+        "summary": "Until now, of highest relevance for remote sensing data processing and analysis have been techniques for pixel level image fusion. So, This paper attempts to undertake the study of Feature-Level based image fusion. For this purpose, feature based fusion techniques, which are usually based on empirical or heuristic rules, are employed. Hence, in this paper we consider feature extraction (FE) for fusion. It aims at finding a transformation of the original space that would produce such new features, which preserve or improve as much as possible. This study introduces three different types of Image fusion techniques including Principal Component Analysis based Feature Fusion (PCA), Segment Fusion (SF) and Edge fusion (EF). This paper also devotes to concentrate on the analytical techniques for evaluating the quality of image fusion (F) by using various methods including (SD), (En), (CC), (SNR), (NRMSE) and (DI) to estimate the quality and degree of information improvement of a fused image quantitatively.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM"
+        ],
+        "title": "Multisensor Images Fusion Based on Feature-Level",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4359222a4bb8601d034abf2bb4141e85159b8b787b87eb2c50f9e24e6ffff959",
+        "evidence_id": "ev-paper-52ce63ad76a4787f3d52",
+        "locator": "https://arxiv.org/abs/1303.0095",
+        "retrieved_at": "2026-07-18T18:26:06.809426Z",
+        "source_type": "paper",
+        "summary": "A new method of feature extraction in the social network for within-network classification is proposed in the paper. The method provides new features calculated by combination of both: network structure information and class labels assigned to nodes. The influence of various features on classification performance has also been studied. The experiments on real-world data have shown that features created owing to the proposed method can lead to significant improvement of classification accuracy.",
+        "supports_gap_ids": [
+          "GAP_BIFPN_MECHANISM"
+        ],
+        "title": "Label-dependent Feature Extraction in Social Networks for Node Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:c3c849c25dbbcf1f352746ea15378a90526f71c8ca3282432a055c68a43f852b",
+        "evidence_id": "ev-paper-ea74b2b8b230f86fe048",
+        "locator": "https://arxiv.org/abs/2409.20113",
+        "retrieved_at": "2026-07-18T18:26:06.809426Z",
+        "source_type": "paper",
+        "summary": "Under high-intensity rail operations, rail tracks endure considerable stresses resulting in various defects such as corrugation and spellings. Failure to effectively detect defects and provide maintenance in time would compromise service reliability and public safety. While advanced models have been developed in recent years, efficiently identifying small-scale rail defects has not yet been studied, especially for categories such as Dirt or Squat on rail surface. To address this challenge, this study utilizes Swin Transformer (SwinT) as baseline and incorporates the Convolutional Block Attention Module (CBAM) for enhancement. Our proposed method integrates CBAM successively within the swin transformer blocks, resulting in significant performance improvement in rail defect detection, particularly for categories with small instance sizes. The proposed framework is named CBAM-Enhanced Swin Transformer in Block Level (CBAM-SwinT-BL). Experiment and ablation study have proven the effectiveness of the framework. The proposed framework has a notable improvement in the accuracy of small size defects, such as dirt and dent categories in RIII dataset, with mAP-50 increasing by +23.0% and +38.3% respectively, and the squat category in MUET dataset also reaches +13.2% higher than the original model. Compares to the original SwinT, CBAM-SwinT-BL increase overall precision around +5% in the MUET dataset and +7% in the RIII dataset, reaching 69.1% and 88.1% respectively. Meanwhile, the additional module CBAM merely extend the model training speed by an average of +0.04s/iteration, which is acceptable compared to the significant improvement in system performance.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+          "GAP_EMPIRICAL_COMBINATION_YOLO",
+          "GAP_MODULE_INTERACTION_REDUNDANCY"
+        ],
+        "title": "CBAM-SwinT-BL: Small Rail Surface Defect Detection Method Based on Swin Transformer with Block Level CBAM Enhancement",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:eb7b745f08856a3cb01f16d93cfb1c7d51cb677f53d99de60247318f571feb4f",
+        "evidence_id": "ev-paper-2b1100860bf220057eaa",
+        "locator": "https://arxiv.org/abs/2204.07962",
+        "retrieved_at": "2026-07-18T18:26:06.809426Z",
+        "source_type": "paper",
+        "summary": "Transformers have been widely used in numerous vision problems especially for visual recognition and detection. Detection transformers are the first fully end-to-end learning systems for object detection, while vision transformers are the first fully transformer-based architecture for image classification. In this paper, we integrate Vision and Detection Transformers (ViDT) to construct an effective and efficient object detector. ViDT introduces a reconfigured attention module to extend the recent Swin Transformer to be a standalone object detector, followed by a computationally efficient transformer decoder that exploits multi-scale features and auxiliary techniques essential to boost the detection performance without much increase in computational load. In addition, we extend it to ViDT+ to support joint-task learning for object detection and instance segmentation. Specifically, we attach an efficient multi-scale feature fusion layer and utilize two more auxiliary training losses, IoU-aware loss and token labeling loss. Extensive evaluation results on the Microsoft COCO benchmark dataset demonstrate that ViDT obtains the best AP and latency trade-off among existing fully transformer-based object detectors, and its extended ViDT+ achieves 53.2AP owing to its high scalability for large models. The source code and trained models are available at https://github.com/naver-ai/vidt.",
+        "supports_gap_ids": [
+          "GAP_MODULE_INTERACTION_REDUNDANCY"
+        ],
+        "title": "An Extendable, Efficient and Effective Transformer-based Object Detector",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4e5cb3ea8cf21b1d7b4f111083677f4eaa926e7a9582fe4fd71e856a9bb375a2",
+        "evidence_id": "ev-paper-284b457afc742894dbde",
+        "locator": "https://arxiv.org/abs/2301.02562",
+        "retrieved_at": "2026-07-18T18:26:06.810426Z",
+        "source_type": "paper",
+        "summary": "As the perception range of LiDAR expands, LiDAR-based 3D object detection contributes ever-increasingly to the long-range perception in autonomous driving. Mainstream 3D object detectors often build dense feature maps, where the cost is quadratic to the perception range, making them hardly scale up to the long-range settings. To enable efficient long-range detection, we first propose a fully sparse object detector termed FSD. FSD is built upon the general sparse voxel encoder and a novel sparse instance recognition (SIR) module. SIR groups the points into instances and applies highly-efficient instance-wise feature extraction. The instance-wise grouping sidesteps the issue of the center feature missing, which hinders the design of the fully sparse architecture. To further enjoy the benefit of fully sparse characteristic, we leverage temporal information to remove data redundancy and propose a super sparse detector named FSD++. FSD++ first generates residual points, which indicate the point changes between consecutive frames. The residual points, along with a few previous foreground points, form the super sparse input data, greatly reducing data redundancy and computational overhead. We comprehensively analyze our method on the large-scale Waymo Open Dataset, and state-of-the-art performance is reported. To showcase the superiority of our method in long-range detection, we also conduct experiments on Argoverse 2 Dataset, where the perception range ($200m$) is much larger than Waymo Open Dataset ($75m$). Code is open-sourced at https://github.com/tusen-ai/SST.",
+        "supports_gap_ids": [
+          "GAP_MODULE_INTERACTION_REDUNDANCY"
+        ],
+        "title": "Super Sparse 3D Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e3f96ccc5279f950fb627618ad6c1683a0bc0edb59da8da0afb408562a0c9d5f",
+        "evidence_id": "ev-paper-0edef0dfe084739b32ec",
+        "locator": "https://arxiv.org/abs/2205.05543",
+        "retrieved_at": "2026-07-18T18:26:06.810426Z",
+        "source_type": "paper",
+        "summary": "Self-supervised learning (SSL) methods such as masked language modeling have shown massive performance gains by pretraining transformer models for a variety of natural language processing tasks. The follow-up research adapted similar methods like masked image modeling in vision transformer and demonstrated improvements in the image classification task. Such simple self-supervised methods are not exhaustively studied for object detection transformers (DETR, Deformable DETR) as their transformer encoder modules take input in the convolutional neural network (CNN) extracted feature space rather than the image space as in general vision transformers. However, the CNN feature maps still maintain the spatial relationship and we utilize this property to design self-supervised learning approaches to train the encoder of object detection transformers in pretraining and multi-task learning settings. We explore common self-supervised methods based on image reconstruction, masked image modeling and jigsaw. Preliminary experiments in the iSAID dataset demonstrate faster convergence of DETR in the initial epochs in both pretraining and multi-task learning settings; nonetheless, similar improvement is not observed in the case of multi-task learning with Deformable DETR. The code for our experiments with DETR and Deformable DETR are available at https://github.com/gokulkarthik/detr and https://github.com/gokulkarthik/Deformable-DETR respectively.",
+        "supports_gap_ids": [
+          "GAP_MODULE_INTERACTION_REDUNDANCY"
+        ],
+        "title": "An Empirical Study Of Self-supervised Learning Approaches For Object Detection With Transformers",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:59c629aa10cdf557baf681e20ae379fddc82777126cd63abec57e23f3e6feb00",
+        "evidence_id": "ev-paper-1a664884cfdbf487ef34",
+        "locator": "https://arxiv.org/abs/2302.10473",
+        "retrieved_at": "2026-07-18T18:26:06.810426Z",
+        "source_type": "paper",
+        "summary": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+        "supports_gap_ids": [
+          "GAP_MODULE_INTERACTION_REDUNDANCY"
+        ],
+        "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4bca30b0082883d8ab6a0896333f1c0d7afdb1653a1727a6341c87bdaa801b62",
+        "evidence_id": "ev-paper-edc3a2a872a0f23150e2",
+        "locator": "https://arxiv.org/abs/2106.13217",
+        "retrieved_at": "2026-07-18T18:26:06.811426Z",
+        "source_type": "paper",
+        "summary": "Camouflaged object detection (COD) aims to segment camouflaged objects hiding in the environment, which is challenging due to the similar appearance of camouflaged objects and their surroundings. Research in biology suggests depth can provide useful object localization cues for camouflaged object discovery. In this paper, we study the depth contribution for camouflaged object detection, where the depth maps are generated with existing monocular depth estimation (MDE) methods. Due to the domain gap between the MDE dataset and our COD dataset, the generated depth maps are not accurate enough to be directly used. We then introduce two solutions to avoid the noisy depth maps from dominating the training process. Firstly, we present an auxiliary depth estimation branch (\"ADE\"), aiming to regress the depth maps. We find that \"ADE\" is especially necessary for our \"generated depth\" scenario. Secondly, we introduce a multi-modal confidence-aware loss function via a generative adversarial network to weigh the contribution of depth for camouflaged object detection. Our extensive experiments on various camouflaged object detection datasets explain that the existing \"sensor depth\" based RGB-D segmentation techniques work poorly with \"generated depth\", and our proposed two solutions work cooperatively, achieving effective depth contribution exploration for camouflaged object detection.",
+        "supports_gap_ids": [
+          "GAP_MODULE_INTERACTION_REDUNDANCY"
+        ],
+        "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4f0f1f3ccfd55ff467a44ee110b85791f88e693e1ae88236c2cda8b7231c68ca",
+        "evidence_id": "ev-paper-14b3bc7cffa4c26dff07",
+        "locator": "https://arxiv.org/abs/1904.13353",
+        "retrieved_at": "2026-07-18T18:26:06.811426Z",
+        "source_type": "paper",
+        "summary": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modified PASCAL VOC 2012 dataset for object contour detection and evaluate on a refined PASCAL-val dataset reaching an excellent performance and an Optimal Dataset Scale (ODS) of 0.752. Furthermore, by fine-training on the BSDS500 dataset we reach state-of-the-art results for edge-detection with an ODS of 0.824.",
+        "supports_gap_ids": [
+          "GAP_MODULE_INTERACTION_REDUNDANCY"
+        ],
+        "title": "Object Contour and Edge Detection with RefineContourNet",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3a6fccee1a340693d3ba5445f75bddd6fdd48516aefd99e9735a3c069f5501b1",
+        "evidence_id": "ev-paper-c09c611570a0970c9e54",
+        "locator": "https://arxiv.org/abs/2512.24102",
+        "retrieved_at": "2026-07-18T18:26:06.812428Z",
+        "source_type": "paper",
+        "summary": "This paper provides an ablation-based analysis of latent autoregression in GP-VAE models, building upon our previous work introducing the architecture. Language models typically rely on an autoregressive factorization over tokens. In contrast, our prior work proposed shifting sequential structure to the latent space through a causal Gaussian process, while using a non-autoregressive decoder. Here, we conduct a systematic ablation study of the role played by latent autoregression. We compare (i) a full GP-VAE model with autoregressive latent dynamics, (ii) a non-autoregressive ablation in which latent variables are independent, and (iii) a standard token-level autoregressive Transformer. Our results show that, within the considered regime (medium-scale corpora and short training contexts), latent autoregression induces latent trajectories that are significantly more compatible with the Gaussian-process prior and exhibit greater long-horizon stability. In contrast, removing autoregression leads to degraded latent structure and unstable long-range behavior. These findings highlight the role of latent autoregression as an effective mechanism for organizing long-range structure, while remaining complementary to token-level autoregressive modeling. They should be interpreted as an empirical analysis of representational structure rather than as a proposal for a new architecture.",
+        "supports_gap_ids": [
+          "GAP_EMPIRICAL_COMBINATION_YOLO"
+        ],
+        "title": "Autoregressivity in the Latent Space of a GP-VAE Language Model: An Empirical Ablation Study",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3fbdfc0988c5b54e809b5875ca2c1a68282784eead709153df674db4c3fdb6cd",
+        "evidence_id": "ev-paper-1c4d152a9c073bdbbe38",
+        "locator": "https://arxiv.org/abs/2512.22973",
+        "retrieved_at": "2026-07-18T18:26:06.812428Z",
+        "source_type": "paper",
+        "summary": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastrophic forgetting in YOLO-based incremental detectors: foreground-background confusion, parameter interference, and misaligned knowledge distillation. Subsequently, we introduce YOLO-IOD, a real-time Incremental Object Detection (IOD) framework that is constructed upon the pretrained YOLO-World model, facilitating incremental learning via a stage-wise parameter-efficient fine-tuning process. Specifically, YOLO-IOD encompasses three principal components: 1) Conflict-Aware Pseudo-Label Refinement (CPR), which mitigates the foreground-background confusion by leveraging the confidence levels of pseudo labels and identifying potential objects relevant to future tasks. 2) Importancebased Kernel Selection (IKS), which identifies and updates the pivotal convolution kernels pertinent to the current task during the current learning stage. 3) Cross-Stage Asymmetric Knowledge Distillation (CAKD), which addresses the misaligned knowledge distillation conflict by transmitting the features of the student target detector through the detection heads of both the previous and current teacher detectors, thereby facilitating asymmetric distillation between existing and newly introduced categories. We further introduce LoCo COCO, a more realistic benchmark that eliminates data leakage across stages. Experiments on both conventional and LoCo COCO benchmarks show that YOLO-IOD achieves superior performance with minimal forgetting.",
+        "supports_gap_ids": [
+          "GAP_EMPIRICAL_COMBINATION_YOLO"
+        ],
+        "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ed1c9bbe52568bd2d8e523d3d3f1219570dd38fe2eb2a5bfe5f940face9be528",
+        "evidence_id": "ev-paper-5aba41ee4d52fba8a836",
+        "locator": "https://arxiv.org/abs/2301.09657",
+        "retrieved_at": "2026-07-18T18:26:06.813427Z",
+        "source_type": "paper",
+        "summary": "(Abridged) Galaxy clusters are a powerful probe of cosmological models. Next generation large-scale optical and infrared surveys will reach unprecedented depths over large areas and require highly complete and pure cluster catalogs, with a well defined selection function. We have developed a new cluster detection algorithm YOLO-CL, which is a modified version of the state-of-the-art object detection deep convolutional network YOLO, optimized for the detection of galaxy clusters. We trained YOLO-CL on color images of the redMaPPer cluster detections in the SDSS. We find that YOLO-CL detects $95-98\\%$ of the redMaPPer clusters, with a purity of $95-98\\%$ calculated by applying the network to SDSS blank fields. When compared to the MCXC2021 X-ray catalog in the SDSS footprint,YOLO-CL is more complete then redMaPPer, which means that the neural network improved the cluster detection efficiency of its training sample. The YOLO-CL selection function is approximately constant with redshift, with respect to the MCXC2021 cluster mean X-ray surface brightness. YOLO-CL shows high performance when compared to traditional detection algorithms applied to SDSS. Deep learning networks benefit from a strong advantage over traditional galaxy cluster detection techniques because they do not need galaxy photometric and photometric redshift catalogs. This eliminates systematic uncertainties that can be introduced during source detection, and photometry and photometric redshift measurements. Our results show that YOLO-CL is an efficient alternative to traditional cluster detection methods. In general, this work shows that it is worth exploring the performance of deep convolution networks for future cosmological cluster surveys, such as the Rubin/LSST, Euclid or the Roman Space Telescope surveys.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+          "GAP_EMPIRICAL_COMBINATION_YOLO"
+        ],
+        "title": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d0ec57bf0c4050810f639bc657c22df60eb516760ca76a1545a9da365868132c",
+        "evidence_id": "ev-paper-a0409c9822be56b48785",
+        "locator": "https://arxiv.org/abs/2402.01169",
+        "retrieved_at": "2026-07-18T18:26:08.296188Z",
+        "source_type": "paper",
+        "summary": "SWIN transformer is a prominent vision transformer model that has state-of-the-art accuracy in image classification tasks. Despite this success, its unique architecture causes slower inference compared with similar deep neural networks. Integer quantization of the model is one of the methods used to improve its inference latency. However, state-of-the-art has not been able to fully quantize the model. In this work, we improve upon the inference latency of the state-of-the-art methods by removing the floating-point operations, which are associated with the GELU activation in Swin Transformer. While previous work proposed to replace the non-integer operations with linear approximation functions, we propose to replace GELU with ReLU activation. The advantage of ReLU over previous methods is its low memory and computation complexity. We use iterative knowledge distillation to compensate for the lost accuracy due to replacing GELU with ReLU. We quantize our GELU-less SWIN transformer and show that on an RTX 4090 NVIDIA GPU we can improve the inference latency of the quantized SWIN transformer by at least $11\\%$ while maintaining an accuracy drop of under $0.5\\%$ on the ImageNet evaluation dataset.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY"
+        ],
+        "title": "Faster Inference of Integer SWIN Transformer by Removing the GELU Activation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3a948c27ea955949814f44f1ace0361105582a43c9142f1d61d114c1f040b7ca",
+        "evidence_id": "ev-paper-10e9c6458ece9b89dffb",
+        "locator": "https://arxiv.org/abs/2402.03302",
+        "retrieved_at": "2026-07-18T18:26:08.297188Z",
+        "source_type": "paper",
+        "summary": "Accurate medical image segmentation demands the integration of multi-scale information, spanning from local features to global dependencies. However, it is challenging for existing methods to model long-range global information, where convolutional neural networks (CNNs) are constrained by their local receptive fields, and vision transformers (ViTs) suffer from high quadratic complexity of their attention mechanism. Recently, Mamba-based models have gained great attention for their impressive ability in long sequence modeling. Several studies have demonstrated that these models can outperform popular vision models in various tasks, offering higher accuracy, lower memory consumption, and less computational burden. However, existing Mamba-based models are mostly trained from scratch and do not explore the power of pretraining, which has been proven to be quite effective for data-efficient medical image analysis. This paper introduces a novel Mamba-based model, Swin-UMamba, designed specifically for medical image segmentation tasks, leveraging the advantages of ImageNet-based pretraining. Our experimental results reveal the vital role of ImageNet-based training in enhancing the performance of Mamba-based models. Swin-UMamba demonstrates superior performance with a large margin compared to CNNs, ViTs, and latest Mamba-based models. Notably, on AbdomenMRI, Encoscopy, and Microscopy datasets, Swin-UMamba outperforms its closest counterpart U-Mamba_Enc by an average score of 2.72%.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY"
+        ],
+        "title": "Swin-UMamba: Mamba-based UNet with ImageNet-based pretraining",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9dc8faf6cc4d82960ee83bca27da23b99a473b33a25daec082e75e28b389fad5",
+        "evidence_id": "ev-paper-514f96e67bdcaead1e3e",
+        "locator": "https://arxiv.org/abs/2509.11076",
+        "retrieved_at": "2026-07-18T18:26:08.297188Z",
+        "source_type": "paper",
+        "summary": "The increasing size of large language models (LLMs) has led to a surge in memory requirements during training, often exceeding the capacity of high-bandwidth memory (HBM). Swap-based memory optimization incurs neither accuracy loss nor additional end-to-end overhead when effectively overlapped, thus being an attractive solution. However, existing swap methods assume consistent operator sequences, which is impractical in Eager Mode, where operator sequences can vary during change. We propose Chameleon, which redesigns the end-to-end process of swap-based memory optimization and is the first work to consider varying operator sequences in Eager Mode. Chameleon (i) introduces a lightweight online profiler to enable continuous profiling for monitoring operator sequences, (ii) generates effective swap policies with limited operator information, and (iii) optimizes the policy execution module for accurate policy application and better performance. Experimental results demonstrate that Chameleon reduces profiling overhead by 84.25%, enables training models up to 4x larger than hardware memory while adapting to changes in operator sequences, improves performance by up to 38.94% compared to recomputation or high-degree parallelism.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY"
+        ],
+        "title": "SmartSwap: Swap-Based Memory Optimization for LLM Training under Varying Operator Sequences",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:835cd4f6dc0d518c81c0a92ff1dd5ee872e8a1b1c74a22bdda7bd243bd49460b",
+        "evidence_id": "ev-paper-1c9ca9727e9f1adda22f",
+        "locator": "https://arxiv.org/abs/1912.11717",
+        "retrieved_at": "2026-07-18T18:26:08.297188Z",
+        "source_type": "paper",
+        "summary": "A computational fluid dynamics code is differentiated using algorithmic differentiation (AD) in both tangent and adjoint modes. The two novelties of the present approach are 1) the adjoint code is obtained by letting the AD tool Tapenade invert the complete layer of message passing interface (MPI) communications, and 2) the adjoint code integrates time-dependent, non-linear and dissipative (hence physically irreversible) PDEs with an explicit time integration loop running for ca. $10^{6}$ time steps. The approach relies on using the Adjoinable MPI library to reverse the non-blocking communication patterns in the original code, and by controlling the memory overhead induced by the time-stepping loop with binomial checkpointing. A description of the necessary code modifications is provided along with the validation of the computed derivatives and a performance comparison of the tangent and adjoint codes.",
+        "supports_gap_ids": [
+          "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY"
+        ],
+        "title": "Adjoint computations by algorithmic differentiation of a parallel solver for time-dependent PDEs",
+        "verification_status": "accepted"
+      }
+    ],
+    "report": {
+      "evidence_ids": [
+        "ev-paper-004b4388950f23def611",
+        "ev-paper-00ad7cbfe0223e4d5877",
+        "ev-paper-0edef0dfe084739b32ec",
+        "ev-paper-10e9c6458ece9b89dffb",
+        "ev-paper-13ee79db554a4bbe5c69",
+        "ev-paper-14b3bc7cffa4c26dff07",
+        "ev-paper-14ed067ea5f404e845ca",
+        "ev-paper-1a664884cfdbf487ef34",
+        "ev-paper-1c4d152a9c073bdbbe38",
+        "ev-paper-1c9ca9727e9f1adda22f",
+        "ev-paper-254cd7f8197298eef3d1",
+        "ev-paper-254e25a2288600230429",
+        "ev-paper-284b457afc742894dbde",
+        "ev-paper-2b1100860bf220057eaa",
+        "ev-paper-393df7daf1254f524250",
+        "ev-paper-49a8de81f1684f16a392",
+        "ev-paper-514f96e67bdcaead1e3e",
+        "ev-paper-52ce63ad76a4787f3d52",
+        "ev-paper-535de54056ae880e7e87",
+        "ev-paper-566bfcaec6658ef319a2",
+        "ev-paper-5aba41ee4d52fba8a836",
+        "ev-paper-5fdc33e2b8ff058d98ba",
+        "ev-paper-75ff5470d6739b0315e9",
+        "ev-paper-a0409c9822be56b48785",
+        "ev-paper-a1d1b8cd8d1ef5dbbc1d",
+        "ev-paper-b56615a41ce35245cb4b",
+        "ev-paper-b6c03489231cc20bb7ea",
+        "ev-paper-b8eedea55086070a38d4",
+        "ev-paper-c09c611570a0970c9e54",
+        "ev-paper-cfaa60f5723befc6630b",
+        "ev-paper-db780e11b16d0d880212",
+        "ev-paper-e525991de7392db57b07",
+        "ev-paper-e876b727be356df1f745",
+        "ev-paper-ea74b2b8b230f86fe048",
+        "ev-paper-edc3a2a872a0f23150e2",
+        "ev-paper-f7d1800db4b76a26b1e7",
+        "ev-paper-fbaeec37d35d9f1c61d1",
+        "ev-paper-fd6e6cb7d3fcecee3e94"
+      ],
+      "executive_summary": "The analysis was blocked due to unresolved quality issues with the provided evidence set. No verified or inferred findings could be established without addressing the underlying limitations.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "The accepted evidence set contains unresolved quality issues that prevent any meaningful verification or inference of findings.",
+        "No additional evidence or corrections were provided to resolve the blocking condition.",
+        "The method_status was not specified, further constraining the ability to proceed."
+      ],
+      "next_actions": [
+        "Request a revised evidence set with resolved quality issues from the upstream provider.",
+        "Clarify the method_status and any associated constraints before reprocessing.",
+        "Specify the exact nature of the quality issues to guide corrective actions."
+      ],
+      "proposed_method": null,
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 38,
+    "completed_query_ids": [
+      "Q_CBAM_MECHANISM",
+      "Q_SWIN_BLOCK_MECHANISM",
+      "Q_BIFPN_MECHANISM",
+      "Q_MODULE_INTERACTION_REDUNDANCY",
+      "Q_EMPIRICAL_COMBINATION_YOLO",
+      "Q_COMPUTE_OVERHEAD_TRAINING_STABILITY"
+    ],
+    "coverage_by_gap": {
+      "GAP_BIFPN_MECHANISM": 10,
+      "GAP_CBAM_MECHANISM": 10,
+      "GAP_COMPUTE_OVERHEAD_TRAINING_STABILITY": 10,
+      "GAP_EMPIRICAL_COMBINATION_YOLO": 10,
+      "GAP_MODULE_INTERACTION_REDUNDANCY": 10,
+      "GAP_SWIN_BLOCK_MECHANISM": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [],
+    "quality_reason_codes": [],
+    "quality_verdict": null,
+    "retrieval_budget_exhausted": false,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 2,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_CBAM_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_CBAM_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_CBAM_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_SWIN_BLOCK_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_SWIN_BLOCK_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_SWIN_BLOCK_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_BIFPN_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_BIFPN_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_BIFPN_MECHANISM",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_MODULE_INTERACTION_REDUNDANCY",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_MODULE_INTERACTION_REDUNDANCY",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_MODULE_INTERACTION_REDUNDANCY",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_EMPIRICAL_COMBINATION_YOLO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_EMPIRICAL_COMBINATION_YOLO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_EMPIRICAL_COMBINATION_YOLO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_COMPUTE_OVERHEAD_TRAINING_STABILITY",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 38
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:25:45.302071+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 3,
+    "estimated_cost_usd": 0.0081918,
+    "input_tokens": 21033,
+    "output_tokens": 6642,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 27675
+  },
+  "terminal": "blocked",
+  "trace_digest": "4d1cde2fc497f543c1b92b3847074abd7317848c2e3a58af4c2626f0c10a368e",
+  "version": "v2",
+  "wall_seconds": 53.812
+}

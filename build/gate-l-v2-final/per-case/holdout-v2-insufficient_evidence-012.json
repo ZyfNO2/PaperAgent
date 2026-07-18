@@ -1,0 +1,709 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-insufficient_evidence-012",
+  "case_index": 1,
+  "category": "insufficient_evidence",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "promotional_claim_marked_unverified"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "dataset_accessibility_blocker"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "public_alternative_dataset_search"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "benchmark_provenance_check"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "revise_or_no_go_decision"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "largest_dataset_claim_without_evidence"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "inaccessible_dataset_as_executable"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "marketing_as_scientific_evidence"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "false_go"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--case-id",
+      "holdout-v2-insufficient_evidence-012",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "38b44ab0bcd07b1ff13820616a2659b2b46ba6c453bf7f490ee64f3d1714c19e",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:5734841ffbba46fab0bbfd3ce395de60d5bb032d316a388812c777ddfed91c34",
+        "evidence_id": "ev-paper-83ff1e5debd3a5a6256e",
+        "locator": "https://arxiv.org/abs/2510.16500",
+        "retrieved_at": "2026-07-18T18:23:42.110108Z",
+        "source_type": "paper",
+        "summary": "A major bottleneck in off-road autonomous driving research lies in the scarcity of large-scale, high-quality datasets and benchmarks. To bridge this gap, we present ORAD-3D, which, to the best of our knowledge, is the largest dataset specifically curated for off-road autonomous driving. ORAD-3D covers a wide spectrum of terrains, including woodlands, farmlands, grasslands, riversides, gravel roads, cement roads, and rural areas, while capturing diverse environmental variations across weather conditions (sunny, rainy, foggy, and snowy) and illumination levels (bright daylight, daytime, twilight, and nighttime). Building upon this dataset, we establish a comprehensive suite of benchmark evaluations spanning five fundamental tasks: 2D free-space detection, 3D occupancy prediction, rough GPS-guided path planning, vision-language model-driven autonomous driving, and world model for off-road environments. Together, the dataset and benchmarks provide a unified and robust resource for advancing perception and planning in challenging off-road scenarios. The dataset and code will be made publicly available at https://github.com/chaytonmin/ORAD-3D.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Advancing Off-Road Autonomous Driving: The Large-Scale ORAD-3D Dataset and Comprehensive Benchmarks",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f4137268da1900f22387bde30a1379faef26be85289ef36ad2e347409f5f788b",
+        "evidence_id": "ev-paper-2ff2711194617560d6fa",
+        "locator": "https://arxiv.org/abs/2209.08538",
+        "retrieved_at": "2026-07-18T18:23:42.110108Z",
+        "source_type": "paper",
+        "summary": "The data article describes the Road Damage Dataset, RDD2022, which comprises 47,420 road images from six countries, Japan, India, the Czech Republic, Norway, the United States, and China. The images have been annotated with more than 55,000 instances of road damage. Four types of road damage, namely longitudinal cracks, transverse cracks, alligator cracks, and potholes, are captured in the dataset. The annotated dataset is envisioned for developing deep learning-based methods to detect and classify road damage automatically. The dataset has been released as a part of the Crowd sensing-based Road Damage Detection Challenge (CRDDC2022). The challenge CRDDC2022 invites researchers from across the globe to propose solutions for automatic road damage detection in multiple countries. The municipalities and road agencies may utilize the RDD2022 dataset, and the models trained using RDD2022 for low-cost automatic monitoring of road conditions. Further, computer vision and machine learning researchers may use the dataset to benchmark the performance of different algorithms for other image-based applications of the same type (classification, object detection, etc.).",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002"
+        ],
+        "title": "RDD2022: A multi-national image dataset for automatic Road Damage Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:62a5eae983e97860dc1d21e0616f8fa1f7d99b8b6892946cf7af6ad76434336f",
+        "evidence_id": "ev-paper-70dff05c88059a22f9b8",
+        "locator": "https://arxiv.org/abs/2007.03262",
+        "retrieved_at": "2026-07-18T18:23:42.110108Z",
+        "source_type": "paper",
+        "summary": "Salient object detection in complex scenes and environments is a challenging research topic. Most works focus on RGB-based salient object detection, which limits its performance of real-life applications when confronted with adverse conditions such as dark environments and complex backgrounds. Taking advantage of RGB and thermal infrared images becomes a new research direction for detecting salient object in complex scenes recently, as thermal infrared spectrum imaging provides the complementary information and has been applied to many computer vision tasks. However, current research for RGBT salient object detection is limited by the lack of a large-scale dataset and comprehensive benchmark. This work contributes such a RGBT image dataset named VT5000, including 5000 spatially aligned RGBT image pairs with ground truth annotations. VT5000 has 11 challenges collected in different scenes and environments for exploring the robustness of algorithms. With this dataset, we propose a powerful baseline approach, which extracts multi-level features within each modality and aggregates these features of all modalities with the attention mechanism, for accurate RGBT salient object detection. Extensive experiments show that the proposed baseline approach outperforms the state-of-the-art methods on VT5000 dataset and other two public datasets. In addition, we carry out a comprehensive analysis of different algorithms of RGBT salient object detection on VT5000 dataset, and then make several valuable conclusions and provide some potential research directions for RGBT salient object detection.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002",
+          "EG003"
+        ],
+        "title": "RGBT Salient Object Detection: A Large-scale Dataset and Benchmark",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:afe69e86d9d11151b4138f3a1ddc952c6dfc2a41be5e7012b7b9ee7d1b43dc83",
+        "evidence_id": "ev-paper-0e91431cffddce33fe37",
+        "locator": "https://arxiv.org/abs/2011.09170",
+        "retrieved_at": "2026-07-18T18:23:42.111107Z",
+        "source_type": "paper",
+        "summary": "Vehicles, pedestrians, and riders are the most important and interesting objects for the perception modules of self-driving vehicles and video surveillance. However, the state-of-the-art performance of detecting such important objects (esp. small objects) is far from satisfying the demand of practical systems. Large-scale, rich-diversity, and high-resolution datasets play an important role in developing better object detection methods to satisfy the demand. Existing public large-scale datasets such as MS COCO collected from websites do not focus on the specific scenarios. Moreover, the popular datasets (e.g., KITTI and Citypersons) collected from the specific scenarios are limited in the number of images and instances, the resolution, and the diversity. To attempt to solve the problem, we build a diverse high-resolution dataset (called TJU-DHD). The dataset contains 115,354 high-resolution images (52% images have a resolution of 1624$\\times$1200 pixels and 48% images have a resolution of at least 2,560$\\times$1,440 pixels) and 709,330 labeled objects in total with a large variance in scale and appearance. Meanwhile, the dataset has a rich diversity in season variance, illumination variance, and weather variance. In addition, a new diverse pedestrian dataset is further built. With the four different detectors (i.e., the one-stage RetinaNet, anchor-free FCOS, two-stage FPN, and Cascade R-CNN), experiments about object detection and pedestrian detection are conducted. We hope that the newly built dataset can help promote the research on object detection and pedestrian detection in these two scenes. The dataset is available at https://github.com/tjubiit/TJU-DHD.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002",
+          "EG003"
+        ],
+        "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:01ece61eb62921d1a3e98ed15588de5737397b5d2308bc162865e5d83eb53902",
+        "evidence_id": "ev-paper-5cf36711aaadddc9cfca",
+        "locator": "https://arxiv.org/abs/2403.09233",
+        "retrieved_at": "2026-07-18T18:23:42.111107Z",
+        "source_type": "paper",
+        "summary": "Adverse weather conditions including haze, snow and rain lead to decline in image qualities, which often causes a decline in performance for deep-learning based detection networks. Most existing approaches attempts to rectify hazy images before performing object detection, which increases the complexity of the network and may result in the loss in latent information. To better integrate image restoration and object detection tasks, we designed a double-route network with an attention feature fusion module, taking both hazy and dehazed features into consideration. We also proposed a subnetwork to provide haze-free features to the detection network. Specifically, our D-YOLO improves the performance of the detection network by minimizing the distance between the clear feature extraction subnetwork and detection network. Experiments on RTTS and FoggyCityscapes datasets show that D-YOLO demonstrates better performance compared to the state-of-the-art methods. It is a robust detection framework for bridging the gap between low-level dehazing and high-level detection.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002",
+          "EG003"
+        ],
+        "title": "D-YOLO a robust framework for object detection in adverse weather conditions",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:55c3c4bc2f15711eea07fd44209e95ace276cac94c13a896afb266a407270192",
+        "evidence_id": "ev-paper-336e2c2a95fa13437acd",
+        "locator": "https://arxiv.org/abs/2206.15241",
+        "retrieved_at": "2026-07-18T18:23:42.111107Z",
+        "source_type": "paper",
+        "summary": "Precipitation forecasting is an important scientific challenge that has wide-reaching impacts on society. Historically, this challenge has been tackled using numerical weather prediction (NWP) models, grounded on physics-based simulations. Recently, many works have proposed an alternative approach, using end-to-end deep learning (DL) models to replace physics-based NWP models. While these DL methods show improved performance and computational efficiency, they exhibit limitations in long-term forecasting and lack the explainability. In this work, we present a hybrid NWP-DL workflow to fill the gap between standalone NWP and DL approaches. Under this workflow, the outputs of NWP models are fed into a deep neural network, which post-processes the data to yield a refined precipitation forecast. The deep model is trained with supervision, using Automatic Weather Station (AWS) observations as ground-truth labels. This can achieve the best of both worlds, and can even benefit from future improvements in NWP technology. To facilitate study in this direction, we present a novel dataset focused on the Korean Peninsula, termed KoMet (Korea Meteorological Dataset), comprised of NWP outputs and AWS observations. For the NWP model, the Global Data Assimilation and Prediction Systems-Korea Integrated Model (GDAPS-KIM) is utilized. We provide analysis on a comprehensive set of baseline methods aimed at addressing the challenges of KoMet, including the sparsity of AWS observations and class imbalance. To lower the barrier to entry and encourage further study, we also provide an extensive open-source Python package for data processing and model development. Our benchmark data and code are available at https://github.com/osilab-kaist/KoMet-Benchmark-Dataset.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Benchmark Dataset for Precipitation Forecasting by Post-Processing the Numerical Weather Prediction",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8024a7508a2467a2c9af57ce96972cc845af8fbcea92771e2beb7cbb9686be06",
+        "evidence_id": "ev-paper-539792e3a66172660bf1",
+        "locator": "https://arxiv.org/abs/1906.11561",
+        "retrieved_at": "2026-07-18T18:23:42.111107Z",
+        "source_type": "paper",
+        "summary": "Texture analysis plays an important role in many image processing applications to describe the image content or objects. On the other hand, visual surface defect detection is a highly research field in the computer vision. Surface defect refers to abnormalities in the texture of the surface. So, in this paper a dual purpose benchmark dataset is proposed for texture image analysis and surface defect detection titled stone texture image (STI dataset). The proposed benchmark dataset consist of 4 different class of stone texture images. The proposed benchmark dataset have some unique properties to make it very near to real applications. Local rotation, different zoom rates, unbalanced classes, variation of textures in size are some properties of the proposed dataset. In the result part, some descriptors are applied on this dataset to evaluate the proposed STI dataset in comparison with other state-of-the-art datasets.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "A New Benchmark Dataset for Texture Image Analysis and Surface Defect Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:0e1a4975f7fe224ca1014ab976488424c56ff910db1e9e4e0ad4b4477500097f",
+        "evidence_id": "ev-paper-d60e9e4a76f712c2cd44",
+        "locator": "https://arxiv.org/abs/2405.19595",
+        "retrieved_at": "2026-07-18T18:23:42.111107Z",
+        "source_type": "paper",
+        "summary": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002",
+          "EG003"
+        ],
+        "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f2881f0646fd9a5af7101596e33009751dc10411bf8b001195811d2ebcc6d758",
+        "evidence_id": "ev-paper-1a664884cfdbf487ef34",
+        "locator": "https://arxiv.org/abs/2302.10473",
+        "retrieved_at": "2026-07-18T18:23:42.111107Z",
+        "source_type": "paper",
+        "summary": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002",
+          "EG003"
+        ],
+        "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:daf9e031569564dea0c04baa4759d722570466bde23a7cc5a9d066929e51358b",
+        "evidence_id": "ev-paper-906cdc02efb0bb82e617",
+        "locator": "https://arxiv.org/abs/1804.02985",
+        "retrieved_at": "2026-07-18T18:23:42.111107Z",
+        "source_type": "paper",
+        "summary": "The Met Office Space Weather Operations Centre was founded in 2014 and part of its remit is a daily Space Weather Technical Forecast to help the UK build resilience to space weather impacts; guidance includes four day geo-magnetic storm forecasts (GMSF) and X-ray flare forecasts (XRFF). It is crucial for forecasters, users, modelers and stakeholders to understand the strengths and weaknesses of these forecasts; therefore, it is important to verify against the most reliable truth data source available. The present study contains verification results for XRFFs using GOES-15 satellite data and GMSF using planetary K-index (Kp) values from the GFZ Helmholtz Centre. To assess the value of the verification results it is helpful to compare them against a reference forecast and the frequency of occurrence during a rolling prediction period is used for this purpose. Analysis of the rolling 12-month performance over a 19-month period suggests that both the XRFF and GMSF struggle to provide a better prediction than the reference. However, a relative operating characteristic and reliability analysis of the full 19-month period reveals that although the GMSF and XRFF possess discriminatory skill, events tend to be over-forecast.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002",
+          "EG003"
+        ],
+        "title": "Verification of Space Weather Forecasts issued by the Met Office Space Weather Operations Centre",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:124a9504572c5a17cf2207df9a084ba0750aafd95cf8b2f5a5f4509d5d047dee",
+        "evidence_id": "ev-paper-f469f080b056e347f283",
+        "locator": "https://arxiv.org/abs/2602.12902",
+        "retrieved_at": "2026-07-18T18:23:42.111107Z",
+        "source_type": "paper",
+        "summary": "As self-driving technology advances toward widespread adoption, determining safe operational thresholds across varying environmental conditions becomes critical for public safety. This paper proposes a method for evaluating the robustness of object detection ML models in autonomous vehicles under adverse weather conditions. It employs data augmentation operators to generate synthetic data that simulates different severance degrees of the adverse operation conditions at progressive intensity levels to find the lowest intensity of the adverse conditions at which the object detection model fails. The robustness of the object detection model is measured by the average first failure coefficients (AFFC) over the input images in the benchmark. The paper reports an experiment with four object detection models: YOLOv5s, YOLOv11s, Faster R-CNN, and Detectron2, utilising seven data augmentation operators that simulate weather conditions fog, rain, and snow, and lighting conditions of dark, bright, flaring, and shadow. The experiment data show that the method is feasible, effective, and efficient to evaluate and compare the robustness of object detection models in various adverse operation conditions. In particular, the Faster R-CNN model achieved the highest robustness with an overall average AFFC of 71.9% over all seven adverse conditions, while YOLO variants showed the AFFC values of 43%. The method is also applied to assess the impact of model training that targets adverse operation conditions using synthetic data on model robustness. It is observed that such training can improve robustness in adverse conditions but may suffer from diminishing returns and forgetting phenomena (i.e., decline in robustness) if overtrained.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Robustness of Object Detection of Autonomous Vehicles in Adverse Weather Conditions",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:bf5bb3552a1d804953aa40ab883bcca6172f20e684a63367fa3d00e63a063a45",
+        "evidence_id": "ev-paper-049be5827c9e2f4658c1",
+        "locator": "https://arxiv.org/abs/2505.08228",
+        "retrieved_at": "2026-07-18T18:23:42.112611Z",
+        "source_type": "paper",
+        "summary": "Enhancing the robustness of object detection systems under adverse weather conditions is crucial for the advancement of autonomous driving technology. This study presents a novel approach leveraging the diffusion model Instruct Pix2Pix to develop prompting methodologies that generate realistic datasets with weather-based augmentations aiming to mitigate the impact of adverse weather on the perception capabilities of state-of-the-art object detection models, including Faster R-CNN and YOLOv10. Experiments were conducted in two environments, in the CARLA simulator where an initial evaluation of the proposed data augmentation was provided, and then on the real-world image data sets BDD100K and ACDC demonstrating the effectiveness of the approach in real environments. The key contributions of this work are twofold: (1) identifying and quantifying the performance gap in object detection models under challenging weather conditions, and (2) demonstrating how tailored data augmentation strategies can significantly enhance the robustness of these models. This research establishes a solid foundation for improving the reliability of perception systems in demanding environmental scenarios, and provides a pathway for future advancements in autonomous driving.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Object detection in adverse weather conditions for autonomous vehicles using Instruct Pix2Pix",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4c8dd7c026e104ad63a7db785ea12fbdabe601b8ab6307bbde073d7c3e5775f0",
+        "evidence_id": "ev-paper-5997060dee0a005b0a50",
+        "locator": "https://arxiv.org/abs/2211.09445",
+        "retrieved_at": "2026-07-18T18:23:42.112611Z",
+        "source_type": "paper",
+        "summary": "Autonomous driving is a popular research area within the computer vision research community. Since autonomous vehicles are highly safety-critical, ensuring robustness is essential for real-world deployment. While several public multimodal datasets are accessible, they mainly comprise two sensor modalities (camera, LiDAR) which are not well suited for adverse weather. In addition, they lack far-range annotations, making it harder to train neural networks that are the base of a highway assistant function of an autonomous vehicle. Therefore, we introduce a multimodal dataset for robust autonomous driving with long-range perception. The dataset consists of 176 scenes with synchronized and calibrated LiDAR, camera, and radar sensors covering a 360-degree field of view. The collected data was captured in highway, urban, and suburban areas during daytime, night, and rain and is annotated with 3D bounding boxes with consistent identifiers across frames. Furthermore, we trained unimodal and multimodal baseline models for 3D object detection. Data are available at \\url{https://github.com/aimotive/aimotive_dataset}.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "aiMotive Dataset: A Multimodal Dataset for Robust Autonomous Driving with Long-Range Perception",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6942d7c39213e343525572a176fb040cd0e79b62cacf138e41dbe31a97afaae5",
+        "evidence_id": "ev-paper-4cea440f2fcff02ca5af",
+        "locator": "https://arxiv.org/abs/2408.01430",
+        "retrieved_at": "2026-07-18T18:23:42.112611Z",
+        "source_type": "paper",
+        "summary": "Autonomous driving significantly benefits from data-driven deep neural networks. However, the data in autonomous driving typically fits the long-tailed distribution, in which the critical driving data in adverse conditions is hard to collect. Although generative adversarial networks (GANs) have been applied to augment data for autonomous driving, generating driving images in adverse conditions is still challenging. In this work, we propose a novel framework, SUSTechGAN, with customized dual attention modules, multi-scale generators, and a novel loss function to generate driving images for improving object detection of autonomous driving in adverse conditions. We test the SUSTechGAN and the well-known GANs to generate driving images in adverse conditions of rain and night and apply the generated images to retrain object detection networks. Specifically, we add generated images into the training datasets to retrain the well-known YOLOv5 and evaluate the improvement of the retrained YOLOv5 for object detection in adverse conditions. The experimental results show that the generated driving images by our SUSTechGAN significantly improved the performance of retrained YOLOv5 in rain and night conditions, which outperforms the well-known GANs. The open-source code, video description and datasets are available on the page 1 to facilitate image generation development in autonomous driving under adverse conditions.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "SUSTechGAN: Image Generation for Object Detection in Adverse Conditions of Autonomous Driving",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d01b1a662f302eab2a7c9fb50f6b830bbf1b8c1c951880c2d731c5170ecf8015",
+        "evidence_id": "ev-paper-76661293bff689af3ea0",
+        "locator": "https://arxiv.org/abs/1909.07541",
+        "retrieved_at": "2026-07-18T18:23:42.112611Z",
+        "source_type": "paper",
+        "summary": "With the increasing global popularity of self-driving cars, there is an immediate need for challenging real-world datasets for benchmarking and training various computer vision tasks such as 3D object detection. Existing datasets either represent simple scenarios or provide only day-time data. In this paper, we introduce a new challenging A*3D dataset which consists of RGB images and LiDAR data with significant diversity of scene, time, and weather. The dataset consists of high-density images ($\\approx~10$ times more than the pioneering KITTI dataset), heavy occlusions, a large number of night-time frames ($\\approx~3$ times the nuScenes dataset), addressing the gaps in the existing datasets to push the boundaries of tasks in autonomous driving research to more challenging highly diverse environments. The dataset contains $39\\text{K}$ frames, $7$ classes, and $230\\text{K}$ 3D object annotations. An extensive 3D object detection benchmark evaluation on the A*3D dataset for various attributes such as high density, day-time/night-time, gives interesting insights into the advantages and limitations of training and testing 3D object detection in real-world setting.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "A*3D Dataset: Towards Autonomous Driving in Challenging Environments",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ec0df818f3eb72dc869d5b3705cd40cdbf6b864077fb4e940f3794a85a167e6f",
+        "evidence_id": "ev-paper-73ed50456788ef683015",
+        "locator": "https://arxiv.org/abs/2306.13290",
+        "retrieved_at": "2026-07-18T18:23:42.113617Z",
+        "source_type": "paper",
+        "summary": "Segment Anything Model (SAM) has gained considerable interest in recent times for its remarkable performance and has emerged as a foundational model in computer vision. It has been integrated in diverse downstream tasks, showcasing its strong zero-shot transfer capabilities. Given its impressive performance, there is a strong desire to apply SAM in autonomous driving to improve the performance of vision tasks, particularly in challenging scenarios such as driving under adverse weather conditions. However, its robustness under adverse weather conditions remains uncertain. In this work, we investigate the application of SAM in autonomous driving and specifically explore its robustness under adverse weather conditions. Overall, this work aims to enhance understanding of SAM's robustness in challenging scenarios before integrating it into autonomous driving vision tasks, providing valuable insights for future applications.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Robustness of Segment Anything Model (SAM) for Autonomous Driving in Adverse Weather Conditions",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:953f2202a0edfd6f1a95e2d809492e1d0ea569e6eada2d532ecb1614fcdb2dfd",
+        "evidence_id": "ev-paper-e892f8b876cddb0a457a",
+        "locator": "https://arxiv.org/abs/2205.07708",
+        "retrieved_at": "2026-07-18T18:23:42.113617Z",
+        "source_type": "paper",
+        "summary": "3D object detection has recently received much attention due to its great potential in autonomous vehicle (AV). The success of deep learning based object detectors relies on the availability of large-scale annotated datasets, which is time-consuming and expensive to compile, especially for 3D bounding box annotation. In this work, we investigate diversity-based active learning (AL) as a potential solution to alleviate the annotation burden. Given limited annotation budget, only the most informative frames and objects are automatically selected for human to annotate. Technically, we take the advantage of the multimodal information provided in an AV dataset, and propose a novel acquisition function that enforces spatial and temporal diversity in the selected samples. We benchmark the proposed method against other AL strategies under realistic annotation cost measurement, where the realistic costs for annotating a frame and a 3D bounding box are both taken into consideration. We demonstrate the effectiveness of the proposed method on the nuScenes dataset and show that it outperforms existing AL strategies significantly. Code is available at https://github.com/Linkon87/Exploring-Diversity-based-Active-Learning-for-3D-Object-Detection-in-Autonomous-Driving",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Exploring Diversity-based Active Learning for 3D Object Detection in Autonomous Driving",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d97b798a683def159e6af62bab0ebdf7e1dba25ad6956faabe2155ec68b8c9dc",
+        "evidence_id": "ev-paper-8034e0a251662e6a580c",
+        "locator": "https://arxiv.org/abs/2203.05983",
+        "retrieved_at": "2026-07-18T18:23:42.113617Z",
+        "source_type": "paper",
+        "summary": "Semi-supervised object detection methods are widely used in autonomous driving systems, where only a fraction of objects are labeled. To propagate information from the labeled objects to the unlabeled ones, pseudo-labels for unlabeled objects must be generated. Although pseudo-labels have proven to improve the performance of semi-supervised object detection significantly, the applications of image-based methods to video frames result in numerous miss or false detections using such generated pseudo-labels. In this paper, we propose a new approach, PseudoProp, to generate robust pseudo-labels by leveraging motion continuity in video frames. Specifically, PseudoProp uses a novel bidirectional pseudo-label propagation approach to compensate for misdetection. A feature-based fusion technique is also used to suppress inference noise. Extensive experiments on the large-scale Cityscapes dataset demonstrate that our method outperforms the state-of-the-art semi-supervised object detection methods by 7.4% on mAP75.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "PseudoProp: Robust Pseudo-Label Generation for Semi-Supervised Object Detection in Autonomous Driving Systems",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:34ec5b931b8a0bfd51eb9b8d3675fb46b3551da0302b462b95e83b814e8ebc57",
+        "evidence_id": "ev-paper-475e733bf01b591e1a59",
+        "locator": "https://arxiv.org/abs/2206.09474",
+        "retrieved_at": "2026-07-18T18:23:42.113617Z",
+        "source_type": "paper",
+        "summary": "Autonomous driving, in recent years, has been receiving increasing attention for its potential to relieve drivers' burdens and improve the safety of driving. In modern autonomous driving pipelines, the perception system is an indispensable component, aiming to accurately estimate the status of surrounding environments and provide reliable observations for prediction and planning. 3D object detection, which intelligently predicts the locations, sizes, and categories of the critical 3D objects near an autonomous vehicle, is an important part of a perception system. This paper reviews the advances in 3D object detection for autonomous driving. First, we introduce the background of 3D object detection and discuss the challenges in this task. Second, we conduct a comprehensive survey of the progress in 3D object detection from the aspects of models and sensory inputs, including LiDAR-based, camera-based, and multi-modal detection approaches. We also provide an in-depth analysis of the potentials and challenges in each category of methods. Additionally, we systematically investigate the applications of 3D object detection in driving systems. Finally, we conduct a performance analysis of the 3D object detection approaches, and we further summarize the research trends over the years and prospect the future directions of this area.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "3D Object Detection for Autonomous Driving: A Comprehensive Survey",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:99115c97d82effc42cf171517095843177c2d3fc45f5f049770cda5075cb6faa",
+        "evidence_id": "ev-paper-c98beee33931916fc8a9",
+        "locator": "https://arxiv.org/abs/1908.00732",
+        "retrieved_at": "2026-07-18T18:23:42.114619Z",
+        "source_type": "paper",
+        "summary": "Security is of primary importance to vehicles. The viability of performing remote intrusions onto the in-vehicle network has been manifested. In regard to unmanned autonomous cars, limited work has been done to detect intrusions for them while existing intrusion detection systems (IDSs) embrace limitations against strong adversaries. In this paper, we consider the very nature of autonomous car and leverage the road context to build a novel IDS, named Road context-aware IDS (RAIDS). When a computer-controlled car is driving through continuous roads, road contexts and genuine frames transmitted on the car's in-vehicle network should resemble a regular and intelligible pattern. RAIDS hence employs a lightweight machine learning model to extract road contexts from sensory information (e.g., camera images and distance sensor values) that are used to generate control signals for maneuvering the car. With such ongoing road context, RAIDS validates corresponding frames observed on the in-vehicle network. Anomalous frames that substantially deviate from road context will be discerned as intrusions. We have implemented a prototype of RAIDS with neural networks, and conducted experiments on a Raspberry Pi with extensive datasets and meaningful intrusion cases. Evaluations show that RAIDS significantly outperforms state-of-the-art IDS without using road context by up to 99.9% accuracy and short response time.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Road Context-aware Intrusion Detection System for Autonomous Cars",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9b1c3a05251bd96375d120a307b71ed4d748c3521f4c573a3ab7bcefa69fcdfc",
+        "evidence_id": "ev-paper-16ccdaa7f19002687d98",
+        "locator": "https://arxiv.org/abs/1806.09861",
+        "retrieved_at": "2026-07-18T18:23:42.115616Z",
+        "source_type": "paper",
+        "summary": "The space weather community has begun to use frontier methods such as data assimilation, machine learning, and ensemble modeling to advance current operational forecasting efforts. This was highlighted by a multi-disciplinary session at the 2017 American Geophysical Union Meeting, 'Frontier Solar-Terrestrial Science Enabled by the Combination of Data-Driven Techniques and Physics-Based Understanding', with considerable discussion surrounding ensemble techniques. Here ensemble methods are described in detail; using a set of predictions to improve on a single-model output, for example taking a simple average of multiple models, or using more complex techniques for data assimilation. They have been used extensively in fields such as numerical weather prediction and data science, for both improving model accuracy and providing a measure of model uncertainty. Researchers in the space weather community have found them to be similarly useful, and some examples of success stories are highlighted in this commentary. Future developments are also encouraged to transition these basic research efforts to operational forecasting as well as providing prediction errors to aid end-user understanding.",
+        "supports_gap_ids": [
+          "EG002",
+          "EG003"
+        ],
+        "title": "The importance of ensemble techniques for operational space weather forecasting",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:69479a99d345d20d4a91abc5e53e1aa7641140337ba8612ab22defd902f5bec6",
+        "evidence_id": "ev-paper-42d4172172910224ace4",
+        "locator": "https://arxiv.org/abs/1703.06754",
+        "retrieved_at": "2026-07-18T18:23:42.115616Z",
+        "source_type": "paper",
+        "summary": "The Met Office Space Weather Operations Centre produces 24/7/365 space weather guidance, alerts, and forecasts to a wide range of government and commercial end users across the United Kingdom. Solar flare forecasts are one of its products, which are issued multiple times a day in two forms; forecasts for each active region on the solar disk over the next 24 hours, and full-disk forecasts for the next four days. Here the forecasting process is described in detail, as well as first verification of archived forecasts using methods commonly used in operational weather prediction. Real-time verification available for operational flare forecasting use is also described. The influence of human forecasters is highlighted, with human-edited forecasts outperforming original model results, and forecasting skill decreasing over longer forecast lead times.",
+        "supports_gap_ids": [
+          "EG002",
+          "EG003"
+        ],
+        "title": "Flare forecasting at the Met Office Space Weather Operations Centre",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:c865a3fece7e6bf1f59036c729ffd69a72b490ddb6883e6bc77e921bd67a1558",
+        "evidence_id": "ev-paper-cc5cd8f1ac3847601e85",
+        "locator": "https://arxiv.org/abs/2605.11521",
+        "retrieved_at": "2026-07-18T18:23:42.115616Z",
+        "source_type": "paper",
+        "summary": "Autonomous driving and intelligent transportation systems remain vulnerable under extreme weather. The U.S. Federal Highway Administration reports that roughly 745,000 crashes and 3,800 fatalities per year are weather-related, and recent regulatory investigations have examined failures of Level-2/3 driving systems under reduced-visibility conditions. However, datasets commonly used to evaluate weather robustness remain limited in scale, diversity, and realism. In this paper, we introduce XWOD (Extreme Weather Object Detection), a large-scale real-world traffic-object detection benchmark containing 10,010 images and 42,924 bounding boxes across seven extreme weather conditions: rain, snow, fog, haze/sand/dust, flooding, tornado, and wildfire. The dataset covers six traffic-object categories, including car, person, truck, motorcycle, bicycle, and bus. XWOD extends the weather taxonomy from one to seven conditions, and is the first to cover the emerging class of climate-amplified hazards, such as flooding, tornado, and wildfire. To evaluate the quality of our data, we train standard YOLO-family detectors on XWOD and test them zero-shot on external weather benchmarks, achieving mAP$_{50}$ scores of 63.00% on RTTS, 59.94% on DAWN, and 61.12% on WEDGE, compared with the corresponding published YOLO-based baselines of 40.37%, 32.75%, and 45.41%, respectively, representing relative improvements of 56%, 83%, and 35%. These cross-dataset results show that XWOD provides a strong source domain for learning weather-robust traffic perception. We release the dataset, splits, baseline weights, and reproducible evaluation code under a research-use license.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "XWOD: A Real-World Benchmark for Object Detection under Extreme Weather Conditions",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8aeae1227be29563f154424370e2cca727922ad25f0a53deb812bf17d6ba5253",
+        "evidence_id": "ev-paper-1e0debfff9aa7baa7363",
+        "locator": "https://arxiv.org/abs/2504.09480",
+        "retrieved_at": "2026-07-18T18:23:42.115616Z",
+        "source_type": "paper",
+        "summary": "Vision-Language Model (VLM) have gained widespread adoption in Open-Vocabulary (OV) object detection and segmentation tasks. Despite they have shown promise on OV-related tasks, their effectiveness in conventional vision tasks has thus far been unevaluated. In this work, we present the systematic review of VLM-based detection and segmentation, view VLM as the foundational model and conduct comprehensive evaluations across multiple downstream tasks for the first time: 1) The evaluation spans eight detection scenarios (closed-set detection, domain adaptation, crowded objects, etc.) and eight segmentation scenarios (few-shot, open-world, small object, etc.), revealing distinct performance advantages and limitations of various VLM architectures across tasks. 2) As for detection tasks, we evaluate VLMs under three finetuning granularities: \\textit{zero prediction}, \\textit{visual fine-tuning}, and \\textit{text prompt}, and further analyze how different finetuning strategies impact performance under varied task. 3) Based on empirical findings, we provide in-depth analysis of the correlations between task characteristics, model architectures, and training methodologies, offering insights for future VLM design. 4) We believe that this work shall be valuable to the pattern recognition experts working in the fields of computer vision, multimodal learning, and vision foundation models by introducing them to the problem, and familiarizing them with the current status of the progress while providing promising directions for future research. A project associated with this review and evaluation has been created at https://github.com/better-chao/perceptual_abilities_evaluation.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Vision-Language Model for Object Detection and Segmentation: A Review and Evaluation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:26dfb00a4bb83207bdb73b6bb6c4d88d23f7e89e5e14671e714d16bbd2752935",
+        "evidence_id": "ev-paper-5b61e8c4de994cb28bab",
+        "locator": "https://arxiv.org/abs/2508.19294",
+        "retrieved_at": "2026-07-18T18:23:42.116615Z",
+        "source_type": "paper",
+        "summary": "The fusion of language and vision in large vision-language models (LVLMs) has revolutionized deep learning-based object detection by enhancing adaptability, contextual reasoning, and generalization beyond traditional architectures. This in-depth review presents a structured exploration of the state-of-the-art in LVLMs, systematically organized through a three-step research review process. First, we discuss the functioning of vision language models (VLMs) for object detection, describing how these models harness natural language processing (NLP) and computer vision (CV) techniques to revolutionize object detection and localization. We then explain the architectural innovations, training paradigms, and output flexibility of recent LVLMs for object detection, highlighting how they achieve advanced contextual understanding for object detection. The review thoroughly examines the approaches used in integration of visual and textual information, demonstrating the progress made in object detection using VLMs that facilitate more sophisticated object detection and localization strategies. This review presents comprehensive visualizations demonstrating LVLMs' effectiveness in diverse scenarios including localization and segmentation, and then compares their real-time performance, adaptability, and complexity to traditional deep learning systems. Based on the review, its is expected that LVLMs will soon meet or surpass the performance of conventional methods in object detection. The review also identifies a few major limitations of the current LVLM modes, proposes solutions to address those challenges, and presents a clear roadmap for the future advancement in this field. We conclude, based on this study, that the recent advancement in LVLMs have made and will continue to make a transformative impact on object detection and robotic applications in the future.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Object Detection with Multimodal Large Vision-Language Models: An In-depth Review",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8b36c702c4cbb26afbbf80837b75de2a1bd568f4e9f810d04ac6fdb34edaad70",
+        "evidence_id": "ev-paper-014292038f6527a1cee2",
+        "locator": "https://arxiv.org/abs/2605.30626",
+        "retrieved_at": "2026-07-18T18:23:42.117190Z",
+        "source_type": "paper",
+        "summary": "We present a community-wide effort to develop a strategy and action plan to advance heliophysics and space weather modeling through open science. While open science has the potential to enhance the quality and pace of scientific discovery, its application to scientific modeling requires more careful consideration regarding open data and open software guidelines, as scientific models differ significantly from data analysis software. We gathered feedback from modeling teams worldwide through a living survey and discussion sessions at the 2024 Open Science Workshop in College Park, USA, and at the 2025 COSPAR ISWAT Working Meeting in Cape Canaveral, USA. We complement these findings with lessons learned from almost 25 years of experience at the Community Coordinated Modeling Center in enabling open use of models. We identify key roadblocks in current open science practices and guidelines and offer recommendations for future progress across four overlapping themes: open use of models and simulation results, open validation, open development, and open collaboration. An essential outcome of the discussion is the need for model developers and model users to speak with a united voice and promote the role of models in future open science efforts. We introduce a new cross-domain community initiative called the Heliophysics Open Modeling Environment (HOME), which will be integrated as an overarching activity within COSPAR ISWAT. HOME will serve as a platform for modelers and model users to work together, facilitate community modeling, improve the scientific return on modeling investment, and advance understanding, modeling, and forecasting in heliophysics and space weather.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Advancing Heliophysics and Space Weather Modeling through Open Science",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e4819d909547de63cd54c5e7563bedc657f8739c14396d173ceb3fa7a3e11da9",
+        "evidence_id": "ev-paper-f7465c26b3360d3c48b6",
+        "locator": "https://arxiv.org/abs/2011.04759",
+        "retrieved_at": "2026-07-18T18:23:42.117190Z",
+        "source_type": "paper",
+        "summary": "Advances in space weather science and small satellite (SmallSat) technology have proceeded in parallel over the past two decades, but better communication and coordination is needed among the respective worldwide communities contributing to this rapid progress. We identify six areas where improved international coordination is especially desirable, including: (1) orbital debris mitigation; (2) spectrum management; (3) export control regulations; (4) access to timely and low-cost launch opportunities; (5) inclusive data policies; and (6) education. We argue the need for internationally coordinated policies and programs to promote the use of SmallSats for space weather research and forecasting while realizing maximum scientific and technical advances through the integration of these two increasingly important endeavors.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "International Coordination and Support for SmallSat-enabled Space Weather Activities",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:0b48dfc7b8582b4dadd37f0db704ad247af5318d9d999910d66e53db323e67c5",
+        "evidence_id": "ev-paper-8bcdaeadf00f37c79e05",
+        "locator": "https://arxiv.org/abs/2510.09110",
+        "retrieved_at": "2026-07-18T18:23:42.118204Z",
+        "source_type": "paper",
+        "summary": "Visual grouping -- operationalized through tasks such as instance segmentation, visual grounding, and object detection -- enables applications ranging from robotic perception to photo editing. These fundamental problems in computer vision are powered by large-scale, painstakingly annotated datasets. Despite their impact, these datasets are costly to build, biased in coverage, and difficult to scale. Synthetic datasets offer a promising alternative but struggle with flexibility, accuracy, and compositional diversity. We introduce Synthetic Object Compositions (SOC), an accurate and scalable data synthesis pipeline via a novel object-centric composition strategy. It composes high-quality synthetic object segments into new images using 3D geometric layout augmentation and camera configuration augmentation with generative harmonization and mask-area-weighted blending, yielding accurate and diverse masks, boxes, and referring expressions. Models trained on just 100K of our synthetic images outperform those trained on larger real datasets (GRIT 20M, V3Det 200K) and synthetic pipelines (Copy-Paste, X-Paste, SynGround, SegGen) by +24-36% -- achieving +10.9 AP on LVIS and +8.4 NAcc on gRefCOCO. Beyond the general open-vocabulary setup, SOC also enables controllable dataset construction for different use cases and boosts performance in both low-data and closed-vocabulary scenarios. Augmenting LVIS and COCO with synthetic object segments delivers strong performance across different real-data scales and yields even greater improvements under extremely limited real-data conditions, including +6.59 AP on a 1% COCO data setup. Furthermore, this controllability enables targeted data generation for intra-class referring, a diagnostic grounding task we propose that requires fine-grained attribute discrimination.",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "Synthetic Object Compositions for Scalable and Accurate Learning in Detection, Segmentation, and Grounding",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2f1cd309b1ebba6232a53db233660d6a1b493f94d1285c55daded7390af3b12d",
+        "evidence_id": "ev-paper-252cf60c31006568ae44",
+        "locator": "https://arxiv.org/abs/2501.09281",
+        "retrieved_at": "2026-07-18T18:23:42.118204Z",
+        "source_type": "paper",
+        "summary": "In soccer video analysis, player detection is essential for identifying key events and reconstructing tactical positions. The presence of numerous players and frequent occlusions, combined with copyright restrictions, severely restricts the availability of datasets, leaving limited options such as SoccerNet-Tracking and SportsMOT. These datasets suffer from a lack of diversity, which hinders algorithms from adapting effectively to varied soccer video contexts. To address these challenges, we developed SoccerSynth-Detection, the first synthetic dataset designed for the detection of synthetic soccer players. It includes a broad range of random lighting and textures, as well as simulated camera motion blur. We validated its efficacy using the object detection model (Yolov8n) against real-world datasets (SoccerNet-Tracking and SportsMoT). In transfer tests, it matched the performance of real datasets and significantly outperformed them in images with motion blur; in pre-training tests, it demonstrated its efficacy as a pre-training dataset, significantly enhancing the algorithm's overall performance. Our work demonstrates the potential of synthetic datasets to replace real datasets for algorithm training in the field of soccer video analysis.",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "SoccerSynth-Detection: A Synthetic Dataset for Soccer Player Detection",
+        "verification_status": "accepted"
+      }
+    ],
+    "report": {
+      "evidence_ids": [],
+      "executive_summary": "The analysis is blocked due to insufficient or conflicting evidence required to validate key claims. No verifiable findings could be confirmed, and no inferred findings were derived due to the lack of acceptable evidence.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "No evidence was accepted or processed due to the 'blocked' quality verdict.",
+        "The provided evidence IDs were not evaluated as the method_status was null and the quality verdict precluded further analysis."
+      ],
+      "next_actions": [
+        "Re-evaluate the quality verdict and method_status to determine if the evidence set can be reprocessed.",
+        "Verify the integrity and relevance of the accepted evidence IDs before reattempting analysis.",
+        "Clarify the blocking condition (e.g., missing metadata, conflicting sources) to resolve the block."
+      ],
+      "proposed_method": null,
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 29,
+    "completed_query_ids": [
+      "SQ001",
+      "SQ002",
+      "SQ003",
+      "SQ004",
+      "SQ005"
+    ],
+    "coverage_by_gap": {
+      "EG001": 19,
+      "EG002": 15,
+      "EG003": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [],
+    "quality_reason_codes": [],
+    "quality_verdict": null,
+    "retrieval_budget_exhausted": false,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 1,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ005",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ005",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ005",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 29
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:23:18.559637+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 3,
+    "estimated_cost_usd": 0.0056302,
+    "input_tokens": 15794,
+    "output_tokens": 4119,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 19913
+  },
+  "terminal": "blocked",
+  "trace_digest": "aa3f928941976fab63fd2b36e9eb7d62a924f8c6db75e283e1ff67762a971520",
+  "version": "v2",
+  "wall_seconds": 43.265
+}

@@ -252,6 +252,87 @@ async def test_graph__malformed_planning_json__does_not_fallback(fixed_time) -> 
 
 
 @pytest.mark.asyncio
+async def test_graph__failed_synthesis__short_circuits_method_and_reports_blocked(
+    fixed_time,
+) -> None:
+    from paperagent.graph import build_graph
+    from paperagent.persistence import InMemoryStateStore
+    from paperagent.providers import (
+        FakeLLMProvider,
+        FakeSearchProvider,
+        FixtureKey,
+        SearchFixtureKey,
+    )
+    from paperagent.runtime import RuntimeServices
+    from paperagent.schemas import ResearchRequest, SearchCandidate
+    from paperagent.testing import FixedClock, SequenceIdFactory
+
+    llm = FakeLLMProvider(
+        fixtures={
+            FixtureKey(task="planning", scenario="synthesis_failure", call_index=0): load_llm_raw(
+                "planning", "happy_path", 0
+            ),
+            FixtureKey(
+                task="evidence_synthesis", scenario="synthesis_failure", call_index=0
+            ): '{"verified_findings":',
+            FixtureKey(task="report", scenario="blocked", call_index=0): load_llm_raw(
+                "report", "blocked", 0
+            ),
+        }
+    )
+    search = FakeSearchProvider(
+        fixtures={
+            SearchFixtureKey(
+                scenario="synthesis_failure", query_id=query_id, call_index=0
+            ): [
+                SearchCandidate(
+                    candidate_id=candidate_id,
+                    query_id=query_id,
+                    gap_id=gap_id,
+                    source_type="paper",
+                    title="Verified source",
+                    locator=f"doi:10.1000/{candidate_id}",
+                    snippet="Verified evidence",
+                )
+            ]
+            for query_id, candidate_id, gap_id in (
+                ("query-support-01", "support-001", "gap-support"),
+                ("query-ablation-01", "ablation-001", "gap-ablation"),
+            )
+        }
+    )
+    services = RuntimeServices(
+        llm,
+        search,
+        FixedClock(fixed_time),
+        SequenceIdFactory("synthesis-failure"),
+        InMemoryStateStore(),
+    )
+
+    result = await build_graph().ainvoke(
+        {"request": ResearchRequest(question="Evaluate citation reliability")},
+        {
+            "configurable": {
+                "services": services,
+                "scenarios": {
+                    "planning": "synthesis_failure",
+                    "evidence_synthesis": "synthesis_failure",
+                    "report": "blocked",
+                },
+                "search_scenario": "synthesis_failure",
+            }
+        },
+    )
+
+    assert result["execution"].status == "blocked"
+    assert result["execution"].last_error.code == "LLM_RESPONSE_JSON_INVALID"
+    assert result["report"].status == "blocked"
+    assert result.get("synthesis") is None
+    assert result.get("method") is None
+    assert all(call.key.task != "method_design" for call in llm.calls)
+
+
+@pytest.mark.asyncio
 async def test_graph__quality_repair_retrieval__uses_remaining_round_then_passes(
     fixed_time,
 ) -> None:

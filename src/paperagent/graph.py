@@ -17,6 +17,11 @@ from paperagent.retrieval.graph import build_retrieval_graph
 from paperagent.state import PaperAgentState
 
 
+def _continue_unless_failed(state: PaperAgentState) -> str:
+    execution = state.get("execution")
+    return "blocked" if execution is not None and execution.status == "failed" else "continue"
+
+
 def build_graph(*, checkpointer: Any | None = None) -> Any:
     retrieval = build_retrieval_graph()
 
@@ -56,8 +61,16 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     )
     builder.add_edge("human_review_node", "planning_node")
     builder.add_edge("retrieval_subgraph", "evidence_synthesis_node")
-    builder.add_edge("evidence_synthesis_node", "method_design_node")
-    builder.add_edge("method_design_node", "quality_gate_node")
+    builder.add_conditional_edges(
+        "evidence_synthesis_node",
+        _continue_unless_failed,
+        {"continue": "method_design_node", "blocked": "report_node"},
+    )
+    builder.add_conditional_edges(
+        "method_design_node",
+        _continue_unless_failed,
+        {"continue": "quality_gate_node", "blocked": "report_node"},
+    )
     builder.add_conditional_edges(
         "quality_gate_node",
         quality_route,

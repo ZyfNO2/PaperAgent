@@ -1,0 +1,867 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-insufficient_evidence-009",
+  "case_index": 9,
+  "category": "insufficient_evidence",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "insufficient_input_statement"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "missing_research_contract_fields"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "bounded_inference_only"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "targeted_recovery_questions"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "revise_decision"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "invented_domain"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "invented_dataset"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "invented_baseline"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "invented_modules"
+    },
+    {
+      "check_id": "forbidden_05",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "fabricated_expected_improvement"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "d2a98c516f36c816e1a6e8d4dc916e4666c1ac948155ae0f4088408ea38d783f",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:e450ede1947eb4c56d1aebaa58db6daf34a8f9270a88eadce34e6c48f97d0eb9",
+        "evidence_id": "ev-paper-b46fe114a0e90ecda021",
+        "locator": "https://arxiv.org/abs/2303.04141",
+        "retrieved_at": "2026-07-18T18:16:00.284366Z",
+        "source_type": "paper",
+        "summary": "Artificial Intelligence (AI) systems planned for deployment in real-world applications frequently are researched and developed in closed simulation environments where all variables are controlled and known to the simulator or labeled benchmark datasets are used. Transition from these simulators, testbeds, and benchmark datasets to more open-world domains poses significant challenges to AI systems, including significant increases in the complexity of the domain and the inclusion of real-world novelties; the open-world environment contains numerous out-of-distribution elements that are not part in the AI systems' training set. Here, we propose a path to a general, domain-independent measure of domain complexity level. We distinguish two aspects of domain complexity: intrinsic and extrinsic. The intrinsic domain complexity is the complexity that exists by itself without any action or interaction from an AI agent performing a task on that domain. This is an agent-independent aspect of the domain complexity. The extrinsic domain complexity is agent- and task-dependent. Intrinsic and extrinsic elements combined capture the overall complexity of the domain. We frame the components that define and impact domain complexity levels in a domain-independent light. Domain-independent measures of complexity could enable quantitative predictions of the difficulty posed to AI systems when transitioning from one testbed or environment to another, when facing out-of-distribution data in open-world tasks, and when navigating the rapidly expanding solution and search spaces encountered in open-world domains.",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "Toward Defining a Domain Complexity Measure Across Domains",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:19f86cfe7df19bd430d68112201912843dffa8b9f5e4ed014aed76bdcc4f8fc5",
+        "evidence_id": "ev-paper-a957e939b656f38d16e6",
+        "locator": "https://arxiv.org/abs/2204.08143",
+        "retrieved_at": "2026-07-18T18:16:00.285869Z",
+        "source_type": "paper",
+        "summary": "Massive false rumors emerging along with breaking news or trending topics severely hinder the truth. Existing rumor detection approaches achieve promising performance on the yesterday's news, since there is enough corpus collected from the same domain for model training. However, they are poor at detecting rumors about unforeseen events especially those propagated in different languages due to the lack of training data and prior knowledge (i.e., low-resource regimes). In this paper, we propose an adversarial contrastive learning framework to detect rumors by adapting the features learned from well-resourced rumor data to that of the low-resourced. Our model explicitly overcomes the restriction of domain and/or language usage via language alignment and a novel supervised contrastive training paradigm. Moreover, we develop an adversarial augmentation mechanism to further enhance the robustness of low-resource rumor representation. Extensive experiments conducted on two low-resource datasets collected from real-world microblog platforms demonstrate that our framework achieves much better performance than state-of-the-art methods and exhibits a superior capacity for detecting rumors at early stages.",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "Detect Rumors in Microblog Posts for Low-Resource Domains via Adversarial Contrastive Learning",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:982288b63f7aa754bfbd6af467186b3e4cd8c408c49d0904303d5777f43d5e3b",
+        "evidence_id": "ev-paper-fc2a0870b396fe771ef3",
+        "locator": "https://arxiv.org/abs/1907.08719",
+        "retrieved_at": "2026-07-18T18:16:00.286346Z",
+        "source_type": "paper",
+        "summary": "Deep learning techniques have enabled the emergence of state-of-the-art models to address object detection tasks. However, these techniques are data-driven, delegating the accuracy to the training dataset which must resemble the images in the target task. The acquisition of a dataset involves annotating images, an arduous and expensive process, generally requiring time and manual effort. Thus, a challenging scenario arises when the target domain of application has no annotated dataset available, making tasks in such situation to lean on a training dataset of a different domain. Sharing this issue, object detection is a vital task for autonomous vehicles where the large amount of driving scenarios yields several domains of application requiring annotated data for the training process. In this work, a method for training a car detection system with annotated data from a source domain (day images) without requiring the image annotations of the target domain (night images) is presented. For that, a model based on Generative Adversarial Networks (GANs) is explored to enable the generation of an artificial dataset with its respective annotations. The artificial dataset (fake dataset) is created translating images from day-time domain to night-time domain. The fake dataset, which comprises annotated images of only the target domain (night images), is then used to train the car detector model. Experimental results showed that the proposed method achieved significant and consistent improvements, including the increasing by more than 10% of the detection performance when compared to the training with only the available annotated data (i.e., day images).",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "Cross-Domain Car Detection Using Unsupervised Image-to-Image Translation: From Day to Night",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:014ab2427fc42b3cc72a1332a5503bd318348f3f70740a8a140ac5034b1d5fe1",
+        "evidence_id": "ev-paper-f8cad9646238a40de6f0",
+        "locator": "https://arxiv.org/abs/1902.02401",
+        "retrieved_at": "2026-07-18T18:16:00.286848Z",
+        "source_type": "paper",
+        "summary": "This paper studies the problem of stance detection which aims to predict the perspective (or stance) of a given document with respect to a given claim. Stance detection is a major component of automated fact checking. As annotating stances in different domains is a tedious and costly task, automatic methods based on machine learning are viable alternatives. In this paper, we focus on adversarial domain adaptation for stance detection where we assume there exists sufficient labeled data in the source domain and limited labeled data in the target domain. Extensive experiments on publicly available datasets show the effectiveness of our domain adaption model in transferring knowledge for accurate stance detection across domains.",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "Adversarial Domain Adaptation for Stance Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:af717ca334b587577afef7d8e861f92afb9a95d785ee0f1204eaec365dfb2bf4",
+        "evidence_id": "ev-paper-4213be93e8b4956da2b8",
+        "locator": "https://arxiv.org/abs/2503.08977",
+        "retrieved_at": "2026-07-18T18:16:00.286848Z",
+        "source_type": "paper",
+        "summary": "Despite the impressive performance of current vision-based facial action unit (AU) detection approaches, they are heavily susceptible to the variations across different domains and the cross-domain AU detection methods are under-explored. In response to this challenge, we propose a decoupled doubly contrastive adaptation (D$^2$CA) approach to learn a purified AU representation that is semantically aligned for the source and target domains. Specifically, we decompose latent representations into AU-relevant and AU-irrelevant components, with the objective of exclusively facilitating adaptation within the AU-relevant subspace. To achieve the feature decoupling, D$^2$CA is trained to disentangle AU and domain factors by assessing the quality of synthesized faces in cross-domain scenarios when either AU or domain attributes are modified. To further strengthen feature decoupling, particularly in scenarios with limited AU data diversity, D$^2$CA employs a doubly contrastive learning mechanism comprising image and feature-level contrastive learning to ensure the quality of synthesized faces and mitigate feature ambiguities. This new framework leads to an automatically learned, dedicated separation of AU-relevant and domain-relevant factors, and it enables intuitive, scale-specific control of the cross-domain facial image synthesis. Extensive experiments demonstrate the efficacy of D$^2$CA in successfully decoupling AU and domain factors, yielding visually pleasing cross-domain synthesized facial images. Meanwhile, D$^2$CA consistently outperforms state-of-the-art cross-domain AU detection approaches, achieving an average F1 score improvement of 6\\%-14\\% across various cross-domain scenarios.",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "Decoupled Doubly Contrastive Learning for Cross Domain Facial Action Unit Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4dfd66adec695f77ba41e525ba169aee7e1827484857cb1bf48d30e2b7988f09",
+        "evidence_id": "ev-paper-53ec7c60af93df6e9b94",
+        "locator": "https://arxiv.org/abs/1712.05956",
+        "retrieved_at": "2026-07-18T18:16:00.286848Z",
+        "source_type": "paper",
+        "summary": "We report on the Wikidata vandalism detection task at the WSDM Cup 2017. The task received five submissions for which this paper describes their evaluation and a comparison to state of the art baselines. Unlike previous work, we recast Wikidata vandalism detection as an online learning problem, requiring participant software to predict vandalism in near real-time. The best-performing approach achieves a ROC-AUC of 0.947 at a PR-AUC of 0.458. In particular, this task was organized as a software submission task: to maximize reproducibility as well as to foster future research and development on this task, the participants were asked to submit their working software to the TIRA experimentation platform along with the source code for open source release.",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "Overview of the Wikidata Vandalism Detection Task at WSDM Cup 2017",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:b009c24f20e7fbe256602355961f21015ea425ccca694abde049d35fd17da542",
+        "evidence_id": "ev-paper-849ad0781fc40e78735d",
+        "locator": "https://arxiv.org/abs/2305.08636",
+        "retrieved_at": "2026-07-18T18:16:00.286848Z",
+        "source_type": "paper",
+        "summary": "The Explainable Detection of Online Sexism task presents the problem of explainable sexism detection through fine-grained categorisation of sexist cases with three subtasks. Our team experimented with different ways to combat class imbalance throughout the tasks using data augmentation and loss alteration techniques. We tackled the challenge by utilising ensembles of Transformer models trained on different datasets, which are tested to find the balance between performance and interpretability. This solution ranked us in the top 40\\% of teams for each of the tracks.",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "AdamR at SemEval-2023 Task 10: Solving the Class Imbalance Problem in Sexism Detection with Ensemble Learning",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9c3a093f8c20362431330d022f2cf2c20b7141a6df9c8df4eb6ade52f1a10182",
+        "evidence_id": "ev-paper-4df3da8d162c8f5581be",
+        "locator": "https://arxiv.org/abs/2104.07376",
+        "retrieved_at": "2026-07-18T18:16:00.288357Z",
+        "source_type": "paper",
+        "summary": "The increment of toxic comments on online space is causing tremendous effects on other vulnerable users. For this reason, considerable efforts are made to deal with this, and SemEval-2021 Task 5: Toxic Spans Detection is one of those. This task asks competitors to extract spans that have toxicity from the given texts, and we have done several analyses to understand its structure before doing experiments. We solve this task by two approaches, Named Entity Recognition with spaCy library and Question-Answering with RoBERTa combining with ToxicBERT, and the former gains the highest F1-score of 66.99%.",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "UIT-E10dot3 at SemEval-2021 Task 5: Toxic Spans Detection with Named Entity Recognition and Question-Answering Approaches",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e12af0d251b4fea62b48a36572467f6cd0bcafe180be47c40fbccce693122b52",
+        "evidence_id": "ev-paper-1f0c434cfb8adc20ba7a",
+        "locator": "https://arxiv.org/abs/1904.11245",
+        "retrieved_at": "2026-07-18T18:16:00.288357Z",
+        "source_type": "paper",
+        "summary": "Rendering synthetic data (e.g., 3D CAD-rendered images) to generate annotations for learning deep models in vision tasks has attracted increasing attention in recent years. However, simply applying the models learnt on synthetic images may lead to high generalization error on real images due to domain shift. To address this issue, recent progress in cross-domain recognition has featured the Mean Teacher, which directly simulates unsupervised domain adaptation as semi-supervised learning. The domain gap is thus naturally bridged with consistency regularization in a teacher-student scheme. In this work, we advance this Mean Teacher paradigm to be applicable for cross-domain detection. Specifically, we present Mean Teacher with Object Relations (MTOR) that novelly remolds Mean Teacher under the backbone of Faster R-CNN by integrating the object relations into the measure of consistency cost between teacher and student modules. Technically, MTOR firstly learns relational graphs that capture similarities between pairs of regions for teacher and student respectively. The whole architecture is then optimized with three consistency regularizations: 1) region-level consistency to align the region-level predictions between teacher and student, 2) inter-graph consistency for matching the graph structures between teacher and student, and 3) intra-graph consistency to enhance the similarity between regions of same class within the graph of student. Extensive experiments are conducted on the transfers across Cityscapes, Foggy Cityscapes, and SIM10k, and superior results are reported when comparing to state-of-the-art approaches. More remarkably, we obtain a new record of single model: 22.8% of mAP on Syn2Real detection dataset.",
+        "supports_gap_ids": [
+          "task_domain"
+        ],
+        "title": "Exploring Object Relation in Mean Teacher for Cross-Domain Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ec10cff9ab9ab947f847ca461711e55b5447ae9179dd56f951b31151c8611ef7",
+        "evidence_id": "ev-paper-a8a15c2c6ce68e8287d7",
+        "locator": "https://arxiv.org/abs/cond-mat/0309395",
+        "retrieved_at": "2026-07-18T18:16:00.289360Z",
+        "source_type": "paper",
+        "summary": "This paper has been withdrawn",
+        "supports_gap_ids": [
+          "baseline_method",
+          "dataset_used",
+          "expected_improvement",
+          "innovation_modules",
+          "task_domain"
+        ],
+        "title": "This paper has been withdrawn",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7df593451c6ecd530771afa6120e7f4913325f555bec83a858c62ebf8b698f15",
+        "evidence_id": "ev-paper-c1146742e552d4dfb11f",
+        "locator": "https://arxiv.org/abs/2304.01973",
+        "retrieved_at": "2026-07-18T18:16:00.289360Z",
+        "source_type": "paper",
+        "summary": "Domain Generalization (DG) aims to develop classifiers that can generalize to new, unseen data distributions, a critical capability when collecting new domain-specific data is impractical. A common DG baseline minimizes the empirical risk on the source domains. Recent studies have shown that this approach, known as Empirical Risk Minimization (ERM), can outperform most more complex DG methods when properly tuned. However, these studies have primarily focused on a narrow set of hyperparameters, neglecting other factors that can enhance robustness and prevent overfitting and catastrophic forgetting, properties which are critical for strong DG performance. In our investigation of training data utilization (i.e., duration and setting validation splits), initialization, and additional regularizers, we find that tuning these previously overlooked factors significantly improves model generalization across diverse datasets without adding much complexity. We call this improved, yet simple baseline ERM++. Despite its ease of implementation, ERM++ improves DG performance by over 5\\% compared to prior ERM baselines on a standard benchmark of 5 datasets with a ResNet-50 and over 15\\% with a ViT-B/16. It also outperforms all state-of-the-art methods on DomainBed datasets with both architectures. Importantly, ERM++ is easy to integrate into existing frameworks like DomainBed, making it a practical and powerful tool for researchers and practitioners. Overall, ERM++ challenges the need for more complex DG methods by providing a stronger, more reliable baseline that maintains simplicity and ease of use. Code is available at \\url{https://github.com/piotr-teterwak/erm_plusplus}",
+        "supports_gap_ids": [
+          "baseline_method",
+          "expected_improvement"
+        ],
+        "title": "ERM++: An Improved Baseline for Domain Generalization",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d2c7fb5c3ff891e3fab64abc9d1dcf6d5fc3ac74865c3a6199b05dffebf707f0",
+        "evidence_id": "ev-paper-1fd71d2e8553b86f270e",
+        "locator": "https://arxiv.org/abs/2302.02752",
+        "retrieved_at": "2026-07-18T18:16:00.289360Z",
+        "source_type": "paper",
+        "summary": "This paper presents the baseline method proposed for the Sports Video task part of the MediaEval 2022 benchmark. This task proposes two subtasks: stroke classification from trimmed videos, and stroke detection from untrimmed videos. This baseline addresses both subtasks. We propose two types of 3D-CNN architectures to solve the two subtasks. Both 3D-CNNs use Spatio-temporal convolutions and attention mechanisms. The architectures and the training process are tailored to solve the addressed subtask. This baseline method is shared publicly online to help the participants in their investigation and alleviate eventually some aspects of the task such as video processing, training method, evaluation and submission routine. The baseline method reaches 86.4% of accuracy with our v2 model for the classification subtask. For the detection subtask, the baseline reaches a mAP of 0.131 and IoU of 0.515 with our v1 model.",
+        "supports_gap_ids": [
+          "baseline_method",
+          "expected_improvement"
+        ],
+        "title": "Baseline Method for the Sport Task of MediaEval 2022 with 3D CNNs using Attention Mechanisms",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a391495d17b93a8b5777fb5bd9ab477f9a89e9fc615ed56f136ce3fa82c5eefc",
+        "evidence_id": "ev-paper-5c22854ff309f0071a9d",
+        "locator": "https://arxiv.org/abs/1903.07071",
+        "retrieved_at": "2026-07-18T18:16:00.290360Z",
+        "source_type": "paper",
+        "summary": "This paper explores a simple and efficient baseline for person re-identification (ReID). Person re-identification (ReID) with deep neural networks has made progress and achieved high performance in recent years. However, many state-of-the-arts methods design complex network structure and concatenate multi-branch features. In the literature, some effective training tricks are briefly appeared in several papers or source codes. This paper will collect and evaluate these effective training tricks in person ReID. By combining these tricks together, the model achieves 94.5% rank-1 and 85.9% mAP on Market1501 with only using global features. Our codes and models are available at https://github.com/michuanhaohao/reid-strong-baseline.",
+        "supports_gap_ids": [
+          "baseline_method"
+        ],
+        "title": "Bag of Tricks and A Strong Baseline for Deep Person Re-identification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f00531558b4ceef1cb55c5401de32faf015cfae83b9074f07ec8a7cb19303269",
+        "evidence_id": "ev-paper-323454ac429d4a6c2529",
+        "locator": "https://arxiv.org/abs/2405.16693",
+        "retrieved_at": "2026-07-18T18:16:00.290360Z",
+        "source_type": "paper",
+        "summary": "Most decision-making models, including the pairwise comparison method, assume the decision-makers honesty. However, it is easy to imagine a situation where a decision-maker tries to manipulate the ranking results. This paper presents three simple manipulation methods in the pairwise comparison method. We then try to detect these methods using appropriately constructed neural networks. Experimental results accompany the proposed solutions on the generated data, showing a considerable manipulation detection level.",
+        "supports_gap_ids": [
+          "baseline_method"
+        ],
+        "title": "Detection of decision-making manipulation in the pairwise comparisons method",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:548c0654dc7b90ceac6d58c1b313ad7590298c5db2e290103709057d5050bf38",
+        "evidence_id": "ev-paper-d5eb2dc03beac8011378",
+        "locator": "https://arxiv.org/abs/2201.08089",
+        "retrieved_at": "2026-07-18T18:16:00.290360Z",
+        "source_type": "paper",
+        "summary": "We propose the task of automatically identifying papers used as baselines in a scientific article. We frame the problem as a binary classification task where all the references in a paper are to be classified as either baselines or non-baselines. This is a challenging problem due to the numerous ways in which a baseline reference can appear in a paper. We develop a dataset of $2,075$ papers from ACL anthology corpus with all their references manually annotated as one of the two classes. We develop a multi-module attention-based neural classifier for the baseline classification task that outperforms four state-of-the-art citation role classification methods when applied to the baseline classification task. We also present an analysis of the errors made by the proposed classifier, eliciting the challenges that make baseline identification a challenging problem.",
+        "supports_gap_ids": [
+          "baseline_method",
+          "expected_improvement"
+        ],
+        "title": "Why Did You Not Compare With That? Identifying Papers for Use as Baselines",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4d1e358ae04d88378331f21ab2b83cec6187a023b8f08c2a931f6b062aa6b672",
+        "evidence_id": "ev-paper-bf8257dc078e58d204b5",
+        "locator": "https://arxiv.org/abs/1103.0538",
+        "retrieved_at": "2026-07-18T18:16:00.291360Z",
+        "source_type": "paper",
+        "summary": "We introduce a probabilistic version of the classical Perron's method to construct viscosity solutions to linear parabolic equations associated to stochastic differential equations. Using this method, we construct easily two viscosity (sub and super) solutions that squeeze in between the expected payoff. If a comparison result holds true, then there exists a unique viscosity solution which is a martingale along the solutions of the stochastic differential equation. The unique viscosity solution is actually equal to the expected payoff. This amounts to a verification result (Ito's Lemma) for non-smooth viscosity solutions of the linear parabolic equation. This is the first step in a larger program to prove verification for viscosity solutions and the Dynamic Programming Principle for stochastic control problems and games",
+        "supports_gap_ids": [
+          "baseline_method"
+        ],
+        "title": "Stochatic Perron's method and verification without smoothness using viscosity comparison: the linear case",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9d0b4f09c8032d38ebcd7cbab50882ae35368b8250782445d62aa12855ea2432",
+        "evidence_id": "ev-paper-785bfb745f796db0e315",
+        "locator": "https://arxiv.org/abs/1410.4506",
+        "retrieved_at": "2026-07-18T18:16:00.291360Z",
+        "source_type": "paper",
+        "summary": "This white paper summarizes the conclusions of the Snowmass White Paper \"Spectroscopic Needs for Imaging Dark Energy Experiments\" (arXiv:1309.5384) which are relevant to the calibration of LSST photometric redshifts; i.e., the accurate characterization of biases and uncertainties in photo-z's. Any significant miscalibration will lead to systematic errors in photo-z's, impacting nearly all extragalactic science with LSST. As existing deep redshift samples have failed to yield highly-secure redshifts for a systematic 20%-60% of their targets, it is a strong possibility that future deep spectroscopic samples will not solve the calibration problem on their own. The best options in this scenario are provided by cross-correlation methods that utilize clustering with objects from spectroscopic surveys (which need not be fully representative) to trace the redshift distribution of the full sample. For spectroscopy, the eBOSS survey would enable a basic calibration of LSST photometric redshifts, while the expected LSST-DESI overlap would be more than sufficient for an accurate calibration at z>0.2. A DESI survey of nearby galaxies conducted in bright time would enable accurate calibration down to z~0. The expanded areal coverage provided by the transfer of the DESI instrument (or duplication of it at the Blanco Telescope) would enable the best possible calibration from cross-correlations, in addition to other science gains.",
+        "supports_gap_ids": [
+          "baseline_method"
+        ],
+        "title": "Spectroscopic Needs for Calibration of LSST Photometric Redshifts",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:0de460567acb11e13ca601dae3d6c451d7bd0cf0d16efd0063a4c4b3628d3ba4",
+        "evidence_id": "ev-paper-6d870d54c7f8097a254c",
+        "locator": "https://arxiv.org/abs/1410.4498",
+        "retrieved_at": "2026-07-18T18:16:00.291360Z",
+        "source_type": "paper",
+        "summary": "This white paper summarizes those conclusions of the Snowmass White Paper \"Spectroscopic Needs for Imaging Dark Energy Experiments\" (arXiv:1309.5384) which are relevant to the training of LSST photometric redshifts; i.e., the use of spectroscopic redshifts to improve algorithms and reduce photo-z errors. The larger and more complete the available training set is, the smaller the RMS error in photo-z estimates should be, increasing LSST's constraining power. Among the better US-based options for this work are the proposed MANIFEST fiber feed for the Giant Magellan Telescope or (with lower survey speed) the WFOS spectrograph on the Thirty Meter Telescope (TMT). Due to its larger field of view and higher multiplexing, the PFS spectrograph on Subaru would be able to obtain a baseline training sample faster than TMT; comparable performance could be achieved with a highly-multiplexed spectrograph on Gemini with at least a 20 arcmin diameter field of view.",
+        "supports_gap_ids": [
+          "baseline_method",
+          "dataset_used",
+          "expected_improvement"
+        ],
+        "title": "Spectroscopic Needs for Training of LSST Photometric Redshifts",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a0c4d7e38cf00c7d4aff996e3dc9dd05202262aea021d626d45437da7bd5064e",
+        "evidence_id": "ev-paper-01c6315b27a9fa33a639",
+        "locator": "https://arxiv.org/abs/1207.1040",
+        "retrieved_at": "2026-07-18T18:16:00.291360Z",
+        "source_type": "paper",
+        "summary": "Recently, the DSBGK method (note: the original name DS-BGK is changed to DSBGK for simplicity) was proposed based on the BGK equation to reduce the stochastic noise in simulating rarefied gas flows at low velocity, in which the deviation from equilibrium state is small making the traditional DSMC simulation time-consuming due to the dominance of noise in transient results. In both DSMC and DSBGK simulations, the simulated molecules move into and out of cells randomly and frequently. Consequently, the transient information of molecules in each particular cell contains significant noise. The DSMC method uses the transient values of molecular variables to compute the cell's variables (including number density, flow velocity and temperature) and so the stochastic noise in its cell's variables is remarkable particularly in the case of low velocity. In the DSBGK simulation, the increments rather than the transient information of molecular variables are used to update the cell's variables based on the mass, momentum and energy conservation principles of intermolecular collision process. This updating scheme significantly reduces the noise in cell's variables of DSBGK simulations because the molecular variables are updated smoothly by the extrapolation of acceptance-rejection scheme and so their increments contain low noise. The detailed comparisons of algorithms and results between the DSMC and DSBGK methods are given here. Several benchmark problems are simulated to verify the DSBGK method by comparison with the DSMC method as criterion.",
+        "supports_gap_ids": [
+          "baseline_method"
+        ],
+        "title": "Comparison between the DSMC and DSBGK Methods",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:168e20b0621a439eedb7ecd2efa9347894abce1029a6a30b37706369e728f2fa",
+        "evidence_id": "ev-paper-8bcdb38e07298523681e",
+        "locator": "https://arxiv.org/abs/2503.18626",
+        "retrieved_at": "2026-07-18T18:16:00.292360Z",
+        "source_type": "paper",
+        "summary": "In this paper, we address the problem of generative dataset distillation that utilizes generative models to synthesize images. The generator may produce any number of images under a preserved evaluation time. In this work, we leverage the popular diffusion model as the generator to compute a surrogate dataset, boosted by a min-max loss to control the dataset's diversity and representativeness during training. However, the diffusion model is time-consuming when generating images, as it requires an iterative generation process. We observe a critical trade-off between the number of image samples and the image quality controlled by the diffusion steps and propose Diffusion Step Reduction to achieve optimal performance. This paper details our comprehensive method and its performance. Our model achieved $2^{nd}$ place in the generative track of \\href{https://www.dd-challenge.com/#/}{The First Dataset Distillation Challenge of ECCV2024}, demonstrating its superior performance.",
+        "supports_gap_ids": [
+          "dataset_used"
+        ],
+        "title": "Generative Dataset Distillation using Min-Max Diffusion Model",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:080baf0c0f1d0e156378813fd8bb4ea0376805a5f0a789a8f75828146e8682d7",
+        "evidence_id": "ev-paper-cfe80eddb4c34a0ff257",
+        "locator": "https://arxiv.org/abs/2411.01653",
+        "retrieved_at": "2026-07-18T18:16:00.292360Z",
+        "source_type": "paper",
+        "summary": "This study explores the potential of using training dynamics as an automated alternative to human annotation for evaluating the quality of training data. The framework used is Data Maps, which classifies data points into categories such as easy-to-learn, hard-to-learn, and ambiguous (Swayamdipta et al., 2020). Swayamdipta et al. (2020) highlight that difficult-to-learn examples often contain errors, and ambiguous cases significantly impact model training. To confirm the reliability of these findings, we replicated the experiments using a challenging dataset, with a focus on medical question answering. In addition to text comprehension, this field requires the acquisition of detailed medical knowledge, which further complicates the task. A comprehensive evaluation was conducted to assess the feasibility and transferability of the Data Maps framework to the medical domain. The evaluation indicates that the framework is unsuitable for addressing datasets' unique challenges in answering medical questions.",
+        "supports_gap_ids": [
+          "dataset_used"
+        ],
+        "title": "Diagnosing Medical Datasets with Training Dynamics",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:0444a23e009ee64f764f052f27b6a7d97ca31d96bab7a353438b4c8222b0ea1a",
+        "evidence_id": "ev-paper-94576720e185b7c91f75",
+        "locator": "https://arxiv.org/abs/2209.07976",
+        "retrieved_at": "2026-07-18T18:16:00.293360Z",
+        "source_type": "paper",
+        "summary": "This paper introduces a dataset for training and evaluating methods for 6D pose estimation of hand-held tools in task demonstrations captured by a standard RGB camera. Despite the significant progress of 6D pose estimation methods, their performance is usually limited for heavily occluded objects, which is a common case in imitation learning, where the object is typically partially occluded by the manipulating hand. Currently, there is a lack of datasets that would enable the development of robust 6D pose estimation methods for these conditions. To overcome this problem, we collect a new dataset (Imitrob) aimed at 6D pose estimation in imitation learning and other applications where a human holds a tool and performs a task. The dataset contains image sequences of nine different tools and twelve manipulation tasks with two camera viewpoints, four human subjects, and left/right hand. Each image is accompanied by an accurate ground truth measurement of the 6D object pose obtained by the HTC Vive motion tracking device. The use of the dataset is demonstrated by training and evaluating a recent 6D object pose estimation method (DOPE) in various setups.",
+        "supports_gap_ids": [
+          "dataset_used"
+        ],
+        "title": "Imitrob: Imitation Learning Dataset for Training and Evaluating 6D Object Pose Estimators",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:963fb6d3e1e16d910f1df1f71d41df3ec5b04727aecd9a012c7245dd1f5ca25b",
+        "evidence_id": "ev-paper-803630ad4c4686982969",
+        "locator": "https://arxiv.org/abs/2502.01891",
+        "retrieved_at": "2026-07-18T18:16:00.293360Z",
+        "source_type": "paper",
+        "summary": "Human label variation (HLV) challenges the standard assumption that a labelled instance has a single ground truth, instead embracing the natural variation in human annotation to train and evaluate models. While various training methods and metrics for HLV have been proposed, it is still unclear which methods and metrics perform best in what settings. We propose new evaluation metrics for HLV leveraging fuzzy set theory. Since these new proposed metrics are differentiable, we then in turn experiment with employing these metrics as training objectives. We conduct an extensive study over 6 HLV datasets testing 14 training methods and 6 evaluation metrics. We find that training on either disaggregated annotations or soft labels performs best across metrics, outperforming training using the proposed training objectives with differentiable metrics. We also show that our proposed soft micro F1 score is one of the best metrics for HLV data.",
+        "supports_gap_ids": [
+          "dataset_used"
+        ],
+        "title": "Training and Evaluating with Human Label Variation: An Empirical Study",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:51a7c11cd7191945b71cf3327dd93615a777387c2b36320365a079182f724fad",
+        "evidence_id": "ev-paper-d60e9e4a76f712c2cd44",
+        "locator": "https://arxiv.org/abs/2405.19595",
+        "retrieved_at": "2026-07-18T18:16:00.293360Z",
+        "source_type": "paper",
+        "summary": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+        "supports_gap_ids": [
+          "dataset_used"
+        ],
+        "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:48a19108a69c6ecbacfc307d6ced48920631011d9040dd8536983451970ed5e3",
+        "evidence_id": "ev-paper-53202f937b81c124f265",
+        "locator": "https://arxiv.org/abs/2311.18580",
+        "retrieved_at": "2026-07-18T18:16:00.294670Z",
+        "source_type": "paper",
+        "summary": "The widespread of generative artificial intelligence has heightened concerns about the potential harms posed by AI-generated texts, primarily stemming from factoid, unfair, and toxic content. Previous researchers have invested much effort in assessing the harmlessness of generative language models. However, existing benchmarks are struggling in the era of large language models (LLMs), due to the stronger language generation and instruction following capabilities, as well as wider applications. In this paper, we propose FFT, a new benchmark with 2116 elaborated-designed instances, for LLM harmlessness evaluation with factuality, fairness, and toxicity. To investigate the potential harms of LLMs, we evaluate 9 representative LLMs covering various parameter scales, training stages, and creators. Experiments show that the harmlessness of LLMs is still under-satisfactory, and extensive analysis derives some insightful findings that could inspire future research for harmless LLM research.",
+        "supports_gap_ids": [
+          "dataset_used"
+        ],
+        "title": "FFT: Towards Harmlessness Evaluation and Analysis for LLMs with Factuality, Fairness, Toxicity",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8a5280f3e6650a5cf73effc1ae55462b0a16b6cb01cf07bd2af14d75f2fb57fa",
+        "evidence_id": "ev-paper-4a854ebb8e23418cef91",
+        "locator": "https://arxiv.org/abs/2506.09162",
+        "retrieved_at": "2026-07-18T18:16:00.294670Z",
+        "source_type": "paper",
+        "summary": "The Radiological Society of North America (RSNA) Lumbar Degenerative Imaging Spine Classification (LumbarDISC) dataset is the largest publicly available dataset of adult MRI lumbar spine examinations annotated for degenerative changes. The dataset includes 2,697 patients with a total of 8,593 image series from 8 institutions across 6 countries and 5 continents. The dataset is available for free for non-commercial use via Kaggle and RSNA Medical Imaging Resource of AI (MIRA). The dataset was created for the RSNA 2024 Lumbar Spine Degenerative Classification competition where competitors developed deep learning models to grade degenerative changes in the lumbar spine. The degree of spinal canal, subarticular recess, and neural foraminal stenosis was graded at each intervertebral disc level in the lumbar spine. The images were annotated by expert volunteer neuroradiologists and musculoskeletal radiologists from the RSNA, American Society of Neuroradiology, and the American Society of Spine Radiology. This dataset aims to facilitate research and development in machine learning and lumbar spine imaging to lead to improved patient care and clinical efficiency.",
+        "supports_gap_ids": [
+          "dataset_used"
+        ],
+        "title": "The RSNA Lumbar Degenerative Imaging Spine Classification (LumbarDISC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ad54ea998ba42da5b674eabfcde6c19a279b1f8077f52102de0eb21ac4666c64",
+        "evidence_id": "ev-paper-b693ec4ba8a067893938",
+        "locator": "https://arxiv.org/abs/2208.04360",
+        "retrieved_at": "2026-07-18T18:16:00.295173Z",
+        "source_type": "paper",
+        "summary": "The variability of wind power supply can present substantial challenges to incorporating wind power into a grid system. Thus, Wind Power Forecasting (WPF) has been widely recognized as one of the most critical issues in wind power integration and operation. There has been an explosion of studies on wind power forecasting problems in the past decades. Nevertheless, how to well handle the WPF problem is still challenging, since high prediction accuracy is always demanded to ensure grid stability and security of supply. We present a unique Spatial Dynamic Wind Power Forecasting dataset: SDWPF, which includes the spatial distribution of wind turbines, as well as the dynamic context factors. Whereas, most of the existing datasets have only a small number of wind turbines without knowing the locations and context information of wind turbines at a fine-grained time scale. By contrast, SDWPF provides the wind power data of 134 wind turbines from a wind farm over half a year with their relative positions and internal statuses. We use this dataset to launch the Baidu KDD Cup 2022 to examine the limit of current WPF solutions. The dataset is released at https://aistudio.baidu.com/aistudio/competition/detail/152/0/datasets.",
+        "supports_gap_ids": [
+          "dataset_used"
+        ],
+        "title": "SDWPF: A Dataset for Spatial Dynamic Wind Power Forecasting Challenge at KDD Cup 2022",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:cd11c9a038ed392ef9d6a33e55ed6546df90fc930a65df99d1f98e03a5168999",
+        "evidence_id": "ev-paper-ded18c70ea01b4195746",
+        "locator": "https://arxiv.org/abs/1303.5061",
+        "retrieved_at": "2026-07-18T18:16:00.295716Z",
+        "source_type": "paper",
+        "summary": "Studying design creativity and innovation from practical perspectives for companies requires both a good understanding of the company ecosystem and its inner processes contributing to delivered innovations and a rigorous design research methodology to provide effective design models, methods, platforms that are truly effective in the context of company. Working in an Industrial Engineering laboratory, we advocate a more systemic vision of design creativity and innovation in company ecosystems. We present in this paper an attempt to develop and make professional an innovation engineering. Our research works are illustrated along the different research topics of an innovation process. We start by a recent survey on innovation practice and organizational models led in 28 large companies. The lessons learned about this survey reinforce our belief that there is a need for a new method in agile management of radical innovation projects in company contexts. We currently develop, test and apply such a methodology named: Radical Innovation Design(RID). Its effectiveness has been evaluated through a large scale evaluation of the project outcomes for the company. Two extensions of RID have been proposed and deployed in company contexts: a selection procedure for innovation clusters and a value-driven process for airplane development projects.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "Which research in design creativity and innovation? Let us not forget the reality of companies",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:707cc7f17096bcf7e169a69b29c02e3cf0542f0e6b96b54ba113a392decebb23",
+        "evidence_id": "ev-paper-a20e5d3326edc58836f7",
+        "locator": "https://arxiv.org/abs/2508.00871",
+        "retrieved_at": "2026-07-18T18:16:00.296440Z",
+        "source_type": "paper",
+        "summary": "In an age of fast-paced technological change, patents have evolved into not only legal mechanisms of intellectual property, but also structured storage containers of knowledge full of metadata, categories, and formal innovation. This chapter proposes to reframe patents in the context of information science, by focusing on patents as knowledge artifacts, and by seeing patents as fundamentally tied to the global movement of scientific and technological knowledge. With a focus on three areas, the inventions of AIs, biotech patents, and international competition with patents, this work considers how new technologies are challenging traditional notions of inventorship, access, and moral accountability.The chapter provides a critical analysis of AI's implications for patent authorship and prior art searches, ownership issues arising from proprietary claims in biotechnology to ethical dilemmas, and the problem of using patents for strategic advantage in a global context of innovation competition. In this analysis, the chapter identified the importance of organizing information, creating metadata standards about originality, implementing retrieval systems to access previous works, and ethical contemplation about patenting unseen relationships in innovation ecosystems. Ultimately, the chapter called for a collaborative, transparent, and ethically-based approach in managing knowledge in the patenting environment highlighting the role for information professionals and policy to contribute to access equity in innovation.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "Patents as Knowledge Artifacts: An Information Science Perspective on Global Innovation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:171e98b0c2f8db24f40a1368bed4a15bb535f801e160d9002d38ff5dbf5aa74e",
+        "evidence_id": "ev-paper-90b12f16c9d64744c50a",
+        "locator": "https://arxiv.org/abs/0809.4309",
+        "retrieved_at": "2026-07-18T18:16:00.296942Z",
+        "source_type": "paper",
+        "summary": "This paper is the continuation of arXiv:0802.1245. We construct the Hochschild class for coherent modules over a deformation quantization algebroid on a complex Poisson manifold. We also define the convolution of Hochschild homologies, and prove that the Hochschild class of the convolution of two coherent modules is the convolution of their Hochschild classes. We study with some details the case of symplectic deformations.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "Deformation quantization modules II. Hochschild class",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:c6db3d54b72301ed3b303c690a45e90cf10692e726c56fdd29e7fb5492a86d61",
+        "evidence_id": "ev-paper-64550e0daad1bb906bcb",
+        "locator": "https://arxiv.org/abs/1208.2589",
+        "retrieved_at": "2026-07-18T18:16:00.296942Z",
+        "source_type": "paper",
+        "summary": "When the full stock of a new product is quickly sold in a few days or weeks, one has the impression that new technologies develop and conquer the market in a very easy way. This may be true for some new technologies, for example the cell phone, but not for others, like the blue-ray. Novelty, usefulness, advertising, price, and fashion are the driving forces behind the adoption of a new product. But, what are the key factors that lead to adopt a new technology? In this paper we propose and investigate a simple model for the adoption of an innovation which depends mainly on three elements: the appeal of the novelty, the inertia or resistance to adopt it, and the interaction with other agents. Social interactions are taken into account in two ways: by imitation and by differentiation, i.e., some agents will be inclined to adopt an innovation if many people do the same, but other will act in the opposite direction, trying to differentiate from the \"herd\". We determine the conditions for a successful implantation of the new technology, by considering the strength of advertising and the effect of social interactions. We find a balance between the advertising and the number of anti-herding agents that may block the adoption of a new product. We also compare the effect of social interactions, when agents take into account the behavior of the whole society or just a part of it. In a nutshell, the present model reproduces qualitatively the available data on adoption of innovation.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "Why, when, and how fast innovations are adopted",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:5d7fac34eb0e5eee56fc9533323e95448b7f58c0dae66407091baa8bd942301c",
+        "evidence_id": "ev-paper-5cef2d69aebac156cb8d",
+        "locator": "https://arxiv.org/abs/2001.11379",
+        "retrieved_at": "2026-07-18T18:16:00.297499Z",
+        "source_type": "paper",
+        "summary": "The purpose of this work is to offer a methodology that allows to construct a standard in Knowledge Management and Technological Innovation which may be used in various organizations in México to improve the operation of their resources and productivity. Based on the review of the existing literature, a model is offered including several elements to enable organizations to establish their position in relation to both concepts. The following proposal is based on a systematic effort to understand and integrate models of Knowledge Management and Innovation published in recent years as well as the results of the experiences to propose standards of Knowledge Management and Technological Innovation. In order to elaborate the proposal, factors and their associated components have been analyzed through a review of the literature in order to build and validate a standard proposal. To test the research study, a six-stage research model has been constructed. For this purpose, an in-depth exploratory research study has been carried out in a public sector organization, in an area that allows the replicability of the model. The results have been analyzed to construct and empirically validate the Mexican Standard of Knowledge Management an Technological Innovation. Finally, after the statistical analysis, results obtained from the application of the validated instrument are shown , which supports the definition of the model.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "Proposal of a standard of Knowledge Management and Technological Innovation for Mexico",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:60afcf9e424f854f33cc8dedeb52a0e619e178c8fee5d784606a45d3ea088686",
+        "evidence_id": "ev-paper-37d13d288e01a5e9ca14",
+        "locator": "https://arxiv.org/abs/2511.00027",
+        "retrieved_at": "2026-07-18T18:16:00.298007Z",
+        "source_type": "paper",
+        "summary": "Artificial intelligence (AI) now permeates critical infrastructures and decision-making systems where failures produce social, economic, and democratic harm. This position paper challenges the entrenched belief that regulation and innovation are opposites. As evidenced by analogies from aviation, pharmaceuticals, and welfare systems and recent cases of synthetic misinformation, bias and unaccountable decision-making, the absence of well-designed regulation has already created immeasurable damage. Regulation, when thoughtful and adaptive, is not a brake on innovation -- it is its foundation. The present position paper examines the EU AI Act as a model of risk-based, responsibility-driven regulation that addresses the Collingridge Dilemma: acting early enough to prevent harm, yet flexibly enough to sustain innovation. Its adaptive mechanisms -- regulatory sandboxes, small and medium enterprises (SMEs) support, real-world testing, fundamental rights impact assessment (FRIA) -- demonstrate how regulation can accelerate responsibly, rather than delay, technological progress. The position paper summarises how governance tools transform perceived burdens into tangible advantages: legal certainty, consumer trust, and ethical competitiveness. Ultimately, the paper reframes progress: innovation and regulation advance together. By embedding transparency, impact assessments, accountability, and AI literacy into design and deployment, the EU framework defines what responsible innovation truly means -- technological ambition disciplined by democratic values and fundamental rights.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "Position Paper: If Innovation in AI Systematically Violates Fundamental Rights, Is It Innovation at All?",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:79959f669853293c578d7755edbeb22d3f13ede1d923db6d4fd5c10dd1b4270f",
+        "evidence_id": "ev-paper-6a39cbc9eb70f6e6fce0",
+        "locator": "https://arxiv.org/abs/1207.6428",
+        "retrieved_at": "2026-07-18T18:16:00.298007Z",
+        "source_type": "paper",
+        "summary": "The statistical relationship between structural capital and innovation in Indonesian manufacturing industries is presented. The correlation is constructed using recent survey data on the contribution of structural capital to the innovation processes in the industries. The correlation is represented quantitatively using the recently developed Intellectual Capital and Innovation (ICI) index involving all components of intellectual capital and its role to enable innovation in a manufacturing industry. However, the paper is focused only on the contribution of structural capital component. Using the available data it is shown that the correlation is highly depending on the scale and characteristics of each manufacture. It is also argued that the ICI index is able to quantitatively prove the dominant components in innovation processes for each class of manufacturing industries.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "The Correlation between Structural Capital and Innovation in Indonesian Manufacturing Industry",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:91820820e03f1571107509f5ed5db35f9d6ced7c6fdac74733239448acb903a4",
+        "evidence_id": "ev-paper-b625113d72e661a69206",
+        "locator": "https://arxiv.org/abs/2301.04607",
+        "retrieved_at": "2026-07-18T18:16:00.298559Z",
+        "source_type": "paper",
+        "summary": "This empirical study investigates the impact of the Hofstede cultural dimensions (HCD) on the Global Innovation Index (GII) scores in four different years (2007, 2009, 2019 and 2021) to compare the impacts during the pre- and post-crisis (financial and COVID-19) period by employing ordinary least square (OLS) and robust least square (Robust) analyses. The purpose of this study is to identify the impact of cultural factors on the innovation development for different income groups during the pre- and post-crisis period. We found that, in general, the same cultural properties were required for countries to enhance innovation inputs and outputs regardless of pre- and post-crisis periods and time variances. The significant cultural factors (driving forces) of the innovation performance do not change over time. However, our empirical results revealed that not the crisis itself but the income group (either developed or developing) is the factor that influences the relationship between cultural properties and innovation. It is also worth noting that cultural properties have lost much of their impact on innovation, particularly in developing countries, during recent periods. It is highly likely that in terms of innovation, no cultural development or change can significantly impact the innovation output of developing countries without the construction of the appropriate systems.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "The Impact of National Culture on Innovation A Comparative Analysis between Developed and Developing Nations during the Pre and Post Crisis Period 2007_2021",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f3a07ec2e8a41f3e86ae143d0b719e155df65f79afd83ae3fb99bbd017032992",
+        "evidence_id": "ev-paper-e7d70975cb76495281e9",
+        "locator": "https://arxiv.org/abs/1412.2746",
+        "retrieved_at": "2026-07-18T18:16:00.298559Z",
+        "source_type": "paper",
+        "summary": "The analysis of the theoretical material revealed the lack of consensus on defini-tion of the tax stimulation of innovation-active business entities within the re-gional taxation. The definition tax stimulation of innovation-active business en-tities is specified.",
+        "supports_gap_ids": [
+          "innovation_modules"
+        ],
+        "title": "Taxation as an instrument of stimulation of innovation-active business entities",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9bd240eed5d7b462dd92b4766d4839cf68ffd16f0e9cd6e148e1ba5462028727",
+        "evidence_id": "ev-paper-aac839bc83d8b3c80ae7",
+        "locator": "https://arxiv.org/abs/2505.22808",
+        "retrieved_at": "2026-07-18T18:16:00.299151Z",
+        "source_type": "paper",
+        "summary": "The search for extraterrestrial life in the Solar System and beyond is a key science driver in astrobiology, planetary science, and astrophysics. A critical step is the identification and characterization of potential habitats, both to guide the search and to interpret its results. However, a well-accepted, self-consistent, flexible, and quantitative terminology and method of assessment of habitability are lacking. Our paper fills this gap based on a three year-long study by the NExSS Quantitative Habitability Science Working Group. We reviewed past studies of habitability, but find that the lack of a universally valid definition of life prohibits a universally applicable definition of habitability. A more nuanced approach is needed. We introduce a quantitative habitability assessment framework (QHF) that enables self-consistent, probabilistic assessment of the compatibility of two models: First, a habitat model, which describes the probability distributions of key conditions in the habitat. Second, a viability model, which describes the probability that a metabolism is viable given a set of environmental conditions. We provide an open-source implementation of this framework and four examples as a proof of concept: (a) Comparison of two exoplanets for observational target prioritization; (b) Interpretation of atmospheric O2 detection in two exoplanets; (c) Subsurface habitability of Mars; and (d) Ocean habitability in Europa. These examples demonstrate that our framework can self-consistently inform astrobiology research over a broad range of questions. The proposed framework is modular so that future work can expand the range and complexity of models available, both for habitats and for metabolisms.",
+        "supports_gap_ids": [
+          "expected_improvement"
+        ],
+        "title": "A Terminology and Quantitative Framework for Assessing the Habitability of Solar System and Extraterrestrial Worlds",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ee62627019f606d20e0f6325588beaf6f35047c260b01705ddc63e8ddf38614b",
+        "evidence_id": "ev-paper-dab3e114cd9ea45653d4",
+        "locator": "https://arxiv.org/abs/2405.08948",
+        "retrieved_at": "2026-07-18T18:16:00.300464Z",
+        "source_type": "paper",
+        "summary": "An emergent challenge in geriatric care is improving the quality of care, which requires insight from stakeholders. Qualitative methods offer detailed insights, but they can be biased and have limited generalizability, while quantitative methods may miss nuances. Network-based approaches, such as quantitative ethnography (QE), can bridge this methodological gap. By leveraging the strengths of both methods, QE provides profound insights into need-finding interviews. In this paper, to better understand geriatric care attitudes, we interviewed ten nursing assistants, used QE to analyze the data, and compared their daily activities in real life with training experiences. A two-sample t-test with a large effect size (Cohen's d=1.63) indicated a significant difference between real-life and training activities. The findings suggested incorporating more empathetic training scenarios into the future design of our geriatric care simulation. The results have implications for human-computer interaction and human factors. This is illustrated by presenting an example of using QE to analyze expert interviews with nursing assistants as caregivers to inform subsequent design processes.",
+        "supports_gap_ids": [
+          "expected_improvement"
+        ],
+        "title": "Analyzing Nursing Assistant Attitudes Towards Empathic Geriatric Caregiving Using Quantitative Ethnography",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:00db20dbb929cff79fed5c69629017d4c123b66ba0d3b753a194bf16764065d7",
+        "evidence_id": "ev-paper-2b34fc8c73c5b79e3e89",
+        "locator": "https://arxiv.org/abs/2004.05466",
+        "retrieved_at": "2026-07-18T18:16:00.300464Z",
+        "source_type": "paper",
+        "summary": "Motivated by the current COVID-19 health-crisis, we examine the task of baseline subtraction for quantitative polymerase chain-reaction (qPCR) measurements. In particular, we present an algorithm that leverages information obtained from non-template and/or DNA extraction-control experiments to remove systematic bias from amplification curves. We recast this problem in terms of mathematical optimization, i.e. by finding the amount of control signal that, when subtracted from an amplification curve, minimizes background noise. We demonstrate that this approach can yield a decade improvement in sensitivity relative to standard approaches, especially for data exhibiting late-cycle amplification. Critically, this increased sensitivity and accuracy promises more effective screening of viral DNA and a reduction in the rate of false-negatives in diagnostic settings.",
+        "supports_gap_ids": [
+          "expected_improvement"
+        ],
+        "title": "Improving Baseline Subtraction for Increased Sensitivity of Quantitative PCR Measurements",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:89de081089ec537d6bc335e4ec29d519cd5a00e9c1b8042f75027d41d28f5641",
+        "evidence_id": "ev-paper-7da7ac4a9cd6847a6fd2",
+        "locator": "https://arxiv.org/abs/2404.11885",
+        "retrieved_at": "2026-07-18T18:16:00.301017Z",
+        "source_type": "paper",
+        "summary": "We obtain a solution to a bordism version of Gromov's linearity problem over a large family of acyclic groups, for manifolds with arbitrary dimension. Every group embeds into some acyclic group in this family. Thus, the linear bordism problem has an affirmative solution over a possibly enlarged acyclic group. Our result holds in both PL and smooth categories, and for both oriented and unoriented cases. In the PL case, our results hold without assuming bounded local geometry. As an application, we prove that there is a universal linear bound for the Cheeger-Gromov $L^2$ $ρ$-invariants of PL $(4k-1)$-manifolds associated with arbitrary regular covers. We also show that the minimum number of simplices in a PL triangulation of $(4k-1)$-manifolds with a fixed simple homotopy type is unbounded if the fundamental group has nontrivial torsion. The proof of our main results builds on quantitative algebraic and geometric techniques over the simplicial classifying spaces of groups.",
+        "supports_gap_ids": [
+          "expected_improvement"
+        ],
+        "title": "Quantitative bordism over acyclic groups and Cheeger-Gromov $ρ$-invariants",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:19454f4ed9ca73bb95612072068677454f0c4e6dc610494a734eb845bc8feac8",
+        "evidence_id": "ev-paper-73faf2cc7b2e3afaafe6",
+        "locator": "https://arxiv.org/abs/1106.2419",
+        "retrieved_at": "2026-07-18T18:16:00.301804Z",
+        "source_type": "paper",
+        "summary": "In this paper, we develop a quantitative K-theory for filtered C*-algebras. Particularly interesting examples of filtered C*-algebras include group C*-algebras, crossed product C*-algebras and Roe algebras. We prove a quantitative version of the six term exact sequence and a quantitative Bott periodicity. We apply the quantitative K-theory to formulate a quantitative version of the Baum-Connes conjecture and prove that the quantitative Baum-Connes conjecture holds for a large class of groups.",
+        "supports_gap_ids": [
+          "expected_improvement"
+        ],
+        "title": "On a quantitative operator K-theory",
+        "verification_status": "accepted"
+      }
+    ],
+    "report": {
+      "evidence_ids": [],
+      "executive_summary": "The analysis was blocked due to insufficient or conflicting evidence in the provided dataset. No verifiable findings could be established, and the quality assessment returned a 'blocked' verdict.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "No evidence could be validated against the accepted evidence IDs due to a 'blocked' quality verdict.",
+        "The provided evidence IDs were not sufficient to derive any findings or conclusions.",
+        "The analysis pipeline was unable to proceed due to the blocked status."
+      ],
+      "next_actions": [
+        "Re-evaluate the input dataset for completeness and correctness.",
+        "Verify the availability and integrity of the accepted evidence IDs.",
+        "Re-run the analysis with corrected or additional evidence if available.",
+        "Investigate the root cause of the 'blocked' quality verdict to prevent recurrence."
+      ],
+      "proposed_method": null,
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 41,
+    "completed_query_ids": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5"
+    ],
+    "coverage_by_gap": {
+      "baseline_method": 10,
+      "dataset_used": 10,
+      "expected_improvement": 10,
+      "innovation_modules": 10,
+      "task_domain": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [],
+    "quality_reason_codes": [],
+    "quality_verdict": null,
+    "retrieval_budget_exhausted": false,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 1,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q1",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "q1",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q1",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q2",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "q2",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q2",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q3",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "q3",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q3",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q5",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "q5",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "q5",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 41
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:15:39.889163+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 3,
+    "estimated_cost_usd": 0.006429,
+    "input_tokens": 19569,
+    "output_tokens": 4192,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 23761
+  },
+  "terminal": "blocked",
+  "trace_digest": "73b31542636be0f42dc6f83e9270e70c7dec40794637f5e319b88775d735fdcb",
+  "version": "v2",
+  "wall_seconds": 45.734
+}
