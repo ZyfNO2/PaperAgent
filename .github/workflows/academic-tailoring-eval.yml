@@ -31,7 +31,7 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p build
-          ruff check --fix --diff . > build/academic-tailoring-ruff-lint.txt 2>&1
+          ruff check . > build/academic-tailoring-ruff-lint.txt 2>&1
       - name: Ruff format
         id: ruff-format
         continue-on-error: true
