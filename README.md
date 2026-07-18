@@ -19,10 +19,10 @@ Stage: MVP release candidate
 Deployment boundary: local single user / trusted network
 ```
 
-The Draft development branch `feat/v0.6-v0.8-mvp-plugins` additionally implements the v0.6 real-LLM
-offline MVP, the v0.7 controlled local plugin runtime, and the v0.8 deterministic academic method
-auditor. Those capabilities are not released to `master`, and v0.6 live Mistral/scientific quality
-remains unverified.
+The development stack additionally implements the v0.6 real-LLM offline MVP, the v0.7 controlled
+local plugin runtime, the v0.8 deterministic academic method auditor, and interview-hardening evidence.
+Those capabilities are not released to `master`, and v0.6 live Mistral/scientific quality remains
+unverified.
 
 ## Run the deterministic demo
 
@@ -40,6 +40,27 @@ not a scientific answer and does not call an LLM.
 The CLI refuses a non-loopback bind unless `--allow-public-bind` is supplied. That flag is an explicit
 operator acknowledgement only; it does not add authentication or tenant isolation.
 
+## One-command interview demonstration
+
+```bash
+python scripts/interview_demo.py --output interview-demo-summary.json
+```
+
+This credential-free script demonstrates asynchronous submission, idempotency reuse and conflict,
+durable events, Review, deterministic export, the academic-method plugin, schema versioning, runtime
+diagnostics, and metrics against a temporary SQLite database.
+
+Supporting material:
+
+- [architecture overview](docs/architecture/OVERVIEW.md)
+- [request lifecycle](docs/architecture/REQUEST_LIFECYCLE.md)
+- [failure model](docs/architecture/FAILURE_MODEL.md)
+- [project pitch](docs/interview/PROJECT_PITCH.md)
+- [backend Q&A](docs/interview/BACKEND_QA.md)
+- [Agent Q&A](docs/interview/AGENT_QA.md)
+- [incident cases](docs/interview/INCIDENT_CASES.md)
+- [demo runbook](docs/interview/DEMO_SCRIPT.md)
+
 ## Development-branch plugins
 
 ```bash
@@ -54,6 +75,19 @@ paperagent plugins run academic-method-tailoring \
 External Python entry points are never loaded automatically. They require an exact
 `--enable-external-plugin <entry-point-name>` authorization for the current command. This authorization
 is not sandboxing; an authorized installed plugin executes local Python code in the PaperAgent process.
+
+An independently packaged example is available in [`examples/external_plugin`](examples/external_plugin).
+
+## Runtime diagnostics
+
+```bash
+paperagent diagnostics --database paperagent.db
+curl http://127.0.0.1:8000/v1/diagnostics/runtime
+curl http://127.0.0.1:8000/metrics
+```
+
+Diagnostics expose low-cardinality task, event, database, and schema metadata. They do not return
+research requests, idempotency keys, provider credentials, prompts, or model response bodies.
 
 ## Live provider smoke
 
@@ -72,7 +106,7 @@ docker run --rm -p 8000:8000 -v paperagent-data:/data paperagent:0.5.1
 ```
 
 The image runs as an unprivileged user, stores SQLite state in `/data`, and exposes `/readyz` for
-SQLite integrity and packaged-asset checks.
+SQLite integrity, schema compatibility, executor, and packaged-asset checks.
 
 ## Main routes
 
@@ -87,6 +121,8 @@ POST /v1/tasks/{task_id}/cancel
 GET  /v1/tasks/{task_id}/papers
 PUT  /v1/tasks/{task_id}/papers/{paper_id}/review
 GET  /v1/tasks/{task_id}/exports/{json|markdown|bibtex}
+GET  /v1/diagnostics/runtime
+GET  /metrics
 GET  /healthz
 GET  /readyz
 ```
@@ -126,11 +162,21 @@ The release workflow additionally runs:
 - live OpenAlex, arXiv, Crossref, and DataCite smoke;
 - Docker build and readiness smoke.
 
+Contract and benchmark utilities:
+
+```bash
+python scripts/export_openapi.py --output build/openapi.json
+python scripts/repository_benchmark.py --tasks 500 --output build/repository-benchmark.json
+```
+
 ## Security and product boundary
 
 This release has no authentication, user accounts, tenant isolation, quotas, payments, or public
 abuse controls. Do not expose it as an unauthenticated public multi-user service. The deterministic
 demo does not establish scientific quality, real-LLM quality, or production scalability.
+
+See the expanded [threat model](docs/security/THREAT_MODEL.md) and
+[benchmark methodology](docs/benchmarks/BASELINE.md).
 
 ## Development contracts
 
