@@ -93,16 +93,12 @@ def _scientific_trace(result: dict[str, Any] | None) -> dict[str, Any]:
     if not result:
         return {}
     plan = result.get("plan") if isinstance(result.get("plan"), dict) else {}
-    retrieval = (
-        result.get("retrieval") if isinstance(result.get("retrieval"), dict) else {}
-    )
+    retrieval = result.get("retrieval") if isinstance(result.get("retrieval"), dict) else {}
     evidence = result.get("evidence") if isinstance(result.get("evidence"), dict) else {}
     quality = result.get("quality") if isinstance(result.get("quality"), dict) else {}
     items = evidence.get("items") if isinstance(evidence.get("items"), list) else []
     verification_counts = Counter(
-        item.get("verification_status", "unknown")
-        for item in items
-        if isinstance(item, dict)
+        item.get("verification_status", "unknown") for item in items if isinstance(item, dict)
     )
     return {
         "plan_status": plan.get("status"),
@@ -163,15 +159,11 @@ async def _execute_case(
 
     wall_seconds = round(time.monotonic() - started, 3)
     raw_terminal = (
-        str(result.get("execution", {}).get("status", "failed"))
-        if result is not None
-        else "failed"
+        str(result.get("execution", {}).get("status", "failed")) if result is not None else "failed"
     )
     terminal_class = _normalized_terminal(raw_terminal)
 
-    llm_events = [
-        event for event in trace_records if event.get("event") == "llm.invocation"
-    ]
+    llm_events = [event for event in trace_records if event.get("event") == "llm.invocation"]
     calls = len(llm_events)
     input_tokens = 0
     output_tokens = 0
@@ -192,14 +184,8 @@ async def _execute_case(
             if not isinstance(value, int) or isinstance(value, bool) or value < 0:
                 accounting_errors.append(f"call {index}: invalid {token_field}")
         cost = usage.get("estimated_cost_usd")
-        if (
-            not isinstance(cost, int | float)
-            or isinstance(cost, bool)
-            or cost < 0
-        ):
-            accounting_errors.append(
-                f"call {index}: invalid estimated_cost_usd"
-            )
+        if not isinstance(cost, int | float) or isinstance(cost, bool) or cost < 0:
+            accounting_errors.append(f"call {index}: invalid estimated_cost_usd")
         input_tokens += int(usage.get("input_tokens", 0) or 0)
         output_tokens += int(usage.get("output_tokens", 0) or 0)
         estimated_cost += float(usage.get("estimated_cost_usd", 0.0) or 0.0)
@@ -220,9 +206,7 @@ async def _execute_case(
     if wall_seconds > budget["max_wall_seconds"]:
         violations.append(f"wall {wall_seconds}>{budget['max_wall_seconds']}")
     if estimated_cost > budget["max_cost_usd"]:
-        violations.append(
-            f"cost {estimated_cost:.6f}>{budget['max_cost_usd']}"
-        )
+        violations.append(f"cost {estimated_cost:.6f}>{budget['max_cost_usd']}")
     if accounting_errors:
         violations.append("incomplete_usage_accounting")
     if error:
@@ -309,9 +293,7 @@ async def main() -> int:
     execution_identity = {
         "repo_sha": os.environ.get("GITHUB_SHA", "local"),
         "clean_tree": clean_tree,
-        "scientific_behavior_cutoff_sha": manifest[
-            "scientific_behavior_cutoff_sha"
-        ],
+        "scientific_behavior_cutoff_sha": manifest["scientific_behavior_cutoff_sha"],
         "planning_prompt_version": prompt.version,
         "provider": provider_config.provider.value,
         "model": provider_config.model,
@@ -341,8 +323,7 @@ async def main() -> int:
         )
         results.append(evidence)
         (evidence_dir / f"{case['case_id']}.json").write_text(
-            json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True)
-            + "\n",
+            json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
         print(
@@ -365,9 +346,7 @@ async def main() -> int:
         "gate": "L",
         "holdout_version": manifest["version"],
         "formal_run": formal_run,
-        "formal_execution_eligible": (
-            formal_run and not case_failures and not global_failures
-        ),
+        "formal_execution_eligible": (formal_run and not case_failures and not global_failures),
         "selected_case_ids": sorted(requested),
         "execution_identity": execution_identity,
         "started_utc": min(
@@ -394,8 +373,7 @@ async def main() -> int:
     }
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / "run-record.json").write_text(
-        json.dumps(run_record, ensure_ascii=False, indent=2, sort_keys=True)
-        + "\n",
+        json.dumps(run_record, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     if formal_run and (case_failures or global_failures):
@@ -406,10 +384,7 @@ async def main() -> int:
         )
         return 2
     if not formal_run:
-        print(
-            "Targeted execution is diagnostic-only and cannot establish final Gate L "
-            "acceptance."
-        )
+        print("Targeted execution is diagnostic-only and cannot establish final Gate L acceptance.")
     return 0
 
 
