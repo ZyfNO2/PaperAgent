@@ -1,4 +1,4 @@
-from paperagent import academic_tailoring_guard as _academic_tailoring_guard
+from paperagent import academic_tailoring_guard as _academic_tailoring_guard  # noqa: F401
 from paperagent.version import (
     ENGINE_VERSION,
     FIXTURE_VERSION,
