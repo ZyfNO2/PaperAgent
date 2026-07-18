@@ -126,6 +126,6 @@ class AcademicMethodTailoringPlugin(_BaseAcademicMethodTailoringPlugin):
 
 # Keep direct submodule imports, the built-in registry, and the CLI on one policy.
 _implementation.audit_method_plan = audit_method_plan
-_implementation.AcademicMethodTailoringPlugin = AcademicMethodTailoringPlugin
+setattr(_implementation, "AcademicMethodTailoringPlugin", AcademicMethodTailoringPlugin)
 
 __all__ = ["AcademicMethodTailoringPlugin", "audit_method_plan"]
