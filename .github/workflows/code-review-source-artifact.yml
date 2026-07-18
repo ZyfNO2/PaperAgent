@@ -40,45 +40,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Extract and apply reviewed patch
-        id: apply-patch
-        continue-on-error: true
+      - name: Decode and apply reviewed patch
         run: |
-          mkdir -p build
-          {
-            python - <<'PY'
-          import base64
-          import gzip
-          import hashlib
-          from pathlib import Path
-
-          source = Path('.github/workflows/review-hardening-apply-once.yml').read_text(
-              encoding='utf-8'
-          )
-          encoded = source.split("<<'B64'\n", 1)[1].split('\nB64\n', 1)[0]
-          compressed = base64.b64decode(encoded)
-          patch = gzip.decompress(compressed)
-          Path('/tmp/review-hardening.patch').write_bytes(patch)
-          print(f'encoded_length={len(encoded)}')
-          print(f'compressed_length={len(compressed)}')
-          print(f'patch_length={len(patch)}')
-          print(f'patch_sha256={hashlib.sha256(patch).hexdigest()}')
-          PY
-            git status --short
-            git apply --check /tmp/review-hardening.patch
-            git apply /tmp/review-hardening.patch
-          } > build/review-patch-apply.txt 2>&1
-      - name: Upload patch diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: review-patch-apply-diagnostics
-          path: build/review-patch-apply.txt
-          if-no-files-found: error
-          retention-days: 3
-      - name: Enforce patch application
-        if: steps.apply-patch.outcome == 'failure'
-        run: exit 1
+          cat build/review-hardening.patch.gz.b64.part* \
+            | base64 --decode \
+            | gzip --decompress \
+            > /tmp/review-hardening.patch
+          echo 'ae6ee4b32af592837c1cd1fb12c89677d6d66553febe51cd563bdfc737aad68e  /tmp/review-hardening.patch' \
+            | sha256sum --check --strict
+          git apply --check /tmp/review-hardening.patch
+          git apply /tmp/review-hardening.patch
       - name: Install project
         run: python -m pip install -e '.[dev,release]'
       - name: Static verification
@@ -101,6 +72,10 @@ jobs:
         run: |
           git rm .github/workflows/code-review-source-artifact.yml
           git rm .github/workflows/review-hardening-apply-once.yml
+          git rm build/review-hardening.patch.gz.b64.part00
+          git rm build/review-hardening.patch.gz.b64.part01
+          git rm build/review-hardening.patch.gz.b64.part02
+          git rm build/review-hardening.patch.gz.b64.part03
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src tests
