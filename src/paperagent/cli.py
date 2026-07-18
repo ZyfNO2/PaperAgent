@@ -71,8 +71,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=os.getenv("PAPERAGENT_OPENAI_API_KEY"),
         help="OpenAI-compatible API key (defaults to PAPERAGENT_OPENAI_API_KEY)",
     )
-    llm_smoke.add_argument("--model", default="gpt-4o-mini")
-    llm_smoke.add_argument("--base-url", default="https://api.openai.com/v1")
+    llm_smoke.add_argument(
+        "--model",
+        default=os.getenv("PAPERAGENT_OPENAI_MODEL", "gpt-4o-mini"),
+        help="OpenAI-compatible model (defaults to PAPERAGENT_OPENAI_MODEL or gpt-4o-mini)",
+    )
+    llm_smoke.add_argument(
+        "--base-url",
+        default=os.getenv("PAPERAGENT_OPENAI_BASE_URL", "https://api.openai.com/v1"),
+        help="OpenAI-compatible base URL (defaults to PAPERAGENT_OPENAI_BASE_URL or api.openai.com)",
+    )
     llm_smoke.add_argument("--timeout", type=_non_negative_float, default=60.0)
     llm_smoke.add_argument(
         "--question",
@@ -125,9 +133,7 @@ def _provider_smoke(args: argparse.Namespace) -> int:
 def _llm_smoke(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
     api_key = cast(str | None, args.api_key)
     if not api_key:
-        parser.error(
-            "--api-key is required (or set PAPERAGENT_OPENAI_API_KEY in the environment)"
-        )
+        parser.error("--api-key is required (or set PAPERAGENT_OPENAI_API_KEY in the environment)")
     model = cast(str, args.model)
     base_url = cast(str, args.base_url)
     timeout = cast(float, args.timeout)
