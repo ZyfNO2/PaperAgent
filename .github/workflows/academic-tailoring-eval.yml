@@ -1,0 +1,77 @@
+name: Academic Tailoring Agent Evaluation
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Python ${{ matrix.python-version }} academic tailoring verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev,release]'
+      - name: Ruff lint
+        run: ruff check .
+      - name: Ruff format
+        run: ruff format --check .
+      - name: Strict Mypy
+        run: mypy --config-file pyproject.toml
+      - name: Tests and branch coverage
+        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+
+  evaluate:
+    name: Generate academic tailoring corpus evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+      - name: Generate and grade corpus
+        run: |
+          python scripts/run_academic_tailoring_eval.py \
+            --output-dir build/academic-tailoring-eval
+      - name: Run propose operation through plugin CLI
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from paperagent.academic_tailoring_fixtures import load_tailoring_task_bundle
+          task = load_tailoring_task_bundle(Path('evals/academic_tailoring/npc'))
+          Path('build/academic-tailoring-task.json').write_text(
+              json.dumps(task.model_dump(mode='json'), ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          paperagent plugins run academic-method-tailoring \
+            --operation propose \
+            --input build/academic-tailoring-task.json \
+            --output build/academic-tailoring-plugin-output.json
+      - name: Upload Agent evaluation data
+        uses: actions/upload-artifact@v4
+        with:
+          name: academic-tailoring-agent-evaluation
+          path: build/
+          if-no-files-found: error
