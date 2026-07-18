@@ -1,0 +1,24 @@
+{
+  "gate": "L",
+  "comparison": {
+    "prompt_version": "v0.1.0 -> v0.1.1",
+    "model": "mistral-small-latest"
+  },
+  "results_v0_1_0": {
+    "need_human_short_circuited": 14,
+    "full_pipeline_blocked": 2,
+    "passed": 0,
+    "total": 16
+  },
+  "results_v0_1_1_partial": {
+    "completed": 10,
+    "full_pipeline_blocked": 10,
+    "need_human_short_circuited": 0,
+    "passed": 0,
+    "stuck_on_case_11": true,
+    "notes": "need_human eliminated, all cases now run full pipeline"
+  },
+  "key_improvement": "Prompt optimization eliminated need_human cases (14 -> 0). All completed cases now run full 4-node pipeline.",
+  "remaining_issue": "All cases still end as 'blocked' at quality_gate with Q_RETRIEVAL_BUDGET_EXHAUSTED. Retrieval subgraph cannot cover required evidence gaps.",
+  "evidence_dir": "build/gate-l-evidence/per-case/"
+}
