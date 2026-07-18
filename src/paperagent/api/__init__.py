@@ -9,6 +9,7 @@ from paperagent.api.models import (
     TaskStatus,
     TaskView,
 )
+from paperagent.api.real_executor import RealTaskExecutor, build_real_task_executor
 from paperagent.api.repository import SQLiteTaskRepository
 from paperagent.api.review import ReviewExportService, SQLiteReviewRepository
 from paperagent.api.review_models import (
@@ -32,6 +33,7 @@ __all__ = [
     "PaperCardPage",
     "PaperReview",
     "PaperReviewUpdate",
+    "RealTaskExecutor",
     "ReviewDecision",
     "ReviewExportService",
     "ReviewPaperCard",
@@ -46,5 +48,6 @@ __all__ = [
     "TaskExecutor",
     "TaskStatus",
     "TaskView",
+    "build_real_task_executor",
     "create_app",
 ]

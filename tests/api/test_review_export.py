@@ -256,17 +256,27 @@ def test_review_api__updates_filters_and_downloads_exports(tmp_path) -> None:
 
         assert client.get("/v1/tasks/missing/papers").status_code == 404
         assert client.get("/v1/tasks/missing/exports/json").status_code == 404
-        assert client.put("/v1/tasks/missing/papers/paper-a/review", json={"decision": "accepted", "expected_version": 0}).status_code == 404
+        assert (
+            client.put(
+                "/v1/tasks/missing/papers/paper-a/review",
+                json={"decision": "accepted", "expected_version": 0},
+            ).status_code
+            == 404
+        )
 
         tasks.create_task(
             task_id="queued-for-review",
             idempotency_key="queued-review",
-            payload=TaskCreateRequest(
-                request=ResearchRequest(question="Queued task review API")
-            ),
+            payload=TaskCreateRequest(request=ResearchRequest(question="Queued task review API")),
         )
         assert client.get("/v1/tasks/queued-for-review/papers").status_code == 409
-        assert client.put("/v1/tasks/queued-for-review/papers/paper-a/review", json={"decision": "accepted", "expected_version": 0}).status_code == 409
+        assert (
+            client.put(
+                "/v1/tasks/queued-for-review/papers/paper-a/review",
+                json={"decision": "accepted", "expected_version": 0},
+            ).status_code
+            == 409
+        )
         assert client.get("/v1/tasks/queued-for-review/exports/json").status_code == 409
 
         assert client.get("/v1/tasks/task-review/papers?cursor=bad").status_code == 422

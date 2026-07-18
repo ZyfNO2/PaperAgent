@@ -332,4 +332,4 @@ class OpenAILLMProvider:
         # Only treat as response_format error when the request actually carried
         # response_format (the caller already knows that) AND the body has the
         # invalid_request_error type without a more specific param.
-        return err_type == "invalid_request_error" and error.get("param") is None
+        return bool(err_type == "invalid_request_error" and error.get("param") is None)

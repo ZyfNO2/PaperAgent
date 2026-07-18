@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal, cast
+
 from langchain_core.runnables import RunnableConfig
 
 from paperagent.runtime import get_option, get_services
@@ -31,12 +33,16 @@ async def intake_node(state: PaperAgentState, config: RunnableConfig) -> StatePa
         if isinstance(budgets_raw, RunBudgets)
         else RunBudgets.model_validate(budgets_raw)
     )
+    network_policy_raw = get_option(config, "network_policy", "offline")
+    if network_policy_raw not in {"offline", "allow_search"}:
+        raise ValueError("network_policy must be offline or allow_search")
+    network_policy = cast(Literal["offline", "allow_search"], network_policy_raw)
     run = RunContext(
         run_id=services.ids.new_id("run"),
         thread_id=services.ids.new_id("thread"),
         created_at=services.clock.now(),
         model_profile=getattr(services.llm, "model_name", "structured-provider"),
-        network_policy="offline",
+        network_policy=network_policy,
         budgets=budgets,
     )
     execution = ExecutionMeta(current_node=NODE, status="running")

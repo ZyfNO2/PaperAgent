@@ -1,0 +1,11 @@
+{
+  "source_paper_id": "SYN-B",
+  "insertion_point": "the boundary after frozen action scores and before action selection",
+  "proposed_role": "remove actions that are invalid in the current scenario",
+  "host_input_semantics": "ordered action scores paired with a shared action ontology",
+  "host_output_semantics": "filtered scores over the unchanged action vocabulary",
+  "semantic_mapping": "the module uses the same action identifiers and ordering as the baseline",
+  "adapter": "a named action identifier join checks ontology coverage before filtering",
+  "predicted_effect": "reduce intent violations caused by structurally invalid choices",
+  "failure_mode": "an incomplete ontology may suppress a necessary action"
+}
