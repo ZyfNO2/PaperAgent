@@ -19,18 +19,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install -e '.[dev]'
+      - run: python -m pip install ruff
       - name: Format methodology files
         run: |
-          files=(
-            src/paperagent/academic_methodology.py
-            src/paperagent/academic_tailoring.py
-            src/paperagent/academic_tailoring_proposal.py
+          ruff format \
+            src/paperagent/academic_methodology.py \
+            src/paperagent/academic_tailoring.py \
+            src/paperagent/academic_tailoring_proposal.py \
             src/paperagent/plugins/academic_method.py
-          )
-          ruff format "${files[@]}"
-          ruff check --fix "${files[@]}"
-          ruff format "${files[@]}"
       - name: Commit formatting
         run: |
           git config user.name 'github-actions[bot]'
