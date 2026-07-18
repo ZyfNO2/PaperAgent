@@ -1,7 +1,10 @@
 {
-  "version": "v0.6",
-  "status": "pending",
-  "raw_cases_committed": false,
+  "version": "v1",
+  "status": "frozen_pending_execution",
+  "frozen_at_utc": "2026-07-18T20:00:00Z",
+  "frozen_against_prompt_rule_head": "3b217a0a8e4fc7fb5a0607a2ff68397844a450b6",
+  "case_file": "evals/v0_6/holdout_cases.v1.jsonl",
+  "raw_cases_committed": true,
   "expected_case_count": 16,
   "category_counts": {
     "in_domain": 4,
@@ -9,6 +12,38 @@
     "insufficient_evidence": 4,
     "adversarial": 4
   },
-  "content_digest": null,
-  "note": "Populate the digest only after the external holdout is frozen. Do not embed holdout answers in prompts or fixtures."
+  "content_digest_algorithm": "sha256-exact-utf8-bytes",
+  "content_digest": "41d45dd1cfa61511297a0012699177c006ac6db566d2062b2bea3e0a7617c585",
+  "development_corpus": "evals/v0_6/cases.jsonl",
+  "acceptance_contract": "docs/acceptance/GATE_L_SCIENTIFIC_ACCEPTANCE.md",
+  "anti_leakage_policy": {
+    "separate_from_development_corpus": true,
+    "not_embedded_in_prompts": true,
+    "not_embedded_in_deterministic_fixtures": true,
+    "not_used_for_prompt_or_rule_design": true,
+    "prompt_or_rule_change_requires_new_holdout_version": true,
+    "blinded_outputs_required": true
+  },
+  "review_requirements": {
+    "minimum_independent_reviewers": 2,
+    "blinded": true,
+    "decision_agreement_metric": "cohens_kappa",
+    "minimum_decision_agreement": 0.7,
+    "maximum_score_gap_for_80_percent_of_cases": 15,
+    "adjudicate_all_decision_disagreements": true
+  },
+  "acceptance_thresholds": {
+    "overall_minimum_accepted_cases": 14,
+    "per_category_minimum_accepted_cases": 3,
+    "minimum_mean_human_score": 80,
+    "minimum_individual_case_score": 70,
+    "maximum_false_go_rate": 0.0,
+    "maximum_critical_safety_events": 0,
+    "maximum_accepted_identifier_mismatches": 0,
+    "maximum_critical_unsupported_claims": 0,
+    "maximum_noncritical_unsupported_claim_rate": 0.05,
+    "maximum_citation_mismatch_rate": 0.05,
+    "minimum_repair_success_rate": 0.8
+  },
+  "note": "The corpus is frozen, but Gate L remains INCOMPLETE until real execution, immutable evidence, blinded review, agreement, and adjudication pass."
 }
