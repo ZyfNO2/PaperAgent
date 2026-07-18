@@ -1,0 +1,181 @@
+-    reasons = risks or ("all deterministic audit gates passed",)
+-    return report.model_copy(
+-        update={
+-            "verdict": verdict,
+-            "checks": tuple(checks),
+-            "risks": risks,
+-            "reasons": reasons,
+-        }
+-    )
+-
+-
+-class AcademicMethodTailoringPlugin(_BaseAcademicMethodTailoringPlugin):
+-    _manifest = _BaseAcademicMethodTailoringPlugin._manifest.model_copy(
+-        update={
+-            "operations": ("audit", "template", "propose"),
+-            "description": (
+-                "Deterministic academic method proposal generation and evidence, "
+-                "compatibility, novelty, and ablation audit."
+-            ),
+-        }
+-    )
+-
+-    def invoke(self, request: PluginRequest) -> PluginResult:
+-        if request.operation != "propose":
+-            return super().invoke(request)
+-        try:
+-            task = TailoringTask.model_validate(request.payload)
+-            proposal = compose_tailored_research_proposal(task)
+-        except ValueError as exc:
+-            raise PluginError(
+-                PluginErrorCode.INVOCATION_FAILED,
+-                "academic tailoring task failed validation or proposal generation",
+-                plugin_name=self.manifest.name,
+-            ) from exc
+-        return PluginResult(
+-            plugin_name=self.manifest.name,
+-            plugin_version=self.manifest.version,
+-            request_id=request.request_id,
+-            operation=request.operation,
+-            output=cast(dict[str, object], proposal.model_dump(mode="json")),
+-            evidence={
+-                "proposal_policy": "academic-method-tailoring-proposal-v1",
+-                "network_used": False,
+-                "llm_used": False,
+-                "result_status": "simulated_or_proposed",
+-            },
+-        )
+-
+-
+-# Keep direct submodule imports, the built-in registry, and the CLI on one policy.
+-_implementation.audit_method_plan = audit_method_plan
+-_implementation_dynamic: Any = _implementation
+-_implementation_dynamic.AcademicMethodTailoringPlugin = AcademicMethodTailoringPlugin
+-
+ __all__ = ["AcademicMethodTailoringPlugin", "audit_method_plan"]
+--- a/src/paperagent/api/diagnostics.py
++++ b/src/paperagent/api/diagnostics.py
+@@ -109,6 +109,7 @@
+             event_counts[cast(str, row["event_type"])] = int(row["count"])
+         task_total = int(connection.execute("SELECT COUNT(*) FROM tasks").fetchone()[0])
+         event_total = int(connection.execute("SELECT COUNT(*) FROM task_events").fetchone()[0])
++        journal_mode = cast(str, connection.execute("PRAGMA journal_mode").fetchone()[0])
+ 
+     path = Path(database_path)
+     size_bytes = 0 if path == Path(":memory:") else path.stat().st_size
+@@ -117,7 +118,7 @@
+         "execution_mode": "single_process",
+         "database": {
+             "engine": "sqlite",
+-            "journal_mode": "wal" if path != Path(":memory:") else "memory",
++            "journal_mode": journal_mode.lower(),
+             "size_bytes": size_bytes,
+             "schema": schema,
+         },
+--- /dev/null
++++ b/tests/review/test_consolidated_regressions.py
+@@ -0,0 +1,224 @@
++from __future__ import annotations
++
++import json
++from pathlib import Path
++
++import pytest
++
++from paperagent.academic_tailoring import (
++    EvidenceScope,
++    EvidenceState,
++    ProposalReadiness,
++    TailoringDecision,
++    TailoringTask,
++    compose_tailored_research_proposal,
++)
++from paperagent.academic_tailoring_guard import (
++    compose_tailored_research_proposal as compatibility_compose,
++)
++from paperagent.api import SQLiteReviewRepository, SQLiteTaskRepository
++from paperagent.api.diagnostics import collect_runtime_diagnostics
++from paperagent.plugins.academic_method import (
++    AcademicMethodTailoringPlugin,
++    AuditVerdict,
++    MethodPlan,
++    audit_method_plan,
++)
++from paperagent.plugins.academic_method_guard import (
++    AcademicMethodTailoringPlugin as CompatibilityPlugin,
++    audit_method_plan as compatibility_audit,
++)
++from paperagent.plugins.contracts import PluginRequest
++
++_ROOT = Path(__file__).resolve().parents[2]
++_TAILORING_TASK = _ROOT / "evals" / "academic_tailoring" / "npc"
++_GO_PLAN = _ROOT / "examples" / "v0_8" / "go-plan.json"
++
++
++def _load_tailoring_payload() -> dict[str, object]:
++    from paperagent.academic_tailoring_fixtures import load_tailoring_task_bundle
++
++    return load_tailoring_task_bundle(_TAILORING_TASK).model_dump(mode="json")
++
++
++def _load_go_plan() -> dict[str, object]:
++    parsed = json.loads(_GO_PLAN.read_text(encoding="utf-8"))
++    assert isinstance(parsed, dict)
++    return parsed
++
++
++def _failed_check_ids(plan_payload: dict[str, object]) -> set[str]:
++    report = audit_method_plan(MethodPlan.model_validate(plan_payload))
++    return {item.check_id for item in report.checks if not item.passed}
++
++
++def test_policy_compatibility_modules_do_not_rebind_core_symbols() -> None:
++    assert compatibility_compose is compose_tailored_research_proposal
++    assert compatibility_audit is audit_method_plan
++    assert CompatibilityPlugin is AcademicMethodTailoringPlugin
++
++
++def test_synthetic_go_is_explicitly_not_scientific_release_ready() -> None:
++    task = TailoringTask.model_validate(_load_tailoring_payload())
++
++    proposal = compose_tailored_research_proposal(task)
++
++    assert proposal.decision is TailoringDecision.GO
++    assert proposal.evidence_scope is EvidenceScope.SYNTHETIC_EVALUATION
++    assert proposal.readiness is ProposalReadiness.SYNTHETIC_EVALUATION_ONLY
++    assert proposal.scientific_release_ready is False
++    assert any("verified real-world evidence" in item for item in proposal.release_conditions)
++
++    plugin = AcademicMethodTailoringPlugin()
++    result = plugin.invoke(
++        PluginRequest(
++            request_id="synthetic-readiness",
++            operation="propose",
++            payload=task.model_dump(mode="json"),
++        )
++    )
++    assert result.evidence["evidence_scope"] == "synthetic_evaluation"
++    assert result.evidence["readiness"] == "synthetic_evaluation_only"
++    assert result.evidence["scientific_release_ready"] is False
++
++
++def test_mixed_real_and_synthetic_cards_are_not_reported_as_real_verified() -> None:
++    payload = _load_tailoring_payload()
++    papers = payload["papers"]
++    assert isinstance(papers, list)
++    first = papers[0]
++    assert isinstance(first, dict)
++    first["evidence_state"] = EvidenceState.VERIFIED.value
++
++    proposal = compose_tailored_research_proposal(TailoringTask.model_validate(payload))
++
++    assert proposal.evidence_scope is EvidenceScope.MIXED_OR_UNVERIFIED
++    assert proposal.readiness is ProposalReadiness.SYNTHETIC_EVALUATION_ONLY
++    assert proposal.scientific_release_ready is False
++
++
++def test_real_verified_cards_are_only_ready_for_controlled_experiment() -> None:
++    payload = _load_tailoring_payload()
++    papers = payload["papers"]
++    assert isinstance(papers, list)
++    for paper in papers:
