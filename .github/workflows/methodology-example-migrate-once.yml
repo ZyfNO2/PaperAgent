@@ -1,0 +1,83 @@
+name: Methodology Example Migration Once
+
+on:
+  pull_request:
+    branches: [fix/gate-l-v3-acceptance-routing]
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: ${{ github.head_ref == 'fix/academic-tailoring-contract-convergence' && github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Derive focused examples
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+
+          root = Path('examples/v0_8')
+          go = json.loads((root / 'go-plan.json').read_text(encoding='utf-8'))
+
+          revise = copy.deepcopy(go)
+          revise['baseline']['name'] = 'candidate-baseline'
+          revise['baseline']['reproduced'] = False
+          revise['baseline']['reproduced_metric'] = None
+          revise['research']['observed_problem'] = 'The candidate baseline has not yet been reproduced'
+          revise['stop_conditions'] = [
+              'Stop if the baseline cannot be reproduced within the fixed budget'
+          ]
+          for arm in revise['experiments']:
+              arm['stopping_criteria'] = revise['stop_conditions'][0]
+          (root / 'revise-plan.json').write_text(
+              json.dumps(revise, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+
+          no_go = copy.deepcopy(go)
+          no_go['baseline']['name'] = 'infeasible-baseline'
+          no_go['baseline']['compute_fit'] = False
+          no_go['research']['observed_problem'] = 'The reproduced baseline exceeds available compute'
+          no_go['stop_conditions'] = [
+              'Stop because the reproduced baseline does not fit declared compute constraints'
+          ]
+          for arm in no_go['experiments']:
+              arm['stopping_criteria'] = no_go['stop_conditions'][0]
+          (root / 'no-go-plan.json').write_text(
+              json.dumps(no_go, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+
+          expected = {
+              'go-plan.json': {'verdict': 'GO', 'failed_check_ids': []},
+              'revise-plan.json': {
+                  'verdict': 'REVISE',
+                  'failed_check_ids': ['baseline-reproduced'],
+              },
+              'no-go-plan.json': {
+                  'verdict': 'NO_GO',
+                  'failed_check_ids': ['baseline-compute-fit'],
+              },
+          }
+          (root / 'expected-verdicts.json').write_text(
+              json.dumps(expected, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+      - name: Commit examples
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add examples/v0_8
+          git commit -m 'test(methodology): derive focused v0.9 verdict examples'
+          git push origin HEAD:${{ github.head_ref }}
