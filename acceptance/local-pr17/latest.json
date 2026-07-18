@@ -7,7 +7,7 @@
     "3.11",
     "3.12"
   ],
-  "source_head_sha": "f55f110ece4f1357d1c715c08e8a8ca73df76f03",
+  "source_head_sha": "c4b32eb8d49bbe4469a2fc5340068aec9b6ec866",
   "status": "passed",
   "summary": {
     "artifacts": [
@@ -33,7 +33,7 @@
       },
       {
         "path": "build/local-acceptance/interview-demo.json",
-        "sha256": "bf45c013553fa1e6655bd74959d3be4b18ca96b78dacbd641d16e02b13ae4912"
+        "sha256": "184ae5b33885446c43f253686a12a1179c34f5f73c716803dd2c3110f7452f10"
       },
       {
         "path": "build/local-acceptance/logs/academic-evaluation.log",
@@ -41,7 +41,7 @@
       },
       {
         "path": "build/local-acceptance/logs/benchmark.log",
-        "sha256": "8de3b1f39c64faac1ef91b3d5b4613cd357d48c578e80b3083473df49f431e6b"
+        "sha256": "754a6c9c3b096a6d9ca8b47af5f700b70cf3cc035c2d7420079c92bd948ca6d6"
       },
       {
         "path": "build/local-acceptance/logs/compile.log",
@@ -49,7 +49,7 @@
       },
       {
         "path": "build/local-acceptance/logs/interview-demo.log",
-        "sha256": "b13652817a6a624e1e3192528519c86d611d724e70eea9129ba8d73a61b69533"
+        "sha256": "3c769cdd64251feb0c5e8a59ddcf18c7b4659a50108de708c1a0296a7b889dbb"
       },
       {
         "path": "build/local-acceptance/logs/mypy.log",
@@ -61,7 +61,7 @@
       },
       {
         "path": "build/local-acceptance/logs/pytest.log",
-        "sha256": "7237d498f4f23bb8dcf3d0f1f1eb68c68c23b241e174f25310991e1b88f9ca6d"
+        "sha256": "6fc9014b361db64666cc930075be9af5cae5d7a54c40af532e783ed7e7bd6975"
       },
       {
         "path": "build/local-acceptance/logs/ruff-format.log",
@@ -73,7 +73,7 @@
       },
       {
         "path": "build/local-acceptance/logs/state-roundtrip.log",
-        "sha256": "16732a8a488417d62bcd4c94ecf360868a5e4fe853ca48aeb6aa716fd70d4b3a"
+        "sha256": "484002b7550b22b249cf9acb56934c582a19c65afcea3d9fc620fa97ef573506"
       },
       {
         "path": "build/local-acceptance/openapi.json",
@@ -81,23 +81,23 @@
       },
       {
         "path": "build/local-acceptance/repository-benchmark.json",
-        "sha256": "e0f16541b641935e3784063ec490f3bbcde8ff1f3321d5a9a448769bb28ba485"
+        "sha256": "38b25bf0038489ec81077b742d73f3a2499fdfb897f49b307d9bc3a03e1d51e1"
       },
       {
         "path": "build/local-acceptance/state/paperagent-local.backup.db",
-        "sha256": "e9426a9c2f95cb50f2a4bdb491a6ce52034be2c54209e95fdaf1b3a505200c20"
+        "sha256": "e6c46b5c70ef3980772c41c3a111d1c5b5d378b1a0b012e45e524f5ff4b7fc85"
       },
       {
         "path": "build/local-acceptance/state/paperagent-local.db",
-        "sha256": "a7f5cd67c4067419df679c324e02f843b72b90422cff09b85d4329beaf0a38ba"
+        "sha256": "1e2bf87146b2fe6692ddec95925650a168ebf733495ef2203859c2d9ae4352e9"
       },
       {
         "path": "build/local-acceptance/state/paperagent-local.restored.db",
-        "sha256": "e9426a9c2f95cb50f2a4bdb491a6ce52034be2c54209e95fdaf1b3a505200c20"
+        "sha256": "e6c46b5c70ef3980772c41c3a111d1c5b5d378b1a0b012e45e524f5ff4b7fc85"
       },
       {
         "path": "build/local-acceptance/state-roundtrip.json",
-        "sha256": "15ea43fe260cc432f1fd890a50619fafc607b30ad595372d4db6329e7dd625ac"
+        "sha256": "3aca1702e7d9b832eaa62912f5c96d24417dda992b3a83b87b765776ea74f024"
       }
     ],
     "live_llm_required": false,
@@ -110,7 +110,7 @@
     "steps": [
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python -m compileall -q src/paperagent",
-        "duration_seconds": 0.142,
+        "duration_seconds": 0.139,
         "log": "build/local-acceptance/logs/compile.log",
         "name": "compile",
         "passed": true,
@@ -134,7 +134,7 @@
       },
       {
         "command": "mypy --config-file pyproject.toml",
-        "duration_seconds": 10.341,
+        "duration_seconds": 9.991,
         "log": "build/local-acceptance/logs/mypy.log",
         "name": "mypy",
         "passed": true,
@@ -142,7 +142,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python -m pytest -q tests/local tests/review/test_consolidated_regressions.py tests/api/test_diagnostics.py tests/release/test_release_candidate.py",
-        "duration_seconds": 3.287,
+        "duration_seconds": 2.493,
         "log": "build/local-acceptance/logs/pytest.log",
         "name": "pytest",
         "passed": true,
@@ -150,7 +150,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/local_state_roundtrip.py --workdir build/local-acceptance/state --output build/local-acceptance/state-roundtrip.json",
-        "duration_seconds": 1.098,
+        "duration_seconds": 1.012,
         "log": "build/local-acceptance/logs/state-roundtrip.log",
         "name": "state-roundtrip",
         "passed": true,
@@ -158,7 +158,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/interview_demo.py --output build/local-acceptance/interview-demo.json",
-        "duration_seconds": 1.1,
+        "duration_seconds": 1.022,
         "log": "build/local-acceptance/logs/interview-demo.log",
         "name": "interview-demo",
         "passed": true,
@@ -166,7 +166,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/export_openapi.py --output build/local-acceptance/openapi.json",
-        "duration_seconds": 1.046,
+        "duration_seconds": 0.973,
         "log": "build/local-acceptance/logs/openapi.log",
         "name": "openapi",
         "passed": true,
@@ -174,7 +174,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/repository_benchmark.py --tasks 100 --output build/local-acceptance/repository-benchmark.json",
-        "duration_seconds": 1.241,
+        "duration_seconds": 1.109,
         "log": "build/local-acceptance/logs/benchmark.log",
         "name": "benchmark",
         "passed": true,
@@ -182,7 +182,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/run_academic_tailoring_eval.py --output-dir build/local-acceptance/academic-tailoring",
-        "duration_seconds": 0.203,
+        "duration_seconds": 0.189,
         "log": "build/local-acceptance/logs/academic-evaluation.log",
         "name": "academic-evaluation",
         "passed": true,
@@ -190,6 +190,6 @@
       }
     ]
   },
-  "workflow_run_id": 29630394572,
-  "workflow_run_number": 23
+  "workflow_run_id": 29632176141,
+  "workflow_run_number": 24
 }
