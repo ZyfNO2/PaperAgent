@@ -135,6 +135,42 @@ def _freeze(tmp_path: Path) -> tuple[Path, Path, list[dict[str, object]]]:
     return manifest, cases_path, cases
 
 
+def _blind(
+    tmp_path: Path, manifest_path: Path, cases: list[dict[str, object]]
+) -> tuple[Path, Path]:
+    evidence_dir = tmp_path / "evidence"
+    evidence_dir.mkdir()
+    for case in cases:
+        (evidence_dir / f"{case['case_id']}.json").write_text(
+            json.dumps(
+                {
+                    "case_id": case["case_id"],
+                    "terminal": "succeeded",
+                    "execution_identity": {
+                        "provider": "secret-provider-name",
+                        "model": "secret-model-name",
+                    },
+                    "review_output": {"report": {"summary": "review me"}},
+                }
+            ),
+            encoding="utf-8",
+        )
+    output = tmp_path / "blind.json"
+    result = _run(
+        "blind",
+        "--manifest",
+        str(manifest_path),
+        "--evidence-dir",
+        str(evidence_dir),
+        "--output",
+        str(output),
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    mapping = tmp_path / "blind.mapping.json"
+    assert mapping.exists()
+    return output, mapping
+
+
 def test_gate_l_v2_validate_and_freeze_records_digest(tmp_path: Path) -> None:
     manifest_path, cases_path, _ = _freeze(tmp_path)
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -175,52 +211,32 @@ def test_gate_l_v2_validate_rejects_wrong_category_counts(tmp_path: Path) -> Non
     assert "category counts" in result.stdout
 
 
-def test_gate_l_v2_blinded_package_excludes_provider_identity(tmp_path: Path) -> None:
+def test_gate_l_v2_blinded_package_randomizes_arms_and_excludes_identity(tmp_path: Path) -> None:
     manifest_path, _, cases = _freeze(tmp_path)
-    evidence_dir = tmp_path / "evidence"
-    evidence_dir.mkdir()
-    for case in cases:
-        (evidence_dir / f"{case['case_id']}.json").write_text(
-            json.dumps(
-                {
-                    "case_id": case["case_id"],
-                    "terminal": "succeeded",
-                    "execution_identity": {
-                        "provider": "secret-provider-name",
-                        "model": "secret-model-name",
-                    },
-                    "review_output": {"report": {"summary": "review me"}},
-                }
-            ),
-            encoding="utf-8",
-        )
-    output = tmp_path / "blind.json"
+    output, mapping = _blind(tmp_path, manifest_path, cases)
 
-    result = _run(
-        "blind",
-        "--manifest",
-        str(manifest_path),
-        "--evidence-dir",
-        str(evidence_dir),
-        "--output",
-        str(output),
-    )
-
-    assert result.returncode == 0, result.stdout + result.stderr
     raw = output.read_text(encoding="utf-8")
     assert "secret-provider-name" not in raw
     assert "secret-model-name" not in raw
     assert "expected_terminal" not in raw
+    assert "holdout-v2-" not in raw
+
+    package = json.loads(raw)
+    arm_ids = {item["arm_id"] for item in package["cases"]}
+    assert len(arm_ids) == 16
+    private_mapping = json.loads(mapping.read_text(encoding="utf-8"))
+    assert {item["arm_id"] for item in private_mapping["arms"]} == arm_ids
+    assert len({item["case_id"] for item in private_mapping["arms"]}) == 16
 
 
-def _review(cases: list[dict[str, object]], terminal: str = "succeeded") -> dict[str, object]:
+def _review(arm_ids: list[str]) -> dict[str, object]:
     return {
         "reviewer_id": "reviewer",
         "blinded": True,
         "cases": [
             {
-                "case_id": case["case_id"],
-                "terminal_decision": terminal,
+                "arm_id": arm_id,
+                "decision": "GO",
                 "critical_defect": False,
                 "scores": {
                     "scientific_correctness": 25,
@@ -230,17 +246,21 @@ def _review(cases: list[dict[str, object]], terminal: str = "succeeded") -> dict
                     "actionability": 15,
                 },
             }
-            for case in cases
+            for arm_id in arm_ids
         ],
     }
 
 
 def test_gate_l_v2_score_passes_only_complete_hard_gates(tmp_path: Path) -> None:
     manifest_path, _, cases = _freeze(tmp_path)
+    _, mapping_path = _blind(tmp_path, manifest_path, cases)
+    mapping = json.loads(mapping_path.read_text(encoding="utf-8"))
+    arm_ids = [item["arm_id"] for item in mapping["arms"]]
+
     review_a = tmp_path / "a.json"
     review_b = tmp_path / "b.json"
-    review_a.write_text(json.dumps(_review(cases)), encoding="utf-8")
-    review_b.write_text(json.dumps(_review(cases)), encoding="utf-8")
+    review_a.write_text(json.dumps(_review(arm_ids)), encoding="utf-8")
+    review_b.write_text(json.dumps(_review(arm_ids)), encoding="utf-8")
     deterministic = tmp_path / "deterministic.json"
     deterministic.write_text(
         json.dumps(
@@ -253,6 +273,15 @@ def test_gate_l_v2_score_passes_only_complete_hard_gates(tmp_path: Path) -> None
                 "citation_mismatch_rate": 0.0,
                 "repair_success_rate": 1.0,
                 "budget_fail_closed_rate": 1.0,
+                "cases": [
+                    {
+                        "case_id": case["case_id"],
+                        "observed_terminal": "succeeded",
+                        "passed": True,
+                        "zero_tolerance_failures": [],
+                    }
+                    for case in cases
+                ],
             }
         ),
         encoding="utf-8",
@@ -263,6 +292,8 @@ def test_gate_l_v2_score_passes_only_complete_hard_gates(tmp_path: Path) -> None
         "score",
         "--manifest",
         str(manifest_path),
+        "--review-map",
+        str(mapping_path),
         "--review-a",
         str(review_a),
         "--review-b",
