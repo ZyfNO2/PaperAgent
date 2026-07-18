@@ -236,9 +236,7 @@ def run(profile: str, output: Path, *, continue_on_error: bool = False) -> dict[
         "live_llm_required": False,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(
-        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return summary
 
 
