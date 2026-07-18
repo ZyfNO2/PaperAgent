@@ -13,7 +13,8 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-import dotenv
+from dotenv import load_dotenv
+
 from paperagent.api.real_executor import build_real_task_executor
 from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.pricing import load_price_table
@@ -21,7 +22,7 @@ from paperagent.providers.config import load_provider_config
 from paperagent.schemas.request import ResearchRequest
 
 
-dotenv.load_dotenv()
+load_dotenv()
 
 HOLDOUT_CASES = Path("evals/v0_6/holdout_cases.v1.jsonl")
 OUTPUT_DIR = Path("build/gate-l-evidence")
