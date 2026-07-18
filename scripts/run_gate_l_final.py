@@ -5,6 +5,7 @@ Hard timeout: 120s/case. Strict budget compliance. SHA-256 digests for immutabil
 After any prompt/rule change, the frozen v1 corpus is diagnostic-only and must not be used as
 final scientific acceptance evidence. Freeze a fresh holdout version before a release decision.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -46,8 +47,7 @@ def parse_args() -> argparse.Namespace:
 
 def load_holdout_cases() -> list[dict]:
     return [
-        json.loads(line)
-        for line in HOLDOUT_CASES.read_text(encoding="utf-8").strip().splitlines()
+        json.loads(line) for line in HOLDOUT_CASES.read_text(encoding="utf-8").strip().splitlines()
     ]
 
 
@@ -68,7 +68,9 @@ def _scientific_trace(result: dict | None) -> dict[str, object]:
     evidence = result.get("evidence") if isinstance(result.get("evidence"), dict) else {}
     quality = result.get("quality") if isinstance(result.get("quality"), dict) else {}
 
-    search_queries = plan.get("search_queries") if isinstance(plan.get("search_queries"), list) else []
+    search_queries = (
+        plan.get("search_queries") if isinstance(plan.get("search_queries"), list) else []
+    )
     query_ids_by_gap: dict[str, list[str]] = {}
     for query in search_queries:
         if not isinstance(query, dict):
@@ -94,9 +96,7 @@ def _scientific_trace(result: dict | None) -> dict[str, object]:
 
     items = evidence.get("items") if isinstance(evidence.get("items"), list) else []
     verification_counts = Counter(
-        item.get("verification_status", "unknown")
-        for item in items
-        if isinstance(item, dict)
+        item.get("verification_status", "unknown") for item in items if isinstance(item, dict)
     )
 
     tool_errors = retrieval.get("tool_errors")
@@ -307,11 +307,7 @@ async def main() -> int:
         )
 
     violated = [result for result in results if result["budget_violations"]]
-    timeouts = [
-        result
-        for result in results
-        if result["error"] and "TIMEOUT" in result["error"]
-    ]
+    timeouts = [result for result in results if result["error"] and "TIMEOUT" in result["error"]]
     print("\n=== ISSUES ===")
     print(f"  Budget violations: {len(violated)}/{len(cases)}")
     print(f"  Hard timeouts: {len(timeouts)}/{len(cases)}")
