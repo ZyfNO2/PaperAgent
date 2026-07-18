@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
 
@@ -20,7 +18,8 @@ def test_prompt_registry__known_task__returns_versioned_prompt() -> None:
 
 
 def test_gate_l_runner__source__has_no_merge_conflict_markers() -> None:
-    source = Path("scripts/run_gate_l_execution.py").read_text(encoding="utf-8-sig")
+    with open("scripts/run_gate_l_execution.py", encoding="utf-8-sig") as handle:
+        source = handle.read()
     assert not any(marker in source for marker in MERGE_CONFLICT_MARKERS)
 
 
