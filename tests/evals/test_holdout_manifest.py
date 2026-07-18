@@ -31,7 +31,9 @@ def test_holdout_manifest_freezes_exact_16_case_corpus() -> None:
     cases = _load_cases()
     raw = CASE_PATH.read_bytes()
 
-    assert manifest["status"] == "frozen_pending_execution"
+    assert manifest["status"] == "diagnostic_only_prompt_changed"
+    assert manifest["replacement_holdout_required"] is True
+    assert manifest["invalidated_for_final_acceptance_by_prompt_version"] == "planning.v0.1.2"
     assert manifest["raw_cases_committed"] is True
     assert manifest["case_file"] == CASE_PATH.as_posix()
     assert manifest["expected_case_count"] == 16
