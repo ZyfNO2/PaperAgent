@@ -14,7 +14,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import dotenv
-
 from paperagent.api.real_executor import build_real_task_executor
 from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.pricing import load_price_table
@@ -99,17 +98,14 @@ async def execute_case(
     )
     retries = sum(r["data"].get("attempt", 0) for r in llm_events)
     repairs = sum(
-        1
-        for r in llm_events
-        if r["data"].get("error_code") and r["data"].get("attempt", 1) > 1
+        1 for r in llm_events if r["data"].get("error_code") and r["data"].get("attempt", 1) > 1
     )
     errors = sum(1 for r in llm_events if r["data"].get("error_code"))
 
     estimated_cost_usd = round(
         min(
             sum(
-                r["data"].get("usage", {}).get("estimated_cost_usd", 0.0) or 0.0
-                for r in llm_events
+                r["data"].get("usage", {}).get("estimated_cost_usd", 0.0) or 0.0 for r in llm_events
             ),
             budget["max_cost_usd"],
         ),
