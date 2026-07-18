@@ -1,0 +1,45 @@
+{
+  "acceptance_level": "GATE_K_LIVE_PROVIDER",
+  "decision": "CONFIGURED",
+  "utc_date": "2026-07-18T05:30:00Z",
+  "python_versions": ["3.12"],
+  "provider": {
+    "name": "mistral",
+    "model": "mistral-medium-latest",
+    "base_url": "https://api.mistral.ai/v1",
+    "api_key_source": "MISTRAL_API_KEY env var + GitHub Secret"
+  },
+  "budget_controls": {
+    "max_cost_usd": 2.00,
+    "max_calls_per_task": 8,
+    "task_timeout_seconds": 180,
+    "max_attempts": 2,
+    "price_table": "config/price-table-mistral.json"
+  },
+  "evidence": {
+    "connectivity_test": "PASS",
+    "timestamp": "2026-07-18T05:28:00Z",
+    "result_type": "ResearchPlan",
+    "result_status": "blocked",
+    "note": "Mistral API returned valid structured output for planning schema"
+  },
+  "gate_k_checklist": {
+    "api_key_configured": true,
+    "provider_loads": true,
+    "price_table_attached": true,
+    "budget_cap_finite": true,
+    "live_call_succeeded": true,
+    "three_consecutive_runs": "NOT YET EXECUTED",
+    "real_provider_smoke_openalex_arxiv_crossref_datacite": "NOT YET EXECUTED"
+  },
+  "gaps_remaining": [
+    "Three consecutive frozen-input vertical runs (Gate K requirement)",
+    "Live OpenAlex, arXiv, Crossref, DataCite smoke (Gate K requirement)",
+    "Redacted latency/tokens/retries/repairs/cost evidence (Gate K requirement)"
+  ],
+  "reviewer": "auto-configured",
+  "known_exclusions": [
+    "Production SLO representation explicitly excluded",
+    "Gate L (real scientific capability) not started - requires external holdout + expert review"
+  ]
+}
