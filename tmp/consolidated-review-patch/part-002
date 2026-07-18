@@ -1,0 +1,203 @@
+-_implementation.compose_tailored_research_proposal = compose_tailored_research_proposal
++from paperagent.academic_tailoring import compose_tailored_research_proposal
+ 
+ __all__ = ["compose_tailored_research_proposal"]
+--- a/src/paperagent/plugins/__init__.py
++++ b/src/paperagent/plugins/__init__.py
+@@ -1,11 +1,9 @@
+ from paperagent.plugins.academic_method import (
++    AcademicMethodTailoringPlugin,
+     MethodAuditReport,
+     MethodPlan,
+-    method_plan_template,
+-)
+-from paperagent.plugins.academic_method_guard import (
+-    AcademicMethodTailoringPlugin,
+     audit_method_plan,
++    method_plan_template,
+ )
+ from paperagent.plugins.contracts import (
+     PLUGIN_API_VERSION,
+--- a/src/paperagent/plugins/academic_method.py
++++ b/src/paperagent/plugins/academic_method.py
+@@ -5,6 +5,10 @@
+ 
+ from pydantic import BaseModel, ConfigDict, Field, model_validator
+ 
++from paperagent.academic_tailoring import (
++    TailoringTask,
++    compose_tailored_research_proposal,
++)
+ from paperagent.plugins.contracts import (
+     PluginCapability,
+     PluginError,
+@@ -121,6 +125,18 @@
+     resource_measures: tuple[str, ...] = ()
+     stopping_criteria: str | None = None
+ 
++    @model_validator(mode="after")
++    def require_unique_comparison_values(self) -> ExperimentCard:
++        for label, values in (
++            ("included module", self.included_modules),
++            ("metric", self.metrics),
++            ("seed", self.seeds),
++            ("resource measure", self.resource_measures),
++        ):
++            if len(set(values)) != len(values):
++                raise ValueError(f"duplicate {label} in experiment {self.name}")
++        return self
++
+ 
+ class EvidenceItem(BaseModel):
+     model_config = ConfigDict(extra="forbid", frozen=True)
+@@ -199,7 +215,13 @@
+     if not _present(value):
+         return False
+     assert value is not None
+-    return value.strip().lower() not in {"unknown", "missing", "unverified", "incompatible"}
++    return value.strip().lower() not in {
++        "unknown",
++        "missing",
++        "unverified",
++        "incompatible",
++        "proprietary-no-reuse",
++    }
+ 
+ 
+ def _check(
+@@ -232,6 +254,29 @@
+     )
+ 
+ 
++def _fairness_signature(experiment: ExperimentCard) -> tuple[object, ...]:
++    return (
++        experiment.dataset,
++        experiment.split,
++        experiment.preprocessing,
++        experiment.tuning_budget,
++        experiment.metrics,
++        experiment.seeds,
++        experiment.uncertainty_reporting,
++        experiment.resource_measures,
++        experiment.stopping_criteria,
++    )
++
++
++def _verified_evidence(item: EvidenceItem | None) -> bool:
++    return (
++        item is not None
++        and item.verified
++        and _present(item.stable_identifier)
++        and bool(item.supported_claims)
++    )
++
++
+ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
+     checks: list[AuditCheck] = []
+     evidence_by_id = {item.evidence_id: item for item in plan.evidence}
+@@ -303,6 +348,11 @@
+             _license_is_acceptable(baseline.license),
+             AuditSeverity.CRITICAL,
+             "baseline license is present and not marked incompatible or unknown",
++            status=(
++                ClaimStatus.INFERRED
++                if _license_is_acceptable(baseline.license)
++                else ClaimStatus.UNKNOWN
++            ),
+         )
+     )
+ 
+@@ -312,9 +362,12 @@
+     checks.append(
+         _check(
+             "baseline-provenance",
+-            baseline_evidence is not None and baseline_evidence.verified,
++            _verified_evidence(baseline_evidence),
+             AuditSeverity.CRITICAL,
+-            "baseline provenance references a verified evidence item",
++            (
++                "baseline provenance references a verified evidence item with a stable "
++                "identifier and supported claims"
++            ),
+             evidence_ids=(baseline.source_evidence_id,) if baseline.source_evidence_id else (),
+         )
+     )
+@@ -340,6 +393,16 @@
+         )
+     )
+ 
++    checks.append(
++        _check(
++            "proposed-modules-present",
++            bool(plan.modules),
++            AuditSeverity.ERROR,
++            "method plan proposes at least one attributed intervention module",
++            status=ClaimStatus.PROPOSED,
++        )
++    )
++
+     for module in plan.modules:
+         semantic_values = (
+             module.original_role,
+@@ -372,6 +435,7 @@
+                 and _present(module.input_shape)
+                 and _present(module.output_shape)
+                 and module.trainable is not None
++                and (module.trainable is False or bool(module.loss_terms))
+                 and bool(module.assumptions)
+                 and not shape_only,
+                 AuditSeverity.ERROR,
+@@ -390,15 +454,23 @@
+                 AuditSeverity.CRITICAL,
+                 f"module {module.name} license is present and compatible",
+                 evidence_ids=(module.evidence_id,) if module.evidence_id else (),
++                status=(
++                    ClaimStatus.INFERRED
++                    if _license_is_acceptable(module.license)
++                    else ClaimStatus.UNKNOWN
++                ),
+             )
+         )
+         module_evidence = evidence_by_id.get(module.evidence_id) if module.evidence_id else None
+         checks.append(
+             _check(
+                 f"module-provenance:{module.name}",
+-                module_evidence is not None and module_evidence.verified,
++                _verified_evidence(module_evidence),
+                 AuditSeverity.CRITICAL,
+-                f"module {module.name} references verified provenance",
++                (
++                    f"module {module.name} references verified provenance with a stable "
++                    "identifier and supported claims"
++                ),
+                 evidence_ids=(module.evidence_id,) if module.evidence_id else (),
+             )
+         )
+@@ -409,12 +481,36 @@
+         arm for arm in plan.experiments if arm.arm_type is ExperimentArmType.BASELINE
+     )
+     full_arms = tuple(arm for arm in plan.experiments if arm.arm_type is ExperimentArmType.FULL)
++    unknown_module_references = sorted(
++        {
++            module_name
++            for arm in plan.experiments
++            for module_name in arm.included_modules
++            if module_name not in module_name_set
++        }
++    )
++    checks.append(
++        _check(
++            "experiment-module-references",
++            not unknown_module_references,
++            AuditSeverity.ERROR,
++            (
++                "all experiment module references resolve to declared modules"
++                if not unknown_module_references
++                else "unknown experiment modules: " + ", ".join(unknown_module_references)
++            ),
++            status=ClaimStatus.PROPOSED,
++        )
++    )
+     checks.append(
+         _check(
+             "experiment-baseline-arm",
