@@ -11,6 +11,7 @@ from typing import cast
 import uvicorn
 
 from paperagent.api import create_app
+from paperagent.api.diagnostics import collect_runtime_diagnostics
 from paperagent.api.executor import TaskExecutor
 from paperagent.api.real_executor import build_real_task_executor
 from paperagent.demo import DemoTaskExecutor
@@ -72,6 +73,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--allow-public-bind",
         action="store_true",
         help="allow a non-loopback bind; still not a public multi-tenant security claim",
+    )
+
+    diagnostics = subparsers.add_parser(
+        "diagnostics",
+        help="print a secret-free snapshot of the local durable runtime",
+    )
+    diagnostics.add_argument(
+        "--database",
+        type=Path,
+        default=Path(os.getenv("PAPERAGENT_DATABASE", "paperagent.db")),
     )
 
     smoke = subparsers.add_parser(
@@ -157,6 +168,12 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
     return 0
 
 
+def _diagnostics(args: argparse.Namespace) -> int:
+    snapshot = collect_runtime_diagnostics(cast(Path, args.database))
+    print(json.dumps(snapshot, indent=2, sort_keys=True))
+    return 0
+
+
 def _provider_smoke(args: argparse.Namespace) -> int:
     contact_email = cast(str | None, args.contact_email)
     timeout = cast(float, args.timeout)
@@ -196,6 +213,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     command = cast(str, args.command)
     if command == "serve":
         return _serve(parser, args)
+    if command == "diagnostics":
+        return _diagnostics(args)
     if command == "provider-smoke":
         return _provider_smoke(args)
     if command == "llm-smoke":
