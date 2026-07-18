@@ -36,9 +36,7 @@ def _npc_task() -> TailoringTask:
 def test_method_plan_fingerprint_is_stable_and_content_sensitive() -> None:
     plan = _go_plan()
     first = method_plan_fingerprint(plan)
-    second = method_plan_fingerprint(
-        MethodPlan.model_validate(plan.model_dump(mode="json"))
-    )
+    second = method_plan_fingerprint(MethodPlan.model_validate(plan.model_dump(mode="json")))
     changed = plan.model_copy(
         update={
             "research": plan.research.model_copy(
@@ -107,10 +105,7 @@ def test_missing_module_execution_contract_forces_revision() -> None:
     proposal = compose_tailored_research_proposal(TailoringTask.model_validate(payload))
 
     assert proposal.decision is TailoringDecision.REVISE
-    assert any(
-        check_id.startswith("module-contract:")
-        for check_id in proposal.failed_audit_checks
-    )
+    assert any(check_id.startswith("module-contract:") for check_id in proposal.failed_audit_checks)
 
 
 def test_missing_strong_comparison_forces_revision() -> None:
@@ -172,11 +167,7 @@ def test_multi_module_plan_requires_explicit_interaction_analysis() -> None:
 def test_incompatible_license_is_no_go() -> None:
     plan = _go_plan()
     changed = plan.model_copy(
-        update={
-            "baseline": plan.baseline.model_copy(
-                update={"license": "proprietary-no-reuse"}
-            )
-        }
+        update={"baseline": plan.baseline.model_copy(update={"license": "proprietary-no-reuse"})}
     )
     report = audit_method_plan(changed)
 
