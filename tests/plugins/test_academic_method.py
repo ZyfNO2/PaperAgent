@@ -45,8 +45,7 @@ def test_unreproduced_baseline_requires_revision() -> None:
 
     assert report.verdict is AuditVerdict.REVISE
     assert any(
-        check.check_id == "baseline-reproduced" and not check.passed
-        for check in report.checks
+        check.check_id == "baseline-reproduced" and not check.passed for check in report.checks
     )
 
 
@@ -60,8 +59,7 @@ def test_compute_incompatible_plan_is_no_go() -> None:
 
     assert report.verdict is AuditVerdict.NO_GO
     assert any(
-        check.check_id == "baseline-compute-fit" and not check.passed
-        for check in report.checks
+        check.check_id == "baseline-compute-fit" and not check.passed for check in report.checks
     )
 
 
@@ -85,9 +83,7 @@ def test_shape_only_module_contract_is_rejected() -> None:
 def test_plugin_template_does_not_invent_research_content() -> None:
     plugin = AcademicMethodTailoringPlugin()
 
-    result = plugin.invoke(
-        PluginRequest(request_id="template-1", operation="template", payload={})
-    )
+    result = plugin.invoke(PluginRequest(request_id="template-1", operation="template", payload={}))
 
     baseline = result.output["baseline"]
     assert isinstance(baseline, dict)
