@@ -15,7 +15,7 @@
     "adversarial": 4
   },
   "content_digest_algorithm": "sha256-exact-utf8-bytes",
-  "content_digest": "24ef38eb9c345610daee14222e69d967318e8dca360be6e709ef10a9f17a6801",
+  "content_digest": "5f7f0bba25fa1cd0a9f2ad3e7e2fe242970f688838bdeab6d0684f8afa1e268f",
   "development_corpus": "evals/v0_6/cases.jsonl",
   "acceptance_contract": "docs/acceptance/GATE_L_SCIENTIFIC_ACCEPTANCE.md",
   "anti_leakage_policy": {
@@ -47,5 +47,5 @@
     "maximum_citation_mismatch_rate": 0.05,
     "minimum_repair_success_rate": 0.8
   },
-  "note": "Holdout v1 remains byte-frozen for diagnostics, but prompt/rule changes after the freeze invalidate it for final Gate L acceptance. Freeze a new holdout version after remediation stabilizes before any scientific release decision."
+  "note": "Holdout v1 is retained only as a diagnostic snapshot. Its current exact-byte digest is recorded for repository integrity, but prompt/rule changes invalidate it for final Gate L acceptance."
 }
