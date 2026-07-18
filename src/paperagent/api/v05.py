@@ -76,9 +76,10 @@ def create_app(
                     "ok": False,
                     "error": type(exc).__name__,
                 }
+        schema = await asyncio.to_thread(ensure_schema_version, durable_path)
         snapshot["checks"]["schema"] = {
             "ok": True,
-            "version": ensure_schema_version(durable_path)["current_version"],
+            "version": schema["current_version"],
         }
         snapshot["status"] = (
             "ready"
