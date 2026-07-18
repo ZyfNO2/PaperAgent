@@ -101,6 +101,44 @@ Acceptance requires:
 - restored database reports WAL mode;
 - in-flight task is never replayed and ends with `PROCESS_RESTARTED`.
 
+## Verified execution record
+
+Branch-level one-command acceptance:
+
+```text
+Source SHA:       591ff5d8354d69b6606820263e1eed9fc7403787
+Workflow run:     29630172738
+Python 3.11:      success
+Python 3.12:      success
+Quick profile:    success
+Network required: false
+Live LLM required:false
+```
+
+Final code-head verification:
+
+```text
+Code SHA:         37572aba81070fe0b4df5df5f3708a94cf825368
+Interview run:    29630259329 — success
+Academic run:     29630259297 — success
+Artifact ID:      8425220815
+Artifact SHA-256: a8e9d60be337ef4e6ddcede1cea3b3bc2e5cb4b97e9a526cce87b0813125ee79
+```
+
+Final-head state roundtrip:
+
+```text
+status:                  passed
+review_restored:         true
+journal_mode:            wal
+restart_recovery_code:   PROCESS_RESTARTED
+backup_sha256:           fa01fca97af37f3d13a8a66b149d4df3a4bc3cf22bffa016e44cfd882b548470
+export_sha256:           2f9e0c62e2540558a59a50ef586fe07a40846742d064f45d66916e8351ea4915
+restored_export_sha256:  2f9e0c62e2540558a59a50ef586fe07a40846742d064f45d66916e8351ea4915
+```
+
+The machine-readable branch record is `acceptance/local-pr17/latest.json`.
+
 ## Local test matrix
 
 | Area | Automated locally | Main evidence |
