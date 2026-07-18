@@ -1,8 +1,10 @@
 {
   "version": "v1",
-  "status": "frozen_pending_execution",
+  "status": "diagnostic_only_prompt_changed",
   "frozen_at_utc": "2026-07-18T05:31:51Z",
   "frozen_against_prompt_rule_head": "3b217a0a8e4fc7fb5a0607a2ff68397844a450b6",
+  "invalidated_for_final_acceptance_by_prompt_version": "planning.v0.1.2",
+  "replacement_holdout_required": true,
   "case_file": "evals/v0_6/holdout_cases.v1.jsonl",
   "raw_cases_committed": true,
   "expected_case_count": 16,
@@ -13,7 +15,7 @@
     "adversarial": 4
   },
   "content_digest_algorithm": "sha256-exact-utf8-bytes",
-  "content_digest": "89375da32f3879baea711c5e6567ed1dcc65efc5cce4c8e95496adcfd8fedda6",
+  "content_digest": "41d45dd1cfa61511297a0012699177c006ac6db566d2062b2bea3e0a7617c585",
   "development_corpus": "evals/v0_6/cases.jsonl",
   "acceptance_contract": "docs/acceptance/GATE_L_SCIENTIFIC_ACCEPTANCE.md",
   "anti_leakage_policy": {
@@ -45,6 +47,5 @@
     "maximum_citation_mismatch_rate": 0.05,
     "minimum_repair_success_rate": 0.8
   },
-  "note": "The corpus is frozen, but Gate L remains INCOMPLETE until real execution, immutable evidence, blinded review, agreement, and adjudication pass."
+  "note": "Holdout v1 remains byte-frozen for diagnostics, but prompt/rule changes after the freeze invalidate it for final Gate L acceptance. Freeze a new holdout version after remediation stabilizes before any scientific release decision."
 }
-
