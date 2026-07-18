@@ -6,6 +6,7 @@ from typing import Annotated, Any, cast
 from pydantic import TypeAdapter
 from typing_extensions import TypedDict
 
+from paperagent.academic_methodology import MethodAuditReport
 from paperagent.schemas import (
     EvidenceBundle,
     EvidenceSynthesis,
@@ -29,6 +30,7 @@ class PaperAgentState(TypedDict, total=False):
     evidence: EvidenceBundle
     synthesis: EvidenceSynthesis | None
     method: MethodProposal | None
+    methodology_audit: MethodAuditReport | None
     quality: QualityDecision | None
     report: FinalReport | None
     execution: ExecutionMeta
@@ -43,6 +45,7 @@ class StatePatch(TypedDict, total=False):
     evidence: EvidenceBundle
     synthesis: EvidenceSynthesis | None
     method: MethodProposal | None
+    methodology_audit: MethodAuditReport | None
     quality: QualityDecision | None
     report: FinalReport | None
     execution: ExecutionMeta
