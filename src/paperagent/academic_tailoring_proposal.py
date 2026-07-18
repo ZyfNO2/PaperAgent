@@ -5,6 +5,7 @@ import json
 import math
 import re
 from enum import StrEnum
+from typing import TypedDict
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -489,7 +490,19 @@ def _module_contract_complete(intent: ModuleIntent) -> bool:
     )
 
 
-def _common_experiment(task: TailoringTask) -> dict[str, object]:
+class _CommonExperimentArgs(TypedDict):
+    dataset: str
+    split: str
+    preprocessing: str
+    tuning_budget: str
+    metrics: tuple[str, ...]
+    seeds: tuple[int, ...]
+    uncertainty_reporting: str
+    resource_measures: tuple[str, ...]
+    stopping_criteria: str
+
+
+def _common_experiment(task: TailoringTask) -> _CommonExperimentArgs:
     return {
         "dataset": task.reproduction.dataset,
         "split": task.reproduction.split,
