@@ -1,0 +1,25 @@
+name: Review Baseline Facts Source
+
+on:
+  pull_request:
+    branches: [fix/academic-tailoring-contract-convergence]
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: review-baseline-facts-source
+          path: |
+            src/
+            tests/
+            pyproject.toml
+          if-no-files-found: error
+          retention-days: 3
