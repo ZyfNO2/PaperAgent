@@ -1,0 +1,63 @@
+name: PaperAgent Interview Evidence
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Python ${{ matrix.python-version }} interview verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev,release]'
+      - name: Ruff lint
+        run: ruff check .
+      - name: Ruff format
+        run: ruff format --check .
+      - name: Strict Mypy
+        run: mypy --config-file pyproject.toml
+      - name: Tests and branch coverage
+        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+
+  evidence:
+    name: Generate interview artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+      - name: Run deterministic interview demo
+        run: python scripts/interview_demo.py --output build/interview-demo-summary.json
+      - name: Export OpenAPI
+        run: python scripts/export_openapi.py --output build/openapi.json
+      - name: Run SQLite repository benchmark
+        run: python scripts/repository_benchmark.py --tasks 500 --output build/repository-benchmark.json
+      - name: Upload interview evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: paperagent-interview-evidence
+          path: build/
+          if-no-files-found: error
