@@ -282,9 +282,7 @@ async def test_graph__failed_synthesis__short_circuits_method_and_reports_blocke
     )
     search = FakeSearchProvider(
         fixtures={
-            SearchFixtureKey(
-                scenario="synthesis_failure", query_id=query_id, call_index=0
-            ): [
+            SearchFixtureKey(scenario="synthesis_failure", query_id=query_id, call_index=0): [
                 SearchCandidate(
                     candidate_id=candidate_id,
                     query_id=query_id,
