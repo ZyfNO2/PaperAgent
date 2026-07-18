@@ -67,6 +67,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]'
+      - name: Install and invoke external plugin example
+        run: |
+          python -m pip install --no-deps ./examples/external_plugin
+          paperagent plugins inspect interview-summary \
+            --enable-external-plugin interview-summary
+          mkdir -p build
+          paperagent plugins run interview-summary \
+            --enable-external-plugin interview-summary \
+            --operation summarize \
+            --input examples/external_plugin/input.json \
+            --output build/interview-summary-plugin.json
+          python -c "import json; value=json.load(open('build/interview-summary-plugin.json')); assert value['output']['count'] == 3"
       - name: Run deterministic interview demo
         run: python scripts/interview_demo.py --output build/interview-demo-summary.json
       - name: Export OpenAPI
