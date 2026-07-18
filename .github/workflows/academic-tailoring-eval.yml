@@ -107,7 +107,7 @@ jobs:
           if-no-files-found: error
 
   finalize-v3:
-    name: Format and verify Gate L v3 files
+    name: Format and diagnose Gate L v3 files
     if: ${{ github.head_ref == 'fix/gate-l-v3-acceptance-routing' && github.actor != 'github-actions[bot]' }}
     permissions:
       contents: write
@@ -149,11 +149,27 @@ jobs:
           ruff check --fix "${files[@]}"
           ruff format "${files[@]}"
       - name: Run Gate L v3 regression tests
-        run: pytest -q tests/evals/test_gate_l_acceptance_v3.py
+        id: v3-tests
+        continue-on-error: true
+        run: |
+          mkdir -p build
+          pytest -vv tests/evals/test_gate_l_acceptance_v3.py \
+            > build/gate-l-v3-tests.txt 2>&1
+      - name: Upload Gate L v3 test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-l-v3-test-diagnostics
+          path: build/gate-l-v3-tests.txt
+          if-no-files-found: error
+          retention-days: 7
       - name: Commit verified formatting
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add scripts tests/evals/test_gate_l_acceptance_v3.py
-          git commit -m 'style(gate-l): format and verify v3 acceptance tooling'
+          git commit -m 'style(gate-l): format v3 acceptance tooling'
           git push origin HEAD:${{ github.head_ref }}
+      - name: Enforce Gate L v3 tests
+        if: steps.v3-tests.outcome == 'failure'
+        run: exit 1
