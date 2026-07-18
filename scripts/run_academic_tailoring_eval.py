@@ -19,9 +19,7 @@ def _write_json(path: Path, value: object) -> None:
 def _write_jsonl(path: Path, values: list[object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        "".join(
-            json.dumps(value, ensure_ascii=False, sort_keys=True) + "\n" for value in values
-        ),
+        "".join(json.dumps(value, ensure_ascii=False, sort_keys=True) + "\n" for value in values),
         encoding="utf-8",
     )
 

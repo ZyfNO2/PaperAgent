@@ -136,7 +136,9 @@ def materialize_task(base: TailoringTask, mutation: TailoringMutation) -> Tailor
     return TailoringTask.model_validate(payload)
 
 
-def _score(name: str, available: int, checks: tuple[bool, ...], findings: list[str]) -> DimensionScore:
+def _score(
+    name: str, available: int, checks: tuple[bool, ...], findings: list[str]
+) -> DimensionScore:
     if not checks:
         earned = available
     else:
@@ -195,7 +197,9 @@ def grade_proposal(
         provenance_checks.append(complete)
         if not complete:
             provenance_findings.append(f"incomplete method attribution for {paper_id}")
-    dimensions.append(_score("provenance_and_attribution", 15, tuple(provenance_checks), provenance_findings))
+    dimensions.append(
+        _score("provenance_and_attribution", 15, tuple(provenance_checks), provenance_findings)
+    )
 
     baseline_checks = (
         proposal.baseline.paper_id == task.reproduction.baseline_paper_id,
@@ -270,7 +274,9 @@ def grade_proposal(
             compatibility_findings.append(
                 f"compatibility status for {intent.source_paper_id} should be {expected_status}"
             )
-    dimensions.append(_score("semantic_compatibility", 10, tuple(compatibility_checks), compatibility_findings))
+    dimensions.append(
+        _score("semantic_compatibility", 10, tuple(compatibility_checks), compatibility_findings)
+    )
 
     innovation = proposal.innovation_points[0] if proposal.innovation_points else None
     innovation_checks = (
@@ -280,7 +286,9 @@ def grade_proposal(
         innovation is not None and bool(innovation.falsifiable_test.strip()),
         innovation is not None and innovation.status == "proposed",
     )
-    innovation_findings = [] if all(innovation_checks) else ["innovation is not explicit and falsifiable"]
+    innovation_findings = (
+        [] if all(innovation_checks) else ["innovation is not explicit and falsifiable"]
+    )
     dimensions.append(_score("innovation_distinctness", 15, innovation_checks, innovation_findings))
 
     story = proposal.academic_story
@@ -314,9 +322,7 @@ def grade_proposal(
         if arm.arm_type == "single_module" and len(arm.included_modules) == 1
         for module_id in arm.included_modules
     }
-    leave_one_out_count = sum(
-        arm.arm_type == "leave_one_out" for arm in proposal.experiment_matrix
-    )
+    leave_one_out_count = sum(arm.arm_type == "leave_one_out" for arm in proposal.experiment_matrix)
     fair_fields = all(
         arm.dataset == task.reproduction.dataset
         and arm.split == task.reproduction.split

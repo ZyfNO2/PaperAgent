@@ -7,6 +7,8 @@ from paperagent.academic_tailoring_guard import compose_tailored_research_propos
 from paperagent.plugins import academic_method as _implementation
 from paperagent.plugins.academic_method import (
     AcademicMethodTailoringPlugin as _BaseAcademicMethodTailoringPlugin,
+)
+from paperagent.plugins.academic_method import (
     AuditCheck,
     AuditSeverity,
     AuditVerdict,

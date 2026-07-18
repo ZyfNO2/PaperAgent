@@ -345,9 +345,7 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
                 license=source.license,
                 method_used=source.method_name,
                 borrowed_component=source.reusable_component,
-                use_in_proposal=(
-                    f"inserted at {intent.insertion_point} as {intent.proposed_role}"
-                ),
+                use_in_proposal=(f"inserted at {intent.insertion_point} as {intent.proposed_role}"),
             )
         )
 
@@ -451,10 +449,11 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
             ),
         ),
     )
+    metric_summary = _format_metric_summary(task.reproduction.reproduced_metrics)
     story = AcademicStory(
         problem=f"{task.target_problem}: {task.observed_failure}",
         baseline_evidence=(
-            f"{baseline_paper.title} was reproduced as {_format_metric_summary(task.reproduction.reproduced_metrics)} "
+            f"{baseline_paper.title} was reproduced as {metric_summary} "
             f"within {task.reproduction.acceptance_tolerance}"
         ),
         gap=(
@@ -475,7 +474,9 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
         strongest_reason = risks[0]
     else:
         decision = TailoringDecision.GO
-        strongest_reason = "baseline, provenance, compatibility, novelty, and fair experiments are explicit"
+        strongest_reason = (
+            "baseline, provenance, compatibility, novelty, and fair experiments are explicit"
+        )
 
     limitations = tuple(
         limitation

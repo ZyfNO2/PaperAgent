@@ -24,9 +24,7 @@ def _is_weak_novelty(value: str) -> bool:
 
 def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchProposal:
     proposal = _base_compose(task)
-    weak = _is_weak_novelty(task.novelty_thesis) or _is_weak_novelty(
-        task.why_not_simple_splice
-    )
+    weak = _is_weak_novelty(task.novelty_thesis) or _is_weak_novelty(task.why_not_simple_splice)
     if not weak or proposal.decision is TailoringDecision.NO_GO:
         return proposal
     risk = (
