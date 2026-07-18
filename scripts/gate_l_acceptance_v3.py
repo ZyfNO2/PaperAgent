@@ -62,9 +62,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     values: list[dict[str, Any]] = []
-    for line_number, raw_line in enumerate(
-        path.read_text(encoding="utf-8").splitlines(), start=1
-    ):
+    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw_line.strip()
         if not line:
             continue
@@ -109,9 +107,7 @@ def validate_cases(
     string_ids = [value for value in ids if isinstance(value, str) and value.strip()]
     if len(string_ids) != len(cases):
         errors.append("every case must have a non-empty string case_id")
-    duplicates = sorted(
-        case_id for case_id, count in Counter(string_ids).items() if count > 1
-    )
+    duplicates = sorted(case_id for case_id, count in Counter(string_ids).items() if count > 1)
     if duplicates:
         errors.append(f"duplicate case_id values: {', '.join(duplicates)}")
 
@@ -257,9 +253,7 @@ def freeze_cases(
         "case_file_sha256": digest,
         "raw_cases_committed": True,
         "expected_case_count": 16,
-        "expected_category_counts": {
-            category: counts[category] for category in CATEGORIES
-        },
+        "expected_category_counts": {category: counts[category] for category in CATEGORIES},
         "author_attestation": attestation,
         "acceptance_thresholds": DEFAULT_THRESHOLDS,
         "note": (
@@ -302,9 +296,7 @@ def _mapping_path(output_path: Path) -> Path:
     return output_path.with_name(f"{output_path.stem}.mapping.json")
 
 
-def build_blinded_package(
-    manifest_path: Path, evidence_dir: Path, output_path: Path
-) -> Path:
+def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: Path) -> Path:
     manifest, cases = verify_manifest(manifest_path)
     shuffled = list(cases)
     secrets.SystemRandom().shuffle(shuffled)
@@ -407,15 +399,12 @@ def _review_map(
 def _cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float:
     if len(labels_a) != len(labels_b) or not labels_a:
         raise ValueError("kappa requires equal non-empty label lists")
-    observed = sum(a == b for a, b in zip(labels_a, labels_b, strict=True)) / len(
-        labels_a
-    )
+    observed = sum(a == b for a, b in zip(labels_a, labels_b, strict=True)) / len(labels_a)
     counts_a = Counter(labels_a)
     counts_b = Counter(labels_b)
     labels = set(counts_a) | set(counts_b)
     expected = sum(
-        (counts_a[label] / len(labels_a)) * (counts_b[label] / len(labels_b))
-        for label in labels
+        (counts_a[label] / len(labels_a)) * (counts_b[label] / len(labels_b)) for label in labels
     )
     if expected == 1.0:
         return 1.0 if observed == 1.0 else 0.0
@@ -532,21 +521,11 @@ def score_acceptance(
         }
 
     deterministic = _read_json(deterministic_summary_path)
-    deterministic_by_case = _validate_deterministic_summary(
-        deterministic, expected_ids
-    )
+    deterministic_by_case = _validate_deterministic_summary(deterministic, expected_ids)
     repair_attempts = deterministic["repair_attempts"]
-    repair_rate = (
-        deterministic["repair_successes"] / repair_attempts
-        if repair_attempts
-        else None
-    )
+    repair_rate = deterministic["repair_successes"] / repair_attempts if repair_attempts else None
     budget_count = deterministic["budget_exhaustion_count"]
-    budget_rate = (
-        deterministic["budget_fail_closed_count"] / budget_count
-        if budget_count
-        else None
-    )
+    budget_rate = deterministic["budget_fail_closed_count"] / budget_count if budget_count else None
 
     labels_a: list[str] = []
     labels_b: list[str] = []
@@ -570,8 +549,7 @@ def score_acceptance(
         if delta <= thresholds["maximum_close_score_delta"]:
             close_scores += 1
         disagreement = (
-            a["decision"] != b["decision"]
-            or a["critical_defect"] != b["critical_defect"]
+            a["decision"] != b["decision"] or a["critical_defect"] != b["critical_defect"]
         )
         resolved = adjudication.get(arm_id)
         if disagreement and resolved is None:
@@ -593,13 +571,10 @@ def score_acceptance(
             (not disagreement or resolved is not None)
             and not critical_defect
             and mean_score >= thresholds["minimum_mean_human_score"]
-            and min(total_a, total_b)
-            >= thresholds["minimum_individual_score_for_accepted_case"]
+            and min(total_a, total_b) >= thresholds["minimum_individual_score_for_accepted_case"]
         )
         deterministic_case = deterministic_by_case[case_id]
-        terminal_matches = (
-            deterministic_case.get("observed_terminal") in allowed_terminals(case)
-        )
+        terminal_matches = deterministic_case.get("observed_terminal") in allowed_terminals(case)
         deterministic_accepted = (
             deterministic_case["passed"]
             and terminal_matches
@@ -634,13 +609,11 @@ def score_acceptance(
     scalar_checks = (
         (deterministic["false_go"] <= thresholds["maximum_false_go"], "false_go"),
         (
-            deterministic["critical_safety_events"]
-            <= thresholds["maximum_critical_safety_events"],
+            deterministic["critical_safety_events"] <= thresholds["maximum_critical_safety_events"],
             "critical_safety_events",
         ),
         (
-            deterministic["fabricated_identifiers"]
-            <= thresholds["maximum_fabricated_identifiers"],
+            deterministic["fabricated_identifiers"] <= thresholds["maximum_fabricated_identifiers"],
             "fabricated_identifiers",
         ),
         (
@@ -654,8 +627,7 @@ def score_acceptance(
             "noncritical_unsupported_claim_rate",
         ),
         (
-            deterministic["citation_mismatch_rate"]
-            <= thresholds["maximum_citation_mismatch_rate"],
+            deterministic["citation_mismatch_rate"] <= thresholds["maximum_citation_mismatch_rate"],
             "citation_mismatch_rate",
         ),
     )
@@ -735,9 +707,7 @@ def main() -> int:
     args = _parser().parse_args()
     try:
         if args.command == "validate":
-            errors = validate_cases(
-                _read_jsonl(args.cases), expected_version=args.holdout_version
-            )
+            errors = validate_cases(_read_jsonl(args.cases), expected_version=args.holdout_version)
             if errors:
                 raise ValueError("\n".join(errors))
             print("Gate L candidate validation: PASS")

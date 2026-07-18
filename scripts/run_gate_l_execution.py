@@ -105,19 +105,16 @@ async def execute_case(
     llm_events = [record for record in trace_records if record["event"] == "llm.invocation"]
     calls_count = len(llm_events)
     total_input_tokens = sum(
-        record["data"].get("usage", {}).get("input_tokens", 0) or 0
-        for record in llm_events
+        record["data"].get("usage", {}).get("input_tokens", 0) or 0 for record in llm_events
     )
     total_output_tokens = sum(
-        record["data"].get("usage", {}).get("output_tokens", 0) or 0
-        for record in llm_events
+        record["data"].get("usage", {}).get("output_tokens", 0) or 0 for record in llm_events
     )
     retries = sum(max(int(record["data"].get("attempt", 1)) - 1, 0) for record in llm_events)
     repairs = sum(
         1
         for record in llm_events
-        if record["data"].get("error_code")
-        and int(record["data"].get("attempt", 1)) > 1
+        if record["data"].get("error_code") and int(record["data"].get("attempt", 1)) > 1
     )
     errors = sum(1 for record in llm_events if record["data"].get("error_code"))
     estimated_cost_usd = round(
@@ -155,11 +152,7 @@ async def execute_case(
             "within": cost_within,
         },
         "all_within": (
-            calls_within
-            and tokens_within
-            and time_within
-            and cost_within
-            and errors == 0
+            calls_within and tokens_within and time_within and cost_within and errors == 0
         ),
     }
 

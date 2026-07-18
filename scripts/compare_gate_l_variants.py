@@ -87,11 +87,7 @@ def _load_variant(entry: dict[str, Any]) -> dict[str, Any]:
 
 
 def _segment_metrics(variant: dict[str, Any], case_ids: set[str]) -> dict[str, Any]:
-    rows = [
-        row
-        for row in variant["decision"]["cases"]
-        if row.get("case_id") in case_ids
-    ]
+    rows = [row for row in variant["decision"]["cases"] if row.get("case_id") in case_ids]
     if not rows:
         return {
             "case_count": 0,
@@ -103,14 +99,15 @@ def _segment_metrics(variant: dict[str, Any], case_ids: set[str]) -> dict[str, A
     return {
         "case_count": len(rows),
         "accepted_rate": sum(bool(row.get("accepted")) for row in rows) / len(rows),
-        "deterministic_rate": sum(
-            bool(row.get("deterministic_accepted")) for row in rows
-        )
+        "deterministic_rate": sum(bool(row.get("deterministic_accepted")) for row in rows)
         / len(rows),
-        "human_rate": sum(bool(row.get("human_accepted")) for row in rows)
-        / len(rows),
+        "human_rate": sum(bool(row.get("human_accepted")) for row in rows) / len(rows),
         "mean_human_score": _mean(
-            [float(row["mean_score"]) for row in rows if isinstance(row.get("mean_score"), int | float)]
+            [
+                float(row["mean_score"])
+                for row in rows
+                if isinstance(row.get("mean_score"), int | float)
+            ]
         ),
     }
 
@@ -175,15 +172,12 @@ def compare(matrix_path: Path) -> dict[str, Any]:
                     for category in categories
                 },
                 "by_tag": {
-                    tag: _segment_metrics(variant, ids)
-                    for tag, ids in sorted(tag_cases.items())
+                    tag: _segment_metrics(variant, ids) for tag, ids in sorted(tag_cases.items())
                 },
             }
         )
 
-    eligible = {
-        item["strategy_id"]: item for item in per_variant if item["formal_evidence"]
-    }
+    eligible = {item["strategy_id"]: item for item in per_variant if item["formal_evidence"]}
 
     def winner_for(segment: str, name: str) -> dict[str, Any] | None:
         candidates: list[dict[str, Any]] = []
@@ -223,15 +217,14 @@ def compare(matrix_path: Path) -> dict[str, Any]:
         ),
         "warning": (
             "Selections are exploratory. Freeze routing rules before evaluating them "
-            "on a fresh confirmation holdout. Do not report same-holdout selection as final acceptance."
+            "on a fresh confirmation holdout. Do not report same-holdout selection "
+            "as final acceptance."
         ),
         "global_ranking": global_ranking,
         "best_by_category": {
             category: winner_for("by_category", category) for category in categories
         },
-        "best_by_tag": {
-            tag: winner_for("by_tag", tag) for tag in sorted(tag_cases)
-        },
+        "best_by_tag": {tag: winner_for("by_tag", tag) for tag in sorted(tag_cases)},
         "variants": per_variant,
     }
 

@@ -154,9 +154,7 @@ def assemble(
         "critical_safety_events": audit["critical_safety_events"],
         "fabricated_identifiers": audit["fabricated_identifiers"],
         "critical_unsupported_claims": audit["critical_unsupported_claims"],
-        "noncritical_unsupported_claim_rate": audit[
-            "noncritical_unsupported_claim_rate"
-        ],
+        "noncritical_unsupported_claim_rate": audit["noncritical_unsupported_claim_rate"],
         "citation_mismatch_rate": audit["citation_mismatch_rate"],
         "repair_attempts": audit["repair_attempts"],
         "repair_successes": audit["repair_successes"],

@@ -102,24 +102,16 @@ async def run(args: argparse.Namespace) -> int:
         literature_settings=LiteratureProviderSettings(
             contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
             semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
-            provider_timeout_seconds=float(
-                literature.get("provider_timeout_seconds", 10.0)
-            ),
-            round_deadline_seconds=float(
-                literature.get("round_deadline_seconds", 25.0)
-            ),
-            enable_arxiv_fallback=bool(
-                literature.get("enable_arxiv_fallback", True)
-            ),
+            provider_timeout_seconds=float(literature.get("provider_timeout_seconds", 10.0)),
+            round_deadline_seconds=float(literature.get("round_deadline_seconds", 25.0)),
+            enable_arxiv_fallback=bool(literature.get("enable_arxiv_fallback", True)),
         ),
         price_table=price_table,
     )
     identity = {
         "repo_sha": os.environ.get("GITHUB_SHA", "local"),
         "clean_tree": clean_tree,
-        "scientific_behavior_cutoff_sha": manifest[
-            "scientific_behavior_cutoff_sha"
-        ],
+        "scientific_behavior_cutoff_sha": manifest["scientific_behavior_cutoff_sha"],
         "planning_prompt_version": prompt.version,
         "provider": provider_config.provider.value,
         "model": provider_config.model,
