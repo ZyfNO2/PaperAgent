@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
+
+
+MERGE_CONFLICT_MARKERS = ("<<<<<<<", "=======", ">>>>>>>")
 
 
 def test_prompt_registry__known_task__returns_versioned_prompt() -> None:
@@ -11,6 +16,12 @@ def test_prompt_registry__known_task__returns_versioned_prompt() -> None:
     assert prompt.version == "planning.v0.1.2"
     assert "JSON" in prompt.system
     assert "hidden chain of thought" not in prompt.system.lower()
+    assert not any(marker in prompt.system for marker in MERGE_CONFLICT_MARKERS)
+
+
+def test_gate_l_runner__source__has_no_merge_conflict_markers() -> None:
+    source = Path("scripts/run_gate_l_execution.py").read_text(encoding="utf-8-sig")
+    assert not any(marker in source for marker in MERGE_CONFLICT_MARKERS)
 
 
 def test_prompt_registry__unknown_task__fails() -> None:
