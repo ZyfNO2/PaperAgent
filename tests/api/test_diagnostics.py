@@ -19,7 +19,9 @@ from paperagent.demo import DemoTaskExecutor
 from paperagent.schemas.request import ResearchRequest
 
 
-def _payload(question: str = "How should a bounded research agent be evaluated?") -> TaskCreateRequest:
+def _payload(
+    question: str = "How should a bounded research agent be evaluated?",
+) -> TaskCreateRequest:
     return TaskCreateRequest(request=ResearchRequest(question=question))
 
 
