@@ -35,7 +35,7 @@ jobs:
       - name: Ruff format
         id: ruff-format
         continue-on-error: true
-        run: ruff format --check . > build/ruff-format.txt 2>&1
+        run: ruff format --check --diff . > build/ruff-format.txt 2>&1
       - name: Upload quality diagnostics
         if: always()
         uses: actions/upload-artifact@v4
