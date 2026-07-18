@@ -16,9 +16,7 @@ def _load_script(name: str, path: str) -> ModuleType:
 def test_local_state_roundtrip_preserves_state_and_recovers_inflight(
     tmp_path: Path,
 ) -> None:
-    module = _load_script(
-        "paperagent_local_state_roundtrip", "scripts/local_state_roundtrip.py"
-    )
+    module = _load_script("paperagent_local_state_roundtrip", "scripts/local_state_roundtrip.py")
 
     summary = module.run_local_state_roundtrip(tmp_path)
 
