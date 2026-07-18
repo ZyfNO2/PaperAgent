@@ -66,7 +66,7 @@ async def test_planning_node__happy_fixture__returns_plan_and_usage_trace(fixed_
     assert patch["plan"].status == "ready"
     assert patch["execution"].llm_call_count == 1
     assert any(event.event_type == "llm.responded" for event in patch["trace"])
-    assert any(event.prompt_version == "planning.v0.1.0" for event in patch["trace"])
+    assert any(event.prompt_version == "planning.v0.1.2" for event in patch["trace"])
 
 
 @pytest.mark.asyncio
