@@ -1,0 +1,186 @@
++Every acceptance record must contain:
++
++- exact commit SHA;
++- UTC execution time;
++- Python and operating-system versions;
++- command or workflow run ID;
++- input manifest and configuration hash;
++- artifact names and SHA-256 digests;
++- pass/fail/incomplete status;
++- known exclusions and skipped tests;
++- reviewer and sign-off date.
++
++Secrets, raw prompts containing sensitive data, provider credentials, and private research inputs must not be included in artifacts.
++
++## 4. Gate A — PR consolidation and change control
++
++### Procedure
++
++1. Confirm PR #17 targets `master`.
++2. Confirm PRs #14 and #16 are closed, unmerged, and marked superseded.
++3. Confirm no other open integration PR contains a competing subset of the same commits.
++4. Record `master` base SHA and PR head SHA.
++5. Review the complete `master...head` diff, not only the last stacked delta.
++6. Confirm the branch is mergeable and contains no conflict resolution not covered by tests.
++
++### Acceptance
++
++- Exactly one integration PR remains open.
++- Full-history diff is reviewable.
++- No changes were directly pushed to `master` as part of consolidation.
++
++## 5. Gate B — static quality and source integrity
++
++### Commands
++
++```bash
++python -m compileall -q src/paperagent
++ruff check .
++ruff format --check --diff .
++mypy --config-file pyproject.toml
++```
++
++### Additional review
++
++- Search for import-time mutation, monkey patching, `eval`, `exec`, unbounded subprocess execution, secret logging, raw traceback exposure, and unsafe path writes.
++- Confirm broad exception handlers convert failures to typed, redacted boundary errors.
++- Confirm compatibility modules are re-exports only.
++- Confirm generated files are not silently treated as authoritative source.
++
++### Acceptance
++
++- All commands pass.
++- No unresolved P0/P1 finding.
++- Any suppression is documented with scope and justification.
++
++## 6. Gate C — offline automated tests and coverage
++
++### Command
++
++```bash
++pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
++```
++
++### Required coverage
++
++- Python 3.11 and 3.12.
++- Branch coverage threshold at least the configured 90 percent.
++- New consolidated-review regressions pass:
++  - no import-time policy rebinding;
++  - synthetic readiness and release boundary;
++  - real-evidence controlled-experiment boundary;
++  - novelty-variant rejection;
++  - duplicate and non-finite contract rejection;
++  - verifiable provenance;
++  - full experiment fairness;
++  - unknown module and missing-loss rejection;
++  - observed SQLite journal mode.
++
++### Acceptance
++
++- Zero failing offline tests.
++- Skips are only for explicitly marked network, real-provider, browser, or credentialed tests.
++- Snapshot changes are reviewed and explained.
++
++## 7. Gate D — package and installed-artifact acceptance
++
++### Procedure
++
++```bash
++python -m build --wheel
++python -m venv /tmp/paperagent-acceptance
++/tmp/paperagent-acceptance/bin/pip install dist/*.whl
++/tmp/paperagent-acceptance/bin/paperagent --help
++/tmp/paperagent-acceptance/bin/paperagent plugins list
++```
++
++Also install the independent example plugin and invoke it only with exact command-local authorization.
++
++### Acceptance
++
++- Wheel installs into a clean environment.
++- CLI, built-in plugins, authorized external plugin, and packaged web assets work from the Wheel rather than the source tree.
++- Unauthorized external plugins are not imported.
++- Plugin output is atomic, no-overwrite, finite JSON with consistent metadata.
++
++## 8. Gate E — task API and durable state acceptance
++
++### Scenarios
++
++1. New task returns `202` and persists `task.queued`.
++2. Same idempotency key and same canonical request reuses the task.
++3. Same key with a different request returns `409`.
++4. Concurrent identical submissions create one task.
++5. Concurrent claims assign a queued task once.
++6. Polling and SSE return monotonically ordered persisted events.
++7. SSE reconnect resumes from the last event cursor.
++8. Queued cancellation becomes terminal cancellation.
++9. Running cancellation becomes `cancel_requested` and resolves at a bounded workflow boundary.
++10. Completion after accepted cancellation does not become success.
++11. Process restart fails in-flight work closed without replaying potentially billable calls.
++12. Result-size limit and malformed terminal output fail with typed errors.
++13. Review optimistic versions reject stale writes.
++14. JSON, Markdown, and BibTeX exports are deterministic and digestible.
++
++### Acceptance
++
++- State transitions and terminal events are transactional.
++- No duplicate task execution is observed in the tested single-process boundary.
++- Error responses do not expose internal stack traces or secrets.
++
++## 9. Gate F — database, diagnostics, migration, and observability
++
++### Procedure
++
++- Initialize a new SQLite database and confirm schema version 1.
++- Run schema initialization twice and confirm idempotency.
++- Reject missing, empty, task-only, and future-version databases without diagnostic side effects.
++- Confirm WAL and busy-timeout behavior.
++- Exercise concurrent idempotent creation and task claiming.
++- Query `/readyz`, `/v1/diagnostics/runtime`, and `/metrics`.
++
++### Acceptance
++
++- Diagnostics reports the observed `PRAGMA journal_mode`.
++- Readiness is `503` for incompatible schema or executor failure.
++- Diagnostics and metrics contain no request body, idempotency key, prompt, credential, model response body, or high-cardinality secret-bearing label.
++- 500-task benchmark completes and records environment and interpretation limits; it is not presented as a production SLO.
++
++## 10. Gate G — provider, retry, repair, budget, and redaction
++
++### Offline matrix
++
++Test typed behavior for:
++
++- authentication and authorization failure;
++- rate limiting;
++- connect/read/total timeout;
++- transient 5xx;
++- malformed JSON;
++- schema-invalid JSON;
++- thinking-only or empty structured output;
++- unknown token usage or cost;
++- call, input-token, output-token, elapsed-time, and monetary budget exhaustion;
++- cancellation before and after an issued provider request.
++
++### Acceptance
++
++- Retry occurs only for documented retryable classes and stays within the attempt budget.
++- Schema repair is bounded and does not become a general second answer attempt.
++- Monetary budget fails closed when usage or price is unknown.
++- Redaction covers API keys, Bearer values, query secrets, assignment forms, and configured secret aliases.
++- Events preserve correlation identifiers without persisting prompts or credentials.
++
++## 11. Gate H — academic-method deterministic acceptance
++
++### Required cases
++
++- complete valid plan;
++- missing or unreproduced baseline;
++- unverified or claim-free source;
++- incompatible or unknown license;
++- no proposed module;
++- contaminated or duplicate baseline arm;
++- shape-only compatibility;
++- trainable module without loss;
++- undeclared module in an experiment;
