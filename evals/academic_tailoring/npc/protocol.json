@@ -10,6 +10,16 @@
     "p95_decision_latency_ms",
     "manual_adjustment_minutes"
   ],
+  "strong_comparisons": [
+    {
+      "name": "shift-robust-ensemble-comparison",
+      "source_paper_id": "SYN-D",
+      "comparator": "Shift-Robust Ensemble Policy",
+      "contrast": "full proposed method versus the attributed ensemble under the same shifted test split and tuning budget",
+      "purpose": "test whether the proposed mechanism adds value beyond a strong compute-heavier shift-robust alternative",
+      "included_modules": []
+    }
+  ],
   "stop_conditions": [
     "stop if the frozen baseline cannot be reproduced within tolerance",
     "stop if a selected source is unverified or cannot be reused",
