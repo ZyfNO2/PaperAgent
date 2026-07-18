@@ -12,11 +12,21 @@ from paperagent.telemetry import hash_payload, make_event
 
 NODE = "verify_evidence_node"
 _ALLOWED_LOCATOR_PREFIXES = ("fixture://", "https://", "http://", "doi:", "github://")
+_TRUSTED_VERIFICATION_PROVIDERS = frozenset({"literature_retrieval"})
+_DETERMINISTIC_FIXTURE_PROVIDERS = frozenset({"fake_search"})
+_VOLATILE_METADATA_KEYS = frozenset(
+    {
+        "verification_status",
+        "rank_score",
+        "fallback_used",
+        "providers",
+    }
+)
 _STATUS_PRIORITY = {
     "failed_verification": 0,
-    "rejected": 1,
-    "pending": 2,
-    "accepted": 3,
+    "pending": 1,
+    "accepted": 2,
+    "rejected": 3,
 }
 
 
@@ -24,18 +34,50 @@ def _candidate_status(
     candidate: SearchCandidate,
 ) -> Literal["accepted", "rejected", "pending", "failed_verification"]:
     external = candidate.metadata.get("verification_status")
-    if external == "verified":
-        return "accepted"
-    if external in {"pending", "suspicious"}:
-        return "pending"
+
+    # Negative verification signals are always fail-closed, even when they come
+    # from a provider that is not permitted to assert positive verification.
     if external == "rejected":
         return "rejected"
     if external == "failed":
         return "failed_verification"
-    return (
-        "accepted"
-        if candidate.locator.startswith(_ALLOWED_LOCATOR_PREFIXES)
-        else "failed_verification"
+    if external in {"pending", "suspicious"}:
+        return "pending"
+
+    # Positive verification is trusted only from the retrieval service that owns
+    # the Crossref/DataCite verification pipeline.
+    if candidate.provider in _TRUSTED_VERIFICATION_PROVIDERS:
+        return "accepted" if external == "verified" else "pending"
+
+    # Deterministic fixtures are the only non-network exception. A fake provider
+    # must still use the explicit fixture scheme; arbitrary HTTPS strings are not
+    # accepted merely because they look like locators.
+    if (
+        candidate.provider in _DETERMINISTIC_FIXTURE_PROVIDERS
+        and candidate.locator.startswith("fixture://")
+    ):
+        return "accepted"
+
+    if not candidate.locator.startswith(_ALLOWED_LOCATOR_PREFIXES):
+        return "failed_verification"
+    return "pending"
+
+
+def _candidate_content_hash(candidate: SearchCandidate) -> str:
+    metadata = {
+        key: value
+        for key, value in candidate.metadata.items()
+        if key not in _VOLATILE_METADATA_KEYS
+    }
+    return hash_payload(
+        {
+            "source_type": candidate.source_type,
+            "title": candidate.title,
+            "locator": candidate.locator,
+            "snippet": candidate.snippet,
+            "provider": candidate.provider,
+            "metadata": metadata,
+        }
     )
 
 
@@ -67,7 +109,7 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
             verification_status=status,
             supports_gap_ids=supports,
             summary=candidate.snippet,
-            content_hash=hash_payload(candidate),
+            content_hash=_candidate_content_hash(candidate),
             provider=candidate.provider,
             metadata=metadata,
         )
