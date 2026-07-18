@@ -1,0 +1,87 @@
++| HIGH | A synthetic fixture could correctly receive an internal `GO`, but the proposal output had no machine-readable distinction between a structurally valid simulation and evidence sufficient for a scientific release. | Added evidence scope, readiness, `scientific_release_ready`, and explicit release conditions. Synthetic `GO` is limited to `synthetic_evaluation_only`; verified real evidence is limited to `ready_for_controlled_experiment`; neither is automatically release-ready. |
++| HIGH | Audit provenance accepted `verified=true` without requiring a stable identifier or any supported claim. | Baseline and module provenance now require verification, a stable identifier, and non-empty supported claims. Missing evidence remains fail-closed. |
++| MEDIUM | Novelty rejection depended on narrow phrase matching and could be bypassed by trivial composition wording variants. | Added normalized English/Chinese composition and mechanism signals. Composition-only claims now produce `REVISE` unless they state a falsifiable mechanism. |
++| MEDIUM | Tailoring contracts allowed duplicate stable identifiers, duplicate metrics/seeds/resources, and non-finite result values. | Added Pydantic validators for uniqueness, non-empty evaluation contracts, and finite metrics and targets. |
++| MEDIUM | Experiment fairness compared only dataset, split, and preprocessing. Unequal tuning budget, metrics, seeds, uncertainty reporting, resources, or stopping criteria could pass. | Added a complete comparison signature and duplicate-value validation for every arm. |
++| MEDIUM | Experiment arms could reference undeclared modules, and trainable modules could omit their loss definition. | Added declared-module reference checks and explicit loss requirements for trainable modules. |
++| LOW | Runtime diagnostics reported WAL from an assumption about the database path instead of the actual SQLite connection state. | Diagnostics now reads `PRAGMA journal_mode` and reports the observed value. |
++| LOW | README described v0.6-v0.8 capabilities as not targeting `master`, which became stale after consolidation. | README now distinguishes the integration candidate from the published package version and keeps the scientific-evidence boundary explicit. |
++
++## Review invariants after correction
++
++1. Critical scientific and security rules live in deterministic code, not prompt text or import side effects.
++2. Compatibility modules cannot alter runtime behavior.
++3. `GO` means the supplied contract passed the current deterministic proposal gates; it does not mean publication-ready science.
++4. Synthetic, mixed/unverified, and real-verified evidence are distinct machine-readable states.
++5. A real-verified proposal can advance to controlled experimentation only after the deterministic gates pass.
++6. Scientific release remains false until observed results have immutable evidence and domain-expert review is complete.
++7. Every comparison arm uses the same data, preprocessing, tuning budget, metrics, seeds, uncertainty reporting, resource accounting, and stopping criteria.
++8. Baseline and borrowed modules require stable, claim-bearing provenance and acceptable reuse terms.
++9. Unknown module references, empty proposed modules, contaminated baselines, fabricated observed results, and non-finite metrics fail closed.
++10. Diagnostics report observed database state and do not expose prompts, credentials, request bodies, or idempotency keys.
++
++## Verification required on the corrective head
++
++```bash
++ruff check .
++ruff format --check --diff .
++mypy --config-file pyproject.toml
++pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
++python -m build --wheel
++python scripts/interview_demo.py --output build/interview-demo-summary.json
++python scripts/export_openapi.py --output build/openapi.json
++python scripts/repository_benchmark.py --tasks 500 --output build/repository-benchmark.json
++python scripts/run_academic_tailoring_eval.py --output-dir build/academic-tailoring-eval
++```
++
++The GitHub Actions matrix must pass on Python 3.11 and 3.12. Installed-Wheel, external-plugin, web, browser, live literature-provider, Docker, OpenAPI, benchmark, and academic-evaluation evidence must also remain green where configured.
++
++## Residual risk and non-claims
++
++The following are not merge-blocking code defects, but they block broader scientific or production claims:
++
++- no authentication, tenant isolation, public abuse controls, distributed worker leases, or hostile-plugin sandbox;
++- no completed live Mistral validation across every production schema and failure class;
++- no three consecutive real-provider vertical runs with frozen inputs;
++- no representative external scientific holdout;
++- no real-paper reproduction package for the academic-tailoring proposal path;
++- no exhaustive prior-art search or proof of global novelty;
++- no blinded domain-expert review or calibrated scientific acceptance threshold;
++- no production throughput, availability, or cost SLO.
++
++## Decision rule
++
++- **Merge-ready:** all corrective-head CI gates pass, OpenAPI and snapshots are intentional, no unresolved P0/P1 code finding remains, and PR #17 remains the only open integration PR.
++- **Engineering release-ready:** merge gates plus installed artifact, browser, container, diagnostics, migration, rollback, and operational acceptance pass.
++- **Scientific release-ready:** engineering release plus live provider, real sources, baseline reproduction, frozen holdout, statistical evaluation, and blinded human review pass.
++
++The authoritative execution checklist is `docs/acceptance/CONSOLIDATED_ACCEPTANCE_PLAN.md`.
+--- /dev/null
++++ b/docs/acceptance/CONSOLIDATED_ACCEPTANCE_PLAN.md
+@@ -0,0 +1,369 @@
++# PaperAgent Consolidated Acceptance Plan
++
++## 1. Purpose
++
++This plan accepts the consolidated PR #17 at three distinct levels:
++
++1. **Merge acceptance** — code may enter `master`.
++2. **Engineering release acceptance** — an installable local single-user candidate may be published.
++3. **Scientific capability acceptance** — claims involving real LLM quality, real literature, reproducibility, or research validity may be made.
++
++Passing a lower level never implies passing a higher one.
++
++## 2. Roles and sign-off
++
++| Role | Responsibility | Required for merge | Required for engineering release | Required for scientific release |
++|---|---|---:|---:|---:|
++| Code reviewer | Correctness, security, failure semantics, maintainability | Yes | Yes | Yes |
++| Release operator | Wheel/container/browser/rollback evidence | No | Yes | Yes |
++| Provider evaluator | Live model and literature-provider evidence | No | Conditional | Yes |
++| Domain reviewer | Scientific validity, novelty, feasibility, interpretation | No | No | Yes |
++| Data/reproducibility reviewer | Dataset, split, code, environment, seeds, results | No | No | Yes |
++
++No person should approve a scientific claim solely from the synthetic corpus.
++
++## 3. Evidence rules
++
