@@ -1,0 +1,57 @@
+name: Gate L Case 11 One-shot Diagnostic
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  case11:
+    if: github.event.pull_request.head.ref == 'scientific-gate-l'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      PAPERAGENT_LLM_PROVIDER: mistral
+      PAPERAGENT_LLM_MODEL: mistral-small-latest
+      PAPERAGENT_LLM_BASE_URL: https://api.mistral.ai/v1
+      PAPERAGENT_LLM_MAX_CALLS: "6"
+      PAPERAGENT_LLM_MAX_INPUT_TOKENS_PER_TASK: "10000"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_CALL: "4096"
+      PAPERAGENT_LLM_MAX_OUTPUT_TOKENS_PER_TASK: "10000"
+      PAPERAGENT_LLM_MAX_COST_USD: "1.25"
+      PAPERAGENT_LLM_TASK_TIMEOUT: "120"
+      PAPERAGENT_LLM_TOTAL_TIMEOUT: "90"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev,release]'
+      - name: Verify live credential is available
+        run: |
+          if [ -z "$MISTRAL_API_KEY" ]; then
+            echo "::error::MISTRAL_API_KEY repository secret is unavailable"
+            exit 2
+          fi
+      - name: Run Case 11 diagnostic only
+        run: |
+          mkdir -p build/gate-l-evidence
+          python scripts/run_gate_l_final.py \
+            --case-id holdout-v1-insufficient-003 \
+            | tee build/gate-l-evidence/case11-console.log
+      - name: Upload immutable diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-l-case11-diagnostic
+          path: |
+            build/gate-l-evidence/per-case/holdout-v1-insufficient-003.json
+            build/gate-l-evidence/run-record.json
+            build/gate-l-evidence/case11-console.log
+          if-no-files-found: warn
