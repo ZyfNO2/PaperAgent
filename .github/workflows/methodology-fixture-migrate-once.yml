@@ -1,0 +1,263 @@
+name: Methodology Fixture Migration Once
+
+on:
+  pull_request:
+    branches: [fix/gate-l-v3-acceptance-routing]
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: ${{ github.head_ref == 'fix/academic-tailoring-contract-convergence' && github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Migrate method design fixtures and node assertions
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          root = Path('tests/fixtures/llm/v0_1/method_design')
+
+          def common() -> dict[str, object]:
+              return {
+                  'dataset': 'fixture-method-dataset-v1',
+                  'split': 'fixture-frozen-split-v1',
+                  'preprocessing': 'fixture-preprocess-v1',
+                  'tuning_budget': '10 trials per arm',
+                  'metrics': ['primary_metric', 'resource_cost'],
+                  'seeds': [1, 2, 3],
+                  'uncertainty_reporting': 'mean and 95 percent bootstrap interval',
+                  'resource_measures': ['wall_clock_seconds', 'peak_memory_mb'],
+                  'stopping_criteria': 'stop after the fixed budget',
+              }
+
+          def arm(
+              name: str,
+              arm_type: str,
+              included: list[str],
+              purpose: str,
+              *,
+              comparator: str | None = None,
+              contrast: str | None = None,
+              source: str | None = None,
+          ) -> dict[str, object]:
+              return {
+                  'name': name,
+                  'arm_type': arm_type,
+                  'included_modules': included,
+                  **common(),
+                  'purpose': purpose,
+                  'comparator': comparator,
+                  'contrast': contrast,
+                  'source_evidence_id': source,
+              }
+
+          for path in sorted(root.glob('*.json')):
+              payload = json.loads(path.read_text(encoding='utf-8'))
+              weak = path.name in {'gate_repair_method__call_0.json', 'empty__call_0.json'}
+              evidence_ids = list(payload.get('evidence_ids', []))
+              legacy_modules = list(payload.get('modules', []))
+              baseline_source = evidence_ids[0] if evidence_ids else None
+              strong_source = evidence_ids[-1] if evidence_ids else None
+              module_cards = []
+              for index, module in enumerate(legacy_modules):
+                  evidence_id = evidence_ids[min(index, len(evidence_ids) - 1)] if evidence_ids else None
+                  module_cards.append(
+                      {
+                          'name': module['module_id'],
+                          'evidence_id': evidence_id,
+                          'license': 'MIT' if not weak else None,
+                          'original_role': module['name'],
+                          'proposed_role': module['purpose'],
+                          'input_semantics': 'ordered verified research records',
+                          'output_semantics': 'bounded method-specific records',
+                          'input_shape': 'batch x records x features' if not weak else None,
+                          'output_shape': 'batch x records' if not weak else None,
+                          'normalization': 'training-split statistics' if not weak else None,
+                          'masks': 'mask absent or rejected evidence' if not weak else None,
+                          'ordering': 'preserve declared record order' if not weak else None,
+                          'trainable': True if not weak else None,
+                          'loss_terms': ['bounded_method_loss'] if not weak else [],
+                          'compute_cost': 'below 10 percent of baseline cost',
+                          'assumptions': ['all evidence identifiers are accepted'] if not weak else [],
+                          'predicted_effect': module['purpose'],
+                          'failure_mode': 'domain shift can invalidate the proposed mapping',
+                          'implementation_switch': f"enable_{module['module_id'].replace('-', '_')}" if not weak else None,
+                          'gradient_expectation': 'gradients remain inside the proposed module' if not weak else None,
+                          'parameter_update_scope': 'proposed module parameters only' if not weak else None,
+                          'loss_scale': 'fixed loss weight 1.0' if not weak else None,
+                          'baseline_parity_behavior': 'disabling the switch reproduces the frozen baseline' if not weak else None,
+                      }
+                  )
+              module_ids = [item['name'] for item in module_cards]
+              experiments = [
+                  arm(
+                      'canonical-baseline',
+                      'baseline',
+                      [],
+                      'reconfirm the frozen baseline and modules-disabled parity',
+                      contrast='baseline versus reproduced reference metric',
+                  )
+              ]
+              if not weak:
+                  experiments.extend(
+                      arm(
+                          f'single-{module_id}',
+                          'single_module',
+                          [module_id],
+                          f'measure isolated contribution of {module_id}',
+                          contrast=f'{module_id} versus frozen baseline',
+                      )
+                      for module_id in module_ids
+                  )
+                  experiments.append(
+                      arm(
+                          'canonical-full',
+                          'full',
+                          module_ids,
+                          'test the full mechanism under the frozen protocol',
+                          contrast='full method versus baseline and strong comparison',
+                      )
+                  )
+                  if len(module_ids) > 1:
+                      for module_id in module_ids:
+                          experiments.append(
+                              arm(
+                                  f'without-{module_id}',
+                                  'leave_one_out',
+                                  [item for item in module_ids if item != module_id],
+                                  f'test the full story without {module_id}',
+                                  contrast=f'full method versus method without {module_id}',
+                              )
+                          )
+                      experiments.append(
+                          arm(
+                              'canonical-interaction',
+                              'interaction',
+                              module_ids,
+                              'measure whether combined effects exceed isolated effects',
+                              contrast='full minus baseline versus the sum of single-module improvements',
+                          )
+                      )
+                  if strong_source is not None:
+                      experiments.append(
+                          arm(
+                              'canonical-strong-comparison',
+                              'strong_comparison',
+                              [],
+                              'compare against the strongest attributed fixture alternative',
+                              comparator='attributed fixture comparator',
+                              contrast='proposed method versus attributed comparator',
+                              source=strong_source,
+                          )
+                      )
+              elif module_ids:
+                  experiments.append(
+                      arm(
+                          'weak-full',
+                          'full',
+                          module_ids,
+                          'deliberately incomplete first-pass proposal',
+                      )
+                  )
+
+              evidence = [
+                  {
+                      'evidence_id': evidence_id,
+                      'source_type': 'user_material',
+                      'title': f'Accepted fixture evidence {evidence_id}',
+                      'stable_identifier': f'fixture://{evidence_id}',
+                      'verified': True,
+                      'supported_claims': ['fixture-supported method and comparison claims'],
+                      'limitations': ['deterministic test fixture'],
+                      'content_hash': f'sha256:{evidence_id}',
+                      'license': 'MIT',
+                      'repository_ref': None,
+                  }
+                  for evidence_id in evidence_ids
+              ]
+              old_experiment = payload['minimum_key_experiment']
+              stop_conditions = list(payload.get('stop_conditions', []))
+              payload['schema_version'] = '0.2'
+              payload['methodology_plan'] = {
+                  'contract_version': 'paperagent.method-plan.v0.9',
+                  'research': {
+                      'target_problem': payload['problem_method_insight'],
+                      'scientific_setting': 'bounded deterministic fixture workflow',
+                      'success_metric': ', '.join(old_experiment['metrics']),
+                      'constraints': ['fixed evidence set', 'fixed evaluation budget'],
+                      'intended_claim': payload['problem_method_insight'],
+                      'observed_problem': payload['baseline']['description'],
+                      'proposed_mechanism': payload['falsifiable_hypothesis'],
+                  },
+                  'baseline': {
+                      'name': payload['baseline']['name'],
+                      'version_or_commit': 'fixture-baseline-v1' if not weak else None,
+                      'source_evidence_id': baseline_source,
+                      'license': 'MIT' if not weak else None,
+                      'dataset': 'fixture-method-dataset-v1' if not weak else None,
+                      'split': 'fixture-frozen-split-v1' if not weak else None,
+                      'environment': 'Python fixture runtime' if not weak else None,
+                      'seed_policy': 'seeds 1, 2, 3' if not weak else None,
+                      'reproduced': not weak,
+                      'reproduced_metric': 'primary_metric=0.50' if not weak else None,
+                      'compute_fit': True if not weak else None,
+                      'baseline_parity_verified': True if not weak else False,
+                      'dataset_fingerprint': 'sha256:fixture-dataset' if not weak else None,
+                      'environment_fingerprint': 'sha256:fixture-environment' if not weak else None,
+                  },
+                  'hypothesis': {
+                      'condition': 'under the declared fixture condition',
+                      'limitation': payload['baseline']['description'],
+                      'mechanism': payload['problem_method_insight'],
+                      'intervention': payload['falsifiable_hypothesis'],
+                      'predicted_metric_change': old_experiment['success_threshold'],
+                      'guardrail': 'resource_cost does not increase by more than 10 percent',
+                  },
+                  'modules': module_cards,
+                  'experiments': experiments,
+                  'evidence': evidence,
+                  'stop_conditions': stop_conditions,
+              }
+              path.write_text(
+                  json.dumps(payload, ensure_ascii=False, indent=2) + '\n',
+                  encoding='utf-8',
+              )
+
+          pattern = re.compile(
+              r'(?P<method_indent>\s*)"method_design_node",\n'
+              r'(?P<quality_indent>\s*)"quality_gate_node",'
+          )
+          for path in Path('tests').rglob('*.py'):
+              text = path.read_text(encoding='utf-8')
+              text, count = pattern.subn(
+                  lambda match: (
+                      f'{match.group("method_indent")}"method_design_node",\n'
+                      f'{match.group("quality_indent")}"methodology_audit_node",\n'
+                      f'{match.group("quality_indent")}"quality_gate_node",'
+                  ),
+                  text,
+              )
+              if count:
+                  path.write_text(text, encoding='utf-8')
+          PY
+      - run: python -m pip install ruff
+      - name: Format migrated fixtures and tests
+        run: ruff format tests
+      - name: Commit migration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tests
+          git commit -m 'test(methodology): migrate method fixtures to canonical v0.2'
+          git push origin HEAD:${{ github.head_ref }}
