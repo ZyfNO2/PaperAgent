@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import cast
+from typing import Any, cast
 
 from paperagent.academic_tailoring import TailoringTask
 from paperagent.academic_tailoring_guard import compose_tailored_research_proposal
@@ -126,6 +126,7 @@ class AcademicMethodTailoringPlugin(_BaseAcademicMethodTailoringPlugin):
 
 # Keep direct submodule imports, the built-in registry, and the CLI on one policy.
 _implementation.audit_method_plan = audit_method_plan
-setattr(_implementation, "AcademicMethodTailoringPlugin", AcademicMethodTailoringPlugin)
+_implementation_dynamic: Any = _implementation
+_implementation_dynamic.AcademicMethodTailoringPlugin = AcademicMethodTailoringPlugin
 
 __all__ = ["AcademicMethodTailoringPlugin", "audit_method_plan"]
