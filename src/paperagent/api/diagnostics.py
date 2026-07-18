@@ -8,10 +8,11 @@ from typing import Any, cast
 from paperagent.api.models import TaskStatus
 
 CURRENT_SCHEMA_VERSION = 1
+_REQUIRED_SCHEMA_TABLES = ("tasks", "task_events", "paper_reviews")
 
 
 class DatabaseNotInitializedError(RuntimeError):
-    """Raised when diagnostics target a file without the durable task schema."""
+    """Raised when diagnostics target a file without the durable application schema."""
 
 
 class UnsupportedSchemaVersionError(RuntimeError):
@@ -41,12 +42,13 @@ def _has_table(connection: sqlite3.Connection, name: str) -> bool:
 
 
 def ensure_schema_version(database_path: str | Path) -> dict[str, Any]:
-    """Apply metadata migrations after verifying that the durable task schema exists."""
+    """Apply metadata migrations after verifying the durable application schema."""
 
     with _connect(database_path) as connection:
-        if not all(_has_table(connection, name) for name in ("tasks", "task_events")):
+        missing = [name for name in _REQUIRED_SCHEMA_TABLES if not _has_table(connection, name)]
+        if missing:
             raise DatabaseNotInitializedError(
-                "database is missing the PaperAgent task schema; initialize the service first"
+                "database is missing required PaperAgent tables: " + ", ".join(missing)
             )
         current = int(connection.execute("PRAGMA user_version").fetchone()[0])
         if current > CURRENT_SCHEMA_VERSION:
