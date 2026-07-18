@@ -41,15 +41,38 @@ jobs:
         with:
           python-version: '3.12'
       - name: Decode and apply reviewed patch
+        id: apply-patch
+        continue-on-error: true
         run: |
-          cat build/review-hardening.patch.gz.b64.part* \
-            | base64 --decode \
-            | gzip --decompress \
-            > /tmp/review-hardening.patch
-          echo 'ae6ee4b32af592837c1cd1fb12c89677d6d66553febe51cd563bdfc737aad68e  /tmp/review-hardening.patch' \
-            | sha256sum --check --strict
-          git apply --check /tmp/review-hardening.patch
-          git apply /tmp/review-hardening.patch
+          mkdir -p build
+          {
+            ls -l build/review-hardening.patch.gz.b64.part*
+            sha256sum build/review-hardening.patch.gz.b64.part*
+            cat build/review-hardening.patch.gz.b64.part* > /tmp/review-hardening.payload
+            wc -c /tmp/review-hardening.payload
+            sha256sum /tmp/review-hardening.payload
+            base64 --decode /tmp/review-hardening.payload > /tmp/review-hardening.patch.gz
+            wc -c /tmp/review-hardening.patch.gz
+            sha256sum /tmp/review-hardening.patch.gz
+            gzip --decompress --stdout /tmp/review-hardening.patch.gz > /tmp/review-hardening.patch
+            wc -c /tmp/review-hardening.patch
+            sha256sum /tmp/review-hardening.patch
+            echo 'ae6ee4b32af592837c1cd1fb12c89677d6d66553febe51cd563bdfc737aad68e  /tmp/review-hardening.patch' \
+              | sha256sum --check --strict
+            git apply --check /tmp/review-hardening.patch
+            git apply /tmp/review-hardening.patch
+          } > build/review-payload-diagnostics.txt 2>&1
+      - name: Upload payload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-payload-diagnostics
+          path: build/review-payload-diagnostics.txt
+          if-no-files-found: error
+          retention-days: 3
+      - name: Enforce patch application
+        if: steps.apply-patch.outcome == 'failure'
+        run: exit 1
       - name: Install project
         run: python -m pip install -e '.[dev,release]'
       - name: Static verification
