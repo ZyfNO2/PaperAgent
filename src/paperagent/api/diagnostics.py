@@ -10,21 +10,44 @@ from paperagent.api.models import TaskStatus
 CURRENT_SCHEMA_VERSION = 1
 
 
+class DatabaseNotInitializedError(RuntimeError):
+    """Raised when diagnostics target a file without the durable task schema."""
+
+
 class UnsupportedSchemaVersionError(RuntimeError):
     """Raised when a database was created by a newer incompatible PaperAgent build."""
 
 
+def _database_path(database_path: str | Path) -> Path:
+    path = Path(database_path)
+    if path != Path(":memory:") and not path.exists():
+        raise FileNotFoundError(f"PaperAgent database does not exist: {path}")
+    return path
+
+
 def _connect(database_path: str | Path) -> sqlite3.Connection:
-    connection = sqlite3.connect(str(Path(database_path)), timeout=30.0)
+    connection = sqlite3.connect(str(_database_path(database_path)), timeout=30.0)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA busy_timeout = 30000")
     return connection
 
 
+def _has_table(connection: sqlite3.Connection, name: str) -> bool:
+    row = connection.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (name,),
+    ).fetchone()
+    return row is not None
+
+
 def ensure_schema_version(database_path: str | Path) -> dict[str, Any]:
-    """Apply idempotent metadata migrations and reject unknown future schemas."""
+    """Apply metadata migrations after verifying that the durable task schema exists."""
 
     with _connect(database_path) as connection:
+        if not all(_has_table(connection, name) for name in ("tasks", "task_events")):
+            raise DatabaseNotInitializedError(
+                "database is missing the PaperAgent task schema; initialize the service first"
+            )
         current = int(connection.execute("PRAGMA user_version").fetchone()[0])
         if current > CURRENT_SCHEMA_VERSION:
             raise UnsupportedSchemaVersionError(
@@ -39,15 +62,15 @@ def ensure_schema_version(database_path: str | Path) -> dict[str, Any]:
             )
             """
         )
+        applied_at = datetime.now(tz=UTC).isoformat()
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO schema_migrations (version, name, applied_at)
+            VALUES (1, 'initial_task_and_review_schema', ?)
+            """,
+            (applied_at,),
+        )
         if current < 1:
-            applied_at = datetime.now(tz=UTC).isoformat()
-            connection.execute(
-                """
-                INSERT OR IGNORE INTO schema_migrations (version, name, applied_at)
-                VALUES (1, 'initial_task_and_review_schema', ?)
-                """,
-                (applied_at,),
-            )
             connection.execute(f"PRAGMA user_version = {CURRENT_SCHEMA_VERSION}")
             current = CURRENT_SCHEMA_VERSION
         rows = connection.execute(
@@ -86,7 +109,7 @@ def collect_runtime_diagnostics(database_path: str | Path) -> dict[str, Any]:
         event_total = int(connection.execute("SELECT COUNT(*) FROM task_events").fetchone()[0])
 
     path = Path(database_path)
-    size_bytes = 0 if path == Path(":memory:") or not path.exists() else path.stat().st_size
+    size_bytes = 0 if path == Path(":memory:") else path.stat().st_size
     return {
         "service": "paperagent",
         "execution_mode": "single_process",
