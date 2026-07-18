@@ -7,5 +7,21 @@
   "semantic_mapping": "the module uses the same action identifiers and ordering as the baseline",
   "adapter": "a named action identifier join checks ontology coverage before filtering",
   "predicted_effect": "reduce intent violations caused by structurally invalid choices",
-  "failure_mode": "an incomplete ontology may suppress a necessary action"
+  "failure_mode": "an incomplete ontology may suppress a necessary action",
+  "input_shape": "batch x action_vocabulary",
+  "output_shape": "batch x action_vocabulary",
+  "normalization": "reuse frozen baseline logits before categorical normalization",
+  "masks": "binary scenario-valid action mask with explicit unknown-action rejection",
+  "ordering": "preserve the baseline action ontology order",
+  "trainable": false,
+  "loss_terms": [],
+  "assumptions": [
+    "the action ontology is versioned",
+    "every baseline action identifier resolves before masking"
+  ],
+  "implementation_switch": "enable_semantic_action_mask",
+  "gradient_expectation": "no gradient is introduced by the deterministic mask",
+  "parameter_update_scope": "no trainable parameters; baseline remains frozen",
+  "loss_scale": "not applicable because the module is non-trainable",
+  "baseline_parity_behavior": "disabling enable_semantic_action_mask preserves frozen baseline logits and action selection"
 }
