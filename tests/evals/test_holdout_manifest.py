@@ -7,12 +7,9 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-
 MANIFEST_PATH = Path("evals/v0_6/holdout_manifest.json")
 CASE_PATH = Path("evals/v0_6/holdout_cases.v1.jsonl")
-CASE_ID_PATTERN = re.compile(
-    r"^holdout-v1-(in-domain|ood|insufficient|adversarial)-\d{3}$"
-)
+CASE_ID_PATTERN = re.compile(r"^holdout-v1-(in-domain|ood|insufficient|adversarial)-\d{3}$")
 DOI_PATTERN = re.compile(r"^10\.\d{4,9}/\S+$", re.IGNORECASE)
 ARXIV_PATTERN = re.compile(r"^arXiv:\d{4}\.\d{4,5}$")
 
