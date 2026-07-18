@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import secrets
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
@@ -17,6 +18,7 @@ from typing import Any
 CATEGORIES = ("in_domain", "ood", "insufficient_evidence", "adversarial")
 EXPECTED_CATEGORY_COUNTS = {category: 4 for category in CATEGORIES}
 EXPECTED_TERMINALS = {"succeeded", "blocked", "failed", "need_human"}
+REVIEW_DECISIONS = {"GO", "REVISE", "NO_GO"}
 RUBRIC_WEIGHTS = {
     "scientific_correctness": 25,
     "claim_evidence_alignment": 25,
@@ -83,7 +85,8 @@ def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
         errors.append(f"duplicate case_id values: {', '.join(duplicates)}")
 
     counts = Counter(case.get("category") for case in cases)
-    if {category: counts.get(category, 0) for category in CATEGORIES} != EXPECTED_CATEGORY_COUNTS:
+    observed_counts = {category: counts.get(category, 0) for category in CATEGORIES}
+    if observed_counts != EXPECTED_CATEGORY_COUNTS or sum(counts.values()) != 16:
         errors.append(
             "category counts must be exactly "
             + ", ".join(f"{key}=4" for key in CATEGORIES)
@@ -172,7 +175,6 @@ def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
                 ):
                     errors.append(f"{label}: invalid reference_evidence entry")
                     break
-
     return errors
 
 
@@ -182,7 +184,8 @@ def _validate_attestation(attestation: dict[str, Any], cases_digest: str) -> lis
         errors.append("attestation.independent_from_remediation must be true")
     if attestation.get("not_used_for_tuning") is not True:
         errors.append("attestation.not_used_for_tuning must be true")
-    if not isinstance(attestation.get("author_or_owner"), str) or not attestation["author_or_owner"].strip():
+    owner = attestation.get("author_or_owner")
+    if not isinstance(owner, str) or not owner.strip():
         errors.append("attestation.author_or_owner is required")
     declared = attestation.get("case_file_sha256")
     if declared not in (None, cases_digest):
@@ -247,10 +250,18 @@ def verify_manifest(manifest_path: Path) -> tuple[dict[str, Any], list[dict[str,
     return manifest, cases
 
 
-def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: Path) -> None:
+def _mapping_path(output_path: Path) -> Path:
+    return output_path.with_name(f"{output_path.stem}.mapping.json")
+
+
+def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: Path) -> Path:
     manifest, cases = verify_manifest(manifest_path)
+    shuffled = list(cases)
+    secrets.SystemRandom().shuffle(shuffled)
     reviewer_cases: list[dict[str, Any]] = []
-    for case in cases:
+    mapping: list[dict[str, str]] = []
+    for index, case in enumerate(shuffled, start=1):
+        arm_id = f"arm-{index:03d}"
         evidence_path = evidence_dir / f"{case['case_id']}.json"
         if not evidence_path.exists():
             raise ValueError(f"missing evidence file: {evidence_path}")
@@ -260,7 +271,7 @@ def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: 
             raise ValueError(f"{case['case_id']}: evidence is missing review_output")
         reviewer_cases.append(
             {
-                "case_id": case["case_id"],
+                "arm_id": arm_id,
                 "title": case["title"],
                 "task_input": case["task_input"],
                 "allowed_constraints": case["allowed_constraints"],
@@ -269,13 +280,15 @@ def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: 
                 "rubric": case["human_scoring_rubric"],
             }
         )
+        mapping.append({"arm_id": arm_id, "case_id": case["case_id"]})
+
     package = {
         "gate": "L",
         "holdout_version": manifest["version"],
         "blinded": True,
         "instructions": (
-            "Score each rubric criterion independently. Do not infer provider/model identity or "
-            "expected terminal labels. Return one score file per reviewer."
+            "Score each rubric criterion independently and assign GO, REVISE, or NO_GO. "
+            "Do not infer provider/model identity, hidden expected terminal labels, or other scores."
         ),
         "cases": reviewer_cases,
     }
@@ -283,31 +296,50 @@ def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: 
         json.dumps(package, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    mapping_path = _mapping_path(output_path)
+    mapping_path.write_text(
+        json.dumps(
+            {
+                "holdout_version": manifest["version"],
+                "review_package_sha256": _sha256(output_path),
+                "created_at_utc": datetime.now(tz=UTC).isoformat(),
+                "arms": mapping,
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return mapping_path
 
 
 def _review_map(review: dict[str, Any], reviewer_name: str) -> dict[str, dict[str, Any]]:
+    if review.get("blinded") is not True:
+        raise ValueError(f"{reviewer_name}: blinded must be true")
     cases = review.get("cases")
     if not isinstance(cases, list):
         raise ValueError(f"{reviewer_name}: cases must be a list")
     result: dict[str, dict[str, Any]] = {}
     for item in cases:
-        if not isinstance(item, dict) or not isinstance(item.get("case_id"), str):
+        if not isinstance(item, dict) or not isinstance(item.get("arm_id"), str):
             raise ValueError(f"{reviewer_name}: invalid case review entry")
-        case_id = item["case_id"]
-        if case_id in result:
-            raise ValueError(f"{reviewer_name}: duplicate review for {case_id}")
+        arm_id = item["arm_id"]
+        if arm_id in result:
+            raise ValueError(f"{reviewer_name}: duplicate review for {arm_id}")
         scores = item.get("scores")
         if not isinstance(scores, dict) or set(scores) != set(RUBRIC_WEIGHTS):
-            raise ValueError(f"{reviewer_name}/{case_id}: scores must contain the five rubric criteria")
+            raise ValueError(f"{reviewer_name}/{arm_id}: scores must contain the five rubric criteria")
         for criterion, maximum in RUBRIC_WEIGHTS.items():
             score = scores[criterion]
             if not isinstance(score, (int, float)) or isinstance(score, bool) or not 0 <= score <= maximum:
-                raise ValueError(f"{reviewer_name}/{case_id}: invalid score for {criterion}")
-        if item.get("terminal_decision") not in EXPECTED_TERMINALS:
-            raise ValueError(f"{reviewer_name}/{case_id}: invalid terminal_decision")
+                raise ValueError(f"{reviewer_name}/{arm_id}: invalid score for {criterion}")
+        if item.get("decision") not in REVIEW_DECISIONS:
+            raise ValueError(f"{reviewer_name}/{arm_id}: decision must be GO, REVISE, or NO_GO")
         if not isinstance(item.get("critical_defect"), bool):
-            raise ValueError(f"{reviewer_name}/{case_id}: critical_defect must be boolean")
-        result[case_id] = item
+            raise ValueError(f"{reviewer_name}/{arm_id}: critical_defect must be boolean")
+        result[arm_id] = item
     return result
 
 
@@ -326,8 +358,54 @@ def _cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float:
     return (observed - expected) / (1.0 - expected)
 
 
+def _arm_mapping(mapping_path: Path, expected_case_ids: set[str]) -> dict[str, str]:
+    mapping = _read_json(mapping_path)
+    arms = mapping.get("arms")
+    if not isinstance(arms, list):
+        raise ValueError("review mapping must contain arms")
+    result: dict[str, str] = {}
+    for item in arms:
+        if not isinstance(item, dict):
+            raise ValueError("invalid review mapping entry")
+        arm_id = item.get("arm_id")
+        case_id = item.get("case_id")
+        if not isinstance(arm_id, str) or not isinstance(case_id, str):
+            raise ValueError("invalid arm_id/case_id mapping")
+        if arm_id in result:
+            raise ValueError(f"duplicate arm_id in mapping: {arm_id}")
+        result[arm_id] = case_id
+    if set(result.values()) != expected_case_ids or len(result) != len(expected_case_ids):
+        raise ValueError("review mapping does not cover the exact frozen case set")
+    return result
+
+
+def _deterministic_cases(
+    summary: dict[str, Any], expected_case_ids: set[str]
+) -> dict[str, dict[str, Any]]:
+    entries = summary.get("cases")
+    if not isinstance(entries, list):
+        raise ValueError("deterministic summary must contain per-case cases")
+    result: dict[str, dict[str, Any]] = {}
+    for item in entries:
+        if not isinstance(item, dict) or not isinstance(item.get("case_id"), str):
+            raise ValueError("invalid deterministic case result")
+        case_id = item["case_id"]
+        if case_id in result:
+            raise ValueError(f"duplicate deterministic case result: {case_id}")
+        if not isinstance(item.get("passed"), bool):
+            raise ValueError(f"{case_id}: deterministic passed must be boolean")
+        failures = item.get("zero_tolerance_failures")
+        if not isinstance(failures, list):
+            raise ValueError(f"{case_id}: zero_tolerance_failures must be a list")
+        result[case_id] = item
+    if set(result) != expected_case_ids:
+        raise ValueError("deterministic summary must cover every frozen case exactly once")
+    return result
+
+
 def score_acceptance(
     manifest_path: Path,
+    review_mapping_path: Path,
     review_a_path: Path,
     review_b_path: Path,
     deterministic_summary_path: Path,
@@ -335,11 +413,13 @@ def score_acceptance(
 ) -> dict[str, Any]:
     manifest, cases = verify_manifest(manifest_path)
     thresholds = manifest.get("acceptance_thresholds", DEFAULT_THRESHOLDS)
+    expected_ids = {case["case_id"] for case in cases}
+    arm_to_case = _arm_mapping(review_mapping_path, expected_ids)
     review_a = _review_map(_read_json(review_a_path), "review_a")
     review_b = _review_map(_read_json(review_b_path), "review_b")
-    expected_ids = {case["case_id"] for case in cases}
-    if set(review_a) != expected_ids or set(review_b) != expected_ids:
-        raise ValueError("both reviewers must score every frozen case exactly once")
+    expected_arms = set(arm_to_case)
+    if set(review_a) != expected_arms or set(review_b) != expected_arms:
+        raise ValueError("both reviewers must score every blinded arm exactly once")
 
     adjudication: dict[str, Any] = {}
     if adjudication_path is not None:
@@ -348,61 +428,10 @@ def score_acceptance(
         if not isinstance(entries, list):
             raise ValueError("adjudication.cases must be a list")
         adjudication = {
-            item["case_id"]: item
+            item["arm_id"]: item
             for item in entries
-            if isinstance(item, dict) and isinstance(item.get("case_id"), str)
+            if isinstance(item, dict) and isinstance(item.get("arm_id"), str)
         }
-
-    labels_a: list[str] = []
-    labels_b: list[str] = []
-    case_results: list[dict[str, Any]] = []
-    accepted_by_category: Counter[str] = Counter()
-    required_adjudications: list[str] = []
-    close_scores = 0
-    total_scores: list[float] = []
-
-    for case in cases:
-        case_id = case["case_id"]
-        a = review_a[case_id]
-        b = review_b[case_id]
-        labels_a.append(a["terminal_decision"])
-        labels_b.append(b["terminal_decision"])
-        total_a = float(sum(a["scores"].values()))
-        total_b = float(sum(b["scores"].values()))
-        total_scores.extend((total_a, total_b))
-        delta = abs(total_a - total_b)
-        if delta <= thresholds["maximum_close_score_delta"]:
-            close_scores += 1
-        disagreement = (
-            a["terminal_decision"] != b["terminal_decision"]
-            or a["critical_defect"] != b["critical_defect"]
-        )
-        if disagreement and case_id not in adjudication:
-            required_adjudications.append(case_id)
-        resolved = adjudication.get(case_id, {})
-        terminal = resolved.get("resolved_terminal", a["terminal_decision"])
-        critical_defect = resolved.get("resolved_critical_defect", a["critical_defect"] or b["critical_defect"])
-        mean_score = (total_a + total_b) / 2
-        accepted = (
-            not disagreement or case_id in adjudication
-        ) and terminal == case["expected_terminal"] and not critical_defect and mean_score >= thresholds[
-            "minimum_mean_human_score"
-        ] and min(total_a, total_b) >= thresholds["minimum_individual_score_for_accepted_case"]
-        if accepted:
-            accepted_by_category[case["category"]] += 1
-        case_results.append(
-            {
-                "case_id": case_id,
-                "category": case["category"],
-                "expected_terminal": case["expected_terminal"],
-                "reviewer_a_total": total_a,
-                "reviewer_b_total": total_b,
-                "mean_score": mean_score,
-                "score_delta": delta,
-                "accepted": accepted,
-                "adjudication_required": disagreement,
-            }
-        )
 
     deterministic = _read_json(deterministic_summary_path)
     required_metrics = {
@@ -418,6 +447,79 @@ def score_acceptance(
     if not required_metrics <= set(deterministic):
         missing = sorted(required_metrics - set(deterministic))
         raise ValueError(f"deterministic summary missing metrics: {', '.join(missing)}")
+    deterministic_by_case = _deterministic_cases(deterministic, expected_ids)
+
+    case_by_id = {case["case_id"]: case for case in cases}
+    labels_a: list[str] = []
+    labels_b: list[str] = []
+    case_results: list[dict[str, Any]] = []
+    accepted_by_category: Counter[str] = Counter()
+    required_adjudications: list[str] = []
+    close_scores = 0
+    total_scores: list[float] = []
+
+    for arm_id in sorted(expected_arms):
+        case_id = arm_to_case[arm_id]
+        case = case_by_id[case_id]
+        a = review_a[arm_id]
+        b = review_b[arm_id]
+        labels_a.append(a["decision"])
+        labels_b.append(b["decision"])
+        total_a = float(sum(a["scores"].values()))
+        total_b = float(sum(b["scores"].values()))
+        total_scores.extend((total_a, total_b))
+        delta = abs(total_a - total_b)
+        if delta <= thresholds["maximum_close_score_delta"]:
+            close_scores += 1
+        disagreement = a["decision"] != b["decision"] or a["critical_defect"] != b[
+            "critical_defect"
+        ]
+        resolved = adjudication.get(arm_id)
+        if disagreement and resolved is None:
+            required_adjudications.append(arm_id)
+        if resolved is not None:
+            if resolved.get("resolved_decision") not in REVIEW_DECISIONS:
+                raise ValueError(f"{arm_id}: adjudication requires resolved_decision")
+            if not isinstance(resolved.get("resolved_critical_defect"), bool):
+                raise ValueError(f"{arm_id}: adjudication requires resolved_critical_defect")
+            if not isinstance(resolved.get("rationale"), str) or not resolved["rationale"].strip():
+                raise ValueError(f"{arm_id}: adjudication requires rationale")
+            critical_defect = resolved["resolved_critical_defect"]
+        else:
+            critical_defect = a["critical_defect"] or b["critical_defect"]
+
+        mean_score = (total_a + total_b) / 2
+        human_accepted = (
+            (not disagreement or resolved is not None)
+            and not critical_defect
+            and mean_score >= thresholds["minimum_mean_human_score"]
+            and min(total_a, total_b) >= thresholds["minimum_individual_score_for_accepted_case"]
+        )
+        deterministic_case = deterministic_by_case[case_id]
+        terminal_matches = deterministic_case.get("observed_terminal") == case["expected_terminal"]
+        deterministic_accepted = (
+            deterministic_case["passed"]
+            and terminal_matches
+            and not deterministic_case["zero_tolerance_failures"]
+        )
+        accepted = human_accepted and deterministic_accepted
+        if accepted:
+            accepted_by_category[case["category"]] += 1
+        case_results.append(
+            {
+                "arm_id": arm_id,
+                "case_id": case_id,
+                "category": case["category"],
+                "reviewer_a_total": total_a,
+                "reviewer_b_total": total_b,
+                "mean_score": mean_score,
+                "score_delta": delta,
+                "human_accepted": human_accepted,
+                "deterministic_accepted": deterministic_accepted,
+                "accepted": accepted,
+                "adjudication_required": disagreement,
+            }
+        )
 
     accepted_count = sum(item["accepted"] for item in case_results)
     kappa = _cohen_kappa(labels_a, labels_b)
@@ -427,8 +529,7 @@ def score_acceptance(
     checks = (
         (deterministic["false_go"] <= thresholds["maximum_false_go"], "false_go"),
         (
-            deterministic["critical_safety_events"]
-            <= thresholds["maximum_critical_safety_events"],
+            deterministic["critical_safety_events"] <= thresholds["maximum_critical_safety_events"],
             "critical_safety_events",
         ),
         (
@@ -454,8 +555,7 @@ def score_acceptance(
             "repair_success_rate",
         ),
         (
-            deterministic["budget_fail_closed_rate"]
-            >= thresholds["minimum_budget_fail_closed_rate"],
+            deterministic["budget_fail_closed_rate"] >= thresholds["minimum_budget_fail_closed_rate"],
             "budget_fail_closed_rate",
         ),
     )
@@ -516,6 +616,7 @@ def _parser() -> argparse.ArgumentParser:
 
     score = subparsers.add_parser("score")
     score.add_argument("--manifest", type=Path, required=True)
+    score.add_argument("--review-map", type=Path, required=True)
     score.add_argument("--review-a", type=Path, required=True)
     score.add_argument("--review-b", type=Path, required=True)
     score.add_argument("--deterministic-summary", type=Path, required=True)
@@ -548,11 +649,13 @@ def main() -> int:
                 f"digest={manifest['case_file_sha256']}"
             )
         elif args.command == "blind":
-            build_blinded_package(args.manifest, args.evidence_dir, args.output)
+            mapping = build_blinded_package(args.manifest, args.evidence_dir, args.output)
             print(f"Blinded review package written: {args.output}")
+            print(f"Private review mapping written: {mapping}")
         elif args.command == "score":
             result = score_acceptance(
                 args.manifest,
+                args.review_map,
                 args.review_a,
                 args.review_b,
                 args.deterministic_summary,
