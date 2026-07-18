@@ -1,0 +1,94 @@
+[
+  {
+    "case_id": "npc-go-complete",
+    "category": "happy_path",
+    "description": "reproduced baseline, attributed modules, semantic integration, falsifiable novelty, and fair experiments",
+    "mutation": {},
+    "expected_decision": "GO",
+    "minimum_score": 90
+  },
+  {
+    "case_id": "npc-no-go-baseline-not-reproduced",
+    "category": "reproduction_failure",
+    "description": "the baseline reproduction failed and no metric is available",
+    "mutation": {
+      "reproduced": false,
+      "clear_reproduced_metrics": true
+    },
+    "expected_decision": "NO_GO",
+    "minimum_score": 90
+  },
+  {
+    "case_id": "npc-no-go-unverified-module-source",
+    "category": "provenance_failure",
+    "description": "the residual-policy source has not been verified",
+    "mutation": {
+      "evidence_state_overrides": {
+        "SYN-C": "unverified"
+      }
+    },
+    "expected_decision": "NO_GO",
+    "minimum_score": 90
+  },
+  {
+    "case_id": "npc-no-go-incompatible-license",
+    "category": "license_failure",
+    "description": "the action-mask source cannot be reused under the declared license",
+    "mutation": {
+      "license_overrides": {
+        "SYN-B": "proprietary-no-reuse"
+      }
+    },
+    "expected_decision": "NO_GO",
+    "minimum_score": 90
+  },
+  {
+    "case_id": "npc-no-go-shape-only-compatibility",
+    "category": "compatibility_failure",
+    "description": "the residual module is justified only by matching shape",
+    "mutation": {
+      "semantic_mapping_overrides": {
+        "SYN-C": "shape-only"
+      },
+      "adapter_overrides": {
+        "SYN-C": "reshape"
+      }
+    },
+    "expected_decision": "NO_GO",
+    "minimum_score": 90
+  },
+  {
+    "case_id": "npc-revise-weak-novelty",
+    "category": "novelty_failure",
+    "description": "the claimed contribution is only that two modules are combined",
+    "mutation": {
+      "novelty_thesis": "combine two existing modules",
+      "why_not_simple_splice": "the modules are combined"
+    },
+    "expected_decision": "REVISE",
+    "minimum_score": 85
+  },
+  {
+    "case_id": "npc-no-go-missing-paper-card",
+    "category": "insufficient_evidence",
+    "description": "one requested module has no source paper card",
+    "mutation": {
+      "remove_module_sources": [
+        "SYN-C"
+      ]
+    },
+    "expected_decision": "NO_GO",
+    "minimum_score": 75
+  },
+  {
+    "case_id": "npc-go-chinese-research-story",
+    "category": "multilingual",
+    "description": "the innovation and distinction are stated in Chinese while all structural evidence remains unchanged",
+    "mutation": {
+      "novelty_thesis": "在熟悉状态保持冻结模仿策略，仅在高不确定状态启用受动作约束的残差修正",
+      "why_not_simple_splice": "动作约束处理无效动作，不确定性门控处理分布偏移，两者通过触发机制形成可证伪的因果链条"
+    },
+    "expected_decision": "GO",
+    "minimum_score": 90
+  }
+]
