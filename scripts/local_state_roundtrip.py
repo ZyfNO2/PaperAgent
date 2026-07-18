@@ -44,9 +44,11 @@ def _consistent_backup(source: Path, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists():
         destination.unlink()
-    with sqlite3.connect(source) as source_connection:
-        with sqlite3.connect(destination) as destination_connection:
-            source_connection.backup(destination_connection)
+    with (
+        sqlite3.connect(source) as source_connection,
+        sqlite3.connect(destination) as destination_connection,
+    ):
+        source_connection.backup(destination_connection)
 
 
 def run_local_state_roundtrip(workdir: Path) -> dict[str, Any]:
@@ -67,11 +69,7 @@ def run_local_state_roundtrip(workdir: Path) -> dict[str, Any]:
         accepted = client.post(
             "/v1/tasks",
             headers={"Idempotency-Key": "local-state-roundtrip"},
-            json={
-                "request": {
-                    "question": "Verify local backup, restore, and restart recovery"
-                }
-            },
+            json={"request": {"question": "Verify local backup, restore, and restart recovery"}},
         )
         accepted.raise_for_status()
         task_id = accepted.json()["task_id"]
@@ -154,9 +152,7 @@ def run_local_state_roundtrip(workdir: Path) -> dict[str, Any]:
             raise AssertionError(recovered_payload)
         if recovered_payload["error"]["code"] != "PROCESS_RESTARTED":
             raise AssertionError(recovered_payload)
-        recovery_events = client.get(
-            f"/v1/tasks/{restart_task_id}/events?after=0&limit=100"
-        )
+        recovery_events = client.get(f"/v1/tasks/{restart_task_id}/events?after=0&limit=100")
         recovery_events.raise_for_status()
         event_types = [item["event_type"] for item in recovery_events.json()["events"]]
         if event_types[-1] != "task.failed":
@@ -184,9 +180,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Exercise local SQLite backup/restore and fail-closed restart recovery."
     )
-    parser.add_argument(
-        "--workdir", type=Path, default=Path("build/local-state-roundtrip")
-    )
+    parser.add_argument("--workdir", type=Path, default=Path("build/local-state-roundtrip"))
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
 
