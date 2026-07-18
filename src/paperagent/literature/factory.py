@@ -34,6 +34,7 @@ class LiteratureProviderSettings(BaseModel):
     round_deadline_seconds: float = Field(default=25.0, gt=0, le=120)
     success_cache_ttl_seconds: float = Field(default=3600.0, gt=0)
     empty_cache_ttl_seconds: float = Field(default=120.0, gt=0)
+    enable_arxiv_fallback: bool = False
 
 
 @dataclass(frozen=True)
@@ -94,9 +95,13 @@ def build_literature_runtime(
         rewriter=DeterministicFocusedQueryRewriter(),
         total_deadline_seconds=resolved.round_deadline_seconds,
     )
+    fallback_preferences = ["arxiv", "openalex"] if resolved.enable_arxiv_fallback else None
     return LiteratureRuntime(
         service=service,
-        adapter=LiteratureSearchAdapter(service=service),
+        adapter=LiteratureSearchAdapter(
+            service=service,
+            fallback_source_preferences=fallback_preferences,
+        ),
         transport=shared_transport,
         owns_transport=transport is None,
     )
