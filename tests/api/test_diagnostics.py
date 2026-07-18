@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from paperagent.api import SQLiteTaskRepository, TaskCreateRequest, create_app
 from paperagent.api.diagnostics import (
     CURRENT_SCHEMA_VERSION,
+    DatabaseNotInitializedError,
     UnsupportedSchemaVersionError,
     collect_runtime_diagnostics,
     ensure_schema_version,
@@ -37,8 +38,27 @@ def test_schema_version_is_idempotent(tmp_path: Path) -> None:
     assert [item["version"] for item in first["migrations"]] == [1]
 
 
+def test_missing_database_is_not_created_by_diagnostics(tmp_path: Path) -> None:
+    database = tmp_path / "missing.db"
+
+    with pytest.raises(FileNotFoundError, match="does not exist"):
+        ensure_schema_version(database)
+
+    assert not database.exists()
+
+
+def test_database_without_task_schema_is_rejected(tmp_path: Path) -> None:
+    database = tmp_path / "uninitialized.db"
+    with sqlite3.connect(database):
+        pass
+
+    with pytest.raises(DatabaseNotInitializedError, match="missing the PaperAgent task schema"):
+        ensure_schema_version(database)
+
+
 def test_newer_database_schema_fails_closed(tmp_path: Path) -> None:
     database = tmp_path / "future.db"
+    SQLiteTaskRepository(database)
     with sqlite3.connect(database) as connection:
         connection.execute(f"PRAGMA user_version = {CURRENT_SCHEMA_VERSION + 1}")
 
