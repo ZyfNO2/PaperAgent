@@ -56,7 +56,9 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     cases: list[dict[str, Any]] = []
-    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+    for line_number, raw_line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
         line = raw_line.strip()
         if not line:
             continue
@@ -71,6 +73,10 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _is_number(value: object) -> bool:
+    return isinstance(value, int | float) and not isinstance(value, bool)
+
+
 def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
     errors: list[str] = []
     if len(cases) != 16:
@@ -80,7 +86,9 @@ def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
     if any(not isinstance(case_id, str) or not case_id.strip() for case_id in ids):
         errors.append("every case must have a non-empty string case_id")
     string_ids = [case_id for case_id in ids if isinstance(case_id, str)]
-    duplicates = sorted(case_id for case_id, count in Counter(string_ids).items() if count > 1)
+    duplicates = sorted(
+        case_id for case_id, count in Counter(string_ids).items() if count > 1
+    )
     if duplicates:
         errors.append(f"duplicate case_id values: {', '.join(duplicates)}")
 
@@ -118,9 +126,15 @@ def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
         if not isinstance(budget, dict):
             errors.append(f"{label}: budget must be an object")
         else:
-            for field in ("max_calls", "max_total_tokens", "max_wall_seconds", "max_cost_usd"):
+            budget_fields = (
+                "max_calls",
+                "max_total_tokens",
+                "max_wall_seconds",
+                "max_cost_usd",
+            )
+            for field in budget_fields:
                 value = budget.get(field)
-                if not isinstance(value, (int, float)) or isinstance(value, bool) or value <= 0:
+                if not _is_number(value) or value <= 0:
                     errors.append(f"{label}: budget.{field} must be > 0")
 
         checks = case.get("deterministic_checks")
@@ -129,8 +143,12 @@ def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
         else:
             kinds = {check.get("kind") for check in checks if isinstance(check, dict)}
             if "terminal" not in kinds or "budget" not in kinds:
-                errors.append(f"{label}: deterministic_checks must include terminal and budget checks")
-            check_ids = [check.get("check_id") for check in checks if isinstance(check, dict)]
+                errors.append(
+                    f"{label}: deterministic_checks must include terminal and budget checks"
+                )
+            check_ids = [
+                check.get("check_id") for check in checks if isinstance(check, dict)
+            ]
             if len(check_ids) != len(set(check_ids)):
                 errors.append(f"{label}: deterministic check IDs must be unique")
             for check in checks:
@@ -138,7 +156,9 @@ def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
                     isinstance(check.get(field), str) and check[field].strip()
                     for field in ("check_id", "kind", "target", "expected")
                 ):
-                    errors.append(f"{label}: every deterministic check needs string fields")
+                    errors.append(
+                        f"{label}: every deterministic check needs string fields"
+                    )
                     break
 
         rubric = case.get("human_scoring_rubric")
@@ -157,7 +177,9 @@ def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
                     if not isinstance(item.get(field), str) or not item[field].strip():
                         errors.append(f"{label}: rubric {criterion!r} missing {field}")
             if observed != RUBRIC_WEIGHTS:
-                errors.append(f"{label}: rubric weights/criteria must equal {RUBRIC_WEIGHTS}")
+                errors.append(
+                    f"{label}: rubric weights/criteria must equal {RUBRIC_WEIGHTS}"
+                )
 
         references = case.get("reference_evidence")
         provenance_note = case.get("reference_provenance_note")
@@ -166,19 +188,28 @@ def validate_cases(cases: list[dict[str, Any]]) -> list[str]:
         elif not references and not (
             isinstance(provenance_note, str) and provenance_note.strip()
         ):
-            errors.append(f"{label}: empty reference_evidence requires reference_provenance_note")
+            errors.append(
+                f"{label}: empty reference_evidence requires reference_provenance_note"
+            )
         else:
             for reference in references:
                 if not isinstance(reference, dict) or not all(
                     isinstance(reference.get(field), str) and reference[field].strip()
-                    for field in ("claim_scope", "source_type", "stable_identifier", "title")
+                    for field in (
+                        "claim_scope",
+                        "source_type",
+                        "stable_identifier",
+                        "title",
+                    )
                 ):
                     errors.append(f"{label}: invalid reference_evidence entry")
                     break
     return errors
 
 
-def _validate_attestation(attestation: dict[str, Any], cases_digest: str) -> list[str]:
+def _validate_attestation(
+    attestation: dict[str, Any], cases_digest: str
+) -> list[str]:
     errors: list[str] = []
     if attestation.get("independent_from_remediation") is not True:
         errors.append("attestation.independent_from_remediation must be true")
@@ -219,10 +250,15 @@ def freeze_cases(
         "case_file_sha256": digest,
         "raw_cases_committed": True,
         "expected_case_count": 16,
-        "expected_category_counts": {category: counts[category] for category in CATEGORIES},
+        "expected_category_counts": {
+            category: counts[category] for category in CATEGORIES
+        },
         "author_attestation": attestation,
         "acceptance_thresholds": DEFAULT_THRESHOLDS,
-        "note": "Frozen unseen Gate L v2 corpus. Any later scientific behavior change invalidates this manifest.",
+        "note": (
+            "Frozen unseen Gate L v2 corpus. Any later scientific behavior change "
+            "invalidates this manifest."
+        ),
     }
     manifest_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
@@ -230,7 +266,9 @@ def freeze_cases(
     )
 
 
-def verify_manifest(manifest_path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def verify_manifest(
+    manifest_path: Path,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     manifest = _read_json(manifest_path)
     if manifest.get("status") != "frozen_pending_execution":
         raise ValueError("manifest status must be frozen_pending_execution")
@@ -254,7 +292,9 @@ def _mapping_path(output_path: Path) -> Path:
     return output_path.with_name(f"{output_path.stem}.mapping.json")
 
 
-def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: Path) -> Path:
+def build_blinded_package(
+    manifest_path: Path, evidence_dir: Path, output_path: Path
+) -> Path:
     manifest, cases = verify_manifest(manifest_path)
     shuffled = list(cases)
     secrets.SystemRandom().shuffle(shuffled)
@@ -288,7 +328,8 @@ def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: 
         "blinded": True,
         "instructions": (
             "Score each rubric criterion independently and assign GO, REVISE, or NO_GO. "
-            "Do not infer provider/model identity, hidden expected terminal labels, or other scores."
+            "Do not infer provider/model identity, hidden expected terminal labels, or "
+            "other scores."
         ),
         "cases": reviewer_cases,
     }
@@ -315,7 +356,9 @@ def build_blinded_package(manifest_path: Path, evidence_dir: Path, output_path: 
     return mapping_path
 
 
-def _review_map(review: dict[str, Any], reviewer_name: str) -> dict[str, dict[str, Any]]:
+def _review_map(
+    review: dict[str, Any], reviewer_name: str
+) -> dict[str, dict[str, Any]]:
     if review.get("blinded") is not True:
         raise ValueError(f"{reviewer_name}: blinded must be true")
     cases = review.get("cases")
@@ -330,15 +373,23 @@ def _review_map(review: dict[str, Any], reviewer_name: str) -> dict[str, dict[st
             raise ValueError(f"{reviewer_name}: duplicate review for {arm_id}")
         scores = item.get("scores")
         if not isinstance(scores, dict) or set(scores) != set(RUBRIC_WEIGHTS):
-            raise ValueError(f"{reviewer_name}/{arm_id}: scores must contain the five rubric criteria")
+            raise ValueError(
+                f"{reviewer_name}/{arm_id}: scores must contain the five rubric criteria"
+            )
         for criterion, maximum in RUBRIC_WEIGHTS.items():
             score = scores[criterion]
-            if not isinstance(score, (int, float)) or isinstance(score, bool) or not 0 <= score <= maximum:
-                raise ValueError(f"{reviewer_name}/{arm_id}: invalid score for {criterion}")
+            if not _is_number(score) or not 0 <= score <= maximum:
+                raise ValueError(
+                    f"{reviewer_name}/{arm_id}: invalid score for {criterion}"
+                )
         if item.get("decision") not in REVIEW_DECISIONS:
-            raise ValueError(f"{reviewer_name}/{arm_id}: decision must be GO, REVISE, or NO_GO")
+            raise ValueError(
+                f"{reviewer_name}/{arm_id}: decision must be GO, REVISE, or NO_GO"
+            )
         if not isinstance(item.get("critical_defect"), bool):
-            raise ValueError(f"{reviewer_name}/{arm_id}: critical_defect must be boolean")
+            raise ValueError(
+                f"{reviewer_name}/{arm_id}: critical_defect must be boolean"
+            )
         result[arm_id] = item
     return result
 
@@ -346,12 +397,15 @@ def _review_map(review: dict[str, Any], reviewer_name: str) -> dict[str, dict[st
 def _cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float:
     if len(labels_a) != len(labels_b) or not labels_a:
         raise ValueError("kappa requires equal non-empty label lists")
-    observed = sum(a == b for a, b in zip(labels_a, labels_b, strict=True)) / len(labels_a)
+    observed = sum(
+        a == b for a, b in zip(labels_a, labels_b, strict=True)
+    ) / len(labels_a)
     counts_a = Counter(labels_a)
     counts_b = Counter(labels_b)
     labels = set(counts_a) | set(counts_b)
     expected = sum(
-        (counts_a[label] / len(labels_a)) * (counts_b[label] / len(labels_b)) for label in labels
+        (counts_a[label] / len(labels_a)) * (counts_b[label] / len(labels_b))
+        for label in labels
     )
     if expected == 1.0:
         return 1.0 if observed == 1.0 else 0.0
@@ -446,7 +500,9 @@ def score_acceptance(
     }
     if not required_metrics <= set(deterministic):
         missing = sorted(required_metrics - set(deterministic))
-        raise ValueError(f"deterministic summary missing metrics: {', '.join(missing)}")
+        raise ValueError(
+            f"deterministic summary missing metrics: {', '.join(missing)}"
+        )
     deterministic_by_case = _deterministic_cases(deterministic, expected_ids)
 
     case_by_id = {case["case_id"]: case for case in cases}
@@ -471,18 +527,24 @@ def score_acceptance(
         delta = abs(total_a - total_b)
         if delta <= thresholds["maximum_close_score_delta"]:
             close_scores += 1
-        disagreement = a["decision"] != b["decision"] or a["critical_defect"] != b[
-            "critical_defect"
-        ]
+        disagreement = (
+            a["decision"] != b["decision"]
+            or a["critical_defect"] != b["critical_defect"]
+        )
         resolved = adjudication.get(arm_id)
         if disagreement and resolved is None:
             required_adjudications.append(arm_id)
         if resolved is not None:
             if resolved.get("resolved_decision") not in REVIEW_DECISIONS:
-                raise ValueError(f"{arm_id}: adjudication requires resolved_decision")
+                raise ValueError(
+                    f"{arm_id}: adjudication requires resolved_decision"
+                )
             if not isinstance(resolved.get("resolved_critical_defect"), bool):
-                raise ValueError(f"{arm_id}: adjudication requires resolved_critical_defect")
-            if not isinstance(resolved.get("rationale"), str) or not resolved["rationale"].strip():
+                raise ValueError(
+                    f"{arm_id}: adjudication requires resolved_critical_defect"
+                )
+            rationale = resolved.get("rationale")
+            if not isinstance(rationale, str) or not rationale.strip():
                 raise ValueError(f"{arm_id}: adjudication requires rationale")
             critical_defect = resolved["resolved_critical_defect"]
         else:
@@ -493,10 +555,13 @@ def score_acceptance(
             (not disagreement or resolved is not None)
             and not critical_defect
             and mean_score >= thresholds["minimum_mean_human_score"]
-            and min(total_a, total_b) >= thresholds["minimum_individual_score_for_accepted_case"]
+            and min(total_a, total_b)
+            >= thresholds["minimum_individual_score_for_accepted_case"]
         )
         deterministic_case = deterministic_by_case[case_id]
-        terminal_matches = deterministic_case.get("observed_terminal") == case["expected_terminal"]
+        terminal_matches = (
+            deterministic_case.get("observed_terminal") == case["expected_terminal"]
+        )
         deterministic_accepted = (
             deterministic_case["passed"]
             and terminal_matches
@@ -529,11 +594,13 @@ def score_acceptance(
     checks = (
         (deterministic["false_go"] <= thresholds["maximum_false_go"], "false_go"),
         (
-            deterministic["critical_safety_events"] <= thresholds["maximum_critical_safety_events"],
+            deterministic["critical_safety_events"]
+            <= thresholds["maximum_critical_safety_events"],
             "critical_safety_events",
         ),
         (
-            deterministic["fabricated_identifiers"] <= thresholds["maximum_fabricated_identifiers"],
+            deterministic["fabricated_identifiers"]
+            <= thresholds["maximum_fabricated_identifiers"],
             "fabricated_identifiers",
         ),
         (
@@ -547,15 +614,18 @@ def score_acceptance(
             "noncritical_unsupported_claim_rate",
         ),
         (
-            deterministic["citation_mismatch_rate"] <= thresholds["maximum_citation_mismatch_rate"],
+            deterministic["citation_mismatch_rate"]
+            <= thresholds["maximum_citation_mismatch_rate"],
             "citation_mismatch_rate",
         ),
         (
-            deterministic["repair_success_rate"] >= thresholds["minimum_repair_success_rate"],
+            deterministic["repair_success_rate"]
+            >= thresholds["minimum_repair_success_rate"],
             "repair_success_rate",
         ),
         (
-            deterministic["budget_fail_closed_rate"] >= thresholds["minimum_budget_fail_closed_rate"],
+            deterministic["budget_fail_closed_rate"]
+            >= thresholds["minimum_budget_fail_closed_rate"],
             "budget_fail_closed_rate",
         ),
     )
@@ -593,7 +663,9 @@ def score_acceptance(
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Gate L v2 formal acceptance utilities")
+    parser = argparse.ArgumentParser(
+        description="Gate L v2 formal acceptance utilities"
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     validate = subparsers.add_parser("validate")
@@ -645,11 +717,13 @@ def main() -> int:
         elif args.command == "verify":
             manifest, cases = verify_manifest(args.manifest)
             print(
-                f"Frozen manifest verified: version={manifest['version']} cases={len(cases)} "
-                f"digest={manifest['case_file_sha256']}"
+                f"Frozen manifest verified: version={manifest['version']} "
+                f"cases={len(cases)} digest={manifest['case_file_sha256']}"
             )
         elif args.command == "blind":
-            mapping = build_blinded_package(args.manifest, args.evidence_dir, args.output)
+            mapping = build_blinded_package(
+                args.manifest, args.evidence_dir, args.output
+            )
             print(f"Blinded review package written: {args.output}")
             print(f"Private review mapping written: {mapping}")
         elif args.command == "score":
@@ -662,7 +736,8 @@ def main() -> int:
                 args.adjudication,
             )
             args.output.write_text(
-                json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)
+                + "\n",
                 encoding="utf-8",
             )
             print(f"Gate L decision: {result['decision']}")
