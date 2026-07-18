@@ -1,6 +1,7 @@
-﻿"""Execute frozen holdout cases against real provider for Gate L evidence.
+"""Execute the frozen Gate L v1 diagnostic corpus against a configured provider.
 
-Produces immutable per-case evidence with SHA-256 digests.
+This legacy runner is diagnostic-only. Formal v3 strategy execution uses
+``scripts/run_gate_l_variant.py``.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ import os
 import time
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 from paperagent.api.real_executor import build_real_task_executor
 from paperagent.literature.factory import LiteratureProviderSettings
@@ -35,11 +37,12 @@ OUTPUT_DIR = Path("build/gate-l-evidence")
 REPO_SHA = os.environ.get("GITHUB_SHA", "local")
 
 
-def load_holdout_cases() -> list[dict]:
-    cases = []
-    for line in HOLDOUT_CASES.read_text(encoding="utf-8").strip().splitlines():
-        cases.append(json.loads(line))
-    return cases
+def load_holdout_cases() -> list[dict[str, Any]]:
+    return [
+        json.loads(line)
+        for line in HOLDOUT_CASES.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
 
 def sha256_text(text: str) -> str:
@@ -50,7 +53,7 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def build_request(case: dict) -> ResearchRequest:
+def build_request(case: dict[str, Any]) -> ResearchRequest:
     return ResearchRequest(
         question=case["task_input"],
         domain_hint=case.get("title"),
@@ -59,18 +62,17 @@ def build_request(case: dict) -> ResearchRequest:
 
 
 async def execute_case(
-    case: dict,
-    executor,
+    case: dict[str, Any],
+    executor: Any,
     case_index: int,
-) -> dict[str, object]:
+    *,
+    price_table_path: Path,
+) -> dict[str, Any]:
     case_id = case["case_id"]
     budget = case["budget"]
-    task_id = f"gate-l-{case_id}"
+    trace_records: list[dict[str, Any]] = []
 
-    request = build_request(case)
-    trace_records: list[dict] = []
-
-    async def emit(event_type: str, data: dict) -> None:
+    async def emit(event_type: str, data: dict[str, Any]) -> None:
         trace_records.append({"event": event_type, "data": data})
 
     def should_cancel() -> bool:
@@ -78,75 +80,67 @@ async def execute_case(
 
     started = time.monotonic()
     started_utc = datetime.now(tz=UTC).isoformat()
-
     try:
         result = await asyncio.wait_for(
             executor.execute(
-                task_id=task_id,
-                request=request,
+                task_id=f"gate-l-{case_id}",
+                request=build_request(case),
                 emit=emit,
                 should_cancel=should_cancel,
             ),
-            timeout=180,
+            timeout=float(budget["max_wall_seconds"]),
         )
         terminal_status = result.get("execution", {}).get("status", "unknown")
         error = None
-    except asyncio.TimeoutError:
-        result = {"error": "HARD TIMEOUT: exceeded 180s wall-clock limit"}
+    except TimeoutError:
+        result = {"error": "case wall-clock budget exhausted"}
         terminal_status = "timeout"
-        error = "TIMEOUT: case exceeded 180s wall-clock limit"
+        error = "TIMEOUT"
     except Exception as exc:
         result = {"error": str(exc)}
         terminal_status = "error"
         error = f"{type(exc).__name__}: {exc}"
 
     wall_seconds = round(time.monotonic() - started, 3)
-
-    llm_events = [r for r in trace_records if r["event"] == "llm.invocation"]
+    llm_events = [record for record in trace_records if record["event"] == "llm.invocation"]
     calls_count = len(llm_events)
     total_input_tokens = sum(
-        r["data"].get("usage", {}).get("input_tokens", 0) or 0 for r in llm_events
+        record["data"].get("usage", {}).get("input_tokens", 0) or 0
+        for record in llm_events
     )
     total_output_tokens = sum(
-        r["data"].get("usage", {}).get("output_tokens", 0) or 0 for r in llm_events
+        record["data"].get("usage", {}).get("output_tokens", 0) or 0
+        for record in llm_events
     )
-    retries = sum(r["data"].get("attempt", 0) for r in llm_events)
+    retries = sum(max(int(record["data"].get("attempt", 1)) - 1, 0) for record in llm_events)
     repairs = sum(
-        1 for r in llm_events if r["data"].get("error_code") and r["data"].get("attempt", 1) > 1
+        1
+        for record in llm_events
+        if record["data"].get("error_code")
+        and int(record["data"].get("attempt", 1)) > 1
     )
-    errors = sum(1 for r in llm_events if r["data"].get("error_code"))
-
+    errors = sum(1 for record in llm_events if record["data"].get("error_code"))
     estimated_cost_usd = round(
-        min(
-            sum(
-                r["data"].get("usage", {}).get("estimated_cost_usd", 0.0) or 0.0 for r in llm_events
-            ),
-            budget["max_cost_usd"],
+        sum(
+            record["data"].get("usage", {}).get("estimated_cost_usd", 0.0) or 0.0
+            for record in llm_events
         ),
-        4,
+        8,
     )
 
-<<<<<<< Updated upstream
+    total_tokens = total_input_tokens + total_output_tokens
     calls_within = calls_count <= budget["max_calls"]
-    tokens_within = (total_input_tokens + total_output_tokens) <= budget["max_total_tokens"]
+    tokens_within = total_tokens <= budget["max_total_tokens"]
     time_within = wall_seconds <= budget["max_wall_seconds"]
     cost_within = estimated_cost_usd <= budget["max_cost_usd"]
-=======
-    # Budget compliance: use case budgets but with realistic caps
-    effective_max_calls = max(budget["max_calls"], 12)
-    effective_max_tokens = max(budget["max_total_tokens"], 60000)
-    effective_max_time = max(budget["max_wall_seconds"], 600)
-    effective_max_cost = max(budget["max_cost_usd"], 5.0)
-    calls_within = calls_count <= effective_max_calls
-    tokens_within = (total_input_tokens + total_output_tokens) <= effective_max_tokens
-    time_within = wall_seconds <= effective_max_time
-    cost_within = estimated_cost_usd <= effective_max_cost
->>>>>>> Stashed changes
-    any_error = errors > 0
     budget_compliance = {
-        "calls": {"used": calls_count, "limit": budget["max_calls"], "within": calls_within},
+        "calls": {
+            "used": calls_count,
+            "limit": budget["max_calls"],
+            "within": calls_within,
+        },
         "tokens": {
-            "used": total_input_tokens + total_output_tokens,
+            "used": total_tokens,
             "limit": budget["max_total_tokens"],
             "within": tokens_within,
         },
@@ -160,19 +154,18 @@ async def execute_case(
             "limit": budget["max_cost_usd"],
             "within": cost_within,
         },
-        "all_within": calls_within
-        and tokens_within
-        and time_within
-        and cost_within
-        and not any_error,
+        "all_within": (
+            calls_within
+            and tokens_within
+            and time_within
+            and cost_within
+            and errors == 0
+        ),
     }
 
     output_dump = json.dumps(result, ensure_ascii=False, sort_keys=True)
-    output_digest = sha256_text(output_dump)
     trace_dump = json.dumps(trace_records, ensure_ascii=False, sort_keys=True)
-    trace_digest = sha256_text(trace_dump)
-
-    evidence = {
+    return {
         "case_id": case_id,
         "case_index": case_index,
         "category": case["category"],
@@ -182,7 +175,8 @@ async def execute_case(
             "provider": os.environ.get("PAPERAGENT_LLM_PROVIDER", "unknown"),
             "model": os.environ.get("PAPERAGENT_LLM_MODEL", "unknown"),
             "base_url": os.environ.get("PAPERAGENT_LLM_BASE_URL", ""),
-            "price_table_version": "operator-mistral-2026-07",
+            "price_table_path": price_table_path.as_posix(),
+            "price_table_sha256": sha256_file(price_table_path),
             "started_utc": started_utc,
             "wall_seconds": wall_seconds,
             "terminal_status": terminal_status,
@@ -194,43 +188,28 @@ async def execute_case(
             "repairs": repairs,
             "input_tokens": total_input_tokens,
             "output_tokens": total_output_tokens,
-            "total_tokens": total_input_tokens + total_output_tokens,
+            "total_tokens": total_tokens,
             "estimated_cost_usd": estimated_cost_usd,
             "errors": errors,
         },
         "budget_compliance": budget_compliance,
-        "output_digest": output_digest,
-        "trace_digest": trace_digest,
+        "output_digest": sha256_text(output_dump),
+        "trace_digest": sha256_text(trace_dump),
         "reference_evidence": case.get("reference_evidence", []),
         "deterministic_checks": case.get("deterministic_checks", []),
     }
-    return evidence
 
 
 async def main() -> int:
     cases = load_holdout_cases()
-    print(f"Loaded {len(cases)} holdout cases")
-
-<<<<<<< Updated upstream
-    sample_categories = {"in_domain", "ood", "insufficient_evidence", "adversarial"}
-    sampled = []
-    seen_cats = set()
-    for case in cases:
-        category = case["category"]
-        if category in sample_categories and category not in seen_cats:
-            sampled.append(case)
-            seen_cats.add(category)
-    cases = sampled
-    print(f"Running {len(cases)} representative cases (one per category)")
-=======
-    # Run ALL 16 cases with full budgets
-    print(f"Running ALL {len(cases)} holdout cases with relaxed timeouts")
->>>>>>> Stashed changes
-
+    print(f"Running all {len(cases)} frozen v1 diagnostic cases")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     provider_config = load_provider_config()
-    price_table = load_price_table(Path("config/price-table-mistral.json"))
+    price_table_path = Path(
+        os.environ.get("PAPERAGENT_PRICE_TABLE", "config/price-table-mistral.json")
+    )
+    price_table = load_price_table(price_table_path)
     executor = build_real_task_executor(
         provider_config,
         literature_settings=LiteratureProviderSettings(
@@ -241,42 +220,38 @@ async def main() -> int:
         price_table=price_table,
     )
 
-    print(f"Provider: {provider_config.provider.value}")
-    print(f"Model: {provider_config.model}")
-    print(f"Budget cap: ${provider_config.max_estimated_cost_usd}")
-    print()
-
     evidence_dir = OUTPUT_DIR / "per-case"
     evidence_dir.mkdir(parents=True, exist_ok=True)
-
-    run_record = {
+    run_record: dict[str, Any] = {
         "gate": "L",
         "version": "v1",
+        "formal_run": False,
+        "diagnostic_only": True,
         "repo_sha": REPO_SHA,
         "holdout_digest": sha256_file(HOLDOUT_CASES),
         "provider": provider_config.provider.value,
         "model": provider_config.model,
+        "price_table_path": price_table_path.as_posix(),
+        "price_table_sha256": sha256_file(price_table_path),
         "started_utc": datetime.now(tz=UTC).isoformat(),
-        "sample_strategy": "one_per_category",
+        "sample_strategy": "all_cases",
         "cases": [],
     }
 
-    for i, case in enumerate(cases):
+    for index, case in enumerate(cases, start=1):
         case_id = case["case_id"]
-        print(f"[{i + 1}/{len(cases)}] Executing {case_id}...", end=" ", flush=True)
-
-        evidence = await execute_case(case, executor, i + 1)
-
-        case_path = evidence_dir / f"{case_id}.json"
-        case_dump = json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True)
-        case_path.write_text(case_dump + "\n", encoding="utf-8")
-
-        status_icon = "PASS" if evidence["budget_compliance"]["all_within"] else "OVER-BUDGET"
-        print(
-            f"{evidence['execution']['terminal_status']} | "
-            f"calls={evidence['telemetry']['calls']} | {status_icon}"
+        print(f"[{index}/{len(cases)}] Executing {case_id}...", flush=True)
+        evidence = await execute_case(
+            case,
+            executor,
+            index,
+            price_table_path=price_table_path,
         )
-
+        case_path = evidence_dir / f"{case_id}.json"
+        case_path.write_text(
+            json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
         run_record["cases"].append(
             {
                 "case_id": case_id,
@@ -290,17 +265,14 @@ async def main() -> int:
         )
 
     run_record["finished_utc"] = datetime.now(tz=UTC).isoformat()
-
     run_path = OUTPUT_DIR / "run-record.json"
     run_path.write_text(
         json.dumps(run_record, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    print()
     print(f"Run record saved: {run_path}")
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(asyncio.run(main()))
-
