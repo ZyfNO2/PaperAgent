@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from paperagent.api import SQLiteTaskRepository
+from paperagent.api import SQLiteReviewRepository, SQLiteTaskRepository
 from paperagent.cli import main
 
 
@@ -14,7 +14,8 @@ def test_diagnostics_cli_prints_runtime_snapshot(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     database = tmp_path / "paperagent.db"
-    SQLiteTaskRepository(database)
+    repository = SQLiteTaskRepository(database)
+    SQLiteReviewRepository(repository)
 
     assert main(["diagnostics", "--database", str(database)]) == 0
     payload = json.loads(capsys.readouterr().out)
