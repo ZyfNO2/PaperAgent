@@ -49,7 +49,19 @@ jobs:
         if: steps.ruff-lint.outcome == 'failure' || steps.ruff-format.outcome == 'failure'
         run: exit 1
       - name: Strict Mypy
-        run: mypy --config-file pyproject.toml
+        id: mypy
+        continue-on-error: true
+        run: mypy --config-file pyproject.toml > build/academic-tailoring-mypy.txt 2>&1
+      - name: Upload type diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: academic-tailoring-mypy-${{ matrix.python-version }}
+          path: build/academic-tailoring-mypy.txt
+          if-no-files-found: error
+      - name: Enforce Mypy
+        if: steps.mypy.outcome == 'failure'
+        run: exit 1
       - name: Tests and branch coverage
         run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
 
