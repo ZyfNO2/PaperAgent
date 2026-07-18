@@ -40,39 +40,44 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Decode and apply reviewed patch
-        id: apply-patch
-        continue-on-error: true
+      - name: Reconstruct and apply reviewed patch
         run: |
-          mkdir -p build
-          {
-            ls -l build/review-hardening.patch.gz.b64.part*
-            sha256sum build/review-hardening.patch.gz.b64.part*
-            cat build/review-hardening.patch.gz.b64.part* > /tmp/review-hardening.payload
-            wc -c /tmp/review-hardening.payload
-            sha256sum /tmp/review-hardening.payload
-            base64 --decode /tmp/review-hardening.payload > /tmp/review-hardening.patch.gz
-            wc -c /tmp/review-hardening.patch.gz
-            sha256sum /tmp/review-hardening.patch.gz
-            gzip --decompress --stdout /tmp/review-hardening.patch.gz > /tmp/review-hardening.patch
-            wc -c /tmp/review-hardening.patch
-            sha256sum /tmp/review-hardening.patch
-            echo 'ae6ee4b32af592837c1cd1fb12c89677d6d66553febe51cd563bdfc737aad68e  /tmp/review-hardening.patch' \
-              | sha256sum --check --strict
-            git apply --check /tmp/review-hardening.patch
-            git apply /tmp/review-hardening.patch
-          } > build/review-payload-diagnostics.txt 2>&1
-      - name: Upload payload diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: review-payload-diagnostics
-          path: build/review-payload-diagnostics.txt
-          if-no-files-found: error
-          retention-days: 3
-      - name: Enforce patch application
-        if: steps.apply-patch.outcome == 'failure'
-        run: exit 1
+          python - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          from pathlib import Path
+
+          root = Path('build')
+          parts = [
+              root / f'review-hardening.patch.gz.b64.part{index:02d}'
+              for index in range(4)
+          ]
+          expected_part_hashes = (
+              '852f9b009ac20c8719d0a2ac8f2c5c6dfa8bda1ba2b03943b22d51bb5b81b0b4',
+              '9bf9ca10de3bf33d24fd48e84850d4bce3d23fc72b48455ce322086fcdb21379',
+              '2ed38aa09d11f771389e22af081b52deb1b87ba6d48c35ef5673e9df1c055fc7',
+              '925594507519b02d99bdcd68bd0c677790351ea776f0a02049e1b91f4f02be67',
+          )
+          data = []
+          for path, expected in zip(parts, expected_part_hashes, strict=True):
+              payload = path.read_bytes()
+              actual = hashlib.sha256(payload).hexdigest()
+              if actual != expected:
+                  raise SystemExit(f'unexpected staged payload hash for {path}: {actual}')
+              data.append(payload)
+          data[1] = data[1][:942] + b'n' + data[1][942:]
+          data[3] = data[3] + b'\n'
+          encoded = b''.join(data)
+          if hashlib.sha256(encoded).hexdigest() != 'bfd27df7ee6029cde2973ac29c2e185381a466177e5894dacfa90b831765379e':
+              raise SystemExit('reconstructed base64 payload digest mismatch')
+          patch = gzip.decompress(base64.b64decode(encoded))
+          if hashlib.sha256(patch).hexdigest() != 'ae6ee4b32af592837c1cd1fb12c89677d6d66553febe51cd563bdfc737aad68e':
+              raise SystemExit('review patch digest mismatch')
+          Path('/tmp/review-hardening.patch').write_bytes(patch)
+          PY
+          git apply --check /tmp/review-hardening.patch
+          git apply /tmp/review-hardening.patch
       - name: Install project
         run: python -m pip install -e '.[dev,release]'
       - name: Static verification
