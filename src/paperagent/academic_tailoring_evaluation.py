@@ -137,7 +137,10 @@ def materialize_task(base: TailoringTask, mutation: TailoringMutation) -> Tailor
 
 
 def _score(
-    name: str, available: int, checks: tuple[bool, ...], findings: list[str]
+    name: str,
+    available: int,
+    checks: tuple[bool, ...],
+    findings: list[str],
 ) -> DimensionScore:
     earned = available if not checks else round(available * sum(checks) / len(checks))
     return DimensionScore(
@@ -146,6 +149,37 @@ def _score(
         available=available,
         findings=tuple(findings),
     )
+
+
+def _license_is_blocking(value: str) -> bool:
+    return value.strip().lower() in {
+        "unknown",
+        "missing",
+        "unverified",
+        "incompatible",
+        "proprietary-no-reuse",
+    }
+
+
+def _shape_only(value: str) -> bool:
+    return value.strip().lower() in {
+        "shape-only",
+        "shape only",
+        "same shape",
+        "reshape",
+        "projection only",
+        "tensor",
+    }
+
+
+def _decision_audit_consistent(proposal: TailoredResearchProposal) -> bool:
+    if not proposal.plan_fingerprint or not proposal.proposal_fingerprint:
+        return False
+    if proposal.decision is TailoringDecision.GO:
+        return proposal.audit_verdict.value == "GO"
+    if proposal.audit_verdict.value == "NO_GO":
+        return proposal.decision is TailoringDecision.NO_GO
+    return True
 
 
 def grade_proposal(
@@ -157,18 +191,30 @@ def grade_proposal(
     hard_blockers: list[str] = []
 
     decision_matches = proposal.decision is spec.expected_decision
+    audit_consistent = _decision_audit_consistent(proposal)
+    decision_findings: list[str] = []
+    if not decision_matches:
+        decision_findings.append("GO/REVISE/NO_GO decision does not match")
+    if not audit_consistent:
+        decision_findings.append(
+            "proposal decision, canonical audit, or fingerprints diverged"
+        )
+        hard_blockers.append(
+            "proposal decision is inconsistent with the canonical audit"
+        )
     dimensions.append(
-        DimensionScore(
-            name="decision_correctness",
-            earned=15 if decision_matches else 0,
-            available=15,
-            findings=() if decision_matches else ("GO/REVISE/NO_GO decision does not match",),
+        _score(
+            "decision_correctness",
+            15,
+            (decision_matches, audit_consistent),
+            decision_findings,
         )
     )
 
     expected_reference_ids = {
         task.reproduction.baseline_paper_id,
         *(intent.source_paper_id for intent in task.module_intents),
+        *(comparison.source_paper_id for comparison in task.strong_comparisons),
     }
     references = {reference.paper_id: reference for reference in proposal.references}
     provenance_checks: list[bool] = []
@@ -193,25 +239,48 @@ def grade_proposal(
         )
         provenance_checks.append(complete)
         if not complete:
-            provenance_findings.append(f"incomplete method attribution for {paper_id}")
+            provenance_findings.append(
+                f"incomplete method attribution for {paper_id}"
+            )
     dimensions.append(
-        _score("provenance_and_attribution", 15, tuple(provenance_checks), provenance_findings)
+        _score(
+            "provenance_and_attribution",
+            15,
+            tuple(provenance_checks),
+            provenance_findings,
+        )
     )
 
     baseline_checks = (
         proposal.baseline.paper_id == task.reproduction.baseline_paper_id,
-        proposal.baseline.implementation_ref == task.reproduction.implementation_ref,
+        proposal.baseline.implementation_ref
+        == task.reproduction.implementation_ref,
+        proposal.baseline.version_or_commit == task.reproduction.version_or_commit,
         proposal.baseline.dataset == task.reproduction.dataset,
         proposal.baseline.split == task.reproduction.split,
         proposal.baseline.seed_policy == task.reproduction.seed_policy,
         proposal.baseline.reproduced == task.reproduction.reproduced,
-        proposal.baseline.reproduced_metrics == task.reproduction.reproduced_metrics,
+        proposal.baseline.reproduced_metrics
+        == task.reproduction.reproduced_metrics,
+        proposal.baseline.compute_fit == task.reproduction.compute_fit,
+        proposal.baseline.baseline_parity_verified
+        == task.reproduction.baseline_parity_verified,
+        proposal.baseline.dataset_fingerprint
+        == task.reproduction.dataset_fingerprint,
+        proposal.baseline.environment_fingerprint
+        == task.reproduction.environment_fingerprint,
     )
-    baseline_findings = [] if all(baseline_checks) else ["baseline reproduction record drifted"]
-    dimensions.append(_score("baseline_reproduction", 10, baseline_checks, baseline_findings))
+    baseline_findings = (
+        [] if all(baseline_checks) else ["baseline reproduction contract drifted"]
+    )
+    dimensions.append(
+        _score("baseline_reproduction", 10, baseline_checks, baseline_findings)
+    )
 
     paper_methods = {paper.paper_id: paper.method_name for paper in task.papers}
-    modules_by_source = {module.source_paper_id: module for module in proposal.modules}
+    modules_by_source = {
+        module.source_paper_id: module for module in proposal.modules
+    }
     trace_checks: list[bool] = []
     trace_findings: list[str] = []
     for intent in task.module_intents:
@@ -219,21 +288,42 @@ def grade_proposal(
         present = module is not None
         trace_checks.append(present)
         if not present:
-            trace_findings.append(f"missing module extracted from {intent.source_paper_id}")
+            trace_findings.append(
+                f"missing module extracted from {intent.source_paper_id}"
+            )
             continue
         assert module is not None
-        method_matches = module.method_used == paper_methods.get(intent.source_paper_id)
+        method_matches = module.method_used == paper_methods.get(
+            intent.source_paper_id
+        )
         trace_checks.extend(
             (
                 method_matches,
                 module.insertion_point == intent.insertion_point,
                 module.proposed_role == intent.proposed_role,
                 bool(module.borrowed_component.strip()),
+                module.implementation_switch == intent.implementation_switch,
+                module.gradient_expectation == intent.gradient_expectation,
+                module.parameter_update_scope == intent.parameter_update_scope,
+                module.loss_scale == intent.loss_scale,
+                module.baseline_parity_behavior
+                == intent.baseline_parity_behavior,
+                module.trainable == intent.trainable,
+                module.loss_terms == intent.loss_terms,
             )
         )
         if not method_matches:
-            trace_findings.append(f"method name drift for {intent.source_paper_id}")
-    dimensions.append(_score("module_method_traceability", 10, tuple(trace_checks), trace_findings))
+            trace_findings.append(
+                f"method name drift for {intent.source_paper_id}"
+            )
+    dimensions.append(
+        _score(
+            "module_method_traceability",
+            10,
+            tuple(trace_checks),
+            trace_findings,
+        )
+    )
 
     compatibility_checks: list[bool] = []
     compatibility_findings: list[str] = []
@@ -242,51 +332,66 @@ def grade_proposal(
         if module is None:
             compatibility_checks.append(False)
             continue
-        invalid = intent.semantic_mapping.strip().lower() in {
-            "shape-only",
-            "shape only",
-            "same shape",
-            "reshape",
-            "projection only",
-            "tensor",
-        } or intent.adapter.strip().lower() in {
-            "shape-only",
-            "shape only",
-            "same shape",
-            "reshape",
-            "projection only",
-            "tensor",
-        }
+        invalid = _shape_only(intent.semantic_mapping) or _shape_only(intent.adapter)
         expected_status = "blocked" if invalid else "compatible"
         status_matches = module.compatibility_status == expected_status
-        compatibility_checks.extend(
+        complete_contract = all(
             (
-                status_matches,
                 bool(module.semantic_mapping.strip()),
                 bool(module.failure_mode.strip()),
                 bool(module.compatibility_reason.strip()),
+                bool(module.input_shape and module.input_shape.strip()),
+                bool(module.output_shape and module.output_shape.strip()),
+                bool(module.normalization and module.normalization.strip()),
+                bool(module.masks and module.masks.strip()),
+                bool(module.ordering and module.ordering.strip()),
+                module.trainable is not None,
+                bool(module.assumptions),
             )
         )
+        compatibility_checks.extend((status_matches, complete_contract))
         if not status_matches:
             compatibility_findings.append(
-                f"compatibility status for {intent.source_paper_id} should be {expected_status}"
+                f"compatibility status for {intent.source_paper_id} should be "
+                f"{expected_status}"
+            )
+        if not complete_contract:
+            compatibility_findings.append(
+                f"module contract for {intent.source_paper_id} is incomplete"
             )
     dimensions.append(
-        _score("semantic_compatibility", 10, tuple(compatibility_checks), compatibility_findings)
+        _score(
+            "semantic_compatibility",
+            10,
+            tuple(compatibility_checks),
+            compatibility_findings,
+        )
     )
 
-    innovation = proposal.innovation_points[0] if proposal.innovation_points else None
+    innovation = (
+        proposal.innovation_points[0] if proposal.innovation_points else None
+    )
     innovation_checks = (
         innovation is not None,
         innovation is not None and bool(innovation.contribution.strip()),
-        innovation is not None and bool(innovation.why_not_simple_splice.strip()),
+        innovation is not None
+        and bool(innovation.why_not_simple_splice.strip()),
         innovation is not None and bool(innovation.falsifiable_test.strip()),
         innovation is not None and innovation.status == "proposed",
     )
     innovation_findings = (
-        [] if all(innovation_checks) else ["innovation is not explicit and falsifiable"]
+        []
+        if all(innovation_checks)
+        else ["innovation is not explicit and falsifiable"]
     )
-    dimensions.append(_score("innovation_distinctness", 15, innovation_checks, innovation_findings))
+    dimensions.append(
+        _score(
+            "innovation_distinctness",
+            15,
+            innovation_checks,
+            innovation_findings,
+        )
+    )
 
     story = proposal.academic_story
     story_checks = tuple(
@@ -306,33 +411,66 @@ def grade_proposal(
             "academic_story_coherence",
             10,
             story_checks,
-            [] if all(story_checks) else ["academic story has an empty causal step"],
+            []
+            if all(story_checks)
+            else ["academic story has an empty causal step"],
         )
     )
 
     module_ids = {module.module_id for module in proposal.modules}
-    baseline_arms = [arm for arm in proposal.experiment_matrix if arm.arm_type == "baseline"]
-    full_arms = [arm for arm in proposal.experiment_matrix if arm.arm_type == "full"]
+    baseline_arms = [
+        arm
+        for arm in proposal.experiment_matrix
+        if arm.arm_type == "baseline"
+    ]
+    full_arms = [
+        arm for arm in proposal.experiment_matrix if arm.arm_type == "full"
+    ]
     single_covered = {
         module_id
         for arm in proposal.experiment_matrix
-        if arm.arm_type == "single_module" and len(arm.included_modules) == 1
+        if arm.arm_type == "single_module"
+        and len(arm.included_modules) == 1
         for module_id in arm.included_modules
     }
-    leave_one_out_count = sum(arm.arm_type == "leave_one_out" for arm in proposal.experiment_matrix)
+    leave_one_out_count = sum(
+        arm.arm_type == "leave_one_out"
+        for arm in proposal.experiment_matrix
+    )
+    interaction_count = sum(
+        arm.arm_type == "interaction" for arm in proposal.experiment_matrix
+    )
+    observed_strong_comparisons = {
+        arm.name
+        for arm in proposal.experiment_matrix
+        if arm.arm_type == "strong_comparison"
+    }
+    expected_strong_comparisons = {
+        comparison.name for comparison in task.strong_comparisons
+    }
+    expected_metrics = tuple(item.metric for item in task.expected_results)
+    expected_stopping = "; ".join(task.stop_conditions)
     fair_fields = all(
         arm.dataset == task.reproduction.dataset
         and arm.split == task.reproduction.split
         and arm.preprocessing == task.preprocessing
         and arm.tuning_budget == task.tuning_budget
+        and arm.metrics == expected_metrics
         and arm.seeds == task.seeds
+        and arm.uncertainty_reporting == task.uncertainty_reporting
+        and arm.resource_measures == task.resource_measures
+        and arm.stopping_criteria == expected_stopping
         for arm in proposal.experiment_matrix
     )
     experiment_checks = (
         len(baseline_arms) == 1 and not baseline_arms[0].included_modules,
-        len(full_arms) == 1 and set(full_arms[0].included_modules) == module_ids,
+        len(full_arms) == 1
+        and set(full_arms[0].included_modules) == module_ids,
         single_covered == module_ids,
-        len(module_ids) <= 1 or leave_one_out_count == len(module_ids),
+        len(module_ids) <= 1
+        or leave_one_out_count == len(module_ids),
+        observed_strong_comparisons == expected_strong_comparisons,
+        len(module_ids) <= 1 or interaction_count >= 1,
         fair_fields,
     )
     dimensions.append(
@@ -340,11 +478,15 @@ def grade_proposal(
             "fair_experiment_and_ablation",
             10,
             experiment_checks,
-            [] if all(experiment_checks) else ["experiment matrix is incomplete or unfair"],
+            []
+            if all(experiment_checks)
+            else ["experiment matrix is incomplete or unfair"],
         )
     )
 
-    result_by_metric = {item.metric: item for item in proposal.expected_results}
+    result_by_metric = {
+        item.metric: item for item in proposal.expected_results
+    }
     result_checks: list[bool] = []
     result_findings: list[str] = []
     for target in task.expected_results:
@@ -352,10 +494,15 @@ def grade_proposal(
         present = observed is not None
         result_checks.append(present)
         if not present:
-            result_findings.append(f"missing expected result for {target.metric}")
+            result_findings.append(
+                f"missing expected result for {target.metric}"
+            )
             continue
         assert observed is not None
-        honest = observed.status is ResultStatus.PROPOSED and observed.evidence_id is None
+        honest = (
+            observed.status is ResultStatus.PROPOSED
+            and observed.evidence_id is None
+        )
         result_checks.extend(
             (
                 observed.baseline_value == target.baseline_value,
@@ -366,26 +513,45 @@ def grade_proposal(
             )
         )
         if not honest:
-            hard_blockers.append(f"unverified result for {target.metric} is presented as observed")
-    dimensions.append(_score("expected_result_honesty", 5, tuple(result_checks), result_findings))
+            hard_blockers.append(
+                f"unverified result for {target.metric} is presented as observed"
+            )
+    dimensions.append(
+        _score(
+            "expected_result_honesty",
+            5,
+            tuple(result_checks),
+            result_findings,
+        )
+    )
 
     task_requires_no_go = (
         not task.reproduction.reproduced
         or not task.reproduction.reproduced_metrics
-        or any(paper.evidence_state is EvidenceState.UNVERIFIED for paper in task.papers)
         or any(
-            paper.license.strip().lower()
-            in {"unknown", "missing", "unverified", "incompatible", "proprietary-no-reuse"}
+            paper.evidence_state is EvidenceState.UNVERIFIED
             for paper in task.papers
         )
-        or any(module.compatibility_status == "blocked" for module in proposal.modules)
+        or any(_license_is_blocking(paper.license) for paper in task.papers)
+        or any(
+            module.compatibility_status == "blocked"
+            for module in proposal.modules
+        )
+        or proposal.audit_verdict.value == "NO_GO"
         or bool(proposal.blockers)
     )
     if proposal.decision is TailoringDecision.GO and task_requires_no_go:
-        hard_blockers.append("proposal claims GO despite a release-blocking research condition")
+        hard_blockers.append(
+            "proposal claims GO despite a release-blocking research condition"
+        )
 
     score = sum(item.earned for item in dimensions)
-    passed = decision_matches and score >= spec.minimum_score and not hard_blockers
+    passed = (
+        decision_matches
+        and audit_consistent
+        and score >= spec.minimum_score
+        and not hard_blockers
+    )
     return AcademicTailoringGrade(
         case_id=spec.case_id,
         category=spec.category,
@@ -400,12 +566,20 @@ def grade_proposal(
     )
 
 
-def corpus_digest(base: TailoringTask, specs: tuple[AcademicTailoringCaseSpec, ...]) -> str:
+def corpus_digest(
+    base: TailoringTask,
+    specs: tuple[AcademicTailoringCaseSpec, ...],
+) -> str:
     payload = {
         "base": base.model_dump(mode="json"),
         "cases": [spec.model_dump(mode="json") for spec in specs],
     }
-    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    canonical = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -438,7 +612,10 @@ def evaluate_corpus(
         total=len(grades),
         passed=sum(item.passed for item in grades),
         failed=sum(not item.passed for item in grades),
-        by_category={category: dict(counter) for category, counter in sorted(counts.items())},
+        by_category={
+            category: dict(counter)
+            for category, counter in sorted(counts.items())
+        },
         grades=tuple(grades),
     )
     return report, tuple(tasks), tuple(proposals)
