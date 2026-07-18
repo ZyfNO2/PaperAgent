@@ -4,7 +4,7 @@
     "expected_observation": "intent_violation_rate should decrease from 0.18 toward 0.1; task_success_rate should increase from 0.71 toward 0.77; adjustment_minutes_per_scenario should decrease from 45 toward 30; p95_decision_latency_ms should hold from 6.2 toward 7.13",
     "gap": "the baseline does not explicitly address shift raises policy uncertainty while the unconstrained action head has no explicit representation of scenario-valid actions under single-agent game environments with partially observed state and changing scenario rules",
     "implication": "an uncertainty-triggered, action-constrained residual policy improves robustness and reduces adjustment work without sacrificing task success",
-    "intervention": "compose Semantic Action Mask, Uncertainty-Gated Residual Policy at explicit semantic boundaries",
+    "intervention": "compose Semantic Action Mask, Uncertainty-Gated Residual Policy at explicit semantic and training boundaries",
     "mechanism": "shift raises policy uncertainty while the unconstrained action head has no explicit representation of scenario-valid actions",
     "problem": "reduce unintended NPC actions and manual rule adjustment under scenario shift: a reproduced behavior-cloning policy works on familiar scenes but emits invalid or intent-inconsistent actions after distribution shift"
   },
@@ -65,12 +65,14 @@
     "single_module",
     "full",
     "leave_one_out",
-    "leave_one_out"
+    "leave_one_out",
+    "interaction",
+    "strong_comparison"
   ],
   "idea_id": "npc-safe-residual-policy-v1",
   "innovation": {
     "contribution": "couple semantic action masking with uncertainty-triggered residual correction so the baseline is preserved in familiar states and changed only for high-risk decisions",
-    "falsifiable_test": "the contribution is unsupported if the full arm does not outperform the frozen baseline and the required single-module or leave-one-out comparisons",
+    "falsifiable_test": "the contribution is unsupported if the full arm does not outperform the frozen baseline and strong comparison, or if single-module, leave-one-out, and interaction contrasts do not support the proposed mechanism",
     "status": "proposed",
     "why_not_simple_splice": "the mask and residual policy address different mechanisms and are connected by an explicit uncertainty trigger rather than unconditional stacking"
   },
@@ -115,8 +117,15 @@
       "paper_id": "SYN-C",
       "title": "Synthetic Paper C: Uncertainty-Gated Residual Policies under Distribution Shift",
       "use_in_proposal": "inserted at the interface following baseline feature encoding as refine decisions with high uncertainty"
+    },
+    {
+      "borrowed_component": "full comparator implementation and fixed evaluation recipe",
+      "method_used": "Shift-Robust Ensemble Policy",
+      "paper_id": "SYN-D",
+      "title": "Synthetic Paper D: Shift-Robust Ensemble Policy for NPC Control",
+      "use_in_proposal": "strong comparison: Shift-Robust Ensemble Policy"
     }
   ],
   "risks": [],
-  "strongest_reason": "baseline, provenance, compatibility, novelty, and fair experiments are explicit"
+  "strongest_reason": "baseline, provenance, compatibility, hypothesis, comparisons, interaction analysis, and fair experiments passed the canonical audit"
 }
