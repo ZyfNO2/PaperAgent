@@ -14,7 +14,6 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi.testclient import TestClient
-
 from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm_raw
 
 EXPECTED_METHOD_REPAIR_NODES = [
@@ -43,12 +42,12 @@ def _method_repair_services() -> Any:
             "evidence_synthesis", "happy_path", 0
         ),
         # call_index=0 is deliberately weak; call_index=1 is the fixed proposal.
-        FixtureKey(
-            task="method_design", scenario="gate_repair_method", call_index=0
-        ): load_llm_raw("method_design", "gate_repair_method", 0),
-        FixtureKey(
-            task="method_design", scenario="gate_repair_method", call_index=1
-        ): load_llm_raw("method_design", "gate_repair_method", 1),
+        FixtureKey(task="method_design", scenario="gate_repair_method", call_index=0): load_llm_raw(
+            "method_design", "gate_repair_method", 0
+        ),
+        FixtureKey(task="method_design", scenario="gate_repair_method", call_index=1): load_llm_raw(
+            "method_design", "gate_repair_method", 1
+        ),
         FixtureKey(task="report", scenario="happy_path", call_index=0): load_llm_raw(
             "report", "happy_path", 0
         ),
@@ -91,6 +90,7 @@ def test_e2e__method_repair_loop__reaches_pass_after_one_repair_via_http(
         gate_routes = [
             event.get("route")
             for event in result.get("trace", [])
-            if event.get("event_type") == "route.decided" and event.get("node") == "quality_gate_node"
+            if event.get("event_type") == "route.decided"
+            and event.get("node") == "quality_gate_node"
         ]
         assert gate_routes == ["repair_method", "pass"], gate_routes

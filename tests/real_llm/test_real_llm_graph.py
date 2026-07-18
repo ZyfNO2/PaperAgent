@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+from datetime import UTC, datetime
 from typing import Any
 
 import pytest
@@ -27,7 +28,6 @@ from paperagent.providers import FakeSearchProvider
 from paperagent.runtime import RuntimeServices
 from paperagent.schemas import ResearchRequest
 from paperagent.testing import FixedClock, SequenceIdFactory
-from datetime import UTC, datetime
 
 pytestmark = [
     pytest.mark.llm,
@@ -78,10 +78,7 @@ async def test_real_llm_graph__bounded_termination_with_empty_search(
 
     # Diagnostic: surface the last few trace events on failure so we can see
     # where the graph actually stopped.
-    last_events = [
-        {"node": _event_node(e), "event_type": _event_type(e)}
-        for e in trace[-5:]
-    ]
+    last_events = [{"node": _event_node(e), "event_type": _event_type(e)} for e in trace[-5:]]
 
     # Bounded termination contract: the graph must terminate within the timeout
     # without raising. Three legitimate outcomes:
@@ -94,20 +91,17 @@ async def test_real_llm_graph__bounded_termination_with_empty_search(
     #       graph simply stops after planning.
     plan_status = getattr(result.get("plan"), "status", None)
     persist_completed = any(
-        _event_node(e) == "persist_node" and _event_type(e) == "node.completed"
-        for e in trace
+        _event_node(e) == "persist_node" and _event_type(e) == "node.completed" for e in trace
     )
     planning_completed = any(
-        _event_node(e) == "planning_node" and _event_type(e) == "node.completed"
-        for e in trace
+        _event_node(e) == "planning_node" and _event_type(e) == "node.completed" for e in trace
     )
 
     if plan_status == "need_human":
         # interrupt() pauses before human_review_node emits any trace event, so
         # we only assert that planning completed and the graph did not crash.
         assert planning_completed, (
-            f"plan.status=need_human but planning_node did not complete; "
-            f"last events: {last_events}"
+            f"plan.status=need_human but planning_node did not complete; last events: {last_events}"
         )
     else:
         # For ready/blocked/unknown statuses, planning_route's defensive

@@ -270,9 +270,7 @@ class OpenAILLMProvider:
                     ) from exc
                 retryable_status = status == 429 or 500 <= status < 600
                 if retryable_status and attempt < self._max_retries:
-                    delay = _RETRY_BACKOFF_SECONDS[
-                        min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)
-                    ]
+                    delay = _RETRY_BACKOFF_SECONDS[min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)]
                     await asyncio.sleep(delay)
                     continue
                 raise ProviderError(
@@ -288,9 +286,7 @@ class OpenAILLMProvider:
                 # response"). These are often transient on flaky proxy links,
                 # so retry with backoff before surfacing to the node layer.
                 if attempt < self._max_retries:
-                    delay = _RETRY_BACKOFF_SECONDS[
-                        min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)
-                    ]
+                    delay = _RETRY_BACKOFF_SECONDS[min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)]
                     await asyncio.sleep(delay)
                     continue
                 raise ProviderError(
@@ -336,6 +332,4 @@ class OpenAILLMProvider:
         # Only treat as response_format error when the request actually carried
         # response_format (the caller already knows that) AND the body has the
         # invalid_request_error type without a more specific param.
-        if err_type == "invalid_request_error" and error.get("param") is None:
-            return True
-        return False
+        return err_type == "invalid_request_error" and error.get("param") is None

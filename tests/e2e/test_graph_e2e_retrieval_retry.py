@@ -17,7 +17,6 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi.testclient import TestClient
-
 from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm_raw
 
 EXPECTED_RETRIEVAL_RETRY_NODES = [
@@ -56,12 +55,12 @@ def _retrieval_retry_services() -> Any:
             task="evidence_synthesis", scenario="repair_retrieval", call_index=1
         ): load_llm_raw("evidence_synthesis", "repair_retrieval", 1),
         # Both method_design calls return a valid proposal (no method repair).
-        FixtureKey(
-            task="method_design", scenario="repair_retrieval", call_index=0
-        ): load_llm_raw("method_design", "repair_retrieval", 0),
-        FixtureKey(
-            task="method_design", scenario="repair_retrieval", call_index=1
-        ): load_llm_raw("method_design", "repair_retrieval", 1),
+        FixtureKey(task="method_design", scenario="repair_retrieval", call_index=0): load_llm_raw(
+            "method_design", "repair_retrieval", 0
+        ),
+        FixtureKey(task="method_design", scenario="repair_retrieval", call_index=1): load_llm_raw(
+            "method_design", "repair_retrieval", 1
+        ),
         FixtureKey(task="report", scenario="happy_path", call_index=0): load_llm_raw(
             "report", "happy_path", 0
         ),

@@ -15,18 +15,19 @@ modules when pytest collects across directories.
 
 from __future__ import annotations
 
+import contextlib
 import time
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+from helpers import TERMINAL_STATUSES, build_services, load_llm_raw
 
 from paperagent.api import create_app
 from paperagent.api.executor import LangGraphTaskExecutor
 from paperagent.graph import build_graph
-
-from helpers import TERMINAL_STATUSES, build_services, load_llm_raw
 
 # Re-export load_llm_raw so that ``from conftest import load_llm_raw`` in other
 # test directories (tests/graph, tests/nodes, tests/ood, tests/integration) keeps
@@ -73,10 +74,8 @@ def graph_app_factory(tmp_path: Path):
     yield _build
 
     for client in created:
-        try:
+        with contextlib.suppress(Exception):
             client.__exit__(None, None, None)
-        except Exception:
-            pass
 
 
 @pytest.fixture
