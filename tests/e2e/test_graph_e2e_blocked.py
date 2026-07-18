@@ -11,7 +11,6 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi.testclient import TestClient
-
 from helpers import FixtureKey, assert_completed_nodes, build_services, load_llm_raw
 
 EXPECTED_BLOCKED_NODES = [

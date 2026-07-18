@@ -1,0 +1,72 @@
+{
+  "cases": [
+    {
+      "case_id": "npc-go-complete",
+      "category": "happy_path",
+      "expected_decision": "GO",
+      "observed_decision": "GO",
+      "passed": true,
+      "score": 100
+    },
+    {
+      "case_id": "npc-no-go-baseline-not-reproduced",
+      "category": "reproduction_failure",
+      "expected_decision": "NO_GO",
+      "observed_decision": "NO_GO",
+      "passed": true,
+      "score": 100
+    },
+    {
+      "case_id": "npc-no-go-unverified-module-source",
+      "category": "provenance_failure",
+      "expected_decision": "NO_GO",
+      "observed_decision": "NO_GO",
+      "passed": true,
+      "score": 100
+    },
+    {
+      "case_id": "npc-no-go-incompatible-license",
+      "category": "license_failure",
+      "expected_decision": "NO_GO",
+      "observed_decision": "NO_GO",
+      "passed": true,
+      "score": 100
+    },
+    {
+      "case_id": "npc-no-go-shape-only-compatibility",
+      "category": "compatibility_failure",
+      "expected_decision": "NO_GO",
+      "observed_decision": "NO_GO",
+      "passed": true,
+      "score": 100
+    },
+    {
+      "case_id": "npc-revise-weak-novelty",
+      "category": "novelty_failure",
+      "expected_decision": "REVISE",
+      "observed_decision": "REVISE",
+      "passed": true,
+      "score": 100
+    },
+    {
+      "case_id": "npc-no-go-insufficient-evidence",
+      "category": "insufficient_evidence",
+      "expected_decision": "NO_GO",
+      "observed_decision": "NO_GO",
+      "passed": true,
+      "score": 100
+    },
+    {
+      "case_id": "npc-go-chinese-research-story",
+      "category": "multilingual",
+      "expected_decision": "GO",
+      "observed_decision": "GO",
+      "passed": true,
+      "score": 100
+    }
+  ],
+  "corpus_digest": "483cba088330236209f3e13791aeeea2402b66c3c108797965bdcb4310c0336f",
+  "failed": 0,
+  "passed": 8,
+  "total": 8
+}

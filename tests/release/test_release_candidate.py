@@ -157,9 +157,9 @@ def test_cli__serve_is_localhost_first_and_invokes_uvicorn(
 
 
 def test_cli__non_negative_float_rejects_negative() -> None:
-    from paperagent.cli import _non_negative_float
-
     import argparse
+
+    from paperagent.cli import _non_negative_float
 
     with pytest.raises(argparse.ArgumentTypeError, match="non-negative"):
         _non_negative_float("-1")

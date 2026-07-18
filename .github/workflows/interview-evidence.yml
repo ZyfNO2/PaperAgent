@@ -1,0 +1,108 @@
+name: PaperAgent Interview Evidence
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Python ${{ matrix.python-version }} interview verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev,release]'
+      - name: Ruff lint
+        id: ruff-lint
+        continue-on-error: true
+        run: |
+          mkdir -p build
+          ruff check . > build/ruff-lint.txt 2>&1
+      - name: Ruff format
+        id: ruff-format
+        continue-on-error: true
+        run: ruff format --check --diff . > build/ruff-format.txt 2>&1
+      - name: Upload quality diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: interview-quality-${{ matrix.python-version }}
+          path: |
+            build/ruff-lint.txt
+            build/ruff-format.txt
+          if-no-files-found: error
+      - name: Enforce Ruff
+        if: steps.ruff-lint.outcome == 'failure' || steps.ruff-format.outcome == 'failure'
+        run: exit 1
+      - name: Strict Mypy
+        run: mypy --config-file pyproject.toml
+      - name: Tests and branch coverage
+        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+
+  evidence:
+    name: Generate interview artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev,release]'
+      - name: Build and smoke installed wheel with external plugin
+        run: |
+          mkdir -p build/dist
+          python -m build --wheel --outdir build/dist
+          python -m venv /tmp/paperagent-interview-wheel
+          /tmp/paperagent-interview-wheel/bin/python -m pip install --upgrade pip
+          /tmp/paperagent-interview-wheel/bin/python -m pip install build/dist/*.whl
+          /tmp/paperagent-interview-wheel/bin/python -m pip install --no-deps ./examples/external_plugin
+          /tmp/paperagent-interview-wheel/bin/paperagent --help
+          /tmp/paperagent-interview-wheel/bin/paperagent plugins inspect interview-summary \
+            --enable-external-plugin interview-summary
+          /tmp/paperagent-interview-wheel/bin/paperagent plugins run interview-summary \
+            --enable-external-plugin interview-summary \
+            --operation summarize \
+            --input examples/external_plugin/input.json \
+            --output build/interview-summary-plugin.json
+          python -c "import json; value=json.load(open('build/interview-summary-plugin.json')); assert value['output']['count'] == 3"
+      - name: Record local acceptance plan
+        run: |
+          mkdir -p build/local-acceptance
+          python scripts/local_acceptance.py --profile full --print-plan \
+            > build/local-acceptance/plan.json
+      - name: Run local durable state roundtrip
+        run: |
+          python scripts/local_state_roundtrip.py \
+            --workdir build/local-state-roundtrip \
+            --output build/local-acceptance/state-roundtrip.json
+      - name: Run deterministic interview demo
+        run: python scripts/interview_demo.py --output build/interview-demo-summary.json
+      - name: Export OpenAPI
+        run: python scripts/export_openapi.py --output build/openapi.json
+      - name: Run SQLite repository benchmark
+        run: python scripts/repository_benchmark.py --tasks 500 --output build/repository-benchmark.json
+      - name: Upload interview evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: paperagent-interview-evidence
+          path: build/
+          if-no-files-found: error

@@ -55,7 +55,7 @@ jobs:
           if-no-files-found: ignore
 
   installed-wheel-smoke:
-    name: Installed wheel and CLI smoke
+    name: Installed wheel, CLI, plugin, and web smoke
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,11 +68,34 @@ jobs:
           python -m build --wheel
           python -m venv /tmp/paperagent-release
           /tmp/paperagent-release/bin/pip install dist/*.whl
-      - name: Exercise installed CLI and web assets
+      - name: Exercise installed CLI, plugins, and web assets
         shell: bash
         run: |
           set -euo pipefail
           /tmp/paperagent-release/bin/paperagent --help
+          /tmp/paperagent-release/bin/paperagent plugins list > /tmp/paperagent-plugins.json
+          printf '{}\n' > /tmp/paperagent-plugin-input.json
+          /tmp/paperagent-release/bin/paperagent plugins run academic-method-tailoring \
+            --operation template \
+            --input /tmp/paperagent-plugin-input.json \
+            --output /tmp/paperagent-method-template.json
+          python - <<'PY'
+          import json
+
+          with open('/tmp/paperagent-plugins.json', encoding='utf-8') as stream:
+              plugins = json.load(stream)
+          names = [item['name'] for item in plugins['plugins']]
+          assert names == ['academic-method-tailoring', 'echo-contract']
+          assert plugins['load_failures'] == []
+
+          with open('/tmp/paperagent-method-template.json', encoding='utf-8') as stream:
+              result = json.load(stream)
+          assert result['plugin_name'] == 'academic-method-tailoring'
+          assert result['operation'] == 'template'
+          assert result['output']['baseline']['reproduced'] is False
+          assert result['evidence']['network_used'] is False
+          assert result['evidence']['llm_used'] is False
+          PY
           /tmp/paperagent-release/bin/paperagent serve \
             --port 8765 \
             --database /tmp/paperagent-wheel.db \

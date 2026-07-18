@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paperagent.local/schemas/v0.6/evaluation-run-manifest.json",
+  "title": "PaperAgent v0.6 Evaluation Run Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "commit_sha",
+    "provider",
+    "model",
+    "prompt_version",
+    "schema_version",
+    "corpus_digest",
+    "started_at"
+  ],
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "provider": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "prompt_version": {"type": "string", "minLength": 1},
+    "schema_version": {"type": "string", "minLength": 1},
+    "corpus_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "price_table_version": {"type": ["string", "null"]},
+    "started_at": {"type": "string", "format": "date-time"},
+    "completed_at": {"type": ["string", "null"], "format": "date-time"},
+    "notes": {"type": ["string", "null"]}
+  }
+}
