@@ -1,0 +1,34 @@
+{
+  "experiment_id": "REPLACE_WITH_EXPERIMENT_ID",
+  "selection_policy": "Compare only complete formal runs on the same frozen holdout. Freeze any routing policy before testing it on a fresh confirmation holdout.",
+  "variants": [
+    {
+      "strategy_id": "strict-precision",
+      "manifest": "build/gate-l-strict/holdout-manifest.json",
+      "run_record": "build/gate-l-strict/run-record.json",
+      "evidence_dir": "build/gate-l-strict/per-case",
+      "decision": "build/gate-l-strict/decision.json"
+    },
+    {
+      "strategy_id": "balanced",
+      "manifest": "build/gate-l-balanced/holdout-manifest.json",
+      "run_record": "build/gate-l-balanced/run-record.json",
+      "evidence_dir": "build/gate-l-balanced/per-case",
+      "decision": "build/gate-l-balanced/decision.json"
+    },
+    {
+      "strategy_id": "broad-recall",
+      "manifest": "build/gate-l-broad/holdout-manifest.json",
+      "run_record": "build/gate-l-broad/run-record.json",
+      "evidence_dir": "build/gate-l-broad/per-case",
+      "decision": "build/gate-l-broad/decision.json"
+    },
+    {
+      "strategy_id": "low-cost",
+      "manifest": "build/gate-l-low-cost/holdout-manifest.json",
+      "run_record": "build/gate-l-low-cost/run-record.json",
+      "evidence_dir": "build/gate-l-low-cost/per-case",
+      "decision": "build/gate-l-low-cost/decision.json"
+    }
+  ]
+}
