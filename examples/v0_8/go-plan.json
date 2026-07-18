@@ -1,4 +1,5 @@
 {
+  "contract_version": "paperagent.method-plan.v0.9",
   "research": {
     "target_problem": "Unsupported claims in generated scientific reports",
     "scientific_setting": "Local single-user bounded research workflow",
@@ -22,7 +23,10 @@
     "seed_policy": "Seeds 1, 2, and 3",
     "reproduced": true,
     "reproduced_metric": "unsupported_claim_rate=0.18",
-    "compute_fit": true
+    "compute_fit": true,
+    "baseline_parity_verified": true,
+    "dataset_fingerprint": "sha256:development-corpus-v1-frozen-split-v1",
+    "environment_fingerprint": "sha256:python-3.12-cpu-environment"
   },
   "hypothesis": {
     "condition": "When retrieved evidence is sparse or conflicting",
@@ -55,7 +59,12 @@
         "Evidence identifiers have passed deterministic verification"
       ],
       "predicted_effect": "Reduce unsupported claims without reducing citation coverage",
-      "failure_mode": "Miscalibration under domain shift"
+      "failure_mode": "Miscalibration under domain shift",
+      "implementation_switch": "enable_support_scorer",
+      "gradient_expectation": "Gradients flow only through the support scorer during its training phase",
+      "parameter_update_scope": "support scorer parameters only; baseline remains frozen",
+      "loss_scale": "binary-cross-entropy weight fixed at 1.0",
+      "baseline_parity_behavior": "Disabling enable_support_scorer reproduces the frozen baseline output"
     }
   ],
   "experiments": [
@@ -71,69 +80,68 @@
         "unsupported_claim_rate",
         "citation_coverage"
       ],
-      "seeds": [
-        1,
-        2,
-        3
-      ],
+      "seeds": [1, 2, 3],
       "uncertainty_reporting": "Mean and 95 percent bootstrap interval",
-      "resource_measures": [
-        "wall_clock_seconds",
-        "peak_memory_mb"
-      ],
-      "stopping_criteria": "Stop after the fixed tuning budget"
+      "resource_measures": ["wall_clock_seconds", "peak_memory_mb"],
+      "stopping_criteria": "Stop after the fixed tuning budget",
+      "purpose": "Reconfirm the frozen baseline and modules-disabled parity",
+      "comparator": null,
+      "contrast": "Frozen baseline versus the reproduced reference metric",
+      "source_evidence_id": null
     },
     {
       "name": "full",
       "arm_type": "full",
-      "included_modules": [
-        "support-scorer"
-      ],
+      "included_modules": ["support-scorer"],
       "dataset": "development-corpus-v1",
       "split": "frozen-split-v1",
       "preprocessing": "preprocess-v1",
       "tuning_budget": "Twenty trials",
-      "metrics": [
-        "unsupported_claim_rate",
-        "citation_coverage"
-      ],
-      "seeds": [
-        1,
-        2,
-        3
-      ],
+      "metrics": ["unsupported_claim_rate", "citation_coverage"],
+      "seeds": [1, 2, 3],
       "uncertainty_reporting": "Mean and 95 percent bootstrap interval",
-      "resource_measures": [
-        "wall_clock_seconds",
-        "peak_memory_mb"
-      ],
-      "stopping_criteria": "Stop after the fixed tuning budget"
+      "resource_measures": ["wall_clock_seconds", "peak_memory_mb"],
+      "stopping_criteria": "Stop after the fixed tuning budget",
+      "purpose": "Test the complete intervention under the frozen protocol",
+      "comparator": null,
+      "contrast": "Full method versus baseline and strong comparison",
+      "source_evidence_id": null
     },
     {
       "name": "support-only",
       "arm_type": "single_module",
-      "included_modules": [
-        "support-scorer"
-      ],
+      "included_modules": ["support-scorer"],
       "dataset": "development-corpus-v1",
       "split": "frozen-split-v1",
       "preprocessing": "preprocess-v1",
       "tuning_budget": "Twenty trials",
-      "metrics": [
-        "unsupported_claim_rate",
-        "citation_coverage"
-      ],
-      "seeds": [
-        1,
-        2,
-        3
-      ],
+      "metrics": ["unsupported_claim_rate", "citation_coverage"],
+      "seeds": [1, 2, 3],
       "uncertainty_reporting": "Mean and 95 percent bootstrap interval",
-      "resource_measures": [
-        "wall_clock_seconds",
-        "peak_memory_mb"
-      ],
-      "stopping_criteria": "Stop after the fixed tuning budget"
+      "resource_measures": ["wall_clock_seconds", "peak_memory_mb"],
+      "stopping_criteria": "Stop after the fixed tuning budget",
+      "purpose": "Measure the isolated support scorer contribution",
+      "comparator": null,
+      "contrast": "Support scorer versus frozen baseline",
+      "source_evidence_id": null
+    },
+    {
+      "name": "strong-support-comparison",
+      "arm_type": "strong_comparison",
+      "included_modules": [],
+      "dataset": "development-corpus-v1",
+      "split": "frozen-split-v1",
+      "preprocessing": "preprocess-v1",
+      "tuning_budget": "Twenty trials",
+      "metrics": ["unsupported_claim_rate", "citation_coverage"],
+      "seeds": [1, 2, 3],
+      "uncertainty_reporting": "Mean and 95 percent bootstrap interval",
+      "resource_measures": ["wall_clock_seconds", "peak_memory_mb"],
+      "stopping_criteria": "Stop after the fixed tuning budget",
+      "purpose": "Compare against the strongest attributed support-scoring alternative",
+      "comparator": "Attributed support scorer in its original configuration",
+      "contrast": "Proposed integration versus the attributed standalone comparator",
+      "source_evidence_id": "ev-support"
     }
   ],
   "evidence": [
@@ -143,12 +151,11 @@
       "title": "Frozen baseline implementation and reproduction record",
       "stable_identifier": "commit:verified-baseline-commit",
       "verified": true,
-      "supported_claims": [
-        "Baseline implementation and reproduced metric"
-      ],
-      "limitations": [
-        "Evaluated on one frozen development corpus"
-      ]
+      "supported_claims": ["Baseline implementation and reproduced metric"],
+      "limitations": ["Evaluated on one frozen development corpus"],
+      "content_hash": "sha256:baseline-evidence",
+      "license": "MIT",
+      "repository_ref": "commit:verified-baseline-commit"
     },
     {
       "evidence_id": "ev-support",
@@ -156,12 +163,11 @@
       "title": "Attributed support-scoring method",
       "stable_identifier": "doi:10.1000/support-example",
       "verified": true,
-      "supported_claims": [
-        "Support-scoring mechanism and original role"
-      ],
-      "limitations": [
-        "Domain-transfer behavior remains unknown"
-      ]
+      "supported_claims": ["Support-scoring mechanism and original role"],
+      "limitations": ["Domain-transfer behavior remains unknown"],
+      "content_hash": "sha256:support-evidence",
+      "license": "Apache-2.0",
+      "repository_ref": null
     }
   ],
   "stop_conditions": [
