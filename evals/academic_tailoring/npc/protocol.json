@@ -1,0 +1,20 @@
+{
+  "preprocessing": "fixed observation normalization and action ontology version 1",
+  "tuning_budget": "20 trials per arm with the same early-stop budget",
+  "seeds": [1, 2, 3, 5, 8],
+  "uncertainty_reporting": "mean, standard deviation, and 95 percent bootstrap interval",
+  "resource_measures": [
+    "training_gpu_hours",
+    "peak_vram_mb",
+    "median_decision_latency_ms",
+    "p95_decision_latency_ms",
+    "manual_adjustment_minutes"
+  ],
+  "stop_conditions": [
+    "stop if the frozen baseline cannot be reproduced within tolerance",
+    "stop if a selected source is unverified or cannot be reused",
+    "stop if action identifiers or ordering cannot be aligned",
+    "stop if the full method does not reduce violations across four of five seeds",
+    "stop if p95 latency exceeds the 15 percent guardrail"
+  ]
+}
