@@ -1,0 +1,66 @@
+name: Gate L v2 Candidate Build
+
+on:
+  push:
+    branches: [scientific-gate-l]
+    paths:
+      - scripts/build_gate_l_v2_candidate.py
+      - evals/v0_6/gate_l_v2_author_attestation.json
+      - .github/workflows/gate-l-v2-candidate-build.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: scientific-gate-l
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+      - name: Build 16-case candidate
+        run: python scripts/build_gate_l_v2_candidate.py
+      - name: Validate candidate contract
+        run: python scripts/gate_l_v2_acceptance.py validate --cases evals/v0_6/holdout_cases.v2.jsonl
+      - name: Record candidate digest
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from collections import Counter
+          from pathlib import Path
+          path = Path('evals/v0_6/holdout_cases.v2.jsonl')
+          rows = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines() if line.strip()]
+          record = {
+              'status': 'validated_candidate_not_frozen',
+              'case_count': len(rows),
+              'category_counts': dict(Counter(row['category'] for row in rows)),
+              'case_file': path.as_posix(),
+              'case_file_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+              'scientific_behavior_cutoff_sha': 'd4fef014932d084a0addd4a588b3431d2c08628b',
+              'planning_prompt_version': 'planning.v0.1.2',
+              'source_markdown_sha256': '85d16c4e41f4a15ed75ed8be5c1ca0e3175f318d52e7561b9d20535753cede7f',
+              'note': 'Candidate validated only. Do not run formal paid execution until explicit freeze approval.'
+          }
+          Path('evals/v0_6/holdout_v2_candidate_validation.json').write_text(
+              json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          print(record['case_file_sha256'])
+          PY
+      - name: Commit generated candidate and validation record
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add evals/v0_6/holdout_cases.v2.jsonl evals/v0_6/holdout_v2_candidate_validation.json
+          if git diff --cached --quiet; then
+            echo 'No candidate changes.'
+            exit 0
+          fi
+          git commit -m 'test(gate-l): build and validate 16-case v2 candidate'
+          git push origin HEAD:scientific-gate-l
