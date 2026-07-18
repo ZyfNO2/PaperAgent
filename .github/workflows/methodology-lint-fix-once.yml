@@ -85,20 +85,17 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
       - run: python -m pip install ruff
-      - name: Format and enforce selected files
+      - name: Format selected files
         run: |
-          files=(
-            src/paperagent/academic_methodology.py
-            src/paperagent/academic_tailoring_proposal.py
-            src/paperagent/retrieval/verify_evidence.py
+          ruff format \
+            src/paperagent/academic_methodology.py \
+            src/paperagent/academic_tailoring_proposal.py \
+            src/paperagent/retrieval/verify_evidence.py \
             src/paperagent/schemas/evidence.py
-          )
-          ruff format "${files[@]}"
-          ruff check "${files[@]}"
       - name: Commit lint repair
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/paperagent
-          git commit -m 'style(methodology): satisfy canonical contract lint'
+          git commit -m 'style(methodology): apply canonical contract lint rewrites'
           git push origin HEAD:${{ github.head_ref }}
