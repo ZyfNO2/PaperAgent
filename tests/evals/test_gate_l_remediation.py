@@ -10,6 +10,7 @@ from paperagent.schemas import SearchQuery
 from paperagent.schemas.literature import (
     CoverageReport,
     LiteratureBundle,
+    LiteratureQueryPlan,
     PaperRecord,
     RetrievalMetrics,
 )
@@ -17,9 +18,9 @@ from paperagent.schemas.literature import (
 
 class _FallbackService:
     def __init__(self) -> None:
-        self.plans = []
+        self.plans: list[LiteratureQueryPlan] = []
 
-    async def retrieve(self, plan):
+    async def retrieve(self, plan: LiteratureQueryPlan) -> LiteratureBundle:
         self.plans.append(plan)
         if len(self.plans) == 1:
             return LiteratureBundle(
