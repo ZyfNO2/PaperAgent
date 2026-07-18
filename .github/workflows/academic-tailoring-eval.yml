@@ -27,9 +27,27 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev,release]'
       - name: Ruff lint
-        run: ruff check .
+        id: ruff-lint
+        continue-on-error: true
+        run: |
+          mkdir -p build
+          ruff check . > build/academic-tailoring-ruff-lint.txt 2>&1
       - name: Ruff format
-        run: ruff format --check .
+        id: ruff-format
+        continue-on-error: true
+        run: ruff format --check --diff . > build/academic-tailoring-ruff-format.txt 2>&1
+      - name: Upload quality diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: academic-tailoring-quality-${{ matrix.python-version }}
+          path: |
+            build/academic-tailoring-ruff-lint.txt
+            build/academic-tailoring-ruff-format.txt
+          if-no-files-found: error
+      - name: Enforce Ruff
+        if: steps.ruff-lint.outcome == 'failure' || steps.ruff-format.outcome == 'failure'
+        run: exit 1
       - name: Strict Mypy
         run: mypy --config-file pyproject.toml
       - name: Tests and branch coverage
