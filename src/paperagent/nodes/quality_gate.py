@@ -4,6 +4,7 @@ import re
 
 from langchain_core.runnables import RunnableConfig
 
+from paperagent.academic_methodology import AuditVerdict
 from paperagent.nodes._shared import execution_with
 from paperagent.runtime import get_option, get_services
 from paperagent.schemas import EvidenceBundle, QualityDecision, RetrievalState
@@ -17,6 +18,11 @@ def _has_threshold(text: str) -> bool:
     return bool(re.search(r"(?:\d+(?:\.\d+)?|>=|<=|>|<)", text))
 
 
+def _audit_reason_code(check_id: str) -> str:
+    normalized = re.sub(r"[^A-Z0-9]+", "_", check_id.upper()).strip("_")
+    return f"Q_METHOD_AUDIT_{normalized}"
+
+
 def evaluate_quality(state: PaperAgentState) -> QualityDecision:
     plan = state.get("plan")
     if plan is None:
@@ -26,7 +32,8 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
     missing = [
         gap.gap_id
         for gap in plan.evidence_gaps
-        if gap.required and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
+        if gap.required
+        and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
     ]
     if missing:
         if retrieval.round < retrieval.max_rounds and not retrieval.budget_exhausted:
@@ -43,8 +50,14 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
         )
     synthesis = state.get("synthesis")
     method = state.get("method")
+    methodology_audit = state.get("methodology_audit")
     if synthesis is None or method is None:
         return QualityDecision(verdict="blocked", reason_codes=["Q_MISSING_ARTIFACT"])
+    if methodology_audit is None:
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=["Q_MISSING_METHODOLOGY_AUDIT"],
+        )
     required_gap_ids = {gap.gap_id for gap in plan.evidence_gaps if gap.required}
     weak_gap_ids = sorted(
         assessment.gap_id
@@ -65,7 +78,14 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
             missing_gap_ids=weak_gap_ids,
         )
     accepted = set(evidence.accepted_ids)
-    invalid = (synthesis.referenced_evidence_ids() | set(method.evidence_ids)) - accepted
+    canonical_evidence_ids = {
+        item.evidence_id for item in method.methodology_plan.evidence
+    }
+    invalid = (
+        synthesis.referenced_evidence_ids()
+        | set(method.evidence_ids)
+        | canonical_evidence_ids
+    ) - accepted
     execution = state.get("execution")
     run = state.get("run")
     max_repairs = run.budgets.max_method_repairs if run is not None else 1
@@ -83,6 +103,32 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
             reason_codes=["Q_REPAIR_BUDGET_EXHAUSTED", "Q_UNKNOWN_EVIDENCE_ID"],
             invalid_evidence_ids=sorted(invalid),
         )
+
+    audit_failures = [
+        _audit_reason_code(check_id)
+        for check_id in methodology_audit.trace.failed_check_ids
+    ]
+    if methodology_audit.verdict is AuditVerdict.NO_GO:
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=["Q_METHODOLOGY_NO_GO", *audit_failures],
+        )
+    if methodology_audit.verdict is AuditVerdict.REVISE:
+        if repair_count < max_repairs:
+            return QualityDecision(
+                verdict="repair_method",
+                reason_codes=["Q_METHODOLOGY_REVISE", *audit_failures],
+                repair_target="method",
+            )
+        return QualityDecision(
+            verdict="blocked",
+            reason_codes=[
+                "Q_REPAIR_BUDGET_EXHAUSTED",
+                "Q_METHODOLOGY_REVISE",
+                *audit_failures,
+            ],
+        )
+
     method_missing: list[str] = []
     if not method.baseline.name.strip():
         method_missing.append("Q_MISSING_BASELINE")
@@ -121,7 +167,13 @@ async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> S
     decision = evaluate_quality(state)
     increment = 1 if decision.verdict == "repair_method" else 0
     trace = [
-        make_event(services, state, node=NODE, event_type="node.started", status="started"),
+        make_event(
+            services,
+            state,
+            node=NODE,
+            event_type="node.started",
+            status="started",
+        ),
         make_event(
             services,
             state,
