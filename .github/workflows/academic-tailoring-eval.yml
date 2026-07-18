@@ -63,7 +63,19 @@ jobs:
         if: steps.mypy.outcome == 'failure'
         run: exit 1
       - name: Tests and branch coverage
-        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+        id: tests
+        continue-on-error: true
+        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q > build/academic-tailoring-pytest.txt 2>&1
+      - name: Upload test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: academic-tailoring-tests-${{ matrix.python-version }}
+          path: build/academic-tailoring-pytest.txt
+          if-no-files-found: error
+      - name: Enforce tests
+        if: steps.tests.outcome == 'failure'
+        run: exit 1
 
   evaluate:
     name: Generate academic tailoring corpus evidence
