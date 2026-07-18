@@ -1,0 +1,157 @@
++- unfair budget, metrics, seeds, uncertainty, resource, or stopping criteria;
++- missing single-module or leave-one-out ablation;
++- weak module-composition novelty;
++- unsupported observed result;
++- missing paper-to-method attribution;
++- non-finite metrics and duplicate identifiers.
++
++### Acceptance
++
++- Blocking provenance, license, compute, or semantic failures cannot return `GO`.
++- Composition-only novelty returns at most `REVISE`.
++- Every borrowed component maps to a source, role, interface, adapter, predicted effect, and failure mode.
++- Baseline, full, single-module, and required leave-one-out arms use a fair comparison signature.
++
++## 12. Gate I — academic-tailoring evidence scope and Agent evaluation
++
++### Procedure
++
++```bash
++python scripts/run_academic_tailoring_eval.py \
++  --output-dir build/academic-tailoring-eval
++```
++
++Run the plugin `propose` operation on the committed NPC fixture and inspect both output and evidence metadata.
++
++### Acceptance
++
++- All committed synthetic cases match expected decisions and quality thresholds.
++- Every expected target remains `proposed` unless an immutable evidence ID is present.
++- Synthetic fixtures report:
++  - `evidence_scope=synthetic_evaluation`;
++  - `readiness=synthetic_evaluation_only`;
++  - `scientific_release_ready=false`.
++- Verified real source cards can report `ready_for_controlled_experiment`, but still report `scientific_release_ready=false` before experiments and expert review.
++- Corpus artifacts and digests are reproducible.
++- The report explicitly states that the corpus evaluates contract handling, not real scientific validity or global novelty.
++
++## 13. Gate J — web, browser, container, and local deployment
++
++### Procedure
++
++- Serve the installed package on loopback.
++- Run headless Chromium submit → progress → review → export.
++- Build the Docker image.
++- Run as the configured unprivileged user with a persistent `/data` volume.
++- Confirm `/readyz` and packaged assets.
++- Attempt non-loopback bind without acknowledgement and confirm refusal.
++
++### Acceptance
++
++- Browser contains no provider key or Agent decision logic.
++- CSP and package-local assets remain intact.
++- Public binding requires explicit acknowledgement and is still documented as unauthenticated/trusted-network only.
++- Container restart preserves terminal state and fails in-flight work closed.
++
++## 14. Gate K — live provider engineering acceptance
++
++This gate requires repository secrets and must be opt-in.
++
++### Procedure
++
++1. Store `MISTRAL_API_KEY` only in GitHub repository Secrets.
++2. Validate all four production structured schemas with the configured real model.
++3. Run three consecutive frozen-input vertical executions.
++4. Capture redacted latency, token, retry, repair, error-class, and cost summaries.
++5. Intentionally observe or safely simulate 429, timeout, malformed structured output, and thinking-only response behavior.
++6. Run live OpenAlex, arXiv, Crossref, and DataCite smoke.
++
++### Acceptance
++
++- Three consecutive vertical runs complete under fixed budgets.
++- No credential or prompt body appears in logs or artifacts.
++- Retry/repair counts remain bounded and attributable.
++- Cost is calculable or the run fails closed.
++- Provider behavior is reported for the exact model and date; it is not generalized to all models.
++
++## 15. Gate L — real scientific capability acceptance
++
++This gate is mandatory before claiming the system produces reliable research designs or scientific novelty.
++
++### Required evidence
++
++1. A frozen external holdout not used to design prompts, rules, or thresholds.
++2. Real primary-source records with DOI/PMID/repository commit and claim-level support checks.
++3. At least one executable baseline reproduction package with environment, data access, preprocessing, split, seeds, logs, and result digest.
++4. Controlled baseline, single-module, full, and interaction/leave-one-out experiments.
++5. Statistical uncertainty, robustness, compute, and failure analysis.
++6. Data availability, license, privacy, ethics, and human-subject approvals where applicable.
++7. Blinded domain-expert review with explicit rubric.
++8. Inter-rater agreement and adjudication of disagreements.
++9. Calibrated false-GO, false-NO_GO, unsupported-claim, citation-mismatch, and repair-success rates.
++10. A limitations statement that distinguishes local evidence from global novelty.
++
++### Acceptance
++
++- No critical claim is uncovered; unknown claims remain explicitly unknown.
++- Results represented as observed have immutable evidence.
++- Reproduction meets its predeclared tolerance.
++- Human reviewers meet the predeclared acceptance and agreement threshold.
++- Release decision is traceable to the frozen rubric and holdout, not post-hoc narrative.
++
++## 16. Merge checklist
++
++A reviewer may approve merge into `master` only when every item is checked:
++
++- [ ] PR #17 is the sole integration PR and is mergeable.
++- [ ] Corrective-head Ruff, format, strict Mypy, compile, tests, and coverage pass.
++- [ ] Installed-Wheel, CLI, plugin, demo, OpenAPI, benchmark, web/browser, and Docker gates pass where configured.
++- [ ] Consolidated regression tests pass on Python 3.11 and 3.12.
++- [ ] No unresolved P0/P1 review finding remains.
++- [ ] README and review documentation state the correct evidence and deployment boundaries.
++- [ ] OpenAPI and committed snapshots are intentionally reviewed.
++- [ ] Exact head SHA and workflow/artifact digests are recorded in the PR.
++- [ ] No release tag or package-version claim is made unintentionally.
++
++## 17. Engineering release checklist
++
++- [ ] Merge checklist is complete.
++- [ ] Clean Wheel and container acceptance pass from the merged SHA.
++- [ ] Migration, rollback, backup, and local recovery runbook is exercised.
++- [ ] Operational owner accepts the local single-user/trusted-network boundary.
++- [ ] Release notes identify excluded live/scientific gates.
++
++## 18. Scientific release checklist
++
++- [ ] Engineering release checklist is complete.
++- [ ] Live provider Gate K passes.
++- [ ] Real scientific Gate L passes.
++- [ ] Domain reviewer and reproducibility reviewer sign off independently.
++- [ ] Evidence tier is stated per capability; synthetic evidence is never relabeled as real evidence.
++- [ ] Final claims, limitations, and stop conditions match the accepted evidence.
++
++## 19. Final acceptance record template
++
++```text
++Decision level:       MERGE | ENGINEERING_RELEASE | SCIENTIFIC_RELEASE
++Decision:             PASS | FAIL | INCOMPLETE
++Commit SHA:
++Base SHA:
++UTC date:
++Python versions:
++Workflow run IDs:
++Artifact IDs/digests:
++Offline test result:
++Coverage:
++Installed artifact:
++Browser/container:
++Live providers:
++Real sources:
++Reproduction:
++Human review:
++Known exclusions:
++Reviewer(s):
++Sign-off:
++```
++
++An `INCOMPLETE` result must not be converted to `PASS` by narrative explanation.
