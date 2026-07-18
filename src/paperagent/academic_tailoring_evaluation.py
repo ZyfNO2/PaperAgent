@@ -139,10 +139,7 @@ def materialize_task(base: TailoringTask, mutation: TailoringMutation) -> Tailor
 def _score(
     name: str, available: int, checks: tuple[bool, ...], findings: list[str]
 ) -> DimensionScore:
-    if not checks:
-        earned = available
-    else:
-        earned = round(available * sum(checks) / len(checks))
+    earned = available if not checks else round(available * sum(checks) / len(checks))
     return DimensionScore(
         name=name,
         earned=earned,
