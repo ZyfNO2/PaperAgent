@@ -15,7 +15,9 @@
     "limitations": [
       "expert data covers only familiar scenario combinations",
       "the action head does not encode scenario-invalid actions"
-    ]
+    ],
+    "content_hash": "sha256:synthetic-paper-a",
+    "repository_ref": "fixture-commit-a1b2c3"
   },
   {
     "paper_id": "SYN-B",
@@ -33,7 +35,9 @@
     "limitations": [
       "cannot identify semantically poor actions that remain technically valid",
       "requires a maintained action ontology"
-    ]
+    ],
+    "content_hash": "sha256:synthetic-paper-b",
+    "repository_ref": "fixture-commit-b2c3d4"
   },
   {
     "paper_id": "SYN-C",
@@ -51,6 +55,28 @@
     "limitations": [
       "poor calibration may activate corrections too often",
       "residual learning can overfit rare failure states"
-    ]
+    ],
+    "content_hash": "sha256:synthetic-paper-c",
+    "repository_ref": "fixture-commit-c3d4e5"
+  },
+  {
+    "paper_id": "SYN-D",
+    "title": "Synthetic Paper D: Shift-Robust Ensemble Policy for NPC Control",
+    "stable_identifier": "synthetic:paper-d:v1",
+    "evidence_state": "synthetic_fixture",
+    "license": "Apache-2.0",
+    "method_name": "Shift-Robust Ensemble Policy",
+    "original_problem": "improve NPC control under scenario distribution shift",
+    "method_summary": "an ensemble of independently trained behavior policies averages calibrated action values under shift",
+    "reusable_component": "full comparator implementation and fixed evaluation recipe",
+    "input_semantics": "the same ordered observations and intent tokens as the baseline",
+    "output_semantics": "calibrated action values over the same discrete vocabulary",
+    "compute_cost": "approximately three times baseline inference cost",
+    "limitations": [
+      "higher inference cost",
+      "does not explicitly remove scenario-invalid actions"
+    ],
+    "content_hash": "sha256:synthetic-paper-d",
+    "repository_ref": "fixture-commit-d4e5f6"
   }
 ]
