@@ -5,7 +5,8 @@
 ```text
 Repository:        ZyfNO2/PaperAgent
 Integration PR:    #17
-Base:              master
+Review base:       integration/pre-rewrite-v0.5.1-base
+Pinned base SHA:   497982242023e3b621fa8b31816a6f2b8d899d4a
 Branch:            feat/academic-tailoring-evaluation
 Package version:   0.5.1
 Merge performed:   no
@@ -14,11 +15,13 @@ Release performed: no
 
 PR #17 supersedes the former stacked PR #14 and PR #16 handoff model. Use `docs/v0.6-v0.8/HANDOFF.md` as the consolidated authority.
 
+The repository `master` history was rewritten after review began. The PR uses the pinned pre-rewrite base for safe review. Do not merge it directly into rewritten `master` without clean-tree reconciliation.
+
 ## Interview evidence already delivered
 
 - durable asynchronous task API;
 - idempotency, event cursor, SSE, cancellation, restart recovery, review, and export;
-- SQLite schema metadata, diagnostics, metrics, and concurrency evidence;
+- SQLite schema metadata, diagnostics, metrics, concurrency, backup, and restore evidence;
 - real-LLM runtime contracts, bounded retry/repair, budgets, pricing, and redaction;
 - controlled plugin runtime and independent external-plugin package;
 - deterministic academic method audit/proposal and Agent evaluation;
@@ -60,6 +63,33 @@ python scripts/local_state_roundtrip.py \
 The focused demonstration proves that a completed task, review state, and deterministic export survive a consistent SQLite backup/restore, and that an in-flight task fails closed with `PROCESS_RESTARTED` after application restart.
 
 Detailed procedure and expected evidence: `docs/testing/LOCAL_ACCEPTANCE.md`.
+
+## Verified evidence for the new local tests
+
+```text
+One-command local run:  29630172738 — SUCCESS
+Source SHA:             591ff5d8354d69b6606820263e1eed9fc7403787
+Python matrix:          3.11 and 3.12 — SUCCESS
+Quick profile:          SUCCESS
+
+Final code-head run:    29630259329 — SUCCESS
+Final tested code SHA:  37572aba81070fe0b4df5df5f3708a94cf825368
+Academic run:           29630259297 — SUCCESS
+Interview artifact ID:  8425220815
+Artifact SHA-256:       a8e9d60be337ef4e6ddcede1cea3b3bc2e5cb4b97e9a526cce87b0813125ee79
+```
+
+Final-head durable-state evidence:
+
+```text
+status:                  passed
+review_restored:         true
+journal_mode:            wal
+restart_recovery_code:   PROCESS_RESTARTED
+backup_sha256:           fa01fca97af37f3d13a8a66b149d4df3a4bc3cf22bffa016e44cfd882b548470
+export_sha256:           2f9e0c62e2540558a59a50ef586fe07a40846742d064f45d66916e8351ea4915
+restored_export_sha256:  2f9e0c62e2540558a59a50ef586fe07a40846742d064f45d66916e8351ea4915
+```
 
 ## Primary interview commands
 
