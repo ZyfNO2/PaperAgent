@@ -81,11 +81,17 @@ def test_local_proposal_contains_references_methods_innovation_story_and_targets
     proposal = compose_tailored_research_proposal(task)
 
     assert proposal.decision is TailoringDecision.GO
-    assert {reference.paper_id for reference in proposal.references} == {"SYN-A", "SYN-B", "SYN-C"}
+    assert {reference.paper_id for reference in proposal.references} == {
+        "SYN-A",
+        "SYN-B",
+        "SYN-C",
+        "SYN-D",
+    }
     assert {reference.method_used for reference in proposal.references} == {
         "Behavior Cloning Policy",
         "Semantic Action Mask",
         "Uncertainty-Gated Residual Policy",
+        "Shift-Robust Ensemble Policy",
     }
     assert {module.source_paper_id for module in proposal.modules} == {"SYN-B", "SYN-C"}
     assert proposal.innovation_points[0].why_not_simple_splice
@@ -99,6 +105,8 @@ def test_local_proposal_contains_references_methods_innovation_story_and_targets
         "single_module",
         "full",
         "leave_one_out",
+        "strong_comparison",
+        "interaction",
     }
 
 
@@ -116,7 +124,7 @@ def test_plugin_propose_uses_the_same_local_generation_path() -> None:
 
     assert "propose" in plugin.manifest.operations
     assert result.output["decision"] == "GO"
-    assert len(result.output["references"]) == 3
+    assert len(result.output["references"]) == 4
     assert len(result.output["modules"]) == 2
     assert result.evidence["llm_used"] is False
     assert result.evidence["result_status"] == "simulated_or_proposed"
