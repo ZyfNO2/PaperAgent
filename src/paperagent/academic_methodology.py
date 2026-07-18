@@ -176,9 +176,7 @@ class MethodPlan(BaseModel):
     @model_validator(mode="after")
     def require_unique_identifiers(self) -> MethodPlan:
         if self.contract_version != METHOD_PLAN_CONTRACT_VERSION:
-            raise ValueError(
-                f"unsupported method plan contract version: {self.contract_version}"
-            )
+            raise ValueError(f"unsupported method plan contract version: {self.contract_version}")
         for label, values in (
             ("module", tuple(item.name for item in self.modules)),
             ("experiment", tuple(item.name for item in self.experiments)),
@@ -382,8 +380,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
     checks.append(
         _check(
             "research-contract-complete",
-            all(_present(value) for value in research_fields)
-            and bool(plan.research.constraints),
+            all(_present(value) for value in research_fields) and bool(plan.research.constraints),
             AuditSeverity.ERROR,
             "research contract includes problem, setting, metric, constraints, claim, observation, and mechanism",
             status=ClaimStatus.PROPOSED,
@@ -439,9 +436,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             baseline.compute_fit is True,
             AuditSeverity.CRITICAL,
             "baseline fits the declared compute constraints",
-            status=(
-                ClaimStatus.VERIFIED if baseline.compute_fit is True else ClaimStatus.UNKNOWN
-            ),
+            status=(ClaimStatus.VERIFIED if baseline.compute_fit is True else ClaimStatus.UNKNOWN),
         )
     )
     checks.append(
@@ -458,9 +453,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
         )
     )
     baseline_evidence = (
-        evidence_by_id.get(baseline.source_evidence_id)
-        if baseline.source_evidence_id
-        else None
+        evidence_by_id.get(baseline.source_evidence_id) if baseline.source_evidence_id else None
     )
     checks.append(
         _check(
@@ -524,9 +517,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
                 ),
             )
         )
-        module_evidence = (
-            evidence_by_id.get(module.evidence_id) if module.evidence_id else None
-        )
+        module_evidence = evidence_by_id.get(module.evidence_id) if module.evidence_id else None
         checks.append(
             _check(
                 f"module-provenance:{module.name}",
@@ -542,18 +533,12 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
     baseline_arms = tuple(
         arm for arm in plan.experiments if arm.arm_type is ExperimentArmType.BASELINE
     )
-    full_arms = tuple(
-        arm for arm in plan.experiments if arm.arm_type is ExperimentArmType.FULL
-    )
+    full_arms = tuple(arm for arm in plan.experiments if arm.arm_type is ExperimentArmType.FULL)
     strong_arms = tuple(
-        arm
-        for arm in plan.experiments
-        if arm.arm_type is ExperimentArmType.STRONG_COMPARISON
+        arm for arm in plan.experiments if arm.arm_type is ExperimentArmType.STRONG_COMPARISON
     )
     interaction_arms = tuple(
-        arm
-        for arm in plan.experiments
-        if arm.arm_type is ExperimentArmType.INTERACTION
+        arm for arm in plan.experiments if arm.arm_type is ExperimentArmType.INTERACTION
     )
     unknown_module_references = sorted(
         {
@@ -588,8 +573,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
     checks.append(
         _check(
             "experiment-full-arm",
-            len(full_arms) == 1
-            and set(full_arms[0].included_modules) == module_name_set,
+            len(full_arms) == 1 and set(full_arms[0].included_modules) == module_name_set,
             AuditSeverity.ERROR,
             "experiment matrix contains one full-method arm with every proposed module",
             status=ClaimStatus.PROPOSED,
@@ -628,18 +612,13 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
                 )
             )
 
-    strong_comparison_complete = (
-        len(strong_arms) >= 1
-        and all(
-            _present(arm.comparator)
-            and _present(arm.contrast)
-            and _verified_evidence(
-                evidence_by_id.get(arm.source_evidence_id)
-                if arm.source_evidence_id
-                else None
-            )
-            for arm in strong_arms
+    strong_comparison_complete = len(strong_arms) >= 1 and all(
+        _present(arm.comparator)
+        and _present(arm.contrast)
+        and _verified_evidence(
+            evidence_by_id.get(arm.source_evidence_id) if arm.source_evidence_id else None
         )
+        for arm in strong_arms
     )
     checks.append(
         _check(
@@ -648,9 +627,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             AuditSeverity.ERROR,
             "at least one strong comparison arm names its comparator, contrast, and verified provenance",
             evidence_ids=tuple(
-                arm.source_evidence_id
-                for arm in strong_arms
-                if arm.source_evidence_id is not None
+                arm.source_evidence_id for arm in strong_arms if arm.source_evidence_id is not None
             ),
             status=ClaimStatus.PROPOSED,
         )
@@ -674,9 +651,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
         )
     )
 
-    reference_signature = (
-        _fairness_signature(baseline_arms[0]) if len(baseline_arms) == 1 else None
-    )
+    reference_signature = _fairness_signature(baseline_arms[0]) if len(baseline_arms) == 1 else None
     fair_experiments = bool(plan.experiments) and reference_signature is not None
     for experiment in plan.experiments:
         complete = (
@@ -694,8 +669,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
         fair_experiments = fair_experiments and complete
         if reference_signature is not None:
             fair_experiments = (
-                fair_experiments
-                and _fairness_signature(experiment) == reference_signature
+                fair_experiments and _fairness_signature(experiment) == reference_signature
             )
     checks.append(
         _check(
@@ -717,9 +691,7 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
     )
 
     critical_failures = tuple(
-        item
-        for item in checks
-        if not item.passed and item.severity is AuditSeverity.CRITICAL
+        item for item in checks if not item.passed and item.severity is AuditSeverity.CRITICAL
     )
     other_failures = tuple(item for item in checks if not item.passed)
     if critical_failures:
@@ -736,15 +708,12 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
                 for item in checks
                 if not item.passed
                 for evidence_id in item.evidence_ids
-                if evidence_id not in evidence_by_id
-                or not evidence_by_id[evidence_id].verified
+                if evidence_id not in evidence_by_id or not evidence_by_id[evidence_id].verified
             }
         )
     )
     risks = tuple(
-        item.message
-        for item in other_failures
-        if item.severity is not AuditSeverity.NOTE
+        item.message for item in other_failures if item.severity is not AuditSeverity.NOTE
     )
     reasons = risks or ("all deterministic audit gates passed",)
     baseline_decision = (

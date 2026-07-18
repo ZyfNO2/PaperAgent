@@ -109,9 +109,7 @@ class AcademicMethodTailoringPlugin:
                     "evidence_scope": proposal.evidence_scope.value,
                     "readiness": proposal.readiness.value,
                     "scientific_release_ready": proposal.scientific_release_ready,
-                    "proposal_fingerprint": getattr(
-                        proposal, "proposal_fingerprint", None
-                    ),
+                    "proposal_fingerprint": getattr(proposal, "proposal_fingerprint", None),
                     "plan_fingerprint": getattr(proposal, "plan_fingerprint", None),
                     "audit_verdict": getattr(proposal, "audit_verdict", None),
                 }

@@ -678,13 +678,9 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
             blockers.append(f"module source {source.paper_id} is unverified")
         if not _license_is_acceptable(source.license):
             blockers.append(f"module source {source.paper_id} has an incompatible license")
-        shape_only = _is_shape_only(intent.semantic_mapping) or _is_shape_only(
-            intent.adapter
-        )
+        shape_only = _is_shape_only(intent.semantic_mapping) or _is_shape_only(intent.adapter)
         complete_contract = _module_contract_complete(intent)
-        compatibility_status = (
-            "compatible" if not shape_only and complete_contract else "blocked"
-        )
+        compatibility_status = "compatible" if not shape_only and complete_contract else "blocked"
         if shape_only:
             blockers.append(
                 f"module {source.paper_id} is justified only by shape or an unexplained adapter"
@@ -793,9 +789,7 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
                     name=f"without-{module.module_id}",
                     arm_type=ExperimentArmType.LEAVE_ONE_OUT,
                     included_modules=tuple(
-                        candidate.module_id
-                        for candidate in modules
-                        if candidate != module
+                        candidate.module_id for candidate in modules if candidate != module
                     ),
                     purpose=f"test whether the story still holds without {module.method_used}",
                     contrast=f"full method versus method without {module.module_id}",
