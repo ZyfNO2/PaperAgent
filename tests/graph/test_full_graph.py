@@ -48,7 +48,15 @@ def _services(fixed_time, *, planning="happy_path", method="happy_path"):
                 title="Synthetic support note",
                 locator="fixture://evidence/ev-support-001",
                 snippet="Claim support can be measured.",
-                metadata={"license": "MIT"},
+                metadata={
+                    "license": "MIT",
+                    "baseline_reproduced": "true",
+                    "baseline_reproduced_metric": "primary_metric=0.50",
+                    "baseline_compute_fit": "true",
+                    "baseline_parity_verified": "true",
+                    "dataset_fingerprint": "sha256:fixture-dataset",
+                    "environment_fingerprint": "sha256:fixture-environment",
+                },
             )
         ],
         SearchFixtureKey(scenario="happy_path", query_id="query-ablation-01", call_index=0): [
@@ -372,7 +380,15 @@ async def test_graph__quality_repair_retrieval__uses_remaining_round_then_passes
                     title="Support note",
                     locator="fixture://support",
                     snippet="support",
-                    metadata={"license": "MIT"},
+                    metadata={
+                        "license": "MIT",
+                        "baseline_reproduced": "true",
+                        "baseline_reproduced_metric": "primary_metric=0.50",
+                        "baseline_compute_fit": "true",
+                        "baseline_parity_verified": "true",
+                        "dataset_fingerprint": "sha256:fixture-dataset",
+                        "environment_fingerprint": "sha256:fixture-environment",
+                    },
                 )
             ],
             SearchFixtureKey(scenario=scenario, query_id="query-ablation-01", call_index=0): [

@@ -16,6 +16,12 @@ _ALLOWED_EVIDENCE_METADATA = frozenset(
         "repository_ref",
         "verification_status",
         "providers",
+        "baseline_reproduced",
+        "baseline_reproduced_metric",
+        "baseline_compute_fit",
+        "baseline_parity_verified",
+        "dataset_fingerprint",
+        "environment_fingerprint",
     }
 )
 
@@ -73,6 +79,18 @@ def _metadata_value(metadata: dict[str, str], key: str) -> str | None:
     return normalized or None
 
 
+def _metadata_bool(metadata: dict[str, str], key: str) -> bool | None:
+    value = _metadata_value(metadata, key)
+    if value is None:
+        return None
+    normalized = value.lower()
+    if normalized in {"true", "1", "yes"}:
+        return True
+    if normalized in {"false", "0", "no"}:
+        return False
+    raise ValueError(f"invalid boolean metadata {key}: {value!r}")
+
+
 def bind_method_evidence(
     method: MethodProposal,
     evidence: EvidenceBundle,
@@ -116,8 +134,25 @@ def bind_method_evidence(
     evidence_by_id = {item.evidence_id: item for item in bound_evidence}
     baseline = method.methodology_plan.baseline
     baseline_evidence = evidence_by_id.get(baseline.source_evidence_id or "")
+    baseline_metadata = (
+        accepted[baseline.source_evidence_id].metadata
+        if baseline.source_evidence_id in accepted
+        else {}
+    )
     bound_baseline = baseline.model_copy(
-        update={"license": baseline_evidence.license if baseline_evidence is not None else None}
+        update={
+            "license": baseline_evidence.license if baseline_evidence is not None else None,
+            "reproduced": _metadata_bool(baseline_metadata, "baseline_reproduced") is True,
+            "reproduced_metric": _metadata_value(baseline_metadata, "baseline_reproduced_metric"),
+            "compute_fit": _metadata_bool(baseline_metadata, "baseline_compute_fit"),
+            "baseline_parity_verified": _metadata_bool(
+                baseline_metadata, "baseline_parity_verified"
+            ),
+            "dataset_fingerprint": _metadata_value(baseline_metadata, "dataset_fingerprint"),
+            "environment_fingerprint": _metadata_value(
+                baseline_metadata, "environment_fingerprint"
+            ),
+        }
     )
     bound_modules = tuple(
         module.model_copy(

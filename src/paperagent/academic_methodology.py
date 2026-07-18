@@ -485,12 +485,23 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             ),
         )
     )
+    compute_fit_severity = (
+        AuditSeverity.CRITICAL if baseline.compute_fit is False else AuditSeverity.ERROR
+    )
     checks.append(
         _check(
             "baseline-compute-fit",
             baseline.compute_fit is True,
-            AuditSeverity.CRITICAL,
-            "baseline fits the declared compute constraints",
+            compute_fit_severity,
+            (
+                "baseline fits the declared compute constraints"
+                if baseline.compute_fit is True
+                else (
+                    "baseline is explicitly incompatible with the declared compute constraints"
+                    if baseline.compute_fit is False
+                    else "baseline compute fit has not been verified"
+                )
+            ),
             status=(ClaimStatus.VERIFIED if baseline.compute_fit is True else ClaimStatus.UNKNOWN),
         )
     )

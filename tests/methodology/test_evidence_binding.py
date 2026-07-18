@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -40,7 +41,15 @@ def _evidence() -> EvidenceBundle:
                     "summary": "Server support summary",
                     "content_hash": "sha256:server-support",
                     "provider": "fake_search",
-                    "metadata": {"license": "MIT"},
+                    "metadata": {
+                        "license": "MIT",
+                        "baseline_reproduced": "true",
+                        "baseline_reproduced_metric": "primary_metric=0.50",
+                        "baseline_compute_fit": "true",
+                        "baseline_parity_verified": "true",
+                        "dataset_fingerprint": "sha256:fixture-dataset",
+                        "environment_fingerprint": "sha256:fixture-environment",
+                    },
                 },
                 {
                     "evidence_id": "ev-ablation-001",
@@ -109,7 +118,15 @@ def test_accepted_evidence_ledger_exposes_only_server_owned_fields() -> None:
         "ev-support-001",
         "ev-ablation-001",
     ]
-    assert ledger[0]["metadata"] == {"license": "MIT"}
+    assert ledger[0]["metadata"] == {
+        "license": "MIT",
+        "baseline_reproduced": "true",
+        "baseline_reproduced_metric": "primary_metric=0.50",
+        "baseline_compute_fit": "true",
+        "baseline_parity_verified": "true",
+        "dataset_fingerprint": "sha256:fixture-dataset",
+        "environment_fingerprint": "sha256:fixture-environment",
+    }
     assert "verification_status" not in ledger[0]
 
 
@@ -180,8 +197,55 @@ def test_quality_gate_recomputes_stale_audit_for_current_method_plan() -> None:
     assert "Q_METHOD_AUDIT_BASELINE_LICENSE" in decision.reason_codes
 
 
+def test_bind_method_evidence_clears_model_authored_baseline_execution_facts() -> None:
+    evidence = _evidence()
+    support = evidence.items[0].model_copy(update={"metadata": {"license": "MIT"}})
+    unverified = evidence.model_copy(update={"items": [support, evidence.items[1]]})
+
+    bound = bind_method_evidence(_method(), unverified, _synthesis())
+    baseline = bound.methodology_plan.baseline
+
+    assert baseline.reproduced is False
+    assert baseline.reproduced_metric is None
+    assert baseline.compute_fit is None
+    assert baseline.baseline_parity_verified is None
+    assert baseline.dataset_fingerprint is None
+    assert baseline.environment_fingerprint is None
+
+
+def test_bind_method_evidence_uses_server_owned_baseline_execution_facts() -> None:
+    bound = bind_method_evidence(_method(), _evidence(), _synthesis())
+    baseline = bound.methodology_plan.baseline
+
+    assert baseline.reproduced is True
+    assert baseline.reproduced_metric == "primary_metric=0.50"
+    assert baseline.compute_fit is True
+    assert baseline.baseline_parity_verified is True
+    assert baseline.dataset_fingerprint == "sha256:fixture-dataset"
+    assert baseline.environment_fingerprint == "sha256:fixture-environment"
+
+
+def test_compute_fit_unknown_is_revise_but_explicit_false_is_no_go() -> None:
+    from paperagent.academic_methodology import AuditVerdict, audit_method_plan
+
+    bound = bind_method_evidence(_method(), _evidence(), _synthesis())
+    unknown = bound.methodology_plan.model_copy(
+        update={
+            "baseline": bound.methodology_plan.baseline.model_copy(update={"compute_fit": None})
+        }
+    )
+    incompatible = bound.methodology_plan.model_copy(
+        update={
+            "baseline": bound.methodology_plan.baseline.model_copy(update={"compute_fit": False})
+        }
+    )
+
+    assert audit_method_plan(unknown).verdict is AuditVerdict.REVISE
+    assert audit_method_plan(incompatible).verdict is AuditVerdict.NO_GO
+
+
 @pytest.mark.asyncio
-async def test_quality_gate_node_persists_recomputed_audit(fixed_time) -> None:
+async def test_quality_gate_node_persists_recomputed_audit(fixed_time: datetime) -> None:
     from paperagent.academic_methodology import audit_method_plan, method_plan_fingerprint
     from paperagent.nodes.quality_gate import quality_gate_node
     from paperagent.persistence import InMemoryStateStore
@@ -225,6 +289,7 @@ async def test_quality_gate_node_persists_recomputed_audit(fixed_time) -> None:
         {"configurable": {"services": services}},
     )
 
+    assert patch["quality"] is not None
     assert patch["quality"].verdict == "blocked"
     assert patch["methodology_audit"] is not None
     assert patch["methodology_audit"].plan_fingerprint == method_plan_fingerprint(changed_plan)
