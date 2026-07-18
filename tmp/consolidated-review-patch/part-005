@@ -1,0 +1,157 @@
++        assert isinstance(paper, dict)
++        paper["evidence_state"] = EvidenceState.VERIFIED.value
++    task = TailoringTask.model_validate(payload)
++
++    proposal = compose_tailored_research_proposal(task)
++
++    assert proposal.decision is TailoringDecision.GO
++    assert proposal.evidence_scope is EvidenceScope.REAL_VERIFIED
++    assert proposal.readiness is ProposalReadiness.READY_FOR_CONTROLLED_EXPERIMENT
++    assert proposal.scientific_release_ready is False
++    assert any("fixed baseline" in item for item in proposal.release_conditions)
++
++
++def test_novelty_composition_variants_require_revision() -> None:
++    payload = _load_tailoring_payload()
++    payload["novelty_thesis"] = "We stack the existing modules."
++    payload["why_not_simple_splice"] = "This is a combination of two components."
++
++    proposal = compose_tailored_research_proposal(TailoringTask.model_validate(payload))
++
++    assert proposal.decision is TailoringDecision.REVISE
++    assert any("module composition" in item for item in proposal.risks)
++
++
++def test_tailoring_contract_rejects_duplicate_stable_identifiers() -> None:
++    payload = _load_tailoring_payload()
++    papers = payload["papers"]
++    assert isinstance(papers, list)
++    first = papers[0]
++    second = papers[1]
++    assert isinstance(first, dict)
++    assert isinstance(second, dict)
++    second["stable_identifier"] = first["stable_identifier"]
++
++    with pytest.raises(ValueError, match="duplicate stable paper identifier"):
++        TailoringTask.model_validate(payload)
++
++
++def test_tailoring_contract_rejects_duplicate_seeds() -> None:
++    payload = _load_tailoring_payload()
++    payload["seeds"] = [1, 1]
++
++    with pytest.raises(ValueError, match="seeds must be non-empty and unique"):
++        TailoringTask.model_validate(payload)
++
++
++def test_tailoring_contract_rejects_nonfinite_targets() -> None:
++    payload = _load_tailoring_payload()
++    expected_results = payload["expected_results"]
++    assert isinstance(expected_results, list)
++    first = expected_results[0]
++    assert isinstance(first, dict)
++    first["target_value"] = float("nan")
++
++    with pytest.raises(ValueError, match="finite number"):
++        TailoringTask.model_validate(payload)
++
++
++def test_method_audit_requires_machine_verifiable_provenance() -> None:
++    payload = _load_go_plan()
++    evidence = payload["evidence"]
++    assert isinstance(evidence, list)
++    baseline_evidence = evidence[0]
++    assert isinstance(baseline_evidence, dict)
++    baseline_evidence["stable_identifier"] = None
++    baseline_evidence["supported_claims"] = []
++
++    report = audit_method_plan(MethodPlan.model_validate(payload))
++
++    assert report.verdict is AuditVerdict.NO_GO
++    assert "baseline-provenance" in {item.check_id for item in report.checks if not item.passed}
++
++
++def test_method_audit_rejects_unfair_budget_and_unknown_modules() -> None:
++    payload = _load_go_plan()
++    experiments = payload["experiments"]
++    assert isinstance(experiments, list)
++    full = next(item for item in experiments if isinstance(item, dict) and item["name"] == "full")
++    full["tuning_budget"] = "Unlimited trials"
++    full["included_modules"] = ["support-scorer", "undeclared-module"]
++
++    failures = _failed_check_ids(payload)
++
++    assert "experiment-fairness" in failures
++    assert "experiment-module-references" in failures
++
++
++def test_trainable_module_requires_an_explicit_loss() -> None:
++    payload = _load_go_plan()
++    modules = payload["modules"]
++    assert isinstance(modules, list)
++    module = modules[0]
++    assert isinstance(module, dict)
++    module["loss_terms"] = []
++
++    failures = _failed_check_ids(payload)
++
++    assert "module-contract:support-scorer" in failures
++
++
++def test_experiment_contract_rejects_duplicate_comparison_values() -> None:
++    payload = _load_go_plan()
++    experiments = payload["experiments"]
++    assert isinstance(experiments, list)
++    experiment = experiments[0]
++    assert isinstance(experiment, dict)
++    experiment["seeds"] = [1, 1]
++
++    with pytest.raises(ValueError, match="duplicate seed"):
++        MethodPlan.model_validate(payload)
++
++
++def test_runtime_diagnostics_reports_actual_sqlite_journal_mode(tmp_path: Path) -> None:
++    database = tmp_path / "paperagent.db"
++    repository = SQLiteTaskRepository(database)
++    SQLiteReviewRepository(repository)
++
++    snapshot = collect_runtime_diagnostics(database)
++
++    assert snapshot["database"]["journal_mode"] == "wal"
+--- /dev/null
++++ b/docs/review/CONSOLIDATED_CODE_REVIEW.md
+@@ -0,0 +1,92 @@
++# Consolidated Integration Code Review
++
++## Review identity
++
++```text
++Repository:          ZyfNO2/PaperAgent
++Pull request:        #17
++Base:                master
++Reviewed head:       pending corrective commit
++Review date:         2026-07-18
++Disposition:         PASS AFTER CORRECTIVE CI; EXTERNAL SCIENTIFIC EVIDENCE STILL REQUIRED
++Merge performed:     no
++Release performed:   no
++```
++
++PR #17 is the sole integration surface. It contains the complete linear history of the former PRs #14 and #16 plus the academic-tailoring evaluation work. The superseded PRs were closed without merging.
++
++## Scope reviewed
++
++- FastAPI asynchronous task contract, idempotency, durable events, SSE, cancellation, restart recovery, review, export, readiness, diagnostics, and metrics;
++- SQLite transactions, WAL behavior, schema metadata, task claiming, and concurrency tests;
++- LangGraph workflow boundaries and structured LLM calls;
++- Mistral provider configuration, typed errors, bounded retry/repair, budgets, pricing, and telemetry redaction;
++- plugin contracts, authorization, loading, invocation, and atomic output;
++- deterministic academic-method audit and academic-tailoring proposal generation;
++- synthetic Agent evaluation corpus, grader, fixtures, and snapshots;
++- wheel, CLI, browser, Docker, OpenAPI, benchmark, threat-model, and interview evidence;
++- claims made in README, review documents, and PR metadata.
++
++## Findings and corrective changes
++
++| Severity | Finding | Corrective change |
++|---|---|---|
++| HIGH | Academic policy modules modified core functions and plugin classes through import-time monkey patching. Behavior depended on package-import order and tests imported guard modules to activate the final implementation. | Moved all policy checks and the `propose` operation into the core implementations. Guard modules are now compatibility-only re-exports and perform no rebinding. |
