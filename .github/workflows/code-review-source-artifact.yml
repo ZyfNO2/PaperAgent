@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - uses: actions/upload-artifact@v4
         with:
           name: code-review-source
@@ -53,8 +55,7 @@ jobs:
               gzip.decompress(base64.b64decode(encoded))
           )
           PY
-          git apply --check /tmp/review-hardening.patch
-          git apply /tmp/review-hardening.patch
+          git apply --3way /tmp/review-hardening.patch
       - name: Install project
         run: python -m pip install -e '.[dev,release]'
       - name: Static verification
