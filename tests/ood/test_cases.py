@@ -51,6 +51,7 @@ def _services(fixed_time: datetime, scenario: str):
                     title="Synthetic domain evidence",
                     locator="fixture://ood/evidence",
                     snippet="Synthetic evidence for workflow verification.",
+                    metadata={"license": "MIT"},
                 )
             ],
             SearchFixtureKey(scenario=scenario, query_id="query-evaluation-01", call_index=0): [
@@ -62,6 +63,7 @@ def _services(fixed_time: datetime, scenario: str):
                     title="Synthetic evaluation evidence",
                     locator="fixture://ood/evaluation",
                     snippet="Synthetic evaluation contract.",
+                    metadata={"license": "MIT"},
                 )
             ],
         }

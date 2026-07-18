@@ -224,3 +224,31 @@ def test_runtime_diagnostics_reports_actual_sqlite_journal_mode(tmp_path: Path) 
     snapshot = collect_runtime_diagnostics(database)
 
     assert snapshot["database"]["journal_mode"] == "wal"
+
+
+def test_proposal_fingerprint_covers_non_plan_proposal_content() -> None:
+    original_payload = _load_tailoring_payload()
+    changed_payload = _load_tailoring_payload()
+    changed_reproduction = changed_payload["reproduction"]
+    assert isinstance(changed_reproduction, dict)
+    changed_reproduction["implementation_ref"] = "different-implementation-reference"
+
+    original = compose_tailored_research_proposal(TailoringTask.model_validate(original_payload))
+    changed = compose_tailored_research_proposal(TailoringTask.model_validate(changed_payload))
+
+    assert original.plan_fingerprint == changed.plan_fingerprint
+    assert original.proposal_fingerprint != changed.proposal_fingerprint
+
+
+def test_baseline_decision_uses_full_canonical_audit() -> None:
+    payload = _load_tailoring_payload()
+    papers = payload["papers"]
+    assert isinstance(papers, list)
+    baseline = papers[0]
+    assert isinstance(baseline, dict)
+    baseline["license"] = "proprietary-no-reuse"
+
+    proposal = compose_tailored_research_proposal(TailoringTask.model_validate(payload))
+
+    assert proposal.decision is TailoringDecision.NO_GO
+    assert proposal.baseline.decision == "not ready for modification"

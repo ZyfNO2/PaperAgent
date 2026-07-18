@@ -64,6 +64,7 @@ def happy_path_search_fixtures() -> dict[SearchFixtureKey, list[SearchCandidate]
                 title="Synthetic support note",
                 locator="fixture://evidence/ev-support-001",
                 snippet="Claim support can be measured.",
+                metadata={"license": "MIT"},
             )
         ],
         SearchFixtureKey(scenario="happy_path", query_id="query-ablation-01", call_index=0): [
@@ -75,6 +76,7 @@ def happy_path_search_fixtures() -> dict[SearchFixtureKey, list[SearchCandidate]
                 title="Synthetic ablation note",
                 locator="fixture://evidence/ev-ablation-001",
                 snippet="Context ablation separates errors.",
+                metadata={"license": "MIT"},
             )
         ],
     }

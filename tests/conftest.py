@@ -31,6 +31,8 @@ def accepted_evidence_payload() -> dict:
                 "supports_gap_ids": ["gap-support"],
                 "summary": "Claim-level support labels yield a support rate.",
                 "content_hash": "sha256:test-support",
+                "provider": "fake_search",
+                "metadata": {"license": "MIT"},
             },
             {
                 "evidence_id": "ev-ablation-001",
@@ -42,6 +44,8 @@ def accepted_evidence_payload() -> dict:
                 "supports_gap_ids": ["gap-ablation"],
                 "summary": "Gold, retrieved and shuffled context separate errors.",
                 "content_hash": "sha256:test-ablation",
+                "provider": "fake_search",
+                "metadata": {"license": "MIT"},
             },
             {
                 "evidence_id": "ev-rejected-001",

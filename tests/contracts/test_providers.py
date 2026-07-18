@@ -81,6 +81,7 @@ async def test_fake_search__explicit_key__returns_stable_candidates() -> None:
         title="Synthetic note",
         locator="fixture://candidate/c1",
         snippet="summary",
+        metadata={"license": "MIT"},
     )
     provider = FakeSearchProvider(fixtures={key: [candidate]})
     first = await provider.search(

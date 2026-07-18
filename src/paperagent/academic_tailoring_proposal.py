@@ -918,13 +918,7 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
         for reference in references_by_id.values()
         for limitation in papers[reference.paper_id].limitations
     )
-    baseline_decision = (
-        "reproduced, parity-checked, and frozen for proposal evaluation"
-        if task.reproduction.reproduced
-        and task.reproduction.reproduced_metrics
-        and task.reproduction.baseline_parity_verified is True
-        else "not ready for modification"
-    )
+    baseline_decision = audit.baseline_decision
     evidence_scope = _evidence_scope(task.papers)
     if decision is not TailoringDecision.GO:
         readiness = ProposalReadiness.BLOCKED
@@ -942,8 +936,8 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
     release_conditions.extend(
         (
             (
-                "run the fixed baseline, strong comparison, single-module, full, "
-                "leave-one-out, interaction, and efficiency experiments"
+                "run every frozen experiment arm from the fixed baseline and collect "
+                "the declared resource measures"
             ),
             "attach immutable evidence to every result represented as observed",
             "complete domain-expert review before making scientific or novelty claims",
@@ -953,11 +947,27 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
         {
             "proposal_policy_version": PROPOSAL_POLICY_VERSION,
             "plan_fingerprint": audit.plan_fingerprint,
-            "idea_id": task.idea_id,
+            "task": task.model_dump(mode="json"),
             "decision": decision.value,
-            "references": sorted(references_by_id),
-            "modules": sorted(module.module_id for module in modules),
-            "experiments": sorted(experiment.name for experiment in experiments),
+            "strongest_reason": strongest_reason,
+            "baseline_decision": baseline_decision,
+            "references": [
+                reference.model_dump(mode="json")
+                for reference in sorted(references_by_id.values(), key=lambda item: item.paper_id)
+            ],
+            "modules": [module.model_dump(mode="json") for module in module_tuple],
+            "innovation_points": [point.model_dump(mode="json") for point in innovation_points],
+            "academic_story": story.model_dump(mode="json"),
+            "experiments": [experiment.model_dump(mode="json") for experiment in experiment_tuple],
+            "expected_results": [result.model_dump(mode="json") for result in expected_results],
+            "risks": list(dict.fromkeys([*risks, *audit.risks])),
+            "blockers": list(dict.fromkeys(blockers)),
+            "limitations": list(limitations),
+            "evidence_scope": evidence_scope.value,
+            "readiness": readiness.value,
+            "release_conditions": release_conditions,
+            "audit_verdict": audit.verdict.value,
+            "audit_reasons": list(audit.reasons),
             "failed_checks": list(audit.trace.failed_check_ids),
         }
     )
