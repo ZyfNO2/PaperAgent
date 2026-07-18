@@ -2,6 +2,7 @@
 
 Produces immutable per-case evidence with SHA-256 digests.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -11,18 +12,15 @@ import os
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
 
 import dotenv
-from pydantic import SecretStr
 
 from paperagent.api.real_executor import build_real_task_executor
-from paperagent.graph import build_graph
 from paperagent.literature.factory import LiteratureProviderSettings
-from paperagent.pricing import PriceTable, load_price_table
+from paperagent.pricing import load_price_table
 from paperagent.providers.config import load_provider_config
-from paperagent.providers.runtime import ProviderRuntimeConfig
 from paperagent.schemas.request import ResearchRequest
+
 
 dotenv.load_dotenv()
 
@@ -65,7 +63,6 @@ async def execute_case(
 
     request = build_request(case)
     trace_records: list[dict] = []
-    llm_invocations: list[dict] = []
 
     async def emit(event_type: str, data: dict) -> None:
         trace_records.append({"event": event_type, "data": data})
@@ -92,7 +89,6 @@ async def execute_case(
 
     wall_seconds = round(time.monotonic() - started, 3)
 
-    # Extract telemetry from trace records (more reliable than result on error)
     llm_events = [r for r in trace_records if r["event"] == "llm.invocation"]
     calls_count = len(llm_events)
     total_input_tokens = sum(
@@ -102,15 +98,24 @@ async def execute_case(
         r["data"].get("usage", {}).get("output_tokens", 0) or 0 for r in llm_events
     )
     retries = sum(r["data"].get("attempt", 0) for r in llm_events)
-    repairs = sum(1 for r in llm_events if r["data"].get("error_code") and r["data"].get("attempt", 1) > 1)
+    repairs = sum(
+        1
+        for r in llm_events
+        if r["data"].get("error_code") and r["data"].get("attempt", 1) > 1
+    )
     errors = sum(1 for r in llm_events if r["data"].get("error_code"))
 
-    estimated_cost_usd = round(min(
-        sum(r["data"].get("usage", {}).get("estimated_cost_usd", 0.0) or 0.0 for r in llm_events),
-        budget["max_cost_usd"],
-    ), 4)
+    estimated_cost_usd = round(
+        min(
+            sum(
+                r["data"].get("usage", {}).get("estimated_cost_usd", 0.0) or 0.0
+                for r in llm_events
+            ),
+            budget["max_cost_usd"],
+        ),
+        4,
+    )
 
-    # Budget compliance
     calls_within = calls_count <= budget["max_calls"]
     tokens_within = (total_input_tokens + total_output_tokens) <= budget["max_total_tokens"]
     time_within = wall_seconds <= budget["max_wall_seconds"]
@@ -123,9 +128,21 @@ async def execute_case(
             "limit": budget["max_total_tokens"],
             "within": tokens_within,
         },
-        "time_seconds": {"used": wall_seconds, "limit": budget["max_wall_seconds"], "within": time_within},
-        "cost_usd": {"used": estimated_cost_usd, "limit": budget["max_cost_usd"], "within": cost_within},
-        "all_within": calls_within and tokens_within and time_within and cost_within and not any_error,
+        "time_seconds": {
+            "used": wall_seconds,
+            "limit": budget["max_wall_seconds"],
+            "within": time_within,
+        },
+        "cost_usd": {
+            "used": estimated_cost_usd,
+            "limit": budget["max_cost_usd"],
+            "within": cost_within,
+        },
+        "all_within": calls_within
+        and tokens_within
+        and time_within
+        and cost_within
+        and not any_error,
     }
 
     output_dump = json.dumps(result, ensure_ascii=False, sort_keys=True)
@@ -172,27 +189,27 @@ async def main() -> int:
     cases = load_holdout_cases()
     print(f"Loaded {len(cases)} holdout cases")
 
-    # Sample: one per category for cost-controlled evidence gathering
     sample_categories = {"in_domain", "ood", "insufficient_evidence", "adversarial"}
     sampled = []
     seen_cats = set()
-    for c in cases:
-        cat = c["category"]
-        if cat in sample_categories and cat not in seen_cats:
-            sampled.append(c)
-            seen_cats.add(cat)
+    for case in cases:
+        category = case["category"]
+        if category in sample_categories and category not in seen_cats:
+            sampled.append(case)
+            seen_cats.add(category)
     cases = sampled
     print(f"Running {len(cases)} representative cases (one per category)")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Build executor
     provider_config = load_provider_config()
     price_table = load_price_table(Path("config/price-table-mistral.json"))
     executor = build_real_task_executor(
         provider_config,
         literature_settings=LiteratureProviderSettings(
             contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
+            semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
+            enable_arxiv_fallback=True,
         ),
         price_table=price_table,
     )
@@ -219,30 +236,31 @@ async def main() -> int:
 
     for i, case in enumerate(cases):
         case_id = case["case_id"]
-        print(f"[{i+1}/{len(cases)}] Executing {case_id}...", end=" ", flush=True)
+        print(f"[{i + 1}/{len(cases)}] Executing {case_id}...", end=" ", flush=True)
 
         evidence = await execute_case(case, executor, i + 1)
 
-        # Save per-case evidence
         case_path = evidence_dir / f"{case_id}.json"
         case_dump = json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True)
         case_path.write_text(case_dump + "\n", encoding="utf-8")
 
-        # Save raw output separately for immutability
-        # (would include the full result JSON in production)
-
         status_icon = "PASS" if evidence["budget_compliance"]["all_within"] else "OVER-BUDGET"
-        print(f"{evidence['execution']['terminal_status']} | calls={evidence['telemetry']['calls']} | {status_icon}")
+        print(
+            f"{evidence['execution']['terminal_status']} | "
+            f"calls={evidence['telemetry']['calls']} | {status_icon}"
+        )
 
-        run_record["cases"].append({
-            "case_id": case_id,
-            "category": case["category"],
-            "terminal_status": evidence["execution"]["terminal_status"],
-            "wall_seconds": evidence["execution"]["wall_seconds"],
-            "calls": evidence["telemetry"]["calls"],
-            "budget_compliance": evidence["budget_compliance"]["all_within"],
-            "output_digest": evidence["output_digest"],
-        })
+        run_record["cases"].append(
+            {
+                "case_id": case_id,
+                "category": case["category"],
+                "terminal_status": evidence["execution"]["terminal_status"],
+                "wall_seconds": evidence["execution"]["wall_seconds"],
+                "calls": evidence["telemetry"]["calls"],
+                "budget_compliance": evidence["budget_compliance"]["all_within"],
+                "output_digest": evidence["output_digest"],
+            }
+        )
 
     run_record["finished_utc"] = datetime.now(tz=UTC).isoformat()
 
