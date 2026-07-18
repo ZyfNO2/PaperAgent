@@ -1,0 +1,201 @@
++            self.resource_measures
++        ):
++            raise ValueError("resource measures must be non-empty and unique")
++        if not self.stop_conditions:
++            raise ValueError("at least one stop condition is required")
+         return self
+ 
+ 
+@@ -211,9 +252,9 @@
+     model_config = ConfigDict(extra="forbid", frozen=True)
+ 
+     metric: str
+-    baseline_value: float
++    baseline_value: float = Field(allow_inf_nan=False)
+     direction: StrEnumDirection
+-    target_value: float
++    target_value: float = Field(allow_inf_nan=False)
+     guardrail: str
+     status: ResultStatus = ResultStatus.PROPOSED
+     evidence_id: str | None = None
+@@ -236,6 +277,10 @@
+     blockers: tuple[str, ...]
+     stop_conditions: tuple[str, ...]
+     limitations: tuple[str, ...]
++    evidence_scope: EvidenceScope
++    readiness: ProposalReadiness
++    scientific_release_ready: bool
++    release_conditions: tuple[str, ...]
+ 
+ 
+ def _license_is_acceptable(value: str) -> bool:
+@@ -266,6 +311,60 @@
+     return ", ".join(f"{name}={value:g}" for name, value in sorted(values.items()))
+ 
+ 
++def _normalized_words(value: str) -> str:
++    return " ".join(re.sub(r"[^\w\u4e00-\u9fff]+", " ", value.lower()).split())
++
++
++def _is_weak_novelty(value: str) -> bool:
++    normalized = _normalized_words(value)
++    composition_signals = (
++        "combine",
++        "combination",
++        "add",
++        "stack",
++        "splice",
++        "concatenate",
++        "组合",
++        "拼接",
++        "堆叠",
++        "结合",
++    )
++    component_signals = ("module", "component", "模块", "组件")
++    mechanism_signals = (
++        "because",
++        "through",
++        "condition",
++        "trigger",
++        "gating",
++        "mechanism",
++        "causal",
++        "hypothesis",
++        "uncertainty",
++        "when",
++        "if",
++        "机制",
++        "条件",
++        "触发",
++        "门控",
++        "因果",
++        "假设",
++        "不确定性",
++    )
++    has_composition = any(signal in normalized for signal in composition_signals)
++    has_component = any(signal in normalized for signal in component_signals)
++    has_mechanism = any(signal in normalized for signal in mechanism_signals)
++    return has_composition and has_component and not has_mechanism
++
++
++def _evidence_scope(papers: tuple[PaperMethodCard, ...]) -> EvidenceScope:
++    states = {paper.evidence_state for paper in papers}
++    if states == {EvidenceState.VERIFIED}:
++        return EvidenceScope.REAL_VERIFIED
++    if states == {EvidenceState.SYNTHETIC_FIXTURE}:
++        return EvidenceScope.SYNTHETIC_EVALUATION
++    return EvidenceScope.MIXED_OR_UNVERIFIED
++
++
+ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchProposal:
+     papers = {paper.paper_id: paper for paper in task.papers}
+     blockers: list[str] = []
+@@ -351,8 +450,14 @@
+ 
+     if not modules:
+         blockers.append("no attributed intervention module was selected")
+-    if not task.novelty_thesis.strip() or not task.why_not_simple_splice.strip():
+-        risks.append("the novelty claim is not separated from module composition")
++    weak_novelty = _is_weak_novelty(task.novelty_thesis) or _is_weak_novelty(
++        task.why_not_simple_splice
++    )
++    if weak_novelty:
++        risks.append(
++            "novelty is stated as module composition rather than a falsifiable "
++            "problem-method-insight contribution"
++        )
+ 
+     module_ids = tuple(module.module_id for module in modules)
+     experiment_matrix: list[ProposalExperiment] = [
+@@ -485,10 +590,31 @@
+         for limitation in paper.limitations
+     )
+     baseline_decision = (
+-        "verified and frozen for modification"
++        "reproduced and frozen for proposal evaluation"
+         if task.reproduction.reproduced and task.reproduction.reproduced_metrics
+         else "not ready for modification"
+     )
++    evidence_scope = _evidence_scope(task.papers)
++    if decision is not TailoringDecision.GO:
++        readiness = ProposalReadiness.BLOCKED
++    elif evidence_scope is EvidenceScope.REAL_VERIFIED:
++        readiness = ProposalReadiness.READY_FOR_CONTROLLED_EXPERIMENT
++    else:
++        readiness = ProposalReadiness.SYNTHETIC_EVALUATION_ONLY
++    release_conditions: list[str] = []
++    if decision is not TailoringDecision.GO:
++        release_conditions.append("resolve all proposal blockers and revision risks")
++    if evidence_scope is not EvidenceScope.REAL_VERIFIED:
++        release_conditions.append(
++            "replace synthetic or unverified source cards with verified real-world evidence"
++        )
++    release_conditions.extend(
++        (
++            "run the fixed baseline, single-module, full, and required ablation experiments",
++            "attach immutable evidence to every result represented as observed",
++            "complete domain-expert review before making scientific or novelty claims",
++        )
++    )
+     return TailoredResearchProposal(
+         idea_id=task.idea_id,
+         decision=decision,
+@@ -516,4 +642,8 @@
+         blockers=tuple(blockers),
+         stop_conditions=task.stop_conditions,
+         limitations=limitations,
++        evidence_scope=evidence_scope,
++        readiness=readiness,
++        scientific_release_ready=False,
++        release_conditions=tuple(release_conditions),
+     )
+--- a/src/paperagent/academic_tailoring_guard.py
++++ b/src/paperagent/academic_tailoring_guard.py
+@@ -1,45 +1,12 @@
+ from __future__ import annotations
+ 
+-from paperagent import academic_tailoring as _implementation
+-from paperagent.academic_tailoring import (
+-    TailoredResearchProposal,
+-    TailoringDecision,
+-    TailoringTask,
+-)
++"""Compatibility exports for the academic-tailoring policy.
+ 
+-_base_compose = _implementation.compose_tailored_research_proposal
++The release-blocking rules now live in :mod:`paperagent.academic_tailoring`.
++This module remains import-compatible for callers of the earlier stacked PRs,
++but it intentionally performs no import-time monkey patching.
++"""
+ 
+-_WEAK_NOVELTY_PHRASES = {
+-    "combine two existing modules",
+-    "add two modules",
+-    "module combination",
+-    "the modules are combined",
+-    "combine modules",
+-}
+-
+-
+-def _is_weak_novelty(value: str) -> bool:
+-    return value.strip().lower() in _WEAK_NOVELTY_PHRASES
+-
+-
+-def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchProposal:
+-    proposal = _base_compose(task)
+-    weak = _is_weak_novelty(task.novelty_thesis) or _is_weak_novelty(task.why_not_simple_splice)
+-    if not weak or proposal.decision is TailoringDecision.NO_GO:
+-        return proposal
+-    risk = (
+-        "novelty is stated as module composition rather than a falsifiable "
+-        "problem-method-insight contribution"
+-    )
+-    return proposal.model_copy(
+-        update={
+-            "decision": TailoringDecision.REVISE,
+-            "strongest_reason": risk,
+-            "risks": (*proposal.risks, risk),
+-        }
+-    )
+-
+-
