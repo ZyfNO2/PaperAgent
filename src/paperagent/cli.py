@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import json
 import os
+import sqlite3
 from collections.abc import Sequence
 from pathlib import Path
 from typing import cast
@@ -169,7 +170,10 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
 
 
 def _diagnostics(args: argparse.Namespace) -> int:
-    snapshot = collect_runtime_diagnostics(cast(Path, args.database))
+    try:
+        snapshot = collect_runtime_diagnostics(cast(Path, args.database))
+    except (OSError, RuntimeError, sqlite3.Error) as exc:
+        raise SystemExit(f"diagnostics failed: {exc}") from exc
     print(json.dumps(snapshot, indent=2, sort_keys=True))
     return 0
 
