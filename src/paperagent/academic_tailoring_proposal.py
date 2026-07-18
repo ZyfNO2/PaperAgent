@@ -637,7 +637,10 @@ def _decision_from_audit(
         return TailoringDecision.REVISE, reason
     return (
         TailoringDecision.GO,
-        "baseline, provenance, compatibility, hypothesis, comparisons, interaction analysis, and fair experiments passed the canonical audit",
+        (
+            "baseline, provenance, compatibility, hypothesis, comparisons, "
+            "interaction analysis, and fair experiments passed the canonical audit"
+        ),
     )
 
 
@@ -687,10 +690,16 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
             )
         elif not complete_contract:
             risks.append(
-                f"module {source.paper_id} lacks a complete training, gradient, switch, or parity contract"
+                (
+                    f"module {source.paper_id} lacks a complete training, gradient, "
+                    "switch, or parity contract"
+                )
             )
         compatibility_reason = (
-            "semantic, shape, ordering, switch, gradient, update, loss-scale, and failure contracts are explicit"
+            (
+                "semantic, shape, ordering, switch, gradient, update, loss-scale, "
+                "and failure contracts are explicit"
+            )
             if compatibility_status == "compatible"
             else "semantic or executable compatibility is incomplete"
         )
@@ -747,7 +756,10 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
     )
     if weak_novelty:
         risks.append(
-            "novelty is stated as module composition rather than a falsifiable problem-method-insight contribution"
+            (
+                "novelty is stated as module composition rather than a falsifiable "
+                "problem-method-insight contribution"
+            )
         )
 
     common = _common_experiment(task)
@@ -757,7 +769,10 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
             name="frozen-baseline",
             arm_type=ExperimentArmType.BASELINE,
             included_modules=(),
-            purpose="reconfirm the reproduced baseline and modules-disabled parity under fixed evaluation code",
+            purpose=(
+                "reconfirm the reproduced baseline and modules-disabled parity "
+                "under fixed evaluation code"
+            ),
             **common,
         )
     ]
@@ -843,7 +858,10 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
         for item in task.expected_results
     )
     expected_observation = "; ".join(
-        f"{item.metric} should {item.direction.value} from {item.baseline_value:g} toward {item.target_value:g}"
+        (
+            f"{item.metric} should {item.direction.value} from "
+            f"{item.baseline_value:g} toward {item.target_value:g}"
+        )
         for item in expected_results
     )
     method_names = ", ".join(module.method_used for module in modules) or "no module"
@@ -852,7 +870,10 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
             contribution=task.novelty_thesis,
             why_not_simple_splice=task.why_not_simple_splice,
             falsifiable_test=(
-                "the contribution is unsupported if the full arm does not outperform the frozen baseline and strong comparison, or if single-module, leave-one-out, and interaction contrasts do not support the proposed mechanism"
+                "the contribution is unsupported if the full arm does not "
+                "outperform the frozen baseline and strong comparison, or if "
+                "single-module, leave-one-out, and interaction contrasts do not "
+                "support the proposed mechanism"
             ),
         ),
     )
@@ -860,10 +881,12 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
     story = AcademicStory(
         problem=f"{task.target_problem}: {task.observed_failure}",
         baseline_evidence=(
-            f"{baseline_paper.title} was reproduced as {metric_summary} within {task.reproduction.acceptance_tolerance}"
+            f"{baseline_paper.title} was reproduced as {metric_summary} within "
+            f"{task.reproduction.acceptance_tolerance}"
         ),
         gap=(
-            f"the baseline does not explicitly address {task.mechanism_hypothesis} under {task.scientific_setting}"
+            "the baseline does not explicitly address "
+            f"{task.mechanism_hypothesis} under {task.scientific_setting}"
         ),
         mechanism=task.mechanism_hypothesis,
         intervention=f"compose {method_names} at explicit semantic and training boundaries",
@@ -909,7 +932,10 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
         )
     release_conditions.extend(
         (
-            "run the fixed baseline, strong comparison, single-module, full, leave-one-out, interaction, and efficiency experiments",
+            (
+                "run the fixed baseline, strong comparison, single-module, full, "
+                "leave-one-out, interaction, and efficiency experiments"
+            ),
             "attach immutable evidence to every result represented as observed",
             "complete domain-expert review before making scientific or novelty claims",
         )

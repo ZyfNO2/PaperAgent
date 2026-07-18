@@ -50,9 +50,7 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
         evidence_id = f"ev-{candidate.candidate_id}"
         status = _candidate_status(candidate)
         previous = by_id.get(evidence_id)
-        supports = sorted(
-            set(previous.supports_gap_ids if previous else []) | {candidate.gap_id}
-        )
+        supports = sorted(set(previous.supports_gap_ids if previous else []) | {candidate.gap_id})
         if (
             previous is not None
             and _STATUS_PRIORITY[previous.verification_status] > _STATUS_PRIORITY[status]
@@ -74,19 +72,11 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
             metadata=metadata,
         )
     items = list(by_id.values())
-    accepted = [
-        item.evidence_id for item in items if item.verification_status == "accepted"
-    ]
-    rejected = [
-        item.evidence_id for item in items if item.verification_status == "rejected"
-    ]
-    pending = [
-        item.evidence_id for item in items if item.verification_status == "pending"
-    ]
+    accepted = [item.evidence_id for item in items if item.verification_status == "accepted"]
+    rejected = [item.evidence_id for item in items if item.verification_status == "rejected"]
+    pending = [item.evidence_id for item in items if item.verification_status == "pending"]
     failed = [
-        item.evidence_id
-        for item in items
-        if item.verification_status == "failed_verification"
+        item.evidence_id for item in items if item.verification_status == "failed_verification"
     ]
     coverage: dict[str, int] = {}
     for item in items:

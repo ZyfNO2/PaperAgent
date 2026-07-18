@@ -3,8 +3,6 @@ from __future__ import annotations
 import hashlib
 import json
 from enum import StrEnum
-from typing import Any
-
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 METHOD_PLAN_CONTRACT_VERSION = "paperagent.method-plan.v0.9"
@@ -382,7 +380,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "research-contract-complete",
             all(_present(value) for value in research_fields) and bool(plan.research.constraints),
             AuditSeverity.ERROR,
-            "research contract includes problem, setting, metric, constraints, claim, observation, and mechanism",
+            (
+                "research contract includes problem, setting, metric, constraints, "
+                "claim, observation, and mechanism"
+            ),
             status=ClaimStatus.PROPOSED,
         )
     )
@@ -404,7 +405,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "baseline-card-complete",
             all(_present(value) for value in baseline_fields),
             AuditSeverity.ERROR,
-            "baseline card records source, version, license, data split, environment, seed policy, and fingerprints",
+            (
+                "baseline card records source, version, license, data split, "
+                "environment, seed policy, and fingerprints"
+            ),
             evidence_ids=(baseline.source_evidence_id,) if baseline.source_evidence_id else (),
         )
     )
@@ -460,7 +464,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "baseline-provenance",
             _verified_evidence(baseline_evidence),
             AuditSeverity.CRITICAL,
-            "baseline provenance references verified evidence with a stable identifier and supported claims",
+            (
+                "baseline provenance references verified evidence with a stable "
+                "identifier and supported claims"
+            ),
             evidence_ids=(baseline.source_evidence_id,) if baseline.source_evidence_id else (),
         )
     )
@@ -478,7 +485,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "falsifiable-hypothesis",
             all(_present(value) for value in hypothesis_values),
             AuditSeverity.ERROR,
-            "hypothesis states condition, limitation, mechanism, intervention, metric change, and guardrail",
+            (
+                "hypothesis states condition, limitation, mechanism, intervention, "
+                "metric change, and guardrail"
+            ),
             status=ClaimStatus.PROPOSED,
         )
     )
@@ -498,7 +508,11 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
                 f"module-contract:{module.name}",
                 _module_contract_complete(module),
                 AuditSeverity.ERROR,
-                f"module {module.name} has semantic, shape, ordering, switch, gradient, update, loss-scale, cost, effect, assumption, parity, and failure contracts",
+                (
+                    f"module {module.name} has semantic, shape, ordering, switch, "
+                    "gradient, update, loss-scale, cost, effect, assumption, parity, "
+                    "and failure contracts"
+                ),
                 evidence_ids=(module.evidence_id,) if module.evidence_id else (),
                 status=ClaimStatus.PROPOSED,
             )
@@ -523,7 +537,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
                 f"module-provenance:{module.name}",
                 _verified_evidence(module_evidence),
                 AuditSeverity.CRITICAL,
-                f"module {module.name} references verified provenance with a stable identifier and supported claims",
+                (
+                    f"module {module.name} references verified provenance with a "
+                    "stable identifier and supported claims"
+                ),
                 evidence_ids=(module.evidence_id,) if module.evidence_id else (),
             )
         )
@@ -625,7 +642,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "strong-comparison-arm",
             strong_comparison_complete,
             AuditSeverity.ERROR,
-            "at least one strong comparison arm names its comparator, contrast, and verified provenance",
+            (
+                "at least one strong comparison arm names its comparator, contrast, "
+                "and verified provenance"
+            ),
             evidence_ids=tuple(
                 arm.source_evidence_id for arm in strong_arms if arm.source_evidence_id is not None
             ),
@@ -646,7 +666,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "module-interaction-analysis",
             interaction_complete,
             AuditSeverity.ERROR,
-            "multi-module plans include an explicit interaction contrast instead of inferring interaction from the full arm",
+            (
+                "multi-module plans include an explicit interaction contrast instead "
+                "of inferring interaction from the full arm"
+            ),
             status=ClaimStatus.PROPOSED,
         )
     )
@@ -676,7 +699,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "experiment-fairness",
             fair_experiments,
             AuditSeverity.ERROR,
-            "all comparison arms share data and preprocessing and define tuning, metrics, seeds, uncertainty, resources, purpose, and stopping criteria",
+            (
+                "all comparison arms share data and preprocessing and define tuning, "
+                "metrics, seeds, uncertainty, resources, purpose, and stopping criteria"
+            ),
             status=ClaimStatus.PROPOSED,
         )
     )
@@ -753,7 +779,10 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             "draw and validate module integration contracts",
             "implement one module at a time behind explicit configuration switches",
             "verify shape, semantics, loss scale, gradients, update scope, and tiny-batch behavior",
-            "run baseline, strong comparison, full, single-module, leave-one-out, interaction, and efficiency comparisons",
+            (
+                "run baseline, strong comparison, full, single-module, leave-one-out, "
+                "interaction, and efficiency comparisons"
+            ),
             "decide GO, REVISE, or NO_GO before writing performance or novelty claims",
         ),
         experiment_matrix=matrix,
