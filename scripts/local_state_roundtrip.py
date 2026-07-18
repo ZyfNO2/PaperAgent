@@ -69,11 +69,7 @@ def run_local_state_roundtrip(workdir: Path) -> dict[str, Any]:
         accepted = client.post(
             "/v1/tasks",
             headers={"Idempotency-Key": "local-state-roundtrip"},
-            json={
-                "request": {
-                    "question": "Verify local backup, restore, and restart recovery"
-                }
-            },
+            json={"request": {"question": "Verify local backup, restore, and restart recovery"}},
         )
         accepted.raise_for_status()
         task_id = accepted.json()["task_id"]
@@ -119,9 +115,7 @@ def run_local_state_roundtrip(workdir: Path) -> dict[str, Any]:
         if restored_review["decision"] != "accepted" or not restored_review["favorite"]:
             raise AssertionError(restored_review)
 
-        restored_export = client.get(
-            f"/v1/tasks/{task_id}/exports/json?selection=all"
-        )
+        restored_export = client.get(f"/v1/tasks/{task_id}/exports/json?selection=all")
         restored_export.raise_for_status()
         restored_export_digest = restored_export.headers["X-PaperAgent-SHA256"]
         if restored_export_digest != export_digest:
@@ -158,9 +152,7 @@ def run_local_state_roundtrip(workdir: Path) -> dict[str, Any]:
             raise AssertionError(recovered_payload)
         if recovered_payload["error"]["code"] != "PROCESS_RESTARTED":
             raise AssertionError(recovered_payload)
-        recovery_events = client.get(
-            f"/v1/tasks/{restart_task_id}/events?after=0&limit=100"
-        )
+        recovery_events = client.get(f"/v1/tasks/{restart_task_id}/events?after=0&limit=100")
         recovery_events.raise_for_status()
         event_types = [item["event_type"] for item in recovery_events.json()["events"]]
         if event_types[-1] != "task.failed":
