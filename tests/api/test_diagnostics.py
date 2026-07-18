@@ -7,7 +7,12 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from paperagent.api import SQLiteTaskRepository, TaskCreateRequest, create_app
+from paperagent.api import (
+    SQLiteReviewRepository,
+    SQLiteTaskRepository,
+    TaskCreateRequest,
+    create_app,
+)
 from paperagent.api.diagnostics import (
     CURRENT_SCHEMA_VERSION,
     DatabaseNotInitializedError,
@@ -26,9 +31,15 @@ def _payload(
     return TaskCreateRequest(request=ResearchRequest(question=question))
 
 
+def _initialize_database(database: Path) -> SQLiteTaskRepository:
+    repository = SQLiteTaskRepository(database)
+    SQLiteReviewRepository(repository)
+    return repository
+
+
 def test_schema_version_is_idempotent(tmp_path: Path) -> None:
     database = tmp_path / "paperagent.db"
-    SQLiteTaskRepository(database)
+    _initialize_database(database)
 
     first = ensure_schema_version(database)
     second = ensure_schema_version(database)
@@ -47,18 +58,26 @@ def test_missing_database_is_not_created_by_diagnostics(tmp_path: Path) -> None:
     assert not database.exists()
 
 
-def test_database_without_task_schema_is_rejected(tmp_path: Path) -> None:
+def test_database_without_application_schema_is_rejected(tmp_path: Path) -> None:
     database = tmp_path / "uninitialized.db"
     with sqlite3.connect(database):
         pass
 
-    with pytest.raises(DatabaseNotInitializedError, match="missing the PaperAgent task schema"):
+    with pytest.raises(DatabaseNotInitializedError, match="missing required PaperAgent tables"):
+        ensure_schema_version(database)
+
+
+def test_task_only_database_is_not_marked_current(tmp_path: Path) -> None:
+    database = tmp_path / "task-only.db"
+    SQLiteTaskRepository(database)
+
+    with pytest.raises(DatabaseNotInitializedError, match="paper_reviews"):
         ensure_schema_version(database)
 
 
 def test_newer_database_schema_fails_closed(tmp_path: Path) -> None:
     database = tmp_path / "future.db"
-    SQLiteTaskRepository(database)
+    _initialize_database(database)
     with sqlite3.connect(database) as connection:
         connection.execute(f"PRAGMA user_version = {CURRENT_SCHEMA_VERSION + 1}")
 
@@ -68,7 +87,7 @@ def test_newer_database_schema_fails_closed(tmp_path: Path) -> None:
 
 def test_runtime_diagnostics_and_prometheus_are_secret_free(tmp_path: Path) -> None:
     database = tmp_path / "paperagent.db"
-    repository = SQLiteTaskRepository(database)
+    repository = _initialize_database(database)
     repository.create_task(
         task_id="task-diagnostics",
         idempotency_key="diagnostics-key",
