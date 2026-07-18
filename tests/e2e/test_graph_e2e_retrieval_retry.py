@@ -28,6 +28,7 @@ EXPECTED_RETRIEVAL_RETRY_NODES = [
     "verify_evidence_node",
     "evidence_synthesis_node",
     "method_design_node",
+    "methodology_audit_node",
     "quality_gate_node",
     # Second retrieval pass (round 1 -> 2): no new queries to run, but the
     # subgraph still re-executes prepare_search/search_tool/verify_evidence.
@@ -36,6 +37,7 @@ EXPECTED_RETRIEVAL_RETRY_NODES = [
     "verify_evidence_node",
     "evidence_synthesis_node",
     "method_design_node",
+    "methodology_audit_node",
     "quality_gate_node",
     "report_node",
     "persist_node",

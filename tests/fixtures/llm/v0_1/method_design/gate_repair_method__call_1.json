@@ -1,28 +1,536 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "status": "proposed",
-  "baseline": {"name": "single-condition evaluation", "description": "Evaluate only retrieved context."},
+  "baseline": {
+    "name": "single-condition evaluation",
+    "description": "Evaluate only retrieved context."
+  },
   "modules": [
-    {"module_id": "module-claim-split", "name": "claim segmentation", "purpose": "Split answers into atomic claims."},
-    {"module_id": "module-support-label", "name": "support labeling", "purpose": "Label claim support."},
-    {"module_id": "module-context-ablation", "name": "context ablation", "purpose": "Compare context conditions."}
+    {
+      "module_id": "module-claim-split",
+      "name": "claim segmentation",
+      "purpose": "Split answers into atomic claims."
+    },
+    {
+      "module_id": "module-support-label",
+      "name": "support labeling",
+      "purpose": "Label claim support."
+    },
+    {
+      "module_id": "module-context-ablation",
+      "name": "context ablation",
+      "purpose": "Compare context conditions."
+    }
   ],
   "integration_contracts": [
-    {"from_module": "module-claim-split", "to_module": "module-support-label", "input": "atomic claims", "output": "support labels"}
+    {
+      "from_module": "module-claim-split",
+      "to_module": "module-support-label",
+      "input": "atomic claims",
+      "output": "support labels"
+    }
   ],
   "problem_method_insight": "Reliability depends on retrieval and faithful evidence use.",
   "falsifiable_hypothesis": "If retrieval dominates error, gold-context support rate exceeds retrieved-context support rate by at least 0.15.",
   "minimum_key_experiment": {
     "name": "three-context evaluation",
-    "conditions": ["gold_context", "retrieved_context", "shuffled_context"],
-    "metrics": ["claim_support_rate", "answer_accuracy"],
+    "conditions": [
+      "gold_context",
+      "retrieved_context",
+      "shuffled_context"
+    ],
+    "metrics": [
+      "claim_support_rate",
+      "answer_accuracy"
+    ],
     "baseline": "retrieved_context",
     "success_threshold": "gold_context - retrieved_context >= 0.15"
   },
   "ablations": [
-    {"name": "remove claim segmentation", "change": "Judge whole answers", "expected_observation": "Lower diagnostic granularity"}
+    {
+      "name": "remove claim segmentation",
+      "change": "Judge whole answers",
+      "expected_observation": "Lower diagnostic granularity"
+    }
   ],
-  "risks": ["Label subjectivity"],
-  "stop_conditions": ["Fewer than 30 answer samples"],
-  "evidence_ids": ["ev-support-001", "ev-ablation-001"]
+  "risks": [
+    "Label subjectivity"
+  ],
+  "stop_conditions": [
+    "Fewer than 30 answer samples"
+  ],
+  "evidence_ids": [
+    "ev-support-001",
+    "ev-ablation-001"
+  ],
+  "methodology_plan": {
+    "contract_version": "paperagent.method-plan.v0.9",
+    "research": {
+      "target_problem": "Reliability depends on retrieval and faithful evidence use.",
+      "scientific_setting": "bounded deterministic fixture workflow",
+      "success_metric": "claim_support_rate, answer_accuracy",
+      "constraints": [
+        "fixed evidence set",
+        "fixed evaluation budget"
+      ],
+      "intended_claim": "Reliability depends on retrieval and faithful evidence use.",
+      "observed_problem": "Evaluate only retrieved context.",
+      "proposed_mechanism": "If retrieval dominates error, gold-context support rate exceeds retrieved-context support rate by at least 0.15."
+    },
+    "baseline": {
+      "name": "single-condition evaluation",
+      "version_or_commit": "fixture-baseline-v1",
+      "source_evidence_id": "ev-support-001",
+      "license": "MIT",
+      "dataset": "fixture-method-dataset-v1",
+      "split": "fixture-frozen-split-v1",
+      "environment": "Python fixture runtime",
+      "seed_policy": "seeds 1, 2, 3",
+      "reproduced": true,
+      "reproduced_metric": "primary_metric=0.50",
+      "compute_fit": true,
+      "baseline_parity_verified": true,
+      "dataset_fingerprint": "sha256:fixture-dataset",
+      "environment_fingerprint": "sha256:fixture-environment"
+    },
+    "hypothesis": {
+      "condition": "under the declared fixture condition",
+      "limitation": "Evaluate only retrieved context.",
+      "mechanism": "Reliability depends on retrieval and faithful evidence use.",
+      "intervention": "If retrieval dominates error, gold-context support rate exceeds retrieved-context support rate by at least 0.15.",
+      "predicted_metric_change": "gold_context - retrieved_context >= 0.15",
+      "guardrail": "resource_cost does not increase by more than 10 percent"
+    },
+    "modules": [
+      {
+        "name": "module-claim-split",
+        "evidence_id": "ev-support-001",
+        "license": "MIT",
+        "original_role": "claim segmentation",
+        "proposed_role": "Split answers into atomic claims.",
+        "input_semantics": "ordered verified research records",
+        "output_semantics": "bounded method-specific records",
+        "input_shape": "batch x records x features",
+        "output_shape": "batch x records",
+        "normalization": "training-split statistics",
+        "masks": "mask absent or rejected evidence",
+        "ordering": "preserve declared record order",
+        "trainable": true,
+        "loss_terms": [
+          "bounded_method_loss"
+        ],
+        "compute_cost": "below 10 percent of baseline cost",
+        "assumptions": [
+          "all evidence identifiers are accepted"
+        ],
+        "predicted_effect": "Split answers into atomic claims.",
+        "failure_mode": "domain shift can invalidate the proposed mapping",
+        "implementation_switch": "enable_module_claim_split",
+        "gradient_expectation": "gradients remain inside the proposed module",
+        "parameter_update_scope": "proposed module parameters only",
+        "loss_scale": "fixed loss weight 1.0",
+        "baseline_parity_behavior": "disabling the switch reproduces the frozen baseline"
+      },
+      {
+        "name": "module-support-label",
+        "evidence_id": "ev-ablation-001",
+        "license": "MIT",
+        "original_role": "support labeling",
+        "proposed_role": "Label claim support.",
+        "input_semantics": "ordered verified research records",
+        "output_semantics": "bounded method-specific records",
+        "input_shape": "batch x records x features",
+        "output_shape": "batch x records",
+        "normalization": "training-split statistics",
+        "masks": "mask absent or rejected evidence",
+        "ordering": "preserve declared record order",
+        "trainable": true,
+        "loss_terms": [
+          "bounded_method_loss"
+        ],
+        "compute_cost": "below 10 percent of baseline cost",
+        "assumptions": [
+          "all evidence identifiers are accepted"
+        ],
+        "predicted_effect": "Label claim support.",
+        "failure_mode": "domain shift can invalidate the proposed mapping",
+        "implementation_switch": "enable_module_support_label",
+        "gradient_expectation": "gradients remain inside the proposed module",
+        "parameter_update_scope": "proposed module parameters only",
+        "loss_scale": "fixed loss weight 1.0",
+        "baseline_parity_behavior": "disabling the switch reproduces the frozen baseline"
+      },
+      {
+        "name": "module-context-ablation",
+        "evidence_id": "ev-ablation-001",
+        "license": "MIT",
+        "original_role": "context ablation",
+        "proposed_role": "Compare context conditions.",
+        "input_semantics": "ordered verified research records",
+        "output_semantics": "bounded method-specific records",
+        "input_shape": "batch x records x features",
+        "output_shape": "batch x records",
+        "normalization": "training-split statistics",
+        "masks": "mask absent or rejected evidence",
+        "ordering": "preserve declared record order",
+        "trainable": true,
+        "loss_terms": [
+          "bounded_method_loss"
+        ],
+        "compute_cost": "below 10 percent of baseline cost",
+        "assumptions": [
+          "all evidence identifiers are accepted"
+        ],
+        "predicted_effect": "Compare context conditions.",
+        "failure_mode": "domain shift can invalidate the proposed mapping",
+        "implementation_switch": "enable_module_context_ablation",
+        "gradient_expectation": "gradients remain inside the proposed module",
+        "parameter_update_scope": "proposed module parameters only",
+        "loss_scale": "fixed loss weight 1.0",
+        "baseline_parity_behavior": "disabling the switch reproduces the frozen baseline"
+      }
+    ],
+    "experiments": [
+      {
+        "name": "canonical-baseline",
+        "arm_type": "baseline",
+        "included_modules": [],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "reconfirm the frozen baseline and modules-disabled parity",
+        "comparator": null,
+        "contrast": "baseline versus reproduced reference metric",
+        "source_evidence_id": null
+      },
+      {
+        "name": "single-module-claim-split",
+        "arm_type": "single_module",
+        "included_modules": [
+          "module-claim-split"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "measure isolated contribution of module-claim-split",
+        "comparator": null,
+        "contrast": "module-claim-split versus frozen baseline",
+        "source_evidence_id": null
+      },
+      {
+        "name": "single-module-support-label",
+        "arm_type": "single_module",
+        "included_modules": [
+          "module-support-label"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "measure isolated contribution of module-support-label",
+        "comparator": null,
+        "contrast": "module-support-label versus frozen baseline",
+        "source_evidence_id": null
+      },
+      {
+        "name": "single-module-context-ablation",
+        "arm_type": "single_module",
+        "included_modules": [
+          "module-context-ablation"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "measure isolated contribution of module-context-ablation",
+        "comparator": null,
+        "contrast": "module-context-ablation versus frozen baseline",
+        "source_evidence_id": null
+      },
+      {
+        "name": "canonical-full",
+        "arm_type": "full",
+        "included_modules": [
+          "module-claim-split",
+          "module-support-label",
+          "module-context-ablation"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "test the full mechanism under the frozen protocol",
+        "comparator": null,
+        "contrast": "full method versus baseline and strong comparison",
+        "source_evidence_id": null
+      },
+      {
+        "name": "without-module-claim-split",
+        "arm_type": "leave_one_out",
+        "included_modules": [
+          "module-support-label",
+          "module-context-ablation"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "test the full story without module-claim-split",
+        "comparator": null,
+        "contrast": "full method versus method without module-claim-split",
+        "source_evidence_id": null
+      },
+      {
+        "name": "without-module-support-label",
+        "arm_type": "leave_one_out",
+        "included_modules": [
+          "module-claim-split",
+          "module-context-ablation"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "test the full story without module-support-label",
+        "comparator": null,
+        "contrast": "full method versus method without module-support-label",
+        "source_evidence_id": null
+      },
+      {
+        "name": "without-module-context-ablation",
+        "arm_type": "leave_one_out",
+        "included_modules": [
+          "module-claim-split",
+          "module-support-label"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "test the full story without module-context-ablation",
+        "comparator": null,
+        "contrast": "full method versus method without module-context-ablation",
+        "source_evidence_id": null
+      },
+      {
+        "name": "canonical-interaction",
+        "arm_type": "interaction",
+        "included_modules": [
+          "module-claim-split",
+          "module-support-label",
+          "module-context-ablation"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "measure whether combined effects exceed isolated effects",
+        "comparator": null,
+        "contrast": "full minus baseline versus the sum of single-module improvements",
+        "source_evidence_id": null
+      },
+      {
+        "name": "canonical-strong-comparison",
+        "arm_type": "strong_comparison",
+        "included_modules": [],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "compare against the strongest attributed fixture alternative",
+        "comparator": "attributed fixture comparator",
+        "contrast": "proposed method versus attributed comparator",
+        "source_evidence_id": "ev-ablation-001"
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "ev-support-001",
+        "source_type": "user_material",
+        "title": "Accepted fixture evidence ev-support-001",
+        "stable_identifier": "fixture://ev-support-001",
+        "verified": true,
+        "supported_claims": [
+          "fixture-supported method and comparison claims"
+        ],
+        "limitations": [
+          "deterministic test fixture"
+        ],
+        "content_hash": "sha256:ev-support-001",
+        "license": "MIT",
+        "repository_ref": null
+      },
+      {
+        "evidence_id": "ev-ablation-001",
+        "source_type": "user_material",
+        "title": "Accepted fixture evidence ev-ablation-001",
+        "stable_identifier": "fixture://ev-ablation-001",
+        "verified": true,
+        "supported_claims": [
+          "fixture-supported method and comparison claims"
+        ],
+        "limitations": [
+          "deterministic test fixture"
+        ],
+        "content_hash": "sha256:ev-ablation-001",
+        "license": "MIT",
+        "repository_ref": null
+      }
+    ],
+    "stop_conditions": [
+      "Fewer than 30 answer samples"
+    ]
+  }
 }

@@ -98,6 +98,7 @@ async def test_graph__happy_path__runs_compiled_langgraph_with_four_llm_calls(fi
         "verify_evidence_node",
         "evidence_synthesis_node",
         "method_design_node",
+        "methodology_audit_node",
         "quality_gate_node",
         "report_node",
         "persist_node",

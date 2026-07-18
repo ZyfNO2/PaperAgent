@@ -1,20 +1,198 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "status": "proposed",
-  "baseline": {"name": "single-condition evaluation", "description": "Evaluate retrieved context."},
-  "modules": [{"module_id": "module-basic", "name": "basic", "purpose": "basic proposal"}],
+  "baseline": {
+    "name": "single-condition evaluation",
+    "description": "Evaluate retrieved context."
+  },
+  "modules": [
+    {
+      "module_id": "module-basic",
+      "name": "basic",
+      "purpose": "basic proposal"
+    }
+  ],
   "integration_contracts": [],
   "problem_method_insight": "A weak proposal.",
   "falsifiable_hypothesis": "Performance may improve.",
   "minimum_key_experiment": {
     "name": "basic experiment",
-    "conditions": ["baseline", "proposal"],
-    "metrics": ["score"],
+    "conditions": [
+      "baseline",
+      "proposal"
+    ],
+    "metrics": [
+      "score"
+    ],
     "baseline": "baseline",
     "success_threshold": "improves"
   },
   "ablations": [],
   "risks": [],
   "stop_conditions": [],
-  "evidence_ids": ["ev-support-001", "ev-ablation-001"]
+  "evidence_ids": [
+    "ev-support-001",
+    "ev-ablation-001"
+  ],
+  "methodology_plan": {
+    "contract_version": "paperagent.method-plan.v0.9",
+    "research": {
+      "target_problem": "A weak proposal.",
+      "scientific_setting": "bounded deterministic fixture workflow",
+      "success_metric": "score",
+      "constraints": [
+        "fixed evidence set",
+        "fixed evaluation budget"
+      ],
+      "intended_claim": "A weak proposal.",
+      "observed_problem": "Evaluate retrieved context.",
+      "proposed_mechanism": "Performance may improve."
+    },
+    "baseline": {
+      "name": "single-condition evaluation",
+      "version_or_commit": null,
+      "source_evidence_id": "ev-support-001",
+      "license": null,
+      "dataset": null,
+      "split": null,
+      "environment": null,
+      "seed_policy": null,
+      "reproduced": false,
+      "reproduced_metric": null,
+      "compute_fit": null,
+      "baseline_parity_verified": false,
+      "dataset_fingerprint": null,
+      "environment_fingerprint": null
+    },
+    "hypothesis": {
+      "condition": "under the declared fixture condition",
+      "limitation": "Evaluate retrieved context.",
+      "mechanism": "A weak proposal.",
+      "intervention": "Performance may improve.",
+      "predicted_metric_change": "improves",
+      "guardrail": "resource_cost does not increase by more than 10 percent"
+    },
+    "modules": [
+      {
+        "name": "module-basic",
+        "evidence_id": "ev-support-001",
+        "license": null,
+        "original_role": "basic",
+        "proposed_role": "basic proposal",
+        "input_semantics": "ordered verified research records",
+        "output_semantics": "bounded method-specific records",
+        "input_shape": null,
+        "output_shape": null,
+        "normalization": null,
+        "masks": null,
+        "ordering": null,
+        "trainable": null,
+        "loss_terms": [],
+        "compute_cost": "below 10 percent of baseline cost",
+        "assumptions": [],
+        "predicted_effect": "basic proposal",
+        "failure_mode": "domain shift can invalidate the proposed mapping",
+        "implementation_switch": null,
+        "gradient_expectation": null,
+        "parameter_update_scope": null,
+        "loss_scale": null,
+        "baseline_parity_behavior": null
+      }
+    ],
+    "experiments": [
+      {
+        "name": "canonical-baseline",
+        "arm_type": "baseline",
+        "included_modules": [],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "reconfirm the frozen baseline and modules-disabled parity",
+        "comparator": null,
+        "contrast": "baseline versus reproduced reference metric",
+        "source_evidence_id": null
+      },
+      {
+        "name": "weak-full",
+        "arm_type": "full",
+        "included_modules": [
+          "module-basic"
+        ],
+        "dataset": "fixture-method-dataset-v1",
+        "split": "fixture-frozen-split-v1",
+        "preprocessing": "fixture-preprocess-v1",
+        "tuning_budget": "10 trials per arm",
+        "metrics": [
+          "primary_metric",
+          "resource_cost"
+        ],
+        "seeds": [
+          1,
+          2,
+          3
+        ],
+        "uncertainty_reporting": "mean and 95 percent bootstrap interval",
+        "resource_measures": [
+          "wall_clock_seconds",
+          "peak_memory_mb"
+        ],
+        "stopping_criteria": "stop after the fixed budget",
+        "purpose": "deliberately incomplete first-pass proposal",
+        "comparator": null,
+        "contrast": null,
+        "source_evidence_id": null
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "ev-support-001",
+        "source_type": "user_material",
+        "title": "Accepted fixture evidence ev-support-001",
+        "stable_identifier": "fixture://ev-support-001",
+        "verified": true,
+        "supported_claims": [
+          "fixture-supported method and comparison claims"
+        ],
+        "limitations": [
+          "deterministic test fixture"
+        ],
+        "content_hash": "sha256:ev-support-001",
+        "license": "MIT",
+        "repository_ref": null
+      },
+      {
+        "evidence_id": "ev-ablation-001",
+        "source_type": "user_material",
+        "title": "Accepted fixture evidence ev-ablation-001",
+        "stable_identifier": "fixture://ev-ablation-001",
+        "verified": true,
+        "supported_claims": [
+          "fixture-supported method and comparison claims"
+        ],
+        "limitations": [
+          "deterministic test fixture"
+        ],
+        "content_hash": "sha256:ev-ablation-001",
+        "license": "MIT",
+        "repository_ref": null
+      }
+    ],
+    "stop_conditions": []
+  }
 }
