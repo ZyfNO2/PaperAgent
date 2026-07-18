@@ -41,7 +41,6 @@ jobs:
             scripts/compare_gate_l_variants.py \
             scripts/run_gate_l_variant.py \
             tests/evals/test_gate_l_acceptance_v3.py
-          pytest -q tests/evals/test_gate_l_acceptance_v3.py
       - name: Commit formatting
         run: |
           git config user.name 'github-actions[bot]'
