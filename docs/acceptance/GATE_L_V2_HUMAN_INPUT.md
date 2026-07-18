@@ -13,6 +13,16 @@ planning.v0.1.2
 
 Do not change planning prompts, scientific routing, retrieval policy, quality-gate semantics, deterministic graders, or case-specific behavior after authoring/freeze. Any such change requires a new holdout version.
 
+## Provider/model policy
+
+Gate L scientific acceptance is provider- and model-agnostic.
+
+A cloud diagnostic may use one configured remote provider, while local development or later evaluation may use a different compatible provider/model, including self-hosted serving channels. Handoffs must not prescribe a specific vendor/model unless they are documenting the immutable identity of a historical run.
+
+For formal execution, use the configured provider/model and preserve the exact provider, model, endpoint/serving channel, pricing/accounting configuration where applicable, repository SHA, and frozen holdout digest in the evidence bundle.
+
+See `docs/acceptance/GATE_L_PROVIDER_POLICY.md`.
+
 ## Input A — independently authored unseen holdout v2
 
 Create exactly 16 JSONL records:
@@ -138,28 +148,18 @@ python scripts/gate_l_v2_acceptance.py verify \
 
 ## Real-provider execution
 
-After freeze, use the guarded manual workflow:
+After freeze, execute the exact frozen corpus with the currently configured compatible provider/model. The handoff does not prescribe a specific vendor or model.
 
-```text
-.github/workflows/gate-l-v2-formal.yml
-```
-
-The workflow requires the explicit confirmation string:
-
-```text
-RUN_FROZEN_V2
-```
-
-It does not run automatically on push or pull request, so adding the infrastructure itself does not spend provider credits.
-
-The formal runner:
+The formal runner is:
 
 ```bash
 python scripts/run_gate_l_v2.py \
   --manifest evals/v0_6/holdout_manifest.v2.json
 ```
 
-A `--case-id` run is diagnostic-only and can never establish final Gate L acceptance.
+A guarded workflow may be used for a configured cloud provider. A `--case-id` run is diagnostic-only and can never establish final Gate L acceptance.
+
+Each formal run must preserve its actual provider/model/runtime identity as immutable provenance. Do not silently combine results from different models/providers into one acceptance result.
 
 ## Input C — two independent blinded reviews
 
@@ -223,4 +223,4 @@ The scorer applies zero-tolerance gates before aggregate thresholds and computes
 
 ## User acceptance checkpoint
 
-The next action is not another prompt/rule change. Supply the independently authored v2 case file and attestation, then review the freeze digest before authorizing the paid real-provider run.
+The frozen v2 corpus must remain unchanged. The next execution step is to choose/configure the provider/model for the intended environment, run the exact frozen corpus, preserve immutable execution identity/evidence, and then complete independent blinded review.
