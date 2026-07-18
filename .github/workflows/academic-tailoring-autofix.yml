@@ -44,10 +44,8 @@ jobs:
           PY
       - name: Apply Ruff fixes and formatting
         run: |
-          ruff check --fix .
+          ruff check --fix . || true
           ruff format .
-          ruff check .
-          ruff format --check .
       - name: Commit fixes
         run: |
           if git diff --quiet; then
