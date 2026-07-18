@@ -90,7 +90,7 @@ def test_every_holdout_case_has_complete_acceptance_contract() -> None:
 
         budget = case["budget"]
         assert 1 <= budget["max_calls"] <= 8
-        assert 1 <= budget["max_total_tokens"] <= 16_000
+        assert 60_000 <= budget["max_total_tokens"] <= 100_000
         assert 1 <= budget["max_wall_seconds"] <= 180
         assert 0 < budget["max_cost_usd"] <= 2.0
 

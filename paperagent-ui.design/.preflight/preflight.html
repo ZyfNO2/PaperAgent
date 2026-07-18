@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preflight</title>
+    <style id="theme-vars">
+:root {
+  color-scheme: light;
+
+  /* Brand prefix: pa (PaperAgent) */
+  --pa-background: #f5f2ea;
+  --pa-foreground: #1a2523;
+
+  --pa-card: #fdfbf5;
+  --pa-card-foreground: #1a2523;
+
+  --pa-popover: #ffffff;
+  --pa-popover-foreground: #1a2523;
+
+  --pa-primary: #165d54;
+  --pa-primary-foreground: #f5f2ea;
+
+  --pa-muted: #f0ece2;
+  --pa-muted-foreground: #5e6b67;
+
+  --pa-border: #ddd8ca;
+  --pa-input: #d4cfc0;
+  --pa-ring: #165d54;
+
+  --pa-destructive: #9e3a32;
+  --pa-destructive-foreground: #fdfbf5;
+
+  --pa-success: #2d7a5c;
+  --pa-warning: #a66418;
+  --pa-warning-foreground: #fdfbf5;
+  --pa-accent-soft: #dde9e4;
+  --pa-highlight: #7a4ea8;
+
+  --pa-radius-sm: 0.375rem;
+  --pa-radius-md: 0.625rem;
+  --pa-radius-lg: 1rem;
+
+  --pa-font-sans: "Inter", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --pa-font-serif: "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --pa-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Raw scale for reference */
+  --pa-paper: #f5f2ea;
+  --pa-paper-warm: #efeae0;
+  --pa-ink: #1a2523;
+  --pa-ink-soft: #2d3d39;
+  --pa-line: #ddd8ca;
+  --pa-line-strong: #c5bfad;
+  --pa-teal-deep: #165d54;
+  --pa-teal: #1f756a;
+  --pa-teal-light: #4e9a8d;
+  --pa-teal-mist: #dde9e4;
+  --pa-amber: #a66418;
+  --pa-amber-soft: #f5e9d3;
+  --pa-crimson: #9e3a32;
+  --pa-crimson-soft: #f5e4e1;
+  --pa-sky: #28548a;
+  --pa-sky-soft: #e4ecf7;
+  --pa-violet: #7a4ea8;
+  --pa-shadow-sm: 0 1px 2px rgb(26 37 35 / 6%);
+  --pa-shadow-md: 0 6px 20px rgb(26 37 35 / 8%);
+  --pa-shadow-lg: 0 18px 48px rgb(26 37 35 / 12%);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--pa-background);
+    --color-foreground: var(--pa-foreground);
+    --color-card: var(--pa-card);
+    --color-card-foreground: var(--pa-card-foreground);
+    --color-popover: var(--pa-popover);
+    --color-popover-foreground: var(--pa-popover-foreground);
+    --color-primary: var(--pa-primary);
+    --color-primary-foreground: var(--pa-primary-foreground);
+    --color-muted: var(--pa-muted);
+    --color-muted-foreground: var(--pa-muted-foreground);
+    --color-destructive: var(--pa-destructive);
+    --color-destructive-foreground: var(--pa-destructive-foreground);
+    --color-border: var(--pa-border);
+    --color-input: var(--pa-input);
+    --color-ring: var(--pa-ring);
+    --radius-sm: var(--pa-radius-sm);
+    --radius-md: var(--pa-radius-md);
+    --radius-lg: var(--pa-radius-lg);
+  }
+  @layer base {
+    body { background: var(--pa-background); color: var(--pa-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--pa-background); }
+      .text-background { color: var(--pa-background); }
+      .border-background { border-color: var(--pa-background); }
+      .ring-background { --tw-ring-color: var(--pa-background); }
+      .bg-foreground { background-color: var(--pa-foreground); }
+      .text-foreground { color: var(--pa-foreground); }
+      .border-foreground { border-color: var(--pa-foreground); }
+      .ring-foreground { --tw-ring-color: var(--pa-foreground); }
+      .bg-card { background-color: var(--pa-card); }
+      .text-card { color: var(--pa-card); }
+      .border-card { border-color: var(--pa-card); }
+      .ring-card { --tw-ring-color: var(--pa-card); }
+      .bg-card-foreground { background-color: var(--pa-card-foreground); }
+      .text-card-foreground { color: var(--pa-card-foreground); }
+      .border-card-foreground { border-color: var(--pa-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--pa-card-foreground); }
+      .bg-popover { background-color: var(--pa-popover); }
+      .text-popover { color: var(--pa-popover); }
+      .border-popover { border-color: var(--pa-popover); }
+      .ring-popover { --tw-ring-color: var(--pa-popover); }
+      .bg-popover-foreground { background-color: var(--pa-popover-foreground); }
+      .text-popover-foreground { color: var(--pa-popover-foreground); }
+      .border-popover-foreground { border-color: var(--pa-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--pa-popover-foreground); }
+      .bg-primary { background-color: var(--pa-primary); }
+      .text-primary { color: var(--pa-primary); }
+      .border-primary { border-color: var(--pa-primary); }
+      .ring-primary { --tw-ring-color: var(--pa-primary); }
+      .bg-primary-foreground { background-color: var(--pa-primary-foreground); }
+      .text-primary-foreground { color: var(--pa-primary-foreground); }
+      .border-primary-foreground { border-color: var(--pa-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--pa-primary-foreground); }
+      .bg-muted { background-color: var(--pa-muted); }
+      .text-muted { color: var(--pa-muted); }
+      .border-muted { border-color: var(--pa-muted); }
+      .ring-muted { --tw-ring-color: var(--pa-muted); }
+      .bg-muted-foreground { background-color: var(--pa-muted-foreground); }
+      .text-muted-foreground { color: var(--pa-muted-foreground); }
+      .border-muted-foreground { border-color: var(--pa-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--pa-muted-foreground); }
+      .bg-destructive { background-color: var(--pa-destructive); }
+      .text-destructive { color: var(--pa-destructive); }
+      .border-destructive { border-color: var(--pa-destructive); }
+      .ring-destructive { --tw-ring-color: var(--pa-destructive); }
+      .bg-destructive-foreground { background-color: var(--pa-destructive-foreground); }
+      .text-destructive-foreground { color: var(--pa-destructive-foreground); }
+      .border-destructive-foreground { border-color: var(--pa-destructive-foreground); }
+      .ring-destructive-foreground { --tw-ring-color: var(--pa-destructive-foreground); }
+      .bg-border { background-color: var(--pa-border); }
+      .text-border { color: var(--pa-border); }
+      .border-border { border-color: var(--pa-border); }
+      .ring-border { --tw-ring-color: var(--pa-border); }
+      .bg-input { background-color: var(--pa-input); }
+      .text-input { color: var(--pa-input); }
+      .border-input { border-color: var(--pa-input); }
+      .ring-input { --tw-ring-color: var(--pa-input); }
+      .bg-ring { background-color: var(--pa-ring); }
+      .text-ring { color: var(--pa-ring); }
+      .border-ring { border-color: var(--pa-ring); }
+      .ring-ring { --tw-ring-color: var(--pa-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -20,6 +20,8 @@ import httpx
 from pydantic import BaseModel, ValidationError
 
 from paperagent.errors import ProviderError, ProviderTimeoutError
+from paperagent.pricing import PriceTable
+from paperagent.providers.runtime import TaskBudget, UsageRecord
 from paperagent.schemas import Message, TokenUsage
 
 T = TypeVar("T", bound=BaseModel)
@@ -43,6 +45,8 @@ class OpenAILLMProvider:
         timeout_seconds: float = 60.0,
         max_retries: int = 2,
         temperature: float = 0.0,
+        budget: TaskBudget | None = None,
+        price_table: PriceTable | None = None,
     ) -> None:
         if not api_key:
             raise ValueError("api_key must be a non-empty string")
@@ -52,6 +56,8 @@ class OpenAILLMProvider:
         self._timeout_seconds = timeout_seconds
         self._max_retries = max_retries
         self._temperature = temperature
+        self._budget = budget
+        self._price_table = price_table
         # Last-call observability, mirrored on FakeLLMProvider for node telemetry.
         self.last_usage: TokenUsage = TokenUsage(input_tokens=0, output_tokens=0)
         self.last_latency_ms: int = 0
@@ -240,6 +246,8 @@ class OpenAILLMProvider:
         attempts = self._max_retries + 1
 
         for attempt in range(attempts):
+            if self._budget is not None:
+                self._budget.reserve_call(task=task)
             started = time.perf_counter()
             try:
                 async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
@@ -247,6 +255,24 @@ class OpenAILLMProvider:
                     response.raise_for_status()
                 self.last_latency_ms = int((time.perf_counter() - started) * 1000)
                 self._record_usage(response)
+                if self._budget is not None:
+                    estimated_cost = (
+                        self._price_table.estimate(
+                            model=self._model,
+                            input_tokens=self.last_usage.input_tokens,
+                            output_tokens=self.last_usage.output_tokens,
+                        )
+                        if self._price_table is not None
+                        else None
+                    )
+                    self._budget.record_usage(
+                        UsageRecord(
+                            input_tokens=self.last_usage.input_tokens,
+                            output_tokens=self.last_usage.output_tokens,
+                            estimated_cost_usd=estimated_cost,
+                        ),
+                        task=task,
+                    )
                 return self._parse_response(response, schema, task)
             except httpx.TimeoutException as exc:
                 raise ProviderTimeoutError(

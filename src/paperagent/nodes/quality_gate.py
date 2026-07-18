@@ -5,7 +5,7 @@ import re
 from langchain_core.runnables import RunnableConfig
 
 from paperagent.nodes._shared import execution_with
-from paperagent.runtime import get_services
+from paperagent.runtime import get_option, get_services
 from paperagent.schemas import EvidenceBundle, QualityDecision, RetrievalState
 from paperagent.state import PaperAgentState, StatePatch
 from paperagent.telemetry import make_event
@@ -152,8 +152,13 @@ async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> S
     }
 
 
-def quality_route(state: PaperAgentState) -> str:
+def quality_route(state: PaperAgentState, config: RunnableConfig) -> str:
     quality = state.get("quality")
     if quality is None:
         raise ValueError("quality decision is required")
+    if (
+        quality.verdict == "human_review"
+        and get_option(config, "human_review_policy", "interrupt") == "block"
+    ):
+        return "blocked"
     return quality.verdict

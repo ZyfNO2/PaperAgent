@@ -14,6 +14,8 @@ from paperagent.telemetry.redaction import redact
 
 class LLMProviderName(StrEnum):
     MISTRAL = "mistral"
+    OPENAI = "openai"
+    DEEPSEEK = "deepseek"
 
 
 class ProviderErrorCode(StrEnum):

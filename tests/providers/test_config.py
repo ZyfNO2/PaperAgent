@@ -25,3 +25,18 @@ def test_load_provider_config_uses_explicit_values_and_redacts_secret() -> None:
     assert config.model == "explicit-model"
     assert config.max_llm_calls_per_task == 3
     assert "secret" not in repr(config)
+
+
+def test_load_provider_config_supports_openai_compatible_credentials() -> None:
+    config = load_provider_config(
+        environ={
+            "PAPERAGENT_LLM_PROVIDER": "deepseek",
+            "PAPERAGENT_LLM_MODEL": "deepseek-v4-flash",
+            "PAPERAGENT_OPENAI_API_KEY": "secret",
+            "PAPERAGENT_LLM_BASE_URL": "https://opencode.ai/zen/go/v1",
+        }
+    )
+
+    assert config.provider.value == "deepseek"
+    assert config.base_url == "https://opencode.ai/zen/go/v1"
+    assert config.api_key.get_secret_value() == "secret"

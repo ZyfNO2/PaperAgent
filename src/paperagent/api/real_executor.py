@@ -112,6 +112,7 @@ class RealTaskExecutor(TaskExecutor):
             configurable={
                 "network_policy": "allow_search",
                 "budgets": graph_budgets,
+                "human_review_policy": "block",
             },
         )
         try:

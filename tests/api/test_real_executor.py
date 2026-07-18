@@ -18,7 +18,7 @@ from paperagent.providers.runtime import (
     ProviderRuntimeConfig,
     TelemetrySink,
 )
-from paperagent.schemas import ExecutionMeta, ResearchRequest
+from paperagent.schemas import ExecutionMeta, FinalReport, ResearchRequest
 
 
 class FakeLLM:
@@ -50,7 +50,17 @@ class FakeLLM:
 class FakeGraph:
     def astream(self, *_: Any, **__: Any) -> AsyncIterator[dict[str, Any]]:
         async def generate() -> AsyncIterator[dict[str, Any]]:
-            yield {"execution": ExecutionMeta(status="completed"), "trace": []}
+            yield {
+                "execution": ExecutionMeta(status="completed"),
+                "report": FinalReport(
+                    status="completed",
+                    executive_summary="completed",
+                    verified_findings=[],
+                    inferred_findings=[],
+                    limitations=["synthetic executor test"],
+                ),
+                "trace": [],
+            }
 
         return generate()
 

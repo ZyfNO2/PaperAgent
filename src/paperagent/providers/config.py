@@ -18,17 +18,26 @@ def load_provider_config(
     values = os.environ if environ is None else environ
     resolved_provider = provider or values.get("PAPERAGENT_LLM_PROVIDER") or "mistral"
     resolved_model = model or values.get("PAPERAGENT_LLM_MODEL")
-    resolved_base_url = (
-        base_url or values.get("PAPERAGENT_LLM_BASE_URL") or "https://api.mistral.ai/v1"
+    provider_name = LLMProviderName(resolved_provider)
+    default_base_url = (
+        "https://api.mistral.ai/v1"
+        if provider_name is LLMProviderName.MISTRAL
+        else "https://api.openai.com/v1"
     )
-    api_key = values.get("MISTRAL_API_KEY")
+    resolved_base_url = base_url or values.get("PAPERAGENT_LLM_BASE_URL") or default_base_url
+    if provider_name is LLMProviderName.MISTRAL:
+        api_key = values.get("MISTRAL_API_KEY")
+        credential_name = "MISTRAL_API_KEY"
+    else:
+        api_key = values.get("PAPERAGENT_OPENAI_API_KEY") or values.get("OPENAI_API_KEY")
+        credential_name = "PAPERAGENT_OPENAI_API_KEY or OPENAI_API_KEY"
     if not resolved_model:
         raise ValueError("PAPERAGENT_LLM_MODEL or an explicit model is required")
     if not api_key:
-        raise ValueError("MISTRAL_API_KEY is required for the real executor")
+        raise ValueError(f"{credential_name} is required for the real executor")
 
     return ProviderRuntimeConfig(
-        provider=LLMProviderName(resolved_provider),
+        provider=provider_name,
         model=resolved_model,
         api_key=SecretStr(api_key),
         base_url=resolved_base_url,

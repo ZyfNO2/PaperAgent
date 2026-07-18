@@ -115,4 +115,21 @@ def test_planning_route__status__maps_to_expected_edge() -> None:
             kwargs["research_questions"] = ["q"]
             kwargs["evidence_gaps"] = [{"gap_id": "g", "description": "d"}]
             kwargs["search_queries"] = [{"query_id": "q", "gap_id": "g", "query": "search"}]
-        assert planning_route({"plan": ResearchPlan(**kwargs)}) == status
+        assert planning_route({"plan": ResearchPlan(**kwargs)}, {}) == status
+
+
+def test_planning_route__headless_policy_blocks_human_interrupt() -> None:
+    from paperagent.nodes.planning import planning_route
+    from paperagent.schemas import ResearchPlan
+
+    plan = ResearchPlan(
+        status="need_human",
+        problem_statement="p",
+        scope="s",
+        clarification_question="Which corpus should be used?",
+    )
+
+    assert (
+        planning_route({"plan": plan}, {"configurable": {"human_review_policy": "block"}})
+        == "blocked"
+    )
