@@ -4,7 +4,7 @@ import re
 
 from langchain_core.runnables import RunnableConfig
 
-from paperagent.academic_methodology import AuditVerdict
+from paperagent.academic_methodology import AuditVerdict, audit_method_plan
 from paperagent.nodes._shared import execution_with
 from paperagent.runtime import get_option, get_services
 from paperagent.schemas import EvidenceBundle, QualityDecision, RetrievalState
@@ -50,14 +50,11 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
         )
     synthesis = state.get("synthesis")
     method = state.get("method")
-    methodology_audit = state.get("methodology_audit")
     if synthesis is None or method is None:
         return QualityDecision(verdict="blocked", reason_codes=["Q_MISSING_ARTIFACT"])
+    methodology_audit = state.get("methodology_audit")
     if methodology_audit is None:
-        return QualityDecision(
-            verdict="blocked",
-            reason_codes=["Q_MISSING_METHODOLOGY_AUDIT"],
-        )
+        methodology_audit = audit_method_plan(method.methodology_plan)
     required_gap_ids = {gap.gap_id for gap in plan.evidence_gaps if gap.required}
     weak_gap_ids = sorted(
         assessment.gap_id
