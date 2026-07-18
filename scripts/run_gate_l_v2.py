@@ -11,6 +11,9 @@ import asyncio
 import hashlib
 import json
 import os
+import platform
+import subprocess
+import sys
 import time
 from collections import Counter
 from datetime import UTC, datetime
@@ -18,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from gate_l_v2_acceptance import verify_manifest
+
 from paperagent.api.real_executor import build_real_task_executor
 from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.pricing import load_price_table
@@ -34,8 +38,26 @@ def _sha256(path: Path) -> str:
 
 
 def _sha256_json(value: Any) -> str:
-    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    payload = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _git_clean() -> bool | None:
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return not result.stdout.strip()
 
 
 def _normalized_terminal(raw_terminal: str) -> str:
@@ -71,12 +93,16 @@ def _scientific_trace(result: dict[str, Any] | None) -> dict[str, Any]:
     if not result:
         return {}
     plan = result.get("plan") if isinstance(result.get("plan"), dict) else {}
-    retrieval = result.get("retrieval") if isinstance(result.get("retrieval"), dict) else {}
+    retrieval = (
+        result.get("retrieval") if isinstance(result.get("retrieval"), dict) else {}
+    )
     evidence = result.get("evidence") if isinstance(result.get("evidence"), dict) else {}
     quality = result.get("quality") if isinstance(result.get("quality"), dict) else {}
     items = evidence.get("items") if isinstance(evidence.get("items"), list) else []
     verification_counts = Counter(
-        item.get("verification_status", "unknown") for item in items if isinstance(item, dict)
+        item.get("verification_status", "unknown")
+        for item in items
+        if isinstance(item, dict)
     )
     return {
         "plan_status": plan.get("status"),
@@ -137,11 +163,15 @@ async def _execute_case(
 
     wall_seconds = round(time.monotonic() - started, 3)
     raw_terminal = (
-        str(result.get("execution", {}).get("status", "failed")) if result is not None else "failed"
+        str(result.get("execution", {}).get("status", "failed"))
+        if result is not None
+        else "failed"
     )
     terminal_class = _normalized_terminal(raw_terminal)
 
-    llm_events = [event for event in trace_records if event.get("event") == "llm.invocation"]
+    llm_events = [
+        event for event in trace_records if event.get("event") == "llm.invocation"
+    ]
     calls = len(llm_events)
     input_tokens = 0
     output_tokens = 0
@@ -162,8 +192,14 @@ async def _execute_case(
             if not isinstance(value, int) or isinstance(value, bool) or value < 0:
                 accounting_errors.append(f"call {index}: invalid {token_field}")
         cost = usage.get("estimated_cost_usd")
-        if not isinstance(cost, (int, float)) or isinstance(cost, bool) or cost < 0:
-            accounting_errors.append(f"call {index}: invalid estimated_cost_usd")
+        if (
+            not isinstance(cost, int | float)
+            or isinstance(cost, bool)
+            or cost < 0
+        ):
+            accounting_errors.append(
+                f"call {index}: invalid estimated_cost_usd"
+            )
         input_tokens += int(usage.get("input_tokens", 0) or 0)
         output_tokens += int(usage.get("output_tokens", 0) or 0)
         estimated_cost += float(usage.get("estimated_cost_usd", 0.0) or 0.0)
@@ -184,14 +220,14 @@ async def _execute_case(
     if wall_seconds > budget["max_wall_seconds"]:
         violations.append(f"wall {wall_seconds}>{budget['max_wall_seconds']}")
     if estimated_cost > budget["max_cost_usd"]:
-        violations.append(f"cost {estimated_cost:.6f}>{budget['max_cost_usd']}")
+        violations.append(
+            f"cost {estimated_cost:.6f}>{budget['max_cost_usd']}"
+        )
     if accounting_errors:
         violations.append("incomplete_usage_accounting")
     if error:
         violations.append("execution_error")
 
-    output_digest = _sha256_json(result or {})
-    trace_digest = _sha256_json(trace_records)
     return {
         "case_id": case_id,
         "case_index": case_index,
@@ -222,9 +258,11 @@ async def _execute_case(
         "scientific_trace": _scientific_trace(result),
         "deterministic_checks": case["deterministic_checks"],
         "reference_evidence": case.get("reference_evidence", []),
+        "skipped_checks": [],
+        "excluded_checks": [],
         "review_output": _review_output(result),
-        "output_digest": output_digest,
-        "trace_digest": trace_digest,
+        "output_digest": _sha256_json(result or {}),
+        "trace_digest": _sha256_json(trace_records),
     }
 
 
@@ -256,6 +294,7 @@ async def main() -> int:
             raise SystemExit(f"Unknown case IDs: {', '.join(sorted(missing))}")
 
     formal_run = not requested and len(cases) == 16
+    clean_tree = _git_clean()
     provider_config = load_provider_config()
     price_table = load_price_table(args.price_table)
     executor = build_real_task_executor(
@@ -269,16 +308,24 @@ async def main() -> int:
     )
     execution_identity = {
         "repo_sha": os.environ.get("GITHUB_SHA", "local"),
-        "scientific_behavior_cutoff_sha": manifest["scientific_behavior_cutoff_sha"],
+        "clean_tree": clean_tree,
+        "scientific_behavior_cutoff_sha": manifest[
+            "scientific_behavior_cutoff_sha"
+        ],
         "planning_prompt_version": prompt.version,
         "provider": provider_config.provider.value,
         "model": provider_config.model,
-        "base_url": provider_config.base_url,
+        "base_url": str(provider_config.base_url),
         "price_table_path": args.price_table.as_posix(),
         "price_table_sha256": _sha256(args.price_table),
         "manifest_path": args.manifest.as_posix(),
         "manifest_sha256": _sha256(args.manifest),
         "case_file_sha256": manifest["case_file_sha256"],
+        "python_version": sys.version,
+        "platform": platform.platform(),
+        "command": [sys.executable, *sys.argv],
+        "github_run_id": os.environ.get("GITHUB_RUN_ID"),
+        "github_workflow": os.environ.get("GITHUB_WORKFLOW"),
     }
 
     evidence_dir = args.output_dir / "per-case"
@@ -286,36 +333,52 @@ async def main() -> int:
     results: list[dict[str, Any]] = []
     for index, case in enumerate(cases, start=1):
         print(f"[{index}/{len(cases)}] {case['case_id']}...", flush=True)
-        evidence = await _execute_case(case, executor, index, execution_identity)
+        evidence = await _execute_case(
+            case,
+            executor,
+            index,
+            execution_identity,
+        )
         results.append(evidence)
         (evidence_dir / f"{case['case_id']}.json").write_text(
-            json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            json.dumps(evidence, ensure_ascii=False, indent=2, sort_keys=True)
+            + "\n",
             encoding="utf-8",
         )
         print(
-            f"  terminal={evidence['terminal']} calls={evidence['telemetry']['calls']} "
+            f"  terminal={evidence['terminal']} "
+            f"calls={evidence['telemetry']['calls']} "
             f"tokens={evidence['telemetry']['total_tokens']} "
             f"cost=${evidence['telemetry']['estimated_cost_usd']:.6f} "
             f"budget={'PASS' if evidence['budget_compliance'] else 'FAIL'}"
         )
 
-    hard_failures = [
+    case_failures = [
         {"case_id": item["case_id"], "violations": item["budget_violations"]}
         for item in results
         if item["budget_violations"]
     ]
+    global_failures: list[str] = []
+    if formal_run and clean_tree is not True:
+        global_failures.append("clean_tree_not_verified")
     run_record = {
         "gate": "L",
         "holdout_version": manifest["version"],
         "formal_run": formal_run,
-        "formal_execution_eligible": formal_run and not hard_failures,
+        "formal_execution_eligible": (
+            formal_run and not case_failures and not global_failures
+        ),
         "selected_case_ids": sorted(requested),
         "execution_identity": execution_identity,
-        "started_utc": min((item["started_utc"] for item in results), default=None),
+        "started_utc": min(
+            (item["started_utc"] for item in results),
+            default=None,
+        ),
         "finished_utc": datetime.now(tz=UTC).isoformat(),
         "case_count": len(results),
         "terminal_summary": dict(Counter(item["terminal"] for item in results)),
-        "hard_failures": hard_failures,
+        "global_failures": global_failures,
+        "case_failures": case_failures,
         "cases": [
             {
                 "case_id": item["case_id"],
@@ -331,14 +394,22 @@ async def main() -> int:
     }
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / "run-record.json").write_text(
-        json.dumps(run_record, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        json.dumps(run_record, ensure_ascii=False, indent=2, sort_keys=True)
+        + "\n",
         encoding="utf-8",
     )
-    if formal_run and hard_failures:
-        print(f"Formal Gate L v2 execution failed closed: {len(hard_failures)} case(s) invalid")
+    if formal_run and (case_failures or global_failures):
+        print(
+            "Formal Gate L v2 execution failed closed: "
+            f"case_failures={len(case_failures)} "
+            f"global_failures={global_failures}"
+        )
         return 2
     if not formal_run:
-        print("Targeted execution is diagnostic-only and cannot establish final Gate L acceptance.")
+        print(
+            "Targeted execution is diagnostic-only and cannot establish final Gate L "
+            "acceptance."
+        )
     return 0
 
 
