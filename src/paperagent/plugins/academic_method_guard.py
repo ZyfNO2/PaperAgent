@@ -102,13 +102,13 @@ class AcademicMethodTailoringPlugin(_BaseAcademicMethodTailoringPlugin):
             return super().invoke(request)
         try:
             task = TailoringTask.model_validate(request.payload)
+            proposal = compose_tailored_research_proposal(task)
         except ValueError as exc:
             raise PluginError(
                 PluginErrorCode.INVOCATION_FAILED,
-                "academic tailoring task failed schema validation",
+                "academic tailoring task failed validation or proposal generation",
                 plugin_name=self.manifest.name,
             ) from exc
-        proposal = compose_tailored_research_proposal(task)
         return PluginResult(
             plugin_name=self.manifest.name,
             plugin_version=self.manifest.version,
