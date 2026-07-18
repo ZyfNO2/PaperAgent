@@ -9,6 +9,7 @@ from paperagent.nodes.evidence_synthesis import evidence_synthesis_node
 from paperagent.nodes.human_review import human_review_node
 from paperagent.nodes.intake import intake_node
 from paperagent.nodes.method_design import method_design_node
+from paperagent.nodes.methodology_audit import methodology_audit_node
 from paperagent.nodes.persist import persist_node
 from paperagent.nodes.planning import planning_node, planning_route
 from paperagent.nodes.quality_gate import quality_gate_node, quality_route
@@ -44,6 +45,7 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     builder.add_node("retrieval_subgraph", retrieval_subgraph_node)
     builder.add_node("evidence_synthesis_node", evidence_synthesis_node)
     builder.add_node("method_design_node", method_design_node)
+    builder.add_node("methodology_audit_node", methodology_audit_node)
     builder.add_node("quality_gate_node", quality_gate_node)
     builder.add_node("report_node", report_node)
     builder.add_node("persist_node", persist_node)
@@ -69,8 +71,9 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
     builder.add_conditional_edges(
         "method_design_node",
         _continue_unless_failed,
-        {"continue": "quality_gate_node", "blocked": "report_node"},
+        {"continue": "methodology_audit_node", "blocked": "report_node"},
     )
+    builder.add_edge("methodology_audit_node", "quality_gate_node")
     builder.add_conditional_edges(
         "quality_gate_node",
         quality_route,
