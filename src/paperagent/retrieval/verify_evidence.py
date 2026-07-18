@@ -50,12 +50,16 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
         evidence_id = f"ev-{candidate.candidate_id}"
         status = _candidate_status(candidate)
         previous = by_id.get(evidence_id)
-        supports = sorted(set(previous.supports_gap_ids if previous else []) | {candidate.gap_id})
+        supports = sorted(
+            set(previous.supports_gap_ids if previous else []) | {candidate.gap_id}
+        )
         if (
             previous is not None
             and _STATUS_PRIORITY[previous.verification_status] > _STATUS_PRIORITY[status]
         ):
             status = previous.verification_status
+        metadata = dict(previous.metadata) if previous else {}
+        metadata.update(candidate.metadata)
         by_id[evidence_id] = EvidenceItem(
             evidence_id=evidence_id,
             source_type=candidate.source_type,
@@ -66,13 +70,23 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
             supports_gap_ids=supports,
             summary=candidate.snippet,
             content_hash=hash_payload(candidate),
+            provider=candidate.provider,
+            metadata=metadata,
         )
     items = list(by_id.values())
-    accepted = [item.evidence_id for item in items if item.verification_status == "accepted"]
-    rejected = [item.evidence_id for item in items if item.verification_status == "rejected"]
-    pending = [item.evidence_id for item in items if item.verification_status == "pending"]
+    accepted = [
+        item.evidence_id for item in items if item.verification_status == "accepted"
+    ]
+    rejected = [
+        item.evidence_id for item in items if item.verification_status == "rejected"
+    ]
+    pending = [
+        item.evidence_id for item in items if item.verification_status == "pending"
+    ]
     failed = [
-        item.evidence_id for item in items if item.verification_status == "failed_verification"
+        item.evidence_id
+        for item in items
+        if item.verification_status == "failed_verification"
     ]
     coverage: dict[str, int] = {}
     for item in items:
@@ -100,7 +114,13 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
         conflicts=existing.conflicts,
     )
     trace = [
-        make_event(services, state, node=NODE, event_type="node.started", status="started"),
+        make_event(
+            services,
+            state,
+            node=NODE,
+            event_type="node.started",
+            status="started",
+        ),
         make_event(
             services,
             state,
