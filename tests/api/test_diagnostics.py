@@ -62,7 +62,7 @@ def test_runtime_diagnostics_and_prometheus_are_secret_free(tmp_path: Path) -> N
     assert snapshot["tasks"]["by_status"]["queued"] == 1
     assert snapshot["events"]["by_type"]["task.queued"] == 1
     assert snapshot["database"]["schema"]["current_version"] == CURRENT_SCHEMA_VERSION
-    assert "paperagent_tasks_by_status{status=\"queued\"} 1" in rendered
+    assert 'paperagent_tasks_by_status{status="queued"} 1' in rendered
     assert "diagnostics-key" not in json.dumps(snapshot)
 
 
