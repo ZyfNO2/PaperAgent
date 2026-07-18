@@ -19,7 +19,10 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
     accepted_ids = set(evidence.accepted_ids)
 
     def validate(method: MethodProposal) -> None:
-        unknown = set(method.evidence_ids) - accepted_ids
+        canonical_evidence_ids = {
+            item.evidence_id for item in method.methodology_plan.evidence
+        }
+        unknown = (set(method.evidence_ids) | canonical_evidence_ids) - accepted_ids
         if unknown:
             raise NodeError(
                 code="SEMANTIC_UNKNOWN_EVIDENCE_ID",
@@ -42,9 +45,15 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
             ],
             "constraints": request.required_constraints if request is not None else [],
             "repair_reason": quality.reason_codes if quality is not None else None,
+            "canonical_methodology_contract": {
+                "required": True,
+                "contract_version": "paperagent.method-plan.v0.9",
+                "authoritative_audit": True,
+            },
         },
         semantic_validate=validate,
     )
     if result is not None:
         patch["method"] = result
+        patch["methodology_audit"] = None
     return patch
