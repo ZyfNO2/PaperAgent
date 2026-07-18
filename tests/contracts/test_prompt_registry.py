@@ -8,7 +8,7 @@ def test_prompt_registry__known_task__returns_versioned_prompt() -> None:
 
     prompt = get_prompt("planning")
     assert prompt.task == "planning"
-    assert prompt.version == "planning.v0.1.0"
+    assert prompt.version == "planning.v0.1.2"
     assert "JSON" in prompt.system
     assert "hidden chain of thought" not in prompt.system.lower()
 
