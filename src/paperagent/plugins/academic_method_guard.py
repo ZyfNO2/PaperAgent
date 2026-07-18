@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from typing import cast
+
+from paperagent.academic_tailoring import TailoringTask
+from paperagent.academic_tailoring_guard import compose_tailored_research_proposal
 from paperagent.plugins import academic_method as _implementation
 from paperagent.plugins.academic_method import (
-    AcademicMethodTailoringPlugin,
+    AcademicMethodTailoringPlugin as _BaseAcademicMethodTailoringPlugin,
     AuditCheck,
     AuditSeverity,
     AuditVerdict,
@@ -10,6 +14,12 @@ from paperagent.plugins.academic_method import (
     ExperimentArmType,
     MethodAuditReport,
     MethodPlan,
+)
+from paperagent.plugins.contracts import (
+    PluginError,
+    PluginErrorCode,
+    PluginRequest,
+    PluginResult,
 )
 
 _base_audit_method_plan = _implementation.audit_method_plan
@@ -74,8 +84,46 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
     )
 
 
-# The package imports this guard before callers reach the implementation submodule.
-# Rebinding keeps direct submodule imports, the built-in plugin, and the CLI on one policy.
+class AcademicMethodTailoringPlugin(_BaseAcademicMethodTailoringPlugin):
+    _manifest = _BaseAcademicMethodTailoringPlugin._manifest.model_copy(
+        update={
+            "operations": ("audit", "template", "propose"),
+            "description": (
+                "Deterministic academic method proposal generation and evidence, "
+                "compatibility, novelty, and ablation audit."
+            ),
+        }
+    )
+
+    def invoke(self, request: PluginRequest) -> PluginResult:
+        if request.operation != "propose":
+            return super().invoke(request)
+        try:
+            task = TailoringTask.model_validate(request.payload)
+        except ValueError as exc:
+            raise PluginError(
+                PluginErrorCode.INVOCATION_FAILED,
+                "academic tailoring task failed schema validation",
+                plugin_name=self.manifest.name,
+            ) from exc
+        proposal = compose_tailored_research_proposal(task)
+        return PluginResult(
+            plugin_name=self.manifest.name,
+            plugin_version=self.manifest.version,
+            request_id=request.request_id,
+            operation=request.operation,
+            output=cast(dict[str, object], proposal.model_dump(mode="json")),
+            evidence={
+                "proposal_policy": "academic-method-tailoring-proposal-v1",
+                "network_used": False,
+                "llm_used": False,
+                "result_status": "simulated_or_proposed",
+            },
+        )
+
+
+# Keep direct submodule imports, the built-in registry, and the CLI on one policy.
 _implementation.audit_method_plan = audit_method_plan
+_implementation.AcademicMethodTailoringPlugin = AcademicMethodTailoringPlugin
 
 __all__ = ["AcademicMethodTailoringPlugin", "audit_method_plan"]
