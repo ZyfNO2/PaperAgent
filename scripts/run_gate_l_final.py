@@ -18,15 +18,22 @@ from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from paperagent.api.real_executor import build_real_task_executor
 from paperagent.literature.factory import LiteratureProviderSettings
 from paperagent.pricing import load_price_table
 from paperagent.providers.config import load_provider_config
 from paperagent.schemas.request import ResearchRequest
 
-load_dotenv()
+
+def _load_dotenv_if_available() -> None:
+    try:
+        import dotenv
+    except ModuleNotFoundError:
+        return
+    dotenv.load_dotenv()
+
+
+_load_dotenv_if_available()
 
 HOLDOUT_CASES = Path("evals/v0_6/holdout_cases.v1.jsonl")
 OUTPUT_DIR = Path("build/gate-l-evidence")
