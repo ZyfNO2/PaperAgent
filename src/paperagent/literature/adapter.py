@@ -60,8 +60,7 @@ class LiteratureSearchAdapter:
         self._last_fallback_used[query.query_id] = fallback_used
 
         if provider_results and all(
-            result.status in {"failed", "timeout", "rate_limited"}
-            for result in provider_results
+            result.status in {"failed", "timeout", "rate_limited"} for result in provider_results
         ):
             raise ProviderError(
                 "all literature providers failed",
