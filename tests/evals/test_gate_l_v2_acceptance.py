@@ -46,7 +46,7 @@ def _case(case_id: str, category: str) -> dict[str, object]:
         "case_id": case_id,
         "version": "v2",
         "category": category,
-        "title": f"Case {case_id}",
+        "title": f"Independent {category} evaluation case",
         "task_input": "Produce a bounded evidence-grounded research answer.",
         "expected_terminal": "succeeded",
         "allowed_constraints": ["Use verifiable evidence."],
