@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from paperagent.academic_tailoring import ResultStatus, TailoringDecision
 from paperagent.academic_tailoring_evaluation import (
     evaluate_corpus,
@@ -10,7 +12,12 @@ from paperagent.academic_tailoring_evaluation import (
 )
 from paperagent.academic_tailoring_fixtures import load_tailoring_task_bundle
 from paperagent.academic_tailoring_guard import compose_tailored_research_proposal
-from paperagent.plugins import AcademicMethodTailoringPlugin, PluginRequest
+from paperagent.plugins import (
+    AcademicMethodTailoringPlugin,
+    PluginError,
+    PluginErrorCode,
+    PluginRequest,
+)
 
 _ROOT = Path(__file__).resolve().parents[2]
 _FIXTURE_ROOT = _ROOT / "evals" / "academic_tailoring" / "npc"
@@ -62,6 +69,25 @@ def test_plugin_propose_uses_the_same_local_generation_path() -> None:
     assert len(result.output["modules"]) == 2
     assert result.evidence["llm_used"] is False
     assert result.evidence["result_status"] == "simulated_or_proposed"
+
+
+def test_plugin_propose_wraps_generation_failure_in_plugin_error() -> None:
+    task = load_tailoring_task_bundle(_FIXTURE_ROOT)
+    payload = task.model_dump(mode="json")
+    payload["reproduction"]["baseline_paper_id"] = "SYN-MISSING"
+    plugin = AcademicMethodTailoringPlugin()
+
+    with pytest.raises(PluginError) as caught:
+        plugin.invoke(
+            PluginRequest(
+                request_id="proposal-missing-baseline",
+                operation="propose",
+                payload=payload,
+            )
+        )
+
+    assert caught.value.code is PluginErrorCode.INVOCATION_FAILED
+    assert caught.value.plugin_name == "academic-method-tailoring"
 
 
 def test_committed_corpus_generates_and_passes_all_expected_decisions() -> None:
