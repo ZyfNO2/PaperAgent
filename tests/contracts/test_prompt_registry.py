@@ -1,6 +1,5 @@
-import pytest
-
 from paperagent.prompts.registry import PromptNotFoundError, get_prompt
+import pytest
 
 
 MERGE_CONFLICT_MARKERS = ("<<<<<<<", "=======", ">>>>>>>")
