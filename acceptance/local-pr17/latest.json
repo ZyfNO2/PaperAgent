@@ -7,7 +7,7 @@
     "3.11",
     "3.12"
   ],
-  "source_head_sha": "591ff5d8354d69b6606820263e1eed9fc7403787",
+  "source_head_sha": "37572aba81070fe0b4df5df5f3708a94cf825368",
   "status": "passed",
   "summary": {
     "artifacts": [
@@ -33,7 +33,7 @@
       },
       {
         "path": "build/local-acceptance/interview-demo.json",
-        "sha256": "8973b18624564489e261e5f32341df8c587357da5223bd55e9cf55d253b350e9"
+        "sha256": "5ac3a883a6b6f1b6f3da45758ad0b26ace9f9fc434441e804084dc5b59297cec"
       },
       {
         "path": "build/local-acceptance/logs/academic-evaluation.log",
@@ -41,7 +41,7 @@
       },
       {
         "path": "build/local-acceptance/logs/benchmark.log",
-        "sha256": "4b90956c0b991420ec0f0dc50ec14d10f757877673568d2cc61a7e602f1f48b5"
+        "sha256": "81f4876a8c965d0d9273686f612b681effe29496aed4f406dde02130a1ddf31e"
       },
       {
         "path": "build/local-acceptance/logs/compile.log",
@@ -49,7 +49,7 @@
       },
       {
         "path": "build/local-acceptance/logs/interview-demo.log",
-        "sha256": "4d13b3eb58576ebbc3aee6b2bc67c68cfa02fad0e1598b02ac8f52a583a59795"
+        "sha256": "ec702529402be1fea0777beb096d1a4b8c12bfacaac2c6ef156a1debf11d5e87"
       },
       {
         "path": "build/local-acceptance/logs/mypy.log",
@@ -61,7 +61,7 @@
       },
       {
         "path": "build/local-acceptance/logs/pytest.log",
-        "sha256": "cb6633295c844cc35118ef77acb83c6f7df61078e4dc97e40f11b6fb932a7ceb"
+        "sha256": "6fc9014b361db64666cc930075be9af5cae5d7a54c40af532e783ed7e7bd6975"
       },
       {
         "path": "build/local-acceptance/logs/ruff-format.log",
@@ -73,7 +73,7 @@
       },
       {
         "path": "build/local-acceptance/logs/state-roundtrip.log",
-        "sha256": "66cb17d72f7f7f5da48478118f8d81b81e9db9b2018703dc974449b738868ae3"
+        "sha256": "68426b34c7251a04baa5e5d9477f30f8544f6c36320b8456c13c199e8e43cedd"
       },
       {
         "path": "build/local-acceptance/openapi.json",
@@ -81,23 +81,23 @@
       },
       {
         "path": "build/local-acceptance/repository-benchmark.json",
-        "sha256": "7bde0b306e47d9430b8e865798ab037c008caf426df3957fa57e21aff087a852"
+        "sha256": "aac4f38a13fb796c36980d3c9a5eba4003b868714ed06ab14c4fe1c97c4fa6c2"
       },
       {
         "path": "build/local-acceptance/state/paperagent-local.backup.db",
-        "sha256": "a317bbad831651b4eddda84cd5a27815264cd02d61be43dc766a37588de81088"
+        "sha256": "954b5cc13a8770d405f29a53db87bd2c624842d56e4a723aadac931f962c32d7"
       },
       {
         "path": "build/local-acceptance/state/paperagent-local.db",
-        "sha256": "0345f3a135f18b1fd46740c76a8ae95a5145f7df6cc697f2107277437111aa0b"
+        "sha256": "90ab45d86cf8f242238f1135d0c048dd89143c6a6d606effac994171050057ed"
       },
       {
         "path": "build/local-acceptance/state/paperagent-local.restored.db",
-        "sha256": "a317bbad831651b4eddda84cd5a27815264cd02d61be43dc766a37588de81088"
+        "sha256": "954b5cc13a8770d405f29a53db87bd2c624842d56e4a723aadac931f962c32d7"
       },
       {
         "path": "build/local-acceptance/state-roundtrip.json",
-        "sha256": "823023f9d911e9ac3c2e1996aa4aca1341c61996018f52fd13345c1d83b7191c"
+        "sha256": "70069de796f7b21845fd241224f68f4391402223b5e487176bb9682f59088472"
       }
     ],
     "live_llm_required": false,
@@ -110,7 +110,7 @@
     "steps": [
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python -m compileall -q src/paperagent",
-        "duration_seconds": 0.14,
+        "duration_seconds": 0.132,
         "log": "build/local-acceptance/logs/compile.log",
         "name": "compile",
         "passed": true,
@@ -126,7 +126,7 @@
       },
       {
         "command": "ruff format --check --diff .",
-        "duration_seconds": 0.032,
+        "duration_seconds": 0.033,
         "log": "build/local-acceptance/logs/ruff-format.log",
         "name": "ruff-format",
         "passed": true,
@@ -134,7 +134,7 @@
       },
       {
         "command": "mypy --config-file pyproject.toml",
-        "duration_seconds": 10.369,
+        "duration_seconds": 10.276,
         "log": "build/local-acceptance/logs/mypy.log",
         "name": "mypy",
         "passed": true,
@@ -142,7 +142,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python -m pytest -q tests/local tests/review/test_consolidated_regressions.py tests/api/test_diagnostics.py tests/release/test_release_candidate.py",
-        "duration_seconds": 2.685,
+        "duration_seconds": 2.813,
         "log": "build/local-acceptance/logs/pytest.log",
         "name": "pytest",
         "passed": true,
@@ -150,7 +150,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/local_state_roundtrip.py --workdir build/local-acceptance/state --output build/local-acceptance/state-roundtrip.json",
-        "duration_seconds": 1.041,
+        "duration_seconds": 1.137,
         "log": "build/local-acceptance/logs/state-roundtrip.log",
         "name": "state-roundtrip",
         "passed": true,
@@ -158,7 +158,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/interview_demo.py --output build/local-acceptance/interview-demo.json",
-        "duration_seconds": 1.031,
+        "duration_seconds": 1.131,
         "log": "build/local-acceptance/logs/interview-demo.log",
         "name": "interview-demo",
         "passed": true,
@@ -166,7 +166,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/export_openapi.py --output build/local-acceptance/openapi.json",
-        "duration_seconds": 0.983,
+        "duration_seconds": 1.082,
         "log": "build/local-acceptance/logs/openapi.log",
         "name": "openapi",
         "passed": true,
@@ -174,7 +174,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/repository_benchmark.py --tasks 100 --output build/local-acceptance/repository-benchmark.json",
-        "duration_seconds": 1.152,
+        "duration_seconds": 1.2,
         "log": "build/local-acceptance/logs/benchmark.log",
         "name": "benchmark",
         "passed": true,
@@ -182,7 +182,7 @@
       },
       {
         "command": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python scripts/run_academic_tailoring_eval.py --output-dir build/local-acceptance/academic-tailoring",
-        "duration_seconds": 0.197,
+        "duration_seconds": 0.199,
         "log": "build/local-acceptance/logs/academic-evaluation.log",
         "name": "academic-evaluation",
         "passed": true,
@@ -190,6 +190,6 @@
       }
     ]
   },
-  "workflow_run_id": 29630172738,
-  "workflow_run_number": 18
+  "workflow_run_id": 29630257543,
+  "workflow_run_number": 20
 }
