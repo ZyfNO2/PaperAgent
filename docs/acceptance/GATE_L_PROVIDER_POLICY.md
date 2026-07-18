@@ -6,14 +6,14 @@ Gate L scientific acceptance is **provider- and model-agnostic**.
 
 No handoff, acceptance decision, or frozen holdout contract should prescribe a specific LLM vendor or model as the required runtime for PaperAgent.
 
-The model used for one engineering diagnostic is evidence about that diagnostic only; it does not become the required model for local use, formal acceptance, or future deployments.
+A model used for one engineering diagnostic is evidence about that diagnostic only. It does not become the required model for local use, formal acceptance, or future deployments.
 
-## Current usage roles
+## Usage roles
 
-- Cloud engineering/debug runs may use any configured remote provider available to the development environment.
-- Local development may use any compatible configured provider/model.
-- Local or self-hosted inference may use Ollama or another supported serving channel.
-- Additional remote/provider channels may be evaluated independently.
+- Cloud engineering/debug runs may use whatever remote provider is configured for that development environment.
+- Local development may use a different compatible provider/model.
+- Local or self-hosted inference may later use Ollama or another supported serving channel.
+- Additional provider channels may be evaluated independently.
 
 A handoff should therefore say **configured provider/model** or **real configured provider**, not prescribe a vendor/model unless it is describing a historical run whose exact identity is part of immutable evidence.
 
@@ -34,6 +34,12 @@ These fields are provenance, not a recommendation or product requirement.
 Results from different providers/models must not be silently pooled into one Gate L acceptance result.
 
 Each formal run should preserve its own execution identity and evidence bundle. Cross-model or cross-provider comparisons should be reported as separate evaluation runs unless an explicitly defined comparison protocol says otherwise.
+
+## Current implementation boundary
+
+The current cloud-debug runtime on this branch still contains Mistral-specific implementation/configuration. That is a development implementation detail, not a Gate L model requirement.
+
+Supporting DeepSeek, Ollama, and additional channels through one unified runtime adapter is a separate engineering task and must not be implied merely by changing handoff wording.
 
 ## Handoff wording rule
 
