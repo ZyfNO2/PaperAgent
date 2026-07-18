@@ -19,15 +19,23 @@ def load_provider_config(
     resolved_provider = provider or values.get("PAPERAGENT_LLM_PROVIDER") or "mistral"
     resolved_model = model or values.get("PAPERAGENT_LLM_MODEL")
     provider_name = LLMProviderName(resolved_provider)
-    default_base_url = (
-        "https://api.mistral.ai/v1"
-        if provider_name is LLMProviderName.MISTRAL
-        else "https://api.openai.com/v1"
-    )
+    if provider_name is LLMProviderName.MISTRAL:
+        default_base_url = "https://api.mistral.ai/v1"
+    elif provider_name is LLMProviderName.OLLAMA:
+        default_base_url = "http://127.0.0.1:11434/v1"
+    else:
+        default_base_url = "https://api.openai.com/v1"
     resolved_base_url = base_url or values.get("PAPERAGENT_LLM_BASE_URL") or default_base_url
     if provider_name is LLMProviderName.MISTRAL:
         api_key = values.get("MISTRAL_API_KEY")
         credential_name = "MISTRAL_API_KEY"
+    elif provider_name is LLMProviderName.OLLAMA:
+        api_key = (
+            values.get("PAPERAGENT_OPENAI_API_KEY")
+            or values.get("OPENAI_API_KEY")
+            or "ollama-local"
+        )
+        credential_name = "optional local Ollama API key"
     else:
         api_key = values.get("PAPERAGENT_OPENAI_API_KEY") or values.get("OPENAI_API_KEY")
         credential_name = "PAPERAGENT_OPENAI_API_KEY or OPENAI_API_KEY"

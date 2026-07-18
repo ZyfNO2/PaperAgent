@@ -16,6 +16,7 @@ class LLMProviderName(StrEnum):
     MISTRAL = "mistral"
     OPENAI = "openai"
     DEEPSEEK = "deepseek"
+    OLLAMA = "ollama"
 
 
 class ProviderErrorCode(StrEnum):
@@ -64,8 +65,14 @@ class ProviderRuntimeConfig(BaseModel):
         if not self.api_key.get_secret_value().strip():
             raise ValueError("api_key must contain non-whitespace characters")
         parsed = urlsplit(self.base_url)
+        loopback_http = parsed.scheme == "http" and parsed.hostname in {
+            "localhost",
+            "127.0.0.1",
+            "::1",
+        }
+        secure_remote = parsed.scheme == "https"
         if (
-            parsed.scheme != "https"
+            not (secure_remote or loopback_http)
             or not parsed.hostname
             or parsed.username is not None
             or parsed.password is not None
@@ -73,7 +80,8 @@ class ProviderRuntimeConfig(BaseModel):
             or parsed.fragment
         ):
             raise ValueError(
-                "base_url must be an HTTPS origin/path without credentials or query data"
+                "base_url must use HTTPS, except HTTP loopback endpoints without "
+                "credentials or query data"
             )
         if self.total_timeout_seconds < self.connect_timeout_seconds:
             raise ValueError("total_timeout_seconds must cover connect timeout")

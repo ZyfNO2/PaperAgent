@@ -13,7 +13,11 @@ def build_llm_provider(
 ) -> LLMProvider:
     if config.provider is LLMProviderName.MISTRAL:
         return MistralLLMProvider(config, price_table=price_table)
-    if config.provider in {LLMProviderName.OPENAI, LLMProviderName.DEEPSEEK}:
+    if config.provider in {
+        LLMProviderName.OPENAI,
+        LLMProviderName.DEEPSEEK,
+        LLMProviderName.OLLAMA,
+    }:
         return OpenAILLMProvider(
             api_key=config.api_key.get_secret_value(),
             model=config.model,
