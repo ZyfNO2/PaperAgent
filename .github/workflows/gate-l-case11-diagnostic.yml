@@ -41,10 +41,12 @@ jobs:
           fi
       - name: Run Case 11 diagnostic only
         run: |
+          set -o pipefail
           mkdir -p build/gate-l-evidence
           python scripts/run_gate_l_final.py \
             --case-id holdout-v1-insufficient-003 \
-            | tee build/gate-l-evidence/case11-console.log
+            > build/gate-l-evidence/case11-console.log 2>&1
+          cat build/gate-l-evidence/case11-console.log
       - name: Upload immutable diagnostic evidence
         if: always()
         uses: actions/upload-artifact@v4
