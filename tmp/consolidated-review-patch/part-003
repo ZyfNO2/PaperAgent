@@ -1,0 +1,183 @@
+-            len(baseline_arms) == 1,
++            len(baseline_arms) == 1 and not baseline_arms[0].included_modules,
+             AuditSeverity.ERROR,
+-            "experiment matrix contains exactly one frozen baseline arm",
++            (
++                "experiment matrix contains exactly one frozen baseline arm "
++                "with no proposed modules"
++            ),
+             status=ClaimStatus.PROPOSED,
+         )
+     )
+@@ -460,7 +556,9 @@
+                 )
+             )
+ 
+-    reference_signature = _data_signature(baseline_arms[0]) if len(baseline_arms) == 1 else None
++    reference_signature = (
++        _fairness_signature(baseline_arms[0]) if len(baseline_arms) == 1 else None
++    )
+     fair_experiments = bool(plan.experiments) and reference_signature is not None
+     for experiment in plan.experiments:
+         complete = (
+@@ -477,7 +575,7 @@
+         fair_experiments = fair_experiments and complete
+         if reference_signature is not None:
+             fair_experiments = (
+-                fair_experiments and _data_signature(experiment) == reference_signature
++                fair_experiments and _fairness_signature(experiment) == reference_signature
+             )
+     checks.append(
+         _check(
+@@ -611,10 +709,11 @@
+         name="academic-method-tailoring",
+         version="0.8.0",
+         description=(
+-            "Deterministic evidence, compatibility, and ablation audit for method proposals."
++            "Deterministic academic method proposal generation and evidence, "
++            "compatibility, novelty, and ablation audit."
+         ),
+         capabilities=(PluginCapability.RESEARCH_METHOD, PluginCapability.EVALUATION),
+-        operations=("audit", "template"),
++        operations=("audit", "template", "propose"),
+         deterministic=True,
+         requires_network=False,
+         writes_files=False,
+@@ -625,6 +724,11 @@
+         return self._manifest
+ 
+     def invoke(self, request: PluginRequest) -> PluginResult:
++        evidence: dict[str, object] = {
++            "audit_policy": "academic-method-tailoring-v0.8",
++            "network_used": False,
++            "llm_used": False,
++        }
+         if request.operation == "template":
+             output = method_plan_template()
+         elif request.operation == "audit":
+@@ -638,6 +742,26 @@
+                 ) from exc
+             report = audit_method_plan(plan)
+             output = cast(dict[str, object], report.model_dump(mode="json"))
++        elif request.operation == "propose":
++            try:
++                task = TailoringTask.model_validate(request.payload)
++                proposal = compose_tailored_research_proposal(task)
++            except ValueError as exc:
++                raise PluginError(
++                    PluginErrorCode.INVOCATION_FAILED,
++                    "academic tailoring task failed validation or proposal generation",
++                    plugin_name=self.manifest.name,
++                ) from exc
++            output = cast(dict[str, object], proposal.model_dump(mode="json"))
++            evidence.update(
++                {
++                    "proposal_policy": "academic-method-tailoring-proposal-v1",
++                    "result_status": "simulated_or_proposed",
++                    "evidence_scope": proposal.evidence_scope.value,
++                    "readiness": proposal.readiness.value,
++                    "scientific_release_ready": proposal.scientific_release_ready,
++                }
++            )
+         else:
+             raise PluginError(
+                 PluginErrorCode.OPERATION_UNSUPPORTED,
+@@ -650,9 +774,5 @@
+             request_id=request.request_id,
+             operation=request.operation,
+             output=output,
+-            evidence={
+-                "audit_policy": "academic-method-tailoring-v0.8",
+-                "network_used": False,
+-                "llm_used": False,
+-            },
++            evidence=evidence,
+         )
+--- a/src/paperagent/plugins/academic_method_guard.py
++++ b/src/paperagent/plugins/academic_method_guard.py
+@@ -1,132 +1,15 @@
+ from __future__ import annotations
+ 
+-from typing import Any, cast
++"""Compatibility exports for the academic-method plugin policy.
++
++The release-blocking audit rules and ``propose`` operation now live directly in
++:mod:`paperagent.plugins.academic_method`. This module intentionally performs no
++import-time rebinding.
++"""
+ 
+-from paperagent.academic_tailoring import TailoringTask
+-from paperagent.academic_tailoring_guard import compose_tailored_research_proposal
+-from paperagent.plugins import academic_method as _implementation
+-from paperagent.plugins.academic_method import (
+-    AcademicMethodTailoringPlugin as _BaseAcademicMethodTailoringPlugin,
+-)
+ from paperagent.plugins.academic_method import (
+-    AuditCheck,
+-    AuditSeverity,
+-    AuditVerdict,
+-    ClaimStatus,
+-    ExperimentArmType,
+-    MethodAuditReport,
+-    MethodPlan,
+-)
+-from paperagent.plugins.contracts import (
+-    PluginError,
+-    PluginErrorCode,
+-    PluginRequest,
+-    PluginResult,
++    AcademicMethodTailoringPlugin,
++    audit_method_plan,
+ )
+ 
+-_base_audit_method_plan = _implementation.audit_method_plan
+-
+-
+-def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
+-    """Apply release-blocking invariants missing from the original v0.8 audit."""
+-    report = _base_audit_method_plan(plan)
+-    checks = list(report.checks)
+-
+-    checks.append(
+-        AuditCheck(
+-            check_id="proposed-modules-present",
+-            passed=bool(plan.modules),
+-            severity=AuditSeverity.ERROR,
+-            status=ClaimStatus.PROPOSED,
+-            message="method plan proposes at least one attributed intervention module",
+-        )
+-    )
+-
+-    baseline_arms = tuple(
+-        arm for arm in plan.experiments if arm.arm_type is ExperimentArmType.BASELINE
+-    )
+-    clean_baseline = len(baseline_arms) == 1 and not baseline_arms[0].included_modules
+-    checks = [
+-        (
+-            item.model_copy(
+-                update={
+-                    "passed": clean_baseline,
+-                    "message": (
+-                        "experiment matrix contains exactly one frozen baseline arm "
+-                        "with no proposed modules"
+-                    ),
+-                }
+-            )
+-            if item.check_id == "experiment-baseline-arm"
+-            else item
+-        )
+-        for item in checks
+-    ]
+-
+-    critical_failures = tuple(
+-        item for item in checks if not item.passed and item.severity is AuditSeverity.CRITICAL
+-    )
+-    failures = tuple(item for item in checks if not item.passed)
+-    if critical_failures:
+-        verdict = AuditVerdict.NO_GO
+-    elif failures:
+-        verdict = AuditVerdict.REVISE
+-    else:
+-        verdict = AuditVerdict.GO
+-
+-    risks = tuple(item.message for item in failures if item.severity is not AuditSeverity.NOTE)
