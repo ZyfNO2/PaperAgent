@@ -19,9 +19,7 @@ async def method_design_node(state: PaperAgentState, config: RunnableConfig) -> 
     accepted_ids = set(evidence.accepted_ids)
 
     def validate(method: MethodProposal) -> None:
-        canonical_evidence_ids = {
-            item.evidence_id for item in method.methodology_plan.evidence
-        }
+        canonical_evidence_ids = {item.evidence_id for item in method.methodology_plan.evidence}
         unknown = (set(method.evidence_ids) | canonical_evidence_ids) - accepted_ids
         if unknown:
             raise NodeError(

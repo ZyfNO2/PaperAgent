@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from enum import StrEnum
+
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 METHOD_PLAN_CONTRACT_VERSION = "paperagent.method-plan.v0.9"

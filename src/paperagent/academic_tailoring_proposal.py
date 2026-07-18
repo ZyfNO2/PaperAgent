@@ -690,10 +690,8 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
             )
         elif not complete_contract:
             risks.append(
-                (
-                    f"module {source.paper_id} lacks a complete training, gradient, "
-                    "switch, or parity contract"
-                )
+                f"module {source.paper_id} lacks a complete training, gradient, "
+                "switch, or parity contract"
             )
         compatibility_reason = (
             (
@@ -756,10 +754,8 @@ def compose_tailored_research_proposal(task: TailoringTask) -> TailoredResearchP
     )
     if weak_novelty:
         risks.append(
-            (
-                "novelty is stated as module composition rather than a falsifiable "
-                "problem-method-insight contribution"
-            )
+            "novelty is stated as module composition rather than a falsifiable "
+            "problem-method-insight contribution"
         )
 
     common = _common_experiment(task)

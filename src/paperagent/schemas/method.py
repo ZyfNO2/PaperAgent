@@ -60,19 +60,11 @@ class MethodProposal(FrozenModel):
         legacy_modules = {module.module_id for module in self.modules}
         canonical_modules = {module.name for module in self.methodology_plan.modules}
         if legacy_modules != canonical_modules:
-            raise ValueError(
-                "legacy method modules must match canonical methodology plan modules"
-            )
+            raise ValueError("legacy method modules must match canonical methodology plan modules")
         legacy_evidence = set(self.evidence_ids)
-        canonical_evidence = {
-            item.evidence_id for item in self.methodology_plan.evidence
-        }
+        canonical_evidence = {item.evidence_id for item in self.methodology_plan.evidence}
         if not canonical_evidence.issubset(legacy_evidence):
-            raise ValueError(
-                "canonical methodology evidence must be declared in evidence_ids"
-            )
+            raise ValueError("canonical methodology evidence must be declared in evidence_ids")
         if self.stop_conditions != list(self.methodology_plan.stop_conditions):
-            raise ValueError(
-                "legacy stop conditions must match canonical methodology plan"
-            )
+            raise ValueError("legacy stop conditions must match canonical methodology plan")
         return self

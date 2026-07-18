@@ -32,8 +32,7 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
     missing = [
         gap.gap_id
         for gap in plan.evidence_gaps
-        if gap.required
-        and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
+        if gap.required and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
     ]
     if missing:
         if retrieval.round < retrieval.max_rounds and not retrieval.budget_exhausted:
@@ -75,13 +74,9 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
             missing_gap_ids=weak_gap_ids,
         )
     accepted = set(evidence.accepted_ids)
-    canonical_evidence_ids = {
-        item.evidence_id for item in method.methodology_plan.evidence
-    }
+    canonical_evidence_ids = {item.evidence_id for item in method.methodology_plan.evidence}
     invalid = (
-        synthesis.referenced_evidence_ids()
-        | set(method.evidence_ids)
-        | canonical_evidence_ids
+        synthesis.referenced_evidence_ids() | set(method.evidence_ids) | canonical_evidence_ids
     ) - accepted
     execution = state.get("execution")
     run = state.get("run")
@@ -102,8 +97,7 @@ def evaluate_quality(state: PaperAgentState) -> QualityDecision:
         )
 
     audit_failures = [
-        _audit_reason_code(check_id)
-        for check_id in methodology_audit.trace.failed_check_ids
+        _audit_reason_code(check_id) for check_id in methodology_audit.trace.failed_check_ids
     ]
     if methodology_audit.verdict is AuditVerdict.NO_GO:
         return QualityDecision(
