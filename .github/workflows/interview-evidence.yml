@@ -66,14 +66,19 @@ jobs:
       - name: Install project
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e '.[dev]'
-      - name: Install and invoke external plugin example
+          python -m pip install -e '.[dev,release]'
+      - name: Build and smoke installed wheel with external plugin
         run: |
-          python -m pip install --no-deps ./examples/external_plugin
-          paperagent plugins inspect interview-summary \
+          mkdir -p build/dist
+          python -m build --wheel --outdir build/dist
+          python -m venv /tmp/paperagent-interview-wheel
+          /tmp/paperagent-interview-wheel/bin/python -m pip install --upgrade pip
+          /tmp/paperagent-interview-wheel/bin/python -m pip install build/dist/*.whl
+          /tmp/paperagent-interview-wheel/bin/python -m pip install --no-deps ./examples/external_plugin
+          /tmp/paperagent-interview-wheel/bin/paperagent --help
+          /tmp/paperagent-interview-wheel/bin/paperagent plugins inspect interview-summary \
             --enable-external-plugin interview-summary
-          mkdir -p build
-          paperagent plugins run interview-summary \
+          /tmp/paperagent-interview-wheel/bin/paperagent plugins run interview-summary \
             --enable-external-plugin interview-summary \
             --operation summarize \
             --input examples/external_plugin/input.json \
