@@ -13,6 +13,7 @@ from paperagent.academic_methodology import (
     method_plan_fingerprint,
 )
 from paperagent.nodes._shared import execution_with
+from paperagent.outcome import derive_final_outcome
 from paperagent.runtime import get_option, get_services
 from paperagent.schemas import EvidenceBundle, QualityDecision, RetrievalState
 from paperagent.state import PaperAgentState, StatePatch
@@ -185,6 +186,19 @@ async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> S
     methodology_audit = _current_methodology_audit(state)
     decision = evaluate_quality(state, methodology_audit=methodology_audit)
     increment = 1 if decision.verdict == "repair_method" else 0
+    execution = execution_with(
+        state,
+        node=NODE,
+        repair_increment=increment,
+        repair_target=decision.repair_target,
+    )
+    outcome_state: PaperAgentState = {
+        **state,
+        "quality": decision,
+        "methodology_audit": methodology_audit,
+        "execution": execution,
+    }
+    final_outcome = derive_final_outcome(outcome_state)
     trace = [
         make_event(
             services,
@@ -200,7 +214,7 @@ async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> S
             event_type="route.decided",
             status="decided",
             route=decision.verdict,
-            output_payload=decision,
+            output_payload={"quality": decision, "final_outcome": final_outcome},
         ),
         make_event(
             services,
@@ -208,18 +222,14 @@ async def quality_gate_node(state: PaperAgentState, config: RunnableConfig) -> S
             node=NODE,
             event_type="node.completed",
             status="completed",
-            output_payload=decision,
+            output_payload={"quality": decision, "final_outcome": final_outcome},
         ),
     ]
     return {
         "quality": decision,
         "methodology_audit": methodology_audit,
-        "execution": execution_with(
-            state,
-            node=NODE,
-            repair_increment=increment,
-            repair_target=decision.repair_target,
-        ),
+        "final_outcome": final_outcome,
+        "execution": execution,
         "trace": trace,
     }
 
