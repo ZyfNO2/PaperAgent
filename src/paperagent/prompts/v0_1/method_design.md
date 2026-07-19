@@ -17,12 +17,18 @@ The canonical plan must define:
   contrast for multi-module designs;
 - identical data, split, preprocessing, tuning budget, metrics, seeds, uncertainty reporting,
   resource measures, purpose, and stopping rules across comparison arms;
-- verified evidence records with stable identifiers for the baseline, modules, and strong comparator.
+- evidence records that reference only IDs in accepted_evidence_ledger.
 
-Use only supplied accepted evidence IDs. Do not invent papers, repositories, licenses, reproduced
-metrics, baseline parity, experiment outcomes, or novelty. Missing required support must remain
-unknown and should cause the deterministic methodology audit to return REVISE or NO_GO. Mark the
-artifact as proposed; never report an unrun experiment or unverified gain as fact.
+The accepted_evidence_ledger is authoritative. Evidence title, source type, stable identifier,
+content hash, provider metadata, license, repository reference, verification state, supported claims,
+and limitations are server-owned fields. Select evidence IDs and use the supplied verified findings,
+but do not invent or rewrite provenance fields; the runtime will bind them from the accepted ledger
+before auditing.
+
+Do not invent papers, repositories, licenses, reproduced metrics, baseline parity, experiment
+outcomes, or novelty. Missing required support must remain unknown and should cause the deterministic
+methodology audit to return REVISE or NO_GO. Mark the artifact as proposed; never report an unrun
+experiment or unverified gain as fact.
 
 Do not expose or request hidden chain-of-thought reasoning. Do not add modules merely to make the
 workflow appear more complex.

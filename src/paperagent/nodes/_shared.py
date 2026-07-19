@@ -83,6 +83,7 @@ async def call_structured(
     schema: type[T],
     user_payload: Any,
     semantic_validate: Callable[[T], None] | None = None,
+    transform: Callable[[T], T] | None = None,
     scenario: str | None = None,
 ) -> tuple[StatePatch, T | None]:
     services = get_services(config)
@@ -125,6 +126,8 @@ async def call_structured(
             schema=schema,
             messages=messages,
         )
+        if transform is not None:
+            result = transform(result)
         if semantic_validate is not None:
             semantic_validate(result)
     except Exception as exc:

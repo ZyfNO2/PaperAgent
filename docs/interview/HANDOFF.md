@@ -4,18 +4,19 @@
 
 ```text
 Repository:        ZyfNO2/PaperAgent
-Integration PR:    #17
-Review base:       integration/pre-rewrite-v0.5.1-base
-Pinned base SHA:   497982242023e3b621fa8b31816a6f2b8d899d4a
-Branch:            feat/academic-tailoring-evaluation
-Package version:   0.5.1
-Merge performed:   no
-Release performed: no
+Pull request:       #22
+Head SHA:           2f459a35fd4e9762817f15b387769e5458a1cad6
+Base branch:        fix/academic-tailoring-contract-convergence
+Base SHA:           ba1f04bb10e576a1d815312cb76e49a42ab8ce99
+Branch:             fix/academic-tailoring-review-hardening
+Package version:    0.5.1
+CI runs:            29689274176 / 29689274159
+Merge performed:    no
+Release performed:  no
+Status:             engineering review passed, Draft, not merged
 ```
 
-PR #17 supersedes the former stacked PR #14 and PR #16 handoff model. Use `docs/v0.6-v0.8/HANDOFF.md` as the consolidated authority.
-
-The repository `master` history was rewritten after review began. The PR uses the pinned pre-rewrite base for safe review. Do not merge it directly into rewritten `master` without clean-tree reconciliation.
+PR #22 is stacked on Draft PR #21 (`fix/academic-tailoring-contract-convergence`). It should remain Draft until the parent branch is reviewed and merged. Do not merge directly into `master`.
 
 ## Interview evidence already delivered
 
@@ -136,3 +137,4 @@ The handoff does not claim:
 - live Mistral scientific-quality evidence;
 - real-paper reproduction, external holdout, or blinded expert review;
 - production throughput, availability, or cost SLOs.
+- independent execution or verification of baseline training and reproduction experiments; PaperAgent only consumes and binds trusted server-owned execution metadata, and missing metadata results in REVISE or NO_GO.

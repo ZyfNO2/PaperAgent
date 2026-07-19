@@ -219,6 +219,25 @@ class MethodAuditTrace(BaseModel):
     module_ids: tuple[str, ...]
     experiment_ids: tuple[str, ...]
 
+    @model_validator(mode="after")
+    def validate_trace_identity(self) -> MethodAuditTrace:
+        if self.contract_version != METHOD_PLAN_CONTRACT_VERSION:
+            raise ValueError("audit trace contract version does not match runtime policy")
+        if self.policy_version != METHOD_AUDIT_POLICY_VERSION:
+            raise ValueError("audit trace policy version does not match runtime policy")
+        if set(self.passed_check_ids) & set(self.failed_check_ids):
+            raise ValueError("audit trace cannot pass and fail the same check")
+        for label, values in (
+            ("passed check", self.passed_check_ids),
+            ("failed check", self.failed_check_ids),
+            ("evidence", self.evidence_ids),
+            ("module", self.module_ids),
+            ("experiment", self.experiment_ids),
+        ):
+            if len(values) != len(set(values)):
+                raise ValueError(f"duplicate {label} identifier in audit trace")
+        return self
+
 
 class MethodAuditReport(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -236,6 +255,47 @@ class MethodAuditReport(BaseModel):
     policy_version: str = METHOD_AUDIT_POLICY_VERSION
     plan_fingerprint: str
     trace: MethodAuditTrace
+
+    @staticmethod
+    def _verdict_from_checks(checks: tuple[AuditCheck, ...]) -> AuditVerdict:
+        has_critical = any(
+            not item.passed and item.severity is AuditSeverity.CRITICAL for item in checks
+        )
+        has_failure = any(not item.passed for item in checks)
+        if has_critical:
+            return AuditVerdict.NO_GO
+        if has_failure:
+            return AuditVerdict.REVISE
+        return AuditVerdict.GO
+
+    @model_validator(mode="after")
+    def validate_report_identity(self) -> MethodAuditReport:
+        if self.contract_version != METHOD_PLAN_CONTRACT_VERSION:
+            raise ValueError("audit report contract version does not match runtime policy")
+        if self.policy_version != METHOD_AUDIT_POLICY_VERSION:
+            raise ValueError("audit report policy version does not match runtime policy")
+        if self.trace.contract_version != self.contract_version:
+            raise ValueError("audit report and trace contract versions disagree")
+        if self.trace.policy_version != self.policy_version:
+            raise ValueError("audit report and trace policy versions disagree")
+        if self.trace.plan_fingerprint != self.plan_fingerprint:
+            raise ValueError("audit report and trace plan fingerprints disagree")
+        check_ids = tuple(item.check_id for item in self.checks)
+        if len(check_ids) != len(set(check_ids)):
+            raise ValueError("audit report contains duplicate check identifiers")
+        passed = tuple(item.check_id for item in self.checks if item.passed)
+        failed = tuple(item.check_id for item in self.checks if not item.passed)
+        if self.trace.passed_check_ids != passed:
+            raise ValueError("audit trace passed checks do not match report checks")
+        if self.trace.failed_check_ids != failed:
+            raise ValueError("audit trace failed checks do not match report checks")
+        expected_verdict = self._verdict_from_checks(self.checks)
+        if self.verdict != expected_verdict:
+            raise ValueError(
+                f"audit verdict {self.verdict.value!r} does not match "
+                f"expected {expected_verdict.value!r} derived from checks"
+            )
+        return self
 
 
 def _canonical_json(value: object) -> str:
@@ -256,11 +316,18 @@ def _present(value: str | None) -> bool:
     return value is not None and bool(value.strip())
 
 
-def _license_is_acceptable(value: str | None) -> bool:
+def _normalized_license(value: str | None) -> str | None:
     if not _present(value):
-        return False
+        return None
     assert value is not None
-    return value.strip().lower() not in {
+    return value.strip().lower()
+
+
+def _license_is_acceptable(value: str | None) -> bool:
+    normalized = _normalized_license(value)
+    if normalized is None:
+        return False
+    return normalized not in {
         "unknown",
         "missing",
         "unverified",
@@ -318,6 +385,7 @@ def _verified_evidence(item: EvidenceItem | None) -> bool:
         item is not None
         and item.verified
         and _present(item.stable_identifier)
+        and _present(item.content_hash)
         and bool(item.supported_claims)
     )
 
@@ -435,30 +503,44 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
             ),
         )
     )
+    compute_fit_severity = (
+        AuditSeverity.CRITICAL if baseline.compute_fit is False else AuditSeverity.ERROR
+    )
     checks.append(
         _check(
             "baseline-compute-fit",
             baseline.compute_fit is True,
-            AuditSeverity.CRITICAL,
-            "baseline fits the declared compute constraints",
-            status=(ClaimStatus.VERIFIED if baseline.compute_fit is True else ClaimStatus.UNKNOWN),
-        )
-    )
-    checks.append(
-        _check(
-            "baseline-license",
-            _license_is_acceptable(baseline.license),
-            AuditSeverity.CRITICAL,
-            "baseline license is present and not marked incompatible or unknown",
-            status=(
-                ClaimStatus.INFERRED
-                if _license_is_acceptable(baseline.license)
-                else ClaimStatus.UNKNOWN
+            compute_fit_severity,
+            (
+                "baseline fits the declared compute constraints"
+                if baseline.compute_fit is True
+                else (
+                    "baseline is explicitly incompatible with the declared compute constraints"
+                    if baseline.compute_fit is False
+                    else "baseline compute fit has not been verified"
+                )
             ),
+            status=(ClaimStatus.VERIFIED if baseline.compute_fit is True else ClaimStatus.UNKNOWN),
         )
     )
     baseline_evidence = (
         evidence_by_id.get(baseline.source_evidence_id) if baseline.source_evidence_id else None
+    )
+    baseline_license_bound = (
+        baseline_evidence is not None
+        and _license_is_acceptable(baseline.license)
+        and _license_is_acceptable(baseline_evidence.license)
+        and _normalized_license(baseline.license) == _normalized_license(baseline_evidence.license)
+    )
+    checks.append(
+        _check(
+            "baseline-license",
+            baseline_license_bound,
+            AuditSeverity.CRITICAL,
+            "baseline license is present, compatible, and bound to verified evidence metadata",
+            evidence_ids=(baseline.source_evidence_id,) if baseline.source_evidence_id else (),
+            status=(ClaimStatus.VERIFIED if baseline_license_bound else ClaimStatus.UNKNOWN),
+        )
     )
     checks.append(
         _check(
@@ -518,21 +600,23 @@ def audit_method_plan(plan: MethodPlan) -> MethodAuditReport:
                 status=ClaimStatus.PROPOSED,
             )
         )
+        module_evidence = evidence_by_id.get(module.evidence_id) if module.evidence_id else None
+        module_license_bound = (
+            module_evidence is not None
+            and _license_is_acceptable(module.license)
+            and _license_is_acceptable(module_evidence.license)
+            and _normalized_license(module.license) == _normalized_license(module_evidence.license)
+        )
         checks.append(
             _check(
                 f"module-license:{module.name}",
-                _license_is_acceptable(module.license),
+                module_license_bound,
                 AuditSeverity.CRITICAL,
-                f"module {module.name} license is present and compatible",
+                f"module {module.name} license is compatible and bound to evidence metadata",
                 evidence_ids=(module.evidence_id,) if module.evidence_id else (),
-                status=(
-                    ClaimStatus.INFERRED
-                    if _license_is_acceptable(module.license)
-                    else ClaimStatus.UNKNOWN
-                ),
+                status=(ClaimStatus.VERIFIED if module_license_bound else ClaimStatus.UNKNOWN),
             )
         )
-        module_evidence = evidence_by_id.get(module.evidence_id) if module.evidence_id else None
         checks.append(
             _check(
                 f"module-provenance:{module.name}",
