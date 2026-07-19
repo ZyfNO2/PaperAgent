@@ -1,12 +1,23 @@
 "use strict";
 
-const CACHE_NAME = "paperagent-shell-v0.5.0";
+const CACHE_NAME = "paperagent-shell-v1.0.0-workbench";
 const SHELL_ASSETS = [
   "/app",
   "/app/manifest.webmanifest",
-  "/app-static/styles.css",
-  "/app-static/app.js",
   "/app-static/icon.svg",
+  "/app-static/css/tokens.css",
+  "/app-static/css/base.css",
+  "/app-static/css/components.css",
+  "/app-static/css/pages.css",
+  "/app-static/css/intro.css",
+  "/app-static/js/data.js",
+  "/app-static/js/ui.js",
+  "/app-static/js/intro.js",
+  "/app-static/js/views/core.js",
+  "/app-static/js/views/research.js",
+  "/app-static/js/views/design.js",
+  "/app-static/js/views/review.js",
+  "/app-static/js/app.js",
 ];
 
 self.addEventListener("install", (event) => {

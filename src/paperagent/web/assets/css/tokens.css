@@ -1,0 +1,151 @@
+/* ==========================================================================
+   PaperAgent Design Tokens
+   专业科研工作台 + AI Agent 控制台 + 学术证据管理系统
+   ========================================================================== */
+
+:root {
+  /* ---- Brand ---- */
+  --pa-primary: #0f766e;
+  --pa-primary-strong: #115e59;
+  --pa-primary-soft: #ccfbf1;
+  --pa-primary-softer: #f0fdfa;
+  --pa-accent: #1d4ed8;
+  --pa-accent-soft: #dbeafe;
+
+  /* ---- Neutrals (light) ---- */
+  --pa-bg: #f4f3ef;
+  --pa-bg-subtle: #eceae4;
+  --pa-panel: #ffffff;
+  --pa-panel-raised: #ffffff;
+  --pa-ink: #1b2430;
+  --pa-ink-2: #3d4756;
+  --pa-muted: #66707e;
+  --pa-faint: #939cab;
+  --pa-line: #e2e0d9;
+  --pa-line-strong: #cfccc2;
+
+  /* ---- Status ---- */
+  --pa-success: #15803d;
+  --pa-success-soft: #dcfce7;
+  --pa-warning: #b45309;
+  --pa-warning-soft: #fef3c7;
+  --pa-danger: #b91c1c;
+  --pa-danger-soft: #fee2e2;
+  --pa-info: #0369a1;
+  --pa-info-soft: #e0f2fe;
+  --pa-neutral-soft: #eeece6;
+
+  /* ---- Typography ---- */
+  --pa-font-sans: "Inter", -apple-system, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --pa-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --pa-fs-11: 0.6875rem;
+  --pa-fs-12: 0.75rem;
+  --pa-fs-13: 0.8125rem;
+  --pa-fs-14: 0.875rem;
+  --pa-fs-16: 1rem;
+  --pa-fs-18: 1.125rem;
+  --pa-fs-20: 1.25rem;
+  --pa-fs-24: 1.5rem;
+  --pa-fs-30: 1.875rem;
+
+  /* ---- Spacing ---- */
+  --pa-sp-1: 4px;
+  --pa-sp-2: 8px;
+  --pa-sp-3: 12px;
+  --pa-sp-4: 16px;
+  --pa-sp-5: 20px;
+  --pa-sp-6: 24px;
+  --pa-sp-8: 32px;
+  --pa-sp-10: 40px;
+
+  /* ---- Radius ---- */
+  --pa-radius-sm: 6px;
+  --pa-radius: 10px;
+  --pa-radius-lg: 14px;
+  --pa-radius-pill: 999px;
+
+  /* ---- Shadow ---- */
+  --pa-shadow-sm: 0 1px 2px rgba(27, 36, 48, 0.06);
+  --pa-shadow: 0 1px 3px rgba(27, 36, 48, 0.08),
+    0 4px 12px rgba(27, 36, 48, 0.05);
+  --pa-shadow-lg: 0 8px 28px rgba(27, 36, 48, 0.14);
+  --pa-shadow-overlay: 0 16px 48px rgba(27, 36, 48, 0.22);
+
+  /* ---- Layout ---- */
+  --pa-nav-w: 236px;
+  --pa-nav-w-collapsed: 64px;
+  --pa-topbar-h: 56px;
+  --pa-content-max: 1280px;
+
+  /* ---- Motion ---- */
+  --pa-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --pa-dur-fast: 120ms;
+  --pa-dur: 200ms;
+  --pa-dur-slow: 320ms;
+
+  color-scheme: light;
+}
+
+/* ---- Dark theme ---- */
+[data-theme="dark"] {
+  --pa-bg: #0f141b;
+  --pa-bg-subtle: #0b0f15;
+  --pa-panel: #161d27;
+  --pa-panel-raised: #1c2530;
+  --pa-ink: #e4e8ee;
+  --pa-ink-2: #bcc4cf;
+  --pa-muted: #8b95a3;
+  --pa-faint: #626c7a;
+  --pa-line: #262f3b;
+  --pa-line-strong: #35404e;
+
+  --pa-primary: #2dd4bf;
+  --pa-primary-strong: #5eead4;
+  --pa-primary-soft: #134e4a;
+  --pa-primary-softer: #0f2e2b;
+  --pa-accent: #60a5fa;
+  --pa-accent-soft: #1e3a5f;
+
+  --pa-success: #4ade80;
+  --pa-success-soft: #14331f;
+  --pa-warning: #fbbf24;
+  --pa-warning-soft: #3a2c0d;
+  --pa-danger: #f87171;
+  --pa-danger-soft: #3d1616;
+  --pa-info: #38bdf8;
+  --pa-info-soft: #0c2c3d;
+  --pa-neutral-soft: #232b36;
+
+  --pa-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --pa-shadow: 0 1px 3px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --pa-shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.5);
+  --pa-shadow-overlay: 0 16px 48px rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+}
+
+/* ---- Density ---- */
+[data-density="compact"] {
+  --pa-sp-1: 3px;
+  --pa-sp-2: 6px;
+  --pa-sp-3: 9px;
+  --pa-sp-4: 12px;
+  --pa-sp-5: 15px;
+  --pa-sp-6: 18px;
+  --pa-sp-8: 24px;
+  --pa-sp-10: 30px;
+  --pa-fs-14: 0.8125rem;
+  --pa-fs-16: 0.9375rem;
+}
+
+/* ---- Animations off ---- */
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
