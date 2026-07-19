@@ -1,6 +1,6 @@
 """Freeze and verify the full evidence identity for a formal Gate L v3 run.
 
-This module complements ``gate_l_acceptance_v3.py``. The acceptance manifest
+This module complements ``gate_l_acceptance_v3.py``.  The acceptance manifest
 remains compatible with the existing v3 scorer, while the formal contract binds
 all scientific-behaviour inputs that must remain unchanged between freeze and
 execution: holdout cases, prompts, policy versions, implementation files,
@@ -36,6 +36,27 @@ _SECRET_SUFFIXES = (
     "_credential",
     "_access_token",
     "_auth_token",
+)
+REQUIRED_BEHAVIOR_FILES = (
+    "scripts/gate_l_acceptance_v3.py",
+    "scripts/gate_l_formal_contract.py",
+    "scripts/run_gate_l_formal.py",
+    "scripts/run_gate_l_variant.py",
+    "scripts/assemble_gate_l_v3_summary.py",
+    "src/paperagent/graph.py",
+    "src/paperagent/academic_methodology.py",
+    "src/paperagent/nodes/planning.py",
+    "src/paperagent/nodes/evidence_synthesis.py",
+    "src/paperagent/nodes/method_design.py",
+    "src/paperagent/nodes/quality_gate.py",
+    "src/paperagent/nodes/report.py",
+    "src/paperagent/retrieval/graph.py",
+    "src/paperagent/retrieval/verify_evidence.py",
+    "src/paperagent/literature/planner.py",
+    "src/paperagent/providers/config.py",
+    "src/paperagent/providers/runtime.py",
+    "src/paperagent/providers/runtime_factory.py",
+    "src/paperagent/pricing.py",
 )
 _REQUIRED_ATTESTATIONS = (
     "independent_from_remediation",
@@ -208,6 +229,12 @@ def freeze_contract(
         spec.get("attestation"), field="attestation"
     )
     behavior_files = _paths(spec.get("behavior_files"), field="behavior_files")
+    missing_behavior = sorted(set(REQUIRED_BEHAVIOR_FILES) - set(behavior_files))
+    if missing_behavior:
+        raise ValueError(
+            "behavior_files is missing mandatory formal inputs: "
+            + ", ".join(missing_behavior)
+        )
     strategy_profiles = _paths(
         spec.get("strategy_profiles"), field="strategy_profiles"
     )
@@ -402,6 +429,22 @@ def verify_contract(
     ):
         raise ValueError("frozen artifact bundle digest mismatch")
 
+    paths_by_kind: dict[str, set[str]] = {}
+    for item in normalized:
+        paths_by_kind.setdefault(item["kind"], set()).add(item["path"])
+    if set(manifest.get("strategy_profiles", [])) != paths_by_kind.get(
+        "strategy_profile", set()
+    ):
+        raise ValueError("manifest strategy_profiles do not match frozen artifacts")
+    if set(manifest.get("price_tables", [])) != paths_by_kind.get(
+        "price_table", set()
+    ):
+        raise ValueError("manifest price_tables do not match frozen artifacts")
+    if set(REQUIRED_BEHAVIOR_FILES) - paths_by_kind.get("behavior", set()):
+        raise ValueError("manifest is missing mandatory behavior artifacts")
+    if manifest.get("acceptance_thresholds") != DEFAULT_THRESHOLDS:
+        raise ValueError("acceptance thresholds do not match the formal v3 contract")
+
     prompt_versions, _ = prompt_snapshot(repo_root)
     if manifest.get("prompt_versions") != prompt_versions:
         raise ValueError("runtime prompt versions do not match the frozen manifest")
@@ -409,6 +452,12 @@ def verify_contract(
         raise ValueError(
             "runtime methodology policy versions do not match the frozen manifest"
         )
+    required_environment = manifest.get("required_provider_environment")
+    if not isinstance(required_environment, list) or any(
+        not isinstance(item, str) or not item.strip() or "=" in item
+        for item in required_environment
+    ):
+        raise ValueError("manifest required_provider_environment is invalid")
 
     if strategy_path is not None:
         strategy = _safe_relative_path(strategy_path.as_posix(), field="strategy")
