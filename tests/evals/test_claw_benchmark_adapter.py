@@ -253,7 +253,9 @@ def test_revise_with_only_placeholder_recovery_defers_pilot() -> None:
                 quality_route="blocked",
                 report_status="completed",
                 reason_codes=["Q_INSUFFICIENT_COVERAGE"],
-                recommended_next_actions=[],
+                recommended_next_actions=[
+                    "capture missing evidence and rerun the bounded workflow"
+                ],
             ),
             "report": FinalReport(
                 status="completed",
