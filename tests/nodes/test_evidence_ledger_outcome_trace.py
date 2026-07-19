@@ -154,9 +154,7 @@ def test_relevant_paper_with_claim_level_gap_overlap_enters_ledger() -> None:
 def test_methodology_no_go_is_a_successful_scientific_outcome() -> None:
     state = {
         "plan": _plan("gap-imbalance", "class imbalance mitigation"),
-        "quality": QualityDecision(
-            verdict="blocked", reason_codes=["Q_METHODOLOGY_NO_GO"]
-        ),
+        "quality": QualityDecision(verdict="blocked", reason_codes=["Q_METHODOLOGY_NO_GO"]),
         "methodology_audit": SimpleNamespace(
             verdict=AuditVerdict.NO_GO,
             plan_fingerprint="sha256:no-go",
@@ -238,9 +236,7 @@ def test_trace_auditor_rejects_unknown_report_evidence_and_coverage_mutation() -
     state["report"] = report.model_copy(
         update={
             "evidence_ids": ["ev-unknown"],
-            "verified_findings": [
-                ReportClaim(text="Tampered claim.", evidence_ids=["ev-unknown"])
-            ],
+            "verified_findings": [ReportClaim(text="Tampered claim.", evidence_ids=["ev-unknown"])],
         }
     )
     evidence = state["evidence"]
