@@ -24,7 +24,9 @@ def extract_identifiers(*values: str | None) -> tuple[str | None, str | None]:
         if doi_match
         else None
     )
-    arxiv_id = canonical_arxiv_id(arxiv_match.group("id")) if arxiv_match else None
+    arxiv_id = (
+        canonical_arxiv_id(arxiv_match.group("id")) if arxiv_match else None
+    )
     return doi, arxiv_id
 
 
