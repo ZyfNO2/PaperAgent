@@ -1,0 +1,249 @@
+name: Gate L Formal Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full frozen 40-character source SHA
+        required: true
+        type: string
+      freeze_run_id:
+        description: Gate L Formal Freeze workflow run ID
+        required: true
+        type: string
+      freeze_artifact_name:
+        description: Exact freeze artifact name
+        required: true
+        type: string
+      execution_run_id:
+        description: Gate L Formal Execute workflow run ID
+        required: true
+        type: string
+      execution_artifact_name:
+        description: Exact execution artifact name
+        required: true
+        type: string
+      mode:
+        description: Prepare a human audit template or finalize a completed audit
+        required: true
+        type: choice
+        options:
+          - prepare
+          - finalize
+      audit_ref:
+        description: Commit, branch, or tag containing the sealed completed audit; required for finalize
+        required: false
+        type: string
+      content_audit_path:
+        description: Path inside audit_ref to the completed audit JSON; required for finalize
+        required: false
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  audit:
+    name: Prepare or finalize exact-evidence audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      FREEZE_RUN_ID: ${{ inputs.freeze_run_id }}
+      EXECUTION_RUN_ID: ${{ inputs.execution_run_id }}
+      FREEZE_DIR: build/gate-l-v3-formal-freeze-input
+      EXECUTION_DIR: build/gate-l-v3-formal-execution-input
+      OUTPUT_DIR: build/gate-l-v3-formal-audit
+
+    steps:
+      - name: Validate audit request
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$FREEZE_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$EXECUTION_RUN_ID" =~ ^[0-9]+$ ]]
+          if [ "${{ inputs.mode }}" = "finalize" ]; then
+            test -n "${{ inputs.audit_ref }}"
+            test -n "${{ inputs.content_audit_path }}"
+            [[ "${{ inputs.content_audit_path }}" != /* ]]
+            [[ "${{ inputs.content_audit_path }}" != *".."* ]]
+          fi
+
+      - name: Check out exact frozen source SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 1
+
+      - name: Verify checked-out identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Check out sealed completed audit
+        if: inputs.mode == 'finalize'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.audit_ref }}
+          path: audit-inputs
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+
+      - name: Download formal freeze artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.freeze_artifact_name }}
+          path: ${{ env.FREEZE_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.freeze_run_id }}
+
+      - name: Download formal execution artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.execution_artifact_name }}
+          path: ${{ env.EXECUTION_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.execution_run_id }}
+
+      - name: Verify upstream artifact chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT_DIR"
+          python scripts/gate_l_artifact_chain.py verify-freeze \
+            --bundle-dir "$FREEZE_DIR" \
+            --source-sha "$SOURCE_SHA" \
+            --run-id "$FREEZE_RUN_ID" \
+            --output "$OUTPUT_DIR/verified-freeze.json"
+          python scripts/gate_l_artifact_chain.py verify-execution \
+            --bundle-dir "$EXECUTION_DIR" \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --source-sha "$SOURCE_SHA" \
+            --output "$OUTPUT_DIR/verified-execution.json"
+
+      - name: Prepare human content-audit template
+        if: inputs.mode == 'prepare'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/gate_l_formal_audit.py prepare \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --evidence-dir "$EXECUTION_DIR/per-case" \
+            --output "$OUTPUT_DIR/content-audit-template.json"
+
+      - name: Finalize completed human content audit
+        if: inputs.mode == 'finalize'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          verified = json.loads(
+              (Path(os.environ["OUTPUT_DIR"]) / "verified-execution.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          if verified.get("formal_execution_eligible") is not True:
+              raise SystemExit("execution evidence is valid but not formal-execution eligible")
+          PY
+          python scripts/gate_l_formal_audit.py finalize \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --run-record "$EXECUTION_DIR/run-record.json" \
+            --evidence-dir "$EXECUTION_DIR/per-case" \
+            --audit "audit-inputs/${{ inputs.content_audit_path }}" \
+            --normalized-audit-out "$OUTPUT_DIR/normalized-content-audit.json" \
+            --summary-out "$OUTPUT_DIR/deterministic-summary.json"
+
+      - name: Record audit workflow identity
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT_DIR"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          output = Path(os.environ["OUTPUT_DIR"])
+          record = {
+              "gate": "L",
+              "record_type": "formal_audit_workflow",
+              "mode": "${{ inputs.mode }}",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "freeze_run_id": os.environ["FREEZE_RUN_ID"],
+              "execution_run_id": os.environ["EXECUTION_RUN_ID"],
+              "audit_ref": "${{ inputs.audit_ref }}" or None,
+              "content_audit_path": "${{ inputs.content_audit_path }}" or None,
+              "created_at_utc": datetime.now(tz=UTC).isoformat(),
+              "github_repository": os.environ["GITHUB_REPOSITORY"],
+              "github_run_id": os.environ["GITHUB_RUN_ID"],
+              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "github_workflow": os.environ["GITHUB_WORKFLOW"],
+          }
+          for filename in (
+              "verified-freeze.json",
+              "verified-execution.json",
+              "normalized-content-audit.json",
+              "deterministic-summary.json",
+          ):
+              path = output / filename
+              if path.is_file():
+                  record[f"{filename}_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+          (output / "audit-workflow-record.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (
+            cd "$OUTPUT_DIR"
+            find . -type f ! -name SHA256SUMS -printf '%P\0' \
+              | sort -z \
+              | xargs -0 -r sha256sum > SHA256SUMS
+          )
+
+      - name: Upload formal audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-l-formal-audit-${{ inputs.mode }}-${{ inputs.source_sha }}-${{ github.run_id }}
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish audit summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Gate L formal audit'
+            echo
+            echo "- Mode: \`${{ inputs.mode }}\`"
+            echo "- Source SHA: \`$SOURCE_SHA\`"
+            echo "- Freeze run: \`$FREEZE_RUN_ID\`"
+            echo "- Execution run: \`$EXECUTION_RUN_ID\`"
+            if [ "${{ inputs.mode }}" = "prepare" ]; then
+              echo '- Result: `INCOMPLETE` — human content audit template generated'
+            else
+              echo '- Result: deterministic audit finalized; blinded review still required'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
