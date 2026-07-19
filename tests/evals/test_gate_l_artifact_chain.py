@@ -109,8 +109,10 @@ def test_verify_execution_requires_all_evidence_checksums(tmp_path: Path) -> Non
             {
                 "case_id": case_id,
                 "execution_identity": identity,
-                "output_digest": "1" * 64,
-                "trace_digest": "2" * 64,
+                "output_payload": {},
+                "trace_payload": [],
+                "output_digest": hashlib.sha256(b"{}").hexdigest(),
+                "trace_digest": hashlib.sha256(b"[]").hexdigest(),
             },
         )
     _write_json(
