@@ -3,7 +3,15 @@ from __future__ import annotations
 from paperagent.errors import ProviderError
 from paperagent.literature.service import LiteratureRetrievalService
 from paperagent.schemas import SearchCandidate, SearchQuery
-from paperagent.schemas.literature import LiteratureQueryPlan, ProviderResult, QueryLane
+from paperagent.schemas.literature import (
+    LiteratureQueryPlan,
+    PaperRecord,
+    ProviderResult,
+    QueryLane,
+)
+
+_ACADEMIC_PROVIDERS = frozenset({"openalex", "semantic_scholar", "arxiv"})
+_WEB_PROVIDERS = frozenset({"tavily", "duckduckgo"})
 
 
 class LiteratureSearchAdapter:
@@ -14,10 +22,12 @@ class LiteratureSearchAdapter:
         *,
         service: LiteratureRetrievalService,
         source_preferences: list[str] | None = None,
+        supplement_source_preferences: list[str] | None = None,
         fallback_source_preferences: list[str] | None = None,
     ) -> None:
         self._service = service
         self._source_preferences = source_preferences or ["openalex", "semantic_scholar"]
+        self._supplement_source_preferences = supplement_source_preferences or []
         self._fallback_source_preferences = fallback_source_preferences
         self._last_results: dict[str, list[ProviderResult]] = {}
         self._last_fallback_used: dict[str, bool] = {}
@@ -38,23 +48,30 @@ class LiteratureSearchAdapter:
         )
         provider_results = list(primary.provider_results)
         papers_by_id = {paper.paper_id: paper for paper in primary.papers}
-        fallback_used = False
 
-        has_verified = any(paper.verification_status == "verified" for paper in primary.papers)
+        if self._supplement_source_preferences:
+            supplement = await self._service.retrieve(
+                self._build_plan(
+                    query,
+                    self._supplement_source_preferences,
+                    lane_suffix="academic-supplement",
+                )
+            )
+            provider_results.extend(supplement.provider_results)
+            self._merge_papers(papers_by_id, supplement.papers)
+
+        fallback_used = False
+        has_verified = any(
+            paper.verification_status == "verified" for paper in papers_by_id.values()
+        )
         fallback = self._fallback_source_preferences
-        if not has_verified and fallback and fallback != self._source_preferences:
+        if not has_verified and fallback:
             secondary = await self._service.retrieve(
-                self._build_plan(query, fallback, lane_suffix="fallback")
+                self._build_plan(query, fallback, lane_suffix="web-supplement")
             )
             provider_results.extend(secondary.provider_results)
             fallback_used = True
-            for paper in secondary.papers:
-                previous = papers_by_id.get(paper.paper_id)
-                if previous is None or (
-                    previous.verification_status != "verified"
-                    and paper.verification_status == "verified"
-                ):
-                    papers_by_id[paper.paper_id] = paper
+            self._merge_papers(papers_by_id, secondary.papers)
 
         self._last_results[query.query_id] = provider_results
         self._last_fallback_used[query.query_id] = fallback_used
@@ -74,6 +91,8 @@ class LiteratureSearchAdapter:
         for paper in list(papers_by_id.values())[:limit]:
             locator = self._locator(paper.doi, paper.arxiv_id, paper.urls)
             providers = sorted({record.provider for record in paper.source_records})
+            provider_set = set(providers)
+            source_kind = self._source_kind(provider_set)
             score = paper.rank_features.score if paper.rank_features else 0.0
             candidates.append(
                 SearchCandidate(
@@ -88,14 +107,71 @@ class LiteratureSearchAdapter:
                     metadata={
                         "verification_status": paper.verification_status,
                         "providers": ",".join(providers),
+                        "provider_classes": source_kind,
+                        "source_kind": source_kind,
                         "rank_score": f"{score:.6f}",
                         "doi": paper.doi or "",
                         "arxiv_id": paper.arxiv_id or "",
                         "fallback_used": "true" if fallback_used else "false",
+                        "web_supplement": (
+                            "true" if provider_set.intersection(_WEB_PROVIDERS) else "false"
+                        ),
                     },
                 )
             )
         return candidates
+
+    @staticmethod
+    def _merge_papers(
+        papers_by_id: dict[str, PaperRecord], incoming: list[PaperRecord]
+    ) -> None:
+        for paper in incoming:
+            previous = papers_by_id.get(paper.paper_id)
+            if previous is None:
+                papers_by_id[paper.paper_id] = paper
+                continue
+            source_records = list(previous.source_records)
+            for record in paper.source_records:
+                if record not in source_records:
+                    source_records.append(record)
+            verification_status = previous.verification_status
+            if verification_status != "verified" and paper.verification_status == "verified":
+                verification_status = "verified"
+            rank_features = previous.rank_features
+            if (
+                paper.rank_features is not None
+                and (rank_features is None or paper.rank_features.score > rank_features.score)
+            ):
+                rank_features = paper.rank_features
+            papers_by_id[paper.paper_id] = previous.model_copy(
+                update={
+                    "abstract": max(
+                        (value for value in (previous.abstract, paper.abstract) if value),
+                        key=len,
+                        default=None,
+                    ),
+                    "urls": sorted(set(previous.urls) | set(paper.urls)),
+                    "source_records": source_records,
+                    "verification_status": verification_status,
+                    "verification_methods": sorted(
+                        set(previous.verification_methods) | set(paper.verification_methods)
+                    ),
+                    "matched_gap_ids": sorted(
+                        set(previous.matched_gap_ids) | set(paper.matched_gap_ids)
+                    ),
+                    "rank_features": rank_features,
+                }
+            )
+
+    @staticmethod
+    def _source_kind(providers: set[str]) -> str:
+        academic = bool(providers.intersection(_ACADEMIC_PROVIDERS))
+        web = bool(providers.intersection(_WEB_PROVIDERS))
+        if academic and web:
+            return "academic+web"
+        if web:
+            return "web"
+        return "academic"
 
     def last_provider_results(self, query_id: str) -> list[ProviderResult]:
         return list(self._last_results.get(query_id, []))
