@@ -104,9 +104,7 @@ async def test_graph__planning_interrupt__resumes_without_repeating_intake(fixed
             "search_scenario": "happy_path",
         }
     }
-    paused = await graph.ainvoke(
-        {"request": ResearchRequest(question="Study this method")}, config
-    )
+    paused = await graph.ainvoke({"request": ResearchRequest(question="Study this method")}, config)
     assert paused["__interrupt__"]
     resumed = await graph.ainvoke(Command(resume="Evaluate citation evidence"), config)
     assert resumed["execution"].status == "completed"
