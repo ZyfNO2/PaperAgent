@@ -144,9 +144,7 @@ class RAGEvaluationReport(BaseModel):
             raise ValueError("case ID must be non-blank")
         if any(not claim_id.strip() for claim_id in self.critical_unsupported_claims):
             raise ValueError("critical unsupported claim IDs must be non-blank")
-        if len(set(self.critical_unsupported_claims)) != len(
-            self.critical_unsupported_claims
-        ):
+        if len(set(self.critical_unsupported_claims)) != len(self.critical_unsupported_claims):
             raise ValueError("critical unsupported claim IDs must be unique")
         if self.terminal == "succeeded" and self.block_reason is not None:
             raise ValueError("succeeded reports cannot carry a block reason")
