@@ -57,8 +57,7 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
                 gap.gap_id
                 for gap in plan.evidence_gaps
                 if gap.required
-                and evidence.coverage_by_gap.get(gap.gap_id, 0)
-                < gap.minimum_accepted_items
+                and evidence.coverage_by_gap.get(gap.gap_id, 0) < gap.minimum_accepted_items
             ]
             exhausted = retrieval_state.budget_exhausted or (
                 retrieval_state.round >= retrieval_state.max_rounds
