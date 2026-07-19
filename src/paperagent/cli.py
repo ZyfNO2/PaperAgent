@@ -209,7 +209,9 @@ def _provider_smoke(args: argparse.Namespace) -> int:
 def _llm_smoke(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
     api_key = cast(str | None, args.api_key)
     if not api_key:
-        parser.error("--api-key is required (or set PAPERAGENT_OPENAI_API_KEY in the environment)")
+        parser.error(
+            "--api-key is required (or set PAPERAGENT_OPENAI_API_KEY in the environment)"
+        )
     timeout = cast(float, args.timeout)
     if timeout <= 0:
         raise SystemExit("--timeout must be greater than zero")
@@ -219,7 +221,9 @@ def _llm_smoke(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int
         base_url=cast(str, args.base_url),
         timeout_seconds=timeout,
     )
-    summary = asyncio.run(run_llm_smoke(provider, question=cast(str | None, args.question)))
+    summary = asyncio.run(
+        run_llm_smoke(provider, question=cast(str | None, args.question))
+    )
     print(json.dumps(summary.as_dict(), indent=2, sort_keys=True))
     return 0 if summary.passed else 1
 
