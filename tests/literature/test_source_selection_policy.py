@@ -44,8 +44,7 @@ def _paper(
         authors=["Researcher"],
         year=2025,
         abstract=(
-            "Lightweight UAV detector for small objects on VisDrone "
-            "with latency evaluation."
+            "Lightweight UAV detector for small objects on VisDrone with latency evaluation."
         ),
         doi=f"10.1234/{paper_id}" if verified else None,
         urls=[f"https://example.org/{paper_id}"],
@@ -152,9 +151,7 @@ async def test_specific_query_stops_after_one_successful_academic_source() -> No
     adapter = _adapter(service)
 
     results = await adapter.search(
-        query=_query(
-            "lightweight UAV small object detection VisDrone AP_small latency"
-        ),
+        query=_query("lightweight UAV small object detection VisDrone AP_small latency"),
         scenario="live",
         call_index=0,
         fixture_version="v0.1",
@@ -196,9 +193,7 @@ async def test_low_quality_first_source_escalates_only_until_threshold_is_met() 
     adapter = _adapter(service)
 
     results = await adapter.search(
-        query=_query(
-            "lightweight UAV small object detection VisDrone AP_small latency"
-        ),
+        query=_query("lightweight UAV small object detection VisDrone AP_small latency"),
         scenario="live",
         call_index=0,
         fixture_version="v0.1",
