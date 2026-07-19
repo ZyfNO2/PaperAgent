@@ -56,7 +56,7 @@ _STOPWORDS = frozenset(
         "with",
     }
 )
-_GENERIC_ONLY = frozenset(
+_GENERIC_TERMS = frozenset(
     {
         "ai",
         "artificial",
@@ -80,6 +80,7 @@ class SearchSourcePolicy:
     precision_risk: PrecisionRisk
     reasons: tuple[str, ...]
     informative_terms: tuple[str, ...]
+    discriminative_terms: tuple[str, ...]
     primary_provider: str
     escalation_providers: tuple[str, ...]
     allow_web_fallback: bool
@@ -113,26 +114,29 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
     normalized = " ".join(query.query.split())
     terms = _english_terms(normalized)
     informative = _informative_terms(normalized)
-    term_set = set(informative)
+    unique_informative = tuple(dict.fromkeys(informative))
+    discriminative = tuple(term for term in unique_informative if term not in _GENERIC_TERMS)
     identifier_query = bool(_IDENTIFIER.search(normalized))
     cjk_count = len(_CJK.findall(normalized))
-    generic_only = bool(term_set) and term_set <= _GENERIC_ONLY
+    generic_only = bool(unique_informative) and not discriminative
     reasons: list[str] = []
 
     if len(normalized) > 220:
         reasons.append("query is too long and likely mixes multiple retrieval intents")
-    if not identifier_query and not informative:
+    if not identifier_query and not unique_informative:
         reasons.append("query has no discriminative academic terms")
-    if not identifier_query and len(informative) < 3 and cjk_count < 8:
+    if not identifier_query and len(unique_informative) < 3 and cjk_count < 8:
         reasons.append("query is too broad for rate-limited scholarly search")
+    if not identifier_query and len(discriminative) < 2 and cjk_count < 8:
+        reasons.append("query lacks at least two task-, domain-, dataset-, or mechanism-specific terms")
     if generic_only:
         reasons.append("query contains only generic research vocabulary")
 
     approved = not reasons
-    specificity = len(set(informative))
-    if identifier_query or specificity >= 6 or cjk_count >= 14:
+    specificity = len(discriminative)
+    if identifier_query or specificity >= 5 or cjk_count >= 14:
         risk: PrecisionRisk = "low"
-    elif specificity >= 4 or cjk_count >= 10:
+    elif specificity >= 3 or cjk_count >= 10:
         risk = "medium"
     else:
         risk = "high"
@@ -157,8 +161,9 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
     return SearchSourcePolicy(
         approved=approved,
         precision_risk=risk,
-        reasons=tuple(reasons),
-        informative_terms=tuple(dict.fromkeys(informative)),
+        reasons=tuple(dict.fromkeys(reasons)),
+        informative_terms=unique_informative,
+        discriminative_terms=discriminative,
         primary_provider=primary,
         escalation_providers=escalation,
         allow_web_fallback=allow_web,
