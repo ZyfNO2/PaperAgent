@@ -38,15 +38,11 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _scan_blinded(
-    value: object, *, case_ids: set[str], location: str = "package"
-) -> None:
+def _scan_blinded(value: object, *, case_ids: set[str], location: str = "package") -> None:
     if isinstance(value, dict):
         for key, nested in value.items():
             if str(key) in _FORBIDDEN_KEYS:
-                raise ValueError(
-                    f"review package exposes forbidden field {location}.{key}"
-                )
+                raise ValueError(f"review package exposes forbidden field {location}.{key}")
             _scan_blinded(nested, case_ids=case_ids, location=f"{location}.{key}")
     elif isinstance(value, list):
         for index, nested in enumerate(value):
