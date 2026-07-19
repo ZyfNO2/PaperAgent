@@ -8,8 +8,11 @@ on:
     paths:
       - "evals/claw_academic_tailoring_v1/**"
       - "src/paperagent/claw_academic_benchmark.py"
+      - "src/paperagent/claw_benchmark_adapter.py"
       - "scripts/run_claw_academic_benchmark.py"
+      - "scripts/normalize_claw_benchmark_states.py"
       - "tests/evals/test_claw_academic_benchmark.py"
+      - "tests/evals/test_claw_benchmark_adapter.py"
       - ".github/workflows/claw-academic-tailoring-benchmark.yml"
   workflow_dispatch:
 
@@ -45,8 +48,11 @@ jobs:
           mkdir -p "$out/formatted"
           files=(
             src/paperagent/claw_academic_benchmark.py
+            src/paperagent/claw_benchmark_adapter.py
             scripts/run_claw_academic_benchmark.py
+            scripts/normalize_claw_benchmark_states.py
             tests/evals/test_claw_academic_benchmark.py
+            tests/evals/test_claw_benchmark_adapter.py
           )
           ruff check "${files[@]}" --output-format=concise > "$out/ruff.log" 2>&1
           ruff_status=$?
@@ -54,7 +60,9 @@ jobs:
           format_status=$?
           mypy --config-file pyproject.toml > "$out/mypy.log" 2>&1
           mypy_status=$?
-          pytest -q tests/evals/test_claw_academic_benchmark.py \
+          pytest -q \
+            tests/evals/test_claw_academic_benchmark.py \
+            tests/evals/test_claw_benchmark_adapter.py \
             > "$out/pytest.log" 2>&1
           pytest_status=$?
           python scripts/run_claw_academic_benchmark.py \
