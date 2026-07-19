@@ -57,11 +57,7 @@ RUBRIC = [
 
 
 def _case(case_id: str, category: str) -> dict[str, Any]:
-    terminal = (
-        "blocked"
-        if category in {"insufficient_evidence", "adversarial"}
-        else "succeeded"
-    )
+    terminal = "blocked" if category in {"insufficient_evidence", "adversarial"} else "succeeded"
     return {
         "case_id": case_id,
         "version": "v3-formal-test",
@@ -106,9 +102,7 @@ def _fixture(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Pat
         for category in CATEGORIES
         for index in range(4)
     ]
-    cases.write_text(
-        "".join(json.dumps(row) + "\n" for row in case_rows), encoding="utf-8"
-    )
+    cases.write_text("".join(json.dumps(row) + "\n" for row in case_rows), encoding="utf-8")
     digest = FORMAL._sha256(cases)
     attestation = tmp_path / "attestation.json"
     attestation.write_text(
@@ -208,10 +202,7 @@ def test_freeze_and_verify_binds_full_artifact_bundle(
         prompt_snapshot=FORMAL._runtime_prompt_snapshot,
         policy_snapshot=FORMAL._runtime_policy_snapshot,
     )
-    assert (
-        verified["frozen_artifact_bundle_sha256"]
-        == manifest["frozen_artifact_bundle_sha256"]
-    )
+    assert verified["frozen_artifact_bundle_sha256"] == manifest["frozen_artifact_bundle_sha256"]
 
 
 def test_verify_rejects_changed_behavior_file(
@@ -258,9 +249,7 @@ def test_verify_rejects_runtime_sha_mismatch(
         )
 
 
-def test_verify_rejects_unfrozen_strategy(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_verify_rejects_unfrozen_strategy(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     spec, manifest_path = _fixture(tmp_path, monkeypatch)
     FORMAL.freeze_contract(
         spec,
@@ -280,9 +269,7 @@ def test_verify_rejects_unfrozen_strategy(
         )
 
 
-def test_freeze_rejects_path_traversal(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_freeze_rejects_path_traversal(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     spec, manifest_path = _fixture(tmp_path, monkeypatch)
     value = json.loads(spec.read_text(encoding="utf-8"))
     value["behavior_files"] = ["../behavior.py"]
