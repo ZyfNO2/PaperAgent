@@ -154,7 +154,7 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
 
     allow_web = approved and risk == "low" and "web" in query.source_types
     result_limit = 5 if risk == "low" else 6
-    minimum_results = 2 if risk == "low" else 1
+    minimum_results = 1 if identifier_query or risk != "low" else 2
     minimum_relevance = 0.34 if risk == "low" else 0.42
     minimum_rank_score = 0.62 if risk == "low" else 0.68
 
