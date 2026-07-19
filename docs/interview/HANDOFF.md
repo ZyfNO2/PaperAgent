@@ -4,19 +4,18 @@
 
 ```text
 Repository:        ZyfNO2/PaperAgent
-Integration branch: integration/paperagent-v0.9-clean
-Source branch:      fix/academic-tailoring-contract-convergence
-Source SHA:         257d1850faae4a6f5e6a15eaa77d27d1d5d6a96d
-Target:             master
-Head SHA:           d5154055
+Master HEAD:        4f81e19a89a68a3fe729a5c85b5e97286cc21b05
+Integration PR:     #25
+Source branch:      integration/paperagent-v0.9-clean
+Source HEAD:        2cfc15c2
 Package version:    0.5.1
 PR #22 audit hardening: included
-Merge performed:    no
+Merge performed:    yes
 Release performed:  no
-Status:             engineering review passed, clean integration pending
+Status:             engineering integration passed, merged to master
 ```
 
-This branch is based on current `master` and contains the final state of PR #17–#22. It excludes build artifacts, databases, and design files.
+PR #25 merged the clean integration branch into master. All PR #17–#22 work is now on master. Build artifacts, databases, and design files are excluded from tracking.
 
 ## Interview evidence already delivered
 

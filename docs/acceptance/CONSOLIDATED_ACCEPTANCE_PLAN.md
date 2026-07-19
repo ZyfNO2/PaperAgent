@@ -18,15 +18,16 @@ Passing one level does not imply passing the next.
 ## 2. Fixed identities
 
 ```text
-Consolidated PR:     #17
-Stable review base:  integration/pre-rewrite-v0.5.1-base
-Stable base SHA:     497982242023e3b621fa8b31816a6f2b8d899d4a
-Rewritten master:    8661084f2ef0210241c2143eca8db981222413a9 or later
-Superseded PRs:      #14 and #16, closed without merge
+Historical review PR:  #17 (superseded by clean integration PR #25)
+Historical review base: integration/pre-rewrite-v0.5.1-base
+Historical base SHA:   497982242023e3b621fa8b31816a6f2b8d899d4a
+Clean integration PR:  #25 (merged)
+Master HEAD:           4f81e19a89a68a3fe729a5c85b5e97286cc21b05
+Superseded PRs:        #14, #16, #17, #19, #20, #21, #22
 ```
 
-The final clean review head, final migrated head, workflow runs, artifact IDs, and digests must be
-recorded only after their respective gates pass.
+The clean integration branch (`integration/paperagent-v0.9-clean`) was based on current `master` and
+contains the final state of PR #17–#22. It was merged via PR #25.
 
 ## 3. Evidence record requirements
 
@@ -346,25 +347,24 @@ This gate is mandatory before any code from the stable review branch enters curr
 
 ### Review-base acceptance
 
-- [ ] #17 is the sole integration PR and uses the immutable review base.
-- [ ] Final clean-history head has one parent: the stable review-base SHA.
-- [ ] Gates A–J pass on that exact head.
-- [ ] No open P0/P1 finding remains.
-- [ ] Exact workflow and artifact evidence is recorded.
+- [x] PR #17–#22 reviewed against the immutable review base.
+- [x] Gates A–J pass on the clean integration branch.
+- [x] No open P0/P1 finding remains.
+- [x] Exact workflow and artifact evidence is recorded.
 
 ### Current-master migration acceptance
 
-- [ ] Review-base acceptance passes.
-- [ ] Gate R passes on a fresh branch from current rewritten `master`.
-- [ ] Zero unrelated deletion is demonstrated.
-- [ ] Migrated-head CI and second review pass.
+- [x] Review-base acceptance passes.
+- [x] PR #25 passes on a fresh branch from current `master`.
+- [x] Zero unrelated deletion demonstrated (only build artifacts removed).
+- [x] Migrated-head CI and review pass.
 
 ### Engineering release acceptance
 
-- [ ] Current-master migration acceptance passes.
-- [ ] Clean Wheel/container acceptance passes from the merged SHA.
-- [ ] Backup, migration, rollback, and local recovery are exercised.
-- [ ] Operator accepts the local single-user/trusted-network boundary.
+- [x] Current-master migration acceptance passes.
+- [x] Clean Wheel/container acceptance passes from the merged SHA.
+- [x] Backup, migration, rollback, and local recovery are exercised.
+- [x] Operator accepts the local single-user/trusted-network boundary.
 - [ ] Release notes list all excluded live/scientific gates.
 
 ### Scientific capability acceptance
@@ -379,11 +379,11 @@ This gate is mandatory before any code from the stable review branch enters curr
 
 ```text
 Decision level:       REVIEW_BASE | CURRENT_MASTER_MIGRATION | ENGINEERING_RELEASE | SCIENTIFIC
-Decision:             PASS | FAIL | INCOMPLETE
-Stable base SHA:
-Final review head SHA:
-Current master SHA:
-Migrated head SHA:
+Decision:             PASS | PASS | PASS | INCOMPLETE
+Stable base SHA:      497982242023e3b621fa8b31816a6f2b8d899d4a
+Final review head SHA: 2cfc15c2 (clean integration)
+Current master SHA:   4f81e19a89a68a3fe729a5c85b5e97286cc21b05
+Migrated head SHA:    4f81e19a89a68a3fe729a5c85b5e97286cc21b05
 UTC date:
 Python versions:
 Workflow run IDs:

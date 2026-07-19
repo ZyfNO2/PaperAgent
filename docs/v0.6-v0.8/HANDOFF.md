@@ -1,5 +1,11 @@
 # PaperAgent PR #17 Consolidated Handoff
 
+> **SUPERSEDED BY PR #25 (merged)**
+>
+> This document is retained for historical review and diagnostic evidence only.
+> The accepted implementation is now on `master` at `4f81e19a`.
+> Current authority: `docs/interview/HANDOFF.md`.
+
 ## Authority
 
 This file supersedes the earlier stacked-PR handoff text for PRs #14 and #16. The only integration surface is PR #17.
