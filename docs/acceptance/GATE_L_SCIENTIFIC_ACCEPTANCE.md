@@ -2,33 +2,39 @@
 
 ## Status
 
-`FROZEN HOLDOUT CREATED / EXECUTION AND HUMAN REVIEW PENDING`
+`FORMAL V3 CONTRACT IMPLEMENTATION IN REVIEW / INDEPENDENT HOLDOUT PENDING`
 
 This document operationalizes Gate L. It defines the minimum evidence required before PaperAgent may
 claim reliable research design, grounded scientific synthesis, novelty assessment, or
 publication-ready output.
 
-Creating and freezing the corpus does **not** pass Gate L. Gate L remains `INCOMPLETE` until the exact
-frozen cases are executed with the real provider, the outputs are reviewed blindly, agreement is
-measured, disagreements are adjudicated, and every hard threshold below passes.
+Historical v1 and v2 corpora are diagnostic-only because prompts, routing, and acceptance logic
+changed after they were authored. They must not be scored or relabeled as formal acceptance
+evidence. Gate L remains `INCOMPLETE` until a new independent v3 holdout is frozen against one exact
+scientific-behaviour commit, executed with a real provider, reviewed blindly, checked for agreement,
+adjudicated, and accepted under every hard threshold below.
 
-## 1. Frozen corpus identity
+The authoritative formal procedure is `docs/acceptance/GATE_L_V3_FORMAL_RUNBOOK.md`.
+
+## 1. Formal corpus identity
 
 ```text
-Version:                       v1
-Case file:                     evals/v0_6/holdout_cases.v1.jsonl
-Manifest:                      evals/v0_6/holdout_manifest.json
-Case count:                    16
-Prompt/rule design cutoff SHA: 3b217a0a8e4fc7fb5a0607a2ff68397844a450b6
+Version:                       PENDING NEW v3-* HOLDOUT
+Case file:                     PENDING INDEPENDENT OWNER
+Manifest:                      GENERATED ONLY AFTER FINAL SOURCE COMMIT
+Case count:                    REQUIRED 16
+Scientific-behaviour SHA:      PENDING FINAL FREEZE
+Formal tooling:                Draft PR #26
 ```
 
-The holdout is separate from the 48-case development corpus. It must not be copied into prompts,
-deterministic fixtures, few-shot examples, rule tables, snapshot expectations, or repair templates.
+The formal holdout must remain separate from the development corpus and all historical diagnostic
+holdouts. It must not be copied into prompts, deterministic fixtures, few-shot examples, rule tables,
+snapshot expectations, repair templates, or routing heuristics.
 
-Because the raw v1 cases are committed for auditable review, v1 is valid only for the frozen
-prompt/rule design cutoff above and descendants that do not change scientific prompts, decision
-rules, deterministic graders, or case-specific routing. Any such change invalidates v1 for release
-acceptance and requires a newly authored and newly digested holdout version.
+Because the formal cases will be committed for auditable review, they are valid only for the exact
+source SHA, prompt versions, policy versions, behaviour-file digests, strategy profiles, price tables,
+and thresholds recorded by the formal manifest. Any change to those identities requires a newly
+authored and newly digested holdout version.
 
 ## 2. Required distribution
 
@@ -67,19 +73,22 @@ A case with a missing field, duplicate ID, invalid digest, invalid budget, or ru
 - Holdout text must not enter prompts, examples, snapshots, or deterministic answer selection.
 - Reviewers receive anonymized arm IDs and outputs; provider/model labels are hidden during scoring.
 - Grader notes and adjudication records are not exposed to the evaluated Agent.
-- No prompt, rule, retrieval configuration, or grader may be tuned after viewing holdout outputs.
-- A post-freeze scientific prompt/rule change requires a new holdout version and new reviewers.
+- No prompt, rule, retrieval configuration, strategy, price table, or grader may be tuned after viewing holdout outputs.
+- A post-freeze scientific-behaviour change requires a new holdout version and new reviewers.
+- Formal execution must use the exact full source SHA and a clean working tree recorded by the manifest.
 
 ### Invalidating events
 
 Any of the following invalidates the run:
 
-- corpus digest mismatch;
+- corpus, prompt, policy, strategy, price-table, or behaviour-file digest mismatch;
+- runtime source SHA differs from the frozen scientific-behaviour SHA;
 - case or rubric edited after the first execution;
 - case-specific code path or fixture lookup;
 - output manually repaired before blind scoring;
 - reviewer sees the expected decision or another reviewer's score before submitting;
-- missing telemetry needed to verify budgets, retries, model identity, or source provenance.
+- missing telemetry needed to verify budgets, retries, model identity, or source provenance;
+- targeted case filtering during a claimed formal run.
 
 ## 5. Execution evidence
 
@@ -87,7 +96,8 @@ Each run record must include:
 
 - exact repository SHA and clean-tree status;
 - exact provider, model, endpoint policy, price table version, and UTC date;
-- input manifest and holdout digest;
+- input manifest, artifact-bundle, and holdout digests;
+- selected frozen strategy profile and digest;
 - per-case calls, retries, repairs, input/output tokens, latency, and estimated cost;
 - retrieved identifiers and metadata-verification status;
 - immutable output and trace digests;
@@ -121,6 +131,7 @@ These are zero-tolerance gates and cannot be offset by a high average score.
 - Reviewers must not have authored the evaluated output or changed prompts after freeze.
 - Review order and arm identity must be randomized.
 - Each reviewer submits independently before seeing any other score.
+- Synthetic, stub, duplicated, model-authored, or same-identity reviewers are invalid.
 
 ### Per-case rubric
 
@@ -199,21 +210,23 @@ Use when a zero-tolerance gate is violated or a declared scientific claim is dis
 
 ### INCOMPLETE
 
-Use when execution, real-source collection, baseline reproduction, blind review, agreement,
-adjudication, or required telemetry is missing. `INCOMPLETE` must never be relabeled as PASS by
-narrative explanation.
+Use when independent holdout authorship, formal freeze, execution, real-source collection, baseline
+reproduction, blind review, agreement, adjudication, or required telemetry is missing. `INCOMPLETE`
+must never be relabeled as PASS by narrative explanation.
 
 ## 12. Current Gate L record
 
 ```text
-Holdout authored:          PASS
-Holdout distribution:      PASS (4/4/4/4)
-Holdout frozen/digested:   PASS
-Real-provider execution:   PENDING
-Real DOI/source retrieval: PENDING
-Baseline reproduction:     PENDING
-Blinded expert review:     PENDING
-Inter-rater agreement:     PENDING
-Adjudication:              PENDING
-Gate L decision:           INCOMPLETE
+Formal contract tooling:    IN REVIEW (Draft PR #26)
+Independent holdout owner:  PENDING
+New v3 holdout authored:    PENDING
+Holdout frozen/digested:    PENDING
+Real-provider execution:    PENDING
+Real DOI/source retrieval:  PENDING
+Baseline reproduction:      PENDING
+Deterministic audit:        PENDING
+Blinded expert review:      PENDING
+Inter-rater agreement:      PENDING
+Adjudication:               PENDING
+Gate L decision:            INCOMPLETE
 ```
