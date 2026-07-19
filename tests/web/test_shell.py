@@ -23,9 +23,10 @@ def test_web_shell__serves_index_and_task_routes_with_security_headers(tmp_path)
     assert index.status_code == task_route.status_code == trailing.status_code == 200
     assert index.text == task_route.text == trailing.text
     assert "PaperAgent" in index.text
-    assert 'id="task-form"' in index.text
-    assert 'id="paper-list"' in index.text
-    assert "/app-static/app.js" in index.text
+    assert 'id="view-root"' in index.text
+    assert 'id="app-nav"' in index.text
+    assert "/app-static/js/app.js" in index.text
+    assert "/app-static/css/tokens.css" in index.text
     assert "cdn." not in index.text.lower()
     assert "default-src 'self'" in index.headers["content-security-policy"]
     assert index.headers["x-frame-options"] == "DENY"
@@ -38,8 +39,8 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
     with TestClient(app) as client:
         manifest_response = client.get("/app/manifest.webmanifest")
         worker = client.get("/app/service-worker.js")
-        javascript = client.get("/app-static/app.js")
-        stylesheet = client.get("/app-static/styles.css")
+        javascript = client.get("/app-static/js/app.js")
+        stylesheet = client.get("/app-static/css/tokens.css")
         icon = client.get("/app-static/icon.svg")
 
     manifest = manifest_response.json()
@@ -49,7 +50,7 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
     assert manifest["display"] == "standalone"
     assert worker.status_code == 200
     assert worker.headers["service-worker-allowed"] == "/app"
-    assert "paperagent-shell-v0.5.0" in worker.text
+    assert "paperagent-shell-v1.0.0-workbench" in worker.text
     assert "/v1" not in worker.text
     assert javascript.status_code == stylesheet.status_code == icon.status_code == 200
     assert javascript.headers["content-type"].startswith(
@@ -59,29 +60,22 @@ def test_web_shell__serves_manifest_worker_and_static_assets(tmp_path) -> None:
     assert icon.headers["content-type"].startswith("image/svg+xml")
 
 
-def test_web_shell__javascript_contract_covers_mvp_vertical_slice(tmp_path) -> None:
+def test_web_shell__javascript_contract_covers_workbench_demo_slice(tmp_path) -> None:
     app = create_app(executor=NeverCalledExecutor(), database_path=tmp_path / "tasks.db")
 
     with TestClient(app) as client:
-        source = client.get("/app-static/app.js").text
+        source = client.get("/app-static/js/app.js").text
 
     required_contracts = [
-        'const API = "/v1"',
-        '"Idempotency-Key"',
-        "POST",
-        "EventSource",
-        "/events/stream",
-        "/papers/",
-        "expected_version",
-        "/exports/",
-        "localStorage",
+        "location.hash",
+        "#/overview",
+        "PA.views",
         "serviceWorker.register",
-        "history.pushState",
     ]
     for contract in required_contracts:
         assert contract in source
     assert "eval(" not in source
-    assert "innerHTML" not in source
+    assert "fetch(" not in source  # 演示工作台不发起网络请求
     assert "openai" not in source.lower()
     assert "semantic scholar" not in source.lower()
 
