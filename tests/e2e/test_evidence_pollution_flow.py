@@ -38,9 +38,7 @@ async def test_full_graph_rejects_identity_verified_cross_domain_pollution(fixed
     )
     search = FakeSearchProvider(
         fixtures={
-            SearchFixtureKey(
-                scenario="happy_path", query_id="query-support-01", call_index=0
-            ): [
+            SearchFixtureKey(scenario="happy_path", query_id="query-support-01", call_index=0): [
                 SearchCandidate(
                     candidate_id="support-001",
                     query_id="query-support-01",
@@ -69,9 +67,7 @@ async def test_full_graph_rejects_identity_verified_cross_domain_pollution(fixed
                     snippet="A collider physics measurement of particle decay channels.",
                 ),
             ],
-            SearchFixtureKey(
-                scenario="happy_path", query_id="query-ablation-01", call_index=0
-            ): [
+            SearchFixtureKey(scenario="happy_path", query_id="query-ablation-01", call_index=0): [
                 SearchCandidate(
                     candidate_id="ablation-001",
                     query_id="query-ablation-01",
