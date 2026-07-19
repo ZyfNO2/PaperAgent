@@ -182,18 +182,14 @@ def assess_abstract_relevance(
     if fixture_scope_raw in valid_scopes:
         fixture_scope = cast(EvidenceScope, fixture_scope_raw)
         fixture_decision: Literal["pass", "reject"] = (
-            "pass"
-            if fixture_scope in {"direct", "indirect"} and fixture_spans
-            else "reject"
+            "pass" if fixture_scope in {"direct", "indirect"} and fixture_spans else "reject"
         )
         return RelevanceAssessment(
             evidence_id=item.evidence_id,
             task_match=fixture_decision == "pass",
             domain_match=not lexical.missing_mandatory_terms,
             evidence_scope=fixture_scope,
-            relevance_score=float(
-                item.metadata.get("relevance_score", lexical.lexical_score)
-            ),
+            relevance_score=float(item.metadata.get("relevance_score", lexical.lexical_score)),
             decision=fixture_decision,
             supporting_spans=fixture_spans,
             conflict_spans=[],
@@ -224,9 +220,7 @@ def assess_abstract_relevance(
     if not spans:
         spans = [item.summary.strip() or item.title.strip()]
     scope: EvidenceScope = (
-        "direct"
-        if len(lexical.matched_terms) >= 2 or lexical.lexical_score >= 0.4
-        else "indirect"
+        "direct" if len(lexical.matched_terms) >= 2 or lexical.lexical_score >= 0.4 else "indirect"
     )
     return RelevanceAssessment(
         evidence_id=item.evidence_id,
@@ -246,11 +240,9 @@ def assess_abstract_relevance(
 
 def _candidate_gap_ids(item: EvidenceItem) -> set[str]:
     values = item.metadata.get("candidate_gap_ids", "")
-    return {
-        value.strip()
-        for value in values.split(",")
-        if value.strip()
-    } | set(item.supports_gap_ids)
+    return {value.strip() for value in values.split(",") if value.strip()} | set(
+        item.supports_gap_ids
+    )
 
 
 def assess_gap_support(
@@ -294,9 +286,7 @@ def assess_gap_support(
         )
     span = relevance.supporting_spans[0]
     support_type: GapSupportType = (
-        "direct_support"
-        if relevance.evidence_scope == "direct"
-        else "indirect_support"
+        "direct_support" if relevance.evidence_scope == "direct" else "indirect_support"
     )
     return GapSupportAssessment(
         evidence_id=item.evidence_id,
@@ -310,9 +300,7 @@ def assess_gap_support(
             "query_provenance_match": origin_match,
         },
         limitations=(
-            []
-            if overlap
-            else ["accepted from explicit query provenance under a weak gap"]
+            [] if overlap else ["accepted from explicit query provenance under a weak gap"]
         ),
         confidence=0.9 if overlap and origin_match else 0.7 if overlap else 0.55,
         decision="accept",
@@ -348,9 +336,7 @@ def build_evidence_ledger(
             for gap_id in sorted(_candidate_gap_ids(item)):
                 span = relevance.supporting_spans[0]
                 support_type: GapSupportType = (
-                    "direct_support"
-                    if relevance.evidence_scope == "direct"
-                    else "indirect_support"
+                    "direct_support" if relevance.evidence_scope == "direct" else "indirect_support"
                 )
                 supports.append(
                     GapSupportAssessment(
@@ -369,11 +355,11 @@ def build_evidence_ledger(
                     )
                 )
         gap_results.extend(supports)
-        accepted_supports = [
-            support for support in supports if support.decision == "accept"
-        ]
-        accepted = identity_verified and relevance.decision == "pass" and (
-            bool(accepted_supports) or not gaps
+        accepted_supports = [support for support in supports if support.decision == "accept"]
+        accepted = (
+            identity_verified
+            and relevance.decision == "pass"
+            and (bool(accepted_supports) or not gaps)
         )
         rejection_reasons: list[str] = []
         if not identity_verified:
@@ -395,9 +381,7 @@ def build_evidence_ledger(
                 gap_supports=supports,
                 supported_claims=supported_claims,
                 limitations=[
-                    limitation
-                    for support in supports
-                    for limitation in support.limitations
+                    limitation for support in supports for limitation in support.limitations
                 ],
                 accepted=accepted,
                 rejection_reasons=_dedupe(
@@ -431,9 +415,7 @@ def apply_ledger_to_bundle(
     accepted = set(ledger.accepted_ids)
     accepted_gaps = {
         entry.evidence_id: sorted(
-            support.gap_id
-            for support in entry.gap_supports
-            if support.decision == "accept"
+            support.gap_id for support in entry.gap_supports if support.decision == "accept"
         )
         for entry in ledger.entries
     }
@@ -446,9 +428,7 @@ def apply_ledger_to_bundle(
         for item in evidence.items
     ]
     identity_verified_ids = [
-        item.evidence_id
-        for item in items
-        if item.verification_status == "accepted"
+        item.evidence_id for item in items if item.verification_status == "accepted"
     ]
     relevance_rejected_ids = sorted(set(identity_verified_ids) - accepted)
     return EvidenceBundle(
