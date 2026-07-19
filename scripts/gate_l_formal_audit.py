@@ -195,6 +195,12 @@ def normalize_completed_audit(
 
     reviewed_claims = totals["noncritical_claims_reviewed"]
     reviewed_citations = totals["citations_reviewed"]
+    if reviewed_claims == 0:
+        raise ValueError(
+            "formal content audit must review at least one noncritical claim"
+        )
+    if reviewed_citations == 0:
+        raise ValueError("formal content audit must review at least one citation")
     return {
         "audit_version": _AUDIT_VERSION,
         "audit_complete": True,
