@@ -13,12 +13,12 @@ import argparse
 import hashlib
 import json
 import re
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
-from typing import Any, Callable
+from typing import Any
 
 from gate_l_acceptance_v3 import DEFAULT_THRESHOLDS, validate_cases
-
 from paperagent.academic_methodology import (
     METHOD_AUDIT_POLICY_VERSION,
     METHOD_PLAN_CONTRACT_VERSION,
@@ -74,9 +74,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     values: list[dict[str, Any]] = []
-    for line_number, raw in enumerate(
-        path.read_text(encoding="utf-8").splitlines(), start=1
-    ):
+    for line_number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw.strip()
         if not line:
             continue
@@ -157,11 +155,7 @@ def _runtime_prompt_snapshot(
         path = f"src/paperagent/prompts/v0_1/{prompt.task}.md"
         records.append(_artifact_record(repo_root, path, kind="prompt"))
     records.append(
-        _artifact_record(
-            repo_root,
-            "src/paperagent/prompts/registry.py",
-            kind="prompt_registry",
-        )
+        _artifact_record(repo_root, "src/paperagent/prompts/registry.py", kind="prompt_registry")
     )
     return versions, records
 
@@ -175,9 +169,7 @@ def _runtime_policy_snapshot() -> dict[str, str]:
 
 def _validate_attestation(attestation: dict[str, Any], case_digest: str) -> None:
     for field in ("author_or_owner", "role", "authored_at_utc"):
-        value = attestation.get(field)
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"attestation.{field} is required")
+        _reject_placeholder(attestation.get(field), field=f"attestation.{field}")
     for field in _REQUIRED_ATTESTATIONS:
         if attestation.get(field) is not True:
             raise ValueError(f"attestation.{field} must be true")
@@ -190,14 +182,19 @@ def _validate_strategy(repo_root: Path, path: str) -> None:
     profile = _read_json(repo_root / path)
     _ensure_no_secrets(profile, location=path)
     for field in ("strategy_id", "provider", "model", "base_url", "price_table"):
-        value = profile.get(field)
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"{path} requires {field}")
-    declared_price = _safe_relative_path(
-        profile["price_table"], field=f"{path}.price_table"
-    )
+        _reject_placeholder(profile.get(field), field=f"{path}.{field}")
+    declared_price = _safe_relative_path(profile["price_table"], field=f"{path}.price_table")
     if not (repo_root / declared_price).is_file():
         raise ValueError(f"{path} references missing price table: {declared_price}")
+
+
+def _reject_placeholder(value: object, *, field: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field} is required")
+    normalized = value.strip()
+    if "REPLACE_WITH" in normalized.upper():
+        raise ValueError(f"{field} still contains a placeholder")
+    return normalized
 
 
 def _source_sha(value: object) -> str:
@@ -225,24 +222,18 @@ def freeze_contract(
         raise ValueError("holdout_version must start with 'v3-'")
     frozen_source_sha = _source_sha(source_sha)
     cases_path = _safe_relative_path(spec.get("cases"), field="cases")
-    attestation_path = _safe_relative_path(
-        spec.get("attestation"), field="attestation"
-    )
+    attestation_path = _safe_relative_path(spec.get("attestation"), field="attestation")
     behavior_files = _paths(spec.get("behavior_files"), field="behavior_files")
     missing_behavior = sorted(set(REQUIRED_BEHAVIOR_FILES) - set(behavior_files))
     if missing_behavior:
         raise ValueError(
-            "behavior_files is missing mandatory formal inputs: "
-            + ", ".join(missing_behavior)
+            "behavior_files is missing mandatory formal inputs: " + ", ".join(missing_behavior)
         )
-    strategy_profiles = _paths(
-        spec.get("strategy_profiles"), field="strategy_profiles"
-    )
+    strategy_profiles = _paths(spec.get("strategy_profiles"), field="strategy_profiles")
     price_tables = _paths(spec.get("price_tables"), field="price_tables")
     required_environment = spec.get("required_provider_environment", [])
     if not isinstance(required_environment, list) or any(
-        not isinstance(item, str) or not item.strip()
-        for item in required_environment
+        not isinstance(item, str) or not item.strip() for item in required_environment
     ):
         raise ValueError("required_provider_environment must be a list of non-empty names")
     if len(required_environment) != len(set(required_environment)):
@@ -262,42 +253,26 @@ def freeze_contract(
     records = [
         _artifact_record(repo_root, spec_relative, kind="freeze_spec"),
         _artifact_record(repo_root, cases_path, kind="holdout_cases"),
-        _artifact_record(
-            repo_root,
-            attestation_path,
-            kind="holdout_attestation",
-        ),
+        _artifact_record(repo_root, attestation_path, kind="holdout_attestation"),
     ]
-    records.extend(
-        _artifact_record(repo_root, path, kind="behavior")
-        for path in behavior_files
-    )
+    records.extend(_artifact_record(repo_root, path, kind="behavior") for path in behavior_files)
     for path in strategy_profiles:
         _validate_strategy(repo_root, path)
-        records.append(
-            _artifact_record(repo_root, path, kind="strategy_profile")
-        )
-    records.extend(
-        _artifact_record(repo_root, path, kind="price_table")
-        for path in price_tables
-    )
+        records.append(_artifact_record(repo_root, path, kind="strategy_profile"))
+    records.extend(_artifact_record(repo_root, path, kind="price_table") for path in price_tables)
     prompt_versions, prompt_records = prompt_snapshot(repo_root)
     records.extend(prompt_records)
 
     price_set = set(price_tables)
     for path in strategy_profiles:
         profile = _read_json(repo_root / path)
-        declared_price = _safe_relative_path(
-            profile["price_table"], field=f"{path}.price_table"
-        )
+        declared_price = _safe_relative_path(profile["price_table"], field=f"{path}.price_table")
         if declared_price not in price_set:
             raise ValueError(
                 f"{path} price table {declared_price!r} must also appear in price_tables"
             )
 
-    normalized_records = sorted(
-        records, key=lambda item: (item["kind"], item["path"])
-    )
+    normalized_records = sorted(records, key=lambda item: (item["kind"], item["path"]))
     manifest = {
         "version": holdout_version,
         "contract_version": ACCEPTANCE_CONTRACT_VERSION,
@@ -314,12 +289,7 @@ def freeze_contract(
         "expected_case_count": 16,
         "expected_category_counts": {
             category: sum(case.get("category") == category for case in cases)
-            for category in (
-                "in_domain",
-                "ood",
-                "insufficient_evidence",
-                "adversarial",
-            )
+            for category in ("in_domain", "ood", "insufficient_evidence", "adversarial")
         },
         "author_attestation": attestation,
         "acceptance_thresholds": DEFAULT_THRESHOLDS,
@@ -331,9 +301,8 @@ def freeze_contract(
         "freeze_spec_path": spec_relative,
         "freeze_spec_sha256": _sha256(spec_path),
         "note": (
-            "Formal Gate L input identity. Any case, prompt, policy, behavior file, "
-            "strategy, price table, threshold, or source-SHA change requires a new "
-            "holdout version."
+            "Formal Gate L input identity. Any case, prompt, policy, behavior file, strategy, "
+            "price table, threshold, or source-SHA change requires a new holdout version."
         ),
     }
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
@@ -381,16 +350,13 @@ def verify_contract(
     policy_snapshot: Callable[[], dict[str, str]] = _runtime_policy_snapshot,
 ) -> dict[str, Any]:
     repo_root = repo_root.resolve()
-    manifest, _ = _verify_acceptance_manifest(manifest_path, repo_root)
+    manifest, cases = _verify_acceptance_manifest(manifest_path, repo_root)
     if manifest.get("formal_contract_version") != FORMAL_CONTRACT_VERSION:
-        raise ValueError(
-            f"formal_contract_version must be {FORMAL_CONTRACT_VERSION}"
-        )
+        raise ValueError(f"formal_contract_version must be {FORMAL_CONTRACT_VERSION}")
     frozen_sha = _source_sha(manifest.get("scientific_behavior_cutoff_sha"))
     if runtime_sha is not None and _source_sha(runtime_sha) != frozen_sha:
         raise ValueError(
-            f"runtime SHA {runtime_sha} does not match frozen scientific behavior "
-            f"SHA {frozen_sha}"
+            f"runtime SHA {runtime_sha} does not match frozen scientific behavior SHA {frozen_sha}"
         )
 
     artifacts = manifest.get("frozen_artifacts")
@@ -401,57 +367,85 @@ def verify_contract(
     for item in artifacts:
         if not isinstance(item, dict):
             raise ValueError("invalid frozen artifact entry")
-        path = _safe_relative_path(
-            item.get("path"), field="frozen_artifacts.path"
-        )
+        path = _safe_relative_path(item.get("path"), field="frozen_artifacts.path")
         kind = item.get("kind")
         digest = item.get("sha256")
-        if (
-            not isinstance(kind, str)
-            or not kind
-            or not isinstance(digest, str)
-            or not digest
-        ):
+        if not isinstance(kind, str) or not kind or not isinstance(digest, str) or not digest:
             raise ValueError(f"invalid frozen artifact metadata for {path}")
         if path in seen:
             raise ValueError(f"duplicate frozen artifact path: {path}")
         seen.add(path)
-        absolute = repo_root / path
-        if not absolute.is_file():
-            raise ValueError(f"missing frozen artifact: {path}")
-        actual = _sha256(absolute)
+        actual = _sha256(repo_root / path)
         if actual != digest:
             raise ValueError(f"frozen artifact digest mismatch: {path}")
         normalized.append({"kind": kind, "path": path, "sha256": digest})
     normalized.sort(key=lambda item: (item["kind"], item["path"]))
-    if _canonical_digest(normalized) != manifest.get(
-        "frozen_artifact_bundle_sha256"
-    ):
+    if _canonical_digest(normalized) != manifest.get("frozen_artifact_bundle_sha256"):
         raise ValueError("frozen artifact bundle digest mismatch")
 
     paths_by_kind: dict[str, set[str]] = {}
     for item in normalized:
         paths_by_kind.setdefault(item["kind"], set()).add(item["path"])
-    if set(manifest.get("strategy_profiles", [])) != paths_by_kind.get(
-        "strategy_profile", set()
-    ):
+    if set(manifest.get("strategy_profiles", [])) != paths_by_kind.get("strategy_profile", set()):
         raise ValueError("manifest strategy_profiles do not match frozen artifacts")
-    if set(manifest.get("price_tables", [])) != paths_by_kind.get(
-        "price_table", set()
-    ):
+    if set(manifest.get("price_tables", [])) != paths_by_kind.get("price_table", set()):
         raise ValueError("manifest price_tables do not match frozen artifacts")
     if set(REQUIRED_BEHAVIOR_FILES) - paths_by_kind.get("behavior", set()):
         raise ValueError("manifest is missing mandatory behavior artifacts")
     if manifest.get("acceptance_thresholds") != DEFAULT_THRESHOLDS:
         raise ValueError("acceptance thresholds do not match the formal v3 contract")
 
+    freeze_specs = paths_by_kind.get("freeze_spec", set())
+    attestations = paths_by_kind.get("holdout_attestation", set())
+    holdout_files = paths_by_kind.get("holdout_cases", set())
+    if len(freeze_specs) != 1 or len(attestations) != 1 or len(holdout_files) != 1:
+        raise ValueError("formal manifest requires one spec, attestation, and holdout file")
+    spec_path = next(iter(freeze_specs))
+    attestation_path = next(iter(attestations))
+    holdout_path = next(iter(holdout_files))
+    if manifest.get("freeze_spec_path") != spec_path:
+        raise ValueError("manifest freeze_spec_path does not match frozen artifacts")
+    if manifest.get("freeze_spec_sha256") != _sha256(repo_root / spec_path):
+        raise ValueError("manifest freeze_spec_sha256 does not match frozen spec")
+    spec = _read_json(repo_root / spec_path)
+    expected_spec_fields = {
+        "holdout_version": manifest.get("version"),
+        "cases": holdout_path,
+        "attestation": attestation_path,
+        "behavior_files": sorted(paths_by_kind.get("behavior", set())),
+        "strategy_profiles": sorted(paths_by_kind.get("strategy_profile", set())),
+        "price_tables": sorted(paths_by_kind.get("price_table", set())),
+        "required_provider_environment": manifest.get("required_provider_environment"),
+    }
+    observed_spec_fields = {
+        "holdout_version": spec.get("holdout_version"),
+        "cases": spec.get("cases"),
+        "attestation": spec.get("attestation"),
+        "behavior_files": sorted(spec.get("behavior_files", [])),
+        "strategy_profiles": sorted(spec.get("strategy_profiles", [])),
+        "price_tables": sorted(spec.get("price_tables", [])),
+        "required_provider_environment": spec.get("required_provider_environment", []),
+    }
+    if observed_spec_fields != expected_spec_fields:
+        raise ValueError("manifest fields do not match the frozen freeze spec")
+    attestation = _read_json(repo_root / attestation_path)
+    if manifest.get("author_attestation") != attestation:
+        raise ValueError("manifest author_attestation does not match frozen attestation")
+    _validate_attestation(attestation, manifest["case_file_sha256"])
+    observed_counts = {
+        category: sum(case.get("category") == category for case in cases)
+        for category in ("in_domain", "ood", "insufficient_evidence", "adversarial")
+    }
+    if manifest.get("expected_category_counts") != observed_counts:
+        raise ValueError("manifest category counts do not match frozen cases")
+    if manifest.get("expected_case_count") != len(cases):
+        raise ValueError("manifest case count does not match frozen cases")
+
     prompt_versions, _ = prompt_snapshot(repo_root)
     if manifest.get("prompt_versions") != prompt_versions:
         raise ValueError("runtime prompt versions do not match the frozen manifest")
     if manifest.get("policy_versions") != policy_snapshot():
-        raise ValueError(
-            "runtime methodology policy versions do not match the frozen manifest"
-        )
+        raise ValueError("runtime methodology policy versions do not match the frozen manifest")
     required_environment = manifest.get("required_provider_environment")
     if not isinstance(required_environment, list) or any(
         not isinstance(item, str) or not item.strip() or "=" in item
@@ -462,24 +456,16 @@ def verify_contract(
     if strategy_path is not None:
         strategy = _safe_relative_path(strategy_path.as_posix(), field="strategy")
         if strategy not in manifest.get("strategy_profiles", []):
-            raise ValueError(
-                f"strategy profile is not frozen in the manifest: {strategy}"
-            )
+            raise ValueError(f"strategy profile is not frozen in the manifest: {strategy}")
     if price_table_path is not None:
-        price = _safe_relative_path(
-            price_table_path.as_posix(), field="price_table"
-        )
+        price = _safe_relative_path(price_table_path.as_posix(), field="price_table")
         if price not in manifest.get("price_tables", []):
-            raise ValueError(
-                f"price table is not frozen in the manifest: {price}"
-            )
+            raise ValueError(f"price table is not frozen in the manifest: {price}")
     return manifest
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Formal Gate L v3 contract utilities"
-    )
+    parser = argparse.ArgumentParser(description="Formal Gate L v3 contract utilities")
     commands = parser.add_subparsers(dest="command", required=True)
     freeze = commands.add_parser("freeze")
     freeze.add_argument("--spec", type=Path, required=True)
@@ -497,15 +483,10 @@ def main() -> int:
     args = _parser().parse_args()
     try:
         if args.command == "freeze":
-            manifest = freeze_contract(
-                args.spec,
-                args.manifest_out,
-                source_sha=args.source_sha,
-            )
+            manifest = freeze_contract(args.spec, args.manifest_out, source_sha=args.source_sha)
             print(
                 "Formal Gate L manifest frozen: "
-                f"version={manifest['version']} "
-                f"bundle={manifest['frozen_artifact_bundle_sha256']}"
+                f"version={manifest['version']} bundle={manifest['frozen_artifact_bundle_sha256']}"
             )
         else:
             manifest = verify_contract(
@@ -516,8 +497,7 @@ def main() -> int:
             )
             print(
                 "Formal Gate L manifest verified: "
-                f"version={manifest['version']} "
-                f"source={manifest['scientific_behavior_cutoff_sha']}"
+                f"version={manifest['version']} source={manifest['scientific_behavior_cutoff_sha']}"
             )
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"Formal Gate L contract error: {exc}")
