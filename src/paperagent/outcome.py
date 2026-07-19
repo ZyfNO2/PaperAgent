@@ -97,6 +97,16 @@ def derive_final_outcome(state: PaperAgentState) -> FinalOutcome:
             blocker_code=reason,
             recommended_next_actions=[],
         )
+    if quality is None:
+        return _outcome(
+            state,
+            execution_status="blocked",
+            scientific_verdict="NOT_EVALUATED",
+            report_status="blocked",
+            reason_codes=["QUALITY_NOT_EVALUATED"],
+            blocker_code="QUALITY_NOT_EVALUATED",
+            recommended_next_actions=[],
+        )
     if audit is not None and audit.verdict is AuditVerdict.NO_GO:
         return _outcome(
             state,
@@ -107,7 +117,7 @@ def derive_final_outcome(state: PaperAgentState) -> FinalOutcome:
             blocker_code=reason_codes[0] if reason_codes else None,
             recommended_next_actions=[],
         )
-    if quality is not None and quality.verdict == "pass":
+    if quality.verdict == "pass":
         return _outcome(
             state,
             execution_status="succeeded",
@@ -119,9 +129,7 @@ def derive_final_outcome(state: PaperAgentState) -> FinalOutcome:
         )
     return _outcome(
         state,
-        execution_status=(
-            "blocked" if quality is not None and quality.verdict == "human_review" else "succeeded"
-        ),
+        execution_status=("blocked" if quality.verdict == "human_review" else "succeeded"),
         scientific_verdict="REVISE",
         report_status="completed",
         reason_codes=reason_codes,
