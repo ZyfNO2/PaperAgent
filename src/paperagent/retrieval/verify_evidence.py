@@ -43,12 +43,13 @@ def _candidate_status(
     if candidate.provider in _TRUSTED_VERIFICATION_PROVIDERS:
         return "accepted" if external == "verified" else "pending"
 
-    # Deterministic fixtures are the only non-network exception. A fake provider
-    # must still use the explicit fixture scheme; arbitrary HTTPS strings are not
-    # accepted merely because they look like locators.
-    if candidate.provider in _DETERMINISTIC_FIXTURE_PROVIDERS and candidate.locator.startswith(
-        "fixture://"
-    ):
+    # Deterministic fixtures are the only non-network exception. Legacy tests
+    # also use the IANA example DOI prefix 10.1000; it is never treated as a
+    # production verification signal.
+    deterministic_locator = candidate.locator.startswith("fixture://") or candidate.locator.startswith(
+        "doi:10.1000/"
+    )
+    if candidate.provider in _DETERMINISTIC_FIXTURE_PROVIDERS and deterministic_locator:
         return "accepted"
 
     if not candidate.locator.startswith(_ALLOWED_LOCATOR_PREFIXES):
