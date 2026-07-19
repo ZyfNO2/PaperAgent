@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from paperagent.errors import ProviderError
 from paperagent.literature.service import LiteratureRetrievalService
 from paperagent.literature.source_policy import SearchSourcePolicy, review_search_query
@@ -178,21 +180,16 @@ class LiteratureSearchAdapter:
 
     @staticmethod
     def _has_sufficient_academic_evidence(
-        papers: object,
+        papers: Iterable[PaperRecord],
         policy: SearchSourcePolicy,
     ) -> bool:
-        relevant = 0
-        for paper in papers:
-            if not isinstance(paper, PaperRecord):
-                continue
-            features = paper.rank_features
-            if (
-                paper.verification_status == "verified"
-                and features is not None
-                and features.relevance >= policy.minimum_relevance
-                and features.score >= policy.minimum_rank_score
-            ):
-                relevant += 1
+        relevant = sum(
+            paper.verification_status == "verified"
+            and paper.rank_features is not None
+            and paper.rank_features.relevance >= policy.minimum_relevance
+            and paper.rank_features.score >= policy.minimum_rank_score
+            for paper in papers
+        )
         return relevant >= policy.minimum_relevant_results
 
     @staticmethod
