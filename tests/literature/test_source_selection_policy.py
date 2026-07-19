@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import cast
+from typing import Any, cast
 
 import pytest
 
@@ -26,7 +26,7 @@ def _query(value: str, *, source_types: list[str] | None = None) -> SearchQuery:
         query_id="q-1",
         gap_id="gap-1",
         query=value,
-        source_types=source_types or ["paper", "web"],
+        source_types=source_types or ["paper", "web"],  # type: ignore[arg-type]
     )
 
 
@@ -73,8 +73,7 @@ def _bundle(provider: str, papers: list[PaperRecord]) -> LiteratureBundle:
     result = ProviderResult(
         provider=provider,
         request_id=f"req-{provider}",
-        status="success" if papers else "empty",
-        papers=[],
+        status="empty",
         started_at=now,
         finished_at=now,
     )
@@ -92,7 +91,7 @@ class RecordingService:
         self._bundles = bundles
         self.calls: list[str] = []
 
-    async def retrieve(self, plan: object) -> LiteratureBundle:
+    async def retrieve(self, plan: Any) -> LiteratureBundle:
         lane = plan.query_lanes[0]
         provider = lane.source_preferences[0]
         self.calls.append(provider)
@@ -108,12 +107,13 @@ def _adapter(service: RecordingService) -> LiteratureSearchAdapter:
     )
 
 
-def test_generic_query_is_rejected_before_any_provider_call() -> None:
+@pytest.mark.asyncio
+async def test_generic_query_is_rejected_before_any_provider_call() -> None:
     service = RecordingService({"openalex": _bundle("openalex", [])})
     adapter = _adapter(service)
 
     with pytest.raises(ProviderError) as exc_info:
-        pytest.run(async_fn=adapter.search)(
+        await adapter.search(
             query=_query("deep learning"),
             scenario="live",
             call_index=0,
