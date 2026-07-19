@@ -95,6 +95,16 @@ async def execute(args: argparse.Namespace) -> int:
         strategy_path=strategy,
         price_table_path=price_table,
     )
+    missing_environment = [
+        name
+        for name in manifest.get("required_provider_environment", [])
+        if not os.environ.get(name)
+    ]
+    if missing_environment:
+        raise ValueError(
+            "missing required provider environment variables: "
+            + ", ".join(sorted(missing_environment))
+        )
 
     os.environ["GITHUB_SHA"] = runtime_sha
     result = await run_variant(
@@ -120,9 +130,7 @@ async def execute(args: argparse.Namespace) -> int:
             "run record repository identity does not match formal preflight"
         )
     if identity.get("manifest_sha256") != _sha256(manifest_path):
-        raise ValueError(
-            "run record manifest identity does not match formal preflight"
-        )
+        raise ValueError("run record manifest identity does not match formal preflight")
 
     preflight = {
         "gate": "L",
