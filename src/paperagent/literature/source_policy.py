@@ -115,9 +115,7 @@ def review_search_query(query: SearchQuery) -> SearchSourcePolicy:
     terms = _english_terms(normalized)
     informative = _informative_terms(normalized)
     unique_informative = tuple(dict.fromkeys(informative))
-    discriminative = tuple(
-        term for term in unique_informative if term not in _GENERIC_TERMS
-    )
+    discriminative = tuple(term for term in unique_informative if term not in _GENERIC_TERMS)
     identifier_query = bool(_IDENTIFIER.search(normalized))
     cjk_count = len(_CJK.findall(normalized))
     generic_only = bool(unique_informative) and not discriminative
