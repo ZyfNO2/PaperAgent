@@ -244,6 +244,145 @@ def test_compute_fit_unknown_is_revise_but_explicit_false_is_no_go() -> None:
     assert audit_method_plan(incompatible).verdict is AuditVerdict.NO_GO
 
 
+def test_forged_go_audit_with_failed_critical_check_is_rejected() -> None:
+    from paperagent.academic_methodology import (
+        AuditCheck,
+        AuditSeverity,
+        AuditVerdict,
+        ClaimStatus,
+        MethodAuditReport,
+        MethodAuditTrace,
+    )
+
+    checks = (
+        AuditCheck(
+            check_id="baseline-license",
+            passed=False,
+            severity=AuditSeverity.CRITICAL,
+            status=ClaimStatus.UNKNOWN,
+            message="baseline license failed",
+        ),
+    )
+    trace = MethodAuditTrace(
+        plan_fingerprint="a" * 64,
+        passed_check_ids=(),
+        failed_check_ids=("baseline-license",),
+        evidence_ids=(),
+        module_ids=(),
+        experiment_ids=(),
+    )
+    try:
+        MethodAuditReport(
+            verdict=AuditVerdict.GO,
+            reasons=("forged",),
+            baseline_decision="ready",
+            checks=checks,
+            missing_evidence=(),
+            risks=("baseline license failed",),
+            implementation_steps=(),
+            experiment_matrix=(),
+            method_section_outline=(),
+            plan_fingerprint="a" * 64,
+            trace=trace,
+        )
+    except ValueError as exc:
+        assert "does not match expected" in str(exc)
+        assert "NO_GO" in str(exc)
+    else:
+        raise AssertionError("forged GO audit with failed critical check was accepted")
+
+
+def test_forged_go_audit_with_failed_error_check_is_rejected() -> None:
+    from paperagent.academic_methodology import (
+        AuditCheck,
+        AuditSeverity,
+        AuditVerdict,
+        ClaimStatus,
+        MethodAuditReport,
+        MethodAuditTrace,
+    )
+
+    checks = (
+        AuditCheck(
+            check_id="research-contract-complete",
+            passed=False,
+            severity=AuditSeverity.ERROR,
+            status=ClaimStatus.PROPOSED,
+            message="research contract incomplete",
+        ),
+    )
+    trace = MethodAuditTrace(
+        plan_fingerprint="b" * 64,
+        passed_check_ids=(),
+        failed_check_ids=("research-contract-complete",),
+        evidence_ids=(),
+        module_ids=(),
+        experiment_ids=(),
+    )
+    try:
+        MethodAuditReport(
+            verdict=AuditVerdict.GO,
+            reasons=("forged",),
+            baseline_decision="ready",
+            checks=checks,
+            missing_evidence=(),
+            risks=("research contract incomplete",),
+            implementation_steps=(),
+            experiment_matrix=(),
+            method_section_outline=(),
+            plan_fingerprint="b" * 64,
+            trace=trace,
+        )
+    except ValueError as exc:
+        assert "does not match expected" in str(exc)
+        assert "REVISE" in str(exc)
+    else:
+        raise AssertionError("forged GO audit with failed error check was accepted")
+
+
+def test_valid_go_audit_with_all_checks_passed_is_accepted() -> None:
+    from paperagent.academic_methodology import (
+        AuditCheck,
+        AuditSeverity,
+        AuditVerdict,
+        ClaimStatus,
+        MethodAuditReport,
+        MethodAuditTrace,
+    )
+
+    checks = (
+        AuditCheck(
+            check_id="baseline-license",
+            passed=True,
+            severity=AuditSeverity.CRITICAL,
+            status=ClaimStatus.VERIFIED,
+            message="baseline license ok",
+        ),
+    )
+    trace = MethodAuditTrace(
+        plan_fingerprint="c" * 64,
+        passed_check_ids=("baseline-license",),
+        failed_check_ids=(),
+        evidence_ids=(),
+        module_ids=(),
+        experiment_ids=(),
+    )
+    report = MethodAuditReport(
+        verdict=AuditVerdict.GO,
+        reasons=("all checks passed",),
+        baseline_decision="ready",
+        checks=checks,
+        missing_evidence=(),
+        risks=(),
+        implementation_steps=(),
+        experiment_matrix=(),
+        method_section_outline=(),
+        plan_fingerprint="c" * 64,
+        trace=trace,
+    )
+    assert report.verdict is AuditVerdict.GO
+
+
 @pytest.mark.asyncio
 async def test_quality_gate_node_persists_recomputed_audit(fixed_time: datetime) -> None:
     from paperagent.academic_methodology import audit_method_plan, method_plan_fingerprint

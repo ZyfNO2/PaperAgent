@@ -256,6 +256,18 @@ class MethodAuditReport(BaseModel):
     plan_fingerprint: str
     trace: MethodAuditTrace
 
+    @staticmethod
+    def _verdict_from_checks(checks: tuple[AuditCheck, ...]) -> AuditVerdict:
+        has_critical = any(
+            not item.passed and item.severity is AuditSeverity.CRITICAL for item in checks
+        )
+        has_failure = any(not item.passed for item in checks)
+        if has_critical:
+            return AuditVerdict.NO_GO
+        if has_failure:
+            return AuditVerdict.REVISE
+        return AuditVerdict.GO
+
     @model_validator(mode="after")
     def validate_report_identity(self) -> MethodAuditReport:
         if self.contract_version != METHOD_PLAN_CONTRACT_VERSION:
@@ -277,6 +289,12 @@ class MethodAuditReport(BaseModel):
             raise ValueError("audit trace passed checks do not match report checks")
         if self.trace.failed_check_ids != failed:
             raise ValueError("audit trace failed checks do not match report checks")
+        expected_verdict = self._verdict_from_checks(self.checks)
+        if self.verdict != expected_verdict:
+            raise ValueError(
+                f"audit verdict {self.verdict.value!r} does not match "
+                f"expected {expected_verdict.value!r} derived from checks"
+            )
         return self
 
 

@@ -136,4 +136,4 @@ The handoff does not claim:
 - live Mistral scientific-quality evidence;
 - real-paper reproduction, external holdout, or blinded expert review;
 - production throughput, availability, or cost SLOs.
-- the system binds baseline reproduction facts to server-owned evidence metadata and does not execute training experiments independently.
+- independent execution or verification of baseline training and reproduction experiments; PaperAgent only consumes and binds trusted server-owned execution metadata, and missing metadata results in REVISE or NO_GO.
