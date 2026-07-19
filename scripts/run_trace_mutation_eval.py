@@ -48,7 +48,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     fixture_dir: Path = args.fixture_dir
-    manifest = TraceFixtureManifest.model_validate(_load_json(fixture_dir / "manifest.json"))
+    manifest = TraceFixtureManifest.model_validate(
+        _load_json(fixture_dir / "manifest.json")
+    )
     baseline = _TRACE_LIST.validate_python(_load_json(fixture_dir / "trace.json"))
     cases = _CASE_LIST.validate_python(_load_json(fixture_dir / "cases.json"))
 
@@ -61,7 +63,8 @@ def main() -> int:
             fixture_version=manifest.fixture_version,
             source_commit=args.source_commit,
             events=events,
-            expected_event_count=case.expected_event_count or manifest.expected_event_count,
+            expected_event_count=case.expected_event_count
+            or manifest.expected_event_count,
             expected_route_sequence=(
                 case.expected_route_sequence
                 if case.expected_route_sequence is not None
@@ -71,8 +74,12 @@ def main() -> int:
                 case.expected_trace_digest or manifest.expected_trace_digest
             ),
         )
-        required_errors_present = set(case.required_error_codes).issubset(report.error_codes)
-        classified_correctly = report.passed == case.expected_pass and required_errors_present
+        required_errors_present = set(case.required_error_codes).issubset(
+            report.error_codes
+        )
+        classified_correctly = (
+            report.passed == case.expected_pass and required_errors_present
+        )
         corpus_passed = corpus_passed and classified_correctly
         case_results.append(
             {
@@ -94,8 +101,12 @@ def main() -> int:
         "source_commit": args.source_commit,
         "total_cases": len(cases),
         "negative_cases": sum(1 for case in cases if not case.expected_pass),
-        "passed_cases": sum(1 for result in case_results if result["classified_correctly"]),
-        "failed_cases": sum(1 for result in case_results if not result["classified_correctly"]),
+        "passed_cases": sum(
+            1 for result in case_results if result["classified_correctly"]
+        ),
+        "failed_cases": sum(
+            1 for result in case_results if not result["classified_correctly"]
+        ),
         "corpus_passed": corpus_passed,
         "cases": case_results,
     }
