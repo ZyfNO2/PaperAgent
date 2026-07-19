@@ -105,9 +105,7 @@ def test_formal_runner_preserves_preflight_on_failed_closed_run(
     assert result == 2
     preflight = output_dir / "formal-preflight.json"
     assert preflight.is_file()
-    run_record = json.loads(
-        (output_dir / "run-record.json").read_text(encoding="utf-8")
-    )
+    run_record = json.loads((output_dir / "run-record.json").read_text(encoding="utf-8"))
     assert run_record["formal_execution_eligible"] is False
     assert (
         run_record["formal_contract"]["preflight_sha256"]
