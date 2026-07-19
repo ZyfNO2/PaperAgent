@@ -14,6 +14,7 @@ on:
       - "tests/test_interview_readiness.py"
       - "docs/evaluation/RAG_EVALUATION_CONTRACT.md"
       - "docs/interview/GOLD_CASE_RAG_READINESS.md"
+      - "docs/interview/HANDOFF.md"
       - ".github/workflows/gold-case-interview-readiness.yml"
   workflow_dispatch:
 
@@ -79,8 +80,19 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install project
         run: python -m pip install -e '.[dev]'
+      - name: Prepare evidence directory
+        run: mkdir -p build/gold-case
       - name: Full repository regression
-        run: pytest --cov=paperagent --cov-branch --cov-report=term-missing -q
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest \
+            --cov=paperagent \
+            --cov-branch \
+            --cov-report=term-missing \
+            --junitxml=build/gold-case/pytest.xml \
+            -q \
+            2>&1 | tee build/gold-case/pytest-output.log
       - name: Build Gold Case report
         run: >-
           python scripts/run_gold_case_readiness.py
