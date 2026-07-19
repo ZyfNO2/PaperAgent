@@ -1,0 +1,36 @@
+{
+  "holdout_version": "v3-formal-001",
+  "cases": "evals/v0_6/gate_l_v3/holdout_cases.v3-formal-001.jsonl",
+  "attestation": "evals/v0_6/gate_l_v3/holdout_attestation.v3-formal-001.json",
+  "behavior_files": [
+    "scripts/gate_l_acceptance_v3.py",
+    "scripts/gate_l_formal_contract.py",
+    "scripts/run_gate_l_formal.py",
+    "scripts/run_gate_l_variant.py",
+    "scripts/assemble_gate_l_v3_summary.py",
+    "src/paperagent/graph.py",
+    "src/paperagent/academic_methodology.py",
+    "src/paperagent/nodes/planning.py",
+    "src/paperagent/nodes/evidence_synthesis.py",
+    "src/paperagent/nodes/method_design.py",
+    "src/paperagent/nodes/quality_gate.py",
+    "src/paperagent/nodes/report.py",
+    "src/paperagent/retrieval/graph.py",
+    "src/paperagent/retrieval/verify_evidence.py",
+    "src/paperagent/literature/planner.py",
+    "src/paperagent/providers/config.py",
+    "src/paperagent/providers/runtime.py",
+    "src/paperagent/providers/runtime_factory.py",
+    "src/paperagent/pricing.py"
+  ],
+  "strategy_profiles": [
+    "config/gate-l-strategies/formal-balanced.json"
+  ],
+  "price_tables": [
+    "config/price-table-mistral.json"
+  ],
+  "required_provider_environment": [
+    "MISTRAL_API_KEY",
+    "PAPERAGENT_CONTACT_EMAIL"
+  ]
+}
