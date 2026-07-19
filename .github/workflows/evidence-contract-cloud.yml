@@ -18,6 +18,7 @@ on:
       - "src/paperagent/schemas/__init__.py"
       - "src/paperagent/state.py"
       - "tests/nodes/test_evidence_ledger_outcome_trace.py"
+      - "tests/e2e/test_evidence_pollution_flow.py"
       - ".github/workflows/evidence-contract-cloud.yml"
   workflow_dispatch:
 
@@ -46,7 +47,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          mkdir -p build/evidence-contract-cloud
+          mkdir -p build/evidence-contract-cloud/source
           files=(
             src/paperagent/evidence_relevance.py
             src/paperagent/outcome.py
@@ -61,7 +62,9 @@ jobs:
             src/paperagent/schemas/__init__.py
             src/paperagent/state.py
             tests/nodes/test_evidence_ledger_outcome_trace.py
+            tests/e2e/test_evidence_pollution_flow.py
           )
+          cp --parents "${files[@]}" build/evidence-contract-cloud/source/
           ruff check "${files[@]}" --output-format=concise \
             > build/evidence-contract-cloud/ruff.log 2>&1
           ruff_status=$?
@@ -71,7 +74,10 @@ jobs:
           mypy --config-file pyproject.toml \
             > build/evidence-contract-cloud/mypy.log 2>&1
           mypy_status=$?
-          pytest -q tests/nodes/test_evidence_ledger_outcome_trace.py tests/nodes/test_retrieval.py \
+          pytest -q \
+            tests/nodes/test_evidence_ledger_outcome_trace.py \
+            tests/nodes/test_retrieval.py \
+            tests/e2e/test_evidence_pollution_flow.py \
             > build/evidence-contract-cloud/pytest.log 2>&1
           pytest_status=$?
           printf '{"ruff":%s,"format":%s,"mypy":%s,"pytest":%s}\n' \
