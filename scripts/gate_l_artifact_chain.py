@@ -24,6 +24,13 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _canonical_digest(value: object) -> str:
+    payload = json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def _safe_relative(raw: str) -> Path:
     normalized = raw.replace("\\", "/")
     path = PurePosixPath(normalized)
@@ -210,10 +217,19 @@ def verify_execution_bundle(
             raise ValueError(f"evidence case ID mismatch: {evidence_path}")
         if evidence.get("execution_identity") != identity:
             raise ValueError(f"evidence execution identity mismatch: {case_id}")
-        for field in ("output_digest", "trace_digest"):
-            value = evidence.get(field)
+        for payload_field, digest_field in (
+            ("output_payload", "output_digest"),
+            ("trace_payload", "trace_digest"),
+        ):
+            if payload_field not in evidence:
+                raise ValueError(f"{case_id}: {payload_field} is required")
+            value = evidence.get(digest_field)
             if not isinstance(value, str) or not _HEX64_RE.fullmatch(value):
-                raise ValueError(f"{case_id}: {field} must be a SHA-256 digest")
+                raise ValueError(f"{case_id}: {digest_field} must be a SHA-256 digest")
+            if _canonical_digest(evidence[payload_field]) != value:
+                raise ValueError(
+                    f"{case_id}: {digest_field} does not match {payload_field}"
+                )
     return {
         "record_type": "verified_formal_execution",
         "source_sha": expected_source_sha,
