@@ -25,9 +25,7 @@ def _sha256(path: Path) -> str:
 
 
 def _canonical_digest(value: object) -> str:
-    payload = json.dumps(
-        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-    )
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -39,16 +37,12 @@ def _safe_relative(raw: str) -> Path:
     return Path(path.as_posix())
 
 
-def verify_sha256sums(
-    directory: Path, *, filename: str = "SHA256SUMS"
-) -> dict[str, str]:
+def verify_sha256sums(directory: Path, *, filename: str = "SHA256SUMS") -> dict[str, str]:
     sums_path = directory / filename
     if not sums_path.is_file():
         raise ValueError(f"missing checksum inventory: {sums_path}")
     observed: dict[str, str] = {}
-    for line_number, raw in enumerate(
-        sums_path.read_text(encoding="utf-8").splitlines(), start=1
-    ):
+    for line_number, raw in enumerate(sums_path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw.strip()
         if not line:
             continue
@@ -151,9 +145,7 @@ def verify_execution_bundle(
     required_files = {"run-record.json", "formal-preflight.json"}
     if not required_files <= set(checksums):
         missing = sorted(required_files - set(checksums))
-        raise ValueError(
-            f"execution checksum inventory is missing: {', '.join(missing)}"
-        )
+        raise ValueError(f"execution checksum inventory is missing: {', '.join(missing)}")
     manifest = _read_json(manifest_path)
     run_record_path = bundle_dir / "run-record.json"
     preflight_path = bundle_dir / "formal-preflight.json"
@@ -227,17 +219,14 @@ def verify_execution_bundle(
             if not isinstance(value, str) or not _HEX64_RE.fullmatch(value):
                 raise ValueError(f"{case_id}: {digest_field} must be a SHA-256 digest")
             if _canonical_digest(evidence[payload_field]) != value:
-                raise ValueError(
-                    f"{case_id}: {digest_field} does not match {payload_field}"
-                )
+                raise ValueError(f"{case_id}: {digest_field} does not match {payload_field}")
     return {
         "record_type": "verified_formal_execution",
         "source_sha": expected_source_sha,
         "manifest_sha256": manifest_digest,
         "run_record_sha256": _sha256(run_record_path),
         "formal_preflight_sha256": _sha256(preflight_path),
-        "formal_execution_eligible": run_record.get("formal_execution_eligible")
-        is True,
+        "formal_execution_eligible": run_record.get("formal_execution_eligible") is True,
         "case_count": len(case_ids),
         "checksums": checksums,
     }
@@ -253,9 +242,7 @@ def _write_result(result: dict[str, Any], output: Path | None) -> None:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Verify formal Gate L artifact-chain links"
-    )
+    parser = argparse.ArgumentParser(description="Verify formal Gate L artifact-chain links")
     commands = parser.add_subparsers(dest="command", required=True)
     sums = commands.add_parser("verify-sums")
     sums.add_argument("--bundle-dir", type=Path, required=True)
