@@ -16,8 +16,12 @@ NODE = "persist_node"
 
 def _execution_status(state: PaperAgentState) -> Literal["blocked", "completed", "failed"]:
     outcome = state.get("final_outcome") or derive_final_outcome(state)
+    # ExecutionMeta is the legacy graph/task terminal contract. Keep upstream
+    # failures in its blocked terminal for backward compatibility while the
+    # authoritative FinalOutcome preserves execution_status=failed and the
+    # original typed NodeErrorRecord.
     if outcome.execution_status == "failed":
-        return "failed"
+        return "blocked"
     if outcome.execution_status in {"blocked", "cancelled"} or outcome.report_status == "blocked":
         return "blocked"
     return "completed"
