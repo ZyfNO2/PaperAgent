@@ -34,6 +34,16 @@ class AsyncHTTPTransport(Protocol):
         timeout: float = 10.0,
     ) -> HTTPResponse: ...
 
+    async def post(
+        self,
+        url: str,
+        *,
+        json_body: dict[str, Any] | None = None,
+        data: dict[str, str] | None = None,
+        headers: dict[str, str] | None = None,
+        timeout: float = 10.0,
+    ) -> HTTPResponse: ...
+
 
 class LiteratureProvider(Protocol):
     provider_name: str
@@ -53,15 +63,8 @@ class HttpxTransport:
         self._client = client or httpx.AsyncClient(follow_redirects=True)
         self._owns_client = client is None
 
-    async def get(
-        self,
-        url: str,
-        *,
-        params: dict[str, str | int] | None = None,
-        headers: dict[str, str] | None = None,
-        timeout: float = 10.0,
-    ) -> HTTPResponse:
-        response = await self._client.get(url, params=params, headers=headers, timeout=timeout)
+    @staticmethod
+    def _response(response: httpx.Response) -> HTTPResponse:
         try:
             json_data: Any | None = response.json()
         except ValueError:
@@ -72,6 +75,35 @@ class HttpxTransport:
             json_data=json_data,
             text=response.text,
         )
+
+    async def get(
+        self,
+        url: str,
+        *,
+        params: dict[str, str | int] | None = None,
+        headers: dict[str, str] | None = None,
+        timeout: float = 10.0,
+    ) -> HTTPResponse:
+        response = await self._client.get(url, params=params, headers=headers, timeout=timeout)
+        return self._response(response)
+
+    async def post(
+        self,
+        url: str,
+        *,
+        json_body: dict[str, Any] | None = None,
+        data: dict[str, str] | None = None,
+        headers: dict[str, str] | None = None,
+        timeout: float = 10.0,
+    ) -> HTTPResponse:
+        response = await self._client.post(
+            url,
+            json=json_body,
+            data=data,
+            headers=headers,
+            timeout=timeout,
+        )
+        return self._response(response)
 
     async def aclose(self) -> None:
         if self._owns_client:
