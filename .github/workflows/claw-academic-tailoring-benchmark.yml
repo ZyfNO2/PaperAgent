@@ -1,0 +1,66 @@
+name: PaperClaw Academic Tailoring Benchmark
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - "evals/claw_academic_tailoring_v1/**"
+      - "src/paperagent/claw_academic_benchmark.py"
+      - "scripts/run_claw_academic_benchmark.py"
+      - "tests/evals/test_claw_academic_benchmark.py"
+      - ".github/workflows/claw-academic-tailoring-benchmark.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Lint and format
+        run: |
+          ruff check \
+            src/paperagent/claw_academic_benchmark.py \
+            scripts/run_claw_academic_benchmark.py \
+            tests/evals/test_claw_academic_benchmark.py
+          ruff format --check \
+            src/paperagent/claw_academic_benchmark.py \
+            scripts/run_claw_academic_benchmark.py \
+            tests/evals/test_claw_academic_benchmark.py
+      - name: Strict type check
+        run: mypy --config-file pyproject.toml
+      - name: Focused benchmark tests
+        run: pytest -q tests/evals/test_claw_academic_benchmark.py
+      - name: Run 20-case evaluator self-check
+        run: |
+          python scripts/run_claw_academic_benchmark.py \
+            --output build/claw-academic-tailoring-${{ matrix.python-version }}.json \
+            --require-pass
+      - name: Upload benchmark evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claw-academic-tailoring-${{ matrix.python-version }}-${{ github.run_id }}
+          path: |
+            build/claw-academic-tailoring-${{ matrix.python-version }}.json
+            evals/claw_academic_tailoring_v1/source.json
+          if-no-files-found: error
+          retention-days: 30
