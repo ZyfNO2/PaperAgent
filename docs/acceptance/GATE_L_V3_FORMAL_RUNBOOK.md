@@ -3,156 +3,271 @@
 ## Current status
 
 ```text
-Formal contract tooling:        IMPLEMENTED
-Formal holdout authored:        PENDING INDEPENDENT OWNER
-Formal manifest frozen:         PENDING
-Real-provider execution:        PENDING
-Deterministic evidence audit:   PENDING
-Two independent blind reviews: PENDING
-Adjudication and agreement:     PENDING
-Gate L decision:                INCOMPLETE
+Formal contract tooling:         IMPLEMENTED IN PR #26
+Artifact-chain verification:     IMPLEMENTED IN PR #26
+Formal execution workflow:       IMPLEMENTED IN PR #26
+Deterministic audit workflow:    IMPLEMENTED IN PR #26
+Blinded-package separation:      IMPLEMENTED IN PR #26
+Final scoring workflow:          IMPLEMENTED IN PR #26
+Formal holdout authored:         PENDING INDEPENDENT OWNER
+Formal manifest frozen:          PENDING
+Real-provider execution:         PENDING
+Human content audit:             PENDING
+Two independent blind reviews:  PENDING
+Adjudication and agreement:      PENDING
+Gate L decision:                 INCOMPLETE
 ```
 
-The earlier v1 and v2 corpora remain diagnostic evidence only. They must not be renamed, copied, or scored as the formal v3 holdout.
+Engineering automation does not establish scientific acceptance. The earlier v1 and v2 corpora remain diagnostic evidence only and must not be renamed, copied, or scored as the formal v3 holdout.
 
-## Why a second formal contract is required
+## Formal evidence chain
 
-The original v3 acceptance manifest fixed the case file and planning-prompt version, but it did not bind every input that can change scientific behaviour. In particular, a run could use a different repository commit, another prompt, a modified quality policy, an altered strategy profile, or a changed price table while retaining the old manifest identity.
+The authoritative cloud sequence is:
 
-The formal contract closes that gap by binding:
+```text
+exact source SHA + independent holdout + attestation + strategy + price table
+        ↓
+Gate L Formal Freeze
+        ↓ immutable freeze artifact
+Gate L Formal Execute
+        ↓ immutable 16-case execution artifact
+Gate L Formal Audit (prepare)
+        ↓ fail-closed human audit template
+human evidence auditor completes and seals the audit on a separate ref
+        ↓
+Gate L Formal Audit (finalize)
+        ↓ deterministic-summary artifact
+Gate L Build Blinded Review Package
+        ↓ reviewer artifact + separate private custodian artifact
+Reviewer A and Reviewer B submit independently on a sealed review ref
+        ↓ optional recorded adjudication
+Gate L Formal Score
+        ↓ PASS / FAIL / INCOMPLETE evidence artifact
+```
 
-- the exact repository source SHA used for execution;
+Each downstream workflow downloads artifacts by exact workflow run ID and exact artifact name. Every artifact contains a relocatable `SHA256SUMS` inventory. The chain verifier rejects checksum drift, source-SHA drift, manifest drift, missing cases, missing per-case evidence, identity mismatches, and incomplete artifact sets.
+
+## Why the formal contract is required
+
+A case-file digest alone does not bind every input that can change scientific behavior. A formal run must bind:
+
+- the exact repository source SHA;
 - the complete 16-case holdout and independent-owner attestation;
 - all packaged prompt versions and prompt-file digests;
 - methodology contract and audit-policy versions;
-- explicitly listed behaviour-bearing source files;
-- strategy profiles and their referenced price tables;
-- the fixed Gate L acceptance thresholds;
-- the names, but never values, of required environment variables.
+- behavior-bearing source files, including artifact-chain, audit, review-package, and scoring utilities;
+- strategy profiles and referenced price tables;
+- fixed Gate L acceptance thresholds;
+- required environment-variable names, never secret values.
 
-Any digest, prompt version, policy version, strategy, price table, or runtime-SHA mismatch fails before provider execution.
+Any digest, prompt version, policy version, strategy, price table, threshold, or runtime-SHA mismatch fails before provider execution.
 
 ## Required independent inputs
 
-A formal run cannot begin until an independent holdout owner supplies:
+A formal run cannot begin until a holdout owner who did not implement or tune the remediation supplies:
 
 1. exactly 16 new cases using one `v3-*` version;
 2. exactly four cases in each category: `in_domain`, `ood`, `insufficient_evidence`, and `adversarial`;
-3. predeclared allowed workflow terminals, budgets, deterministic checks, evidence requirements, forbidden properties, and a 100-point review rubric;
-4. an attestation that the cases were not used for remediation or tuning and that the author did not inspect previous holdout outputs;
+3. predeclared allowed workflow terminals, budgets, deterministic checks, evidence requirements, forbidden properties, and a 100-point rubric;
+4. an attestation that the cases were not used for remediation or tuning and that the owner did not inspect earlier holdout outputs;
 5. the exact SHA-256 digest of the final case file.
 
-The repository contains templates only:
+Templates:
 
 - `evals/v0_6/gate_l_v3/formal_freeze_spec.example.json`;
 - `evals/v0_6/gate_l_v3/holdout_attestation.example.json`.
 
-The attestation example deliberately contains `false` values and cannot pass freeze accidentally.
+The attestation template deliberately contains false values and cannot pass accidentally.
 
 ## Prepare the final source commit
 
 Before freezing:
 
 1. create the new holdout and completed attestation;
-2. create the actual strategy profile, for example `config/gate-l-strategies/formal-balanced.json`;
-3. ensure the profile contains no credential values;
-4. make sure its `price_table` points to a committed file listed in the freeze spec;
-5. commit all cases, profiles, policy files, code, tests, and documentation;
+2. create the real strategy profile, for example `config/gate-l-strategies/formal-balanced.json`;
+3. keep all credentials out of the strategy file;
+4. make the strategy reference a committed price table listed in the freeze spec;
+5. commit cases, profiles, policy files, code, tests, workflows, and documentation;
 6. run the full engineering CI;
-7. stop changing scientific prompts, retrieval behaviour, decision policies, graders, and formal-run scripts.
+7. stop changing scientific prompts, retrieval behavior, decision policies, graders, and formal-run scripts.
 
-Do not put the final commit SHA inside the committed freeze spec. Doing so creates a self-referential commit that can never stabilize. Supply the SHA to the freeze command after the final commit exists.
+Do not place the final commit SHA inside the committed freeze spec. Supply it as the workflow input after the final commit exists.
 
-## Freeze the formal manifest
+## Protected environment and secrets
 
-Run from a clean repository checkout at the exact intended execution commit:
-
-```bash
-SOURCE_SHA="$(git rev-parse HEAD)"
-
-python scripts/gate_l_formal_contract.py freeze \
-  --spec evals/v0_6/gate_l_v3/formal_freeze_spec.json \
-  --manifest-out build/gate-l-v3-formal/manifest.json \
-  --source-sha "$SOURCE_SHA"
-```
-
-The manifest is an evidence artifact under ignored `build/`; it is not required to be committed. Preserve it with the final evidence bundle.
-
-Verify it before spending provider budget:
-
-```bash
-python scripts/gate_l_formal_contract.py verify \
-  --manifest build/gate-l-v3-formal/manifest.json \
-  --runtime-sha "$(git rev-parse HEAD)" \
-  --strategy config/gate-l-strategies/formal-balanced.json \
-  --price-table config/price-table-mistral.json
-```
-
-Expected result:
+Create a protected GitHub Environment named:
 
 ```text
-Formal Gate L manifest verified
+gate-l-formal
 ```
 
-Any mismatch exits with status `2` and must stop the run.
+Require manual approval for the environment. Store only the credentials needed by the frozen strategy. A Mistral-based run normally uses:
 
-## Execute all cases
-
-A formal run must execute the complete frozen set exactly once. Case filters are prohibited.
-
-```bash
-python scripts/run_gate_l_formal.py \
-  --manifest build/gate-l-v3-formal/manifest.json \
-  --strategy config/gate-l-strategies/formal-balanced.json \
-  --output-dir build/gate-l-v3-formal/execution
+```text
+MISTRAL_API_KEY
+PAPERAGENT_CONTACT_EMAIL
 ```
 
-Required real environment values depend on the selected provider. For Mistral this normally includes `MISTRAL_API_KEY`; literature contact identity should be supplied through `PAPERAGENT_CONTACT_EMAIL`. Never commit these values.
+Optional provider or literature secrets may include:
 
-The wrapper checks before execution:
+```text
+PAPERAGENT_OPENAI_API_KEY
+OPENAI_API_KEY
+SEMANTIC_SCHOLAR_API_KEY
+```
 
-- full 40-character runtime SHA equals the frozen SHA;
-- working tree is clean;
-- all frozen artifact digests still match;
-- all packaged prompt versions match;
-- methodology policy versions match;
-- strategy and price table are members of the frozen contract;
-- no case filter is present.
+Secrets must never enter strategy JSON, manifests, logs, review artifacts, or committed files.
 
-The output contains:
+## 1. Freeze the formal manifest
+
+Run the manual workflow:
+
+```text
+Gate L Formal Freeze
+```
+
+Input:
+
+```text
+source_sha = exact 40-character final source SHA
+```
+
+The workflow checks out the exact SHA, verifies a clean tree, runs focused regression tests, creates and re-verifies the formal manifest, records workflow identity, generates relocatable checksums, and uploads:
+
+```text
+gate-l-formal-freeze-<source_sha>
+```
+
+Preserve the freeze workflow run ID, artifact name, artifact digest, manifest digest, source SHA, and artifact-bundle digest.
+
+## 2. Execute all frozen cases
+
+Run:
+
+```text
+Gate L Formal Execute
+```
+
+Required inputs:
+
+- exact source SHA;
+- freeze workflow run ID;
+- exact freeze artifact name;
+- frozen strategy path;
+- confirmation text `RUN_FORMAL_GATE_L`.
+
+The job uses the protected `gate-l-formal` environment. It verifies the downloaded freeze artifact before provider calls and prohibits case filters. The run must execute all 16 cases exactly once.
+
+The execution artifact contains:
 
 - `run-record.json`;
 - `formal-preflight.json`;
-- one immutable evidence JSON per case;
+- one evidence JSON per case;
 - output and trace digests;
-- provider/model, price-table, strategy, manifest, source-SHA, and budget identities.
+- provider/model, strategy, price-table, manifest, source-SHA, usage, latency, retry, repair, and budget identities;
+- `execution-workflow-record.json`;
+- `verified-execution.json` when the chain is valid;
+- `SHA256SUMS`.
 
-## Deterministic audit and blind review
+Execution errors, incomplete usage accounting, token/call/time/cost violations, or other per-case budget failures make `formal_execution_eligible` false. Failed runs still upload their evidence and remain auditable; they are never silently discarded.
 
-After execution:
+## 3. Prepare and finalize deterministic content audit
 
-1. perform the deterministic provenance, citation, unsupported-claim, secret-disclosure, budget, and false-GO audit;
-2. assemble the deterministic summary with `scripts/assemble_gate_l_v3_summary.py`;
-3. build the randomized blinded package with `scripts/gate_l_acceptance_v3.py blind`;
-4. collect two reviews from distinct human experts;
-5. require complete independence attestations;
-6. adjudicate every decision or critical-defect disagreement;
-7. score with `scripts/gate_l_acceptance_v3.py score`.
+First run:
 
-Synthetic, stub, duplicated, model-authored, or same-identity reviewers are invalid. Missing review, adjudication, telemetry, or real-source evidence leaves Gate L `INCOMPLETE`.
+```text
+Gate L Formal Audit
+mode = prepare
+```
+
+This produces a fail-closed audit template. A real human evidence auditor must review every case for:
+
+- claim-evidence alignment;
+- citation and identifier validity;
+- unsupported claims;
+- critical unsupported claims;
+- secret or hidden-information disclosure;
+- repair behavior;
+- zero-tolerance failures.
+
+The template starts incomplete, uses placeholder identity, and has every attestation and review flag set to false.
+
+The completed audit must be sealed on a separate Git ref. Then run:
+
+```text
+Gate L Formal Audit
+mode = finalize
+audit_ref = sealed audit commit/branch/tag
+content_audit_path = path inside audit_ref
+```
+
+Finalization rejects missing attestations, synthetic/stub auditors, incomplete per-case reviews, duplicate/missing cases, impossible counts, and aggregate rates supplied without underlying case-level counts. It creates the normalized audit and deterministic summary from the exact immutable execution evidence.
+
+## 4. Build the blinded review package
+
+Run:
+
+```text
+Gate L Build Blinded Review Package
+```
+
+The workflow verifies execution eligibility, randomizes arm IDs, and uploads two separate artifacts:
+
+1. reviewer artifact: tasks, allowed constraints, outputs, accepted evidence, and rubric;
+2. private custodian artifact: arm-to-case mapping, upstream verification records, and package digest.
+
+The reviewer package guard rejects raw case IDs, expected terminals or decisions, provider/model identity, strategy/price-table identity, execution identity, and any package/mapping mismatch.
+
+Never give the custodian artifact to reviewers.
+
+## 5. Collect independent human reviews
+
+Recruit two distinct human experts who did not generate the outputs or alter the prompts after freeze. Each reviewer must:
+
+- receive only the blinded reviewer artifact;
+- submit independently before seeing the other review;
+- use a distinct reviewer identity;
+- complete every arm exactly once;
+- attest that the review is human, independent, blinded, and not synthetic or stubbed.
+
+Seal both reviews on a separate Git ref. If reviewers disagree on a decision or critical-defect flag, record adjudication with rationale. Agreement is measured before adjudication.
+
+## 6. Score the formal gate
+
+Run:
+
+```text
+Gate L Formal Score
+```
+
+Inputs bind the exact freeze, execution, finalized audit, private mapping, sealed review ref, two review files, and optional adjudication file. Confirmation text must be:
+
+```text
+SCORE_FORMAL_GATE_L
+```
+
+The scorer verifies the upstream checksum chain, requires execution-eligible evidence and a complete deterministic audit, rejects identical reviewers or incomplete attestations, computes case/category acceptance, mean scores, Cohen's kappa, score-distance agreement, repair and budget handling, and emits:
+
+```text
+PASS
+FAIL
+INCOMPLETE
+```
+
+The workflow uploads the decision artifact even when scoring fails. Only a true `PASS` exits successfully.
 
 ## Invalidating changes
 
-After manifest freeze, any of the following requires a new holdout version and new manifest:
+After freeze, any of the following requires a new holdout version and new freeze:
 
 - case, rubric, budget, expected-terminal, or threshold edits;
 - any packaged prompt or prompt-version edit;
-- retrieval, verification, method-design, quality-gate, or report behaviour change;
-- audit or scoring logic change;
+- retrieval, verification, method-design, quality-gate, or report behavior change;
+- execution, artifact-chain, audit, review-package, or scoring logic change;
 - strategy or price-table change;
 - running another repository SHA;
 - tuning after inspecting formal outputs.
 
 ## Boundary
 
-Passing engineering CI or contract preflight does not pass Gate L. The formal scientific decision remains `INCOMPLETE` until real execution, deterministic evidence audit, blinded expert review, agreement measurement, and required adjudication all finish on the exact frozen identity.
+Passing engineering CI, generating a freeze artifact, or completing a real-provider run does not by itself pass Gate L. Formal scientific acceptance remains `INCOMPLETE` until the exact frozen identity has a complete deterministic human content audit, two independent blinded human reviews, agreement measurement, required adjudication, and a final scorer artifact.
