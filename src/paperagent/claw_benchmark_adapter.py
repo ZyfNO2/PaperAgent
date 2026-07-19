@@ -67,8 +67,7 @@ def _has_actionable_recovery_path(next_actions: tuple[str, ...]) -> bool:
         "freeze baseline",
     )
     return any(
-        any(marker in item.casefold() for marker in _concrete_markers)
-        for item in next_actions
+        any(marker in item.casefold() for marker in _concrete_markers) for item in next_actions
     )
 
 
