@@ -1,0 +1,91 @@
+name: Trace Replay Cloud
+
+on:
+  pull_request:
+    paths:
+      - "src/paperagent/trace_replay.py"
+      - "scripts/run_trace_mutation_eval.py"
+      - "evals/cloud_trace/**"
+      - "tests/trace_mutation/**"
+      - "docs/review/TRACE_REPLAY_MUTATION_HANDOFF.md"
+      - ".github/workflows/trace-replay-cloud.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trace-contract:
+    name: Python ${{ matrix.python-version }} trace replay contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Run static checks
+        run: |
+          ruff check \
+            src/paperagent/trace_replay.py \
+            scripts/run_trace_mutation_eval.py \
+            tests/trace_mutation/test_trace_mutation_corpus.py
+          ruff format --check \
+            src/paperagent/trace_replay.py \
+            scripts/run_trace_mutation_eval.py \
+            tests/trace_mutation/test_trace_mutation_corpus.py
+          mypy --config-file pyproject.toml
+      - name: Run trace mutation tests
+        run: |
+          pytest -q tests/trace_mutation/test_trace_mutation_corpus.py \
+            --cov=paperagent.trace_replay \
+            --cov-branch \
+            --cov-report=term-missing \
+            --cov-fail-under=90
+      - name: Grade deterministic mutation corpus
+        run: |
+          python scripts/run_trace_mutation_eval.py \
+            --source-commit "${GITHUB_SHA}" \
+            --output build/trace-mutation-eval/report.json
+      - name: Upload replay evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace-replay-${{ matrix.python-version }}-${{ github.run_id }}
+          path: build/trace-mutation-eval/
+          if-no-files-found: error
+          retention-days: 30
+
+  full-regression:
+    name: Python 3.12 full offline regression
+    needs: trace-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project
+        run: python -m pip install -q -e '.[dev]'
+      - name: Run full test and branch coverage gate
+        run: |
+          pytest -q \
+            --cov=paperagent \
+            --cov-branch \
+            --cov-report=term-missing \
+            --cov-fail-under=90
