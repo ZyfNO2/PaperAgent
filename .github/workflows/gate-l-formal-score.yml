@@ -1,0 +1,338 @@
+name: Gate L Formal Score
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full frozen 40-character source SHA
+        required: true
+        type: string
+      freeze_run_id:
+        description: Gate L Formal Freeze workflow run ID
+        required: true
+        type: string
+      freeze_artifact_name:
+        description: Exact freeze artifact name
+        required: true
+        type: string
+      execution_run_id:
+        description: Gate L Formal Execute workflow run ID
+        required: true
+        type: string
+      execution_artifact_name:
+        description: Exact execution artifact name
+        required: true
+        type: string
+      audit_run_id:
+        description: Gate L Formal Audit finalize workflow run ID
+        required: true
+        type: string
+      audit_artifact_name:
+        description: Exact finalized audit artifact name
+        required: true
+        type: string
+      review_package_run_id:
+        description: Blinded review-package workflow run ID
+        required: true
+        type: string
+      custodian_artifact_name:
+        description: Exact private custodian mapping artifact name
+        required: true
+        type: string
+      review_ref:
+        description: Ref containing both reviews collected before publication
+        required: true
+        type: string
+      reviewer_a_path:
+        description: Repository-relative Reviewer A JSON path under review_ref
+        required: true
+        type: string
+      reviewer_b_path:
+        description: Repository-relative Reviewer B JSON path under review_ref
+        required: true
+        type: string
+      adjudication_path:
+        description: Optional repository-relative adjudication JSON path under review_ref
+        required: false
+        type: string
+      confirmation:
+        description: Type SCORE_FORMAL_GATE_L to run the final scorer
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  score:
+    name: Score exact formal Gate L evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      FREEZE_RUN_ID: ${{ inputs.freeze_run_id }}
+      EXECUTION_RUN_ID: ${{ inputs.execution_run_id }}
+      AUDIT_RUN_ID: ${{ inputs.audit_run_id }}
+      REVIEW_PACKAGE_RUN_ID: ${{ inputs.review_package_run_id }}
+      FREEZE_DIR: build/gate-l-v3-formal-freeze-input
+      EXECUTION_DIR: build/gate-l-v3-formal-execution-input
+      AUDIT_DIR: build/gate-l-v3-formal-audit-input
+      CUSTODIAN_DIR: build/gate-l-v3-review-custodian-input
+      OUTPUT_DIR: build/gate-l-v3-formal-decision
+
+    steps:
+      - name: Validate final scoring request
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ inputs.confirmation }}" = "SCORE_FORMAL_GATE_L"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$FREEZE_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$EXECUTION_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$AUDIT_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$REVIEW_PACKAGE_RUN_ID" =~ ^[0-9]+$ ]]
+          for path in "${{ inputs.reviewer_a_path }}" "${{ inputs.reviewer_b_path }}"; do
+            [[ "$path" != /* ]]
+            [[ "$path" != *".."* ]]
+          done
+          if [ -n "${{ inputs.adjudication_path }}" ]; then
+            [[ "${{ inputs.adjudication_path }}" != /* ]]
+            [[ "${{ inputs.adjudication_path }}" != *".."* ]]
+          fi
+
+      - name: Check out exact frozen source SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 1
+
+      - name: Check out sealed review submissions
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.review_ref }}
+          path: review-inputs
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+
+      - name: Download formal freeze artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.freeze_artifact_name }}
+          path: ${{ env.FREEZE_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.freeze_run_id }}
+
+      - name: Download formal execution artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.execution_artifact_name }}
+          path: ${{ env.EXECUTION_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.execution_run_id }}
+
+      - name: Download finalized formal audit artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.audit_artifact_name }}
+          path: ${{ env.AUDIT_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.audit_run_id }}
+
+      - name: Download private custodian mapping artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.custodian_artifact_name }}
+          path: ${{ env.CUSTODIAN_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.review_package_run_id }}
+
+      - name: Verify complete upstream evidence chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT_DIR"
+          python scripts/gate_l_artifact_chain.py verify-freeze \
+            --bundle-dir "$FREEZE_DIR" \
+            --source-sha "$SOURCE_SHA" \
+            --run-id "$FREEZE_RUN_ID" \
+            --output "$OUTPUT_DIR/verified-freeze.json"
+          python scripts/gate_l_artifact_chain.py verify-execution \
+            --bundle-dir "$EXECUTION_DIR" \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --source-sha "$SOURCE_SHA" \
+            --output "$OUTPUT_DIR/verified-execution.json"
+          python scripts/gate_l_artifact_chain.py verify-sums \
+            --bundle-dir "$AUDIT_DIR" \
+            --output "$OUTPUT_DIR/verified-audit-checksums.json"
+          python scripts/gate_l_artifact_chain.py verify-sums \
+            --bundle-dir "$CUSTODIAN_DIR" \
+            --output "$OUTPUT_DIR/verified-custodian-checksums.json"
+          test -f "$AUDIT_DIR/deterministic-summary.json"
+          test -f "$CUSTODIAN_DIR/review-package.mapping.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          output = Path(os.environ["OUTPUT_DIR"])
+          execution = json.loads(
+              (output / "verified-execution.json").read_text(encoding="utf-8")
+          )
+          audit = json.loads(
+              (Path(os.environ["AUDIT_DIR"]) / "deterministic-summary.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          if execution.get("formal_execution_eligible") is not True:
+              raise SystemExit("final scoring requires execution-eligible evidence")
+          if audit.get("audit_complete") is not True:
+              raise SystemExit("final scoring requires a complete deterministic audit")
+          PY
+
+      - name: Score two independent blinded reviews
+        id: score
+        shell: bash
+        run: |
+          set +e
+          args=(
+            --manifest "$FREEZE_DIR/manifest.json"
+            --review-map "$CUSTODIAN_DIR/review-package.mapping.json"
+            --review-a "review-inputs/${{ inputs.reviewer_a_path }}"
+            --review-b "review-inputs/${{ inputs.reviewer_b_path }}"
+            --deterministic-summary "$AUDIT_DIR/deterministic-summary.json"
+            --output "$OUTPUT_DIR/final-decision.json"
+          )
+          if [ -n "${{ inputs.adjudication_path }}" ]; then
+            args+=(--adjudication "review-inputs/${{ inputs.adjudication_path }}")
+          fi
+          python scripts/gate_l_acceptance_v3.py score "${args[@]}"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Record final decision provenance
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          output = Path(os.environ["OUTPUT_DIR"])
+          paths = {
+              "manifest": Path(os.environ["FREEZE_DIR"]) / "manifest.json",
+              "run_record": Path(os.environ["EXECUTION_DIR"]) / "run-record.json",
+              "deterministic_summary": Path(os.environ["AUDIT_DIR"])
+              / "deterministic-summary.json",
+              "review_mapping": Path(os.environ["CUSTODIAN_DIR"])
+              / "review-package.mapping.json",
+              "review_a": Path("review-inputs/${{ inputs.reviewer_a_path }}"),
+              "review_b": Path("review-inputs/${{ inputs.reviewer_b_path }}"),
+          }
+          if "${{ inputs.adjudication_path }}":
+              paths["adjudication"] = Path(
+                  "review-inputs/${{ inputs.adjudication_path }}"
+              )
+          record = {
+              "gate": "L",
+              "record_type": "formal_final_score",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "freeze_run_id": os.environ["FREEZE_RUN_ID"],
+              "execution_run_id": os.environ["EXECUTION_RUN_ID"],
+              "audit_run_id": os.environ["AUDIT_RUN_ID"],
+              "review_package_run_id": os.environ["REVIEW_PACKAGE_RUN_ID"],
+              "review_ref": "${{ inputs.review_ref }}",
+              "scorer_exit_code": int("${{ steps.score.outputs.exit_code || '99' }}"),
+              "created_at_utc": datetime.now(tz=UTC).isoformat(),
+              "github_repository": os.environ["GITHUB_REPOSITORY"],
+              "github_run_id": os.environ["GITHUB_RUN_ID"],
+              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "github_workflow": os.environ["GITHUB_WORKFLOW"],
+              "input_sha256": {
+                  name: hashlib.sha256(path.read_bytes()).hexdigest()
+                  for name, path in paths.items()
+                  if path.is_file()
+              },
+          }
+          decision = output / "final-decision.json"
+          if decision.is_file():
+              record["final_decision_sha256"] = hashlib.sha256(
+                  decision.read_bytes()
+              ).hexdigest()
+              record["decision"] = json.loads(decision.read_text(encoding="utf-8")).get(
+                  "decision"
+              )
+          (output / "final-score-record.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (
+            cd "$OUTPUT_DIR"
+            find . -type f ! -name SHA256SUMS -printf '%P\0' \
+              | sort -z \
+              | xargs -0 -r sha256sum > SHA256SUMS
+          )
+
+      - name: Upload final Gate L decision artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-l-formal-decision-${{ inputs.source_sha }}-${{ github.run_id }}
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish final score summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Gate L final score'
+            echo
+            echo "- Source SHA: \`$SOURCE_SHA\`"
+            echo "- Scorer exit: \`${{ steps.score.outputs.exit_code || '99' }}\`"
+            if [ -f "$OUTPUT_DIR/final-decision.json" ]; then
+              python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          value = json.loads(
+              (Path(os.environ["OUTPUT_DIR"]) / "final-decision.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          print(f"- Decision: `{value.get('decision', 'UNKNOWN')}`")
+          print(f"- Accepted cases: `{value.get('accepted_cases', 'UNKNOWN')}`")
+          print(f"- Cohen's kappa: `{value.get('cohen_kappa', 'UNKNOWN')}`")
+          print(f"- Hard failures: `{value.get('hard_failures', [])}`")
+          PY
+            else
+              echo '- Decision: `INCOMPLETE` — scorer did not produce a decision artifact'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce final Gate L decision
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.score.outputs.exit_code || '99' }}" = "0"
