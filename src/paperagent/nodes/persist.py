@@ -15,9 +15,7 @@ NODE = "persist_node"
 
 
 def _execution_status(state: PaperAgentState) -> Literal["blocked", "completed", "failed"]:
-    outcome = state.get("final_outcome")
-    if outcome is None:
-        outcome = derive_final_outcome(state)
+    outcome = state.get("final_outcome") or derive_final_outcome(state)
     if outcome.execution_status == "failed":
         return "failed"
     if outcome.execution_status in {"blocked", "cancelled"} or outcome.report_status == "blocked":
@@ -34,8 +32,9 @@ async def persist_node(state: PaperAgentState, config: RunnableConfig) -> StateP
     audit_state: PaperAgentState = {**state, "final_outcome": final_outcome}
     trace_audit = audit_state_consistency(audit_state)
     status = _execution_status(audit_state)
-    error: NodeErrorRecord | None = None
-    if not trace_audit.passed:
+    if trace_audit.passed:
+        execution = execution_with(audit_state, node=NODE, status=status)
+    else:
         status = "failed"
         error = NodeErrorRecord(
             code="TRACE_CONTRACT_FAILURE",
@@ -44,12 +43,12 @@ async def persist_node(state: PaperAgentState, config: RunnableConfig) -> StateP
             retryable=False,
             details={"invariants": trace_audit.error_codes},
         )
-    execution = execution_with(
-        audit_state,
-        node=NODE,
-        status=status,
-        error=error,
-    )
+        execution = execution_with(
+            audit_state,
+            node=NODE,
+            status=status,
+            error=error,
+        )
     trace = [
         make_event(
             services,
