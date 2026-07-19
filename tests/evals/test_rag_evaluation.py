@@ -145,9 +145,9 @@ def test_report_rejects_inconsistent_support_rates() -> None:
 
 def test_aggregate_is_cutoff_order_independent() -> None:
     first = evaluate_rag_case(_input(case_id="case-1"), cutoffs=(1, 2))
-    second_payload = evaluate_rag_case(
-        _input(case_id="case-2"), cutoffs=(1, 2)
-    ).model_dump(mode="json")
+    second_payload = evaluate_rag_case(_input(case_id="case-2"), cutoffs=(1, 2)).model_dump(
+        mode="json"
+    )
     second_payload["recall_at_k"] = {"2": 1.0, "1": 0.5}
     second_payload["precision_at_k"] = {"2": 1.0, "1": 1.0}
     second = RAGEvaluationReport.model_validate(second_payload)
