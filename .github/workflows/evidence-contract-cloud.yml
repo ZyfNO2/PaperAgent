@@ -20,6 +20,12 @@ on:
       - "tests/nodes/test_evidence_ledger_outcome_trace.py"
       - "tests/e2e/test_evidence_pollution_flow.py"
       - "tests/e2e/test_evidence_quality_gate_flow.py"
+      - "tests/e2e/test_graph_e2e_bounded_failure.py"
+      - "tests/e2e/test_graph_e2e_malformed.py"
+      - "tests/e2e/test_graph_e2e_timeout.py"
+      - "tests/graph/test_hitl.py"
+      - "tests/integration/test_bounded_failures.py"
+      - "tests/ood/test_cases.py"
       - "docs/review/EVIDENCE_TRACE_REPAIR_HANDOFF.md"
       - ".github/workflows/evidence-contract-cloud.yml"
   workflow_dispatch:
@@ -66,6 +72,12 @@ jobs:
             tests/nodes/test_evidence_ledger_outcome_trace.py
             tests/e2e/test_evidence_pollution_flow.py
             tests/e2e/test_evidence_quality_gate_flow.py
+            tests/e2e/test_graph_e2e_bounded_failure.py
+            tests/e2e/test_graph_e2e_malformed.py
+            tests/e2e/test_graph_e2e_timeout.py
+            tests/graph/test_hitl.py
+            tests/integration/test_bounded_failures.py
+            tests/ood/test_cases.py
           )
           cp --parents "${files[@]}" build/evidence-contract-cloud/source/
           ruff check "${files[@]}" --output-format=concise \
