@@ -59,9 +59,7 @@ def _git_clean() -> bool:
             text=True,
         )
     except (OSError, subprocess.CalledProcessError) as exc:
-        raise ValueError(
-            "formal execution requires a verifiable clean git tree"
-        ) from exc
+        raise ValueError("formal execution requires a verifiable clean git tree") from exc
     return not result.stdout.strip()
 
 
@@ -69,9 +67,7 @@ def _relative(path: Path) -> Path:
     try:
         return path.resolve().relative_to(Path.cwd().resolve())
     except ValueError as exc:
-        raise ValueError(
-            f"formal run input must be inside the repository: {path}"
-        ) from exc
+        raise ValueError(f"formal run input must be inside the repository: {path}") from exc
 
 
 def _write(path: Path, value: dict[str, Any]) -> None:
@@ -84,9 +80,7 @@ def _write(path: Path, value: dict[str, Any]) -> None:
 
 async def execute(args: argparse.Namespace) -> int:
     if args.case_id:
-        raise ValueError(
-            "formal execution forbids case filters; run all frozen cases exactly once"
-        )
+        raise ValueError("formal execution forbids case filters; run all frozen cases exactly once")
     runtime_sha = _git_sha()
     if not _git_clean():
         raise ValueError("formal execution requires a clean git tree")
@@ -152,9 +146,7 @@ async def execute(args: argparse.Namespace) -> int:
     if run_record.get("formal_run") is not True:
         raise ValueError("variant runner did not execute the complete frozen corpus")
     if not isinstance(identity, dict) or identity.get("repo_sha") != runtime_sha:
-        raise ValueError(
-            "run record repository identity does not match formal preflight"
-        )
+        raise ValueError("run record repository identity does not match formal preflight")
     if identity.get("manifest_sha256") != _sha256(manifest_path):
         raise ValueError("run record manifest identity does not match formal preflight")
 
@@ -173,9 +165,7 @@ async def execute(args: argparse.Namespace) -> int:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Run an exact formal Gate L v3 execution"
-    )
+    parser = argparse.ArgumentParser(description="Run an exact formal Gate L v3 execution")
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--strategy", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
