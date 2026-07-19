@@ -33,6 +33,19 @@ def build_graph(*, checkpointer: Any | None = None) -> Any:
         prior_trace_count = len(state.get("trace", []))
         return {
             "retrieval": result["retrieval"],
+            "research_contract": result.get(
+                "research_contract", state.get("research_contract")
+            ),
+            "lexical_assessments": result.get(
+                "lexical_assessments", state.get("lexical_assessments", [])
+            ),
+            "relevance_assessments": result.get(
+                "relevance_assessments", state.get("relevance_assessments", [])
+            ),
+            "gap_support_assessments": result.get(
+                "gap_support_assessments", state.get("gap_support_assessments", [])
+            ),
+            "evidence_ledger": result.get("evidence_ledger", state.get("evidence_ledger")),
             "evidence": result.get("evidence", state.get("evidence")),
             "execution": result["execution"],
             "trace": result.get("trace", [])[prior_trace_count:],
