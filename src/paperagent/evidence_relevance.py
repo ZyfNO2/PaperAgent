@@ -167,6 +167,17 @@ def _supporting_spans(item: EvidenceItem, matched_terms: list[str]) -> list[str]
     return spans[:3]
 
 
+def _is_deterministic_fixture(item: EvidenceItem) -> bool:
+    return item.provider == "fake_search" and item.locator.startswith("fixture://")
+
+
+def _fixture_gap_support_ids(item: EvidenceItem) -> set[str]:
+    if not _is_deterministic_fixture(item):
+        return set()
+    values = item.metadata.get("fixture_gap_support_ids", "")
+    return {value.strip() for value in values.split(",") if value.strip()}
+
+
 def assess_abstract_relevance(
     item: EvidenceItem,
     contract: ResearchContract,
@@ -179,7 +190,7 @@ def assess_abstract_relevance(
         if value.strip()
     ]
     valid_scopes = {"direct", "indirect", "background_only", "irrelevant"}
-    if fixture_scope_raw in valid_scopes:
+    if _is_deterministic_fixture(item) and fixture_scope_raw in valid_scopes:
         fixture_scope = cast(EvidenceScope, fixture_scope_raw)
         fixture_decision: Literal["pass", "reject"] = (
             "pass" if fixture_scope in {"direct", "indirect"} and fixture_spans else "reject"
@@ -268,8 +279,9 @@ def assess_gap_support(
     text = f"{item.title}\n{item.summary}".lower()
     overlap = [term for term in normalized_gap_terms if term in text]
     origin_match = gap.gap_id in _candidate_gap_ids(item)
+    fixture_support = gap.gap_id in _fixture_gap_support_ids(item)
     weak_gap = not normalized_gap_terms
-    accepted = bool(overlap) or (origin_match and weak_gap)
+    accepted = bool(overlap) or fixture_support or (origin_match and weak_gap)
     if not accepted:
         return GapSupportAssessment(
             evidence_id=item.evidence_id,
@@ -279,6 +291,7 @@ def assess_gap_support(
                 "relevance_passed": True,
                 "gap_overlap": False,
                 "query_provenance_match": origin_match,
+                "fixture_explicit_support": fixture_support,
             },
             limitations=["no claim-level overlap with the requested gap"],
             confidence=0.2 if origin_match else 0.0,
@@ -298,11 +311,26 @@ def assess_gap_support(
             "relevance_passed": True,
             "gap_overlap": bool(overlap),
             "query_provenance_match": origin_match,
+            "fixture_explicit_support": fixture_support,
         },
         limitations=(
-            [] if overlap else ["accepted from explicit query provenance under a weak gap"]
+            []
+            if overlap
+            else [
+                "accepted from an explicit deterministic fixture contract"
+                if fixture_support
+                else "accepted from explicit query provenance under a weak gap"
+            ]
         ),
-        confidence=0.9 if overlap and origin_match else 0.7 if overlap else 0.55,
+        confidence=(
+            0.95
+            if fixture_support
+            else 0.9
+            if overlap and origin_match
+            else 0.7
+            if overlap
+            else 0.55
+        ),
         decision="accept",
     )
 
@@ -419,14 +447,15 @@ def apply_ledger_to_bundle(
         )
         for entry in ledger.entries
     }
-    items = [
-        item.model_copy(
-            update={
-                "supports_gap_ids": accepted_gaps.get(item.evidence_id, []),
-            }
-        )
-        for item in evidence.items
-    ]
+    items: list[EvidenceItem] = []
+    for item in evidence.items:
+        if item.evidence_id in accepted:
+            supports_gap_ids = accepted_gaps.get(item.evidence_id, [])
+        elif item.verification_status == "accepted":
+            supports_gap_ids = []
+        else:
+            supports_gap_ids = list(item.supports_gap_ids)
+        items.append(item.model_copy(update={"supports_gap_ids": supports_gap_ids}))
     identity_verified_ids = [
         item.evidence_id for item in items if item.verification_status == "accepted"
     ]
