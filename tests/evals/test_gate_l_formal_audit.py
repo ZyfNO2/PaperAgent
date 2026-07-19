@@ -45,9 +45,7 @@ def test_audit_template_is_fail_closed(tmp_path: Path) -> None:
 
     assert template["audit_complete"] is False
     assert template["auditor_id"].startswith("REPLACE_WITH")
-    assert all(
-        value is False for value in template["independence_attestation"].values()
-    )
+    assert all(value is False for value in template["independence_attestation"].values())
     assert len(template["cases"]) == 16
 
 
