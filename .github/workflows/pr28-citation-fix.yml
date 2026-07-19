@@ -1,0 +1,150 @@
+name: PR28 Citation Binding Patch
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - ".github/workflows/pr28-citation-fix.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/gold-case-rag-interview-readiness
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply exact citation-binding patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          rag_path = Path("src/paperagent/rag_evaluation.py")
+          rag = rag_path.read_text(encoding="utf-8")
+          old = '''        if self.used_context_tokens > self.total_context_tokens:
+          '''
+          new = '''        linked_evidence = {
+              evidence_id for claim in self.claims for evidence_id in claim.supporting_evidence_ids
+          }
+          cited_evidence = {item.evidence_id for item in self.retrieved if item.cited}
+          if cited_evidence != linked_evidence:
+              raise ValueError("evidence cited flags must match claim-specific support links")
+          if self.used_context_tokens > self.total_context_tokens:
+          '''
+          if rag.count(old) != 1:
+              raise SystemExit("unexpected RAG validator insertion point")
+          rag = rag.replace(old, new, 1)
+          old = '''    cited_ids = {item.evidence_id for item in ordered if item.cited}
+              supported_claims = {
+                  claim.claim_id
+                  for claim in evaluation.claims
+                  if cited_ids.intersection(claim.supporting_evidence_ids)
+              }
+          '''
+          new = '''    supported_claims = {
+              claim.claim_id for claim in evaluation.claims if claim.supporting_evidence_ids
+          }
+          '''
+          if rag.count(old) != 1:
+              raise SystemExit("unexpected RAG support calculation")
+          rag_path.write_text(rag.replace(old, new, 1), encoding="utf-8")
+
+          gold_path = Path("src/paperagent/gold_case.py")
+          gold = gold_path.read_text(encoding="utf-8")
+          start = gold.index("def _build_rag_input(task_root: Path) -> RAGEvaluationInput:\n")
+          end = gold.index("\n\ndef run_gold_case", start)
+          replacement = '''def _build_rag_input(task_root: Path) -> RAGEvaluationInput:
+              task = load_tailoring_task_bundle(task_root)
+              # Baseline reproduction is server-owned execution metadata. It is evaluated by the
+              # canonical methodology audit and must not be represented as supported merely by
+              # citing the baseline paper.
+              claims: list[ClaimAssessment] = [
+                  ClaimAssessment(
+                      claim_id=f"module-{intent.source_paper_id}",
+                      supporting_evidence_ids=(intent.source_paper_id,),
+                      critical=True,
+                  )
+                  for intent in task.module_intents
+              ]
+              claims.extend(
+                  ClaimAssessment(
+                      claim_id=f"comparison-{comparison.name}",
+                      supporting_evidence_ids=(comparison.source_paper_id,),
+                      critical=False,
+                  )
+                  for comparison in task.strong_comparisons
+              )
+              cited_evidence_ids = {
+                  evidence_id for claim in claims for evidence_id in claim.supporting_evidence_ids
+              }
+              retrieved = tuple(
+                  RetrievedEvidence(
+                      evidence_id=paper.paper_id,
+                      stable_identifier=paper.stable_identifier,
+                      rank=index,
+                      context_tokens=128,
+                      cited=paper.paper_id in cited_evidence_ids,
+                  )
+                  for index, paper in enumerate(task.papers, start=1)
+              )
+              used_tokens = sum(item.context_tokens for item in retrieved)
+              return RAGEvaluationInput(
+                  case_id=GOLD_CASE_ID,
+                  relevant_identifiers=tuple(paper.stable_identifier for paper in task.papers),
+                  retrieved=retrieved,
+                  claims=tuple(claims),
+                  total_context_tokens=used_tokens,
+                  used_context_tokens=used_tokens,
+                  llm_calls=0,
+                  input_tokens=0,
+                  output_tokens=0,
+                  estimated_cost_usd=0.0,
+                  terminal="succeeded",
+              )
+          '''
+          gold_path.write_text(gold[:start] + replacement + gold[end:], encoding="utf-8")
+
+          test_path = Path("tests/evals/test_rag_evaluation.py")
+          tests = test_path.read_text(encoding="utf-8")
+          old = '''    ]
+              evaluation = RAGEvaluationInput.model_validate(payload)
+              report = evaluate_rag_case(evaluation, cutoffs=(2,))
+          '''
+          new = '''    ]
+              payload["claims"][1]["supporting_evidence_ids"] = []
+              evaluation = RAGEvaluationInput.model_validate(payload)
+              report = evaluate_rag_case(evaluation, cutoffs=(2,))
+          '''
+          if tests.count(old) != 1:
+              raise SystemExit("unexpected duplicate-evidence test insertion point")
+          tests = tests.replace(old, new, 1)
+          marker = '''def test_succeeded_input_requires_evidence_and_claims() -> None:
+          '''
+          addition = '''def test_cited_flags_must_match_claim_specific_links() -> None:
+              payload = _input().model_dump(mode="json")
+              payload["retrieved"][1]["cited"] = False
+              with pytest.raises(ValidationError, match="claim-specific support links"):
+                  RAGEvaluationInput.model_validate(payload)
+
+
+          '''
+          if tests.count(marker) != 1:
+              raise SystemExit("unexpected citation test insertion point")
+          test_path.write_text(tests.replace(marker, addition + marker, 1), encoding="utf-8")
+          PY
+          python -m pip install 'ruff>=0.12,<0.13'
+          ruff format src/paperagent/gold_case.py src/paperagent/rag_evaluation.py tests/evals/test_gold_case_readiness.py tests/evals/test_rag_evaluation.py
+          ruff check src/paperagent/gold_case.py src/paperagent/rag_evaluation.py tests/evals/test_gold_case_readiness.py tests/evals/test_rag_evaluation.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/paperagent/gold_case.py src/paperagent/rag_evaluation.py tests/evals/test_rag_evaluation.py
+          git commit -m "fix(eval): bind citations to claim-specific support links"
+          git push origin HEAD:feat/gold-case-rag-interview-readiness
