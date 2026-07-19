@@ -1,9 +1,9 @@
 """E2E: planning provider timeout through the HTTP task contract.
 
 When the LLM provider times out during planning, the node must record a typed
-``PROVIDER_TIMEOUT`` error, route to a blocked report, and the durable task must
-finish ``succeeded`` with the blocked report. This proves the timeout contract
-is honoured end-to-end, not only at the graph level.
+``PROVIDER_TIMEOUT`` execution failure and render a blocked ``NOT_EVALUATED``
+report. The durable HTTP task still completes its transport contract and exposes
+the failed workflow state to the caller.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ def _timeout_services() -> RuntimeServices:
     )
 
 
-def test_e2e__planning_timeout__produces_typed_blocked_report_via_http(
+def test_e2e__planning_timeout__produces_typed_failure_report_via_http(
     graph_app_factory, submit_task, wait_for_terminal
 ) -> None:
     services = _timeout_services()
@@ -58,9 +58,11 @@ def test_e2e__planning_timeout__produces_typed_blocked_report_via_http(
         assert task["status"] == "succeeded"
         result: dict[str, Any] = task["result"]
 
-        assert result["execution"]["status"] == "blocked"
+        assert result["execution"]["status"] == "failed"
         assert result["execution"]["last_error"]["code"] == "PROVIDER_TIMEOUT"
         assert result["execution"]["last_error"]["retryable"] is True
+        assert result["final_outcome"]["execution_status"] == "failed"
+        assert result["final_outcome"]["scientific_verdict"] == "NOT_EVALUATED"
         assert result["report"]["status"] == "blocked"
         assert result.get("plan") is None
 
