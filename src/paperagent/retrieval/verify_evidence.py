@@ -6,17 +6,28 @@ from langchain_core.runnables import RunnableConfig
 
 from paperagent.nodes._shared import execution_with
 from paperagent.runtime import get_services
-from paperagent.schemas import EvidenceBundle, EvidenceItem, SearchCandidate
+from paperagent.schemas import EvidenceBundle, EvidenceConflict, EvidenceItem, SearchCandidate
 from paperagent.state import PaperAgentState, StatePatch
 from paperagent.telemetry import hash_payload, make_event
 
 NODE = "verify_evidence_node"
 _ALLOWED_LOCATOR_PREFIXES = ("fixture://", "https://", "http://", "doi:", "github://")
+_TRUSTED_VERIFICATION_PROVIDERS = frozenset({"literature_retrieval"})
+_CONTENT_HASH_VERSION = "content-v1"
+_DETERMINISTIC_FIXTURE_PROVIDERS = frozenset({"fake_search"})
+_VOLATILE_METADATA_KEYS = frozenset(
+    {
+        "verification_status",
+        "rank_score",
+        "fallback_used",
+        "providers",
+    }
+)
 _STATUS_PRIORITY = {
     "failed_verification": 0,
-    "rejected": 1,
-    "pending": 2,
-    "accepted": 3,
+    "pending": 1,
+    "accepted": 2,
+    "rejected": 3,
 }
 
 
@@ -24,18 +35,55 @@ def _candidate_status(
     candidate: SearchCandidate,
 ) -> Literal["accepted", "rejected", "pending", "failed_verification"]:
     external = candidate.metadata.get("verification_status")
-    if external == "verified":
-        return "accepted"
-    if external in {"pending", "suspicious"}:
-        return "pending"
+
+    # Negative verification signals are always fail-closed, even when they come
+    # from a provider that is not permitted to assert positive verification.
     if external == "rejected":
         return "rejected"
     if external == "failed":
         return "failed_verification"
+    if external in {"pending", "suspicious"}:
+        return "pending"
+
+    # Positive verification is trusted only from the retrieval service that owns
+    # the Crossref/DataCite verification pipeline.
+    if candidate.provider in _TRUSTED_VERIFICATION_PROVIDERS:
+        return "accepted" if external == "verified" else "pending"
+
+    # Deterministic fixtures are the only non-network exception. A fake provider
+    # must still use the explicit fixture scheme; arbitrary HTTPS strings are not
+    # accepted merely because they look like locators.
+    if candidate.provider in _DETERMINISTIC_FIXTURE_PROVIDERS and candidate.locator.startswith(
+        "fixture://"
+    ):
+        return "accepted"
+
+    if not candidate.locator.startswith(_ALLOWED_LOCATOR_PREFIXES):
+        return "failed_verification"
+    return "pending"
+
+
+def _candidate_content_hash(candidate: SearchCandidate) -> str:
+    return hash_payload(
+        {
+            "source_type": candidate.source_type,
+            "title": candidate.title,
+            "locator": candidate.locator,
+            "snippet": candidate.snippet,
+        }
+    )
+
+
+def _content_conflict(
+    previous: EvidenceItem,
+    candidate: SearchCandidate,
+    content_hash: str,
+) -> bool:
+    if previous.source_type != candidate.source_type or previous.locator != candidate.locator:
+        return True
     return (
-        "accepted"
-        if candidate.locator.startswith(_ALLOWED_LOCATOR_PREFIXES)
-        else "failed_verification"
+        previous.metadata.get("content_hash_version") == _CONTENT_HASH_VERSION
+        and previous.content_hash != content_hash
     )
 
 
@@ -46,16 +94,42 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
         raise ValueError("retrieval state is required")
     existing = state.get("evidence", EvidenceBundle())
     by_id = {item.evidence_id: item for item in existing.items}
+    conflicts = list(existing.conflicts)
+    conflict_ids = {item.conflict_id for item in conflicts}
     for candidate in retrieval.raw_candidates:
         evidence_id = f"ev-{candidate.candidate_id}"
         status = _candidate_status(candidate)
+        content_hash = _candidate_content_hash(candidate)
         previous = by_id.get(evidence_id)
         supports = sorted(set(previous.supports_gap_ids if previous else []) | {candidate.gap_id})
+        if previous is not None and _content_conflict(previous, candidate, content_hash):
+            conflict_id = f"identity-{evidence_id}"
+            if conflict_id not in conflict_ids:
+                conflicts.append(
+                    EvidenceConflict(
+                        conflict_id=conflict_id,
+                        evidence_ids=[evidence_id],
+                        description=(
+                            "the same evidence ID resolved to different source identity or content"
+                        ),
+                    )
+                )
+                conflict_ids.add(conflict_id)
+            by_id[evidence_id] = previous.model_copy(
+                update={
+                    "verification_status": "rejected",
+                    "supports_gap_ids": supports,
+                }
+            )
+            continue
         if (
             previous is not None
             and _STATUS_PRIORITY[previous.verification_status] > _STATUS_PRIORITY[status]
         ):
             status = previous.verification_status
+        metadata = dict(previous.metadata) if previous else {}
+        metadata.update(candidate.metadata)
+        metadata["content_hash_version"] = _CONTENT_HASH_VERSION
         by_id[evidence_id] = EvidenceItem(
             evidence_id=evidence_id,
             source_type=candidate.source_type,
@@ -65,7 +139,9 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
             verification_status=status,
             supports_gap_ids=supports,
             summary=candidate.snippet,
-            content_hash=hash_payload(candidate),
+            content_hash=content_hash,
+            provider=candidate.provider,
+            metadata=metadata,
         )
     items = list(by_id.values())
     accepted = [item.evidence_id for item in items if item.verification_status == "accepted"]
@@ -97,10 +173,16 @@ async def verify_evidence_node(state: PaperAgentState, config: RunnableConfig) -
         pending_ids=pending,
         failed_verification_ids=failed,
         coverage_by_gap=coverage,
-        conflicts=existing.conflicts,
+        conflicts=conflicts,
     )
     trace = [
-        make_event(services, state, node=NODE, event_type="node.started", status="started"),
+        make_event(
+            services,
+            state,
+            node=NODE,
+            event_type="node.started",
+            status="started",
+        ),
         make_event(
             services,
             state,

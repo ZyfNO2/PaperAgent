@@ -1,0 +1,913 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-ood-006",
+  "case_index": 6,
+  "category": "ood",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "failure_mechanism_evidence"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "fine_grained_problem_disambiguation"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "mechanism_matched_method"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "single_module_ablation"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "leave_one_out_ablation"
+    },
+    {
+      "check_id": "required_06",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "failure_analysis"
+    },
+    {
+      "check_id": "required_07",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "calibrated_go_decision"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "attention_by_default"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "generic_fine_grained_gap"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "module_popularity_as_evidence"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "fabricated_result"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "f1460529d35c56db5a15740f19b9d2fd8a9b15c31146d576117177f046b8450c",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:9521a755c63b80c98a3597c715ddd12c44f61cf77818b5b23701a477162360c9",
+        "evidence_id": "ev-paper-d760c0c9e9abef2f1b7c",
+        "locator": "https://arxiv.org/abs/2505.24380",
+        "retrieved_at": "2026-07-18T18:11:49.543288Z",
+        "source_type": "paper",
+        "summary": "Fine-grained bird image classification (FBIC) is not only of great significance for ecological monitoring and species identification, but also holds broad research value in the fields of image recognition and fine-grained visual modeling. Compared with general image classification tasks, FBIC poses more formidable challenges: 1) the differences in species size and imaging distance result in the varying sizes of birds presented in the images; 2) complex natural habitats often introduce strong background interference; 3) and highly flexible poses such as flying, perching, or foraging result in substantial intra-class variability. These factors collectively make it difficult for traditional methods to stably extract discriminative features, thereby limiting the generalizability and interpretability of models in real-world applications. To address these challenges, this paper proposes a fine-grained bird classification framework based on strip-aware spatial perception, which aims to capture long-range spatial dependencies across entire rows or columns in bird images, thereby enhancing the model's robustness and interpretability. The proposed method incorporates two novel modules: extensional perception aggregator (EPA) and channel semantic weaving (CSW). Specifically, EPA integrates local texture details with global structural cues by aggregating information across horizontal and vertical spatial directions. CSW further refines the semantic representations by adaptively fusing long-range and short-range information along the channel dimension. Built upon a ResNet-50 backbone, the model enables jump-wise connection of extended structural features across the spatial domain. Experimental results on the CUB-200-2011 dataset demonstrate that our framework achieves significant performance improvements while maintaining architectural efficiency.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "SASP: Strip-Aware Spatial Perception for Fine-Grained Bird Image Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4dd62bbc772860c4252c0e4964b39491077e32cbaf762221dcecc79fc4a27856",
+        "evidence_id": "ev-paper-96cc96b7dfdf3f96df21",
+        "locator": "https://arxiv.org/abs/2407.04243",
+        "retrieved_at": "2026-07-18T18:11:49.543288Z",
+        "source_type": "paper",
+        "summary": "Different from large-scale classification tasks, fine-grained visual classification is a challenging task due to two critical problems: 1) evident intra-class variances and subtle inter-class differences, and 2) overfitting owing to fewer training samples in datasets. Most existing methods extract key features to reduce intra-class variances, but pay no attention to subtle inter-class differences in fine-grained visual classification. To address this issue, we propose a loss function named exploration of class center, which consists of a multiple class-center constraint and a class-center label generation. This loss function fully utilizes the information of the class center from the perspective of features and labels. From the feature perspective, the multiple class-center constraint pulls samples closer to the target class center, and pushes samples away from the most similar nontarget class center. Thus, the constraint reduces intra-class variances and enlarges inter-class differences. From the label perspective, the class-center label generation utilizes classcenter distributions to generate soft labels to alleviate overfitting. Our method can be easily integrated with existing fine-grained visual classification approaches as a loss function, to further boost excellent performance with only slight training costs. Extensive experiments are conducted to demonstrate consistent improvements achieved by our method on four widely-used fine-grained visual classification datasets. In particular, our method achieves state-of-the-art performance on the FGVC-Aircraft and CUB-200-2011 datasets.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Exploration of Class Center for Fine-Grained Visual Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7993dda670b5d746dc21561fdc854c4c8da3157de72863bf12591b99dffe91b7",
+        "evidence_id": "ev-paper-13b524108ced3e954dcf",
+        "locator": "https://arxiv.org/abs/1510.00745",
+        "retrieved_at": "2026-07-18T18:11:49.544286Z",
+        "source_type": "paper",
+        "summary": "Planktonic organisms are of fundamental importance to marine ecosystems: they form the basis of the food web, provide the link between the atmosphere and the deep ocean, and influence global-scale biogeochemical cycles. Scientists are increasingly using imaging-based technologies to study these creatures in their natural habit. Images from such systems provide an unique opportunity to model and understand plankton ecosystems, but the collected datasets can be enormous. The Imaging FlowCytobot (IFCB) at Woods Hole Oceanographic Institution, for example, is an \\emph{in situ} system that has been continuously imaging plankton since 2006. To date, it has generated more than 700 million samples. Manual classification of such a vast image collection is impractical due to the size of the data set. In addition, the annotation task is challenging due to the large space of relevant classes, intra-class variability, and inter-class similarity. Methods for automated classification exist, but the accuracy is often below that of human experts. Here we introduce WHOI-Plankton: a large scale, fine-grained visual recognition dataset for plankton classification, which comprises over 3.4 million expert-labeled images across 70 classes. The labeled image set is complied from over 8 years of near continuous data collection with the IFCB at the Martha's Vineyard Coastal Observatory (MVCO). We discuss relevant metrics for evaluation of classification performance and provide results for a traditional method based on hand-engineered features and two methods based on convolutional neural networks.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "WHOI-Plankton- A Large Scale Fine Grained Visual Recognition Benchmark Dataset for Plankton Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:894506f073def31cc04bd51b71e692fa7331ccf6d4092049054ef27467f7f036",
+        "evidence_id": "ev-paper-2980c636c72017ad1bdf",
+        "locator": "https://arxiv.org/abs/1807.00505",
+        "retrieved_at": "2026-07-18T18:11:49.544286Z",
+        "source_type": "paper",
+        "summary": "Humans can naturally understand an image in depth with the aid of rich knowledge accumulated from daily lives or professions. For example, to achieve fine-grained image recognition (e.g., categorizing hundreds of subordinate categories of birds) usually requires a comprehensive visual concept organization including category labels and part-level attributes. In this work, we investigate how to unify rich professional knowledge with deep neural network architectures and propose a Knowledge-Embedded Representation Learning (KERL) framework for handling the problem of fine-grained image recognition. Specifically, we organize the rich visual concepts in the form of knowledge graph and employ a Gated Graph Neural Network to propagate node message through the graph for generating the knowledge representation. By introducing a novel gated mechanism, our KERL framework incorporates this knowledge representation into the discriminative image feature learning, i.e., implicitly associating the specific attributes with the feature maps. Compared with existing methods of fine-grained image classification, our KERL framework has several appealing properties: i) The embedded high-level knowledge enhances the feature representation, thus facilitating distinguishing the subtle differences among subordinate categories. ii) Our framework can learn feature maps with a meaningful configuration that the highlighted regions finely accord with the nodes (specific attributes) of the knowledge graph. Extensive experiments on the widely used Caltech-UCSD bird dataset demonstrate the superiority of our KERL framework over existing state-of-the-art methods.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002"
+        ],
+        "title": "Knowledge-Embedded Representation Learning for Fine-Grained Image Recognition",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a21b14332cb6521d90bb89eef8e4441acd8f78361a25506a40d6bc0550672535",
+        "evidence_id": "ev-paper-9bdc69c43010aec15096",
+        "locator": "https://arxiv.org/abs/2207.01376",
+        "retrieved_at": "2026-07-18T18:11:49.544286Z",
+        "source_type": "paper",
+        "summary": "Recognizing discriminative details such as eyes and beaks is important for distinguishing fine-grained classes since they have similar overall appearances. In this regard, we introduce Task Discrepancy Maximization (TDM), a simple module for fine-grained few-shot classification. Our objective is to localize the class-wise discriminative regions by highlighting channels encoding distinct information of the class. Specifically, TDM learns task-specific channel weights based on two novel components: Support Attention Module (SAM) and Query Attention Module (QAM). SAM produces a support weight to represent channel-wise discriminative power for each class. Still, since the SAM is basically only based on the labeled support sets, it can be vulnerable to bias toward such support set. Therefore, we propose QAM which complements SAM by yielding a query weight that grants more weight to object-relevant channels for a given query image. By combining these two weights, a class-wise task-specific channel weight is defined. The weights are then applied to produce task-adaptive feature maps more focusing on the discriminative details. Our experiments validate the effectiveness of TDM and its complementary benefits with prior methods in fine-grained few-shot classification.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002"
+        ],
+        "title": "Task Discrepancy Maximization for Fine-grained Few-Shot Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:54bb2613247c7a0e4f6ab149ea051253aa498439ec36f37607b5a40647661d78",
+        "evidence_id": "ev-paper-d870a4a65efb495ef1e4",
+        "locator": "https://arxiv.org/abs/2109.11891",
+        "retrieved_at": "2026-07-18T18:11:49.544286Z",
+        "source_type": "paper",
+        "summary": "Automatic classification of aquatic microorganisms is based on the morphological features extracted from individual images. The current works on their classification do not consider the inter-class similarity and intra-class variance that causes misclassification. We are particularly interested in the case where variance within a class occurs due to discrete visual changes in microscopic images. In this paper, we propose to account for it by partitioning the classes with high variance based on the visual features. Our algorithm automatically decides the optimal number of sub-classes to be created and consider each of them as a separate class for training. This way, the network learns finer-grained visual features. Our experiments on two databases of freshwater benthic diatoms and marine plankton show that our method can outperform the state-of-the-art approaches for classification of these aquatic microorganisms.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Tackling Inter-Class Similarity and Intra-Class Variance for Microscopic Image-based Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d4df0353bd188cfe798d8a8c894dc526f1c4ea1881eb08eb6cdec88185177bf9",
+        "evidence_id": "ev-paper-d4c2303536c0a250605d",
+        "locator": "https://arxiv.org/abs/1409.8403",
+        "retrieved_at": "2026-07-18T18:11:49.544286Z",
+        "source_type": "paper",
+        "summary": "Image classification has advanced significantly in recent years with the availability of large-scale image sets. However, fine-grained classification remains a major challenge due to the annotation cost of large numbers of fine-grained categories. This project shows that compelling classification performance can be achieved on such categories even without labeled training data. Given image and class embeddings, we learn a compatibility function such that matching embeddings are assigned a higher score than mismatching ones; zero-shot classification of an image proceeds by finding the label yielding the highest joint compatibility score. We use state-of-the-art image features and focus on different supervised attributes and unsupervised output embeddings either derived from hierarchies or learned from unlabeled text corpora. We establish a substantially improved state-of-the-art on the Animals with Attributes and Caltech-UCSD Birds datasets. Most encouragingly, we demonstrate that purely unsupervised output embeddings (learned from Wikipedia and improved with fine-grained text) achieve compelling results, even outperforming the previous supervised state-of-the-art. By combining different output embeddings, we further improve results.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002"
+        ],
+        "title": "Evaluation of Output Embeddings for Fine-Grained Image Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f38d1ae3f1fd5e0a312fe13e8f333c35ca7e230141f4eac97f1cc8438cc36952",
+        "evidence_id": "ev-paper-25ed19bb0cb1784ddaff",
+        "locator": "https://arxiv.org/abs/2208.01897",
+        "retrieved_at": "2026-07-18T18:11:49.545286Z",
+        "source_type": "paper",
+        "summary": "Fine-grained action recognition is a challenging task in computer vision. As fine-grained datasets have small inter-class variations in spatial and temporal space, fine-grained action recognition model requires good temporal reasoning and discrimination of attribute action semantics. Leveraging on CNN's ability in capturing high level spatial-temporal feature representations and Transformer's modeling efficiency in capturing latent semantics and global dependencies, we investigate two frameworks that combine CNN vision backbone and Transformer Encoder to enhance fine-grained action recognition: 1) a vision-based encoder to learn latent temporal semantics, and 2) a multi-modal video-text cross encoder to exploit additional text input and learn cross association between visual and text semantics. Our experimental results show that both our Transformer encoder frameworks effectively learn latent temporal semantics and cross-modality association, with improved recognition performance over CNN vision model. We achieve new state-of-the-art performance on the FineGym benchmark dataset for both proposed architectures.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Combined CNN Transformer Encoder for Enhanced Fine-grained Human Action Recognition",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:558faa7a954f6be16dce39c81aff4a4f2cec4d566e41ef4fd0039ad909feef23",
+        "evidence_id": "ev-paper-bcebdf3676e4a32f667f",
+        "locator": "https://arxiv.org/abs/2011.09040",
+        "retrieved_at": "2026-07-18T18:11:49.545286Z",
+        "source_type": "paper",
+        "summary": "Whether what you see in Figure 1 is a \"flamingo\" or a \"bird\", is the question we ask in this paper. While fine-grained visual classification (FGVC) strives to arrive at the former, for the majority of us non-experts just \"bird\" would probably suffice. The real question is therefore -- how can we tailor for different fine-grained definitions under divergent levels of expertise. For that, we re-envisage the traditional setting of FGVC, from single-label classification, to that of top-down traversal of a pre-defined coarse-to-fine label hierarchy -- so that our answer becomes \"bird\"-->\"Phoenicopteriformes\"-->\"Phoenicopteridae\"-->\"flamingo\". To approach this new problem, we first conduct a comprehensive human study where we confirm that most participants prefer multi-granularity labels, regardless whether they consider themselves experts. We then discover the key intuition that: coarse-level label prediction exacerbates fine-grained feature learning, yet fine-level feature betters the learning of coarse-level classifier. This discovery enables us to design a very simple albeit surprisingly effective solution to our new problem, where we (i) leverage level-specific classification heads to disentangle coarse-level features with fine-grained ones, and (ii) allow finer-grained features to participate in coarser-grained label predictions, which in turn helps with better disentanglement. Experiments show that our method achieves superior performance in the new FGVC setting, and performs better than state-of-the-art on traditional single-label FGVC problem as well. Thanks to its simplicity, our method can be easily implemented on top of any existing FGVC frameworks and is parameter-free.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002"
+        ],
+        "title": "Your \"Flamingo\" is My \"Bird\": Fine-Grained, or Not",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:328fee8bebde820b5497fd94132493954963a7f5bce29e6f6a4f26a413f2f2b1",
+        "evidence_id": "ev-paper-303d5d285664d3c6cf16",
+        "locator": "https://arxiv.org/abs/1907.06167",
+        "retrieved_at": "2026-07-18T18:11:49.545286Z",
+        "source_type": "paper",
+        "summary": "Food classification is a challenging problem due to the large number of categories, high visual similarity between different foods, as well as the lack of datasets for training state-of-the-art deep models. Solving this problem will require advances in both computer vision models as well as datasets for evaluating these models. In this paper we focus on the second aspect and introduce FoodX-251, a dataset of 251 fine-grained food categories with 158k images collected from the web. We use 118k images as a training set and provide human verified labels for 40k images that can be used for validation and testing. In this work, we outline the procedure of creating this dataset and provide relevant baselines with deep learning models. The FoodX-251 dataset has been used for organizing iFood-2019 challenge in the Fine-Grained Visual Categorization workshop (FGVC6 at CVPR 2019) and is available for download.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002"
+        ],
+        "title": "FoodX-251: A Dataset for Fine-grained Food Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:b7e0271c86ff9cae8d043f5f6664712f5099f3f2c86d9743c27fad43bae8d441",
+        "evidence_id": "ev-paper-59e1d18370a83b119d1f",
+        "locator": "https://arxiv.org/abs/2502.14620",
+        "retrieved_at": "2026-07-18T18:11:49.545286Z",
+        "source_type": "paper",
+        "summary": "This paper investigates the efficacy of RWKV, a novel language model architecture known for its linear attention mechanism, for generating sentence embeddings in a zero-shot setting. I conduct a layer-wise analysis to evaluate the semantic similarity captured by embeddings from different hidden layers of a pre-trained RWKV model. The performance is assessed on the Microsoft Research Paraphrase Corpus (MRPC) dataset using Spearman correlation and compared against a GloVe-based baseline. My results indicate that while RWKV embeddings capture some semantic relatedness, they underperform compared to the GloVe baseline in terms of Spearman correlation. I also analyze the inference time and GPU memory usage, highlighting the computational trade-offs associated with RWKV embeddings. The findings suggest that while RWKV offers potential advantages in terms of linear scaling, its zero-shot sentence embedding quality for semantic similarity tasks requires further investigation and potential task-specific fine-tuning to match or exceed simpler baselines.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Exploring RWKV for Sentence Embeddings: Layer-wise Analysis and Baseline Comparison for Semantic Similarity",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:20112b57f45169587902fb7716c65618084b25e56b3016fbc4f5a485225c978e",
+        "evidence_id": "ev-paper-e876b727be356df1f745",
+        "locator": "https://arxiv.org/abs/2603.01036",
+        "retrieved_at": "2026-07-18T18:11:49.545286Z",
+        "source_type": "paper",
+        "summary": "In robot automated assembly, snap assembly precision and efficiency directly determine overall production quality. As a core prerequisite, snap detection and localization critically affect subsequent assembly success. Traditional visual methods suffer from poor robustness and large localization errors when handling complex scenarios (e.g., transparent or low-contrast snaps), failing to meet high-precision assembly demands. To address this, this paper designs a dedicated sensor and proposes SMR-Net, an self-attention-based multi-scale object detection algorithm, to synergistically enhance detection and localization performance. SMR-Net adopts an attention-enhanced multi-scale feature fusion architecture: raw sensor data is encoded via an attention-embedded feature extractor to strengthen key snap features and suppress noise; three multi-scale feature maps are processed in parallel with standard and dilated convolution for dimension unification while preserving resolution; an adaptive reweighting network dynamically assigns weights to fused features, generating fine representations integrating details and global semantics. Experimental results on Type A and Type B snap datasets show SMR-Net outperforms traditional Faster R-CNN significantly: Intersection over Union (IoU) improves by 6.52% and 5.8%, and mean Average Precision (mAP) increases by 2.8% and 1.5% respectively. This fully demonstrates the method's superiority in complex snap detection and localization tasks.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002"
+        ],
+        "title": "SMR-Net:Robot Snap Detection Based on Multi-Scale Features and Self-Attention Network",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:c54b4213524ad6f551621020e4cd0d6821af6fe1d554adfff84c2eabdb5f4f86",
+        "evidence_id": "ev-paper-5b0cdf433e7c4fc77beb",
+        "locator": "https://arxiv.org/abs/2403.06536",
+        "retrieved_at": "2026-07-18T18:11:49.545286Z",
+        "source_type": "paper",
+        "summary": "Recently, the methods based on implicit neural representations have shown excellent capabilities for arbitrary-scale super-resolution (ASSR). Although these methods represent the features of an image by generating latent codes, these latent codes are difficult to adapt for different magnification factors of super-resolution, which seriously affects their performance. Addressing this, we design Multi-Scale Implicit Transformer (MSIT), consisting of an Multi-scale Neural Operator (MSNO) and Multi-Scale Self-Attention (MSSA). Among them, MSNO obtains multi-scale latent codes through feature enhancement, multi-scale characteristics extraction, and multi-scale characteristics merging. MSSA further enhances the multi-scale characteristics of latent codes, resulting in better performance. Furthermore, to improve the performance of network, we propose the Re-Interaction Module (RIM) combined with the cumulative training strategy to improve the diversity of learned information for the network. We have systematically introduced multi-scale characteristics for the first time in ASSR, extensive experiments are performed to validate the effectiveness of MSIT, and our method achieves state-of-the-art performance in arbitrary super-resolution tasks.",
+        "supports_gap_ids": [
+          "EG001",
+          "EG002"
+        ],
+        "title": "Multi-Scale Implicit Transformer with Re-parameterize for Arbitrary-Scale Super-Resolution",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:abef3884fd3871b5bfc278abfe3e56634a51242c602ff643d60d6734e56da38a",
+        "evidence_id": "ev-paper-df4b6b126a4ff0954861",
+        "locator": "https://arxiv.org/abs/1810.07928",
+        "retrieved_at": "2026-07-18T18:11:49.546285Z",
+        "source_type": "paper",
+        "summary": "The paper introduces a multi-scale processing method for quantitative study and visualization of convective heat transfer using diffractive optical element based background-oriented schlieren technique. The method relies on robust estimation of phase encoded in the fringe pattern using windowed Fourier transform and subsequent multi-scale characterization of the obtained phase using continuous wavelet transform. As the phase is directly mapped to the refractive index fluctuations caused by the temperature gradients, the multi-scale inspection provides interesting insights about the underlying heat flow phenomenon. The performance of the proposed method is demonstrated for quantitative flow visualization.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Multi-scale approach for analyzing convective heat transfer flow in background-oriented Schlieren technique",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:169397b72eba5941d3f42f3afd612ed0f65652a63bc1c6fe56e12fdef099a4ed",
+        "evidence_id": "ev-paper-0c80bcf7c6b5d82f894b",
+        "locator": "https://arxiv.org/abs/2307.13365",
+        "retrieved_at": "2026-07-18T18:11:49.546285Z",
+        "source_type": "paper",
+        "summary": "Although large language models (LLMs) have achieved significant success in natural language processing, they still struggle with long-context comprehension. Traditional approaches to mitigating this issue typically rely on fine-tuning or retraining, which is both resource-intensive and challenging to deploy in lightweight industrial settings. In this paper, we investigate the potential to accomplish this without any additional resources. Through an in-depth study of the attention mechanism in LLMs, we propose a method called Scaled ReAttention (SRA) to strengthen LLMs' ability to interpret and retrieve information by strategically manipulating their attention scores during inference. Through extensive experiments, we demonstrate that integrating SRA significantly boosts LLMs' performance on a variety of downstream tasks, highlighting its practical potential for enhancing language understanding without incurring the overhead of traditional training.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Pay Attention to What You Need",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9f71c499e80fb0dde38f923f94001686df2b86dc525989d2f694ddccba310568",
+        "evidence_id": "ev-paper-7233c0c307ee147b8d8e",
+        "locator": "https://arxiv.org/abs/2107.12614",
+        "retrieved_at": "2026-07-18T18:11:49.546285Z",
+        "source_type": "paper",
+        "summary": "Legged robots are being used to explore rough terrains as they are capable of traversing gaps and obstacles. In this paper, a new mechanism is designed to replicate a robotic lizard using integrated five-bar mechanisms. There are two five bar mechanisms from which two more are formed by connecting the links in a particular order. The legs are attached to the links of the five bar mechanism such that, when the mechanism is actuated, they move the robot forward. Position analysis using vector loop approach has been done for the mechanism. A prototype has been built and controlled using servo motors to verify the robotic lizard mechanism.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Design and Analysis of a Robotic Lizard using Five-Bar Mechanism",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7bc2e3ec8850e26fc97fbd6c3417e00ebbc1d2446e3df69f2c6c8f1b04a8b2f8",
+        "evidence_id": "ev-paper-6f907ac6643471a9d769",
+        "locator": "https://arxiv.org/abs/2101.11843",
+        "retrieved_at": "2026-07-18T18:11:49.546285Z",
+        "source_type": "paper",
+        "summary": "The method of Lie symmetry analysis of differential equations is applied to determine exact solutions for the Camassa-Choi equation and its generalization. We prove that the Camassa-Choi equation is invariant under an infinite-dimensional Lie algebra, with an essential five-dimensional Lie algebra. The application of the Lie point symmetries leads to the construction of exact similarity solutions.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Lie symmetry analysis and similarity solutions for the Camassa-Choi equations",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7d623657968901243054779ba9add61f4cc3cf2fe54479d8bf32a9d972b9f5e2",
+        "evidence_id": "ev-paper-b8eedea55086070a38d4",
+        "locator": "https://arxiv.org/abs/2002.00741",
+        "retrieved_at": "2026-07-18T18:11:49.546285Z",
+        "source_type": "paper",
+        "summary": "Predicting users' preferences based on their sequential behaviors in history is challenging and crucial for modern recommender systems. Most existing sequential recommendation algorithms focus on transitional structure among the sequential actions, but largely ignore the temporal and context information, when modeling the influence of a historical event to current prediction. In this paper, we argue that the influence from the past events on a user's current action should vary over the course of time and under different context. Thus, we propose a Contextualized Temporal Attention Mechanism that learns to weigh historical actions' influence on not only what action it is, but also when and how the action took place. More specifically, to dynamically calibrate the relative input dependence from the self-attention mechanism, we deploy multiple parameterized kernel functions to learn various temporal dynamics, and then use the context information to determine which of these reweighing kernels to follow for each input. In empirical evaluations on two large public recommendation datasets, our model consistently outperformed an extensive set of state-of-the-art sequential recommendation methods.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Déjà vu: A Contextualized Temporal Attention Mechanism for Sequential Recommendation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9efe78cc6fe909c5c36b22fc86fc4c516bae17ca40388c637ea8ba758c67278d",
+        "evidence_id": "ev-paper-f51d147cc49b77752046",
+        "locator": "https://arxiv.org/abs/1102.2017",
+        "retrieved_at": "2026-07-18T18:11:49.546285Z",
+        "source_type": "paper",
+        "summary": "The optimal dimensional synthesis for planar mechanisms using differential evolution (DE) is demonstrated. Four examples are included: in the first case, the synthesis of a mechanism for hybrid-tasks, considering path generation, function generation, and motion generation, is carried out. The second and third cases pertain to path generation, with and without prescribed timing. Finally, the synthesis of an Ackerman mechanism is reported. Order defect problem is solved by manipulating individuals instead of penalizing or discretizing the search space for the parameters. A technique that consists in applying a transformation in order to satisfy the Grashof and crank conditions to generate an initial elitist population is introduced. As a result, the evolutionary algorithm increases its efficiency.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Synthesis of Mechanism for single- and hybrid-tasks using Differential Evolution",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2f21fee8e3b99e76af07d86c6f48504cae6cdeb6b861fb2a32fb34211d099ac5",
+        "evidence_id": "ev-paper-4bac680d3bbb5ecce934",
+        "locator": "https://arxiv.org/abs/1112.2954",
+        "retrieved_at": "2026-07-18T18:11:49.547285Z",
+        "source_type": "paper",
+        "summary": "The problem of path generation for the spherical 4R mechanism is solved using the Differential Evolution algorithm (DE). Formulas for the spherical geodesics are employed in order to obtain the parametric equation for the generated trajectory. Direct optimization of the objective function gives the solution to the path generation task without prescribed timing. Therefore, there is no need to separate this task into two stages to make the optimization. Moreover, the order defect problem can be solved without difficulty by means of manipulations of the individuals in the DE algorithm. Two examples of optimum synthesis showing the simplicity and effectiveness of this approach are included.",
+        "supports_gap_ids": [
+          "EG001"
+        ],
+        "title": "Synthesis of Spherical 4R Mechanism for Path Generation using Differential Evolution",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:17653d1b0015c865bc60f2492545a863f9e1a538d41d773299eb081b1cb68ad9",
+        "evidence_id": "ev-paper-60a7abb209f68b0452b7",
+        "locator": "https://arxiv.org/abs/2309.10219",
+        "retrieved_at": "2026-07-18T18:11:49.547285Z",
+        "source_type": "paper",
+        "summary": "Clinically, automated polyp segmentation techniques have the potential to significantly improve the efficiency and accuracy of medical diagnosis, thereby reducing the risk of colorectal cancer in patients. Unfortunately, existing methods suffer from two significant weaknesses that can impact the accuracy of segmentation. Firstly, features extracted by encoders are not adequately filtered and utilized. Secondly, semantic conflicts and information redundancy caused by feature fusion are not attended to. To overcome these limitations, we propose a novel approach for polyp segmentation, named MLFF-Net, which leverages multi-level feature fusion and attention mechanisms. Specifically, MLFF-Net comprises three modules: Multi-scale Attention Module (MAM), High-level Feature Enhancement Module (HFEM), and Global Attention Module (GAM). Among these, MAM is used to extract multi-scale information and polyp details from the shallow output of the encoder. In HFEM, the deep features of the encoders complement each other by aggregation. Meanwhile, the attention mechanism redistributes the weight of the aggregated features, weakening the conflicting redundant parts and highlighting the information useful to the task. GAM combines features from the encoder and decoder features, as well as computes global dependencies to prevent receptive field locality. Experimental results on five public datasets show that the proposed method not only can segment multiple types of polyps but also has advantages over current state-of-the-art methods in both accuracy and generalization ability.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Multi-level feature fusion network combining attention mechanisms for polyp segmentation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:bcb316100fa05d389f98139ff9547180ca3211123ee8b217b373ad236f1883f6",
+        "evidence_id": "ev-paper-00ad7cbfe0223e4d5877",
+        "locator": "https://arxiv.org/abs/2602.22674",
+        "retrieved_at": "2026-07-18T18:11:49.547285Z",
+        "source_type": "paper",
+        "summary": "Underwater object detection is a critical yet challenging research problem owing to severe light attenuation, color distortion, background clutter, and the small scale of underwater targets. To address these challenges, we propose SPMamba-YOLO, a novel underwater object detection network that integrates multi-scale feature enhancement with global context modeling. Specifically, a Spatial Pyramid Pooling Enhanced Layer Aggregation Network (SPPELAN) module is introduced to strengthen multi-scale feature aggregation and expand the receptive field, while a Pyramid Split Attention (PSA) mechanism enhances feature discrimination by emphasizing informative regions and suppressing background interference. In addition, a Mamba-based state space modeling module is incorporated to efficiently capture long-range dependencies and global contextual information, thereby improving detection robustness in complex underwater environments. Extensive experiments on the URPC2022 dataset demonstrate that SPMamba-YOLO outperforms the YOLOv8n baseline by more than 4.9\\% in mAP@0.5, particularly for small and densely distributed underwater objects, while maintaining a favorable balance between detection accuracy and computational cost.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "SPMamba-YOLO: An Underwater Object Detection Network Based on Multi-Scale Feature Enhancement and Global Context Modeling",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6e2b0ca9aa8d2090fd50a50f32b14f161ebad8923622ccb59c79360f00311516",
+        "evidence_id": "ev-paper-6c46c241920cd4433002",
+        "locator": "https://arxiv.org/abs/1807.04970",
+        "retrieved_at": "2026-07-18T18:11:49.547285Z",
+        "source_type": "paper",
+        "summary": "This paper describes an acoustic scene classification method which achieved the 4th ranking result in the IEEE AASP challenge of Detection and Classification of Acoustic Scenes and Events 2016. In order to accomplish the ensuing task, several methods are explored in three aspects: feature extraction, feature transformation, and score fusion for final decision. In the part of feature extraction, several features are investigated for effective acoustic scene classification. For resolving the issue that the same sound can be heard in different places, a feature transformation is applied for better separation for classification. From these, several systems based on different feature sets are devised for classification. The final result is determined by fusing the individual systems. The method is demonstrated and validated by the experiment conducted using the Challenge database.",
+        "supports_gap_ids": [
+          "EG002",
+          "EG003"
+        ],
+        "title": "Analysis Acoustic Features for Acoustic Scene Classification and Score fusion of multi-classification systems applied to DCASE 2016 challenge",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:c017ba27520473380a2e0f5ceacfec27c574a52d6b9b40177cf35d6159003007",
+        "evidence_id": "ev-paper-e7a9d05f5b0fb3b8e7b1",
+        "locator": "https://arxiv.org/abs/2110.03209",
+        "retrieved_at": "2026-07-18T18:11:49.548288Z",
+        "source_type": "paper",
+        "summary": "This paper addresses the problem of species classification in bird song recordings. The massive amount of available field recordings of birds presents an opportunity to use machine learning to automatically track bird populations. However, it also poses a problem: such field recordings typically contain significant environmental noise and overlapping vocalizations that interfere with classification. The widely available training datasets for species identification also typically leave background species unlabeled. This leads classifiers to ignore vocalizations with a low signal-to-noise ratio. However, recent advances in unsupervised sound separation, such as \\emph{mixture invariant training} (MixIT), enable high quality separation of bird songs to be learned from such noisy recordings. In this paper, we demonstrate improved separation quality when training a MixIT model specifically for birdsong data, outperforming a general audio separation model by over 5 dB in SI-SNR improvement of reconstructed mixtures. We also demonstrate precision improvements with a downstream multi-species bird classifier across three independent datasets. The best classifier performance is achieved by taking the maximum model activations over the separated channels and original audio. Finally, we document additional classifier improvements, including taxonomic classification, augmentation by random low-pass filters, and additional channel normalization.",
+        "supports_gap_ids": [
+          "EG002",
+          "EG003"
+        ],
+        "title": "Improving Bird Classification with Unsupervised Sound Separation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9ad921c06b2a2404a5b280a1cc874e7bfee1976a1f4fd9b649a64209f26b1025",
+        "evidence_id": "ev-paper-25677ff99d416579b7e2",
+        "locator": "https://arxiv.org/abs/2603.25777",
+        "retrieved_at": "2026-07-18T18:11:49.548288Z",
+        "source_type": "paper",
+        "summary": "There is great potential for the application of AI tools in fusion research, and substantial worldwide benefit if fusion power is realised. However, using AI comes with its own challenges, many of which can be mitigated if responsible and robust methodologies are built into existing approaches. To do that requires close, long-term collaborations between fusion domain experts and AI developers and awareness of the fact that not all problems in fusion research are best tackled with AI tools. In April 2025, experts from academia, industry, UKAEA and STFC discussed how AI can be used to advance R&D in fusion energy at the first edition of The Economist FusionFest event. This Perspective is an expanded and updated summary of the round table discussion, providing more context and examples.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Challenges and opportunities for AI to help deliver fusion energy",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:321175d3907e137c77820eeefd19a85ca5023e6c939b9205a0c0c2353e3dc81b",
+        "evidence_id": "ev-paper-cfe311a365c01d54ddfe",
+        "locator": "https://arxiv.org/abs/2508.05264",
+        "retrieved_at": "2026-07-18T18:11:49.548288Z",
+        "source_type": "paper",
+        "summary": "Infrared and visible image fusion (IVIF) is essential for integrating thermal saliency with textural details to support downstream perception. However, most existing approaches suffer from \"semantic blindness,\" leading to the erroneous suppression of thermal targets and the introduction of visual artifacts. To address this, we propose SAM-Guided Diffusion Fusion Network (SGDFuse), a novel Semantic-Guided Generation (SGG) framework that reframes IVIF as a semantically-steered generative task rather than simplistic pixel mapping. Our method uniquely couples high-level semantic priors from the Segment Anything Model (SAM) with the high-fidelity generative power of a conditional diffusion model. We employ a deliberate two-stage strategy to decouple multimodal alignment from iterative refinement: Stage I establishes a robust structural foundation via preliminary fusion, while Stage II utilizes dual-modality semantic masks as spatial anchors to guide the diffusion process toward a semantically coherent, high-fidelity reconstruction. Comprehensive experiments demonstrate that SGDFuse not only delivers state-of-the-art image quality but also enhances downstream task performance, confirming its effectiveness as a new Methodological Framework for semantically aware image fusion. The code is available at https://github.com/boshizhang123/SGDFuse.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "SGDFuse: SAM-Guided Diffusion Model for High-Fidelity Infrared and Visible Image Fusion",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:436f7bd50fee7db52d2d6b6194f6e9de70200d7e3e19943d0d5ca231c1c12b1e",
+        "evidence_id": "ev-paper-b6c03489231cc20bb7ea",
+        "locator": "https://arxiv.org/abs/1108.4098",
+        "retrieved_at": "2026-07-18T18:11:49.548794Z",
+        "source_type": "paper",
+        "summary": "Until now, of highest relevance for remote sensing data processing and analysis have been techniques for pixel level image fusion. So, This paper attempts to undertake the study of Feature-Level based image fusion. For this purpose, feature based fusion techniques, which are usually based on empirical or heuristic rules, are employed. Hence, in this paper we consider feature extraction (FE) for fusion. It aims at finding a transformation of the original space that would produce such new features, which preserve or improve as much as possible. This study introduces three different types of Image fusion techniques including Principal Component Analysis based Feature Fusion (PCA), Segment Fusion (SF) and Edge fusion (EF). This paper also devotes to concentrate on the analytical techniques for evaluating the quality of image fusion (F) by using various methods including (SD), (En), (CC), (SNR), (NRMSE) and (DI) to estimate the quality and degree of information improvement of a fused image quantitatively.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Multisensor Images Fusion Based on Feature-Level",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:323b0c1ba520f37250daeb853541b2cba8c7180a0097a41adfe1d3e5bd0e1e7b",
+        "evidence_id": "ev-paper-52ce63ad76a4787f3d52",
+        "locator": "https://arxiv.org/abs/1303.0095",
+        "retrieved_at": "2026-07-18T18:11:49.548794Z",
+        "source_type": "paper",
+        "summary": "A new method of feature extraction in the social network for within-network classification is proposed in the paper. The method provides new features calculated by combination of both: network structure information and class labels assigned to nodes. The influence of various features on classification performance has also been studied. The experiments on real-world data have shown that features created owing to the proposed method can lead to significant improvement of classification accuracy.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Label-dependent Feature Extraction in Social Networks for Node Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:5ffe9a85ea22d5c30eb6032a0ed7d0b6d7d198182a6932acf34d82644ce663bd",
+        "evidence_id": "ev-paper-2afd39faab45a14b787b",
+        "locator": "https://arxiv.org/abs/1901.00392",
+        "retrieved_at": "2026-07-18T18:11:49.548794Z",
+        "source_type": "paper",
+        "summary": "How to learn a discriminative fine-grained representation is a key point in many computer vision applications, such as person re-identification, fine-grained classification, fine-grained image retrieval, etc. Most of the previous methods focus on learning metrics or ensemble to derive better global representation, which are usually lack of local information. Based on the considerations above, we propose a novel Attribute-Aware Attention Model ($A^3M$), which can learn local attribute representation and global category representation simultaneously in an end-to-end manner. The proposed model contains two attention models: attribute-guided attention module uses attribute information to help select category features in different regions, at the same time, category-guided attention module selects local features of different attributes with the help of category cues. Through this attribute-category reciprocal process, local and global features benefit from each other. Finally, the resulting feature contains more intrinsic information for image recognition instead of the noisy and irrelevant features. Extensive experiments conducted on Market-1501, CompCars, CUB-200-2011 and CARS196 demonstrate the effectiveness of our $A^3M$. Code is available at https://github.com/iamhankai/attribute-aware-attention.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Attribute-Aware Attention Model for Fine-grained Representation Learning",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:42cc1c383868ca3f931b9d8df77a7f2510959d7d031346b0ad37d2889fed6049",
+        "evidence_id": "ev-paper-0a0be66581cea554de93",
+        "locator": "https://arxiv.org/abs/2106.09178",
+        "retrieved_at": "2026-07-18T18:11:49.548794Z",
+        "source_type": "paper",
+        "summary": "Camera-based electronic monitoring (EM) systems are increasingly being deployed onboard commercial fishing vessels to collect essential data for fisheries management and regulation. These systems generate large quantities of video data which must be reviewed on land by human experts. Computer vision can assist this process by automatically detecting and classifying fish species, however the lack of existing public data in this domain has hindered progress. To address this, we present the Fishnet Open Images Database, a large dataset of EM imagery for fish detection and fine-grained categorization onboard commercial fishing vessels. The dataset consists of 86,029 images containing 34 object classes, making it the largest and most diverse public dataset of fisheries EM imagery to-date. It includes many of the characteristic challenges of EM data: visual similarity between species, skewed class distributions, harsh weather conditions, and chaotic crew activity. We evaluate the performance of existing detection and classification algorithms and demonstrate that the dataset can serve as a challenging benchmark for development of computer vision algorithms in fisheries. The dataset is available at https://www.fishnet.ai/.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "The Fishnet Open Images Database: A Dataset for Fish Detection and Fine-Grained Categorization in Fisheries",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8e8f1dc623eb953ef1804d7b7e24fc95e99bcf9f9ee9fc660621f4ea36066e73",
+        "evidence_id": "ev-paper-b735ae4afc5c9944a054",
+        "locator": "https://arxiv.org/abs/2503.12385",
+        "retrieved_at": "2026-07-18T18:11:49.549795Z",
+        "source_type": "paper",
+        "summary": "Fine-grained visual categorization (FGVC) is a challenging but significant task in computer vision, which aims to recognize different sub-categories of birds, cars, airplanes, etc. Among them, recognizing models of different cars has significant application value in autonomous driving, traffic surveillance and scene understanding, which has received considerable attention in the past few years. However, Stanford-Car, the most widely used fine-grained dataset for car recognition, only has 196 different categories and only includes vehicle models produced earlier than 2013. Due to the rapid advancements in the automotive industry during recent years, the appearances of various car models have become increasingly intricate and sophisticated. Consequently, the previous Stanford-Car dataset fails to capture this evolving landscape and cannot satisfy the requirements of automotive industry. To address these challenges, in our paper, we introduce Car-1000, a large-scale dataset designed specifically for fine-grained visual categorization of diverse car models. Car-1000 encompasses vehicles from 166 different automakers, spanning a wide range of 1000 distinct car models. Additionally, we have reproduced several state-of-the-art FGVC methods on the Car-1000 dataset, establishing a new benchmark for research in this field. We hope that our work will offer a fresh perspective for future FGVC researchers. Our dataset is available at https://github.com/toggle1995/Car-1000.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Car-1000: A New Large Scale Fine-Grained Visual Categorization Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ca61d0f31052eb55dca2d611daa98bd71c7a58155d7cf453a7faade420723ae9",
+        "evidence_id": "ev-paper-cc595bed42f6eba7bb46",
+        "locator": "https://arxiv.org/abs/1901.06403",
+        "retrieved_at": "2026-07-18T18:11:49.549795Z",
+        "source_type": "paper",
+        "summary": "Fine-grained object recognition concerns the identification of the type of an object among a large number of closely related sub-categories. Multisource data analysis, that aims to leverage the complementary spectral, spatial, and structural information embedded in different sources, is a promising direction towards solving the fine-grained recognition problem that involves low between-class variance, small training set sizes for rare classes, and class imbalance. However, the common assumption of co-registered sources may not hold at the pixel level for small objects of interest. We present a novel methodology that aims to simultaneously learn the alignment of multisource data and the classification model in a unified framework. The proposed method involves a multisource region attention network that computes per-source feature representations, assigns attention scores to candidate regions sampled around the expected object locations by using these representations, and classifies the objects by using an attention-driven multisource representation that combines the feature representations and the attention scores from all sources. All components of the model are realized using deep neural networks and are learned in an end-to-end fashion. Experiments using RGB, multispectral, and LiDAR elevation data for classification of street trees showed that our approach achieved 64.2% and 47.3% accuracies for the 18-class and 40-class settings, respectively, which correspond to 13% and 14.3% improvement relative to the commonly used feature concatenation approach from multiple sources.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "Multisource Region Attention Network for Fine-Grained Object Recognition in Remote Sensing Imagery",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:cd6d28ee33b240868c83a5d36a14614c0184a617010ea60135cc180a4abbe462",
+        "evidence_id": "ev-paper-d60e9e4a76f712c2cd44",
+        "locator": "https://arxiv.org/abs/2405.19595",
+        "retrieved_at": "2026-07-18T18:11:49.550795Z",
+        "source_type": "paper",
+        "summary": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+        "supports_gap_ids": [
+          "EG002"
+        ],
+        "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6c471bf7e89dbc4a2311a209628fce88f54d3c07148125558c37bc7d5befb342",
+        "evidence_id": "ev-paper-c19058cf2584da509f9c",
+        "locator": "https://arxiv.org/abs/2310.19168",
+        "retrieved_at": "2026-07-18T18:11:49.550795Z",
+        "source_type": "paper",
+        "summary": "We propose a metadata-aware self-supervised learning~(SSL)~framework useful for fine-grained classification and ecological mapping of bird species around the world. Our framework unifies two SSL strategies: Contrastive Learning~(CL) and Masked Image Modeling~(MIM), while also enriching the embedding space with metadata available with ground-level imagery of birds. We separately train uni-modal and cross-modal ViT on a novel cross-view global bird species dataset containing ground-level imagery, metadata (location, time), and corresponding satellite imagery. We demonstrate that our models learn fine-grained and geographically conditioned features of birds, by evaluating on two downstream tasks: fine-grained visual classification~(FGVC) and cross-modal retrieval. Pre-trained models learned using our framework achieve SotA performance on FGVC of iNAT-2021 birds and in transfer learning settings for CUB-200-2011 and NABirds datasets. Moreover, the impressive cross-modal retrieval performance of our model enables the creation of species distribution maps across any geographic region. The dataset and source code will be released at https://github.com/mvrl/BirdSAT}.",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "BirdSAT: Cross-View Contrastive Masked Autoencoders for Bird Species Classification and Mapping",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:97ef64c67ca83c075ce9b6ca3fa556ca4a6efbfb840812e7819f3104b13ccf59",
+        "evidence_id": "ev-paper-1ef549eb38dd70b2bfa6",
+        "locator": "https://arxiv.org/abs/2508.09398",
+        "retrieved_at": "2026-07-18T18:11:49.550795Z",
+        "source_type": "paper",
+        "summary": "This paper presents a low cost, on premise system for autonomous backyard bird monitoring in Belgian urban gardens. A motion triggered IP camera uploads short clips via FTP to a local server, where frames are sampled and birds are localized with Detectron2; cropped regions are then classified by an EfficientNet-B3 model fine tuned on a 40-species Belgian subset derived from a larger Kaggle corpus. All processing runs on commodity hardware without a discrete GPU, preserving privacy and avoiding cloud fees. The physical feeder uses small entry ports (30 mm) to exclude pigeons and reduce nuisance triggers. Detector-guided cropping improves classification accuracy over raw-frame classification. The classifier attains high validation performance on the curated subset (about 99.5 percent) and delivers practical field accuracy (top-1 about 88 percent) on held-out species, demonstrating feasibility for citizen-science-grade biodiversity logging at home.",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "Autonomous AI Bird Feeder for Backyard Biodiversity Monitoring",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:28b058038dce8bbe8fb8cb1ae47b5ad752349ccb95f3dd9ce3366730ab36892f",
+        "evidence_id": "ev-paper-54b8122d9d805998138c",
+        "locator": "https://arxiv.org/abs/2107.10171",
+        "retrieved_at": "2026-07-18T18:11:49.550795Z",
+        "source_type": "paper",
+        "summary": "We introduce leave-one-out unfairness, which characterizes how likely a model's prediction for an individual will change due to the inclusion or removal of a single other person in the model's training data. Leave-one-out unfairness appeals to the idea that fair decisions are not arbitrary: they should not be based on the chance event of any one person's inclusion in the training data. Leave-one-out unfairness is closely related to algorithmic stability, but it focuses on the consistency of an individual point's prediction outcome over unit changes to the training data, rather than the error of the model in aggregate. Beyond formalizing leave-one-out unfairness, we characterize the extent to which deep models behave leave-one-out unfairly on real data, including in cases where the generalization error is small. Further, we demonstrate that adversarial training and randomized smoothing techniques have opposite effects on leave-one-out fairness, which sheds light on the relationships between robustness, memorization, individual fairness, and leave-one-out fairness in deep models. Finally, we discuss salient practical applications that may be negatively affected by leave-one-out unfairness.",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "Leave-one-out Unfairness",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:581875b8adc7a421f2601ddbb6a439685e1480c510a69a1c9a7688e4b0cb1735",
+        "evidence_id": "ev-paper-a1ae0aca2be006bfc0d9",
+        "locator": "https://arxiv.org/abs/2503.15576",
+        "retrieved_at": "2026-07-18T18:11:49.550795Z",
+        "source_type": "paper",
+        "summary": "Passive Acoustic Monitoring is a key tool for biodiversity conservation, but the large volumes of unsupervised audio it generates present major challenges for extracting meaningful information. Deep Learning offers promising solutions. BirdNET, a widely used bird identification model, has shown success in many study systems but is limited at local scale due to biases in its training data, which focus on specific locations and target sounds rather than entire soundscapes. A key challenge in bird species identification is that many recordings either lack target species or contain overlapping vocalizations, complicating automatic identification. To address these problems, we developed a multi-stage pipeline for automatic bird vocalization identification in Doñana National Park (SW Spain), a wetland of high conservation concern. We deployed AudioMoth recorders in three main habitats across nine locations and manually annotated 461 minutes of audio, resulting in 3749 labeled segments spanning 34 classes. We first applied a Bird Song Detector to isolate bird vocalizations using spectrogram-based image processing. Then, species were classified using custom models trained at the local scale. Applying the Bird Song Detector before classification improved species identification, as all models performed better when analyzing only the segments where birds were detected. Specifically, the combination of detector and fine-tuned BirdNET outperformed the baseline without detection. This approach demonstrates the effectiveness of integrating a Bird Song Detector with local classification models. These findings highlight the need to adapt general-purpose tools to specific ecological challenges. Automatically detecting bird species helps track the health of this threatened ecosystem, given birds sensitivity to environmental change, and supports conservation planning to reduce biodiversity loss.",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "A Bird Song Detector for improving bird identification through Deep Learning: a case study from Doñana",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:94479ff206c17764a8f0dd2ff589cc3e2061a33641f41c14f572763099777059",
+        "evidence_id": "ev-paper-8f0575d67536e9446b9c",
+        "locator": "https://arxiv.org/abs/2308.13875",
+        "retrieved_at": "2026-07-18T18:11:49.551794Z",
+        "source_type": "paper",
+        "summary": "Software systems continuously evolve due to new functionalities, requirements, or maintenance activities. In the context of software evolution, software refactoring has gained a strategic relevance. The space of possible software refactoring is usually very large, as it is given by the combinations of different refactoring actions that can produce software system alternatives. Multi-objective algorithms have shown the ability to discover alternatives by pursuing different objectives simultaneously. Performance of such algorithms in the context of software model refactoring is of paramount importance. Therefore, in this paper, we conduct a performance analysis of three genetic algorithms to compare them in terms of performance and quality of solutions. Our results show that there are significant differences in performance among the algorithms (e.g., PESA2 seems to be the fastest one, while NSGA-II shows the least memory usage).",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "Performance of Genetic Algorithms in the Context of Software Model Refactoring",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:49de38b57cf88bbdc36c8c530de4f62dc798ace38e1a6c1c35232069195b13e8",
+        "evidence_id": "ev-paper-76951522da82c5621adb",
+        "locator": "https://arxiv.org/abs/1804.07177",
+        "retrieved_at": "2026-07-18T18:11:49.551794Z",
+        "source_type": "paper",
+        "summary": "Reliable identification of bird species in recorded audio files would be a transformative tool for researchers, conservation biologists, and birders. In recent years, artificial neural networks have greatly improved the detection quality of machine learning systems for bird species recognition. We present a baseline system using convolutional neural networks. We publish our code base as reference for participants in the 2018 LifeCLEF bird identification task and discuss our experiments and potential improvements.",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "Recognizing Birds from Sound - The 2018 BirdCLEF Baseline System",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2883c6fc8549c1e34d68d9de6acdb31444ce4c8f22c1ceada02e8353f725f6dd",
+        "evidence_id": "ev-paper-33adbc7700ac3a5243ea",
+        "locator": "https://arxiv.org/abs/1202.2564",
+        "retrieved_at": "2026-07-18T18:11:49.551794Z",
+        "source_type": "paper",
+        "summary": "The area under the ROC curve is widely used as a measure of performance of classification rules. However, it has recently been shown that the measure is fundamentally incoherent, in the sense that it treats the relative severities of misclassifications differently when different classifiers are used. To overcome this, Hand (2009) proposed the $H$ measure, which allows a given researcher to fix the distribution of relative severities to a classifier-independent setting on a given problem. This note extends the discussion, and proposes a modified standard distribution for the $H$ measure, which better matches the requirements of researchers, in particular those faced with heavily unbalanced datasets, the $Beta(π_1+1,π_0+1)$ distribution. [Preprint submitted at Pattern Recognition Letters]",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "A better Beta for the H measure of classification performance",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:43c294a54c249bc25cdf742c8d790aa7a8164c958b71af09d41a508c02823f40",
+        "evidence_id": "ev-paper-5777a7d408816bc4fd55",
+        "locator": "https://arxiv.org/abs/1703.02317",
+        "retrieved_at": "2026-07-18T18:11:49.551794Z",
+        "source_type": "paper",
+        "summary": "Bird sounds possess distinctive spectral structure which may exhibit small shifts in spectrum depending on the bird species and environmental conditions. In this paper, we propose using convolutional recurrent neural networks on the task of automated bird audio detection in real-life environments. In the proposed method, convolutional layers extract high dimensional, local frequency shift invariant features, while recurrent layers capture longer term dependencies between the features extracted from short time frames. This method achieves 88.5% Area Under ROC Curve (AUC) score on the unseen evaluation data and obtains the second place in the Bird Audio Detection challenge.",
+        "supports_gap_ids": [
+          "EG003"
+        ],
+        "title": "Convolutional Recurrent Neural Networks for Bird Audio Detection",
+        "verification_status": "accepted"
+      }
+    ],
+    "report": {
+      "evidence_ids": [
+        "ev-paper-00ad7cbfe0223e4d5877",
+        "ev-paper-0a0be66581cea554de93",
+        "ev-paper-0c80bcf7c6b5d82f894b",
+        "ev-paper-13b524108ced3e954dcf",
+        "ev-paper-1ef549eb38dd70b2bfa6",
+        "ev-paper-25677ff99d416579b7e2",
+        "ev-paper-25ed19bb0cb1784ddaff",
+        "ev-paper-2980c636c72017ad1bdf",
+        "ev-paper-2afd39faab45a14b787b",
+        "ev-paper-303d5d285664d3c6cf16",
+        "ev-paper-33adbc7700ac3a5243ea",
+        "ev-paper-4bac680d3bbb5ecce934",
+        "ev-paper-52ce63ad76a4787f3d52",
+        "ev-paper-54b8122d9d805998138c",
+        "ev-paper-5777a7d408816bc4fd55",
+        "ev-paper-59e1d18370a83b119d1f",
+        "ev-paper-5b0cdf433e7c4fc77beb",
+        "ev-paper-60a7abb209f68b0452b7",
+        "ev-paper-6c46c241920cd4433002",
+        "ev-paper-6f907ac6643471a9d769",
+        "ev-paper-7233c0c307ee147b8d8e",
+        "ev-paper-76951522da82c5621adb",
+        "ev-paper-8f0575d67536e9446b9c",
+        "ev-paper-96cc96b7dfdf3f96df21",
+        "ev-paper-9bdc69c43010aec15096",
+        "ev-paper-a1ae0aca2be006bfc0d9",
+        "ev-paper-b6c03489231cc20bb7ea",
+        "ev-paper-b735ae4afc5c9944a054",
+        "ev-paper-b8eedea55086070a38d4",
+        "ev-paper-bcebdf3676e4a32f667f",
+        "ev-paper-c19058cf2584da509f9c",
+        "ev-paper-cc595bed42f6eba7bb46",
+        "ev-paper-cfe311a365c01d54ddfe",
+        "ev-paper-d4c2303536c0a250605d",
+        "ev-paper-d60e9e4a76f712c2cd44",
+        "ev-paper-d760c0c9e9abef2f1b7c",
+        "ev-paper-d870a4a65efb495ef1e4",
+        "ev-paper-df4b6b126a4ff0954861",
+        "ev-paper-e7a9d05f5b0fb3b8e7b1",
+        "ev-paper-e876b727be356df1f745",
+        "ev-paper-f51d147cc49b77752046"
+      ],
+      "executive_summary": "The analysis was blocked due to unresolved methodological inconsistencies and insufficient evidence to validate key claims. Critical gaps in accepted evidence prevent progression to verified or inferred findings.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "No accepted evidence could be reliably mapped to the proposed claims due to methodological inconsistencies.",
+        "The quality verdict 'blocked' indicates a failure to meet baseline validation criteria, rendering further analysis infeasible under current constraints.",
+        "Insufficient evidence IDs were provided to substantiate any findings, despite the list of accepted IDs being available."
+      ],
+      "next_actions": [
+        "Re-evaluate the methodological framework to address inconsistencies preventing evidence mapping.",
+        "Conduct a gap analysis to identify missing or misaligned evidence IDs required for validation.",
+        "Re-run the analysis with corrected evidence IDs or an updated methodological approach.",
+        "Engage with domain experts to resolve methodological conflicts before proceeding."
+      ],
+      "proposed_method": null,
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 41,
+    "completed_query_ids": [
+      "SQ001",
+      "SQ002",
+      "SQ003",
+      "SQ004",
+      "SQ005"
+    ],
+    "coverage_by_gap": {
+      "EG001": 20,
+      "EG002": 20,
+      "EG003": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [],
+    "quality_reason_codes": [],
+    "quality_verdict": null,
+    "retrieval_budget_exhausted": false,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 1,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ001",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ002",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ003",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ004",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ005",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "SQ005",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "SQ005",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 41
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:11:35.143699+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 3,
+    "estimated_cost_usd": 0.0074878,
+    "input_tokens": 19706,
+    "output_tokens": 5911,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 25617
+  },
+  "terminal": "blocked",
+  "trace_digest": "6569b3f10d2f2ff523426e51dcf5d0ccbd583670034d5a294615ea9796465488",
+  "version": "v2",
+  "wall_seconds": 43.266
+}

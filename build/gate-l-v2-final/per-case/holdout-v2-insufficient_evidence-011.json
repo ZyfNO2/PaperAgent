@@ -1,0 +1,701 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-insufficient_evidence-011",
+  "case_index": 1,
+  "category": "insufficient_evidence",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "anecdotal_claim_marked_unverified"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "no_core_evidence_use_without_validation"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "independent_reimplementation_plan"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "pilot_experiment_plan"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "public_replacement_evidence_search"
+    },
+    {
+      "check_id": "required_06",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "revise_decision"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "ap_small_plus_8_as_verified"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "anecdote_as_core_evidence"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "invented_module_details"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "fabricated_result"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--case-id",
+      "holdout-v2-insufficient_evidence-011",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "b7fcea4c964e3427a8230041c96e160d87a8c349297d176e873e984507c99f91",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:9429beda094b009af913efd1f53fffca17f2c0ab0610561853630e5ea1639f0f",
+        "evidence_id": "ev-paper-00ad7cbfe0223e4d5877",
+        "locator": "https://arxiv.org/abs/2602.22674",
+        "retrieved_at": "2026-07-18T18:22:50.133513Z",
+        "source_type": "paper",
+        "summary": "Underwater object detection is a critical yet challenging research problem owing to severe light attenuation, color distortion, background clutter, and the small scale of underwater targets. To address these challenges, we propose SPMamba-YOLO, a novel underwater object detection network that integrates multi-scale feature enhancement with global context modeling. Specifically, a Spatial Pyramid Pooling Enhanced Layer Aggregation Network (SPPELAN) module is introduced to strengthen multi-scale feature aggregation and expand the receptive field, while a Pyramid Split Attention (PSA) mechanism enhances feature discrimination by emphasizing informative regions and suppressing background interference. In addition, a Mamba-based state space modeling module is incorporated to efficiently capture long-range dependencies and global contextual information, thereby improving detection robustness in complex underwater environments. Extensive experiments on the URPC2022 dataset demonstrate that SPMamba-YOLO outperforms the YOLOv8n baseline by more than 4.9\\% in mAP@0.5, particularly for small and densely distributed underwater objects, while maintaining a favorable balance between detection accuracy and computational cost.",
+        "supports_gap_ids": [
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "SPMamba-YOLO: An Underwater Object Detection Network Based on Multi-Scale Feature Enhancement and Global Context Modeling",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f61b72992762507e9f7f754239cd9614597fc46e439a9d20879b73e2fd7082b2",
+        "evidence_id": "ev-paper-e525991de7392db57b07",
+        "locator": "https://arxiv.org/abs/2401.17270",
+        "retrieved_at": "2026-07-18T18:22:50.133513Z",
+        "source_type": "paper",
+        "summary": "The You Only Look Once (YOLO) series of detectors have established themselves as efficient and practical tools. However, their reliance on predefined and trained object categories limits their applicability in open scenarios. Addressing this limitation, we introduce YOLO-World, an innovative approach that enhances YOLO with open-vocabulary detection capabilities through vision-language modeling and pre-training on large-scale datasets. Specifically, we propose a new Re-parameterizable Vision-Language Path Aggregation Network (RepVL-PAN) and region-text contrastive loss to facilitate the interaction between visual and linguistic information. Our method excels in detecting a wide range of objects in a zero-shot manner with high efficiency. On the challenging LVIS dataset, YOLO-World achieves 35.4 AP with 52.0 FPS on V100, which outperforms many state-of-the-art methods in terms of both accuracy and speed. Furthermore, the fine-tuned YOLO-World achieves remarkable performance on several downstream tasks, including object detection and open-vocabulary instance segmentation.",
+        "supports_gap_ids": [
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:02049cb1e6288380a05774472f9116aac945298b995d4848c7775d7240d75eb2",
+        "evidence_id": "ev-paper-db780e11b16d0d880212",
+        "locator": "https://arxiv.org/abs/2211.15444",
+        "retrieved_at": "2026-07-18T18:22:50.133513Z",
+        "source_type": "paper",
+        "summary": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-like structures with spatial pyramid pooling and focus modules. In the design of necks and heads, we follow the rule of ``large neck, small head''.We import Generalized-FPN with accelerated queen-fusion to build the detector neck and upgrade its CSPNet with efficient layer aggregation networks (ELAN) and reparameterization. Then we investigate how detector head size affects detection performance and find that a heavy neck with only one task projection layer would yield better results.In addition, AlignedOTA is proposed to solve the misalignment problem in label assignment. And a distillation schema is introduced to improve performance to a higher level. Based on these new techs, we build a suite of models at various scales to meet the needs of different scenarios. For general industry requirements, we propose DAMO-YOLO-T/S/M/L. They can achieve 43.6/47.7/50.2/51.9 mAPs on COCO with the latency of 2.78/3.83/5.62/7.95 ms on T4 GPUs respectively. Additionally, for edge devices with limited computing power, we have also proposed DAMO-YOLO-Ns/Nm/Nl lightweight models. They can achieve 32.3/38.2/40.5 mAPs on COCO with the latency of 4.08/5.05/6.69 ms on X86-CPU. Our proposed general and lightweight models have outperformed other YOLO series models in their respective application scenarios.",
+        "supports_gap_ids": [
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:b5ee1b248ea574d7407a0a1283eacdcd3988ae97484f5dcbb3473b17137e51c5",
+        "evidence_id": "ev-paper-0e91431cffddce33fe37",
+        "locator": "https://arxiv.org/abs/2011.09170",
+        "retrieved_at": "2026-07-18T18:22:50.133513Z",
+        "source_type": "paper",
+        "summary": "Vehicles, pedestrians, and riders are the most important and interesting objects for the perception modules of self-driving vehicles and video surveillance. However, the state-of-the-art performance of detecting such important objects (esp. small objects) is far from satisfying the demand of practical systems. Large-scale, rich-diversity, and high-resolution datasets play an important role in developing better object detection methods to satisfy the demand. Existing public large-scale datasets such as MS COCO collected from websites do not focus on the specific scenarios. Moreover, the popular datasets (e.g., KITTI and Citypersons) collected from the specific scenarios are limited in the number of images and instances, the resolution, and the diversity. To attempt to solve the problem, we build a diverse high-resolution dataset (called TJU-DHD). The dataset contains 115,354 high-resolution images (52% images have a resolution of 1624$\\times$1200 pixels and 48% images have a resolution of at least 2,560$\\times$1,440 pixels) and 709,330 labeled objects in total with a large variance in scale and appearance. Meanwhile, the dataset has a rich diversity in season variance, illumination variance, and weather variance. In addition, a new diverse pedestrian dataset is further built. With the four different detectors (i.e., the one-stage RetinaNet, anchor-free FCOS, two-stage FPN, and Cascade R-CNN), experiments about object detection and pedestrian detection are conducted. We hope that the newly built dataset can help promote the research on object detection and pedestrian detection in these two scenes. The dataset is available at https://github.com/tjubiit/TJU-DHD.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "TJU-DHD: A Diverse High-Resolution Dataset for Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ab7a2e59ccf0cd79b94a289af537fc5ec2eb66216e42bc3b8c32d629b7689eef",
+        "evidence_id": "ev-paper-5cf36711aaadddc9cfca",
+        "locator": "https://arxiv.org/abs/2403.09233",
+        "retrieved_at": "2026-07-18T18:22:50.134514Z",
+        "source_type": "paper",
+        "summary": "Adverse weather conditions including haze, snow and rain lead to decline in image qualities, which often causes a decline in performance for deep-learning based detection networks. Most existing approaches attempts to rectify hazy images before performing object detection, which increases the complexity of the network and may result in the loss in latent information. To better integrate image restoration and object detection tasks, we designed a double-route network with an attention feature fusion module, taking both hazy and dehazed features into consideration. We also proposed a subnetwork to provide haze-free features to the detection network. Specifically, our D-YOLO improves the performance of the detection network by minimizing the distance between the clear feature extraction subnetwork and detection network. Experiments on RTTS and FoggyCityscapes datasets show that D-YOLO demonstrates better performance compared to the state-of-the-art methods. It is a robust detection framework for bridging the gap between low-level dehazing and high-level detection.",
+        "supports_gap_ids": [
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "D-YOLO a robust framework for object detection in adverse weather conditions",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:62b88a1b7b0c2d8bd9e86f6dadcdc870e982e1c0a9597dd336c34125db4e3ae9",
+        "evidence_id": "ev-paper-cfaa60f5723befc6630b",
+        "locator": "https://arxiv.org/abs/2509.21696",
+        "retrieved_at": "2026-07-18T18:22:50.134514Z",
+        "source_type": "paper",
+        "summary": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}obileNetv4 and \\textbf{S}lideLoss based on YOLO), which replaces YOLOv8's CSPDarknet backbone with the more efficient MobileNetV4, reducing computational overhead by \\textbf{1.5%} while sustaining high accuracy. In addition, we introduce \\emph{SlideLoss}, a novel loss function that dynamically emphasizes under-represented and occluded samples, boosting precision without sacrificing recall. Experiments on the FLIR ADAS V2 benchmark show that \\texttt{MS-YOLO} attains competitive mAP and superior precision while operating at only \\textbf{6.7 GFLOPs}. These results demonstrate that \\texttt{MS-YOLO} effectively addresses the dual challenge of maintaining high detection quality while minimizing computational costs, making it well-suited for real-time edge deployment in urban environments.",
+        "supports_gap_ids": [
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:0b864cf1efb368e1663627726ab0308f9a127bef776d07f4d4bcbd72f5196838",
+        "evidence_id": "ev-paper-1c4d152a9c073bdbbe38",
+        "locator": "https://arxiv.org/abs/2512.22973",
+        "retrieved_at": "2026-07-18T18:22:50.135073Z",
+        "source_type": "paper",
+        "summary": "Current methods for incremental object detection (IOD) primarily rely on Faster R-CNN or DETR series detectors; however, these approaches do not accommodate the real-time YOLO detection frameworks. In this paper, we first identify three primary types of knowledge conflicts that contribute to catastrophic forgetting in YOLO-based incremental detectors: foreground-background confusion, parameter interference, and misaligned knowledge distillation. Subsequently, we introduce YOLO-IOD, a real-time Incremental Object Detection (IOD) framework that is constructed upon the pretrained YOLO-World model, facilitating incremental learning via a stage-wise parameter-efficient fine-tuning process. Specifically, YOLO-IOD encompasses three principal components: 1) Conflict-Aware Pseudo-Label Refinement (CPR), which mitigates the foreground-background confusion by leveraging the confidence levels of pseudo labels and identifying potential objects relevant to future tasks. 2) Importancebased Kernel Selection (IKS), which identifies and updates the pivotal convolution kernels pertinent to the current task during the current learning stage. 3) Cross-Stage Asymmetric Knowledge Distillation (CAKD), which addresses the misaligned knowledge distillation conflict by transmitting the features of the student target detector through the detection heads of both the previous and current teacher detectors, thereby facilitating asymmetric distillation between existing and newly introduced categories. We further introduce LoCo COCO, a more realistic benchmark that eliminates data leakage across stages. Experiments on both conventional and LoCo COCO benchmarks show that YOLO-IOD achieves superior performance with minimal forgetting.",
+        "supports_gap_ids": [
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "YOLO-IOD: Towards Real Time Incremental Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:042b836d774f99cefb2eed1914d51ac70d0675fe9413597aa47ff72148df2c80",
+        "evidence_id": "ev-paper-a5dac2c3806cb15aa7b2",
+        "locator": "https://arxiv.org/abs/2403.18819",
+        "retrieved_at": "2026-07-18T18:22:50.135073Z",
+        "source_type": "paper",
+        "summary": "The Common Objects in Context (COCO) dataset has been instrumental in benchmarking object detectors over the past decade. Like every dataset, COCO contains subtle errors and imperfections stemming from its annotation procedure. With the advent of high-performing models, we ask whether these errors of COCO are hindering its utility in reliably benchmarking further progress. In search for an answer, we inspect thousands of masks from COCO (2017 version) and uncover different types of errors such as imprecise mask boundaries, non-exhaustively annotated instances, and mislabeled masks. Due to the prevalence of COCO, we choose to correct these errors to maintain continuity with prior research. We develop COCO-ReM (Refined Masks), a cleaner set of annotations with visibly better mask quality than COCO-2017. We evaluate fifty object detectors and find that models that predict visually sharper masks score higher on COCO-ReM, affirming that they were being incorrectly penalized due to errors in COCO-2017. Moreover, our models trained using COCO-ReM converge faster and score higher than their larger variants trained using COCO-2017, highlighting the importance of data quality in improving object detectors. With these findings, we advocate using COCO-ReM for future object detection research. Our dataset is available at https://cocorem.xyz",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "Benchmarking Object Detectors with COCO: A New Path Forward",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:da3204b3734af95aa57c9fa7c0330849db4a4a56fe9b361e765b4b3eec937f85",
+        "evidence_id": "ev-paper-1a664884cfdbf487ef34",
+        "locator": "https://arxiv.org/abs/2302.10473",
+        "retrieved_at": "2026-07-18T18:22:50.135578Z",
+        "source_type": "paper",
+        "summary": "Oriented object detection is a fundamental yet challenging task in remote sensing (RS), aiming to locate and classify objects with arbitrary orientations. Recent advancements in deep learning have significantly enhanced the capabilities of oriented object detection methods. Given the rapid development of this field, a comprehensive survey of the recent advances in oriented object detection is presented in this paper. Specifically, we begin by tracing the technical evolution from horizontal object detection to oriented object detection and highlighting the specific related challenges, including feature misalignment, spatial misalignment, oriented bounding box (OBB) regression problems, and common issues encountered in RS. Subsequently, we further categorize the existing methods into detection frameworks, OBB regression techniques, feature representation approaches, and solutions to common issues and provide an in-depth discussion of how these methods address the above challenges. In addition, we cover several publicly available datasets and evaluation protocols. Furthermore, we provide a comprehensive comparison and analysis involving the state-of-the-art methods. Toward the end of this paper, we identify several future directions for oriented object detection research.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS",
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "Oriented object detection in optical remote sensing images using deep learning: a survey",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4ab83007455a1b07b738e3eec106bda1721934226dbb1289a2d7ab19196efc52",
+        "evidence_id": "ev-paper-d60e9e4a76f712c2cd44",
+        "locator": "https://arxiv.org/abs/2405.19595",
+        "retrieved_at": "2026-07-18T18:22:50.135578Z",
+        "source_type": "paper",
+        "summary": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+        "supports_gap_ids": [
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ebd9c3ef14ac92f920b89d9c4fa657360c7305b5aaf2dcf96b06529f5d1dc4cb",
+        "evidence_id": "ev-paper-70dff05c88059a22f9b8",
+        "locator": "https://arxiv.org/abs/2007.03262",
+        "retrieved_at": "2026-07-18T18:22:50.136581Z",
+        "source_type": "paper",
+        "summary": "Salient object detection in complex scenes and environments is a challenging research topic. Most works focus on RGB-based salient object detection, which limits its performance of real-life applications when confronted with adverse conditions such as dark environments and complex backgrounds. Taking advantage of RGB and thermal infrared images becomes a new research direction for detecting salient object in complex scenes recently, as thermal infrared spectrum imaging provides the complementary information and has been applied to many computer vision tasks. However, current research for RGBT salient object detection is limited by the lack of a large-scale dataset and comprehensive benchmark. This work contributes such a RGBT image dataset named VT5000, including 5000 spatially aligned RGBT image pairs with ground truth annotations. VT5000 has 11 challenges collected in different scenes and environments for exploring the robustness of algorithms. With this dataset, we propose a powerful baseline approach, which extracts multi-level features within each modality and aggregates these features of all modalities with the attention mechanism, for accurate RGBT salient object detection. Extensive experiments show that the proposed baseline approach outperforms the state-of-the-art methods on VT5000 dataset and other two public datasets. In addition, we carry out a comprehensive analysis of different algorithms of RGBT salient object detection on VT5000 dataset, and then make several valuable conclusions and provide some potential research directions for RGBT salient object detection.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS",
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_SOTA_AP_SMALL"
+        ],
+        "title": "RGBT Salient Object Detection: A Large-scale Dataset and Benchmark",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:82f38a8a7f37d8c534ad6410f92981cd2ac5beb09a56a1f761db87279c062c82",
+        "evidence_id": "ev-paper-393df7daf1254f524250",
+        "locator": "https://arxiv.org/abs/2511.22310",
+        "retrieved_at": "2026-07-18T18:22:50.141095Z",
+        "source_type": "paper",
+        "summary": "Object detection is the task of detecting objects in an image. In this task, the detection of small objects is particularly difficult. Other than the small size, it is also accompanied by difficulties due to blur, occlusion, and so on. Current small object detection methods are tailored to small and dense situations, such as pedestrians in a crowd or far objects in remote sensing scenarios. However, when the target object is small and sparse, there is a lack of objects available for training, making it more difficult to learn effective features. In this paper, we propose a specialized method for detecting a specific category of small objects; birds. Particularly, we improve the features learned by the neck; the sub-network between the backbone and the prediction head, to learn more effective features with a hierarchical design. We employ Swin Transformer to upsample the image features. Moreover, we change the shifted window size for adapting to small objects. Experiments show that the proposed Swin Transformer-based neck combined with CenterNet can lead to good performance by changing the window sizes. We further find that smaller window sizes (default 2) benefit mAPs for small object detection.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS",
+          "GAP_INDEPENDENT_VALIDATION",
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS"
+        ],
+        "title": "Small Object Detection for Birds with Swin Transformer",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:d1b9d713c1e7165108d75bb8877b5c6039c0f6fbf13de6add05bba00ed028a98",
+        "evidence_id": "ev-paper-5aba41ee4d52fba8a836",
+        "locator": "https://arxiv.org/abs/2301.09657",
+        "retrieved_at": "2026-07-18T18:22:50.141095Z",
+        "source_type": "paper",
+        "summary": "(Abridged) Galaxy clusters are a powerful probe of cosmological models. Next generation large-scale optical and infrared surveys will reach unprecedented depths over large areas and require highly complete and pure cluster catalogs, with a well defined selection function. We have developed a new cluster detection algorithm YOLO-CL, which is a modified version of the state-of-the-art object detection deep convolutional network YOLO, optimized for the detection of galaxy clusters. We trained YOLO-CL on color images of the redMaPPer cluster detections in the SDSS. We find that YOLO-CL detects $95-98\\%$ of the redMaPPer clusters, with a purity of $95-98\\%$ calculated by applying the network to SDSS blank fields. When compared to the MCXC2021 X-ray catalog in the SDSS footprint,YOLO-CL is more complete then redMaPPer, which means that the neural network improved the cluster detection efficiency of its training sample. The YOLO-CL selection function is approximately constant with redshift, with respect to the MCXC2021 cluster mean X-ray surface brightness. YOLO-CL shows high performance when compared to traditional detection algorithms applied to SDSS. Deep learning networks benefit from a strong advantage over traditional galaxy cluster detection techniques because they do not need galaxy photometric and photometric redshift catalogs. This eliminates systematic uncertainties that can be introduced during source detection, and photometry and photometric redshift measurements. Our results show that YOLO-CL is an efficient alternative to traditional cluster detection methods. In general, this work shows that it is worth exploring the performance of deep convolution networks for future cosmological cluster surveys, such as the Rubin/LSST, Euclid or the Roman Space Telescope surveys.",
+        "supports_gap_ids": [
+          "GAP_LIMITATIONS_CONSTRAINTS",
+          "GAP_METHODS_WITH_IMPROVEMENTS"
+        ],
+        "title": "YOLO-CL: Galaxy cluster detection in the SDSS with deep machine learning",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:79a7b9f110e11583191ce6d508b5ed8b633b91a31a607b71cf772ca2b2cdc462",
+        "evidence_id": "ev-paper-5b61e8c4de994cb28bab",
+        "locator": "https://arxiv.org/abs/2508.19294",
+        "retrieved_at": "2026-07-18T18:22:50.141095Z",
+        "source_type": "paper",
+        "summary": "The fusion of language and vision in large vision-language models (LVLMs) has revolutionized deep learning-based object detection by enhancing adaptability, contextual reasoning, and generalization beyond traditional architectures. This in-depth review presents a structured exploration of the state-of-the-art in LVLMs, systematically organized through a three-step research review process. First, we discuss the functioning of vision language models (VLMs) for object detection, describing how these models harness natural language processing (NLP) and computer vision (CV) techniques to revolutionize object detection and localization. We then explain the architectural innovations, training paradigms, and output flexibility of recent LVLMs for object detection, highlighting how they achieve advanced contextual understanding for object detection. The review thoroughly examines the approaches used in integration of visual and textual information, demonstrating the progress made in object detection using VLMs that facilitate more sophisticated object detection and localization strategies. This review presents comprehensive visualizations demonstrating LVLMs' effectiveness in diverse scenarios including localization and segmentation, and then compares their real-time performance, adaptability, and complexity to traditional deep learning systems. Based on the review, its is expected that LVLMs will soon meet or surpass the performance of conventional methods in object detection. The review also identifies a few major limitations of the current LVLM modes, proposes solutions to address those challenges, and presents a clear roadmap for the future advancement in this field. We conclude, based on this study, that the recent advancement in LVLMs have made and will continue to make a transformative impact on object detection and robotic applications in the future.",
+        "supports_gap_ids": [
+          "GAP_METHODS_WITH_IMPROVEMENTS"
+        ],
+        "title": "Object Detection with Multimodal Large Vision-Language Models: An In-depth Review",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9c17a3737958c68a92e8fddd44250ea6ddbed72a994ded05388e6b5cf4453b3c",
+        "evidence_id": "ev-paper-102a8e7b08a30141b2cc",
+        "locator": "doi:10.1109/icipcn67432.2026.11438646",
+        "retrieved_at": "2026-07-18T18:22:50.142094Z",
+        "source_type": "paper",
+        "summary": "Retinal fundus image classification plays a crucial role in early diagnosis and monitoring of ocular diseases such as diabetic retinopathy, glaucoma, and age-related macular degeneration. Proper and timely diseases identification of eye is necessary to avoid irreversible blindness and better results. Computer-aided diagnostic (CAD) based Deep Learning (DL) systems have demonstrated to have high potential in recent years by identifying various eye diseases like Glaucoma (GC), Age-related Macular Degeneration (AMD) and Non-Proliferative Diabetic Retinopathy (NPDR) by fundus/OCT imaging. Notably, Convolutional Neural Networks (CNNs) have been commonly utilized in classification and segmentation due to their relative advantage of classification performance. However, computational complexity, slower inference, and failure to identify smaller pathological structures or early disease symptoms limits the performance. Besides, another remarkable DL model, You Only Look Once (YOLO) algorithm shows significant improvements on object detection with better efficiency, processing capability, and better localization accuracy than the traditional CNN architectures. This review investigates the various variants of YOLO development and compares them with the standard CNN models in terms of their performance regarding the multiple disease detection in ophthalmology. This review explores the data availability which directly influences the performance of classifiers. Moreover, this study concentrates on challenges including class imbalance, model interpretability, and dataset availability focusing on multiple diseases. The analysis points out the YOLO ability to identify accurately identify abnormalities which makes it suitable in cases of early screening",
+        "supports_gap_ids": [
+          "GAP_METHODS_WITH_IMPROVEMENTS"
+        ],
+        "title": "Early Eye Disease Detection: A Comprehensive Review of Retinal Fundus Datasets and Various CNN-based Methods",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:33ee4994cd9ce575df5091ab04ac34292d89937b8c7fa4a65fde0506bc78cda3",
+        "evidence_id": "ev-paper-2cf448637302394934e0",
+        "locator": "https://arxiv.org/abs/2206.11473",
+        "retrieved_at": "2026-07-18T18:22:52.382328Z",
+        "source_type": "paper",
+        "summary": "For nearly a decade, the COCO dataset has been the central test bed of research in object detection. According to the recent benchmarks, however, it seems that performance on this dataset has started to saturate. One possible reason can be that perhaps it is not large enough for training deep models. To address this limitation, here we introduce two complementary datasets to COCO: i) COCO_OI, composed of images from COCO and OpenImages (from their 80 classes in common) with 1,418,978 training bounding boxes over 380,111 images, and 41,893 validation bounding boxes over 18,299 images, and ii) ObjectNet_D containing objects in daily life situations (originally created for object recognition known as ObjectNet; 29 categories in common with COCO). The latter can be used to test the generalization ability of object detectors. We evaluate some models on these datasets and pinpoint the source of errors. We encourage the community to utilize these datasets for training and testing object detection models. Code and data is available at https://github.com/aliborji/COCO_OI.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS"
+        ],
+        "title": "Complementary datasets to COCO for object detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8374a7850000826eb0e5aa5e62fcaefdc6a6e77f3d3a088efbb666a118813e4d",
+        "evidence_id": "ev-paper-edc3a2a872a0f23150e2",
+        "locator": "https://arxiv.org/abs/2106.13217",
+        "retrieved_at": "2026-07-18T18:22:52.382328Z",
+        "source_type": "paper",
+        "summary": "Camouflaged object detection (COD) aims to segment camouflaged objects hiding in the environment, which is challenging due to the similar appearance of camouflaged objects and their surroundings. Research in biology suggests depth can provide useful object localization cues for camouflaged object discovery. In this paper, we study the depth contribution for camouflaged object detection, where the depth maps are generated with existing monocular depth estimation (MDE) methods. Due to the domain gap between the MDE dataset and our COD dataset, the generated depth maps are not accurate enough to be directly used. We then introduce two solutions to avoid the noisy depth maps from dominating the training process. Firstly, we present an auxiliary depth estimation branch (\"ADE\"), aiming to regress the depth maps. We find that \"ADE\" is especially necessary for our \"generated depth\" scenario. Secondly, we introduce a multi-modal confidence-aware loss function via a generative adversarial network to weigh the contribution of depth for camouflaged object detection. Our extensive experiments on various camouflaged object detection datasets explain that the existing \"sensor depth\" based RGB-D segmentation techniques work poorly with \"generated depth\", and our proposed two solutions work cooperatively, achieving effective depth contribution exploration for camouflaged object detection.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS"
+        ],
+        "title": "Exploring Depth Contribution for Camouflaged Object Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7e45a712fa826cba9c51c30e4c233c4f6ce9da12b56a8bb99b5147a1a80e76d0",
+        "evidence_id": "ev-paper-8e2c9f26f3abe18eeeaa",
+        "locator": "https://arxiv.org/abs/2509.09014",
+        "retrieved_at": "2026-07-18T18:22:52.383329Z",
+        "source_type": "paper",
+        "summary": "Urdu, spoken by over 250 million people, remains critically under-served in multimodal and vision-language research. The absence of large-scale, high-quality datasets has limited the development of Urdu-capable systems and reinforced biases in multilingual vision-language models trained primarily on high-resource languages. To address this gap, we present COCO-Urdu, a large-scale image-caption dataset derived from MS COCO, containing 59,000 images and 319,000 Urdu captions selected through stratified sampling to preserve the original distribution. Captions were translated using SeamlessM4T v2 and validated with a hybrid multimodal quality estimation framework that integrates COMET-Kiwi for translation quality, CLIP-based similarity for visual grounding, and BERTScore with back-translation for semantic consistency; low-scoring captions were iteratively refined using open-source large language models. We further benchmark COCO-Urdu on BLEU, SacreBLEU, and chrF, reporting consistently strong results. To the best of our knowledge, COCO-Urdu is the largest publicly available Urdu captioning dataset. By releasing both the dataset and the quality estimation pipeline, we aim to reduce language bias in multimodal research and establish a foundation for inclusive vision-language systems.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS"
+        ],
+        "title": "COCO-Urdu: A Large-Scale Urdu Image-Caption Dataset with Multimodal Quality Estimation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a432d6eda3bf2812ed1159b7f435e335a01b49d9c711d6d5bf40ba0d2b988228",
+        "evidence_id": "ev-paper-14b3bc7cffa4c26dff07",
+        "locator": "https://arxiv.org/abs/1904.13353",
+        "retrieved_at": "2026-07-18T18:22:52.383329Z",
+        "source_type": "paper",
+        "summary": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modified PASCAL VOC 2012 dataset for object contour detection and evaluate on a refined PASCAL-val dataset reaching an excellent performance and an Optimal Dataset Scale (ODS) of 0.752. Furthermore, by fine-training on the BSDS500 dataset we reach state-of-the-art results for edge-detection with an ODS of 0.824.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS"
+        ],
+        "title": "Object Contour and Edge Detection with RefineContourNet",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:00fe06fddeba9b2009e923a43a268a42bd48f77c561e432bdc85d5c7aa367946",
+        "evidence_id": "ev-paper-3d3f9af55ecfde95c875",
+        "locator": "https://arxiv.org/abs/2405.16582",
+        "retrieved_at": "2026-07-18T18:22:52.383329Z",
+        "source_type": "paper",
+        "summary": "In this paper, a comparative study between the Coco-Russo scheme (based on finite-difference scheme) and the $\\mathghost$-FEM (based on finite-element method) is presented when solving the Poisson equation in arbitrary domains. The comparison between the two numerical methods is carried out by presenting analytical results from the literature \\cite{cocoStissi,astuto2024nodal}, together with numerical tests in various geometries and boundary conditions.",
+        "supports_gap_ids": [
+          "GAP_DATASETS_PROTOCOLS"
+        ],
+        "title": "A comparison of the Coco-Russo scheme and $\\protect\\mathghost$-FEM for elliptic equations in arbitrary domains",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:647917c3a5034d878cc7f37f5120d147556f834c3e8225f393d82e1f83c02e4b",
+        "evidence_id": "ev-paper-519958743fa906813f70",
+        "locator": "https://arxiv.org/abs/1303.0042",
+        "retrieved_at": "2026-07-18T18:22:52.385330Z",
+        "source_type": "paper",
+        "summary": "During the past twelve years, NASA's Fermi Gamma-ray Space Telescope has supported a wide range of Education and Public Outreach (E/PO) activities, targeting K-14 students and the general public. The purpose of the Fermi E/PO program is to increase student and public understanding of the science of the high-energy Universe, through inspiring, engaging and educational activities linked to the mission's science objectives. The E/PO program has additional more general goals, including increasing the diversity of students in the Science, Technology, Engineering and Mathematics (STEM) pipeline, and increasing public awareness and understanding of Fermi science and technology. Fermi's multi-faceted E/PO program includes elements in each major outcome category: Higher Education; Elementary and Secondary Education; Informal Education and Public Outreach.",
+        "supports_gap_ids": [
+          "GAP_INDEPENDENT_VALIDATION"
+        ],
+        "title": "Twelve Years of Education and Public Outreach with the Fermi Gamma-ray Space Telescope",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:05ece87a7217a681d612dbda1ea72857f8f1b51361aab513b12839aefc6682fa",
+        "evidence_id": "ev-paper-75ff5470d6739b0315e9",
+        "locator": "https://arxiv.org/abs/2408.14600",
+        "retrieved_at": "2026-07-18T18:22:52.386330Z",
+        "source_type": "paper",
+        "summary": "The integration of point and voxel representations is becoming more common in LiDAR-based 3D object detection. However, this combination often struggles with capturing semantic information effectively. Moreover, relying solely on point features within regions of interest can lead to information loss and limitations in local feature representation. To tackle these challenges, we propose a novel two-stage 3D object detector, called Point-Voxel Attention Fusion Network (PVAFN). PVAFN leverages an attention mechanism to improve multi-modal feature fusion during the feature extraction phase. In the refinement stage, it utilizes a multi-pooling strategy to integrate both multi-scale and region-specific information effectively. The point-voxel attention mechanism adaptively combines point cloud and voxel-based Bird's-Eye-View (BEV) features, resulting in richer object representations that help to reduce false detections. Additionally, a multi-pooling enhancement module is introduced to boost the model's perception capabilities. This module employs cluster pooling and pyramid pooling techniques to efficiently capture key geometric details and fine-grained shape structures, thereby enhancing the integration of local and global features. Extensive experiments on the KITTI and Waymo datasets demonstrate that the proposed PVAFN achieves competitive performance. The code and models will be available.",
+        "supports_gap_ids": [
+          "GAP_LIMITATIONS_CONSTRAINTS"
+        ],
+        "title": "PVAFN: Point-Voxel Attention Fusion Network with Multi-Pooling Enhancing for 3D Object Detection",
+        "verification_status": "accepted"
+      }
+    ],
+    "report": {
+      "evidence_ids": [],
+      "executive_summary": "The investigation was blocked due to insufficient or conflicting evidence required to validate key claims. No verified findings could be established, and no inferred findings were derived due to the lack of acceptable evidence.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "No evidence was accepted or processed due to the 'quality.verdict' being set to 'blocked'.",
+        "The provided 'accepted_evidence_ids' were not utilized due to the blocked status.",
+        "The investigation could not proceed without valid, verifiable evidence."
+      ],
+      "next_actions": [
+        "Re-evaluate the evidence collection process to ensure all evidence IDs are valid and accessible.",
+        "Verify the integrity and relevance of the provided evidence IDs before reprocessing.",
+        "Investigate the root cause of the 'blocked' status and address any underlying issues in the evidence validation pipeline."
+      ],
+      "proposed_method": null,
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 22,
+    "completed_query_ids": [
+      "Q_SOTA_AP_SMALL_COCO",
+      "Q_SOTA_AP_SMALL_VISDRONE",
+      "Q_SOTA_AP_SMALL_TINYPERSON",
+      "Q_METHODS_WITH_IMPROVEMENTS_YOLO",
+      "Q_METHODS_WITH_IMPROVEMENTS_OTHER",
+      "Q_DATASETS_PROTOCOLS_SMALL_OBJECT",
+      "Q_INDEPENDENT_VALIDATION_REIMPLEMENTATION",
+      "Q_LIMITATIONS_CONSTRAINTS_SMALL_OBJECT"
+    ],
+    "coverage_by_gap": {
+      "GAP_DATASETS_PROTOCOLS": 10,
+      "GAP_INDEPENDENT_VALIDATION": 10,
+      "GAP_LIMITATIONS_CONSTRAINTS": 10,
+      "GAP_METHODS_WITH_IMPROVEMENTS": 11,
+      "GAP_SOTA_AP_SMALL": 11
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [],
+    "quality_reason_codes": [],
+    "quality_verdict": null,
+    "retrieval_budget_exhausted": false,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 2,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_SOTA_AP_SMALL_COCO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_SOTA_AP_SMALL_COCO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_SOTA_AP_SMALL_COCO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_SOTA_AP_SMALL_VISDRONE",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_SOTA_AP_SMALL_VISDRONE",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_SOTA_AP_SMALL_VISDRONE",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_SOTA_AP_SMALL_TINYPERSON",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_SOTA_AP_SMALL_TINYPERSON",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_SOTA_AP_SMALL_TINYPERSON",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_METHODS_WITH_IMPROVEMENTS_YOLO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_METHODS_WITH_IMPROVEMENTS_YOLO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_METHODS_WITH_IMPROVEMENTS_YOLO",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_METHODS_WITH_IMPROVEMENTS_OTHER",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_DATASETS_PROTOCOLS_SMALL_OBJECT",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_DATASETS_PROTOCOLS_SMALL_OBJECT",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_DATASETS_PROTOCOLS_SMALL_OBJECT",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_INDEPENDENT_VALIDATION_REIMPLEMENTATION",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_INDEPENDENT_VALIDATION_REIMPLEMENTATION",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_INDEPENDENT_VALIDATION_REIMPLEMENTATION",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_LIMITATIONS_CONSTRAINTS_SMALL_OBJECT",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q_LIMITATIONS_CONSTRAINTS_SMALL_OBJECT",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q_LIMITATIONS_CONSTRAINTS_SMALL_OBJECT",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 22
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:22:32.277166+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 3,
+    "estimated_cost_usd": 0.0061342,
+    "input_tokens": 13172,
+    "output_tokens": 5833,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 19005
+  },
+  "terminal": "blocked",
+  "trace_digest": "f995a9256d2845fe3c4e5fe6d41ac76321fa25c15600ae3590ed966395b38725",
+  "version": "v2",
+  "wall_seconds": 44.485
+}

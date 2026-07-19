@@ -24,9 +24,11 @@ EXPECTED_METHOD_REPAIR_NODES = [
     "verify_evidence_node",
     "evidence_synthesis_node",
     "method_design_node",
+    "methodology_audit_node",
     "quality_gate_node",
     # Second method_design call after quality_gate returned repair_method.
     "method_design_node",
+    "methodology_audit_node",
     "quality_gate_node",
     "report_node",
     "persist_node",

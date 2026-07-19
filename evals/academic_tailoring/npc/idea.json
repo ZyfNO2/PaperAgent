@@ -1,0 +1,16 @@
+{
+  "idea_id": "npc-safe-residual-policy-v1",
+  "target_problem": "reduce unintended NPC actions and manual rule adjustment under scenario shift",
+  "scientific_setting": "single-agent game environments with partially observed state and changing scenario rules",
+  "intended_claim": "an uncertainty-triggered, action-constrained residual policy improves robustness and reduces adjustment work without sacrificing task success",
+  "observed_failure": "a reproduced behavior-cloning policy works on familiar scenes but emits invalid or intent-inconsistent actions after distribution shift",
+  "mechanism_hypothesis": "shift raises policy uncertainty while the unconstrained action head has no explicit representation of scenario-valid actions",
+  "novelty_thesis": "couple semantic action masking with uncertainty-triggered residual correction so the baseline is preserved in familiar states and changed only for high-risk decisions",
+  "why_not_simple_splice": "the mask and residual policy address different mechanisms and are connected by an explicit uncertainty trigger rather than unconditional stacking",
+  "constraints": [
+    "one 8 GB GPU",
+    "fixed simulator and evaluation code",
+    "p95 decision latency increase below 15 percent",
+    "all source records are synthetic evaluation fixtures"
+  ]
+}

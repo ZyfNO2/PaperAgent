@@ -48,6 +48,15 @@ def _services(fixed_time, *, planning="happy_path", method="happy_path"):
                 title="Synthetic support note",
                 locator="fixture://evidence/ev-support-001",
                 snippet="Claim support can be measured.",
+                metadata={
+                    "license": "MIT",
+                    "baseline_reproduced": "true",
+                    "baseline_reproduced_metric": "primary_metric=0.50",
+                    "baseline_compute_fit": "true",
+                    "baseline_parity_verified": "true",
+                    "dataset_fingerprint": "sha256:fixture-dataset",
+                    "environment_fingerprint": "sha256:fixture-environment",
+                },
             )
         ],
         SearchFixtureKey(scenario="happy_path", query_id="query-ablation-01", call_index=0): [
@@ -59,6 +68,7 @@ def _services(fixed_time, *, planning="happy_path", method="happy_path"):
                 title="Synthetic ablation note",
                 locator="fixture://evidence/ev-ablation-001",
                 snippet="Context ablation separates errors.",
+                metadata={"license": "MIT"},
             )
         ],
     }
@@ -98,6 +108,7 @@ async def test_graph__happy_path__runs_compiled_langgraph_with_four_llm_calls(fi
         "verify_evidence_node",
         "evidence_synthesis_node",
         "method_design_node",
+        "methodology_audit_node",
         "quality_gate_node",
         "report_node",
         "persist_node",
@@ -252,6 +263,85 @@ async def test_graph__malformed_planning_json__does_not_fallback(fixed_time) -> 
 
 
 @pytest.mark.asyncio
+async def test_graph__failed_synthesis__short_circuits_method_and_reports_blocked(
+    fixed_time,
+) -> None:
+    from paperagent.graph import build_graph
+    from paperagent.persistence import InMemoryStateStore
+    from paperagent.providers import (
+        FakeLLMProvider,
+        FakeSearchProvider,
+        FixtureKey,
+        SearchFixtureKey,
+    )
+    from paperagent.runtime import RuntimeServices
+    from paperagent.schemas import ResearchRequest, SearchCandidate
+    from paperagent.testing import FixedClock, SequenceIdFactory
+
+    llm = FakeLLMProvider(
+        fixtures={
+            FixtureKey(task="planning", scenario="synthesis_failure", call_index=0): load_llm_raw(
+                "planning", "happy_path", 0
+            ),
+            FixtureKey(
+                task="evidence_synthesis", scenario="synthesis_failure", call_index=0
+            ): '{"verified_findings":',
+            FixtureKey(task="report", scenario="blocked", call_index=0): load_llm_raw(
+                "report", "blocked", 0
+            ),
+        }
+    )
+    search = FakeSearchProvider(
+        fixtures={
+            SearchFixtureKey(scenario="synthesis_failure", query_id=query_id, call_index=0): [
+                SearchCandidate(
+                    candidate_id=candidate_id,
+                    query_id=query_id,
+                    gap_id=gap_id,
+                    source_type="paper",
+                    title="Verified source",
+                    locator=f"doi:10.1000/{candidate_id}",
+                    snippet="Verified evidence",
+                )
+            ]
+            for query_id, candidate_id, gap_id in (
+                ("query-support-01", "support-001", "gap-support"),
+                ("query-ablation-01", "ablation-001", "gap-ablation"),
+            )
+        }
+    )
+    services = RuntimeServices(
+        llm,
+        search,
+        FixedClock(fixed_time),
+        SequenceIdFactory("synthesis-failure"),
+        InMemoryStateStore(),
+    )
+
+    result = await build_graph().ainvoke(
+        {"request": ResearchRequest(question="Evaluate citation reliability")},
+        {
+            "configurable": {
+                "services": services,
+                "scenarios": {
+                    "planning": "synthesis_failure",
+                    "evidence_synthesis": "synthesis_failure",
+                    "report": "blocked",
+                },
+                "search_scenario": "synthesis_failure",
+            }
+        },
+    )
+
+    assert result["execution"].status == "blocked"
+    assert result["execution"].last_error.code == "LLM_RESPONSE_JSON_INVALID"
+    assert result["report"].status == "blocked"
+    assert result.get("synthesis") is None
+    assert result.get("method") is None
+    assert all(call.key.task != "method_design" for call in llm.calls)
+
+
+@pytest.mark.asyncio
 async def test_graph__quality_repair_retrieval__uses_remaining_round_then_passes(
     fixed_time,
 ) -> None:
@@ -290,6 +380,15 @@ async def test_graph__quality_repair_retrieval__uses_remaining_round_then_passes
                     title="Support note",
                     locator="fixture://support",
                     snippet="support",
+                    metadata={
+                        "license": "MIT",
+                        "baseline_reproduced": "true",
+                        "baseline_reproduced_metric": "primary_metric=0.50",
+                        "baseline_compute_fit": "true",
+                        "baseline_parity_verified": "true",
+                        "dataset_fingerprint": "sha256:fixture-dataset",
+                        "environment_fingerprint": "sha256:fixture-environment",
+                    },
                 )
             ],
             SearchFixtureKey(scenario=scenario, query_id="query-ablation-01", call_index=0): [
@@ -301,6 +400,7 @@ async def test_graph__quality_repair_retrieval__uses_remaining_round_then_passes
                     title="Ablation note",
                     locator="fixture://ablation",
                     snippet="ablation",
+                    metadata={"license": "MIT"},
                 )
             ],
             SearchFixtureKey(scenario=scenario, query_id="query-extra-01", call_index=0): [
@@ -312,6 +412,7 @@ async def test_graph__quality_repair_retrieval__uses_remaining_round_then_passes
                     title="Additional support note",
                     locator="fixture://extra",
                     snippet="additional support",
+                    metadata={"license": "MIT"},
                 )
             ],
         }

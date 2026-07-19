@@ -1,0 +1,612 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-ood-008",
+  "case_index": 8,
+  "category": "ood",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "research_contract_resolution"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "task_paradigm_comparison"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "public_dataset_evidence"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "method_after_task_definition"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "revise_before_go"
+    },
+    {
+      "check_id": "required_06",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_recovery_questions"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "automatic_unet_selection"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "task_assumption_as_fact"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "premature_go"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "fabricated_dataset"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "b2ab17cdc040c55cf73084980c072eacf74c27307f1eb56b80b9a4f209438314",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:7a5242736d02a95251e47699092d42ad48f2057b955fad1c425789146268bcec",
+        "evidence_id": "ev-paper-4e6bfef0af42e1a230c4",
+        "locator": "https://arxiv.org/abs/2505.02148",
+        "retrieved_at": "2026-07-18T18:15:17.756436Z",
+        "source_type": "paper",
+        "summary": "To operate safely, autonomous vehicles (AVs) need to detect and handle unexpected objects or anomalies on the road. While significant research exists for anomaly detection and segmentation in 2D, research progress in 3D is underexplored. Existing datasets lack high-quality multimodal data that are typically found in AVs. This paper presents a novel dataset for anomaly segmentation in driving scenarios. To the best of our knowledge, it is the first publicly available dataset focused on road anomaly segmentation with dense 3D semantic labeling, incorporating both LiDAR and camera data, as well as sequential information to enable anomaly detection across various ranges. This capability is critical for the safe navigation of autonomous vehicles. We adapted and evaluated several baseline models for 3D segmentation, highlighting the challenges of 3D anomaly detection in driving environments. Our dataset and evaluation code will be openly available, facilitating the testing and performance comparison of different approaches.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "Spotting the Unexpected (STU): A 3D LiDAR Dataset for Anomaly Segmentation in Autonomous Driving",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:361d542d442d39ed609e32900168b2c5d72537ccd9860ec3a96fc6b1e1a6f961",
+        "evidence_id": "ev-paper-fa62b8cdc0248ab4263b",
+        "locator": "https://arxiv.org/abs/2602.16731",
+        "retrieved_at": "2026-07-18T18:15:17.757441Z",
+        "source_type": "paper",
+        "summary": "This paper presents a longitudinal open dataset of Spanish public procurement extracted from the Official State Gazette (BOE) covering the period 2014-2024. The dataset integrates structured information on contracts, contracting authorities, suppliers, amounts, and procedures, enabling large-scale quantitative analysis of public procurement dynamics in Spain. We describe the data extraction and normalization pipeline, provide descriptive statistical analyses of temporal and sectoral trends, and discuss potential applications in transparency research, public policy evaluation, and computational social science. The dataset is released to facilitate reproducible research on public procurement and government contracting.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "A Decade of Public Procurement in Spain: A Longitudinal Open Dataset from the BOE (2014-2024)",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:1a02c48ea7b11ad2745d4fc2bca708f4e734c0611c31ee5a38c25f47eaed4232",
+        "evidence_id": "ev-paper-739adc9999220d955343",
+        "locator": "https://arxiv.org/abs/2406.09637",
+        "retrieved_at": "2026-07-18T18:15:17.757441Z",
+        "source_type": "paper",
+        "summary": "In recent years, the upstream of Large Language Models (LLM) has also encouraged the computer vision community to work on substantial multimodal datasets and train models on a scale in a self-/semi-supervised manner, resulting in Vision Foundation Models (VFM), as, e.g., Contrastive Language-Image Pre-training (CLIP). The models generalize well and perform outstandingly on everyday objects or scenes, even on downstream tasks, tasks the model has not been trained on, while the application in specialized domains, as in an industrial context, is still an open research question. Here, fine-tuning the models or transfer learning on domain-specific data is unavoidable when objecting to adequate performance. In this work, we, on the one hand, introduce a pipeline to generate the Industrial Language-Image Dataset (ILID) based on web-crawled data; on the other hand, we demonstrate effective self-supervised transfer learning and discussing downstream tasks after training on the cheaply acquired ILID, which does not necessitate human labeling or intervention. With the proposed approach, we contribute by transferring approaches from state-of-the-art research around foundation models, transfer learning strategies, and applications to the industrial domain.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "Industrial Language-Image Dataset (ILID): Adapting Vision Foundation Models for Industrial Settings",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f13a2cad1c8c93bfeb8a85ce1bacde034dc72be74b4c8b2e77a3b8176383ed55",
+        "evidence_id": "ev-paper-b73576660428a2a2d239",
+        "locator": "https://arxiv.org/abs/1610.01944",
+        "retrieved_at": "2026-07-18T18:15:17.757441Z",
+        "source_type": "paper",
+        "summary": "The development of powerful 3D scanning hardware and reconstruction algorithms has strongly promoted the generation of 3D surface reconstructions in different domains. An area of special interest for such 3D reconstructions is the cultural heritage domain, where surface reconstructions are generated to digitally preserve historical artifacts. While reconstruction quality nowadays is sufficient in many cases, the robust analysis (e.g. segmentation, matching, and classification) of reconstructed 3D data is still an open topic. In this paper, we target the automatic and interactive segmentation of high-resolution 3D surface reconstructions from the archaeological domain. To foster research in this field, we introduce a fully annotated and publicly available large-scale 3D surface dataset including high-resolution meshes, depth maps and point clouds as a novel benchmark dataset to the community. We provide baseline results for our existing random forest-based approach and for the first time investigate segmentation with convolutional neural networks (CNNs) on the data. Results show that both approaches have complementary strengths and weaknesses and that the provided dataset represents a challenge for future research.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "PetroSurf3D - A Dataset for high-resolution 3D Surface Segmentation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:5462105f48bd0ac9345201e1123ff6cc7e9c9cae0abd877cb0d823d35389c943",
+        "evidence_id": "ev-paper-b2dffad4dbc824841328",
+        "locator": "https://arxiv.org/abs/2304.13509",
+        "retrieved_at": "2026-07-18T18:15:17.757945Z",
+        "source_type": "paper",
+        "summary": "Recently, video conferencing apps have become functional by accomplishing such computer vision-based features as real-time background removal and face beautification. Limited variability in existing portrait segmentation and face parsing datasets, including head poses, ethnicity, scenes, and occlusions specific to video conferencing, motivated us to create a new dataset, EasyPortrait, for these tasks simultaneously. It contains 40,000 primarily indoor photos repeating video meeting scenarios with 13,705 unique users and fine-grained segmentation masks separated into 9 classes. Inappropriate annotation masks from other datasets caused a revision of annotator guidelines, resulting in EasyPortrait's ability to process cases, such as teeth whitening and skin smoothing. The pipeline for data mining and high-quality mask annotation via crowdsourcing is also proposed in this paper. In the ablation study experiments, we proved the importance of data quantity and diversity in head poses in our dataset for the effective learning of the model. The cross-dataset evaluation experiments confirmed the best domain generalization ability among portrait segmentation datasets. Moreover, we demonstrate the simplicity of training segmentation models on EasyPortrait without extra training tricks. The proposed dataset and trained models are publicly available.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "EasyPortrait -- Face Parsing and Portrait Segmentation Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e525de03eaee6d2b37a40937d6773d00f18ddf8113952e11da4105244b1e9a79",
+        "evidence_id": "ev-paper-45b3227729b46cff74a1",
+        "locator": "https://arxiv.org/abs/2310.01946",
+        "retrieved_at": "2026-07-18T18:15:17.757945Z",
+        "source_type": "paper",
+        "summary": "Coral reefs formulate the most valuable and productive marine ecosystems, providing habitat for many marine species. Coral reef surveying and analysis are currently confined to coral experts who invest substantial effort in generating comprehensive and dependable reports (\\emph{e.g.}, coral coverage, population, spatial distribution, \\textit{etc}), from the collected survey data. However, performing dense coral analysis based on manual efforts is significantly time-consuming, the existing coral analysis algorithms compromise and opt for performing down-sampling and only conducting sparse point-based coral analysis within selected frames. However, such down-sampling will \\textbf{inevitable} introduce the estimation bias or even lead to wrong results. To address this issue, we propose to perform \\textbf{dense coral video segmentation}, with no down-sampling involved. Through video object segmentation, we could generate more \\textit{reliable} and \\textit{in-depth} coral analysis than the existing coral reef analysis algorithms. To boost such dense coral analysis, we propose a large-scale coral video segmentation dataset: \\textbf{CoralVOS} as demonstrated in Fig. 1. To the best of our knowledge, our CoralVOS is the first dataset and benchmark supporting dense coral video segmentation. We perform experiments on our CoralVOS dataset, including 6 recent state-of-the-art video object segmentation (VOS) algorithms. We fine-tuned these VOS algorithms on our CoralVOS dataset and achieved observable performance improvement. The results show that there is still great potential for further promoting the segmentation accuracy. The dataset and trained models will be released with the acceptance of this work to foster the coral reef research community.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "CoralVOS: Dataset and Benchmark for Coral Video Segmentation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:940bc7f77a8dcdf617fc0156368bdc9d3cfb3214be1e142e01533961be473072",
+        "evidence_id": "ev-paper-07929f86b931dbbaf935",
+        "locator": "https://arxiv.org/abs/2307.03293",
+        "retrieved_at": "2026-07-18T18:15:17.758454Z",
+        "source_type": "paper",
+        "summary": "The development of successful artificial intelligence models for chest X-ray analysis relies on large, diverse datasets with high-quality annotations. While several databases of chest X-ray images have been released, most include disease diagnosis labels but lack detailed pixel-level anatomical segmentation labels. To address this gap, we introduce an extensive chest X-ray multi-center segmentation dataset with uniform and fine-grain anatomical annotations for images coming from five well-known publicly available databases: ChestX-ray8, Chexpert, MIMIC-CXR-JPG, Padchest, and VinDr-CXR, resulting in 657,566 segmentation masks. Our methodology utilizes the HybridGNet model to ensure consistent and high-quality segmentations across all datasets. Rigorous validation, including expert physician evaluation and automatic quality control, was conducted to validate the resulting masks. Additionally, we provide individualized quality indices per mask and an overall quality estimation per dataset. This dataset serves as a valuable resource for the broader scientific community, streamlining the development and assessment of innovative methodologies in chest X-ray analysis. The CheXmask dataset is publicly available at: https://physionet.org/content/chexmask-cxr-segmentation-data/",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "CheXmask: a large-scale dataset of anatomical segmentation masks for multi-center chest x-ray images",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:b48819327cdc9847a6807047411242bae626ac8a3b24f20dfdc9ee3da225bb90",
+        "evidence_id": "ev-paper-4a854ebb8e23418cef91",
+        "locator": "https://arxiv.org/abs/2506.09162",
+        "retrieved_at": "2026-07-18T18:15:17.758454Z",
+        "source_type": "paper",
+        "summary": "The Radiological Society of North America (RSNA) Lumbar Degenerative Imaging Spine Classification (LumbarDISC) dataset is the largest publicly available dataset of adult MRI lumbar spine examinations annotated for degenerative changes. The dataset includes 2,697 patients with a total of 8,593 image series from 8 institutions across 6 countries and 5 continents. The dataset is available for free for non-commercial use via Kaggle and RSNA Medical Imaging Resource of AI (MIRA). The dataset was created for the RSNA 2024 Lumbar Spine Degenerative Classification competition where competitors developed deep learning models to grade degenerative changes in the lumbar spine. The degree of spinal canal, subarticular recess, and neural foraminal stenosis was graded at each intervertebral disc level in the lumbar spine. The images were annotated by expert volunteer neuroradiologists and musculoskeletal radiologists from the RSNA, American Society of Neuroradiology, and the American Society of Spine Radiology. This dataset aims to facilitate research and development in machine learning and lumbar spine imaging to lead to improved patient care and clinical efficiency.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "The RSNA Lumbar Degenerative Imaging Spine Classification (LumbarDISC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f00e50b855e9c466fe53c4b7b86b8f1df2921706c1eac8614dce1869197ce54f",
+        "evidence_id": "ev-paper-d60e9e4a76f712c2cd44",
+        "locator": "https://arxiv.org/abs/2405.19595",
+        "retrieved_at": "2026-07-18T18:15:17.758454Z",
+        "source_type": "paper",
+        "summary": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:9aef5212c0234e6cf53abc8909cd9198be879b359c13984dfb1364f13cf5c4b9",
+        "evidence_id": "ev-paper-b693ec4ba8a067893938",
+        "locator": "https://arxiv.org/abs/2208.04360",
+        "retrieved_at": "2026-07-18T18:15:17.758454Z",
+        "source_type": "paper",
+        "summary": "The variability of wind power supply can present substantial challenges to incorporating wind power into a grid system. Thus, Wind Power Forecasting (WPF) has been widely recognized as one of the most critical issues in wind power integration and operation. There has been an explosion of studies on wind power forecasting problems in the past decades. Nevertheless, how to well handle the WPF problem is still challenging, since high prediction accuracy is always demanded to ensure grid stability and security of supply. We present a unique Spatial Dynamic Wind Power Forecasting dataset: SDWPF, which includes the spatial distribution of wind turbines, as well as the dynamic context factors. Whereas, most of the existing datasets have only a small number of wind turbines without knowing the locations and context information of wind turbines at a fine-grained time scale. By contrast, SDWPF provides the wind power data of 134 wind turbines from a wind farm over half a year with their relative positions and internal statuses. We use this dataset to launch the Baidu KDD Cup 2022 to examine the limit of current WPF solutions. The dataset is released at https://aistudio.baidu.com/aistudio/competition/detail/152/0/datasets.",
+        "supports_gap_ids": [
+          "public_datasets"
+        ],
+        "title": "SDWPF: A Dataset for Spatial Dynamic Wind Power Forecasting Challenge at KDD Cup 2022",
+        "verification_status": "accepted"
+      }
+    ],
+    "method": {
+      "ablations": [
+        {
+          "change": "Replace ResNet-18 backbone with a randomly initialized ResNet-18 (no pretraining on ImageNet).",
+          "expected_observation": "A significant drop in mIoU (e.g., >0.20 decrease) due to the lack of transferable features for anomaly segmentation.",
+          "name": "Ablation: Backbone Pretraining"
+        },
+        {
+          "change": "Train the model with all available training samples (no few-shot sampling).",
+          "expected_observation": "Improved mIoU (e.g., >0.60) but violates the constraint of few defect samples.",
+          "name": "Ablation: Few-Shot Sampling"
+        },
+        {
+          "change": "Replace binary cross-entropy loss with a standard cross-entropy loss for multi-class segmentation.",
+          "expected_observation": "Reduced performance (e.g., mIoU < 0.40) due to the mismatch between loss and binary anomaly segmentation task.",
+          "name": "Ablation: Loss Function"
+        }
+      ],
+      "baseline": {
+        "description": "A supervised few-shot segmentation baseline trained on the MVTec AD dataset (Bergmann et al., 2019), which provides 3,629 high-resolution images of 15 industrial object and texture categories with pixel-level defect annotations. The baseline uses a ResNet-18 backbone with a U-Net decoder, trained with a binary cross-entropy loss for pixel-wise anomaly segmentation. Training is performed under a few-shot regime (e.g., 5 samples per category) to align with the constraint of few defect samples.",
+        "name": "Few-shot anomaly segmentation baseline using the MVTec AD dataset"
+      },
+      "evidence_ids": [
+        "ev-paper-4e6bfef0af42e1a230c4",
+        "ev-paper-fa62b8cdc0248ab4263b",
+        "ev-paper-739adc9999220d955343",
+        "ev-paper-b73576660428a2a2d239",
+        "ev-paper-b2dffad4dbc824841328",
+        "ev-paper-45b3227729b46cff74a1",
+        "ev-paper-07929f86b931dbbaf935",
+        "ev-paper-4a854ebb8e23418cef91",
+        "ev-paper-d60e9e4a76f712c2cd44",
+        "ev-paper-b693ec4ba8a067893938"
+      ],
+      "falsifiable_hypothesis": "A few-shot supervised segmentation model trained on MVTec AD with k=5 samples per category will achieve a mean Intersection-over-Union (mIoU) of at least 0.50 on the test set, as measured by the standard evaluation protocol (Bergmann et al., 2019).",
+      "integration_contracts": [
+        {
+          "from_module": "M001-data-loader",
+          "input": "Preprocessed image batch (3x224x224)",
+          "output": "Feature tensor (512x14x14)",
+          "to_module": "M002-backbone"
+        },
+        {
+          "from_module": "M002-backbone",
+          "input": "Feature tensor (512x14x14)",
+          "output": "Anomaly segmentation map (1x224x224)",
+          "to_module": "M003-decoder"
+        },
+        {
+          "from_module": "M003-decoder",
+          "input": "Predicted anomaly map (1x224x224)",
+          "output": "Pixel-wise BCE loss",
+          "to_module": "M004-loss"
+        },
+        {
+          "from_module": "M005-few-shot-sampler",
+          "input": "Category label and k (e.g., k=5)",
+          "output": "Subset of training images and annotations",
+          "to_module": "M001-data-loader"
+        }
+      ],
+      "minimum_key_experiment": {
+        "baseline": "Few-shot supervised segmentation baseline (M001-M005)",
+        "conditions": [
+          "Few-shot training (k=5 samples per category)",
+          "ResNet-18 backbone pretrained on ImageNet",
+          "U-Net decoder with skip connections",
+          "Binary cross-entropy loss",
+          "Standard MVTec AD evaluation protocol"
+        ],
+        "metrics": [
+          "Mean Intersection-over-Union (mIoU)",
+          "Pixel Accuracy",
+          "F1-score"
+        ],
+        "name": "Few-shot anomaly segmentation on MVTec AD with k=5",
+        "success_threshold": "mIoU >= 0.50 on the MVTec AD test set"
+      },
+      "modules": [
+        {
+          "module_id": "M001-data-loader",
+          "name": "MVTec AD Data Loader",
+          "purpose": "Loads and preprocesses images and annotations from the MVTec AD dataset, ensuring consistent train/test splits and few-shot sampling."
+        },
+        {
+          "module_id": "M002-backbone",
+          "name": "ResNet-18 Backbone",
+          "purpose": "Extracts feature representations from input images using a ResNet-18 encoder pretrained on ImageNet."
+        },
+        {
+          "module_id": "M003-decoder",
+          "name": "U-Net Decoder",
+          "purpose": "Reconstructs pixel-wise anomaly segmentation maps from backbone features using skip connections."
+        },
+        {
+          "module_id": "M004-loss",
+          "name": "Binary Cross-Entropy Loss",
+          "purpose": "Computes pixel-wise binary cross-entropy loss between predicted anomaly maps and ground truth annotations."
+        },
+        {
+          "module_id": "M005-few-shot-sampler",
+          "name": "Few-Shot Sampler",
+          "purpose": "Samples k training examples per category (e.g., k=5) to simulate the constraint of few defect samples."
+        }
+      ],
+      "problem_method_insight": "Few-shot anomaly segmentation is a defensible research contract for industrial surface anomaly segmentation under the constraint of few defect samples, as it directly addresses the data scarcity problem while leveraging public datasets like MVTec AD. This contract avoids the need for large-scale supervised segmentation or unsupervised anomaly detection, which may require assumptions about defect distributions or lack pixel-level annotations.",
+      "risks": [
+        "The few-shot regime may not generalize well to unseen defect types, leading to poor performance on categories with atypical defects.",
+        "The MVTec AD dataset may not fully represent real-world industrial scenarios, limiting the applicability of the results.",
+        "The binary cross-entropy loss may not be optimal for anomaly segmentation, as it does not explicitly model defect distributions.",
+        "The ResNet-18 backbone may lack sufficient capacity for high-resolution anomaly segmentation, leading to underfitting."
+      ],
+      "schema_version": "0.1",
+      "status": "proposed",
+      "stop_conditions": [
+        "The model fails to achieve mIoU >= 0.50 in the minimum key experiment, indicating the baseline is not viable.",
+        "The ablation studies reveal that the core components (e.g., backbone pretraining, few-shot sampling) are not critical to performance, suggesting a need to revisit the research contract.",
+        "The integration contracts fail to produce consistent outputs (e.g., mismatched tensor shapes) during implementation, halting progress."
+      ]
+    },
+    "quality": {
+      "human_question": null,
+      "invalid_evidence_ids": [],
+      "missing_gap_ids": [
+        "task_definitions",
+        "methodological_constraints"
+      ],
+      "reason_codes": [
+        "Q_RETRIEVAL_BUDGET_EXHAUSTED"
+      ],
+      "repair_target": null,
+      "verdict": "blocked"
+    },
+    "report": {
+      "evidence_ids": [],
+      "executive_summary": "The investigation is currently blocked due to exhausted retrieval budget and missing critical methodological constraints and task definitions. No verified or inferred findings can be reported at this stage.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "Retrieval budget exhausted, preventing further evidence collection.",
+        "Missing task definitions and methodological constraints required for validation.",
+        "No evidence processed due to blocking conditions."
+      ],
+      "next_actions": [
+        "Retrieve and incorporate missing task definitions and methodological constraints.",
+        "Replenish retrieval budget to enable further evidence processing.",
+        "Re-run the investigation with the updated inputs and constraints."
+      ],
+      "proposed_method": null,
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    },
+    "synthesis": {
+      "conflicts": [],
+      "feasibility": "partially_feasible",
+      "gap_assessments": [
+        {
+          "evidence_ids": [
+            "ev-paper-4e6bfef0af42e1a230c4",
+            "ev-paper-fa62b8cdc0248ab4263b",
+            "ev-paper-739adc9999220d955343",
+            "ev-paper-b73576660428a2a2d239",
+            "ev-paper-b2dffad4dbc824841328",
+            "ev-paper-45b3227729b46cff74a1",
+            "ev-paper-07929f86b931dbbaf935",
+            "ev-paper-4a854ebb8e23418cef91",
+            "ev-paper-d60e9e4a76f712c2cd44",
+            "ev-paper-b693ec4ba8a067893938"
+          ],
+          "gap_id": "public_datasets",
+          "limitations": [
+            "No evidence directly addresses industrial surface anomaly segmentation datasets with few defect samples.",
+            "Evidence is limited to general-purpose or domain-specific datasets (e.g., medical, autonomous driving) rather than industrial surface anomaly segmentation specifically.",
+            "Datasets may not reflect the constraints of few defect samples or industrial surface anomaly segmentation tasks."
+          ],
+          "status": "supported",
+          "summary": "Multiple high-quality public datasets exist across domains (autonomous driving, industrial settings, cultural heritage, medical imaging, video conferencing, marine ecosystems, and wind power forecasting), demonstrating broad availability of public datasets for segmentation tasks. These datasets provide diverse modalities (e.g., LiDAR, camera, MRI, CT, X-ray) and annotations (e.g., semantic labels, segmentation masks, voxelwise annotations), supporting research in supervised segmentation, anomaly detection, and few-shot learning. However, domain-specific industrial surface anomaly segmentation datasets with few defect samples are not explicitly represented in the provided evidence."
+        }
+      ],
+      "limitations": [
+        "No evidence directly supports the existence of public datasets tailored for industrial surface anomaly segmentation with few defect samples.",
+        "The provided evidence does not address the specific constraints of few defect samples or industrial surface anomaly segmentation tasks.",
+        "General-purpose public datasets may not be directly applicable to industrial surface anomaly segmentation under the given constraints."
+      ],
+      "schema_version": "0.1",
+      "verified_findings": [
+        {
+          "claim_id": "claim-public-datasets-availability",
+          "evidence_ids": [
+            "ev-paper-4e6bfef0af42e1a230c4",
+            "ev-paper-fa62b8cdc0248ab4263b",
+            "ev-paper-739adc9999220d955343",
+            "ev-paper-b73576660428a2a2d239",
+            "ev-paper-b2dffad4dbc824841328",
+            "ev-paper-45b3227729b46cff74a1",
+            "ev-paper-07929f86b931dbbaf935",
+            "ev-paper-4a854ebb8e23418cef91",
+            "ev-paper-d60e9e4a76f712c2cd44",
+            "ev-paper-b693ec4ba8a067893938"
+          ],
+          "text": "Public datasets are available across multiple domains, including autonomous driving, industrial settings, cultural heritage, medical imaging, video conferencing, marine ecosystems, and wind power forecasting."
+        }
+      ]
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 10,
+    "completed_query_ids": [
+      "public_datasets_bean"
+    ],
+    "coverage_by_gap": {
+      "public_datasets": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [
+      "task_definitions",
+      "methodological_constraints"
+    ],
+    "quality_reason_codes": [
+      "Q_RETRIEVAL_BUDGET_EXHAUSTED"
+    ],
+    "quality_verdict": "blocked",
+    "retrieval_budget_exhausted": true,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 2,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "task_definitions_supervised",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "task_definitions_anomaly",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "task_definitions_fewshot",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "public_datasets_mvtec",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "public_datasets_bean",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "task_definitions_supervised",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "task_definitions_anomaly",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "task_definitions_fewshot",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "ALL_LITERATURE_PROVIDERS_FAILED",
+        "message": "all literature providers failed",
+        "provider": "literature_retrieval",
+        "query_id": "public_datasets_mvtec",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "public_datasets_bean",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "public_datasets_bean",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "public_datasets_bean",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 10
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:13:17.887922+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 4,
+    "estimated_cost_usd": 0.0037684,
+    "input_tokens": 6950,
+    "output_tokens": 3964,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 10914
+  },
+  "terminal": "blocked",
+  "trace_digest": "16e201c102b635cfc6b0635a00bc31171a73db70963371e13a7a7ae4c2b40d9c",
+  "version": "v2",
+  "wall_seconds": 142.0
+}

@@ -1,0 +1,963 @@
+{
+  "budget": {
+    "max_calls": 8,
+    "max_cost_usd": 2.0,
+    "max_total_tokens": 60000,
+    "max_wall_seconds": 180
+  },
+  "budget_compliance": true,
+  "budget_violations": [],
+  "case_id": "holdout-v2-in_domain-003",
+  "case_index": 3,
+  "category": "in_domain",
+  "deterministic_checks": [
+    {
+      "check_id": "terminal_class",
+      "expected": "succeeded",
+      "kind": "terminal",
+      "target": "terminal"
+    },
+    {
+      "check_id": "budget_enforced",
+      "expected": "within_limits",
+      "kind": "budget",
+      "target": "calls_tokens_time_cost"
+    },
+    {
+      "check_id": "identifier_validation",
+      "expected": "resolves_and_metadata_matches",
+      "kind": "identifier",
+      "target": "all_citations"
+    },
+    {
+      "check_id": "research_decision",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "explicit_go_revise_no_go"
+    },
+    {
+      "check_id": "required_01",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "information_status_labels"
+    },
+    {
+      "check_id": "required_02",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "task_and_dataset_inference_with_verification"
+    },
+    {
+      "check_id": "required_03",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "deployment_constraint_verification"
+    },
+    {
+      "check_id": "required_04",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "reproducible_baseline_selection"
+    },
+    {
+      "check_id": "required_05",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "lightweight_accuracy_tradeoff"
+    },
+    {
+      "check_id": "required_06",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "small_lesion_detection_guardrail"
+    },
+    {
+      "check_id": "required_07",
+      "expected": "present",
+      "kind": "required_property",
+      "target": "calibrated_revise_or_go_decision"
+    },
+    {
+      "check_id": "forbidden_01",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "inferred_as_verified"
+    },
+    {
+      "check_id": "forbidden_02",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "invented_dataset"
+    },
+    {
+      "check_id": "forbidden_03",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "assumed_deployment_need_as_fact"
+    },
+    {
+      "check_id": "forbidden_04",
+      "expected": "absent",
+      "kind": "forbidden_property",
+      "target": "fabricated_result"
+    }
+  ],
+  "error": null,
+  "excluded_checks": [],
+  "execution_identity": {
+    "base_url": "https://api.mistral.ai/v1",
+    "case_file_sha256": "c1a74b7781f07085e33d4fe87d9a712f256f071b1c9169a78166ff5ca2386591",
+    "clean_tree": false,
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "scripts/run_gate_l_v2.py",
+      "--manifest",
+      "evals/v0_6/holdout_manifest.v2.json",
+      "--output-dir",
+      "build/gate-l-v2-final",
+      "--price-table",
+      "config/price-table-mistral.json"
+    ],
+    "github_run_id": null,
+    "github_workflow": null,
+    "manifest_path": "evals/v0_6/holdout_manifest.v2.json",
+    "manifest_sha256": "116ee09a38d19df96e4d045c20472533c01557ffa378cd3dbe6d166057ecfc3f",
+    "model": "mistral-small-latest",
+    "planning_prompt_version": "planning.v0.1.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "price_table_path": "config/price-table-mistral.json",
+    "price_table_sha256": "6782214e0fa743048565b583b8742e502076a2db7f341392f87fcb7feb845c67",
+    "provider": "mistral",
+    "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+    "repo_sha": "local",
+    "scientific_behavior_cutoff_sha": "d4fef014932d084a0addd4a588b3431d2c08628b"
+  },
+  "expected_terminal": "succeeded",
+  "output_digest": "1e0d60b6973226d157e41450aff927c4976a1921e632a875b2140cf8b97af4c0",
+  "raw_terminal": "blocked",
+  "reference_evidence": [],
+  "review_output": {
+    "accepted_evidence": [
+      {
+        "content_hash": "sha256:4a57ff51ef3a3b003000f97ce4ec852d6e53efad0e599461ff6185b8ea5ceeba",
+        "evidence_id": "ev-paper-f9db2a743317604e3be7",
+        "locator": "https://arxiv.org/abs/2601.03290",
+        "retrieved_at": "2026-07-18T18:08:23.129321Z",
+        "source_type": "paper",
+        "summary": "The deployment of transformer-based models on resource-constrained edge devices represents a critical challenge in enabling real-time artificial intelligence applications. This comprehensive survey examines lightweight transformer architectures specifically designed for edge deployment, analyzing recent advances in model compression, quantization, pruning, and knowledge distillation techniques. We systematically review prominent lightweight variants including MobileBERT, TinyBERT, DistilBERT, EfficientFormer, EdgeFormer, and MobileViT, providing detailed performance benchmarks on standard datasets such as GLUE, SQuAD, ImageNet-1K, and COCO. Our analysis encompasses current industry adoption patterns across major hardware platforms (NVIDIA Jetson, Qualcomm Snapdragon, Apple Neural Engine, ARM architectures), deployment frameworks (TensorFlow Lite, ONNX Runtime, PyTorch Mobile, CoreML), and optimization strategies. Experimental results demonstrate that modern lightweight transformers can achieve 75-96% of full-model accuracy while reducing model size by 4-10x and inference latency by 3-9x, enabling deployment on devices with as little as 2-5W power consumption. We identify sparse attention mechanisms, mixed-precision quantization (INT8/FP16), and hardware-aware neural architecture search as the most effective optimization strategies. Novel findings include memory-bandwidth bottleneck analysis revealing 15-40M parameter models achieve optimal hardware utilization (60-75% efficiency), quantization sweet spots for different model types, and comprehensive energy efficiency profiling across edge platforms. We establish real-time performance boundaries and provide a practical 6-step deployment pipeline achieving 8-12x size reduction with less than 2% accuracy degradation.",
+        "supports_gap_ids": [
+          "G1",
+          "G5"
+        ],
+        "title": "Lightweight Transformer Architectures for Edge Devices in Real-Time Applications",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6bd1f49227386da76f016f57c1c1eb6caadca0047718c0a567131d9c59b746d5",
+        "evidence_id": "ev-paper-26b37307ab8905046aef",
+        "locator": "https://arxiv.org/abs/2601.21307",
+        "retrieved_at": "2026-07-18T18:08:23.129321Z",
+        "source_type": "paper",
+        "summary": "The rapid growth of the global population, alongside exponential technological advancement, has intensified the demand for food production. Meeting this demand depends not only on increasing agricultural yield but also on minimizing food loss caused by crop diseases. Diseases account for a substantial portion of apple production losses, despite apples being among the most widely produced and nutritionally valuable fruits worldwide. Previous studies have employed machine learning techniques for feature extraction and early diagnosis of apple leaf diseases, and more recently, deep learning-based models have shown remarkable performance in disease recognition. However, most state-of-the-art deep learning models are highly parameter-intensive, resulting in increased training and inference time. Although lightweight models are more suitable for user-friendly and resource-constrained applications, they often suffer from performance degradation. To address the trade-off between efficiency and performance, we propose Mam-App, a parameter-efficient Mamba-based model for feature extraction and leaf disease classification. The proposed approach achieves competitive state-of-the-art performance on the PlantVillage Apple Leaf Disease dataset, attaining 99.58% accuracy, 99.30% precision, 99.14% recall, and a 99.22% F1-score, while using only 0.051M parameters. This extremely low parameter count makes the model suitable for deployment on drones, mobile devices, and other low-resource platforms. To demonstrate the robustness and generalizability of the proposed model, we further evaluate it on the PlantVillage Corn Leaf Disease and Potato Leaf Disease datasets. The model achieves 99.48%, 99.20%, 99.34%, and 99.27% accuracy, precision, recall, and F1-score on the corn dataset and 98.46%, 98.91%, 95.39%, and 97.01% on the potato dataset, respectively.",
+        "supports_gap_ids": [
+          "G1",
+          "G2",
+          "G3",
+          "G5"
+        ],
+        "title": "Mam-App: A Novel Parameter-Efficient Mamba Model for Apple Leaf Disease Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ccb08d99cf45cd8bb5038c0436cd91b68fd69155614ab8ea146009b44037de9f",
+        "evidence_id": "ev-paper-0184be5976873aeae462",
+        "locator": "https://arxiv.org/abs/2504.11305",
+        "retrieved_at": "2026-07-18T18:08:23.130325Z",
+        "source_type": "paper",
+        "summary": "Wood defect detection is critical for ensuring quality control in the wood processing industry. However, current industrial applications face two major challenges: traditional methods are costly, subjective, and labor-intensive, while mainstream deep learning models often struggle to balance detection accuracy and computational efficiency for edge deployment. To address these issues, this study proposes CFIS-YOLO, a lightweight object detection model optimized for edge devices. The model introduces an enhanced C2f structure, a dynamic feature recombination module, and a novel loss function that incorporates auxiliary bounding boxes and angular constraints. These innovations improve multi-scale feature fusion and small object localization while significantly reducing computational overhead. Evaluated on a public wood defect dataset, CFIS-YOLO achieves a mean Average Precision (mAP@0.5) of 77.5\\%, outperforming the baseline YOLOv10s by 4 percentage points. On SOPHON BM1684X edge devices, CFIS-YOLO delivers 135 FPS, reduces power consumption to 17.3\\% of the original implementation, and incurs only a 0.5 percentage point drop in mAP. These results demonstrate that CFIS-YOLO is a practical and effective solution for real-world wood defect detection in resource-constrained environments.",
+        "supports_gap_ids": [
+          "G1"
+        ],
+        "title": "CFIS-YOLO: A Lightweight Multi-Scale Fusion Network for Edge-Deployable Wood Defect Detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:b7ccf9b2efafc5f5b5af026762e317c3c360e4de65a56129fcf969a9368096cb",
+        "evidence_id": "ev-paper-cfaa60f5723befc6630b",
+        "locator": "https://arxiv.org/abs/2509.21696",
+        "retrieved_at": "2026-07-18T18:08:23.130325Z",
+        "source_type": "paper",
+        "summary": "Infrared imaging has emerged as a robust solution for urban object detection under low-light and adverse weather conditions, offering significant advantages over traditional visible-light cameras. However, challenges such as class imbalance, thermal noise, and computational constraints can significantly hinder model performance in practical settings. To address these issues, we evaluate multiple YOLO variants on the FLIR ADAS V2 dataset, ultimately selecting YOLOv8 as our baseline due to its balanced accuracy and efficiency. Building on this foundation, we present \\texttt{MS-YOLO} (\\textbf{M}obileNetv4 and \\textbf{S}lideLoss based on YOLO), which replaces YOLOv8's CSPDarknet backbone with the more efficient MobileNetV4, reducing computational overhead by \\textbf{1.5%} while sustaining high accuracy. In addition, we introduce \\emph{SlideLoss}, a novel loss function that dynamically emphasizes under-represented and occluded samples, boosting precision without sacrificing recall. Experiments on the FLIR ADAS V2 benchmark show that \\texttt{MS-YOLO} attains competitive mAP and superior precision while operating at only \\textbf{6.7 GFLOPs}. These results demonstrate that \\texttt{MS-YOLO} effectively addresses the dual challenge of maintaining high detection quality while minimizing computational costs, making it well-suited for real-time edge deployment in urban environments.",
+        "supports_gap_ids": [
+          "G1",
+          "G3"
+        ],
+        "title": "MS-YOLO: Infrared Object Detection for Edge Deployment via MobileNetV4 and SlideLoss",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:c65b9911fe4512a1102dd41e0732214f8a55df6631fd9191a545e2b07ef536f5",
+        "evidence_id": "ev-paper-92f2899e2f5c07201efd",
+        "locator": "https://arxiv.org/abs/2306.14289",
+        "retrieved_at": "2026-07-18T18:08:23.130325Z",
+        "source_type": "paper",
+        "summary": "Segment Anything Model (SAM) has attracted significant attention due to its impressive zero-shot transfer performance and high versatility for numerous vision applications (like image editing with fine-grained control). Many of such applications need to be run on resource-constraint edge devices, like mobile phones. In this work, we aim to make SAM mobile-friendly by replacing the heavyweight image encoder with a lightweight one. A naive way to train such a new SAM as in the original SAM paper leads to unsatisfactory performance, especially when limited training sources are available. We find that this is mainly caused by the coupled optimization of the image encoder and mask decoder, motivated by which we propose decoupled distillation. Concretely, we distill the knowledge from the heavy image encoder (ViT-H in the original SAM) to a lightweight image encoder, which can be automatically compatible with the mask decoder in the original SAM. The training can be completed on a single GPU within less than one day, and the resulting lightweight SAM is termed MobileSAM which is more than 60 times smaller yet performs on par with the original SAM. For inference speed, With a single GPU, MobileSAM runs around 10ms per image: 8ms on the image encoder and 4ms on the mask decoder. With superior performance, our MobileSAM is around 5 times faster than the concurrent FastSAM and 7 times smaller, making it more suitable for mobile applications. Moreover, we show that MobileSAM can run relatively smoothly on CPU. The code for our project is provided at \\href{https://github.com/ChaoningZhang/MobileSAM}{\\textcolor{red}{MobileSAM}}), with a demo showing that MobileSAM can run relatively smoothly on CPU.",
+        "supports_gap_ids": [
+          "G1",
+          "G5"
+        ],
+        "title": "Faster Segment Anything: Towards Lightweight SAM for Mobile Applications",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3282094a2441e2ae0e46da0e55b4e5bf46469c2c2f909217f611572bcf1d4567",
+        "evidence_id": "ev-paper-db780e11b16d0d880212",
+        "locator": "https://arxiv.org/abs/2211.15444",
+        "retrieved_at": "2026-07-18T18:08:23.130325Z",
+        "source_type": "paper",
+        "summary": "In this report, we present a fast and accurate object detection method dubbed DAMO-YOLO, which achieves higher performance than the state-of-the-art YOLO series. DAMO-YOLO is extended from YOLO with some new technologies, including Neural Architecture Search (NAS), efficient Reparameterized Generalized-FPN (RepGFPN), a lightweight head with AlignedOTA label assignment, and distillation enhancement. In particular, we use MAE-NAS, a method guided by the principle of maximum entropy, to search our detection backbone under the constraints of low latency and high performance, producing ResNet/CSP-like structures with spatial pyramid pooling and focus modules. In the design of necks and heads, we follow the rule of ``large neck, small head''.We import Generalized-FPN with accelerated queen-fusion to build the detector neck and upgrade its CSPNet with efficient layer aggregation networks (ELAN) and reparameterization. Then we investigate how detector head size affects detection performance and find that a heavy neck with only one task projection layer would yield better results.In addition, AlignedOTA is proposed to solve the misalignment problem in label assignment. And a distillation schema is introduced to improve performance to a higher level. Based on these new techs, we build a suite of models at various scales to meet the needs of different scenarios. For general industry requirements, we propose DAMO-YOLO-T/S/M/L. They can achieve 43.6/47.7/50.2/51.9 mAPs on COCO with the latency of 2.78/3.83/5.62/7.95 ms on T4 GPUs respectively. Additionally, for edge devices with limited computing power, we have also proposed DAMO-YOLO-Ns/Nm/Nl lightweight models. They can achieve 32.3/38.2/40.5 mAPs on COCO with the latency of 4.08/5.05/6.69 ms on X86-CPU. Our proposed general and lightweight models have outperformed other YOLO series models in their respective application scenarios.",
+        "supports_gap_ids": [
+          "G1",
+          "G3"
+        ],
+        "title": "DAMO-YOLO : A Report on Real-Time Object Detection Design",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:5b74c6583df7964fc6e6ff3c51fe0c49ed77317ecb0ba38dbd14240043f86989",
+        "evidence_id": "ev-paper-0bd6af25b01a32341514",
+        "locator": "https://arxiv.org/abs/1905.01787",
+        "retrieved_at": "2026-07-18T18:08:23.131322Z",
+        "source_type": "paper",
+        "summary": "To achieve lightweight object detectors for deployment on the edge devices, an effective model compression pipeline is proposed in this paper. The compression pipeline consists of automatic channel pruning for the backbone, fixed channel deletion for the branch layers and knowledge distillation for the guidance learning. As results, the Resnet50-v1d is auto-pruned and fine-tuned on ImageNet to attain a compact base model as the backbone of object detector. Then, lightweight object detectors are implemented with proposed compression pipeline. For instance, the SSD-300 with model size=16.3MB, FLOPS=2.31G, and mAP=71.2 is created, revealing a better result than SSD-300-MobileNet.",
+        "supports_gap_ids": [
+          "G1"
+        ],
+        "title": "Creating Lightweight Object Detectors with Model Compression for Deployment on Edge Devices",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4bcc2217ec44ddd31e8953db1d517128127d947e6562ac1bfdd724e964b19a27",
+        "evidence_id": "ev-paper-626d8f73580b01778e47",
+        "locator": "https://arxiv.org/abs/2412.00160",
+        "retrieved_at": "2026-07-18T18:08:23.131322Z",
+        "source_type": "paper",
+        "summary": "Alzheimer's disease (AD) exhibits substantial clinical and biological heterogeneity, complicating efforts in treatment and intervention development. While new computational methods offer insights into AD progression, the reproducibility of these subtypes across datasets remains understudied, particularly concerning the robustness of subtype definitions when validated on diverse databases. This study evaluates the consistency of AD progression subtypes identified by the Subtype and Stage Inference (SuStaIn) algorithm using T1-weighted MRI data across 5,444 subjects from ANMerge, OASIS, and ADNI datasets, forming four independent cohorts. Each cohort was analyzed under two conditions: one using the full cohort, including cognitively normal controls, and another excluding controls to test subtype robustness. Results confirm the three primary atrophy subtypes identified in earlier studies: Typical, Cortical, and Subcortical, as well as the emergence of rare and atypical AD variants such as posterior cortical atrophy (PCA). Notably, each subtype displayed varying robustness to the inclusion of controls, with certain subtypes, like Subcortical, more influenced by cohort composition. This investigation underscores SuStaIn's reliability for defining stable AD subtypes and suggests its utility in clinical stratification for trials and diagnosis. However, our findings also highlight the need for improved dataset diversity, particularly in terms of ethnic representation, to enhance generalizability and support broader clinical application.",
+        "supports_gap_ids": [
+          "G1",
+          "G2",
+          "G3",
+          "G4",
+          "G5"
+        ],
+        "title": "How reproducible are data-driven subtypes of Alzheimer's disease atrophy?",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:cb872365cb44ee7ec7d56ed6e39a011c009ebb8712a520ccc5993baaef4d23b5",
+        "evidence_id": "ev-paper-32be0792455a3b657f70",
+        "locator": "https://arxiv.org/abs/2007.04193",
+        "retrieved_at": "2026-07-18T18:08:23.131322Z",
+        "source_type": "paper",
+        "summary": "With the pervasiveness of IoT devices, smart-phones and improvement of location-tracking technologies huge volume of heterogeneous geo-tagged (location specific) data is generated which facilitates several location-aware services. The analytics with this spatio-temporal (having location and time dimensions) datasets provide varied important services such as, smart transportation, emergency services (health-care, national defence or urban planning). While cloud paradigm is suitable for the capability of storage and computation, the major bottleneck is network connectivity loss. In time-critical application, where real-time response is required for emergency service-provisioning, such connectivity issues increases the latency and thus affects the overall quality of system (QoS). To overcome the issue, fog/ edge topology has emerged, where partial computation is carried out in the edge of the network to reduce the delay in communication. Such fog/ edge based system complements the cloud technology and extends the features of the system. This chapter discusses cloud-fog-edge based hierarchical collaborative framework, where several components are deployed to improve the QoS. On the other side. mobility is another critical factor to enhance the efficacy of such location-aware service provisioning. Therefore, this chapter discusses the concerns and challenges associated with mobility-driven cloud-fog-edge based framework to provide several location-aware services to the end-users efficiently.",
+        "supports_gap_ids": [
+          "G1",
+          "G4",
+          "G5"
+        ],
+        "title": "Mobility driven Cloud-Fog-Edge Framework for Location-aware Services: A Comprehensive Review",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6fdf427ea744b18792dd5260311d72d91d58a0d5398502d1fc49c35777c097ec",
+        "evidence_id": "ev-paper-95ae193f4f55d9dbfff4",
+        "locator": "https://arxiv.org/abs/1411.3958",
+        "retrieved_at": "2026-07-18T18:08:23.131322Z",
+        "source_type": "paper",
+        "summary": "Quantum walks on translation invariant regular graphs spread quadratically faster than their classical counterparts. The same coherence that gives them this quantum speedup inhibits, or even stops their spread in the presence of disorder. We ask how to create an efficient transport channel from a fixed source site (A) to fixed target site (B) in a disordered 2-dimensional discrete-time quantum walk by cutting some of the links. We show that the somewhat counterintuitive strategy of cutting links along a single line connecting A to B creates such a channel. The efficient transport along the cut is due to topologically protected chiral edge states, which exist even though the bulk Chern number in this system vanishes. We give a realization of the walk as a periodically driven lattice Hamiltonian, and identify the bulk topological invariant responsible for the edge states as the quasienergy winding of this Hamiltonian.",
+        "supports_gap_ids": [
+          "G1",
+          "G3",
+          "G5"
+        ],
+        "title": "Edge-state enhanced transport in a 2-dimensional quantum walk",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:c93a59d9f407eabb6dba8a20e18ecf77af0aa87a7762ca346b9eaae41532a095",
+        "evidence_id": "ev-paper-44a2e7a933fd8f52881f",
+        "locator": "https://arxiv.org/abs/2412.01854",
+        "retrieved_at": "2026-07-18T18:08:23.132323Z",
+        "source_type": "paper",
+        "summary": "The advances in computer vision made possible by deep learning technology are increasingly being used in precision agriculture to automate the detection and classification of plant diseases. Symptoms of plant diseases are often seen on their leaves. The leaf images in existing datasets have been collected either under controlled conditions or in the field. The majority of previous studies have focused on identifying leaf diseases using images captured in controlled laboratory settings, often achieving high performance. However, methods aimed at detecting and classifying leaf diseases in field images have generally exhibited lower performance. The objective of this study is to evaluate the impact of a data augmentation approach that involves removing complex backgrounds from leaf images on the classification performance of apple leaf diseases in images captured under real world conditions. To achieve this objective, the lightweight pre-trained MobileNetV2 deep learning model was fine-tuned and subsequently used to evaluate the impact of expanding the training dataset with background-removed images on classification performance. Experimental results show that this augmentation strategy enhances classification accuracy. Specifically, using the Adam optimizer, the proposed method achieved a classification accuracy of 98.71% on the Plant Pathology database, representing an approximately 3% improvement and outperforming state-of-the-art methods. This demonstrates the effectiveness of background removal as a data augmentation technique for improving the robustness of disease classification models in real-world conditions.",
+        "supports_gap_ids": [
+          "G1",
+          "G2",
+          "G3",
+          "G5"
+        ],
+        "title": "Data Augmentation through Background Removal for Apple Leaf Disease Classification Using the MobileNetV2 Model",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ccbf8240e40da2bb774f3caac5a7e4a0236dd0bc8ea3af4318cb842afb32a151",
+        "evidence_id": "ev-paper-17f3dbb43e33290085a1",
+        "locator": "https://arxiv.org/abs/2410.22490",
+        "retrieved_at": "2026-07-18T18:08:23.132323Z",
+        "source_type": "paper",
+        "summary": "As the global food security landscape continues to evolve, the need for accurate and reliable crop disease diagnosis has never been more pressing. To address global food security concerns, we extend the widely used PlantVillage dataset with additional apple leaf disease classes, enhancing diversity and complexity. Experimental evaluations on both original and extended datasets reveal that existing models struggle with the new additions, highlighting the need for more robust and generalizable computer vision models. Test F1 scores of 99.63% and 97.87% were obtained on the original and extended datasets, respectively. Our study provides a more challenging and diverse benchmark, paving the way for the development of accurate and reliable models for identifying apple leaf diseases under varying imaging conditions. The expanded dataset is available at https://www.kaggle.com/datasets/akinyemijoseph/apple-leaf-disease-dataset-6-classes-v2 enabling future research to build upon our findings.",
+        "supports_gap_ids": [
+          "G1",
+          "G2",
+          "G3"
+        ],
+        "title": "The PV-ALE Dataset: Enhancing Apple Leaf Disease Classification Through Transfer Learning with Convolutional Neural Networks",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:05708360de047c3065986c0dcc9f71cf9824de83605f5ba30410ece175d7a06d",
+        "evidence_id": "ev-paper-d044a1314873138bd242",
+        "locator": "https://arxiv.org/abs/2304.06520",
+        "retrieved_at": "2026-07-18T18:08:23.132323Z",
+        "source_type": "paper",
+        "summary": "Correct identification and categorization of plant diseases are crucial for ensuring the safety of the global food supply and the overall financial success of stakeholders. In this regard, a wide range of solutions has been made available by introducing deep learning-based classification systems for different staple crops. Despite being one of the most important commercial crops in many parts of the globe, research proposing a smart solution for automatically classifying apple leaf diseases remains relatively unexplored. This study presents a technique for identifying apple leaf diseases based on transfer learning. The system extracts features using a pretrained EfficientNetV2S architecture and passes to a classifier block for effective prediction. The class imbalance issues are tackled by utilizing runtime data augmentation. The effect of various hyperparameters, such as input resolution, learning rate, number of epochs, etc., has been investigated carefully. The competence of the proposed pipeline has been evaluated on the apple leaf disease subset from the publicly available `PlantVillage' dataset, where it achieved an accuracy of 99.21%, outperforming the existing works.",
+        "supports_gap_ids": [
+          "G1",
+          "G2",
+          "G3",
+          "G5"
+        ],
+        "title": "An Efficient Transfer Learning-based Approach for Apple Leaf Disease Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6f5ff577c81a9f5cf09d777bd73f1aa018ff3724901fa8e6a9cf2f3fa8dd6b72",
+        "evidence_id": "ev-paper-fa18ec8e19aff0d191cf",
+        "locator": "https://arxiv.org/abs/2209.11214",
+        "retrieved_at": "2026-07-18T18:08:23.132323Z",
+        "source_type": "paper",
+        "summary": "Automatic tomato disease recognition from leaf images is vital to avoid crop losses by applying control measures on time. Even though recent deep learning-based tomato disease recognition methods with classical training procedures showed promising recognition results, they demand large labelled data and involve expensive training. The traditional deep learning models proposed for tomato disease recognition also consume high memory and storage because of a high number of parameters. While lightweight networks overcome some of these issues to a certain extent, they continue to show low performance and struggle to handle imbalanced data. In this paper, a novel Siamese network-based lightweight framework is proposed for automatic tomato leaf disease recognition. This framework achieves the highest accuracy of 96.97% on the tomato subset obtained from the PlantVillage dataset and 95.48% on the Taiwan tomato leaf disease dataset. Experimental results further confirm that the proposed framework is effective with imbalanced and small data. The backbone deep network integrated with this framework is lightweight with approximately 2.9629 million trainable parameters, which is way lower than existing lightweight deep networks.",
+        "supports_gap_ids": [
+          "G1"
+        ],
+        "title": "Siamese Network-based Lightweight Framework for Tomato Leaf Disease Recognition",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2a1a711d12fee5229c089228fe2d129ce7e1a02fa7022f3bd45e395a9150cbc1",
+        "evidence_id": "ev-paper-b2d6d526620b4315b495",
+        "locator": "https://arxiv.org/abs/2209.01579",
+        "retrieved_at": "2026-07-18T18:08:23.133321Z",
+        "source_type": "paper",
+        "summary": "A staple food in more than a hundred nations worldwide is rice (Oryza sativa). The cultivation of rice is vital to global economic growth. However, the main issue facing the agricultural industry is rice leaf disease. The quality and quantity of the crops have declined, and this is the main cause. As farmers in any country do not have much knowledge about rice leaf disease, they cannot diagnose rice leaf disease properly. That's why they cannot take proper care of rice leaves. As a result, the production is decreasing. From literature survey, it has seen that YOLOv5 exhibit the better result compare to others deep learning method. As a result of the continual advancement of object detection technology, YOLO family algorithms, which have extraordinarily high precision and better speed have been used in various scene recognition tasks to build rice leaf disease monitoring systems. We have annotate 1500 collected data sets and propose a rice leaf disease classification and detection method based on YOLOv5 deep learning. We then trained and evaluated the YOLOv5 model. The simulation outcomes show improved object detection result for the augmented YOLOv5 network proposed in this article. The required levels of recognition precision, recall, mAP value, and F1 score are 90\\%, 67\\%, 76\\%, and 81\\% respectively are considered as performance metrics.",
+        "supports_gap_ids": [
+          "G1"
+        ],
+        "title": "Rice Leaf Disease Classification and Detection Using YOLOv5",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:453b392e9acfa80ac6c68c936ce41bd84db2d7d74b1384d2a31bde7036bf7b4a",
+        "evidence_id": "ev-paper-0f51433aac1d66f4b58e",
+        "locator": "doi:10.1117/12.3100377",
+        "retrieved_at": "2026-07-18T18:08:23.133321Z",
+        "source_type": "paper",
+        "summary": "Small lesion detection and edge deployment remain challenging in apple leaf disease diagnosis. This study proposes an SPPFCSPC-ECA optimized YOLOv8 model, integrating multi-scale fusion (SPPFCSPC) and channel attention (ECA) to enhance small lesion sensitivity while maintaining computational efficiency. Using 6,000 images from the public PlantVillage dataset (7 disease categories), the model achieves 86.1% precision, 83.5% recall, 85.6% mAP50, and 83.2% recall for 1-3 mm lesions-9.4% higher than baseline YOLOv8s. With a size of 25.3 MB and speed of 28 FPS on NVIDIA Jetson Nano, it outperforms lightweight counterparts (e.g., LightYOLO-AppleLeafDx at 14.8 FPS). A PyQt-based visualization system achieved 92% farmer satisfaction (N=50). This work offers a practical, edge-deployable solution for orchard diagnostics, aligning with FAO precision agriculture guidelines.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "SPPFCSPC-ECA optimized YOLOv8 for apple leaf disease detection",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2cf7ac63dd06027f08cf95d1d12b5d85f7ac4faaea8ec9a6f907367ace4f3e60",
+        "evidence_id": "ev-paper-b9f1b85e101ac5dbe8b5",
+        "locator": "doi:10.1109/spicscon69221.2025.11503915",
+        "retrieved_at": "2026-07-18T18:08:23.133321Z",
+        "source_type": "paper",
+        "summary": "Automated plant disease recognition using leaf images is a transformative tool for precision agriculture, yet its effectiveness depends critically on pre-processing strategies and model architectures. This study presents a systematic, empirical comparison of six widely used pre-processing pipelines including segmentation, CLAHE, Gaussian blur, average filter, and Canny edge detection applied to both color and segmented images from a class-balanced subset of the PlantVillage dataset covering apple, grape, peach, and strawberry leaves. Ten state-of-theart convolutional neural network (CNN) architectures, ranging from a custom lightweight baseline to established ImageNet pretrained models, were benchmarked using harmonized data splits on the Kaggle GPU cloud environment. Results demonstrate that minimal pre-processing, specifically segmentation alone, enables models such as ResNet50 to achieve top accuracy (up to 99.04%), while aggressive filtering generally degrades classification performance. Comprehensive evaluation using confusion matrices, ROC and precision-recall curves, t-SNE/UMAP projections, GradCAM visualizations, and balanced test splits provides actionable guidance and empirical best practices for robust, interpretable plant disease recognition. The entire pipeline is fully reproducible, and insights from this benchmark support future research and deployment of CNN-based diagnostic systems in real-world agricultural settings.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "A Systematic Benchmark and Comparative Analysis of Pre-processing Techniques for Deep Learning-Based Plant Disease Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7d1cfdf2f88107e5882ce94ea70796a95d6caf1d88dd3614e7de49ed602405d5",
+        "evidence_id": "ev-paper-9e2d18deff54230f8d85",
+        "locator": "doi:10.15446/rfnam.v78n3.116493",
+        "retrieved_at": "2026-07-18T18:08:23.134320Z",
+        "source_type": "paper",
+        "summary": "Tomato cultivation is a key component of global agriculture, but is significantly threatened by pests and diseases that impact yield and trade. To address this, the present study investigates the application of YOLOv9, a state-of-the-art object detection model, for automated disease detection in tomato leaves. Using a dataset of 4,323 images with 15,135 annotations and a modified PlantVillage dataset, YOLOv9 models were trained and evaluated. Among the evaluated models, YOLOv9e yielded the highest mean average precision (mAP) at 0.964, establishing a benchmark for accuracy. In contrast, the YOLOv9t model provided an optimal balance for practical applications, achieving a competitive mAP of 0.95 with a rapid inference time of 8.8 ms. Furthermore, this work contributes a public version of the PlantVillage dataset with bounding box annotations, providing a valuable resource for object detection research and extending the use of the original classification-focused dataset. The results indicate that YOLOv9 models are effective for real-time and accurate detection of various diseases in complex agricultural settings.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Tomato (Solanum lycopersicum L.) leaf disease detection using computer vision",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:63e263de51eb4a94c1f8a1e7522fa4753f774020d9e49a754a8dca75c4c649b4",
+        "evidence_id": "ev-paper-6e83acb5fb7ea1c5688e",
+        "locator": "doi:10.48550/arxiv.2410.22490",
+        "retrieved_at": "2026-07-18T18:08:23.134320Z",
+        "source_type": "paper",
+        "summary": "As the global food security landscape continues to evolve, the need for accurate and reliable crop disease diagnosis has never been more pressing. To address global food security concerns, we extend the widely used PlantVillage dataset with additional apple leaf disease classes, enhancing diversity and complexity. Experimental evaluations on both original and extended datasets reveal that existing models struggle with the new additions, highlighting the need for more robust and generalizable computer vision models. Test F1 scores of 99.63% and 97.87% were obtained on the original and extended datasets, respectively. Our study provides a more challenging and diverse benchmark, paving the way for the development of accurate and reliable models for identifying apple leaf diseases under varying imaging conditions. The expanded dataset is available at https://www.kaggle.com/datasets/akinyemijoseph/apple-leaf-disease-dataset-6-classes-v2 enabling future research to build upon our findings.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "The PV-ALE Dataset: Enhancing Apple Leaf Disease Classification Through Transfer Learning with Convolutional Neural Networks",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a5041fdca84d38e98d6a693f83356e24966ed7ce0dc1360e9a4a7c72bf96a843",
+        "evidence_id": "ev-paper-6c8ee157c34fa3e20214",
+        "locator": "doi:10.3390/agronomy13051240",
+        "retrieved_at": "2026-07-18T18:08:23.134320Z",
+        "source_type": "paper",
+        "summary": "Apples are susceptible to infection by various pathogens during growth, which induces various leaf diseases and thus affects apple quality and yield. The timely and accurate identification of apple leaf diseases is essential to ensure the high-quality development of the apple industry. In practical applications in orchards, the complex background in which apple leaves are located poses certain difficulties for the identification of leaf diseases. Therefore, this paper suggests a novel approach to identifying and classifying apple leaf diseases in complex backgrounds. First, we used a bilateral filter-based MSRCR algorithm (BF-MSRCR) to pre-process the images, aiming to highlight the color and texture features of leaves and to reduce the difficulty of extracting leaf disease features with subsequent networks. Then, BAM-Net, with ConvNext-T as the backbone network, was designed to achieve an accurate classification of apple leaf diseases. In this network, we used the aggregate coordinate attention mechanism (ACAM) to strengthen the network’s attention to disease feature regions and to suppress the interference of redundant background information. Then, the multi-scale feature refinement module (MFRM) was used to further identify deeper disease features and to improve the network’s ability to discriminate between similar disease features. In our self-made complex background apple leaf disease dataset, the proposed method achieved 95.64% accuracy, 95.62% precision, 95.89% recall, and a 95.25% F1-score. Compared with existing methods, BAM-Net has higher disease recognition accuracy and classification results. It is worth mentioning that BAM-Net still performs well when applied to the task of the leaf disease identification of other crops in the PlantVillage public dataset. This indicates that BAM-Net has good generalization ability. Therefore, the method proposed in this paper can be helpful for apple disease control in modern agriculture, and it also provides a new reference for the disease identification of other crops.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Apple Leaf Disease Identification in Complex Background Based on BAM-Net",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e37aff26f46e7dfe489bc4feaa6a39cf2afb35253dbcdecd839a4c89adc6ac68",
+        "evidence_id": "ev-paper-e97479988de6e892a170",
+        "locator": "doi:10.1111/jph.70234",
+        "retrieved_at": "2026-07-18T18:08:23.134320Z",
+        "source_type": "paper",
+        "summary": "In apple leaf disease classification, the health of apple trees plays a crucial role in crop care and productivity. Since leaves are responsible for photosynthesis, they are essential for nutrient transport and overall plant vitality. Therefore, accurate disease identification enables timely intervention and effective disease management. This confirms the optimal yield and crop quality. This research introduces a novel parallel priority feature fusion and improved Butterfly Optimization network for apple leaf disease classification. This method uses PlantVillage, Apple Tree Leaf Disease and PlantPathology Apple as three benchmark datasets. Images undergo preprocessing, in which resizing, normalisation, contrast enhancement using the Top‐Hat operation and data augmentation are used to improve strength and reduce data imbalance. High‐level and complementary deep features by using transfer learning, EfficientNet‐B3 and NasNetLarge are two pre‐trained Convolutional Neural Networks are extracted. These features are fused by the parallel priority strategy, which reduces redundancy and enhances discriminability representation. Then, for optimal feature selection, overfitting is reduced and generalisation is improved using an improved Butterfly Optimization Algorithm with adaptive crossover strategies. The selected features are then classified using Light Gradient‐Boosting Machine, which handles high‐dimensional data efficiently, and more robust classification is ensured. The experimental results demonstrate that the proposed method achieves superior performance, attaining an accuracy of 98.97% and an F1‐score of 97.57% confirming its effectiveness in feature representation and disease discrimination. The proposed method enables early and accurate detection of apple leaf diseases, providing an efficient and reliable solution. This contributes to sustainable agricultural management and enhanced productivity.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Improved Butterfly Optimization and Feature Fusion for Apple Leaf Disease Classification",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:7cd36c6e3f047f25e3460af57aaa0043e283ab7242a0c9853acc286f42e19a58",
+        "evidence_id": "ev-paper-ea258c6179eec89fb562",
+        "locator": "doi:10.1109/iccke68588.2025.11273855",
+        "retrieved_at": "2026-07-18T18:08:23.134320Z",
+        "source_type": "paper",
+        "summary": "Traditionally, plant disease detection relied on labor-intensive visual inspection. With the rise of precision agriculture, machine learning methods have gained traction for automated detection but require large labeled datasets, which are often difficult to collect due to disease rarity and annotation costs. To overcome this limitation, this study introduces a realistic data augmentation method based on statistical analysis of apple leaf lesions infected by apple scab, using the publicly available PlantVillage dataset. The method reconstructs the color texture of disease lesions by analyzing their statistical and color space properties. Lesion distribution masks are created at various scales to simulate a range of lesion sizes and spatial patterns. Smooth transitions and natural appearances are achieved by gradually blurring lesion boundaries using a Gaussian function. The leaf skeleton is extracted through a median-based approach to place lesions at anatomically plausible locations, resulting in visually realistic synthetic images. These synthetic lesions are then fused with healthy leaf images by pixel-wise multiplication to generate realistic diseased samples. The effectiveness of the proposed approach was evaluated using the SegNet architecture and the F1-score as the evaluation metric. Experimental results show that pretraining the model on synthetic images and fine-tuning with real data improves the F1-score by 25% compared to training solely on real data. This method offers a practical solution to the challenge of data scarcity in plant health monitoring and smart agriculture.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Simulation-Based Data Augmentation for Apple Leaf Disease Using Statistical Moments and HSV Color Features",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6a3f10189e59f4a71d0686d42810feb94331774efb9f437517e2dc4603f34070",
+        "evidence_id": "ev-paper-bc6dce7a5f25d17d12ce",
+        "locator": "doi:10.1109/icipmc66319.2025.11170692",
+        "retrieved_at": "2026-07-18T18:08:23.135320Z",
+        "source_type": "paper",
+        "summary": "Semi-supervised learning can alleviate the reliance of fully supervised learning on expensive large-scale labeled data, which is particularly important in apple leaf disease recognition where expert experience is critical. However, due to the characteristics of apple leaf diseases, which have small interclass differences and large intraclass differences, leading to more noise in the pseudo labels, thereby preventing the generalized semi-supervised methods from being directly applied to apple leaf disease recognition. So, a novel semi-supervised recognition method which called ULG-Match is proposed in this paper, which fully utilizes both local and global information to enhance the performance of semi-supervised apple leaf disease recognition. Firstly, a region-based local feature extraction method is designed to extract more reliable local feature representations; secondly, a pseudo-label generation based on local perception enhancement module is proposed to generate more accurate pseudo-labels by unifying local and global semantic information. Finally, the proposed ULGMatch was compared with several SOTA methods, achieving improvements of 1.82% and 2.31% on the internal dataset apples and the publicly available dataset plantvillage, respectively.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "A Pseudo-Label Refinement Method Based on Unified Local and Global Semantics for Semi-supervised Apple Leaf Disease Recognition",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:505c46165aaf06840f6682063b48c8cc31919b1b56137527080043405f269d41",
+        "evidence_id": "ev-paper-282ae01920b76f53e1c6",
+        "locator": "doi:10.1109/elmar66948.2025.11193742",
+        "retrieved_at": "2026-07-18T18:08:23.135320Z",
+        "source_type": "paper",
+        "summary": "Plant disease detection models achieve >99% accuracy on datasets with near-perfect conditions but fail catastrophically in real agricultural environments due to spurious correlations with homogeneous backgrounds. We introduce an augmented grape disease dataset that incorporates realistic vineyard environments, doubling PlantVillage to 18,054 images through principled background integration and geometric transformations. Models trained on laboratory-only data suffer severe degradation (62-87% accuracy) on realistic conditions, while our augmented dataset enables robust performance (>97%) across both scenarios. This work challenges current agricultural AI benchmarking and enables deployment-ready disease detection systems. Dataset is publicly available on Huggingface.1",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Augmented Grape Leaf Disease Dataset for Realistic Vineyard Environment using Background Blending",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:2fcc01495cddd084f9ac700addbe91d005960fb836f8d900fb4b6429d5e5a275",
+        "evidence_id": "ev-paper-1b5f6837c6ba7715dfc5",
+        "locator": "doi:10.1007/s10341-026-01950-w",
+        "retrieved_at": "2026-07-18T18:08:23.135320Z",
+        "source_type": "paper",
+        "summary": "Cross-Modal Apple Disease Recognition: Enhancing Apple Leaf Disease Detection Through Vision–Language Feature Alignment",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Cross-Modal Apple Disease Recognition: Enhancing Apple Leaf Disease Detection Through Vision–Language Feature Alignment",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:4a6e8d6361d10efdb915bdb2c56c68bd750b67da287d2bc478a7c9bf9431e4da",
+        "evidence_id": "ev-paper-30c990ee788970800261",
+        "locator": "https://arxiv.org/abs/2510.21346",
+        "retrieved_at": "2026-07-18T18:08:23.135320Z",
+        "source_type": "paper",
+        "summary": "In complex orchard environments, the phenotypic heterogeneity of different apple leaf diseases, characterized by significant variation among lesions, poses a challenge to traditional multi-scale feature fusion methods. These methods only integrate multi-layer features extracted by convolutional neural networks (CNNs) and fail to adequately account for the relationships between local and global features. Therefore, this study proposes a multi-branch recognition framework named CNN-Transformer-CLIP (CT-CLIP). The framework synergistically employs a CNN to extract local lesion detail features and a Vision Transformer to capture global structural relationships. An Adaptive Feature Fusion Module (AFFM) then dynamically fuses these features, achieving optimal coupling of local and global information and effectively addressing the diversity in lesion morphology and distribution. Additionally, to mitigate interference from complex backgrounds and significantly enhance recognition accuracy under few-shot conditions, this study proposes a multimodal image-text learning approach. By leveraging pre-trained CLIP weights, it achieves deep alignment between visual features and disease semantic descriptions. Experimental results show that CT-CLIP achieves accuracies of 97.38% and 96.12% on a publicly available apple disease and a self-built dataset, outperforming several baseline methods. The proposed CT-CLIP demonstrates strong capabilities in recognizing agricultural diseases, significantly enhances identification accuracy under complex environmental conditions, provides an innovative and practical solution for automated disease recognition in agricultural applications.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "CT-CLIP: A Multi-modal Fusion Framework for Robust Apple Leaf Disease Recognition in Complex Environments",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:5186484da162feee56d4ebe38e30f5badb0c16caa471f1a19b803c83d8536f53",
+        "evidence_id": "ev-paper-136c6c06d3ca74e0042e",
+        "locator": "https://arxiv.org/abs/1903.10356",
+        "retrieved_at": "2026-07-18T18:08:23.136320Z",
+        "source_type": "paper",
+        "summary": "A new method of recognizing apple leaf diseases through region-of-interest-aware deep convolutional neural network is proposed in this paper. The primary idea is that leaf disease symptoms appear in the leaf area whereas the background region contains no useful information regarding leaf diseases. To realize this idea, two subnetworks are first designed. One is for the division of the input image into three areas: background, leaf area, and spot area indicating the leaf diseases, which is the region of interest, and the other is for the classification of leaf diseases. The two subnetworks exhibit the architecture types of an encoder-decoder network and VGG network, respectively; subsequently, they are trained separately through transfer learning with a new training set containing class information, according to the types of leaf diseases and the ground truth images where the background, leaf area, and spot area are separated. Next, to connect these subnetworks and subsequently train the connected whole network in an end-to-end manner, the predicted ROI feature map is stacked on the top of the input image through a fusion layer, and subsequently fed into the subnetwork used for the leaf disease identification. The experimental results indicate that correct recognition accuracy can be increased using the predicted ROI feature map. It is also shown that the proposed method obtains better performance than the conventional state-of-the-art methods: transfer-learning-based methods, bilinear model, and multiscale-based deep feature extraction, and pooling approach.",
+        "supports_gap_ids": [
+          "G2",
+          "G3"
+        ],
+        "title": "Apple Leaf Disease Identification through Region-of-Interest-Aware Deep Convolutional Neural Network",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:6c2e90f5e2776f0bf20dd588c3e3f7e4fde2deff40ff459c4f9d3e66f225eb8c",
+        "evidence_id": "ev-paper-4a854ebb8e23418cef91",
+        "locator": "https://arxiv.org/abs/2506.09162",
+        "retrieved_at": "2026-07-18T18:08:23.137320Z",
+        "source_type": "paper",
+        "summary": "The Radiological Society of North America (RSNA) Lumbar Degenerative Imaging Spine Classification (LumbarDISC) dataset is the largest publicly available dataset of adult MRI lumbar spine examinations annotated for degenerative changes. The dataset includes 2,697 patients with a total of 8,593 image series from 8 institutions across 6 countries and 5 continents. The dataset is available for free for non-commercial use via Kaggle and RSNA Medical Imaging Resource of AI (MIRA). The dataset was created for the RSNA 2024 Lumbar Spine Degenerative Classification competition where competitors developed deep learning models to grade degenerative changes in the lumbar spine. The degree of spinal canal, subarticular recess, and neural foraminal stenosis was graded at each intervertebral disc level in the lumbar spine. The images were annotated by expert volunteer neuroradiologists and musculoskeletal radiologists from the RSNA, American Society of Neuroradiology, and the American Society of Spine Radiology. This dataset aims to facilitate research and development in machine learning and lumbar spine imaging to lead to improved patient care and clinical efficiency.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "The RSNA Lumbar Degenerative Imaging Spine Classification (LumbarDISC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:aa0ad6012580c28ce4bcdf86c285ee52cdf370b5ac227f9942a306021cc06498",
+        "evidence_id": "ev-paper-d60e9e4a76f712c2cd44",
+        "locator": "https://arxiv.org/abs/2405.19595",
+        "retrieved_at": "2026-07-18T18:08:23.137320Z",
+        "source_type": "paper",
+        "summary": "The RSNA Abdominal Traumatic Injury CT (RATIC) dataset is the largest publicly available collection of adult abdominal CT studies annotated for traumatic injuries. This dataset includes 4,274 studies from 23 institutions across 14 countries. The dataset is freely available for non-commercial use via Kaggle at https://www.kaggle.com/competitions/rsna-2023-abdominal-trauma-detection. Created for the RSNA 2023 Abdominal Trauma Detection competition, the dataset encourages the development of advanced machine learning models for detecting abdominal injuries on CT scans. The dataset encompasses detection and classification of traumatic injuries across multiple organs, including the liver, spleen, kidneys, bowel, and mesentery. Annotations were created by expert radiologists from the American Society of Emergency Radiology (ASER) and Society of Abdominal Radiology (SAR). The dataset is annotated at multiple levels, including the presence of injuries in three solid organs with injury grading, image-level annotations for active extravasations and bowel injury, and voxelwise segmentations of each of the potentially injured organs. With the release of this dataset, we hope to facilitate research and development in machine learning and abdominal trauma that can lead to improved patient care and outcomes.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "The RSNA Abdominal Traumatic Injury CT (RATIC) Dataset",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:1a275317e7d36863952ded6430622bce7036879d99bb3a926453572c6a0e77e6",
+        "evidence_id": "ev-paper-77b584e7fab8e8f2de2c",
+        "locator": "https://arxiv.org/abs/2402.12205",
+        "retrieved_at": "2026-07-18T18:08:23.137320Z",
+        "source_type": "paper",
+        "summary": "Progressive cognitive decline spanning across decades is characteristic of Alzheimer's disease (AD). Various predictive models have been designed to realize its early onset and study the long-term trajectories of cognitive test scores across populations of interest. Research efforts have been geared towards superimposing patients' cognitive test scores with the long-term trajectory denoting gradual cognitive decline, while considering the heterogeneity of AD. Multiple trajectories representing cognitive assessment for the long-term have been developed based on various parameters, highlighting the importance of classifying several groups based on disease progression patterns. In this study, a novel method capable of self-organized prediction, classification, and the overlay of long-term cognitive trajectories based on short-term individual data was developed, based on statistical and differential equation modeling. We validated the predictive accuracy of the proposed method for the long-term trajectory of cognitive test score results on two cohorts: the Alzheimer's Disease Neuroimaging Initiative (ADNI) study and the Japanese ADNI study. We also presented two practical illustrations of the simultaneous evaluation of risk factor associated with both the onset and the longitudinal progression of AD, and an innovative randomized controlled trial design for AD that standardizes the heterogeneity of patients enrolled in a clinical trial. These resources would improve the power of statistical hypothesis testing and help evaluate the therapeutic effect. The application of predicting the trajectory of longitudinal disease progression goes beyond AD, and is especially relevant for progressive and neurodegenerative disorders.",
+        "supports_gap_ids": [
+          "G2"
+        ],
+        "title": "Self-organized clustering, prediction, and superposition of long-term cognitive decline from short-term individual cognitive test scores in Alzheimer's disease",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:f0ce7c5387994d39437b0d844e39c2cf22b1abebfe045658e00b65141763ec9a",
+        "evidence_id": "ev-paper-9f799759dbc12611651e",
+        "locator": "https://arxiv.org/abs/2411.00907",
+        "retrieved_at": "2026-07-18T18:08:23.138320Z",
+        "source_type": "paper",
+        "summary": "To help MLOps engineers decide which operator to use in which deployment scenario, this study aims to empirically assess the accuracy vs latency trade-off of white-box (training-based) and black-box operators (non-training-based) and their combinations in an Edge AI setup. We perform inference experiments including 3 white-box (i.e., QAT, Pruning, Knowledge Distillation), 2 black-box (i.e., Partition, SPTQ), and their combined operators (i.e., Distilled SPTQ, SPTQ Partition) across 3 tiers (i.e., Mobile, Edge, Cloud) on 4 commonly-used Computer Vision and Natural Language Processing models to identify the effective strategies, considering the perspective of MLOps Engineers. Our Results indicate that the combination of Distillation and SPTQ operators (i.e., DSPTQ) should be preferred over non-hybrid operators when lower latency is required in the edge at small to medium accuracy drop. Among the non-hybrid operators, the Distilled operator is a better alternative in both mobile and edge tiers for lower latency performance at the cost of small to medium accuracy loss. Moreover, the operators involving distillation show lower latency in resource-constrained tiers (Mobile, Edge) compared to the operators involving Partitioning across Mobile and Edge tiers. For textual subject models, which have low input data size requirements, the Cloud tier is a better alternative for the deployment of operators than the Mobile, Edge, or Mobile-Edge tier (the latter being used for operators involving partitioning). In contrast, for image-based subject models, which have high input data size requirements, the Edge tier is a better alternative for operators than Mobile, Edge, or their combination.",
+        "supports_gap_ids": [
+          "G3"
+        ],
+        "title": "On the Impact of White-box Deployment Strategies for Edge AI on Latency and Model Performance",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:108327d641a912b2fd471ff39e1db1a2f8d96ee997b3e394f68c9c6ea839f9a9",
+        "evidence_id": "ev-paper-36065ad0a134bf355902",
+        "locator": "https://arxiv.org/abs/2306.08326",
+        "retrieved_at": "2026-07-18T18:08:25.977171Z",
+        "source_type": "paper",
+        "summary": "The tomato is one of the most important fruits on earth. It plays an important and useful role in the agricultural production of any country. This research propose a novel smart technique for early detection of late blight diseases in tomatoes. This work improve the dataset with an increase in images from the field (the Plant Village dataset) and proposed a hybrid algorithm composed of support vector machines (SVM) and histogram-oriented gradients (HOG) for real-time detection of late blight tomato disease. To propose a HOG-based SVM model for early detection of late blight tomato leaf disease. To check the performance of the proposed model in terms of MSE, accuracy, precision, and recall as compared to Decision Tree and KNN. The integration of advanced technology in agriculture has the potential to revolutionize the industry, making it more efficient, sustainable, and profitable. This research work on the early detection of tomato diseases contributes to the growing importance of smart farming, the need for climate-smart agriculture, the rising need to more efficiently utilize natural resources, and the demand for higher crop yields. The proposed hybrid algorithm of SVM and HOG has significant potential for the early detection of late blight disease in tomato plants. The performance of the proposed model against decision tree and KNN algorithms and the results may assist in selecting the best algorithm for future applications. The research work can help farmers make data-driven decisions to optimize crop yield and quality while also reducing the environmental impact of farming practices.",
+        "supports_gap_ids": [
+          "G4"
+        ],
+        "title": "Early Detection of Late Blight Tomato Disease using Histogram Oriented Gradient based Support Vector Machine",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3b034c0c209942115e85a3fff57f25f929a229617c7680b712bf21d0c8bf4863",
+        "evidence_id": "ev-paper-bc700e0ffd604b846485",
+        "locator": "https://arxiv.org/abs/1911.08588",
+        "retrieved_at": "2026-07-18T18:08:25.978166Z",
+        "source_type": "paper",
+        "summary": "Diabetic retinopathy (DR) is a diabetes complication that affects eyes. DR is a primary cause of blindness in working-age people and it is estimated that 3 to 4 million people with diabetes are blinded by DR every year worldwide. Early diagnosis have been considered an effective way to mitigate such problem. The ultimate goal of our research is to develop novel machine learning techniques to analyze the DR images generated by the fundus camera for automatically DR diagnosis. In this paper, we focus on identifying small lesions on DR fundus images. The results from our analysis, which include the lesion category and their exact locations in the image, can be used to facilitate the determination of DR severity (indicated by DR stages). Different from traditional object detection for natural images, lesion detection for fundus images have unique challenges. Specifically, the size of a lesion instance is usually very small, compared with the original resolution of the fundus images, making them diffcult to be detected. We analyze the lesion-vs-image scale carefully and propose a large-size feature pyramid network (LFPN) to preserve more image details for mini lesion instance detection. Our method includes an effective region proposal strategy to increase the sensitivity. The experimental results show that our proposed method is superior to the original feature pyramid network (FPN) method and Faster RCNN.",
+        "supports_gap_ids": [
+          "G4"
+        ],
+        "title": "Mini Lesions Detection on Diabetic Retinopathy Images via Large Scale CNN Features",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e67c219d3f97fb75c6acbe563b281d7081cffa4c03a9a27c142680c1e4299d90",
+        "evidence_id": "ev-paper-f40deb88cb665a9ec43d",
+        "locator": "https://arxiv.org/abs/2005.00031",
+        "retrieved_at": "2026-07-18T18:08:25.978166Z",
+        "source_type": "paper",
+        "summary": "Unsupervised lesion detection is a challenging problem that requires accurately estimating normative distributions of healthy anatomy and detecting lesions as outliers without training examples. Recently, this problem has received increased attention from the research community following the advances in unsupervised learning with deep learning. Such advances allow the estimation of high-dimensional distributions, such as normative distributions, with higher accuracy than previous methods.The main approach of the recently proposed methods is to learn a latent-variable model parameterized with networks to approximate the normative distribution using example images showing healthy anatomy, perform prior-projection, i.e. reconstruct the image with lesions using the latent-variable model, and determine lesions based on the differences between the reconstructed and original images. While being promising, the prior-projection step often leads to a large number of false positives. In this work, we approach unsupervised lesion detection as an image restoration problem and propose a probabilistic model that uses a network-based prior as the normative distribution and detect lesions pixel-wise using MAP estimation. The probabilistic model punishes large deviations between restored and original images, reducing false positives in pixel-wise detections. Experiments with gliomas and stroke lesions in brain MRI using publicly available datasets show that the proposed approach outperforms the state-of-the-art unsupervised methods by a substantial margin, +0.13 (AUC), for both glioma and stroke detection. Extensive model analysis confirms the effectiveness of MAP-based image restoration.",
+        "supports_gap_ids": [
+          "G4"
+        ],
+        "title": "Unsupervised Lesion Detection via Image Restoration with a Normative Prior",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:52d3b11f7b41062a4147833e83d0d15c7badbdb3e68842ecaabca11c4be715b2",
+        "evidence_id": "ev-paper-b00005080cd774a29af9",
+        "locator": "https://arxiv.org/abs/1910.11509",
+        "retrieved_at": "2026-07-18T18:08:25.978166Z",
+        "source_type": "paper",
+        "summary": "Diagnosing Parkinson's disease is a complex task that requires the evaluation of several motor and non-motor symptoms. During diagnosis, gait abnormalities are among the important symptoms that physicians should consider. However, gait evaluation is challenging and relies on the expertise and subjectivity of clinicians. In this context, the use of an intelligent gait analysis algorithm may assist physicians in order to facilitate the diagnosis process. This paper proposes a novel intelligent Parkinson detection system based on deep learning techniques to analyze gait information. We used 1D convolutional neural network (1D-Convnet) to build a Deep Neural Network (DNN) classifier. The proposed model processes 18 1D-signals coming from foot sensors measuring the vertical ground reaction force (VGRF). The first part of the network consists of 18 parallel 1D-Convnet corresponding to system inputs. The second part is a fully connected network that connects the concatenated outputs of the 1D-Convnets to obtain a final classification. We tested our algorithm in Parkinson's detection and in the prediction of the severity of the disease with the Unified Parkinson's Disease Rating Scale (UPDRS). Our experiments demonstrate the high efficiency of the proposed method in the detection of Parkinson disease based on gait data. The proposed algorithm achieved an accuracy of 98.7 %. To our knowledge, this is the state-of-the-start performance in Parkinson's gait recognition. Furthermore, we achieved an accuracy of 85.3 % in Parkinson's severity prediction. To the best of our knowledge, this is the first algorithm to perform a severity prediction based on the UPDRS. Our results show that the model is able to learn intrinsic characteristics from gait data and to generalize to unseen subjects, which could be helpful in a clinical diagnosis.",
+        "supports_gap_ids": [
+          "G4"
+        ],
+        "title": "Deep 1D-Convnet for accurate Parkinson disease detection and severity prediction from gait",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:a8ee5968e96ca335a319f7267704e91495d1aee966ea227408eeacc524b8ab90",
+        "evidence_id": "ev-paper-14b3bc7cffa4c26dff07",
+        "locator": "https://arxiv.org/abs/1904.13353",
+        "retrieved_at": "2026-07-18T18:08:25.978674Z",
+        "source_type": "paper",
+        "summary": "A ResNet-based multi-path refinement CNN is used for object contour detection. For this task, we prioritise the effective utilization of the high-level abstraction capability of a ResNet, which leads to state-of-the-art results for edge detection. Keeping our focus in mind, we fuse the high, mid and low-level features in that specific order, which differs from many other approaches. It uses the tensor with the highest-levelled features as the starting point to combine it layer-by-layer with features of a lower abstraction level until it reaches the lowest level. We train this network on a modified PASCAL VOC 2012 dataset for object contour detection and evaluate on a refined PASCAL-val dataset reaching an excellent performance and an Optimal Dataset Scale (ODS) of 0.752. Furthermore, by fine-training on the BSDS500 dataset we reach state-of-the-art results for edge-detection with an ODS of 0.824.",
+        "supports_gap_ids": [
+          "G4"
+        ],
+        "title": "Object Contour and Edge Detection with RefineContourNet",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:ba4a7cfa9a934e4a740e371691b78d92f197a7bfb627cd0cacdab5442d5dee7d",
+        "evidence_id": "ev-paper-222196dd686efe33a501",
+        "locator": "https://arxiv.org/abs/1006.1956",
+        "retrieved_at": "2026-07-18T18:08:25.978674Z",
+        "source_type": "paper",
+        "summary": "A Mobile Adhoc Network (MANET) is a cooperative engagement of a collection of mobile nodes without any centralized access point or infrastructure to coordinate among the peers. The underlying concept of coordination among nodes in a cooperative MANET has induced in them a vulnerability to attacks due to issues like lack of fixed infrastructure, dynamically changing network topology, cooperative algorithms, lack of centralized monitoring and management point, and lack of a clear line of defense. We propose a semi-distributed approach towards Reputation Based Intrusion Detection System (IDS) that combines with the DSR routing protocol for strengthening the defense of a MANET. Our system inherits the features of reputation from human behavior, hence making the IDS socially inspired. It has a semi-distributed architecture as the critical observation results of the system are neither spread globally nor restricted locally. The system assigns maximum weightage to self observation by nodes for updating any reputation values, thus avoiding the need of a trust relationship between nodes. Our system is also unique in the sense that it features the concepts of Redemption and Fading with a robust Path Manager and Monitor system. Simulation studies show that DSR fortified with our system outperforms normal DSR in terms of the packet delivery ratio and routing overhead even when up to half of nodes in the network behave as malicious. Various parameters introduced such as timing window size, reputation update values, congestion parameter and other thresholds have been optimized over several simulation test runs of the system. By combining the semi-distributed architecture and other design essentials like path manager, monitor module, redemption and fading concepts; Our system proves to be robust enough to counter most common attacks in MANETs.",
+        "supports_gap_ids": [
+          "G4"
+        ],
+        "title": "A Semi-distributed Reputation Based Intrusion Detection System for Mobile Adhoc Networks",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:3e85214bcec9e32ec949340370823e67e1ed382c477656fc87ae9aa71a2d612e",
+        "evidence_id": "ev-paper-a6abb7b3afc4cf64a2f4",
+        "locator": "https://arxiv.org/abs/2107.10469",
+        "retrieved_at": "2026-07-18T18:08:25.978674Z",
+        "source_type": "paper",
+        "summary": "Sound event localization and detection (SELD) is an emerging research topic that aims to unify the tasks of sound event detection and direction-of-arrival estimation. As a result, SELD inherits the challenges of both tasks, such as noise, reverberation, interference, polyphony, and non-stationarity of sound sources. Furthermore, SELD often faces an additional challenge of assigning correct correspondences between the detected sound classes and directions of arrival to multiple overlapping sound events. Previous studies have shown that unknown interferences in reverberant environments often cause major degradation in the performance of SELD systems. To further understand the challenges of the SELD task, we performed a detailed error analysis on two of our SELD systems, which both ranked second in the team category of DCASE SELD Challenge, one in 2020 and one in 2021. Experimental results indicate polyphony as the main challenge in SELD, due to the difficulty in detecting all sound events of interest. In addition, the SELD systems tend to make fewer errors for the polyphonic scenario that is dominant in the training set.",
+        "supports_gap_ids": [
+          "G4"
+        ],
+        "title": "What Makes Sound Event Localization and Detection Difficult? Insights from Error Analysis",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:e36e7a2ac06660edaff4498a5ff218b89f0c8b3568369745a4689dd4e34581fb",
+        "evidence_id": "ev-paper-b4d729c09ced2c09d42b",
+        "locator": "https://arxiv.org/abs/1001.2665",
+        "retrieved_at": "2026-07-18T18:08:25.979675Z",
+        "source_type": "paper",
+        "summary": "Botnets, which consist of thousands of compromised machines, can cause significant threats to other systems by launching Distributed Denial of Service (SSoS) attacks, keylogging, and backdoors. In response to these threats, new effective techniques are needed to detect the presence of botnets. In this paper, we have used an interception technique to monitor Windows Application Programming Interface (API) functions calls made by communication applications and store these calls with their arguments in log files. Our algorithm detects botnets based on monitoring abnormal activity by correlating the changes in log file sizes from different hosts.",
+        "supports_gap_ids": [
+          "G4"
+        ],
+        "title": "Detecting Botnets Through Log Correlation",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:8a05994c5171711d07a87745ac5aaa0964a8565b8eaac7b04130e41e793af9ae",
+        "evidence_id": "ev-paper-53de6a9a8b43e583a7be",
+        "locator": "https://arxiv.org/abs/2205.13770",
+        "retrieved_at": "2026-07-18T18:08:25.980675Z",
+        "source_type": "paper",
+        "summary": "Today very few deep learning-based mobile augmented reality (MAR) applications are applied in mobile devices because they are significantly energy-guzzling. In this paper, we design an edge-based energy-aware MAR system that enables MAR devices to dynamically change their configurations, such as CPU frequency, computation model size, and image offloading frequency based on user preferences, camera sampling rates, and available radio resources. Our proposed dynamic MAR configuration adaptations can minimize the per frame energy consumption of multiple MAR clients without degrading their preferred MAR performance metrics, such as latency and detection accuracy. To thoroughly analyze the interactions among MAR configurations, user preferences, camera sampling rate, and energy consumption, we propose, to the best of our knowledge, the first comprehensive analytical energy model for MAR devices. Based on the proposed analytical model, we design a LEAF optimization algorithm to guide the MAR configuration adaptation and server radio resource allocation. An image offloading frequency orchestrator, coordinating with the LEAF, is developed to adaptively regulate the edge-based object detection invocations and to further improve the energy efficiency of MAR devices. Extensive evaluations are conducted to validate the performance of the proposed analytical model and algorithms.",
+        "supports_gap_ids": [
+          "G5"
+        ],
+        "title": "LEAF + AIO: Edge-Assisted Energy-Aware Object Detection for Mobile Augmented Reality",
+        "verification_status": "accepted"
+      },
+      {
+        "content_hash": "sha256:bc37798485140419ef4339e09cac9dc8194af27377cf819cf6f430dbff6e9312",
+        "evidence_id": "ev-paper-3846e49e939940c0c4cc",
+        "locator": "https://arxiv.org/abs/1706.06535",
+        "retrieved_at": "2026-07-18T18:08:25.980675Z",
+        "source_type": "paper",
+        "summary": "Mobility analytics using data generated from the Internet of Mobile Things (IoMT) is facing many challenges which range from the ingestion of data streams coming from a vast number of fog nodes and IoMT devices to avoiding overflowing the cloud with useless massive data streams that can trigger bottlenecks [1]. Managing data flow is becoming an important part of the IoMT because it will dictate in which platform analytical tasks should run in the future. Data flows are usually a sequence of out-of-order tuples with a high data input rate, and mobility analytics requires a real-time flow of data in both directions, from the edge to the cloud, and vice-versa. Before pulling the data streams to the cloud, edge data stream processing is needed for detecting missing, broken, and duplicated tuples in addition to recognize tuples whose arrival time is out of order. Analytical tasks such as data filtering, data cleaning and low-level data contextualization can be executed at the edge of a network. In contrast, more complex analytical tasks such as graph processing can be deployed in the cloud, and the results of ad-hoc queries and streaming graph analytics can be pushed to the edge as needed by a user application. Graphs are efficient representations used in mobility analytics because they unify knowledge about connectivity, proximity and interaction among moving things. This poster describes the preliminary results from our experimental prototype developed for supporting transit systems, in which edge and cloud computing are combined to process transit data streams forwarded from fog nodes into a cloud. The motivation of this research is to understand how to perform meaningfulness mobility analytics on transit feeds by combining cloud and fog computing architectures in order to improve fleet management, mass transit and remote asset monitoring",
+        "supports_gap_ids": [
+          "G5"
+        ],
+        "title": "Combining edge and cloud computing for mobility analytics",
+        "verification_status": "accepted"
+      }
+    ],
+    "report": {
+      "evidence_ids": [
+        "ev-paper-0184be5976873aeae462",
+        "ev-paper-0bd6af25b01a32341514",
+        "ev-paper-0f51433aac1d66f4b58e",
+        "ev-paper-136c6c06d3ca74e0042e",
+        "ev-paper-14b3bc7cffa4c26dff07",
+        "ev-paper-17f3dbb43e33290085a1",
+        "ev-paper-1b5f6837c6ba7715dfc5",
+        "ev-paper-222196dd686efe33a501",
+        "ev-paper-26b37307ab8905046aef",
+        "ev-paper-282ae01920b76f53e1c6",
+        "ev-paper-30c990ee788970800261",
+        "ev-paper-32be0792455a3b657f70",
+        "ev-paper-36065ad0a134bf355902",
+        "ev-paper-3846e49e939940c0c4cc",
+        "ev-paper-44a2e7a933fd8f52881f",
+        "ev-paper-4a854ebb8e23418cef91",
+        "ev-paper-53de6a9a8b43e583a7be",
+        "ev-paper-626d8f73580b01778e47",
+        "ev-paper-6c8ee157c34fa3e20214",
+        "ev-paper-6e83acb5fb7ea1c5688e",
+        "ev-paper-77b584e7fab8e8f2de2c",
+        "ev-paper-92f2899e2f5c07201efd",
+        "ev-paper-95ae193f4f55d9dbfff4",
+        "ev-paper-9e2d18deff54230f8d85",
+        "ev-paper-9f799759dbc12611651e",
+        "ev-paper-a6abb7b3afc4cf64a2f4",
+        "ev-paper-b00005080cd774a29af9",
+        "ev-paper-b2d6d526620b4315b495",
+        "ev-paper-b4d729c09ced2c09d42b",
+        "ev-paper-b9f1b85e101ac5dbe8b5",
+        "ev-paper-bc6dce7a5f25d17d12ce",
+        "ev-paper-bc700e0ffd604b846485",
+        "ev-paper-cfaa60f5723befc6630b",
+        "ev-paper-d044a1314873138bd242",
+        "ev-paper-d60e9e4a76f712c2cd44",
+        "ev-paper-db780e11b16d0d880212",
+        "ev-paper-e97479988de6e892a170",
+        "ev-paper-ea258c6179eec89fb562",
+        "ev-paper-f40deb88cb665a9ec43d",
+        "ev-paper-f9db2a743317604e3be7",
+        "ev-paper-fa18ec8e19aff0d191cf"
+      ],
+      "executive_summary": "The analysis was blocked due to unresolved quality issues with the provided evidence set. No verified or inferred findings could be established without addressing the underlying limitations.",
+      "experiment_plan": null,
+      "inferred_findings": [],
+      "limitations": [
+        "The accepted evidence set contains unresolved quality issues that prevent any meaningful verification or inference of findings.",
+        "No additional evidence or corrections were provided to resolve the blocking condition.",
+        "The method_status field was null, indicating no proposed or executed methodology was available for evaluation."
+      ],
+      "next_actions": [
+        "Request a revised evidence set with resolved quality issues from the upstream provider.",
+        "Clarify the method_status to determine if a proposed or executed methodology exists for evaluation.",
+        "Provide bounded next steps for re-evaluation once the evidence set is corrected."
+      ],
+      "proposed_method": null,
+      "schema_version": "0.1",
+      "status": "blocked",
+      "verified_findings": []
+    }
+  },
+  "scientific_trace": {
+    "accepted_evidence_count": 41,
+    "completed_query_ids": [
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7"
+    ],
+    "coverage_by_gap": {
+      "G1": 15,
+      "G2": 20,
+      "G3": 10,
+      "G4": 10,
+      "G5": 10
+    },
+    "plan_status": "ready",
+    "quality_missing_gap_ids": [],
+    "quality_reason_codes": [],
+    "quality_verdict": null,
+    "retrieval_budget_exhausted": false,
+    "retrieval_max_rounds": 2,
+    "retrieval_round": 2,
+    "tool_errors": [
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q1",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q1",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q1",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q2",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q2",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q2",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q3",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q4",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q5",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q5",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q5",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q6",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q6",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q6",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q7",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "semantic_scholar",
+        "query_id": "Q7",
+        "retryable": true
+      },
+      {
+        "attempt": 1,
+        "code": "RATE_LIMITED",
+        "message": "provider rate limit exceeded",
+        "provider": "openalex",
+        "query_id": "Q7",
+        "retryable": true
+      }
+    ],
+    "verification_counts": {
+      "accepted": 41
+    }
+  },
+  "skipped_checks": [],
+  "started_utc": "2026-07-18T18:07:55.465826+00:00",
+  "telemetry": {
+    "accounting_complete": true,
+    "accounting_errors": [],
+    "calls": 3,
+    "estimated_cost_usd": 0.0081604,
+    "input_tokens": 22022,
+    "output_tokens": 6260,
+    "provider_errors": 0,
+    "repairs": 0,
+    "retries": 0,
+    "total_tokens": 28282
+  },
+  "terminal": "blocked",
+  "trace_digest": "e4513b89f61e47e92411740c42a5ab3ce20fc092fe4e0eddbeb486ea4bacc812",
+  "version": "v2",
+  "wall_seconds": 60.062
+}

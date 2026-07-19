@@ -6,7 +6,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from paperagent.api.executor import LangGraphTaskExecutor, TaskCancelledError
+from paperagent.api.executor import (
+    LangGraphTaskExecutor,
+    TaskBudgetExhaustedError,
+    TaskCancelledError,
+)
 from paperagent.api.models import TaskCreateRequest, TaskStatus
 from paperagent.api.repository import SQLiteTaskRepository
 from paperagent.api.runner import SingleProcessTaskRunner
@@ -169,6 +173,14 @@ async def test_langgraph_executor__streams_progress_and_returns_primitive_state(
             {"request": ResearchRequest(question="Evaluate retrieval reliability"), "trace": []},
             {
                 "request": ResearchRequest(question="Evaluate retrieval reliability"),
+                "execution": {"status": "completed"},
+                "report": {
+                    "status": "completed",
+                    "executive_summary": "done",
+                    "verified_findings": [],
+                    "inferred_findings": [],
+                    "limitations": ["bounded test"],
+                },
                 "trace": [],
             },
         ]
@@ -191,6 +203,57 @@ async def test_langgraph_executor__streams_progress_and_returns_primitive_state(
     assert len(emitted) == 2
     assert graph.config["configurable"]["thread_id"] == "task-1"
     assert graph.config["configurable"]["scenario"] == "x"
+
+
+@pytest.mark.asyncio
+async def test_langgraph_executor__fails_closed_on_nonterminal_state() -> None:
+    graph = FakeGraph(
+        [{"request": ResearchRequest(question="Evaluate retrieval reliability"), "trace": []}]
+    )
+    executor = LangGraphTaskExecutor(graph=graph, services=SimpleNamespace())
+
+    async def emit(event_type: str, payload: dict) -> None:
+        del event_type, payload
+
+    with pytest.raises(RuntimeError, match="terminal execution status"):
+        await executor.execute(
+            task_id="task-1",
+            request=ResearchRequest(question="Evaluate retrieval reliability"),
+            emit=emit,
+            should_cancel=lambda: False,
+        )
+
+
+@pytest.mark.asyncio
+async def test_langgraph_executor__fails_closed_on_provider_budget_exhaustion() -> None:
+    graph = FakeGraph(
+        [
+            {
+                "request": ResearchRequest(question="Evaluate retrieval reliability"),
+                "execution": {
+                    "status": "failed",
+                    "last_error": {
+                        "code": "LLM_BUDGET_EXHAUSTED",
+                        "message": "budget exhausted",
+                        "node": "planning_node",
+                    },
+                },
+                "trace": [],
+            }
+        ]
+    )
+    executor = LangGraphTaskExecutor(graph=graph, services=SimpleNamespace())
+
+    async def emit(event_type: str, payload: dict) -> None:
+        del event_type, payload
+
+    with pytest.raises(TaskBudgetExhaustedError, match="budget exhausted"):
+        await executor.execute(
+            task_id="task-1",
+            request=ResearchRequest(question="Evaluate retrieval reliability"),
+            emit=emit,
+            should_cancel=lambda: False,
+        )
 
 
 @pytest.mark.asyncio

@@ -51,6 +51,15 @@ def _services(fixed_time: datetime, scenario: str):
                     title="Synthetic domain evidence",
                     locator="fixture://ood/evidence",
                     snippet="Synthetic evidence for workflow verification.",
+                    metadata={
+                        "license": "MIT",
+                        "baseline_reproduced": "true",
+                        "baseline_reproduced_metric": "primary_metric=0.50",
+                        "baseline_compute_fit": "true",
+                        "baseline_parity_verified": "true",
+                        "dataset_fingerprint": "sha256:fixture-dataset",
+                        "environment_fingerprint": "sha256:fixture-environment",
+                    },
                 )
             ],
             SearchFixtureKey(scenario=scenario, query_id="query-evaluation-01", call_index=0): [
@@ -62,6 +71,7 @@ def _services(fixed_time: datetime, scenario: str):
                     title="Synthetic evaluation evidence",
                     locator="fixture://ood/evaluation",
                     snippet="Synthetic evaluation contract.",
+                    metadata={"license": "MIT"},
                 )
             ],
         }

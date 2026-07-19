@@ -17,6 +17,10 @@ class TaskCancelledError(RuntimeError):
     pass
 
 
+class TaskBudgetExhaustedError(RuntimeError):
+    pass
+
+
 class TaskExecutor(Protocol):
     async def execute(
         self,
@@ -77,6 +81,16 @@ class LangGraphTaskExecutor:
                         "trace_count": len(primitive.get("trace", [])),
                     },
                 )
+                if isinstance(execution, dict):
+                    last_error = execution.get("last_error")
+                    if (
+                        isinstance(last_error, dict)
+                        and last_error.get("code") == "LLM_BUDGET_EXHAUSTED"
+                    ):
+                        close = getattr(stream, "aclose", None)
+                        if close is not None:
+                            await close()
+                        raise TaskBudgetExhaustedError("workflow provider budget exhausted")
             if should_cancel():
                 close = getattr(stream, "aclose", None)
                 if close is not None:
@@ -85,4 +99,15 @@ class LangGraphTaskExecutor:
 
         if latest is None:
             raise RuntimeError("workflow completed without emitting state")
-        return state_to_primitive(latest)
+        result = state_to_primitive(latest)
+        execution = result.get("execution")
+        if not isinstance(execution, dict) or execution.get("status") not in {
+            "completed",
+            "blocked",
+            "failed",
+        }:
+            raise RuntimeError("workflow completed without a terminal execution status")
+        report = result.get("report")
+        if execution.get("status") in {"completed", "blocked"} and not isinstance(report, dict):
+            raise RuntimeError("terminal workflow state is missing report")
+        return result

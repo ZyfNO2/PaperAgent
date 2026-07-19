@@ -68,9 +68,9 @@ def test_pwa__submit_progress_review_and_export(tmp_path: Path) -> None:
             console_errors: list[str] = []
             page.on(
                 "console",
-                lambda message: console_errors.append(message.text)
-                if message.type == "error"
-                else None,
+                lambda message: (
+                    console_errors.append(message.text) if message.type == "error" else None
+                ),
             )
 
             page.goto(f"{base_url}/app", wait_until="networkidle")

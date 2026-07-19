@@ -1,0 +1,161 @@
+name: PaperAgent Local Acceptance
+
+on:
+  push:
+    branches:
+      - feat/academic-tailoring-evaluation
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  local-tests:
+    if: github.actor != 'github-actions[bot]'
+    name: Python ${{ matrix.python-version }} local tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev,release]'
+      - name: Compile source
+        id: compile
+        continue-on-error: true
+        run: |
+          mkdir -p build/local-quality
+          python -m compileall -q src/paperagent \
+            > build/local-quality/compile.txt 2>&1
+      - name: Ruff lint
+        id: ruff-lint
+        continue-on-error: true
+        run: ruff check . > build/local-quality/ruff-lint.txt 2>&1
+      - name: Ruff format
+        id: ruff-format
+        continue-on-error: true
+        run: ruff format --check --diff . > build/local-quality/ruff-format.txt 2>&1
+      - name: Strict Mypy
+        id: mypy
+        continue-on-error: true
+        run: mypy --config-file pyproject.toml > build/local-quality/mypy.txt 2>&1
+      - name: Upload static diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-quality-${{ matrix.python-version }}
+          path: build/local-quality/
+          if-no-files-found: error
+      - name: Enforce static quality
+        if: steps.compile.outcome == 'failure' || steps.ruff-lint.outcome == 'failure' || steps.ruff-format.outcome == 'failure' || steps.mypy.outcome == 'failure'
+        run: exit 1
+      - name: Local acceptance regressions
+        run: |
+          pytest -q \
+            tests/local \
+            tests/review/test_consolidated_regressions.py \
+            tests/api/test_diagnostics.py \
+            tests/release/test_release_candidate.py
+
+  local-evidence:
+    if: github.actor != 'github-actions[bot]'
+    needs: local-tests
+    name: Execute one-command local acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev,release]'
+      - name: Run quick local acceptance profile
+        run: |
+          python scripts/local_acceptance.py \
+            --profile quick \
+            --output build/local-acceptance/summary.json
+      - name: Upload local acceptance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: paperagent-local-acceptance
+          path: build/local-acceptance/
+          if-no-files-found: error
+
+  report:
+    if: always() && github.actor != 'github-actions[bot]'
+    needs: [local-tests, local-evidence]
+    name: Persist local acceptance status
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/academic-tailoring-evaluation
+          fetch-depth: 0
+      - name: Download successful evidence
+        if: needs.local-evidence.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: paperagent-local-acceptance
+          path: /tmp/paperagent-local-acceptance
+      - name: Write branch record
+        env:
+          SOURCE_HEAD_SHA: ${{ github.sha }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+          WORKFLOW_RUN_NUMBER: ${{ github.run_number }}
+          LOCAL_TESTS_RESULT: ${{ needs.local-tests.result }}
+          LOCAL_EVIDENCE_RESULT: ${{ needs.local-evidence.result }}
+        run: |
+          mkdir -p acceptance/local-pr17
+          python - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          from pathlib import Path
+
+          tests_result = os.environ["LOCAL_TESTS_RESULT"]
+          evidence_result = os.environ["LOCAL_EVIDENCE_RESULT"]
+          passed = tests_result == "success" and evidence_result == "success"
+          record = {
+              "status": "passed" if passed else "failed",
+              "source_head_sha": os.environ["SOURCE_HEAD_SHA"],
+              "workflow_run_id": int(os.environ["WORKFLOW_RUN_ID"]),
+              "workflow_run_number": int(os.environ["WORKFLOW_RUN_NUMBER"]),
+              "local_tests_result": tests_result,
+              "local_evidence_result": evidence_result,
+              "python_versions": ["3.11", "3.12"],
+              "network_required": False,
+              "live_llm_required": False,
+          }
+          summary_path = Path("/tmp/paperagent-local-acceptance/summary.json")
+          if summary_path.exists():
+              summary = json.loads(summary_path.read_text(encoding="utf-8"))
+              record["summary"] = summary
+              if not summary.get("passed"):
+                  record["status"] = "failed"
+          Path("acceptance/local-pr17/latest.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Commit branch record
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add acceptance/local-pr17/latest.json
+          git commit -m 'test(local): record PR17 local acceptance result'
+          git push origin HEAD:feat/academic-tailoring-evaluation
