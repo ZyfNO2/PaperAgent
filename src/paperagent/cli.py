@@ -25,6 +25,7 @@ from paperagent.providers.config import load_provider_config
 from paperagent.providers.openai_llm import OpenAILLMProvider
 
 _LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
+_TRUE_VALUES = {"1", "true", "yes", "on"}
 
 
 def _non_negative_float(value: str) -> float:
@@ -157,6 +158,14 @@ def _serve(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
                 literature_settings=LiteratureProviderSettings(
                     contact_email=os.getenv("PAPERAGENT_CONTACT_EMAIL"),
                     semantic_scholar_api_key=os.getenv("SEMANTIC_SCHOLAR_API_KEY"),
+                    tavily_api_key=os.getenv("TAVILY_API_KEY"),
+                    enable_web_search=(
+                        os.getenv("PAPERAGENT_ENABLE_WEB_SEARCH", "0").strip().casefold()
+                        in _TRUE_VALUES
+                    ),
+                    max_provider_calls_total=int(
+                        os.getenv("PAPERAGENT_MAX_PROVIDER_CALLS", "48")
+                    ),
                 ),
                 price_table=price_table,
             )
