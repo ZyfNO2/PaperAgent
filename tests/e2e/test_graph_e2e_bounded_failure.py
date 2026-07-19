@@ -1,9 +1,10 @@
-"""E2E: bounded retrieval failure through the HTTP task contract.
+"""E2E: bounded retrieval exhaustion through the HTTP task contract.
 
 When every search round returns empty, the retrieval subgraph must exhaust its
-budget, quality_gate must return ``blocked`` with ``Q_RETRIEVAL_BUDGET_EXHAUSTED``,
-and the durable task must finish ``succeeded`` with a blocked report. This is
-the critical safety property: the graph never loops forever on empty results.
+budget, the pre-synthesis evidence gate must produce a scientific ``REVISE``,
+and the durable task must finish ``succeeded`` with a completed repair report.
+This is the critical safety property: the graph never loops forever or invents
+an evaluated method when required evidence is unavailable.
 """
 
 from __future__ import annotations
@@ -28,10 +29,6 @@ EXPECTED_BOUNDED_NODES = [
     "prepare_search_node",
     "search_tool_node",
     "verify_evidence_node",
-    "evidence_synthesis_node",
-    "method_design_node",
-    "methodology_audit_node",
-    "quality_gate_node",
     "report_node",
     "persist_node",
 ]
@@ -42,19 +39,13 @@ def _empty_search_services() -> Any:
         FixtureKey(task="planning", scenario="happy_path", call_index=0): load_llm_raw(
             "planning", "happy_path", 0
         ),
-        FixtureKey(task="evidence_synthesis", scenario="empty", call_index=0): load_llm_raw(
-            "evidence_synthesis", "empty", 0
-        ),
-        FixtureKey(task="method_design", scenario="empty", call_index=0): load_llm_raw(
-            "method_design", "empty", 0
-        ),
         FixtureKey(task="report", scenario="blocked", call_index=0): load_llm_raw(
             "report", "blocked", 0
         ),
     }
     # Empty result lists for every query the happy_path plan emits. Returning []
     # (not omitting the key) avoids FixtureNotFoundError while still starving
-    # coverage so the gate must block.
+    # coverage so the evidence gate must terminate before synthesis.
     search_fixtures = {
         SearchFixtureKey(scenario="empty", query_id="query-support-01", call_index=0): [],
         SearchFixtureKey(scenario="empty", query_id="query-ablation-01", call_index=0): [],
@@ -66,7 +57,7 @@ def _empty_search_services() -> Any:
     )
 
 
-def test_e2e__empty_retrieval__exhausts_budget_and_blocks_via_http(
+def test_e2e__empty_retrieval__exhausts_budget_and_revises_via_http(
     graph_app_factory, submit_task, wait_for_terminal
 ) -> None:
     client: TestClient = graph_app_factory(
@@ -74,8 +65,6 @@ def test_e2e__empty_retrieval__exhausts_budget_and_blocks_via_http(
         configurable={
             "scenarios": {
                 "planning": "happy_path",
-                "evidence_synthesis": "empty",
-                "method_design": "empty",
                 "report": "blocked",
             },
             "search_scenario": "empty",
@@ -88,12 +77,16 @@ def test_e2e__empty_retrieval__exhausts_budget_and_blocks_via_http(
         assert task["status"] == "succeeded"
         result: dict[str, Any] = task["result"]
 
-        assert result["execution"]["status"] == "blocked"
+        assert result["execution"]["status"] == "completed"
         assert result["retrieval"]["round"] == 2
         assert result["retrieval"]["budget_exhausted"] is True
         assert result["quality"]["verdict"] == "blocked"
         assert "Q_RETRIEVAL_BUDGET_EXHAUSTED" in result["quality"]["reason_codes"]
-        assert result["report"]["status"] == "blocked"
+        assert result["final_outcome"]["scientific_verdict"] == "REVISE"
+        assert result["report"]["status"] == "completed"
+        assert result["report"]["next_actions"]
+        assert result.get("synthesis") is None
+        assert result.get("method") is None
 
         assert_completed_nodes(result, EXPECTED_BOUNDED_NODES)
 
