@@ -29,9 +29,11 @@ class FinalOutcome(FrozenModel):
 
     @model_validator(mode="after")
     def validate_outcome(self) -> FinalOutcome:
-        if self.scientific_verdict in {"GO", "REVISE", "NO_GO"}:
-            if self.report_status != "completed":
-                raise ValueError("scientific verdicts require a completed report")
+        if (
+            self.scientific_verdict in {"GO", "REVISE", "NO_GO"}
+            and self.report_status != "completed"
+        ):
+            raise ValueError("scientific verdicts require a completed report")
         if self.scientific_verdict == "NOT_EVALUATED" and self.execution_status == "succeeded":
             raise ValueError("NOT_EVALUATED cannot use succeeded execution status")
         if self.scientific_verdict == "GO" and self.quality_route != "pass":
