@@ -24,8 +24,12 @@ def _load_json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _load_fixture() -> tuple[TraceFixtureManifest, list[TraceEvent], list[TraceMutationCase]]:
-    manifest = TraceFixtureManifest.model_validate(_load_json(FIXTURE_DIR / "manifest.json"))
+def _load_fixture() -> tuple[
+    TraceFixtureManifest, list[TraceEvent], list[TraceMutationCase]
+]:
+    manifest = TraceFixtureManifest.model_validate(
+        _load_json(FIXTURE_DIR / "manifest.json")
+    )
     events = _TRACE_LIST.validate_python(_load_json(FIXTURE_DIR / "trace.json"))
     cases = _CASE_LIST.validate_python(_load_json(FIXTURE_DIR / "cases.json"))
     return manifest, events, cases
@@ -57,13 +61,15 @@ def test_every_trace_mutation_is_classified_as_expected() -> None:
             fixture_version=manifest.fixture_version,
             source_commit="test-source-sha",
             events=events,
-            expected_event_count=case.expected_event_count or manifest.expected_event_count,
+            expected_event_count=case.expected_event_count
+            or manifest.expected_event_count,
             expected_route_sequence=(
                 case.expected_route_sequence
                 if case.expected_route_sequence is not None
                 else manifest.expected_route_sequence
             ),
-            expected_trace_digest=case.expected_trace_digest or manifest.expected_trace_digest,
+            expected_trace_digest=case.expected_trace_digest
+            or manifest.expected_trace_digest,
         )
 
         assert report.passed is case.expected_pass, case.case_id
