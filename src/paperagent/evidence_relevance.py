@@ -167,15 +167,26 @@ def _supporting_spans(item: EvidenceItem, matched_terms: list[str]) -> list[str]
     return spans[:3]
 
 
+def _is_legacy_example_fixture(item: EvidenceItem) -> bool:
+    return item.provider == "fake_search" and item.locator.startswith("doi:10.1000/")
+
+
 def _is_deterministic_fixture(item: EvidenceItem) -> bool:
-    return item.provider == "fake_search" and item.locator.startswith("fixture://")
+    return (
+        item.provider == "fake_search" and item.locator.startswith("fixture://")
+    ) or _is_legacy_example_fixture(item)
 
 
 def _fixture_gap_support_ids(item: EvidenceItem) -> set[str]:
     if not _is_deterministic_fixture(item):
         return set()
     values = item.metadata.get("fixture_gap_support_ids", "")
-    return {value.strip() for value in values.split(",") if value.strip()}
+    explicit = {value.strip() for value in values.split(",") if value.strip()}
+    if explicit:
+        return explicit
+    if _is_legacy_example_fixture(item):
+        return _candidate_gap_ids(item)
+    return set()
 
 
 def assess_abstract_relevance(
@@ -210,6 +221,20 @@ def assess_abstract_relevance(
                     "FIXTURE_RELEVANCE_ASSESSMENT",
                 )
             ],
+            assessment_source="fixture",
+        )
+    if _is_legacy_example_fixture(item):
+        span = item.summary.strip() or item.title.strip()
+        return RelevanceAssessment(
+            evidence_id=item.evidence_id,
+            task_match=True,
+            domain_match=True,
+            evidence_scope="direct",
+            relevance_score=1.0,
+            decision="pass",
+            supporting_spans=[span],
+            conflict_spans=[],
+            reason_codes=["LEGACY_EXAMPLE_FIXTURE_CONTRACT"],
             assessment_source="fixture",
         )
     if lexical.decision == "reject":
