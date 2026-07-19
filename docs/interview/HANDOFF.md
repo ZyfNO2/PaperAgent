@@ -3,19 +3,80 @@
 ## Current integration state
 
 ```text
-Repository:        ZyfNO2/PaperAgent
-Master HEAD:        4f81e19a89a68a3fe729a5c85b5e97286cc21b05
-Integration PR:     #25
-Source branch:      integration/paperagent-v0.9-clean
-Source HEAD:        2cfc15c2
-Package version:    0.5.1
-PR #22 audit hardening: included
-Merge performed:    yes
-Release performed:  no
-Status:             engineering integration passed, merged to master
+Repository:                 ZyfNO2/PaperAgent
+Master baseline:            4599053b6efda464aee1fe242db801427384a6c2
+Historical integration PR:  #25 (merged)
+Current development PR:     #28 (Draft)
+Development branch:         feat/gold-case-rag-interview-readiness
+Validated implementation:   f5b4b8ca5c063033a76131c727cd861333e2a6c6
+Package version:             0.5.1
+Merge performed:             no
+Release performed:           no
+Status:                      engineering readiness passed; scientific acceptance not claimed
 ```
 
-PR #25 merged the clean integration branch into master. All PR #17–#22 work is now on master. Build artifacts, databases, and design files are excluded from tracking.
+PR #25 integrated the canonical academic-tailoring and backend-hardening implementation into
+`master`. PR #28 adds a separate Gold Case, layered RAG/evidence evaluation, and evidence-bound
+interview material. It does not modify or supersede formal Gate L PR #26.
+
+## Gold Case and RAG readiness delivered
+
+- one deterministic NPC/Game-AI Gold Case using the existing canonical proposal and audit contract;
+- a source-to-decision chain from research contract through GO / REVISE / NO_GO;
+- server-owned baseline, provenance, license, compatibility, and fingerprint fields;
+- Recall@K and Precision@K;
+- evidence precision and duplicate-source rate;
+- citation support, unsupported claims, and critical unsupported claims;
+- context utilization, LLM calls, tokens, estimated cost, terminal state, and blocker taxonomy;
+- a generated interview evidence report bound to a stable SHA-256 digest;
+- Chinese interview explanation and Japanese technical keywords;
+- Python 3.11/3.12 focused validation plus full repository regression.
+
+## Exact implementation evidence
+
+```text
+Validated implementation SHA:  f5b4b8ca5c063033a76131c727cd861333e2a6c6
+Gold Case workflow run:         29691477087 — SUCCESS
+Main repository CI run:         29691477085 — SUCCESS
+Academic tailoring eval run:    29691477095 — SUCCESS
+Interview evidence run:         29691477083 — SUCCESS
+Release hardening run:          29691477117 — SUCCESS
+Gold Case artifact ID:          8443722395
+Gold Case artifact digest:      sha256:a8cd587f69666b86b21eac71c04fdc9d1f9d4b4a3ec8edc5a6624e0a99a2a812
+Gold Case report digest:        7a959215fffbedfa8191fc30ce2c888e84ef28713211ef6441f98c37611a7b6e
+```
+
+The implementation run passed Ruff, Ruff format, strict Mypy, and focused tests on Python 3.11 and
+3.12. The full repository regression, report generation, interview document generation, and artifact
+upload also passed. The branch head containing this Handoff changes documentation and CI evidence
+capture only; no product implementation changed after the validated implementation SHA above.
+
+## Gold Case result
+
+```text
+case_id:                    npc-go-complete
+status:                     passed
+proposal_decision:          GO
+audit_verdict:              GO
+rubric_score:               100
+minimum_score:              90
+evidence_scope:             synthetic_evaluation
+readiness:                  synthetic_evaluation_only
+scientific_release_ready:   false
+Recall@1:                   0.25
+Recall@3:                   0.75
+Recall@5:                   1.00
+Precision@1/3/5:            1.00
+citation_support_rate:      1.00
+unsupported_claim_rate:     0.00
+duplicate_source_rate:      0.00
+context_utilization:        1.00
+LLM calls/tokens/cost:      0 / 0 / $0.00
+```
+
+These values are deterministic engineering evidence from synthetic fixtures. They do not establish
+real-provider retrieval quality, real-paper correctness, empirical improvement, novelty, or external
+scientific acceptance.
 
 ## Interview evidence already delivered
 
@@ -26,9 +87,10 @@ PR #25 merged the clean integration branch into master. All PR #17–#22 work is
 - controlled plugin runtime and independent external-plugin package;
 - deterministic academic method audit/proposal and Agent evaluation;
 - OpenAPI export, deterministic demo, benchmark, browser, Docker, and Wheel evidence;
-- architecture ADRs, failure model, threat model, pitch, backend Q&A, Agent Q&A, and incident cases.
+- architecture ADRs, failure model, threat model, pitch, backend Q&A, Agent Q&A, and incident cases;
+- Gold Case and layered RAG/evidence evaluation tied to the game-AI research plan.
 
-## Local verification commands
+## Primary interview commands
 
 Install once:
 
@@ -36,7 +98,28 @@ Install once:
 python -m pip install -e '.[dev,release]'
 ```
 
-Fast interview rehearsal and regression gate:
+Build the Gold Case and evidence-bound interview report:
+
+```bash
+python scripts/run_gold_case_readiness.py \
+  --output build/gold-case/report.json
+python scripts/build_interview_readiness.py \
+  --input build/gold-case/report.json \
+  --output build/gold-case/interview-readiness.md
+```
+
+Existing interview and repository demonstrations:
+
+```bash
+python scripts/interview_demo.py --output build/interview-demo-summary.json
+python scripts/export_openapi.py --output build/openapi.json
+python scripts/repository_benchmark.py --tasks 500 --output build/repository-benchmark.json
+python scripts/run_academic_tailoring_eval.py --output-dir build/academic-tailoring-eval
+paperagent diagnostics --database paperagent.db
+paperagent serve
+```
+
+Fast local rehearsal and regression gate:
 
 ```bash
 python scripts/local_acceptance.py \
@@ -44,7 +127,7 @@ python scripts/local_acceptance.py \
   --output build/local-acceptance/summary.json
 ```
 
-Complete pre-merge local gate:
+Complete local gate:
 
 ```bash
 python scripts/local_acceptance.py \
@@ -60,80 +143,49 @@ python scripts/local_state_roundtrip.py \
   --output build/local-state-roundtrip/summary.json
 ```
 
-The focused demonstration proves that a completed task, review state, and deterministic export survive a consistent SQLite backup/restore, and that an in-flight task fails closed with `PROCESS_RESTARTED` after application restart.
-
-Detailed procedure and expected evidence: `docs/testing/LOCAL_ACCEPTANCE.md`.
-
-## Verified evidence for the new local tests
-
-```text
-One-command local run:  29630172738 — SUCCESS
-Source SHA:             591ff5d8354d69b6606820263e1eed9fc7403787
-Python matrix:          3.11 and 3.12 — SUCCESS
-Quick profile:          SUCCESS
-
-Final code-head run:    29630259329 — SUCCESS
-Final tested code SHA:  37572aba81070fe0b4df5df5f3708a94cf825368
-Academic run:           29630259297 — SUCCESS
-Interview artifact ID:  8425220815
-Artifact SHA-256:       a8e9d60be337ef4e6ddcede1cea3b3bc2e5cb4b97e9a526cce87b0813125ee79
-```
-
-Final-head durable-state evidence:
-
-```text
-status:                  passed
-review_restored:         true
-journal_mode:            wal
-restart_recovery_code:   PROCESS_RESTARTED
-backup_sha256:           fa01fca97af37f3d13a8a66b149d4df3a4bc3cf22bffa016e44cfd882b548470
-export_sha256:           2f9e0c62e2540558a59a50ef586fe07a40846742d064f45d66916e8351ea4915
-restored_export_sha256:  2f9e0c62e2540558a59a50ef586fe07a40846742d064f45d66916e8351ea4915
-```
-
-## Primary interview commands
-
-```bash
-python scripts/interview_demo.py --output build/interview-demo-summary.json
-python scripts/export_openapi.py --output build/openapi.json
-python scripts/repository_benchmark.py --tasks 500 --output build/repository-benchmark.json
-python scripts/run_academic_tailoring_eval.py --output-dir build/academic-tailoring-eval
-paperagent diagnostics --database paperagent.db
-paperagent serve
-```
-
-External plugin example:
-
-```bash
-python -m pip install --no-deps ./examples/external_plugin
-paperagent plugins inspect interview-summary \
-  --enable-external-plugin interview-summary
-paperagent plugins run interview-summary \
-  --enable-external-plugin interview-summary \
-  --operation summarize \
-  --input examples/external_plugin/input.json \
-  --output build/interview-summary-plugin.json
-```
+The durability demonstration proves that a completed task, review state, and deterministic export
+survive a consistent SQLite backup/restore, and that an in-flight task fails closed with
+`PROCESS_RESTARTED` after application restart.
 
 ## What to explain in an interview
 
-1. The system is a deterministic workflow around bounded LLM calls, not an autonomous unbounded agent.
-2. SQLite plus a single-process runner is an explicit MVP boundary.
-3. Startup fails in-flight tasks closed instead of replaying potentially billable provider calls.
-4. Local backup uses the SQLite backup API, not a blind copy of a live WAL database.
-5. Restored review and export digests demonstrate durable application-level state, not merely file existence.
-6. External plugin authorization is not process isolation.
-7. Synthetic academic `GO` means the contract passed deterministic gates; it does not prove novelty or empirical effectiveness.
-8. Merge, engineering release, and scientific capability acceptance are separate decisions.
+1. The system is a bounded workflow around limited LLM calls, not an autonomous unbounded Agent.
+2. The model proposes content, while provenance, baseline facts, fingerprints, and audit verdicts are
+   server-owned contracts.
+3. A plausible final paragraph is not retrieval evidence; retrieval, grounding, context use, cost,
+   and terminal failures are evaluated separately.
+4. The NPC Gold Case maps directly to the research plan: behavior cloning under distribution shift,
+   invalid or unintended actions, action constraints, uncertainty-triggered residual correction, and
+   evaluation of task success, invalid-action rate, adjustment cost, and latency.
+5. SQLite plus a single-process runner is an explicit MVP boundary.
+6. Startup fails in-flight tasks closed instead of replaying potentially billable provider calls.
+7. External plugin authorization is not process isolation.
+8. Synthetic academic `GO` means typed contracts passed deterministic gates; it does not prove
+   novelty or empirical effectiveness.
+9. Engineering integration, release readiness, formal Gate L, and scientific capability acceptance
+   are separate decisions.
+
+## Recommended answer to “What problem did you solve?”
+
+Earlier execution paths could disagree about GO / REVISE / NO_GO or collapse every failure into a
+single final-output judgment. The implementation converged proposal generation and methodology audit
+onto one canonical contract, then added a Gold Case and layered RAG metrics. This makes it possible to
+locate whether failure came from retrieval, citation grounding, baseline reproduction, module
+compatibility, methodology audit, budget exhaustion, or the provider, instead of saying only that the
+model produced a bad answer.
 
 ## Remaining boundaries
 
-The handoff does not claim:
+This handoff does not claim:
 
 - authentication, accounts, tenant isolation, quotas, billing, or public deployment approval;
 - distributed workers or exactly-once remote execution;
 - hostile external-plugin isolation;
+- formal Gate L scientific acceptance;
 - live Mistral scientific-quality evidence;
 - real-paper reproduction, external holdout, or blinded expert review;
-- production throughput, availability, or cost SLOs.
-- independent execution or verification of baseline training and reproduction experiments; PaperAgent only consumes and binds trusted server-owned execution metadata, and missing metadata results in REVISE or NO_GO.
+- production throughput, availability, or cost SLOs;
+- independent execution or verification of baseline training and reproduction experiments.
+
+PaperAgent consumes and binds trusted server-owned execution metadata. Missing, unverified, or
+incompatible critical evidence must produce REVISE or NO_GO rather than a fabricated GO decision.
