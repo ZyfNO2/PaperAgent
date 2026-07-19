@@ -1,0 +1,54 @@
+name: PR28 Format Diagnostic
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - "src/paperagent/gold_case.py"
+      - "src/paperagent/rag_evaluation.py"
+      - "tests/evals/test_gold_case_readiness.py"
+      - "tests/evals/test_rag_evaluation.py"
+      - ".github/workflows/pr28-format-diagnostic.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr28-format-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  format-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Ruff
+        run: python -m pip install 'ruff>=0.12,<0.13'
+      - name: Generate format patch
+        shell: bash
+        run: |
+          mkdir -p build/pr28-format
+          files=(
+            src/paperagent/gold_case.py
+            src/paperagent/rag_evaluation.py
+            tests/evals/test_gold_case_readiness.py
+            tests/evals/test_rag_evaluation.py
+          )
+          ruff format "${files[@]}"
+          git diff -- "${files[@]}" > build/pr28-format/ruff-format.patch
+      - name: Upload patch
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr28-format-${{ github.run_id }}
+          path: build/pr28-format/ruff-format.patch
+          retention-days: 3
+          if-no-files-found: error
