@@ -1,11 +1,7 @@
 from __future__ import annotations
 
 from paperagent.academic_methodology import AuditVerdict
-from paperagent.schemas import (
-    FinalOutcome,
-    TraceAuditResult,
-    TraceInvariantResult,
-)
+from paperagent.schemas import FinalOutcome, TraceAuditResult, TraceInvariantResult
 from paperagent.state import PaperAgentState
 from paperagent.telemetry import hash_payload
 
@@ -34,69 +30,101 @@ def _next_actions(state: PaperAgentState, reason_codes: list[str]) -> list[str]:
     return actions
 
 
+def _outcome(
+    state: PaperAgentState,
+    *,
+    execution_status: str,
+    scientific_verdict: str,
+    report_status: str,
+    reason_codes: list[str],
+    blocker_code: str | None,
+    recommended_next_actions: list[str],
+) -> FinalOutcome:
+    quality = state.get("quality")
+    audit = state.get("methodology_audit")
+    ledger = state.get("evidence_ledger")
+    quality_route = quality.verdict if quality is not None else "blocked"
+    return FinalOutcome.model_validate(
+        {
+            "execution_status": execution_status,
+            "scientific_verdict": scientific_verdict,
+            "quality_route": quality_route,
+            "report_status": report_status,
+            "reason_codes": reason_codes,
+            "blocker_code": blocker_code,
+            "missing_gap_ids": list(quality.missing_gap_ids) if quality is not None else [],
+            "invalid_evidence_ids": (
+                list(quality.invalid_evidence_ids) if quality is not None else []
+            ),
+            "methodology_audit_fingerprint": (
+                audit.plan_fingerprint if audit is not None else None
+            ),
+            "evidence_ledger_fingerprint": (
+                hash_payload(ledger.model_dump(mode="json")) if ledger is not None else None
+            ),
+            "recommended_next_actions": recommended_next_actions,
+        }
+    )
+
+
 def derive_final_outcome(state: PaperAgentState) -> FinalOutcome:
     execution = state.get("execution")
     quality = state.get("quality")
     plan = state.get("plan")
     audit = state.get("methodology_audit")
-    ledger = state.get("evidence_ledger")
     reason_codes = list(quality.reason_codes) if quality is not None else []
-    quality_route = quality.verdict if quality is not None else "blocked"
-    common = {
-        "quality_route": quality_route,
-        "reason_codes": reason_codes,
-        "blocker_code": reason_codes[0] if reason_codes else None,
-        "missing_gap_ids": list(quality.missing_gap_ids) if quality is not None else [],
-        "invalid_evidence_ids": list(quality.invalid_evidence_ids) if quality is not None else [],
-        "methodology_audit_fingerprint": audit.plan_fingerprint if audit is not None else None,
-        "evidence_ledger_fingerprint": (
-            hash_payload(ledger.model_dump(mode="json")) if ledger is not None else None
-        ),
-    }
     if execution is not None and execution.status == "failed":
         error_code = execution.last_error.code if execution.last_error is not None else "EXECUTION_FAILED"
-        return FinalOutcome(
+        return _outcome(
+            state,
             execution_status="failed",
             scientific_verdict="NOT_EVALUATED",
             report_status="partial",
             reason_codes=[error_code],
             blocker_code=error_code,
             recommended_next_actions=[],
-            **{key: value for key, value in common.items() if key not in {"reason_codes", "blocker_code"}},
         )
     if plan is None or plan.status == "blocked":
-        reason = plan.block_reason if plan is not None else "PLAN_NOT_AVAILABLE"
-        return FinalOutcome(
+        reason = (plan.block_reason if plan is not None else None) or "PLAN_NOT_AVAILABLE"
+        return _outcome(
+            state,
             execution_status="blocked",
             scientific_verdict="NOT_EVALUATED",
             report_status="blocked",
             reason_codes=[reason],
             blocker_code=reason,
             recommended_next_actions=[],
-            **{key: value for key, value in common.items() if key not in {"reason_codes", "blocker_code"}},
         )
     if audit is not None and audit.verdict is AuditVerdict.NO_GO:
-        return FinalOutcome(
+        return _outcome(
+            state,
             execution_status="succeeded",
             scientific_verdict="NO_GO",
             report_status="completed",
+            reason_codes=reason_codes,
+            blocker_code=reason_codes[0] if reason_codes else None,
             recommended_next_actions=[],
-            **common,
         )
     if quality is not None and quality.verdict == "pass":
-        return FinalOutcome(
+        return _outcome(
+            state,
             execution_status="succeeded",
             scientific_verdict="GO",
             report_status="completed",
+            reason_codes=reason_codes,
+            blocker_code=None,
             recommended_next_actions=[],
-            **common,
         )
-    return FinalOutcome(
-        execution_status=("blocked" if quality_route == "human_review" else "succeeded"),
+    return _outcome(
+        state,
+        execution_status=(
+            "blocked" if quality is not None and quality.verdict == "human_review" else "succeeded"
+        ),
         scientific_verdict="REVISE",
         report_status="completed",
+        reason_codes=reason_codes,
+        blocker_code=reason_codes[0] if reason_codes else None,
         recommended_next_actions=_next_actions(state, reason_codes),
-        **common,
     )
 
 
@@ -140,9 +168,11 @@ def audit_state_consistency(state: PaperAgentState) -> TraceAuditResult:
         record(
             "REPORT_REFERENCES_ACCEPTED_EVIDENCE",
             not unknown_report_ids,
-            f"unknown or rejected report evidence IDs: {sorted(unknown_report_ids)}"
-            if unknown_report_ids
-            else None,
+            (
+                f"unknown or rejected report evidence IDs: {sorted(unknown_report_ids)}"
+                if unknown_report_ids
+                else None
+            ),
         )
     else:
         record(
