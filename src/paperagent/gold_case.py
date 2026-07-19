@@ -152,9 +152,12 @@ def run_gold_case(repository_root: Path) -> GoldCaseReport:
         "rag": rag.model_dump(mode="json"),
         "acceptance_checks": checks,
         "limitations": (
-            "All evidence records are synthetic fixtures used for deterministic engineering evaluation.",
-            "No real paper, dataset, baseline training run, or empirical result is reproduced here.",
-            "The report proves contract convergence and evaluability, not scientific novelty or quality.",
+            "All evidence records are synthetic fixtures used for deterministic "
+            "engineering evaluation.",
+            "No real paper, dataset, baseline training run, or empirical result is "
+            "reproduced here.",
+            "The report proves contract convergence and evaluability, not scientific "
+            "novelty or quality.",
         ),
     }
     canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
