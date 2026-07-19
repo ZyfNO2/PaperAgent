@@ -48,7 +48,7 @@ NPC research contract
 - Evidence scope: `{report.evidence_scope}`
 - Readiness: `{report.readiness}`
 - Scientific release ready: `{str(report.scientific_release_ready).lower()}`
-- Recall@5: `{report.rag.recall_at_k['5']:.3f}`
+- Recall@5: `{report.rag.recall_at_k["5"]:.3f}`
 - Citation support rate: `{report.rag.citation_support_rate:.3f}`
 - Unsupported claim rate: `{report.rag.unsupported_claim_rate:.3f}`
 
