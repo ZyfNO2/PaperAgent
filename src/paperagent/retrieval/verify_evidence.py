@@ -46,9 +46,9 @@ def _candidate_status(
     # Deterministic fixtures are the only non-network exception. Legacy tests
     # also use the IANA example DOI prefix 10.1000; it is never treated as a
     # production verification signal.
-    deterministic_locator = candidate.locator.startswith("fixture://") or candidate.locator.startswith(
-        "doi:10.1000/"
-    )
+    deterministic_locator = candidate.locator.startswith(
+        "fixture://"
+    ) or candidate.locator.startswith("doi:10.1000/")
     if candidate.provider in _DETERMINISTIC_FIXTURE_PROVIDERS and deterministic_locator:
         return "accepted"
 
