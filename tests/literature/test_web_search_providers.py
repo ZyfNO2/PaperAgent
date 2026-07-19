@@ -62,6 +62,10 @@ async def test_tavily_normalizes_result_and_does_not_self_verify_web_page() -> N
     assert result.status == "success"
     assert result.papers[0].raw_metadata["source_kind"] == "web"
     assert transport.posts[0]["headers"]["Authorization"] == "Bearer tvly-test"
+    assert transport.posts[0]["json_body"]["search_depth"] == "basic"
+    assert transport.posts[0]["json_body"]["auto_parameters"] is False
+    assert transport.posts[0]["json_body"]["max_results"] == 5
+    assert "arxiv.org" in transport.posts[0]["json_body"]["include_domains"]
 
     records = merge_provider_results([result])
     verified = await VerificationService([]).verify_all(records)
@@ -97,10 +101,14 @@ async def test_tavily_extracts_doi_for_existing_verifier_pipeline() -> None:
 
 @pytest.mark.asyncio
 async def test_duckduckgo_parses_html_and_unwraps_redirect() -> None:
-    html = """
+    redirect = (
+        "//duckduckgo.com/l/?uddg="
+        "https%3A%2F%2Farxiv.org%2Fabs%2F2401.01234"
+    )
+    html = f"""
     <html><body>
       <div class="result">
-        <a class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Farxiv.org%2Fabs%2F2401.01234">
+        <a class="result__a" href="{redirect}">
           Useful arXiv paper
         </a>
         <a class="result__snippet">A useful lightweight detection paper.</a>
