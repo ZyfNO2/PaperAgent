@@ -37,6 +37,7 @@ class LiteratureProviderSettings(BaseModel):
     round_deadline_seconds: float = Field(default=25.0, gt=0, le=120)
     success_cache_ttl_seconds: float = Field(default=3600.0, gt=0)
     empty_cache_ttl_seconds: float = Field(default=120.0, gt=0)
+    max_provider_calls_total: int | None = Field(default=48, ge=1, le=1000)
     enable_arxiv_fallback: bool = False
     enable_web_search: bool = False
     enable_duckduckgo: bool = True
@@ -118,6 +119,7 @@ def build_literature_runtime(
         ),
         rewriter=DeterministicFocusedQueryRewriter(),
         total_deadline_seconds=resolved.round_deadline_seconds,
+        max_provider_calls=resolved.max_provider_calls_total,
     )
     return LiteratureRuntime(
         service=service,
