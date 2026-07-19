@@ -1,9 +1,9 @@
 """E2E: malformed LLM JSON through the HTTP task contract.
 
 When the LLM returns invalid JSON, the node must not fall back or retry silently;
-it must record ``LLM_RESPONSE_JSON_INVALID`` and route to a blocked report. This
-is the no-fallback guarantee from the v0.1 fixture contract, verified here
-through the full HTTP task pipeline rather than only at the graph level.
+it must record ``LLM_RESPONSE_JSON_INVALID``, preserve an execution failure, and
+render a blocked ``NOT_EVALUATED`` report. This is the no-fallback guarantee from
+the v0.1 fixture contract, verified through the full HTTP task pipeline.
 """
 
 from __future__ import annotations
@@ -50,9 +50,11 @@ def test_e2e__malformed_planning_json__does_not_fallback_via_http(
         assert task["status"] == "succeeded"
         result: dict[str, Any] = task["result"]
 
-        assert result["execution"]["status"] == "blocked"
+        assert result["execution"]["status"] == "failed"
         assert result["execution"]["last_error"]["code"] == "LLM_RESPONSE_JSON_INVALID"
         assert result["execution"]["last_error"]["retryable"] is False
+        assert result["final_outcome"]["execution_status"] == "failed"
+        assert result["final_outcome"]["scientific_verdict"] == "NOT_EVALUATED"
         assert result["report"]["status"] == "blocked"
         assert result.get("plan") is None
 
