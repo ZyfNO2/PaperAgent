@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from collections import Counter
 from typing import Literal
 
@@ -15,6 +16,12 @@ class RetrievedEvidence(BaseModel):
     context_tokens: int = Field(ge=0)
     cited: bool = False
 
+    @model_validator(mode="after")
+    def reject_blank_identifiers(self) -> RetrievedEvidence:
+        if not self.evidence_id.strip() or not self.stable_identifier.strip():
+            raise ValueError("evidence identifiers must be non-blank")
+        return self
+
 
 class ClaimAssessment(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -22,6 +29,16 @@ class ClaimAssessment(BaseModel):
     claim_id: str = Field(min_length=1)
     supporting_evidence_ids: tuple[str, ...] = ()
     critical: bool = False
+
+    @model_validator(mode="after")
+    def reject_blank_identifiers(self) -> ClaimAssessment:
+        if not self.claim_id.strip():
+            raise ValueError("claim ID must be non-blank")
+        if any(not evidence_id.strip() for evidence_id in self.supporting_evidence_ids):
+            raise ValueError("supporting evidence IDs must be non-blank")
+        if len(set(self.supporting_evidence_ids)) != len(self.supporting_evidence_ids):
+            raise ValueError("supporting evidence IDs must be unique per claim")
+        return self
 
 
 class RAGEvaluationInput(BaseModel):
@@ -42,8 +59,12 @@ class RAGEvaluationInput(BaseModel):
 
     @model_validator(mode="after")
     def validate_contract(self) -> RAGEvaluationInput:
+        if not self.case_id.strip():
+            raise ValueError("case ID must be non-blank")
         if not self.relevant_identifiers:
             raise ValueError("at least one relevant identifier is required")
+        if any(not identifier.strip() for identifier in self.relevant_identifiers):
+            raise ValueError("relevant identifiers must be non-blank")
         if len(set(self.relevant_identifiers)) != len(self.relevant_identifiers):
             raise ValueError("relevant identifiers must be unique")
         evidence_ids = tuple(item.evidence_id for item in self.retrieved)
@@ -69,28 +90,63 @@ class RAGEvaluationInput(BaseModel):
         retrieved_tokens = sum(item.context_tokens for item in self.retrieved)
         if retrieved_tokens > self.total_context_tokens:
             raise ValueError("retrieved evidence tokens cannot exceed total context tokens")
+        if self.terminal == "succeeded" and (not self.retrieved or not self.claims):
+            raise ValueError("succeeded RAG evaluations require retrieved evidence and claims")
         if self.terminal == "blocked" and not (self.block_reason and self.block_reason.strip()):
             raise ValueError("blocked evaluations require a block reason")
         return self
 
 
+def _validated_cutoff_keys(values: dict[str, float], *, label: str) -> tuple[str, ...]:
+    if not values:
+        raise ValueError(f"{label} must contain at least one cutoff")
+    cutoffs: list[int] = []
+    for key, value in values.items():
+        try:
+            cutoff = int(key)
+        except ValueError as exc:
+            raise ValueError(f"{label} cutoff keys must be positive integers") from exc
+        if cutoff < 1 or str(cutoff) != key:
+            raise ValueError(f"{label} cutoff keys must be canonical positive integers")
+        if not math.isfinite(value) or not 0.0 <= value <= 1.0:
+            raise ValueError(f"{label} values must be finite rates between 0 and 1")
+        cutoffs.append(cutoff)
+    return tuple(str(cutoff) for cutoff in sorted(cutoffs))
+
+
 class RAGEvaluationReport(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    case_id: str
+    case_id: str = Field(min_length=1)
     recall_at_k: dict[str, float]
     precision_at_k: dict[str, float]
-    evidence_precision: float
-    citation_support_rate: float
-    unsupported_claim_rate: float
+    evidence_precision: float = Field(ge=0, le=1, allow_inf_nan=False)
+    citation_support_rate: float = Field(ge=0, le=1, allow_inf_nan=False)
+    unsupported_claim_rate: float = Field(ge=0, le=1, allow_inf_nan=False)
     critical_unsupported_claims: tuple[str, ...]
-    duplicate_source_rate: float
-    context_utilization: float
-    llm_calls: int
-    total_tokens: int
-    estimated_cost_usd: float
+    duplicate_source_rate: float = Field(ge=0, le=1, allow_inf_nan=False)
+    context_utilization: float = Field(ge=0, le=1, allow_inf_nan=False)
+    llm_calls: int = Field(ge=0)
+    total_tokens: int = Field(ge=0)
+    estimated_cost_usd: float = Field(ge=0, allow_inf_nan=False)
     terminal: Literal["succeeded", "blocked", "failed"]
     block_reason: str | None
+
+    @model_validator(mode="after")
+    def validate_metrics(self) -> RAGEvaluationReport:
+        recall_keys = _validated_cutoff_keys(self.recall_at_k, label="recall_at_k")
+        precision_keys = _validated_cutoff_keys(self.precision_at_k, label="precision_at_k")
+        if recall_keys != precision_keys:
+            raise ValueError("recall and precision must use the same cutoffs")
+        if not self.case_id.strip():
+            raise ValueError("case ID must be non-blank")
+        if any(not claim_id.strip() for claim_id in self.critical_unsupported_claims):
+            raise ValueError("critical unsupported claim IDs must be non-blank")
+        if len(set(self.critical_unsupported_claims)) != len(
+            self.critical_unsupported_claims
+        ):
+            raise ValueError("critical unsupported claim IDs must be unique")
+        return self
 
 
 class RAGEvaluationAggregate(BaseModel):
@@ -99,16 +155,34 @@ class RAGEvaluationAggregate(BaseModel):
     case_count: int = Field(ge=1)
     mean_recall_at_k: dict[str, float]
     mean_precision_at_k: dict[str, float]
-    mean_evidence_precision: float
-    mean_citation_support_rate: float
-    mean_unsupported_claim_rate: float
-    mean_duplicate_source_rate: float
-    mean_context_utilization: float
-    total_llm_calls: int
-    total_tokens: int
-    total_estimated_cost_usd: float
+    mean_evidence_precision: float = Field(ge=0, le=1, allow_inf_nan=False)
+    mean_citation_support_rate: float = Field(ge=0, le=1, allow_inf_nan=False)
+    mean_unsupported_claim_rate: float = Field(ge=0, le=1, allow_inf_nan=False)
+    mean_duplicate_source_rate: float = Field(ge=0, le=1, allow_inf_nan=False)
+    mean_context_utilization: float = Field(ge=0, le=1, allow_inf_nan=False)
+    total_llm_calls: int = Field(ge=0)
+    total_tokens: int = Field(ge=0)
+    total_estimated_cost_usd: float = Field(ge=0, allow_inf_nan=False)
     terminal_distribution: dict[str, int]
     blocker_distribution: dict[str, int]
+
+    @model_validator(mode="after")
+    def validate_aggregate(self) -> RAGEvaluationAggregate:
+        recall_keys = _validated_cutoff_keys(self.mean_recall_at_k, label="mean_recall_at_k")
+        precision_keys = _validated_cutoff_keys(
+            self.mean_precision_at_k, label="mean_precision_at_k"
+        )
+        if recall_keys != precision_keys:
+            raise ValueError("mean recall and precision must use the same cutoffs")
+        if any(count < 0 for count in self.terminal_distribution.values()):
+            raise ValueError("terminal distribution counts must be non-negative")
+        if sum(self.terminal_distribution.values()) != self.case_count:
+            raise ValueError("terminal distribution must sum to case count")
+        if any(count < 0 for count in self.blocker_distribution.values()):
+            raise ValueError("blocker distribution counts must be non-negative")
+        if sum(self.blocker_distribution.values()) > self.case_count:
+            raise ValueError("blocker distribution cannot exceed case count")
+        return self
 
 
 def _ratio(numerator: int, denominator: int) -> float:
@@ -184,11 +258,17 @@ def aggregate_rag_reports(
 ) -> RAGEvaluationAggregate:
     if not reports:
         raise ValueError("at least one RAG report is required")
-    cutoff_keys = tuple(reports[0].recall_at_k)
-    if any(tuple(report.recall_at_k) != cutoff_keys for report in reports):
-        raise ValueError("RAG reports must use the same recall cutoffs")
-    if any(tuple(report.precision_at_k) != cutoff_keys for report in reports):
-        raise ValueError("RAG reports must use the same precision cutoffs")
+    case_ids = tuple(report.case_id for report in reports)
+    if len(set(case_ids)) != len(case_ids):
+        raise ValueError("RAG aggregate case IDs must be unique")
+
+    cutoff_keys = _validated_cutoff_keys(reports[0].recall_at_k, label="recall_at_k")
+    expected_cutoffs = set(cutoff_keys)
+    for report in reports:
+        if set(report.recall_at_k) != expected_cutoffs:
+            raise ValueError("RAG reports must use the same recall cutoffs")
+        if set(report.precision_at_k) != expected_cutoffs:
+            raise ValueError("RAG reports must use the same precision cutoffs")
 
     count = len(reports)
     terminal_counts = Counter(report.terminal for report in reports)
