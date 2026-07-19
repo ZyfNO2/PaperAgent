@@ -33,9 +33,7 @@ def test_baseline_reproduction_is_not_counted_as_literature_citation_support() -
     evaluation = _build_rag_input(REPOSITORY_ROOT / "evals" / "academic_tailoring" / "npc")
 
     assert "baseline-reproduction" not in {claim.claim_id for claim in evaluation.claims}
-    assert all(
-        claim.claim_id.startswith(("module-", "comparison-")) for claim in evaluation.claims
-    )
+    assert all(claim.claim_id.startswith(("module-", "comparison-")) for claim in evaluation.claims)
 
 
 def test_npc_gold_case_digest_is_deterministic() -> None:
