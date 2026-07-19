@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from paperagent.academic_tailoring import TailoringDecision, compose_tailored_research_proposal
 from paperagent.academic_tailoring_evaluation import (
@@ -24,30 +25,85 @@ from paperagent.rag_evaluation import (
 )
 
 GOLD_CASE_ID = "npc-go-complete"
-GOLD_CASE_CONTRACT_VERSION = "paperagent.gold-case.v1"
+GOLD_CASE_CONTRACT_VERSION = "paperagent.gold-case.v2"
+GOLD_CASE_REQUIRED_CHECKS = frozenset(
+    {
+        "expected_go_decision",
+        "canonical_audit_go",
+        "rubric_passed",
+        "minimum_score_met",
+        "complete_recall_at_5",
+        "all_claims_citation_supported",
+        "no_unsupported_claims",
+        "no_critical_unsupported_claims",
+        "synthetic_scope_declared",
+        "scientific_release_not_claimed",
+    }
+)
+
+
+def _report_digest(payload: dict[str, object]) -> str:
+    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 class GoldCaseReport(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    contract_version: str
-    case_id: str
+    contract_version: str = Field(min_length=1)
+    case_id: str = Field(min_length=1)
     status: Literal["passed", "failed"]
     scientific_claim: Literal["not_claimed"]
-    proposal_decision: str
-    audit_verdict: str
-    grade_score: int
-    minimum_score: int
+    proposal_decision: str = Field(min_length=1)
+    audit_verdict: str = Field(min_length=1)
+    grade_score: int = Field(ge=0, le=100)
+    minimum_score: int = Field(ge=0, le=100)
     grade_passed: bool
-    plan_fingerprint: str
-    proposal_fingerprint: str
-    evidence_scope: str
-    readiness: str
+    plan_fingerprint: str = Field(min_length=1)
+    proposal_fingerprint: str = Field(min_length=1)
+    evidence_scope: str = Field(min_length=1)
+    readiness: str = Field(min_length=1)
     scientific_release_ready: bool
     rag: RAGEvaluationReport
     acceptance_checks: dict[str, bool]
     limitations: tuple[str, ...]
-    report_digest: str
+    report_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def validate_integrity(self) -> GoldCaseReport:
+        if self.contract_version != GOLD_CASE_CONTRACT_VERSION:
+            raise ValueError("unsupported Gold Case contract version")
+        if self.case_id != GOLD_CASE_ID:
+            raise ValueError("unexpected Gold Case identifier")
+        if set(self.acceptance_checks) != GOLD_CASE_REQUIRED_CHECKS:
+            raise ValueError("Gold Case acceptance check set is incomplete or unknown")
+        if not self.limitations or any(not item.strip() for item in self.limitations):
+            raise ValueError("Gold Case limitations must be non-empty and non-blank")
+
+        derived_checks = {
+            "expected_go_decision": self.proposal_decision == "GO",
+            "canonical_audit_go": self.audit_verdict == "GO",
+            "rubric_passed": self.grade_passed,
+            "minimum_score_met": self.grade_score >= self.minimum_score,
+            "complete_recall_at_5": self.rag.recall_at_k.get("5") == 1.0,
+            "all_claims_citation_supported": self.rag.citation_support_rate == 1.0,
+            "no_unsupported_claims": self.rag.unsupported_claim_rate == 0.0,
+            "no_critical_unsupported_claims": not self.rag.critical_unsupported_claims,
+            "synthetic_scope_declared": self.evidence_scope == "synthetic_evaluation",
+            "scientific_release_not_claimed": not self.scientific_release_ready,
+        }
+        if self.acceptance_checks != derived_checks:
+            raise ValueError("Gold Case acceptance checks diverge from report fields")
+
+        expected_status = "passed" if all(derived_checks.values()) else "failed"
+        if self.status != expected_status:
+            raise ValueError("Gold Case status diverges from acceptance checks")
+
+        payload = self.model_dump(mode="json", exclude={"report_digest"})
+        expected_digest = _report_digest(payload)
+        if not hmac.compare_digest(self.report_digest, expected_digest):
+            raise ValueError("Gold Case report digest mismatch")
+        return self
 
 
 def _select_gold_spec(
@@ -71,21 +127,17 @@ def _build_rag_input(task_root: Path) -> RAGEvaluationInput:
         )
         for index, paper in enumerate(task.papers, start=1)
     )
+    # Baseline reproduction is server-owned execution metadata. It is evaluated by the
+    # canonical methodology audit and must not be represented as supported merely by
+    # citing the baseline paper.
     claims: list[ClaimAssessment] = [
-        ClaimAssessment(
-            claim_id="baseline-reproduction",
-            supporting_evidence_ids=(task.reproduction.baseline_paper_id,),
-            critical=True,
-        )
-    ]
-    claims.extend(
         ClaimAssessment(
             claim_id=f"module-{intent.source_paper_id}",
             supporting_evidence_ids=(intent.source_paper_id,),
             critical=True,
         )
         for intent in task.module_intents
-    )
+    ]
     claims.extend(
         ClaimAssessment(
             claim_id=f"comparison-{comparison.name}",
@@ -134,7 +186,7 @@ def run_gold_case(repository_root: Path) -> GoldCaseReport:
         "scientific_release_not_claimed": not proposal.scientific_release_ready,
     }
     status: Literal["passed", "failed"] = "passed" if all(checks.values()) else "failed"
-    payload = {
+    payload: dict[str, object] = {
         "contract_version": GOLD_CASE_CONTRACT_VERSION,
         "case_id": GOLD_CASE_ID,
         "status": status,
@@ -160,10 +212,9 @@ def run_gold_case(repository_root: Path) -> GoldCaseReport:
             "novelty or quality.",
         ),
     }
-    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return GoldCaseReport.model_validate(
         {
             **payload,
-            "report_digest": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+            "report_digest": _report_digest(payload),
         }
     )
