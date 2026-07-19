@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 from paperagent.rag_evaluation import (
     ClaimAssessment,
+    RAGEvaluationAggregate,
     RAGEvaluationInput,
     RAGEvaluationReport,
     RetrievedEvidence,
@@ -183,3 +184,106 @@ def test_aggregate_preserves_blocker_distribution_and_cost() -> None:
     assert aggregate.total_llm_calls == 4
     assert aggregate.total_tokens == 1200
     assert aggregate.total_estimated_cost_usd == pytest.approx(0.04)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        ("blank_relevant", "relevant identifiers must be non-blank"),
+        ("duplicate_relevant", "relevant identifiers must be unique"),
+        ("duplicate_evidence", "retrieved evidence IDs must be unique"),
+        ("duplicate_rank", "retrieval ranks must be unique"),
+        ("noncontiguous_rank", "retrieval ranks must be contiguous"),
+        ("duplicate_claim", "claim IDs must be unique"),
+        ("used_context_overflow", "used context tokens cannot exceed"),
+        ("retrieved_context_overflow", "retrieved evidence tokens cannot exceed"),
+    ],
+)
+def test_input_contract_rejects_structural_inconsistency(
+    mutation: str,
+    message: str,
+) -> None:
+    payload = _input().model_dump(mode="json")
+    if mutation == "blank_relevant":
+        payload["relevant_identifiers"] = ["doi:a", " "]
+    elif mutation == "duplicate_relevant":
+        payload["relevant_identifiers"] = ["doi:a", "doi:a"]
+    elif mutation == "duplicate_evidence":
+        payload["retrieved"][1]["evidence_id"] = "E1"
+    elif mutation == "duplicate_rank":
+        payload["retrieved"][1]["rank"] = 1
+    elif mutation == "noncontiguous_rank":
+        payload["retrieved"][1]["rank"] = 3
+    elif mutation == "duplicate_claim":
+        payload["claims"][1]["claim_id"] = "C1"
+    elif mutation == "used_context_overflow":
+        payload["used_context_tokens"] = 251
+    elif mutation == "retrieved_context_overflow":
+        payload["total_context_tokens"] = 150
+    with pytest.raises(ValidationError, match=message):
+        RAGEvaluationInput.model_validate(payload)
+
+
+def test_identifier_models_reject_blanks_and_duplicate_support() -> None:
+    with pytest.raises(ValidationError, match="identifiers must be non-blank"):
+        RetrievedEvidence(
+            evidence_id=" ",
+            stable_identifier="doi:a",
+            rank=1,
+            context_tokens=0,
+        )
+    with pytest.raises(ValidationError, match="claim ID must be non-blank"):
+        ClaimAssessment(claim_id=" ")
+    with pytest.raises(ValidationError, match="supporting evidence IDs must be non-blank"):
+        ClaimAssessment(claim_id="C1", supporting_evidence_ids=(" ",))
+    with pytest.raises(ValidationError, match="must be unique per claim"):
+        ClaimAssessment(claim_id="C1", supporting_evidence_ids=("E1", "E1"))
+
+
+@pytest.mark.parametrize("cutoffs", [(), (0,), (1, 1)])
+def test_evaluation_rejects_invalid_cutoffs(cutoffs: tuple[int, ...]) -> None:
+    with pytest.raises(ValueError, match="cutoffs"):
+        evaluate_rag_case(_input(), cutoffs=cutoffs)
+
+
+def test_report_rejects_cutoff_and_critical_claim_inconsistency() -> None:
+    payload = evaluate_rag_case(_input(), cutoffs=(1, 2)).model_dump(mode="json")
+    payload["precision_at_k"] = {"1": 1.0}
+    with pytest.raises(ValidationError, match="same cutoffs"):
+        RAGEvaluationReport.model_validate(payload)
+
+    payload = evaluate_rag_case(_input(), cutoffs=(1, 2)).model_dump(mode="json")
+    payload["critical_unsupported_claims"] = ["C1"]
+    with pytest.raises(ValidationError, match="non-zero unsupported rate"):
+        RAGEvaluationReport.model_validate(payload)
+
+
+def test_aggregate_rejects_empty_and_mismatched_cutoffs() -> None:
+    with pytest.raises(ValueError, match="at least one RAG report"):
+        aggregate_rag_reports(())
+
+    first = evaluate_rag_case(_input(case_id="case-1"), cutoffs=(1, 2))
+    second_payload = evaluate_rag_case(_input(case_id="case-2"), cutoffs=(1, 2)).model_dump(
+        mode="json"
+    )
+    second_payload["recall_at_k"] = {"1": 0.5, "3": 1.0}
+    second_payload["precision_at_k"] = {"1": 1.0, "3": 1.0}
+    second = RAGEvaluationReport.model_validate(second_payload)
+    with pytest.raises(ValueError, match="same recall cutoffs"):
+        aggregate_rag_reports((first, second))
+
+
+def test_aggregate_model_rejects_invalid_distributions() -> None:
+    valid = aggregate_rag_reports((evaluate_rag_case(_input(), cutoffs=(1, 2)),)).model_dump(
+        mode="json"
+    )
+    valid["terminal_distribution"] = {"unknown": 1}
+    with pytest.raises(ValidationError, match="unknown terminal"):
+        RAGEvaluationAggregate.model_validate(valid)
+
+    valid = aggregate_rag_reports((evaluate_rag_case(_input(), cutoffs=(1, 2)),)).model_dump(
+        mode="json"
+    )
+    valid["blocker_distribution"] = {" ": 1}
+    with pytest.raises(ValidationError, match="reasons must be non-blank"):
+        RAGEvaluationAggregate.model_validate(valid)
