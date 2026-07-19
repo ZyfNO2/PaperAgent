@@ -1,0 +1,221 @@
+name: Gate L Formal Execute
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full frozen 40-character source SHA
+        required: true
+        type: string
+      freeze_run_id:
+        description: Gate L Formal Freeze workflow run ID
+        required: true
+        type: string
+      freeze_artifact_name:
+        description: Exact freeze artifact name from the freeze workflow
+        required: true
+        type: string
+      strategy_path:
+        description: Frozen repository-relative strategy profile path
+        required: true
+        type: string
+      confirmation:
+        description: Type RUN_FORMAL_GATE_L to authorize the paid full-corpus run
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: gate-l-formal-execute-${{ inputs.source_sha }}
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    name: Execute exact frozen Gate L corpus
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    environment: gate-l-formal
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      FREEZE_RUN_ID: ${{ inputs.freeze_run_id }}
+      FREEZE_ARTIFACT_NAME: ${{ inputs.freeze_artifact_name }}
+      STRATEGY_PATH: ${{ inputs.strategy_path }}
+      FREEZE_DIR: build/gate-l-v3-formal-freeze-input
+      OUTPUT_DIR: build/gate-l-v3-formal-execution
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      PAPERAGENT_OPENAI_API_KEY: ${{ secrets.PAPERAGENT_OPENAI_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+      PAPERAGENT_CONTACT_EMAIL: ${{ secrets.PAPERAGENT_CONTACT_EMAIL }}
+
+    steps:
+      - name: Validate formal execution authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ inputs.confirmation }}" = "RUN_FORMAL_GATE_L"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$FREEZE_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$STRATEGY_PATH" != /* ]]
+          [[ "$STRATEGY_PATH" != *".."* ]]
+
+      - name: Check out exact frozen source SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 1
+
+      - name: Verify checked-out identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+
+      - name: Download exact formal freeze artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.freeze_artifact_name }}
+          path: ${{ env.FREEZE_DIR }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.freeze_run_id }}
+
+      - name: Verify formal freeze artifact chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/gate_l_artifact_chain.py verify-freeze \
+            --bundle-dir "$FREEZE_DIR" \
+            --source-sha "$SOURCE_SHA" \
+            --run-id "$FREEZE_RUN_ID" \
+            --output "$FREEZE_DIR/verified-freeze.json"
+          python scripts/gate_l_formal_contract.py verify \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --runtime-sha "$SOURCE_SHA" \
+            --strategy "$STRATEGY_PATH"
+
+      - name: Execute all 16 frozen cases
+        id: execute
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_gate_l_formal.py \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --strategy "$STRATEGY_PATH" \
+            --output-dir "$OUTPUT_DIR"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Record and checksum execution evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT_DIR"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          output = Path(os.environ["OUTPUT_DIR"])
+          manifest = Path(os.environ["FREEZE_DIR"]) / "manifest.json"
+          record = {
+              "gate": "L",
+              "record_type": "formal_execution_workflow",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "freeze_run_id": os.environ["FREEZE_RUN_ID"],
+              "freeze_artifact_name": os.environ["FREEZE_ARTIFACT_NAME"],
+              "manifest_sha256": (
+                  hashlib.sha256(manifest.read_bytes()).hexdigest() if manifest.is_file() else None
+              ),
+              "strategy_path": os.environ["STRATEGY_PATH"],
+              "execution_exit_code": int("${{ steps.execute.outputs.exit_code || '99' }}"),
+              "created_at_utc": datetime.now(tz=UTC).isoformat(),
+              "github_repository": os.environ["GITHUB_REPOSITORY"],
+              "github_run_id": os.environ["GITHUB_RUN_ID"],
+              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "github_workflow": os.environ["GITHUB_WORKFLOW"],
+          }
+          (output / "execution-workflow-record.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (
+            cd "$OUTPUT_DIR"
+            find . -type f ! -name SHA256SUMS -printf '%P\0' \
+              | sort -z \
+              | xargs -0 -r sha256sum > SHA256SUMS
+          )
+
+      - name: Verify execution evidence chain
+        id: verify
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          python scripts/gate_l_artifact_chain.py verify-execution \
+            --bundle-dir "$OUTPUT_DIR" \
+            --manifest "$FREEZE_DIR/manifest.json" \
+            --source-sha "$SOURCE_SHA" \
+            --output "$OUTPUT_DIR/verified-execution.json"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -eq 0 ]; then
+            (
+              cd "$OUTPUT_DIR"
+              grep -v '  verified-execution.json$' SHA256SUMS > SHA256SUMS.tmp || true
+              mv SHA256SUMS.tmp SHA256SUMS
+              sha256sum verified-execution.json >> SHA256SUMS
+            )
+          fi
+          exit 0
+
+      - name: Upload immutable formal execution evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-l-formal-execution-${{ inputs.source_sha }}-${{ github.run_id }}
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish formal execution summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Gate L formal execution'
+            echo
+            echo "- Source SHA: \`$SOURCE_SHA\`"
+            echo "- Freeze run: \`$FREEZE_RUN_ID\`"
+            echo "- Execution run: \`$GITHUB_RUN_ID\`"
+            echo "- Strategy: \`$STRATEGY_PATH\`"
+            echo "- Executor exit: \`${{ steps.execute.outputs.exit_code || '99' }}\`"
+            echo "- Chain verification: \`${{ steps.verify.outputs.exit_code || '99' }}\`"
+            echo '- Gate L decision: `INCOMPLETE` until audit and blinded human review finish'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce formal execution result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.execute.outputs.exit_code || '99' }}" = "0"
+          test "${{ steps.verify.outputs.exit_code || '99' }}" = "0"
