@@ -5,14 +5,20 @@ on:
     branches:
       - master
       - fix/evidence-ledger-final-outcome-trace-exact
+      - feat/claw-academic-tailoring-benchmark-v1
     paths:
       - "evals/claw_academic_tailoring_v1/**"
       - "src/paperagent/claw_academic_benchmark.py"
       - "src/paperagent/claw_benchmark_adapter.py"
+      - "src/paperagent/claw_benchmark_runtime.py"
+      - "src/paperagent/literature/**"
       - "scripts/run_claw_academic_benchmark.py"
+      - "scripts/run_claw_academic_runtime.py"
       - "scripts/normalize_claw_benchmark_states.py"
       - "tests/evals/test_claw_academic_benchmark.py"
       - "tests/evals/test_claw_benchmark_adapter.py"
+      - "tests/literature/test_claw_benchmark_runtime.py"
+      - "tests/literature/test_web_search_providers.py"
       - ".github/workflows/claw-academic-tailoring-benchmark.yml"
   workflow_dispatch:
 
@@ -49,10 +55,20 @@ jobs:
           files=(
             src/paperagent/claw_academic_benchmark.py
             src/paperagent/claw_benchmark_adapter.py
+            src/paperagent/claw_benchmark_runtime.py
+            src/paperagent/literature/adapter.py
+            src/paperagent/literature/factory.py
+            src/paperagent/literature/providers/_web.py
+            src/paperagent/literature/providers/base.py
+            src/paperagent/literature/providers/duckduckgo.py
+            src/paperagent/literature/providers/tavily.py
             scripts/run_claw_academic_benchmark.py
+            scripts/run_claw_academic_runtime.py
             scripts/normalize_claw_benchmark_states.py
             tests/evals/test_claw_academic_benchmark.py
             tests/evals/test_claw_benchmark_adapter.py
+            tests/literature/test_claw_benchmark_runtime.py
+            tests/literature/test_web_search_providers.py
           )
           ruff check "${files[@]}" --output-format=concise > "$out/ruff.log" 2>&1
           ruff_status=$?
@@ -63,6 +79,8 @@ jobs:
           pytest -q \
             tests/evals/test_claw_academic_benchmark.py \
             tests/evals/test_claw_benchmark_adapter.py \
+            tests/literature/test_claw_benchmark_runtime.py \
+            tests/literature/test_web_search_providers.py \
             > "$out/pytest.log" 2>&1
           pytest_status=$?
           python scripts/run_claw_academic_benchmark.py \
