@@ -2,7 +2,9 @@ name: PaperClaw Academic Tailoring Benchmark
 
 on:
   pull_request:
-    branches: [master]
+    branches:
+      - master
+      - fix/evidence-ledger-final-outcome-trace-exact
     paths:
       - "evals/claw_academic_tailoring_v1/**"
       - "src/paperagent/claw_academic_benchmark.py"
