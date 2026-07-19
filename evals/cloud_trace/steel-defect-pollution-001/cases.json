@@ -1,0 +1,83 @@
+[
+  {
+    "case_id": "trace-valid-baseline",
+    "mutation": "none",
+    "expected_pass": true,
+    "required_error_codes": []
+  },
+  {
+    "case_id": "trace-reject-duplicate-event",
+    "mutation": "duplicate_event",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_EVENT_IDS_UNIQUE", "TRACE_SPAN_IDS_UNIQUE"]
+  },
+  {
+    "case_id": "trace-reject-mixed-run-id",
+    "mutation": "mixed_run_id",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_SINGLE_RUN_ID"]
+  },
+  {
+    "case_id": "trace-reject-missing-route",
+    "mutation": "missing_route",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_ROUTE_EVENTS_COMPLETE"]
+  },
+  {
+    "case_id": "trace-reject-failed-without-error-code",
+    "mutation": "failed_without_error_code",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_FAILED_EVENTS_HAVE_ERROR_CODES"]
+  },
+  {
+    "case_id": "trace-reject-failed-status-mismatch",
+    "mutation": "failed_status_mismatch",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_EVENT_STATUS_MATCHES_TYPE"]
+  },
+  {
+    "case_id": "trace-reject-completed-status-mismatch",
+    "mutation": "completed_status_mismatch",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_EVENT_STATUS_MATCHES_TYPE"]
+  },
+  {
+    "case_id": "trace-reject-orphan-parent-span",
+    "mutation": "orphan_parent_span",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_PARENT_SPANS_EXIST"]
+  },
+  {
+    "case_id": "trace-reject-append-after-terminal",
+    "mutation": "append_after_terminal",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_TERMINAL_EVENT_IS_FINAL"]
+  },
+  {
+    "case_id": "trace-reject-reordered-lifecycle",
+    "mutation": "reorder_events",
+    "expected_pass": false,
+    "required_error_codes": ["TRACE_NODE_LIFECYCLE_ORDERED"]
+  },
+  {
+    "case_id": "trace-reject-event-count-mismatch",
+    "mutation": "none",
+    "expected_pass": false,
+    "expected_event_count": 12,
+    "required_error_codes": ["TRACE_EVENT_COUNT_MATCHES_MANIFEST"]
+  },
+  {
+    "case_id": "trace-reject-route-sequence-mismatch",
+    "mutation": "none",
+    "expected_pass": false,
+    "expected_route_sequence": ["pass"],
+    "required_error_codes": ["TRACE_ROUTE_SEQUENCE_MATCHES_MANIFEST"]
+  },
+  {
+    "case_id": "trace-reject-digest-mismatch",
+    "mutation": "none",
+    "expected_pass": false,
+    "expected_trace_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "required_error_codes": ["TRACE_DIGEST_MATCHES_MANIFEST"]
+  }
+]
