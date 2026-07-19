@@ -101,10 +101,7 @@ async def test_tavily_extracts_doi_for_existing_verifier_pipeline() -> None:
 
 @pytest.mark.asyncio
 async def test_duckduckgo_parses_html_and_unwraps_redirect() -> None:
-    redirect = (
-        "//duckduckgo.com/l/?uddg="
-        "https%3A%2F%2Farxiv.org%2Fabs%2F2401.01234"
-    )
+    redirect = "//duckduckgo.com/l/?uddg=https%3A%2F%2Farxiv.org%2Fabs%2F2401.01234"
     html = f"""
     <html><body>
       <div class="result">
