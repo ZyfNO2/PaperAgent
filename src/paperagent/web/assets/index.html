@@ -3,157 +3,78 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f4f1e8">
+    <meta name="theme-color" content="#f4f3ef">
     <meta
       name="description"
-      content="PaperAgent research task submission, progress, evidence review, and export shell."
+      content="PaperAgent — AI 科研工作台：研究问题、文献证据、Baseline、方法设计、实验与质量门。"
     >
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; connect-src 'self'; img-src 'self' data:; manifest-src 'self'; script-src 'self'; style-src 'self'; worker-src 'self'"
     >
-    <title>PaperAgent</title>
+    <title>PaperAgent · 科研工作台</title>
     <link rel="manifest" href="/app/manifest.webmanifest">
     <link rel="icon" href="/app-static/icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/app-static/styles.css">
-    <script src="/app-static/app.js" defer></script>
+    <link rel="stylesheet" href="/app-static/css/tokens.css">
+    <link rel="stylesheet" href="/app-static/css/base.css">
+    <link rel="stylesheet" href="/app-static/css/components.css">
+    <link rel="stylesheet" href="/app-static/css/pages.css">
+    <script src="/app-static/js/data.js" defer></script>
+    <script src="/app-static/js/ui.js" defer></script>
+    <script src="/app-static/js/views/core.js" defer></script>
+    <script src="/app-static/js/views/research.js" defer></script>
+    <script src="/app-static/js/views/design.js" defer></script>
+    <script src="/app-static/js/views/review.js" defer></script>
+    <script src="/app-static/js/app.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
-    <header class="site-header">
-      <a class="brand" href="/app" aria-label="PaperAgent 首页">
-        <span class="brand-mark" aria-hidden="true">P</span>
-        <span>
-          <strong>PaperAgent</strong>
-          <small>Research evidence workspace</small>
-        </span>
-      </a>
-      <div class="connection" role="status" aria-live="polite">
-        <span id="connection-dot" class="connection-dot"></span>
-        <span id="connection-text">正在连接</span>
-      </div>
-    </header>
 
-    <main id="main-content" class="layout">
-      <aside class="sidebar" aria-label="最近任务">
-        <div class="sidebar-heading">
-          <h2>最近任务</h2>
-          <button id="new-task-button" class="text-button" type="button">新建</button>
+    <div class="app-shell" id="app-shell">
+      <!-- 左侧导航 -->
+      <nav class="app-nav" id="app-nav" aria-label="主导航">
+        <div class="nav-brand">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <span class="brand-text">
+            <strong>PaperAgent</strong>
+            <small>RESEARCH WORKBENCH</small>
+          </span>
         </div>
-        <ol id="recent-task-list" class="recent-list"></ol>
-        <p id="recent-empty" class="muted">还没有本地任务记录。</p>
-      </aside>
+        <div class="nav-scroll" id="nav-scroll"><!-- 由 app.js 渲染 --></div>
+        <div class="nav-footer">
+          <button class="btn btn-ghost btn-sm btn-block" id="nav-collapse-btn" type="button" aria-label="折叠导航">
+            <span aria-hidden="true">⇤</span> <span>折叠导航</span>
+          </button>
+        </div>
+      </nav>
 
-      <section class="workspace">
-        <section id="composer-view" class="panel hero-panel">
-          <p class="eyebrow">BOUNDED RESEARCH WORKFLOW</p>
-          <h1>从研究问题到可审阅证据</h1>
-          <p class="hero-copy">
-            提交一个明确问题。服务端负责检索与工作流；浏览器只展示进度、论文卡片和导出结果。
-          </p>
-          <form id="task-form" class="task-form">
-            <label for="question">研究问题</label>
-            <textarea
-              id="question"
-              name="question"
-              rows="6"
-              minlength="3"
-              maxlength="4000"
-              required
-              placeholder="例如：如何评估多源学术检索系统在部分 Provider 失败时的可靠性？"
-            ></textarea>
-            <div class="form-actions">
-              <p class="privacy-note">默认不在浏览器保存问题正文，只保存任务 ID 和简短标题。</p>
-              <button id="submit-button" class="primary-button" type="submit">
-                创建研究任务
-              </button>
-            </div>
-          </form>
-          <div id="composer-error" class="notice error-notice hidden" role="alert"></div>
-        </section>
+      <!-- 顶部状态栏 -->
+      <header class="app-topbar">
+        <div class="topbar-title">
+          <div class="breadcrumb" id="breadcrumb">工作台</div>
+          <h1 id="page-title">总览</h1>
+        </div>
+        <div class="topbar-spacer"></div>
+        <span class="badge badge-demo" id="demo-badge" title="所有数据为前端演示数据">Demo</span>
+        <div class="topbar-project">
+          <select class="select" id="project-switcher" aria-label="切换当前项目"></select>
+        </div>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="切换深浅色主题"></button>
+      </header>
 
-        <section id="task-view" class="hidden" aria-live="polite">
-          <div class="task-heading">
-            <div>
-              <p class="eyebrow">TASK</p>
-              <h1 id="task-title">研究任务</h1>
-              <p id="task-id-label" class="mono muted"></p>
-            </div>
-            <div class="task-actions">
-              <button id="copy-link-button" class="secondary-button" type="button">复制链接</button>
-              <button id="cancel-button" class="danger-button hidden" type="button">取消任务</button>
-            </div>
-          </div>
+      <!-- 主内容区 -->
+      <main class="app-main" id="main-content">
+        <div class="app-main-inner" id="view-root" tabindex="-1"></div>
+      </main>
+    </div>
 
-          <section class="panel status-panel" aria-labelledby="status-title">
-            <div class="status-header">
-              <div>
-                <p class="eyebrow">PROGRESS</p>
-                <h2 id="status-title">运行状态</h2>
-              </div>
-              <span id="status-badge" class="status-badge">queued</span>
-            </div>
-            <div class="progress-track" aria-hidden="true">
-              <div id="progress-bar" class="progress-bar"></div>
-            </div>
-            <p id="status-message" class="status-message">正在读取任务状态。</p>
-            <ol id="event-list" class="event-list"></ol>
-            <div id="task-error" class="notice error-notice hidden" role="alert"></div>
-          </section>
+    <!-- 全局挂载点 -->
+    <div id="modal-root"></div>
+    <div id="drawer-root"></div>
+    <div class="toast-stack" id="toast-root" aria-live="polite"></div>
 
-          <section id="evidence-section" class="panel hidden" aria-labelledby="evidence-title">
-            <div class="evidence-toolbar">
-              <div>
-                <p class="eyebrow">EVIDENCE</p>
-                <h2 id="evidence-title">论文卡片</h2>
-                <p id="paper-count" class="muted"></p>
-              </div>
-              <div class="filter-group" aria-label="论文筛选">
-                <label for="decision-filter">状态</label>
-                <select id="decision-filter">
-                  <option value="">全部</option>
-                  <option value="pending">待审阅</option>
-                  <option value="accepted">已接受</option>
-                  <option value="rejected">已拒绝</option>
-                </select>
-                <label class="check-label">
-                  <input id="favorite-filter" type="checkbox">
-                  仅收藏
-                </label>
-              </div>
-            </div>
-            <div id="paper-list" class="paper-list"></div>
-            <div id="paper-empty" class="empty-state hidden">
-              <h3>没有符合筛选条件的论文</h3>
-              <p>调整筛选条件，或者检查任务是否产出了论文证据。</p>
-            </div>
-          </section>
-
-          <section id="export-section" class="panel hidden" aria-labelledby="export-title">
-            <div>
-              <p class="eyebrow">EXPORT</p>
-              <h2 id="export-title">导出 Evidence Bundle</h2>
-              <p class="muted">导出由服务端确定性生成，并在响应头中附带 SHA-256。</p>
-            </div>
-            <div class="export-controls">
-              <label for="export-selection">导出范围</label>
-              <select id="export-selection">
-                <option value="accepted">已接受</option>
-                <option value="favorite">已收藏</option>
-                <option value="all">全部论文卡片</option>
-              </select>
-              <button class="secondary-button export-button" data-format="json" type="button">JSON</button>
-              <button class="secondary-button export-button" data-format="markdown" type="button">Markdown</button>
-              <button class="secondary-button export-button" data-format="bibtex" type="button">BibTeX</button>
-            </div>
-          </section>
-        </section>
-      </section>
-    </main>
-
-    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
     <noscript>
-      <div class="noscript">此网页壳需要 JavaScript；PaperAgent API 本身仍可独立使用。</div>
+      <div class="noscript">此工作台需要 JavaScript；PaperAgent API 本身仍可独立使用。</div>
     </noscript>
   </body>
 </html>
